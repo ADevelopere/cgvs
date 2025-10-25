@@ -32,8 +32,7 @@ export interface ColumnHeaderProps<
   onHide?: (columnId: string) => void;
 }
 
-const StyledTh = styled("th")(({ theme }) => ({
-  borderBottom: `1px solid ${theme.palette.divider}`,
+const StyledTh = styled("th")(() => ({
   padding: 0,
   position: "relative",
 }));
@@ -48,13 +47,24 @@ const HeaderContainer = styled("div")<HeaderContainerProps>(
     maxWidth: columnWidth,
     width: columnWidth,
     minWidth: columnWidth,
-    overflow: "hidden",
+    overflow: "visible",
     minHeight: TABLE_CHECKBOX_CONTAINER_SIZE,
     textAlign: "start" as const,
     color: theme.palette.text.primary,
-    paddingInline: 8,
+    paddingInlineStart: 12,
+    paddingInlineEnd: 8,
   })
 );
+
+const HeaderContentWrapper = styled("div")({
+  overflow: "hidden",
+  flex: 1,
+  display: "flex",
+  alignItems: "center",
+  width: "100%",
+  height: "100%",
+  minHeight: TABLE_CHECKBOX_CONTAINER_SIZE,
+});
 
 const HeaderInner = styled("div")({
   display: "flex",
@@ -200,68 +210,70 @@ const ColumnHeaderCellComponent = <
   return (
     <StyledTh>
       <HeaderContainer columnWidth={columnWidth}>
-        <HeaderInner>
-          <HeaderContent
-            isPinned={isPinned}
-            pinnedLeftStyle={pinnedLeftStyle}
-            pinnedRightStyle={pinnedRightStyle}
-          >
-            {/* Render custom header content */}
-            {column.headerRenderer()}
-          </HeaderContent>
+        <HeaderContentWrapper>
+          <HeaderInner>
+            <HeaderContent
+              isPinned={isPinned}
+              pinnedLeftStyle={pinnedLeftStyle}
+              pinnedRightStyle={pinnedRightStyle}
+            >
+              {/* Render custom header content */}
+              {column.headerRenderer()}
+            </HeaderContent>
 
-          {/* Table-managed options menu */}
-          <IconButton
-            onClick={handleOptionsClick}
-            size="small"
-            aria-label={`${column.id} options`}
-          >
-            <MoreVert fontSize="small" />
-          </IconButton>
+            {/* Table-managed options menu */}
+            <IconButton
+              onClick={handleOptionsClick}
+              size="small"
+              aria-label={`${column.id} options`}
+            >
+              <MoreVert fontSize="small" />
+            </IconButton>
 
-          <Menu
-            anchorEl={optionsAnchor}
-            open={Boolean(optionsAnchor)}
-            onClose={handleOptionsClose}
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            transformOrigin={{ vertical: "top", horizontal: "right" }}
-          >
-            {isPinned !== "left" && onPinLeft && (
-              <MenuItem onClick={handlePinLeft}>
-                <ListItemIcon>
-                  <PushPin fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>{locale.strings.column.pinLeft}</ListItemText>
-              </MenuItem>
-            )}
-            {isPinned !== "right" && onPinRight && (
-              <MenuItem onClick={handlePinRight}>
-                <ListItemIcon>
-                  <PushPin fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>{locale.strings.column.pinRight}</ListItemText>
-              </MenuItem>
-            )}
-            {isPinned && onUnpin && (
-              <MenuItem onClick={handleUnpin}>
-                <ListItemIcon>
-                  <PushPin fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>{locale.strings.column.unpin}</ListItemText>
-              </MenuItem>
-            )}
-            {onHide && (
-              <MenuItem onClick={handleHide}>
-                <ListItemIcon>
-                  <VisibilityOff fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>{locale.strings.column.hide}</ListItemText>
-              </MenuItem>
-            )}
-          </Menu>
-        </HeaderInner>
+            <Menu
+              anchorEl={optionsAnchor}
+              open={Boolean(optionsAnchor)}
+              onClose={handleOptionsClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
+            >
+              {isPinned !== "left" && onPinLeft && (
+                <MenuItem onClick={handlePinLeft}>
+                  <ListItemIcon>
+                    <PushPin fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>{locale.strings.column.pinLeft}</ListItemText>
+                </MenuItem>
+              )}
+              {isPinned !== "right" && onPinRight && (
+                <MenuItem onClick={handlePinRight}>
+                  <ListItemIcon>
+                    <PushPin fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>{locale.strings.column.pinRight}</ListItemText>
+                </MenuItem>
+              )}
+              {isPinned && onUnpin && (
+                <MenuItem onClick={handleUnpin}>
+                  <ListItemIcon>
+                    <PushPin fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>{locale.strings.column.unpin}</ListItemText>
+                </MenuItem>
+              )}
+              {onHide && (
+                <MenuItem onClick={handleHide}>
+                  <ListItemIcon>
+                    <VisibilityOff fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>{locale.strings.column.hide}</ListItemText>
+                </MenuItem>
+              )}
+            </Menu>
+          </HeaderInner>
+        </HeaderContentWrapper>
 
-        {/* Resize handle */}
+        {/* Resize handle - now outside overflow:hidden wrapper */}
         <ResizeHandle
           onResize={handleResizeStart}
           enabled={column.resizable !== false}

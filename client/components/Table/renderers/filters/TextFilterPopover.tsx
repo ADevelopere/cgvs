@@ -17,6 +17,7 @@ import {
   operationRequiresValue,
 } from "@/client/types/filters";
 import { Check, Clear } from "@mui/icons-material";
+import { useTableLocale } from "../../contexts/TableLocaleContext";
 
 export interface TextFilterPopoverProps {
   anchorEl: HTMLElement | null;
@@ -46,6 +47,10 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
   onApply,
   onClear,
 }) => {
+  const {
+    strings: { filter: filterStrings, textFilterOps },
+  } = useTableLocale();
+
   const [operation, setOperation] = useState<TextFilterOperation>(
     value?.operation || TextFilterOperation.contains
   );
@@ -90,7 +95,7 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
 
   const handleApply = useCallback(() => {
     if (valueRequired && !filterValue.trim()) {
-      setError("Value is required for this operation");
+      setError(filterStrings.valueRequired);
       return;
     }
     const filterClause: FilterClause<string, TextFilterOperation> = {
@@ -100,7 +105,15 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
     };
     onApply(filterClause);
     onClose();
-  }, [onApply, columnId, onClose, operation, filterValue, valueRequired]);
+  }, [
+    onApply,
+    columnId,
+    onClose,
+    operation,
+    filterValue,
+    valueRequired,
+    filterStrings.valueRequired,
+  ]);
 
   const handleClear = useCallback(() => {
     onClear();
@@ -137,33 +150,43 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
     >
       <Box sx={{ p: 2, minWidth: 300 }}>
         <Typography variant="subtitle2" gutterBottom>
-          Filter: {columnLabel}
+          {filterStrings.title}: {columnLabel}
         </Typography>
 
         <FormControl fullWidth sx={{ mt: 2 }}>
-          <InputLabel id="text-filter-operation-label">Operation</InputLabel>
+          <InputLabel id="text-filter-operation-label">
+            {filterStrings.operation}
+          </InputLabel>
           <Select
             labelId="text-filter-operation-label"
             value={operation}
             onChange={handleOperationChange}
-            label="Operation"
+            label={filterStrings.operation}
             size="small"
           >
-            <MenuItem value={TextFilterOperation.contains}>Contains</MenuItem>
-            <MenuItem value={TextFilterOperation.notContains}>
-              Does Not Contain
+            <MenuItem value={TextFilterOperation.contains}>
+              {textFilterOps.contains}
             </MenuItem>
-            <MenuItem value={TextFilterOperation.equals}>Equals</MenuItem>
+            <MenuItem value={TextFilterOperation.notContains}>
+              {textFilterOps.notContains}
+            </MenuItem>
+            <MenuItem value={TextFilterOperation.equals}>
+              {textFilterOps.equals}
+            </MenuItem>
             <MenuItem value={TextFilterOperation.notEquals}>
-              Not Equals
+              {textFilterOps.notEquals}
             </MenuItem>
             <MenuItem value={TextFilterOperation.startsWith}>
-              Starts With
+              {textFilterOps.startsWith}
             </MenuItem>
-            <MenuItem value={TextFilterOperation.endsWith}>Ends With</MenuItem>
-            <MenuItem value={TextFilterOperation.isEmpty}>Is Empty</MenuItem>
+            <MenuItem value={TextFilterOperation.endsWith}>
+              {textFilterOps.endsWith}
+            </MenuItem>
+            <MenuItem value={TextFilterOperation.isEmpty}>
+              {textFilterOps.isEmpty}
+            </MenuItem>
             <MenuItem value={TextFilterOperation.isNotEmpty}>
-              Is Not Empty
+              {textFilterOps.isNotEmpty}
             </MenuItem>
           </Select>
         </FormControl>
@@ -172,7 +195,7 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
           <TextField
             fullWidth
             size="small"
-            label="Value"
+            label={filterStrings.value}
             value={filterValue}
             onChange={handleValueChange}
             onKeyDown={handleKeyDown}
@@ -192,7 +215,7 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
             startIcon={<Clear />}
             color="inherit"
           >
-            Clear
+            {filterStrings.clear}
           </Button>
           <Button
             size="small"
@@ -200,7 +223,7 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
             variant="contained"
             startIcon={<Check />}
           >
-            Apply
+            {filterStrings.apply}
           </Button>
         </Box>
       </Box>

@@ -69,6 +69,7 @@ const DataCellComponent = <
       maxWidth: width,
       minWidth: width,
       width: width,
+      cursor: editable ? "text" : "default",
     };
 
     if (pinPosition === "left") {
@@ -113,6 +114,7 @@ const DataCellComponent = <
     cellEditingStyle,
     isEditing,
     hasError,
+    editable,
     getColumnPinPosition,
     getColumnWidth,
     pinnedLeftStyle,

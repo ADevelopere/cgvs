@@ -3,6 +3,7 @@ import { Tooltip, Box, IconButton } from "@mui/material";
 import { CheckCircle, Cancel } from "@mui/icons-material";
 import { isRecipientReady } from "@/client/views/template/manage/data/utils/validation";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import { useAppTranslation } from "@/client/locale";
 
 interface ReadyStatusViewRendererProps {
   variableValues: Record<string, unknown>;
@@ -13,10 +14,11 @@ interface ReadyStatusViewRendererProps {
 const getTooltipMessage = (
   isReady: boolean,
   variables: Graphql.TemplateVariable[],
-  variableValues: Record<string, unknown>
+  variableValues: Record<string, unknown>,
+  strings: ReturnType<typeof useAppTranslation<"recipientVariableDataTranslations">>
 ): string => {
   if (isReady) {
-    return "All required fields complete";
+    return strings.allRequiredFieldsComplete;
   }
 
   const requiredVariables = variables.filter(variable => variable.required);
@@ -25,6 +27,7 @@ const getTooltipMessage = (
 
   for (const variable of requiredVariables) {
     const value = variableValues[variable.id?.toString() || ""];
+    const varName = variable.name || strings.variableWithId.replace("{id}", String(variable.id));
 
     // Check if value exists
     if (
@@ -33,7 +36,7 @@ const getTooltipMessage = (
       value === "" ||
       (Array.isArray(value) && value.length === 0)
     ) {
-      missingFields.push(variable.name || `Variable ${variable.id}`);
+      missingFields.push(varName);
       continue;
     }
 
@@ -45,13 +48,13 @@ const getTooltipMessage = (
         const textVar = variable as Graphql.TemplateTextVariable;
         const textValue = typeof value === "string" ? value : String(value);
         if (textVar.minLength && textValue.length < textVar.minLength) {
-          validationError = `Too short (min ${textVar.minLength})`;
+          validationError = strings.textTooShort.replace("{min}", String(textVar.minLength));
         } else if (textVar.maxLength && textValue.length > textVar.maxLength) {
-          validationError = `Too long (max ${textVar.maxLength})`;
+          validationError = strings.textTooLong.replace("{max}", String(textVar.maxLength));
         } else if (textVar.pattern) {
           const regex = new RegExp(textVar.pattern);
           if (!regex.test(textValue)) {
-            validationError = "Pattern mismatch";
+            validationError = strings.patternMismatch;
           }
         }
         break;
@@ -65,19 +68,19 @@ const getTooltipMessage = (
               ? parseFloat(value)
               : Number(value);
         if (isNaN(numValue)) {
-          validationError = "Invalid number";
+          validationError = strings.invalidNumber;
         } else if (
           numberVar.minValue !== null &&
           numberVar.minValue !== undefined &&
           numValue < numberVar.minValue
         ) {
-          validationError = `Too low (min ${numberVar.minValue})`;
+          validationError = strings.numberTooLow.replace("{min}", String(numberVar.minValue));
         } else if (
           numberVar.maxValue !== null &&
           numberVar.maxValue !== undefined &&
           numValue > numberVar.maxValue
         ) {
-          validationError = `Too high (max ${numberVar.maxValue})`;
+          validationError = strings.numberTooHigh.replace("{max}", String(numberVar.maxValue));
         }
         break;
       }
@@ -86,11 +89,11 @@ const getTooltipMessage = (
         const dateValue =
           value instanceof Date ? value : new Date(String(value));
         if (isNaN(dateValue.getTime())) {
-          validationError = "Invalid date";
+          validationError = strings.invalidDate;
         } else if (dateVar.minDate && dateValue < new Date(dateVar.minDate)) {
-          validationError = "Date too early";
+          validationError = strings.dateTooEarly.replace("{min}", new Date(dateVar.minDate).toLocaleDateString());
         } else if (dateVar.maxDate && dateValue > new Date(dateVar.maxDate)) {
-          validationError = "Date too late";
+          validationError = strings.dateTooLate.replace("{max}", new Date(dateVar.maxDate).toLocaleDateString());
         }
         break;
       }
@@ -100,33 +103,33 @@ const getTooltipMessage = (
         const options = selectVar.options || [];
         for (const selectedValue of values) {
           if (!options.includes(selectedValue as string)) {
-            validationError = "Invalid selection";
+            validationError = strings.invalidSelection;
             break;
           }
         }
         if (!selectVar.multiple && values.length > 1) {
-          validationError = "Multiple selection not allowed";
+          validationError = strings.multipleSelectionNotAllowed;
         }
         break;
       }
     }
 
     if (validationError) {
-      invalidFields.push(
-        `${variable.name || `Variable ${variable.id}`}: ${validationError}`
-      );
+      invalidFields.push(`${varName}: ${validationError}`);
     }
   }
 
   if (missingFields.length > 0 && invalidFields.length > 0) {
-    return `Missing: ${missingFields.join(", ")}. Invalid: ${invalidFields.join(", ")}`;
+    return strings.missingAndInvalidFields
+      .replace("{missing}", missingFields.join(", "))
+      .replace("{invalid}", invalidFields.join(", "));
   } else if (missingFields.length > 0) {
-    return `Missing required fields: ${missingFields.join(", ")}`;
+    return strings.missingRequiredFields.replace("{fields}", missingFields.join(", "));
   } else if (invalidFields.length > 0) {
-    return `Invalid values: ${invalidFields.join(", ")}`;
+    return strings.invalidValues.replace("{fields}", invalidFields.join(", "));
   }
 
-  return "Not ready";
+  return strings.notReady;
 };
 
 /**
@@ -138,16 +141,18 @@ const getTooltipMessage = (
 export const ReadyStatusViewRenderer: React.FC<
   ReadyStatusViewRendererProps
 > = ({ variableValues, variables }) => {
+  const strings = useAppTranslation("recipientVariableDataTranslations");
+
   // Calculate ready status (memoized)
   const isReady = useMemo(
-    () => isRecipientReady(variableValues, variables),
-    [variableValues, variables]
+    () => isRecipientReady(variableValues, variables, strings),
+    [variableValues, variables, strings]
   );
 
   // Calculate tooltip message (memoized)
   const tooltipMessage = useMemo(
-    () => getTooltipMessage(isReady, variables, variableValues),
-    [isReady, variables, variableValues]
+    () => getTooltipMessage(isReady, variables, variableValues, strings),
+    [isReady, variables, variableValues, strings]
   );
 
   return (

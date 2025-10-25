@@ -48,7 +48,7 @@ export const SelectEditRenderer = <
       if (isSaving) return;
 
       const newValueString = event.target.value;
-      const normalizedOldValue = (value || "") as string;
+      const normalizedOldValue = (value ?? "") as string;
 
       // Only save if the value has actually changed
       if (newValueString === normalizedOldValue) {

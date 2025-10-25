@@ -11,7 +11,7 @@ export interface PhoneEditRendererProps {
    * This is provided by DataCell and ultimately calls column.onUpdate
    * Call this when the user confirms their edit
    */
-  onSave: (value: string) => Promise<void>;
+  onSave: (value: string | null | undefined) => Promise<void>;
   /**
    * Callback to cancel editing without saving
    * This exits edit mode and discards changes
@@ -21,7 +21,7 @@ export interface PhoneEditRendererProps {
    * Callback to notify parent of error state changes
    */
   onErrorChange?: (error: string | null) => void;
-  validator?: (value: string) => string | null;
+  validator?: (value: string | null | undefined) => string | null;
 }
 
 /**
@@ -37,7 +37,7 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
   onErrorChange,
   validator,
 }) => {
-  const [phoneValue, setPhoneValue] = useState(value || "");
+  const [phoneValue, setPhoneValue] = useState(value);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -65,9 +65,11 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
   );
 
   const handleSave = useCallback(async () => {
+    const currentLength = typeof phoneValue === "string" ? phoneValue.length : 0;
+    const newValue: string | null | undefined = currentLength > 0 ? phoneValue : null;
+    const originalValue = value;
+
     // Early return if value hasn't changed
-    const newValue = phoneValue || null;
-    const originalValue = value || null;
     if (newValue === originalValue) {
       onCancel();
       return;
@@ -75,7 +77,7 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
 
     // Final validation
     if (validator) {
-      const validationError = validator(phoneValue);
+      const validationError = validator(newValue);
       if (validationError) {
         setError(validationError);
         return;
@@ -86,7 +88,7 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
     onCancel();
 
     // Save in the background (fire and forget)
-    onSave(phoneValue).catch(() => {
+    onSave(newValue).catch(() => {
       // Error handling is done by the parent component
     });
   }, [phoneValue, onSave, validator, value, onCancel]);
@@ -117,7 +119,7 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
         <Tooltip open={!!error} title={error ?? ""} arrow placement="bottom-start">
           <MuiTelInput
             inputRef={inputRef}
-            value={phoneValue}
+            value={phoneValue ?? undefined}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             langOfCountryName="ar"

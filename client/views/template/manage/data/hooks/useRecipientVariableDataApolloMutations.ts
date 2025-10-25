@@ -23,11 +23,11 @@ export const useRecipientVariableDataApolloMutations = () => {
           : [vars.values];
 
         const variableValues = valuesArray.reduce(
-          (acc: Record<number, string>, { variableId, value }) => {
+          (acc: Record<number, string | null | undefined>, { variableId, value }) => {
             acc[variableId] = value;
             return acc;
           },
-          {} as Record<number, string>
+          {} as Record<number, string | null | undefined>
         );
 
         return {

@@ -16,6 +16,14 @@ export interface TableLocaleFilter {
   operation: string;
   value: string;
   cancel: string;
+  valueRequired: string; // e.g., "Value is required for this operation"
+  invalidNumber: string; // e.g., "Please enter a valid number"
+  dateRequired: string; // e.g., "Date is required for this operation"
+  endDateRequired: string; // e.g., "End date is required for between operation"
+  startDateBeforeEnd: string; // e.g., "Start date must be before end date"
+  date: string; // e.g., "Date"
+  startDate: string; // e.g., "Start Date"
+  endDate: string; // e.g., "End Date"
   // Add more generic filter strings if needed, specific ones can be per type
 }
 
@@ -92,6 +100,14 @@ export interface TableLocaleSelection {
   deselectRow: string;
 }
 
+export interface TableLocaleBooleanFilterOps {
+  [key: string]: string;
+
+  all: string;
+  true: string;
+  false: string;
+}
+
 export interface TableLocaleColumn {
   pin: string;
   pinLeft: string;
@@ -103,6 +119,18 @@ export interface TableLocaleColumn {
   resize: string;
 }
 
+export interface TableLocaleValidation {
+  required: string; // e.g., "Value is required"
+  invalidNumber: string; // e.g., "Please enter a valid number"
+  invalidValue: string; // e.g., "Invalid value"
+  invalidDate: string; // e.g., "Invalid date"
+  minValue: (min: number) => string; // e.g., "Value must be at least {min}"
+  maxValue: (max: number) => string; // e.g., "Value must be at most {max}"
+  maxDecimals: (decimals: number) => string; // e.g., "Maximum {decimals} decimal places allowed"
+  minDate: (date: string) => string; // e.g., "Date must be after {date}"
+  maxDate: (date: string) => string; // e.g., "Date must be before {date}"
+}
+
 // The complete locale object structure
 export interface TableLocale {
   sort: TableLocaleSort;
@@ -110,10 +138,12 @@ export interface TableLocale {
   textFilterOps: TableLocaleTextFilterOps;
   numberFilterOps: TableLocaleNumberFilterOps;
   dateFilterOps: TableLocaleDateFilterOps;
+  booleanFilterOps: TableLocaleBooleanFilterOps;
   pagination: TableLocalePagination;
   general: TableLocaleGeneral;
   selection: TableLocaleSelection;
   column: TableLocaleColumn;
+  validation: TableLocaleValidation;
   // Add more groups as needed, e.g., for column actions, specific component labels
 }
 

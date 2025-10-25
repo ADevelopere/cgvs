@@ -30,9 +30,9 @@ export const VariableValueInputPothosObject = VariableValueInputRef.implement({
   fields: t => ({
     variableId: t.int({ required: true }),
     value: t.string({
-      required: true,
+      required: false,
       description:
-        'Value as string. Backend parses to correct type. For SELECT multiple: JSON array string like \'["opt1","opt2"]\'',
+        'Value as string (nullable to clear values). Backend parses to correct type. For SELECT multiple: JSON array string like \'["opt1","opt2"]\'',
     }),
   }),
 });

@@ -17,6 +17,14 @@ const enLocale: TableLocale = {
     operation: "Operation",
     value: "Value",
     cancel: "Cancel",
+    valueRequired: "Value is required for this operation",
+    invalidNumber: "Please enter a valid number",
+    dateRequired: "Date is required for this operation",
+    endDateRequired: "End date is required for between operation",
+    startDateBeforeEnd: "Start date must be before end date",
+    date: "Date",
+    startDate: "Start Date",
+    endDate: "End Date",
   },
   textFilterOps: {
     contains: "Contains",
@@ -35,21 +43,26 @@ const enLocale: TableLocale = {
     greaterThanOrEqual: "Greater than or equal to",
     lessThan: "Less than",
     lessThanOrEqual: "Less than or equal to",
-    isEmpty: "Is empty",
-    isNotEmpty: "Is not empty",
+    isEmpty: "Is null",
+    isNotEmpty: "Is not null",
   },
   dateFilterOps: {
     between: "Between",
     is: "Is",
     isNot: "Is not",
-    isAfter: "Is after",
-    isBefore: "Is before",
+    isAfter: "After",
+    isBefore: "Before",
     isOnOrAfter: "Is on or after",
     isOnOrBefore: "Is on or before",
     from: "From",
     to: "To",
     isEmpty: "Is empty",
     isNotEmpty: "Is not empty",
+  },
+  booleanFilterOps: {
+    all: "All",
+    true: "True",
+    false: "False",
   },
   pagination: {
     rowsPerPage: "Rows per page:",
@@ -89,6 +102,18 @@ const enLocale: TableLocale = {
     showColumnManager: "Show Column Manager",
     resize: "Resize",
   },
+  validation: {
+    required: "Value is required",
+    invalidNumber: "Please enter a valid number",
+    invalidValue: "Invalid value",
+    invalidDate: "Invalid date",
+    minValue: min => `Value must be at least ${min}`,
+    maxValue: max => `Value must be at most ${max}`,
+    maxDecimals: decimals =>
+      `Maximum ${decimals} decimal place${decimals === 1 ? "" : "s"} allowed`,
+    minDate: date => `Date must be after ${date}`,
+    maxDate: date => `Date must be before ${date}`,
+  },
 };
 
 const arLocale: TableLocale = {
@@ -108,6 +133,14 @@ const arLocale: TableLocale = {
     operation: "عملية",
     value: "قيمة",
     cancel: "إلغاء",
+    valueRequired: "القيمة مطلوبة لهذه العملية",
+    invalidNumber: "الرجاء إدخال رقم صحيح",
+    dateRequired: "التاريخ مطلوب لهذه العملية",
+    endDateRequired: "تاريخ الانتهاء مطلوب لعملية بين",
+    startDateBeforeEnd: "يجب أن يكون تاريخ البدء قبل تاريخ الانتهاء",
+    date: "تاريخ",
+    startDate: "تاريخ البدء",
+    endDate: "تاريخ الانتهاء",
   },
   textFilterOps: {
     contains: "يحتوي على",
@@ -141,6 +174,11 @@ const arLocale: TableLocale = {
     to: "إلى",
     isEmpty: "فارغ",
     isNotEmpty: "غير فارغ",
+  },
+  booleanFilterOps: {
+    all: "الكل",
+    true: "صحيح",
+    false: "خطأ",
   },
   pagination: {
     rowsPerPage: "عدد الصفوف في الصفحة:",
@@ -179,6 +217,18 @@ const arLocale: TableLocale = {
     autosize: "تغيير الحجم تلقائيًا",
     showColumnManager: "عرض مدير الأعمدة",
     resize: "تغيير الحجم",
+  },
+  validation: {
+    required: "القيمة مطلوبة",
+    invalidNumber: "الرجاء إدخال رقم صحيح",
+    invalidValue: "قيمة غير صالحة",
+    invalidDate: "تاريخ غير صالح",
+    minValue: min => `يجب أن تكون القيمة على الأقل ${min}`,
+    maxValue: max => `يجب أن تكون القيمة على الأكثر ${max}`,
+    maxDecimals: decimals =>
+      `الحد الأقصى ${decimals} منزلة${decimals === 1 ? "" : ""} عشرية مسموح بها`,
+    minDate: date => `يجب أن يكون التاريخ بعد ${date}`,
+    maxDate: date => `يجب أن يكون التاريخ قبل ${date}`,
   },
 };
 

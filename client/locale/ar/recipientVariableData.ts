@@ -41,6 +41,7 @@ export const recipientVariableData: RecipientVariableDataTranslation = {
   // Status tooltips
   missingRequiredFields: "الحقول المطلوبة مفقودة: {fields}",
   invalidValues: "قيم غير صحيحة: {fields}",
+  missingAndInvalidFields: "مفقودة: {missing}. غير صحيحة: {invalid}",
   allRequiredFieldsComplete: "جميع الحقول المطلوبة مكتملة",
 
   // Table messages
@@ -50,4 +51,7 @@ export const recipientVariableData: RecipientVariableDataTranslation = {
   // Group selector
   selectGroupFirst: "يرجى اختيار مجموعة أولاً",
   noGroupsAvailable: "لا توجد مجموعات متاحة",
+
+  // Variable fallback
+  variableWithId: "متغير {id}",
 };

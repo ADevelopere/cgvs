@@ -180,7 +180,7 @@ export const validateNationality = (value: CountryCode | undefined): string | nu
  * @param value - The phone number to validate
  * @returns null if valid, error message if invalid
  */
-export const validatePhoneNumber = (value: string | undefined): string | null => {
+export const validatePhoneNumber = (value: string | null | undefined): string | null => {
   if (!value || !value.trim()) {
     return null; // Optional field
   }
