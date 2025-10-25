@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { TextField } from "@mui/material";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
 
 export interface TextEditRendererProps {
   value: string | null | undefined;
@@ -109,38 +110,41 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
     [handleSave, onCancel, error, multiline]
   );
 
-  const handleBlur = useCallback(() => {
+  const handleClickAway = useCallback(() => {
     if (!error) {
       handleSave();
     }
-  }, [handleSave, error]);
+    onCancel();
+  }, [handleSave, error, onCancel]);
 
   return (
-    <TextField
-      inputRef={inputRef}
-      value={editValue}
-      onChange={handleChange}
-      onKeyDown={handleKeyDown}
-      onMouseDown={e => e.stopPropagation()}
-      onBlur={handleBlur}
-      error={!!error}
-      helperText={error}
-      placeholder={placeholder}
-      multiline={multiline}
-      fullWidth
-      size="small"
-      variant="standard"
-      slotProps={{
-        input: {
-          disableUnderline: !error,
-        },
-      }}
-      sx={{
-        "& .MuiInputBase-input": {
-          padding: 0,
-        },
-      }}
-    />
+    <ClickAwayListener onClickAway={handleClickAway}>
+      <div>
+        <TextField
+          inputRef={inputRef}
+          value={editValue}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          error={!!error}
+          helperText={error}
+          placeholder={placeholder}
+          multiline={multiline}
+          fullWidth
+          size="small"
+          variant="standard"
+          slotProps={{
+            input: {
+              disableUnderline: !error,
+            },
+          }}
+          sx={{
+            "& .MuiInputBase-input": {
+              padding: 0,
+            },
+          }}
+        />
+      </div>
+    </ClickAwayListener>
   );
 };
 

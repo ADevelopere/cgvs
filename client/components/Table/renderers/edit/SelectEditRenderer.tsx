@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { TextField, MenuItem, InputAdornment, IconButton } from "@mui/material";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { Clear as ClearIcon } from "@mui/icons-material";
 
 export interface SelectEditRendererProps<TValue> {
@@ -24,7 +25,13 @@ export interface SelectEditRendererProps<TValue> {
  * Select dropdown that opens automatically and saves immediately on selection.
  * Uses TextField with select prop for better MUI integration.
  */
-export const SelectEditRenderer = <TValue extends string | number | null | undefined = string | number | null | undefined>({
+export const SelectEditRenderer = <
+  TValue extends string | number | null | undefined =
+    | string
+    | number
+    | null
+    | undefined,
+>({
   value,
   options,
   onSave,
@@ -76,6 +83,10 @@ export const SelectEditRenderer = <TValue extends string | number | null | undef
     }
   }, [isSaving, onCancel]);
 
+  const handleClickAway = useCallback(() => {
+    onCancel();
+  }, [onCancel]);
+
   const handleClear = useCallback(
     async (event: React.MouseEvent) => {
       event.stopPropagation();
@@ -95,67 +106,70 @@ export const SelectEditRenderer = <TValue extends string | number | null | undef
   );
 
   return (
-    <TextField
-      select
-      fullWidth
-      variant="standard"
-      value={(value || "") as string}
-      onChange={handleChange}
-      onKeyDown={handleKeyDown}
-      onMouseDown={(e) => e.stopPropagation()} 
-      disabled={isSaving}
-      autoFocus
-      slotProps={{
-        select: {
-          open: true, // Open menu automatically
-          onClose: handleClose,
-        },
-        input: {
-          disableUnderline: true,
-          endAdornment: value ? (
-            <InputAdornment
-              position="end"
-              sx={{
-                px: 4,
-                position: "relative",
-                zIndex: 1400, // Higher than MUI Menu (1300)
-                pointerEvents: "auto",
-              }}
-            >
-              <IconButton
-                aria-label="clear selection"
-                onClick={handleClear}
-                edge="end"
-                size="small"
-                disabled={isSaving}
-                sx={{
-                  backgroundColor: "background.paper",
-                  "&:hover": {
-                    backgroundColor: "action.hover",
-                  },
-                }}
-              >
-                <ClearIcon fontSize="small" />
-              </IconButton>
-            </InputAdornment>
-          ) : null,
-        },
-      }}
-      sx={{
-        "& .MuiInputBase-input": {
-          padding: 0,
-        },
-      }}
-    >
-      {options.map(option => (
-        <MenuItem
-          key={option.value as unknown as string}
-          value={option.value as unknown as string}
+    <ClickAwayListener onClickAway={handleClickAway}>
+      <div>
+        <TextField
+          select
+          fullWidth
+          variant="standard"
+          value={(value || "") as string}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          disabled={isSaving}
+          autoFocus
+          slotProps={{
+            select: {
+              open: true, // Open menu automatically
+              onClose: handleClose,
+            },
+            input: {
+              disableUnderline: true,
+              endAdornment: value ? (
+                <InputAdornment
+                  position="end"
+                  sx={{
+                    px: 4,
+                    position: "relative",
+                    zIndex: 1400, // Higher than MUI Menu (1300)
+                    pointerEvents: "auto",
+                  }}
+                >
+                  <IconButton
+                    aria-label="clear selection"
+                    onClick={handleClear}
+                    edge="end"
+                    size="small"
+                    disabled={isSaving}
+                    sx={{
+                      backgroundColor: "background.paper",
+                      "&:hover": {
+                        backgroundColor: "action.hover",
+                      },
+                    }}
+                  >
+                    <ClearIcon fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
+            },
+          }}
+          sx={{
+            "& .MuiInputBase-input": {
+              padding: 0,
+            },
+          }}
         >
-          {option.label}
-        </MenuItem>
-      ))}
-    </TextField>
+          {options.map(option => (
+            <MenuItem
+              key={option.value as unknown as string}
+              value={option.value as unknown as string}
+            >
+              {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
+      </div>
+    </ClickAwayListener>
   );
 };
 

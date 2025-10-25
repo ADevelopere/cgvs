@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { TextField } from "@mui/material";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
 
 export interface NumberEditRendererProps {
   value: number | null | undefined;
@@ -133,43 +134,47 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
     [handleSave, onCancel, error]
   );
 
-  const handleBlur = useCallback(() => {
+  const handleClickAway = useCallback(() => {
     if (!error) {
       handleSave();
     }
-  }, [handleSave, error]);
+    onCancel();
+  }, [handleSave, error, onCancel]);
 
   return (
-    <TextField
-      inputRef={inputRef}
-      type="number"
-      value={editValue}
-      onChange={handleChange}
-      onKeyDown={handleKeyDown}
-      onBlur={handleBlur}
-      error={!!error}
-      helperText={error}
-      fullWidth
-      size="small"
-      variant="standard"
-      slotProps={{
-        input: {
-          disableUnderline: !error,
-        },
-        htmlInput: {
-          min,
-          max,
-          step:
-            step ||
-            (decimals !== undefined ? Math.pow(10, -decimals) : undefined),
-        },
-      }}
-      sx={{
-        "& .MuiInputBase-input": {
-          padding: 0,
-        },
-      }}
-    />
+    <ClickAwayListener onClickAway={handleClickAway}>
+      <div>
+        <TextField
+          inputRef={inputRef}
+          type="number"
+          value={editValue}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          error={!!error}
+          helperText={error}
+          fullWidth
+          size="small"
+          variant="standard"
+          slotProps={{
+            input: {
+              disableUnderline: !error,
+            },
+            htmlInput: {
+              min,
+              max,
+              step:
+                step ||
+                (decimals !== undefined ? Math.pow(10, -decimals) : undefined),
+            },
+          }}
+          sx={{
+            "& .MuiInputBase-input": {
+              padding: 0,
+            },
+          }}
+        />
+      </div>
+    </ClickAwayListener>
   );
 };
 

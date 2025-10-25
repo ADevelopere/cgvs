@@ -8,7 +8,6 @@ import React, {
   useState,
 } from "react";
 import type { CSSProperties } from "react";
-import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { AnyColumn, isEditableColumn } from "../../types";
 
 type DataCellProps<
@@ -142,7 +141,7 @@ const DataCellComponent = <
     };
   }, [isEditing, handleCancel]);
 
-  const cellContent = (
+  return (
     <td
       ref={cellRef}
       style={computedCellStyle}
@@ -164,14 +163,6 @@ const DataCellComponent = <
             column.viewRenderer({ row })}
       </div>
     </td>
-  );
-
-  return isEditing ? (
-    <ClickAwayListener onClickAway={handleCancel}>
-      {cellContent}
-    </ClickAwayListener>
-  ) : (
-    cellContent
   );
 };
 
