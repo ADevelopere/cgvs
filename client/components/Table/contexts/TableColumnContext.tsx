@@ -42,11 +42,11 @@ const TableColumnContext =
 export type TableColumnsProviderProps = {
   children: ReactNode;
   initialWidths: Record<string, number>;
-  onResizeColumn?: (columnId: string, newWidth: number) => void;
-  onPinColumn?: (columnId: string, position: PinPosition) => void;
-  onHideColumn?: (columnId: string) => void;
-  onShowColumn?: (columnId: string) => void;
-  onAutosizeColumn?: (columnId: string) => void;
+  onResizeColumnAction?: (columnId: string, newWidth: number) => void;
+  onPinColumnAction?: (columnId: string, position: PinPosition) => void;
+  onHideColumnAction?: (columnId: string) => void;
+  onShowColumnAction?: (columnId: string) => void;
+  onAutosizeColumnAction?: (columnId: string) => void;
 };
 
 export const TableColumnsProvider = <
@@ -55,11 +55,11 @@ export const TableColumnsProvider = <
 >({
   children,
   initialWidths,
-  onResizeColumn,
-  onPinColumn,
-  onHideColumn,
-  onShowColumn,
-  onAutosizeColumn,
+  onResizeColumnAction,
+  onPinColumnAction,
+  onHideColumnAction,
+  onShowColumnAction,
+  onAutosizeColumnAction,
 }: TableColumnsProviderProps) => {
   const theme = useTheme();
   const { columns } = useTableContext<TRowData, TRowId>();
@@ -108,9 +108,9 @@ export const TableColumnsProvider = <
   const resizeColumn = useCallback(
     (columnId: string, newWidth: number) => {
       setColumnWidth(columnId, newWidth);
-      onResizeColumn?.(columnId, newWidth);
+      onResizeColumnAction?.(columnId, newWidth);
     },
-    [setColumnWidth, onResizeColumn]
+    [setColumnWidth, onResizeColumnAction]
   );
 
   const pinColumn = useCallback(
@@ -119,25 +119,25 @@ export const TableColumnsProvider = <
         ...prev,
         [columnId]: position,
       }));
-      onPinColumn?.(columnId, position);
+      onPinColumnAction?.(columnId, position);
     },
-    [onPinColumn]
+    [onPinColumnAction]
   );
 
   const hideColumn = useCallback(
     (columnId: string) => {
       setHiddenColumns(prev => [...prev, columnId]);
-      onHideColumn?.(columnId);
+      onHideColumnAction?.(columnId);
     },
-    [onHideColumn]
+    [onHideColumnAction]
   );
 
   const showColumn = useCallback(
     (columnId: string) => {
       setHiddenColumns(prev => prev.filter(id => id !== columnId));
-      onShowColumn?.(columnId);
+      onShowColumnAction?.(columnId);
     },
-    [onShowColumn]
+    [onShowColumnAction]
   );
 
   // Auto-size column method (simplified for generic architecture)
@@ -173,9 +173,9 @@ export const TableColumnsProvider = <
           [columnId]: maxWidth,
         }));
       });
-      onAutosizeColumn?.(columnId);
+      onAutosizeColumnAction?.(columnId);
     },
-    [columns, onAutosizeColumn]
+    [columns, onAutosizeColumnAction]
   );
 
   // Filter out hidden columns

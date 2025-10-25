@@ -19,7 +19,7 @@ import { useAuth } from "@/client/contexts/AuthContext";
 import { useAppTranslation } from "@/client/locale";
 import { useRouter } from "next/navigation";
 
-const UserMenu: React.FC = () => {
+export const UserMenu: React.FC = () => {
   const strings = useAppTranslation("headerTranslations");
   const { user, logout } = useAuth();
   const router = useRouter();
@@ -88,5 +88,3 @@ const UserMenu: React.FC = () => {
     </>
   );
 };
-
-export default UserMenu;

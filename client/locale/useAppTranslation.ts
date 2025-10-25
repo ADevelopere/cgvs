@@ -9,11 +9,14 @@ export const useAppTranslation = <T extends keyof Translations>(
 ) => {
   const { language } = useAppTheme();
   const ts = useMemo(() => {
-    if (Object.values(AppLanguage).includes(language)) {
+    // Check if language exists in translations
+    if (language in translations) {
       return translations[language];
     }
+    // Fallback to default language (guaranteed to exist)
     return translations[AppLanguage.default];
   }, [language]);
 
+  // Return the namespace - guaranteed to exist due to fallback
   return ts[namespace];
 };
