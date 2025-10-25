@@ -23,7 +23,7 @@ export type RecipientWithVariableValues = {
 // Simple input (backend determines type from variable ID)
 export type VariableValueInput = {
   variableId: number;
-  value: string; // Always string, backend parses based on variable type
+  value?: string | null | undefined; // Always string, backend parses based on variable type
 };
 
 // Simplified results - no invalidData, auto-fixed in DB

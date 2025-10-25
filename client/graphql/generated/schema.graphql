@@ -1080,8 +1080,8 @@ type User {
 
 input VariableValueInput {
   """
-  Value as string. Backend parses to correct type. For SELECT multiple: JSON array string like '["opt1","opt2"]'
+  Value as string (nullable to clear values). Backend parses to correct type. For SELECT multiple: JSON array string like '["opt1","opt2"]'
   """
-  value: String!
+  value: String
   variableId: Int!
 }

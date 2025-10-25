@@ -66,7 +66,7 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
 
   // Handle cell updates
   const handleUpdateCell = useCallback(
-    async (rowId: number, columnId: string, value: unknown) => {
+    async <T = unknown>(rowId: number, columnId: string, value: T | null | undefined) => {
       // Extract variable ID from column ID (format: var_${variableId})
       if (columnId.startsWith("var_")) {
         const variableId = parseInt(columnId.replace("var_", ""), 10);

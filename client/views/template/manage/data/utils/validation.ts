@@ -1,4 +1,5 @@
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import { RecipientVariableDataTranslation } from "@/client/locale/components";
 
 /**
  * Validation utilities for template variable values
@@ -9,7 +10,8 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
  */
 export const validateTextVariable = (
   value: string | null | undefined,
-  variable: Graphql.TemplateTextVariable
+  variable: Graphql.TemplateTextVariable,
+  strings: RecipientVariableDataTranslation
 ): string | null => {
   // Handle null/undefined/empty values
   if (!value || value.trim() === "") {
@@ -20,19 +22,19 @@ export const validateTextVariable = (
 
   // Check minimum length
   if (variable.minLength && trimmedValue.length < variable.minLength) {
-    return `textTooShort:${variable.minLength}`;
+    return strings.textTooShort.replace("{min}", String(variable.minLength));
   }
 
   // Check maximum length
   if (variable.maxLength && trimmedValue.length > variable.maxLength) {
-    return `textTooLong:${variable.maxLength}`;
+    return strings.textTooLong.replace("{max}", String(variable.maxLength));
   }
 
   // Check pattern if provided
   if (variable.pattern) {
     const regex = new RegExp(variable.pattern);
     if (!regex.test(trimmedValue)) {
-      return "patternMismatch";
+      return strings.patternMismatch;
     }
   }
 
@@ -44,7 +46,8 @@ export const validateTextVariable = (
  */
 export const validateNumberVariable = (
   value: number | string | null | undefined,
-  variable: Graphql.TemplateNumberVariable
+  variable: Graphql.TemplateNumberVariable,
+  strings: RecipientVariableDataTranslation
 ): string | null => {
   // Handle null/undefined/empty values
   if (value === null || value === undefined || value === "") {
@@ -55,7 +58,7 @@ export const validateNumberVariable = (
 
   // Check if it's a valid number
   if (isNaN(numValue)) {
-    return "invalidNumber";
+    return strings.invalidNumber;
   }
 
   // Check minimum value
@@ -64,7 +67,7 @@ export const validateNumberVariable = (
     variable.minValue !== undefined &&
     numValue < variable.minValue
   ) {
-    return `numberTooLow:${variable.minValue}`;
+    return strings.numberTooLow.replace("{min}", String(variable.minValue));
   }
 
   // Check maximum value
@@ -73,14 +76,14 @@ export const validateNumberVariable = (
     variable.maxValue !== undefined &&
     numValue > variable.maxValue
   ) {
-    return `numberTooHigh:${variable.maxValue}`;
+    return strings.numberTooHigh.replace("{max}", String(variable.maxValue));
   }
 
   // Check decimal places
   if (variable.decimalPlaces !== null && variable.decimalPlaces !== undefined) {
     const decimalPlaces = (numValue.toString().split(".")[1] || "").length;
     if (decimalPlaces > variable.decimalPlaces) {
-      return `tooManyDecimalPlaces:${variable.decimalPlaces}`;
+      return strings.tooManyDecimalPlaces.replace("{max}", String(variable.decimalPlaces));
     }
   }
 
@@ -92,7 +95,8 @@ export const validateNumberVariable = (
  */
 export const validateDateVariable = (
   value: string | Date | null | undefined,
-  variable: Graphql.TemplateDateVariable
+  variable: Graphql.TemplateDateVariable,
+  strings: RecipientVariableDataTranslation
 ): string | null => {
   // Handle null/undefined/empty values
   if (!value) {
@@ -103,14 +107,14 @@ export const validateDateVariable = (
 
   // Check if it's a valid date
   if (isNaN(dateValue.getTime())) {
-    return "invalidDate";
+    return strings.invalidDate;
   }
 
   // Check minimum date
   if (variable.minDate) {
     const minDate = new Date(variable.minDate);
     if (dateValue < minDate) {
-      return `dateTooEarly:${minDate.toLocaleDateString()}`;
+      return strings.dateTooEarly.replace("{min}", minDate.toLocaleDateString());
     }
   }
 
@@ -118,7 +122,7 @@ export const validateDateVariable = (
   if (variable.maxDate) {
     const maxDate = new Date(variable.maxDate);
     if (dateValue > maxDate) {
-      return `dateTooLate:${maxDate.toLocaleDateString()}`;
+      return strings.dateTooLate.replace("{max}", maxDate.toLocaleDateString());
     }
   }
 
@@ -130,7 +134,8 @@ export const validateDateVariable = (
  */
 export const validateSelectVariable = (
   value: string | string[] | null | undefined,
-  variable: Graphql.TemplateSelectVariable
+  variable: Graphql.TemplateSelectVariable,
+  strings: RecipientVariableDataTranslation
 ): string | null => {
   // Handle null/undefined/empty values
   if (!value || (Array.isArray(value) && value.length === 0)) {
@@ -143,13 +148,13 @@ export const validateSelectVariable = (
   // Check if all selected values are valid options
   for (const selectedValue of values) {
     if (!options.includes(selectedValue)) {
-      return "invalidSelection";
+      return strings.invalidSelection;
     }
   }
 
   // Check if multiple selection is allowed
   if (!variable.multiple && values.length > 1) {
-    return "multipleSelectionNotAllowed";
+    return strings.multipleSelectionNotAllowed;
   }
 
   return null;
@@ -160,7 +165,8 @@ export const validateSelectVariable = (
  */
 export const isRecipientReady = (
   variableValues: Record<string, unknown>,
-  variables: Graphql.TemplateVariable[]
+  variables: Graphql.TemplateVariable[],
+  strings: RecipientVariableDataTranslation
 ): boolean => {
   // Get all required variables
   const requiredVariables = variables.filter(variable => variable.required);
@@ -186,25 +192,29 @@ export const isRecipientReady = (
       case "TEXT":
         validationError = validateTextVariable(
           value as string,
-          variable as Graphql.TemplateTextVariable
+          variable as Graphql.TemplateTextVariable,
+          strings
         );
         break;
       case "NUMBER":
         validationError = validateNumberVariable(
           value as number | string,
-          variable as Graphql.TemplateNumberVariable
+          variable as Graphql.TemplateNumberVariable,
+          strings
         );
         break;
       case "DATE":
         validationError = validateDateVariable(
           value as string | Date,
-          variable as Graphql.TemplateDateVariable
+          variable as Graphql.TemplateDateVariable,
+          strings
         );
         break;
       case "SELECT":
         validationError = validateSelectVariable(
           value as string | string[],
-          variable as Graphql.TemplateSelectVariable
+          variable as Graphql.TemplateSelectVariable,
+          strings
         );
         break;
     }
@@ -222,28 +232,33 @@ export const isRecipientReady = (
  */
 export const getValidationError = (
   value: unknown,
-  variable: Graphql.TemplateVariable
+  variable: Graphql.TemplateVariable,
+  strings: RecipientVariableDataTranslation
 ): string | null => {
   switch (variable.type) {
     case "TEXT":
       return validateTextVariable(
         value as string,
-        variable as Graphql.TemplateTextVariable
+        variable as Graphql.TemplateTextVariable,
+        strings
       );
     case "NUMBER":
       return validateNumberVariable(
         value as number | string,
-        variable as Graphql.TemplateNumberVariable
+        variable as Graphql.TemplateNumberVariable,
+        strings
       );
     case "DATE":
       return validateDateVariable(
         value as string | Date,
-        variable as Graphql.TemplateDateVariable
+        variable as Graphql.TemplateDateVariable,
+        strings
       );
     case "SELECT":
       return validateSelectVariable(
         value as string | string[],
-        variable as Graphql.TemplateSelectVariable
+        variable as Graphql.TemplateSelectVariable,
+        strings
       );
     default:
       return null;

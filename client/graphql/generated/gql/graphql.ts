@@ -1434,8 +1434,8 @@ export type User = {
 };
 
 export type VariableValueInput = {
-  /** Value as string. Backend parses to correct type. For SELECT multiple: JSON array string like '["opt1","opt2"]' */
-  value: Scalars['String']['input'];
+  /** Value as string (nullable to clear values). Backend parses to correct type. For SELECT multiple: JSON array string like '["opt1","opt2"]' */
+  value?: InputMaybe<Scalars['String']['input']>;
   variableId: Scalars['Int']['input'];
 };
 

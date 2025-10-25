@@ -403,7 +403,7 @@ export const useStudentTable = () => {
       ),
       editRenderer: ({ row, ...props }) => (
         <Table.PhoneEditRenderer
-          value={row.phoneNumber || ""}
+          value={row.phoneNumber as string | null | undefined}
           {...props}
           validator={Validators.validatePhoneNumber}
         />

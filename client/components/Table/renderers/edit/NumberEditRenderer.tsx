@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { TextField, Tooltip } from "@mui/material";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
+import { useTableLocale } from "../../contexts";
 
 export interface NumberEditRendererProps {
   value: number | null | undefined;
-  onSave: (value: number) => Promise<void>;
+  onSave: (value: number | null | undefined) => Promise<void>;
   onCancel: () => void;
   onErrorChange?: (error: string | null) => void;
   validator?: (value: number) => string | null;
@@ -28,6 +29,10 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
   max,
   decimals,
 }) => {
+  const {
+    strings: { validation: validationStrings },
+  } = useTableLocale();
+
   const [editValue, setEditValue] = useState(
     value !== null && value !== undefined ? String(value) : ""
   );
@@ -44,44 +49,44 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
   }, []);
 
   const validateNumber = useCallback(
-    (strValue: string): { valid: boolean; value?: number; error?: string } => {
-      if (!strValue.trim()) {
-        return { valid: false, error: "Value is required" };
-      }
-
-      const numValue = Number(strValue);
-      if (isNaN(numValue)) {
-        return { valid: false, error: "Please enter a valid number" };
-      }
-
-      if (min !== undefined && numValue < min) {
-        return { valid: false, error: `Value must be at least ${min}` };
-      }
-
-      if (max !== undefined && numValue > max) {
-        return { valid: false, error: `Value must be at most ${max}` };
-      }
-
-      if (decimals !== undefined) {
-        const decimalPart = strValue.split(".")[1];
-        if (decimalPart && decimalPart.length > decimals) {
-          return {
-            valid: false,
-            error: `Maximum ${decimals} decimal places allowed`,
-          };
+    (
+      strValue: string
+    ): { valid: boolean; value?: number | null; error?: string } => {
+      const numValue = strValue ? Number(strValue) : null;
+      if (numValue !== null) {
+        if (isNaN(numValue)) {
+          return { valid: false, error: validationStrings.invalidNumber };
         }
-      }
 
-      if (validator) {
-        const validationError = validator(numValue);
-        if (validationError) {
-          return { valid: false, error: validationError };
+        if (min !== undefined && numValue < min) {
+          return { valid: false, error: validationStrings.minValue(min) };
+        }
+
+        if (max !== undefined && numValue > max) {
+          return { valid: false, error: validationStrings.maxValue(max) };
+        }
+
+        if (decimals !== undefined) {
+          const decimalPart = strValue.split(".")[1];
+          if (decimalPart && decimalPart.length > decimals) {
+            return {
+              valid: false,
+              error: validationStrings.maxDecimals(decimals),
+            };
+          }
+        }
+
+        if (validator) {
+          const validationError = validator(numValue);
+          if (validationError) {
+            return { valid: false, error: validationError };
+          }
         }
       }
 
       return { valid: true, value: numValue };
     },
-    [min, max, decimals, validator]
+    [min, max, decimals, validator, validationStrings]
   );
 
   const handleChange = useCallback(
@@ -100,13 +105,22 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
   const handleSave = useCallback(async () => {
     const validation = validateNumber(editValue);
     if (!validation.valid || validation.value === undefined) {
-      setError(validation.error || "Invalid value");
+      setError(validation.error || validationStrings.invalidValue);
       return;
     }
 
+    const newValue = validation.value;
+    const originalValue = value;
+    
+    // Check if newValue is null (empty)
+    if (newValue === null && !originalValue) {
+      // If original value is null or undefined, cancel (no change to make)
+      onCancel();
+      return;
+    }
+    
     // Early return if value hasn't changed
-    const originalValue = value !== null && value !== undefined ? value : null;
-    if (validation.value === originalValue) {
+    if (newValue === originalValue) {
       onCancel();
       return;
     }
@@ -115,10 +129,10 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
     onCancel();
 
     // Save in the background (fire and forget)
-    onSave(validation.value).catch(() => {
+    onSave(newValue).catch(() => {
       // Error handling is done by the parent component
     });
-  }, [editValue, onSave, validateNumber, value, onCancel]);
+  }, [editValue, onSave, validateNumber, value, onCancel, validationStrings]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
@@ -145,7 +159,12 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <div>
-        <Tooltip open={!!error} title={error ?? ""} arrow placement="bottom-start">
+        <Tooltip
+          open={!!error}
+          title={error ?? ""}
+          arrow
+          placement="bottom-start"
+        >
           <TextField
             inputRef={inputRef}
             type="text"

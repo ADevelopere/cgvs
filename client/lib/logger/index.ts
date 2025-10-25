@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { LogEntry, LogLevel, LoggerConfig } from "./types";
 
 class ClientLogger {
@@ -111,23 +112,18 @@ class ClientLogger {
 
     switch (level) {
       case "log":
-        // eslint-disable-next-line no-console
         console.log(...consoleArgs);
         break;
       case "info":
-        // eslint-disable-next-line no-console
         console.info(...consoleArgs);
         break;
       case "warn":
-        // eslint-disable-next-line no-console
         console.warn(...consoleArgs);
         break;
       case "error":
-        // eslint-disable-next-line no-console
         console.error(...consoleArgs);
         break;
       case "debug":
-        // eslint-disable-next-line no-console
         console.debug(...consoleArgs);
         break;
     }
@@ -158,6 +154,6 @@ class ClientLogger {
 }
 
 // Create singleton instance
-const logger = new ClientLogger();
+export const logger = new ClientLogger();
 
 export default logger;

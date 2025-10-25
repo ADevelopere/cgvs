@@ -37,10 +37,10 @@ type ReadyStatusColumn = Table.Column<VariableDataRow>;
 
 interface UseVariableDataTableParams {
   variables: Graphql.TemplateVariable[];
-  onUpdateCell: (
+  onUpdateCell: <T = unknown>(
     rowId: number,
     columnId: string,
-    value: unknown
+    value: T | null | undefined
   ) => Promise<void>;
   strings: RecipientVariableDataTranslation;
 }
@@ -98,13 +98,13 @@ export const useVariableDataTable = ({
           const textColumn: TextVariableColumn = {
             id: columnId,
             type: "editable" as const,
-            label: variable.name || `Variable ${variable.id}`,
+            label: variable.name || strings.variableWithId.replace("{id}", String(variable.id)),
             resizable: true,
             initialWidth: 150,
             widthStorageKey: `recipient_variable_data_var_${variable.id}_column_width`,
             headerRenderer: () => (
               <Table.BaseHeaderRenderer
-                label={variable.name || `Variable ${variable.id}`}
+                label={variable.name || strings.variableWithId.replace("{id}", String(variable.id))}
               />
             ),
             viewRenderer: ({ row }) => (
@@ -114,7 +114,7 @@ export const useVariableDataTable = ({
               <Table.TextEditRenderer
                 {...props}
                 value={(row[columnId] as string) || ""}
-                validator={value => getValidationError(value, textVar)}
+                validator={value => getValidationError(value, textVar, strings)}
               />
             ),
             onUpdate: async (rowId, value) =>
@@ -129,13 +129,13 @@ export const useVariableDataTable = ({
           const numberColumn: NumberVariableColumn = {
             id: columnId,
             type: "editable" as const,
-            label: variable.name || `Variable ${variable.id}`,
+            label: variable.name || strings.variableWithId.replace("{id}", String(variable.id)),
             resizable: true,
             initialWidth: 150,
             widthStorageKey: `recipient_variable_data_var_${variable.id}_column_width`,
             headerRenderer: () => (
               <Table.BaseHeaderRenderer
-                label={variable.name || `Variable ${variable.id}`}
+                label={variable.name || strings.variableWithId.replace("{id}", String(variable.id))}
               />
             ),
             viewRenderer: ({ row }) => (
@@ -145,7 +145,7 @@ export const useVariableDataTable = ({
               <Table.NumberEditRenderer
                 {...props}
                 value={row[columnId] as number}
-                validator={value => getValidationError(value, numberVar)}
+                validator={value => getValidationError(value, numberVar, strings)}
               />
             ),
             onUpdate: async (rowId, value) =>
@@ -160,13 +160,13 @@ export const useVariableDataTable = ({
           const dateColumn: DateVariableColumn = {
             id: columnId,
             type: "editable" as const,
-            label: variable.name || `Variable ${variable.id}`,
+            label: variable.name || strings.variableWithId.replace("{id}", String(variable.id)),
             resizable: true,
             initialWidth: 150,
             widthStorageKey: `recipient_variable_data_var_${variable.id}_column_width`,
             headerRenderer: () => (
               <Table.BaseHeaderRenderer
-                label={variable.name || `Variable ${variable.id}`}
+                label={variable.name || strings.variableWithId.replace("{id}", String(variable.id))}
               />
             ),
             viewRenderer: ({ row }) => (
@@ -179,14 +179,14 @@ export const useVariableDataTable = ({
               <Table.DateEditRenderer
                 {...props}
                 value={row[columnId] as Date}
-                validator={value => getValidationError(value, dateVar)}
+                validator={value => getValidationError(value, dateVar, strings)}
               />
             ),
             onUpdate: async (rowId, value) =>
               await onUpdateCell(
                 rowId,
                 columnId,
-                value instanceof Date ? value.toISOString() : value
+                value
               ),
           };
           cols.push(dateColumn);
@@ -196,7 +196,7 @@ export const useVariableDataTable = ({
         case "SELECT": {
           const selectVar = variable as Graphql.TemplateSelectVariable;
           const options = [
-            { label: strings.none || "None", value: "" },
+            { label: strings.none, value: "" },
             ...(selectVar.options || []).map(option => ({
               label: option,
               value: option,
@@ -206,13 +206,13 @@ export const useVariableDataTable = ({
           const selectColumn: SelectVariableColumn = {
             id: columnId,
             type: "editable" as const,
-            label: variable.name || `Variable ${variable.id}`,
+            label: variable.name || strings.variableWithId.replace("{id}", String(variable.id)),
             resizable: true,
             initialWidth: 150,
             widthStorageKey: `recipient_variable_data_var_${variable.id}_column_width`,
             headerRenderer: () => (
               <Table.BaseHeaderRenderer
-                label={variable.name || `Variable ${variable.id}`}
+                label={variable.name || strings.variableWithId.replace("{id}", String(variable.id))}
               />
             ),
             viewRenderer: ({ row }) => (

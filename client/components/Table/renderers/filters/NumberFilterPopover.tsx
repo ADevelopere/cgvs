@@ -17,6 +17,7 @@ import {
   operationRequiresValue,
 } from "@/client/types/filters";
 import { Check, Clear } from "@mui/icons-material";
+import { useTableLocale } from "../../contexts";
 
 export interface NumberFilterPopoverProps {
   anchorEl: HTMLElement | null;
@@ -46,6 +47,10 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
   onApply,
   onClear,
 }) => {
+  const {
+    strings: { filter: filterStrings, numberFilterOps },
+  } = useTableLocale();
+
   const [operation, setOperation] = useState<NumberFilterOperation>(
     value?.operation || NumberFilterOperation.equals
   );
@@ -93,12 +98,12 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
   const handleApply = useCallback(() => {
     if (valueRequired) {
       if (!filterValue.trim()) {
-        setError("Value is required for this operation");
+        setError(filterStrings.valueRequired);
         return;
       }
       const numValue = Number(filterValue);
       if (isNaN(numValue)) {
-        setError("Please enter a valid number");
+        setError(filterStrings.invalidNumber);
         return;
       }
     }
@@ -110,7 +115,16 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
     };
     onApply(filterClause);
     onClose();
-  }, [onApply, columnId, onClose, operation, filterValue, valueRequired]);
+  }, [
+    onApply,
+    columnId,
+    onClose,
+    operation,
+    filterValue,
+    valueRequired,
+    filterStrings.valueRequired,
+    filterStrings.invalidNumber,
+  ]);
 
   const handleClear = useCallback(() => {
     onClear();
@@ -147,37 +161,43 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
     >
       <Box sx={{ p: 2, minWidth: 300 }}>
         <Typography variant="subtitle2" gutterBottom>
-          Filter: {columnLabel}
+          {filterStrings.title}: {columnLabel}
         </Typography>
 
         <FormControl fullWidth sx={{ mt: 2 }}>
-          <InputLabel id="number-filter-operation-label">Operation</InputLabel>
+          <InputLabel id="number-filter-operation-label">
+            {filterStrings.operation}
+          </InputLabel>
           <Select
             labelId="number-filter-operation-label"
             value={operation}
             onChange={handleOperationChange}
-            label="Operation"
+            label={filterStrings.operation}
             size="small"
           >
-            <MenuItem value={NumberFilterOperation.equals}>Equals (=)</MenuItem>
+            <MenuItem value={NumberFilterOperation.equals}>
+              {numberFilterOps.equals}
+            </MenuItem>
             <MenuItem value={NumberFilterOperation.notEquals}>
-              Not Equals (≠)
+              {numberFilterOps.notEquals}
             </MenuItem>
             <MenuItem value={NumberFilterOperation.greaterThan}>
-              Greater Than (&gt;)
+              {numberFilterOps.greaterThan}
             </MenuItem>
             <MenuItem value={NumberFilterOperation.greaterThanOrEqual}>
-              Greater Than or Equal (≥)
+              {numberFilterOps.greaterThanOrEqual}
             </MenuItem>
             <MenuItem value={NumberFilterOperation.lessThan}>
-              Less Than (&lt;)
+              {numberFilterOps.lessThan}
             </MenuItem>
             <MenuItem value={NumberFilterOperation.lessThanOrEqual}>
-              Less Than or Equal (≤)
+              {numberFilterOps.lessThanOrEqual}
             </MenuItem>
-            <MenuItem value={NumberFilterOperation.isNull}>Is Null</MenuItem>
+            <MenuItem value={NumberFilterOperation.isNull}>
+              {numberFilterOps.isEmpty}
+            </MenuItem>
             <MenuItem value={NumberFilterOperation.isNotNull}>
-              Is Not Null
+              {numberFilterOps.isNotEmpty}
             </MenuItem>
           </Select>
         </FormControl>
@@ -186,7 +206,7 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
           <TextField
             fullWidth
             size="small"
-            label="Value"
+            label={filterStrings.value}
             type="number"
             value={filterValue}
             onChange={handleValueChange}
@@ -207,7 +227,7 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
             startIcon={<Clear />}
             color="inherit"
           >
-            Clear
+            {filterStrings.clear}
           </Button>
           <Button
             size="small"
@@ -215,7 +235,7 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
             variant="contained"
             startIcon={<Check />}
           >
-            Apply
+            {filterStrings.apply}
           </Button>
         </Box>
       </Box>
