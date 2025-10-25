@@ -102,6 +102,7 @@ export const SelectEditRenderer = <TValue extends string | number | null | undef
       value={(value || "") as string}
       onChange={handleChange}
       onKeyDown={handleKeyDown}
+      onMouseDown={(e) => e.stopPropagation()} 
       disabled={isSaving}
       autoFocus
       slotProps={{

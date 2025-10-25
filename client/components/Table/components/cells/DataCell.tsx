@@ -8,6 +8,7 @@ import React, {
   useState,
 } from "react";
 import type { CSSProperties } from "react";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { AnyColumn, isEditableColumn } from "../../types";
 
 type DataCellProps<
@@ -125,33 +126,6 @@ const DataCellComponent = <
     setIsEditing(false);
   }, []);
 
-  // Handle click outside to cancel
-  useEffect(() => {
-    if (!isEditing) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-
-      // Check if click is outside the cell
-      if (cellRef.current && !cellRef.current.contains(target)) {
-        // Don't cancel if clicking on MUI components rendered in portals
-        // These include Select menus, Autocomplete dropdowns, DatePicker calendars, MuiTelInput menus, etc.
-        const isClickOnMuiPortal = (target as Element).closest?.(
-          ".MuiPopover-root, .MuiMenu-root, .MuiAutocomplete-popper, .MuiPickersPopper-root, .MuiDateCalendar-root, .MuiPickersLayout-root, .MuiTelInput-Menu"
-        );
-
-        if (!isClickOnMuiPortal) {
-          handleCancel();
-        }
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isEditing, handleCancel]);
-
   // Handle Escape key to cancel
   useEffect(() => {
     if (!isEditing) return;
@@ -168,7 +142,7 @@ const DataCellComponent = <
     };
   }, [isEditing, handleCancel]);
 
-  return (
+  const cellContent = (
     <td
       ref={cellRef}
       style={computedCellStyle}
@@ -190,6 +164,14 @@ const DataCellComponent = <
             column.viewRenderer({ row })}
       </div>
     </td>
+  );
+
+  return isEditing ? (
+    <ClickAwayListener onClickAway={handleCancel}>
+      {cellContent}
+    </ClickAwayListener>
+  ) : (
+    cellContent
   );
 };
 
