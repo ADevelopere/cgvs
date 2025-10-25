@@ -10,7 +10,6 @@ export interface NumberEditRendererProps {
   validator?: (value: number) => string | null;
   min?: number;
   max?: number;
-  step?: number;
   decimals?: number;
 }
 
@@ -27,7 +26,6 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
   validator,
   min,
   max,
-  step,
   decimals,
 }) => {
   const [editValue, setEditValue] = useState(
@@ -150,7 +148,7 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
         <Tooltip open={!!error} title={error ?? ""} arrow placement="bottom-start">
           <TextField
             inputRef={inputRef}
-            type="number"
+            type="text"
             value={editValue}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
@@ -162,11 +160,7 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
                 disableUnderline: true,
               },
               htmlInput: {
-                min,
-                max,
-                step:
-                  step ||
-                  (decimals !== undefined ? Math.pow(10, -decimals) : undefined),
+                inputMode: "decimal",
               },
             }}
             sx={{
