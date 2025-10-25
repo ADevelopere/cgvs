@@ -9,12 +9,11 @@ import React, {
 } from "react";
 import { Box, Paper, CircularProgress, Alert } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
-import { TableProvider } from "@/client/components/Table/Table/TableContext";
-import Table from "@/client/components/Table/Table/Table";
+import { TableProvider, Table, AnyColumn } from "@/client/components/Table";
 import { ROWS_PER_PAGE_OPTIONS } from "@/client/components/Table/constants";
 import { useRecipientVariableDataOperations } from "./hooks/useRecipientVariableDataOperations";
 import { useRecipientVariableDataStore } from "./stores/useRecipientVariableDataStore";
-import { buildDataColumns } from "./columns/buildDataColumns";
+import { useVariableDataTable, VariableDataRow } from "./hooks/useVariableDataTable";
 import * as Document from "./hooks/recipientVariableData.documents";
 import { loadFromLocalStorage } from "@/client/utils/localStorage";
 import { useAppTranslation } from "@/client/locale";
@@ -82,10 +81,12 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
     [operations]
   );
 
-  // Build dynamic columns
-  const columns = useMemo(() => {
-    return buildDataColumns(variables, strings, handleUpdateCell);
-  }, [variables, strings, handleUpdateCell]);
+  // Build dynamic columns using hook
+  const { columns } = useVariableDataTable({
+    variables,
+    onUpdateCell: handleUpdateCell,
+    strings,
+  });
 
   // Column width initialization
   const [initialWidths, setInitialWidths] = useState<Record<string, number>>(
@@ -152,20 +153,24 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
 
   // Transform data for table - flatten variableValues for performance
   const tableData = useMemo(() => {
-    return recipientsVarValues.map(recipient => ({
-      id: recipient.recipientGroupItemId,
-      studentName: recipient.studentName,
-      // Flatten variableValues into direct properties for fast string accessor access
-      ...Object.entries(recipient.variableValues || {}).reduce(
+    return recipientsVarValues.map(recipient => {
+      const flattenedVars = Object.entries(
+        recipient.variableValues || {}
+      ).reduce(
         (acc, [key, value]) => {
           acc[`var_${key}`] = value;
           return acc;
         },
         {} as Record<string, unknown>
-      ),
-      // Store full data for readyStatus calculation
-      _fullData: recipient,
-    }));
+      );
+
+      return {
+        id: recipient.recipientGroupItemId || 0,
+        studentName: recipient.studentName || "",
+        ...flattenedVars,
+        _fullData: recipient,
+      };
+    });
   }, [recipientsVarValues]);
 
   // Handle page change
@@ -228,15 +233,16 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
   }
 
   return (
-    <TableProvider
+    <TableProvider<VariableDataRow, number>
       data={tableData}
       isLoading={loading}
-      columns={columns}
+      columns={columns as unknown as readonly AnyColumn<VariableDataRow, number>[]}
       dataProps={{}}
       columnProps={{
         initialWidths,
       }}
       rowsProps={{
+        getRowId: (row: { id: number }) => row.id,
         enableRowResizing: false,
       }}
       pageInfo={{

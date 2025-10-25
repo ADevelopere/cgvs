@@ -1,22 +1,20 @@
 // Main Table component
-export { default as Table } from './core/Table';
+export { Table } from "./core/Table";
 
 // Core components (if needed externally)
-export * from './core';
+export * from "./core";
 
 // Types
-export type * from './types';
+export type * from "./types";
 
 // Contexts
-export * from './contexts';
+export * from "./contexts";
 
 // Renderers (including filters)
-export * from './renderers';
+export * from "./renderers";
 
 // Components
-export * from './components';
+export * from "./components";
 
 // Utils (if needed externally)
-export * from './utils';
-
-
+export * from "./utils";

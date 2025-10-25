@@ -3,9 +3,9 @@ import React from "react";
 /**
  * Base properties shared by all column types
  */
-export type BaseColumnProps<TColumnId extends string = string> = {
+export type BaseColumnProps = {
   /** Unique identifier for the column */
-  id: TColumnId;
+  id: string;
 
   /** Optional label for column (used in column management UI) */
   label?: string;
@@ -29,10 +29,7 @@ export type BaseColumnProps<TColumnId extends string = string> = {
 /**
  * View-only column (non-editable)
  */
-export type Column<
-  TRowData,
-  TColumnId extends string = string,
-> = BaseColumnProps<TColumnId> & {
+export type Column<TRowData> = BaseColumnProps & {
   type: "viewonly";
 
   /**
@@ -53,9 +50,8 @@ export type Column<
 export type EditableColumn<
   TRowData,
   TValue,
-  TColumnId extends string = string,
   TRowId extends string | number = string | number,
-> = BaseColumnProps<TColumnId> & {
+> = BaseColumnProps & {
   type: "editable";
 
   /**
@@ -93,24 +89,18 @@ export type EditableColumn<
  */
 export type AnyColumn<
   TRowData,
-  TColumnId extends string = string,
-  TValue = TRowData[keyof TRowData],
   TRowId extends string | number = string | number,
-> =
-  | Column<TRowData, TColumnId, TRowId>
-  | EditableColumn<TRowData, TValue, TColumnId, TRowId>;
+> = Column<TRowData> | EditableColumn<TRowData, unknown, TRowId>;
 
 /**
  * Type guard to check if column is editable
  */
 export function isEditableColumn<
   TRowData,
-  TValue,
-  TColumnId extends string = string,
   TRowId extends string | number = string | number,
 >(
-  column: AnyColumn<TRowData, TColumnId, TValue, TRowId>
-): column is EditableColumn<TRowData, TValue, TColumnId, TRowId> {
+  column: AnyColumn<TRowData, TRowId>
+): column is EditableColumn<TRowData, unknown, TRowId> {
   return column.type === "editable";
 }
 

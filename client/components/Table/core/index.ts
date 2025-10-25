@@ -1,5 +1,4 @@
-export { default as Table } from './Table';
-export { default as TableHeader } from './TableHeader';
-export { default as TableBody } from './TableBody';
-export { default as TableFooter } from './TableFooter';
-
+export { Table } from "./Table";
+export { TableHeader } from "./TableHeader";
+export { TableBody } from "./TableBody";
+export { TableFooter } from "./TableFooter";
