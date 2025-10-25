@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useApolloClient } from "@apollo/client/react";
-import { gql, ApolloCache } from "@apollo/client";
+import { gql } from "@apollo/client";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as Document from "./student.documents";
 import { useStudentStore } from "../stores/useStudentStore";
