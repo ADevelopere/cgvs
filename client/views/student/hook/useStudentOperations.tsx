@@ -226,11 +226,26 @@ export const useStudentOperations = () => {
     (
       orderByClause: {
         column: string;
-        order: Graphql.OrderSortDirection;
+        order: Graphql.OrderSortDirection | null;
       }[]
     ) => {
+      // Filter out clauses with null order (clear sort)
+      const validClauses = orderByClause.filter(clause => clause.order !== null);
+      
+      // If no valid clauses, clear the sort
+      if (validClauses.length === 0) {
+        store.setQueryParams({
+          orderBy: null,
+          paginationArgs: {
+            first: 100,
+            page: 1,
+          },
+        });
+        return;
+      }
+
       // Convert generic OrderByClause to GraphQL-specific OrderStudentsByClauseInput
-      const graphqlOrderBy: Graphql.StudentsOrderByClause[] = orderByClause
+      const graphqlOrderBy: Graphql.StudentsOrderByClause[] = validClauses
         .map(clause => {
           const graphqlColumn = mapColumnIdToGraphQLColumn(clause.column);
           if (!graphqlColumn) {
@@ -241,7 +256,7 @@ export const useStudentOperations = () => {
           }
           const result: Graphql.StudentsOrderByClause = {
             column: graphqlColumn,
-            order: clause.order,
+            order: clause.order as Graphql.OrderSortDirection,
           };
           return result;
         })
@@ -250,7 +265,7 @@ export const useStudentOperations = () => {
         );
 
       store.setQueryParams({
-        orderBy: graphqlOrderBy,
+        orderBy: graphqlOrderBy.length > 0 ? graphqlOrderBy : null,
         paginationArgs: {
           first: 100,
           page: 1,
