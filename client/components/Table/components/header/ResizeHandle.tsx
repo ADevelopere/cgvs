@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTableLocale } from "../../contexts";
 
 type ResizeHandleProps = {
+  enabled: boolean;
   onResize: (
     event:
       | React.MouseEvent<HTMLButtonElement>
@@ -16,7 +17,6 @@ const buttonStyle = {
   top: 0,
   height: "100%",
   width: "16px",
-  cursor: "col-resize",
   userSelect: "none" as const,
   touchAction: "none" as const,
   padding: 0,
@@ -27,7 +27,10 @@ const buttonStyle = {
   justifyContent: "end",
 };
 
-export const ResizeHandle: React.FC<ResizeHandleProps> = ({ onResize }) => {
+export const ResizeHandle: React.FC<ResizeHandleProps> = ({
+  enabled,
+  onResize,
+}) => {
   const { isRtl, theme } = useAppTheme();
   const { strings } = useTableLocale();
   const [isResizing, setIsResizing] = useState(false);
@@ -40,6 +43,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({ onResize }) => {
         | React.MouseEvent<HTMLButtonElement>
         | React.TouchEvent<HTMLButtonElement>
     ) => {
+      if (!enabled) return;
       event.preventDefault();
       event.stopPropagation();
       setIsResizing(true);
@@ -84,6 +88,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({ onResize }) => {
       className="resize-handle-wrapper"
       style={{
         ...buttonStyle,
+        cursor: enabled ? "col-resize" : "default",
         [isRtl ? "left" : "right"]: "0px",
       }}
       onMouseDown={startResizing}

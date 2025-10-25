@@ -1,7 +1,10 @@
 import { Box } from "@mui/material";
-import ConnectivityStatus from "@/client/components/common/ConnectivityStatus";
-import ThemeSwitcher from "@/client/components/common/ThemeSwitcher";
-import UserMenu from "@/client/components/common/UserMenu";
+import {
+  UserMenu,
+  LanguageSwitcher,
+  ThemeSwitcher,
+  ConnectivityStatus,
+} from "@/client/components";
 
 export default function DashboardEndActions() {
   return (
@@ -15,7 +18,7 @@ export default function DashboardEndActions() {
       }}
     >
       <ConnectivityStatus />
-      {/* <LanguageSwitcher /> */}
+      <LanguageSwitcher />
       <ThemeSwitcher />
       <UserMenu />
     </Box>

@@ -227,7 +227,7 @@ export const useRecipientTable = ({
         <DateFilterHeader label={strings.dateOfBirth} columnId="dateOfBirth" />
       ),
       viewRenderer: ({ row }) => (
-        <Table.DateViewRenderer value={row.dateOfBirth} format="PP" />
+        <Table.DateViewRenderer value={row.dateOfBirth} format="PPP" />
       ),
     };
 
@@ -289,7 +289,7 @@ export const useRecipientTable = ({
         <DateFilterHeader label={strings.createdAt} columnId="createdAt" />
       ),
       viewRenderer: ({ row }) => (
-        <Table.DateViewRenderer value={row.createdAt} format="PPp" />
+        <Table.DateViewRenderer value={row.createdAt} format="PPP" />
       ),
     };
 

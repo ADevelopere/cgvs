@@ -17,7 +17,7 @@ import { useAppTheme } from "@/client/contexts/ThemeContext";
 import ThemeMode from "@/client/theme/ThemeMode";
 import { useAppTranslation } from "@/client/locale";
 
-const ThemeSwitcher: React.FC = () => {
+export const ThemeSwitcher: React.FC = () => {
   const { setThemeMode, themeMode, isDark } = useAppTheme();
   const strings = useAppTranslation("headerTranslations");
 
@@ -134,5 +134,3 @@ const ThemeSwitcher: React.FC = () => {
     </React.Fragment>
   );
 };
-
-export default ThemeSwitcher;

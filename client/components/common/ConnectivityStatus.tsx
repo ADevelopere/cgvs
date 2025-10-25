@@ -6,7 +6,7 @@ import { Wifi, WifiOff, Sync } from "@mui/icons-material";
 import { useNetworkConnectivity } from "@/client/contexts";
 import { useAppTranslation, ConnectivityTranslations } from "@/client/locale";
 
-const ConnectivityStatus: React.FC = () => {
+export const ConnectivityStatus: React.FC = () => {
   const { isConnected, isChecking, checkConnectivity, lastChecked } =
     useNetworkConnectivity();
   const theme = useTheme();
@@ -59,5 +59,3 @@ const ConnectivityStatus: React.FC = () => {
     </Tooltip>
   );
 };
-
-export default ConnectivityStatus;
