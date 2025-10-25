@@ -96,7 +96,12 @@ const DataCellComponent = <
     }
   }, [editable, isEditing]);
 
-  // Handle save
+  /**
+   * Handle save - called by edit renderers via the onSave callback
+   * This wraps column.onUpdate and manages edit state
+   * 
+   * Flow: EditRenderer calls onSave → this function → column.onUpdate
+   */
   const handleSave = useCallback(
     async (value: TValue) => {
       if (isEditableColumn(column) && column.onUpdate) {
@@ -163,6 +168,8 @@ const DataCellComponent = <
       <div style={{ padding: "8px 12px", overflow: "hidden" }}>
         {isEditing && isEditableColumn(column)
           ? // Render edit mode
+            // Pass handleSave as onSave callback to editRenderer
+            // editRenderer should pass this directly to its edit component
             column.editRenderer({
               row,
               onSave: value => handleSave(value as TValue),

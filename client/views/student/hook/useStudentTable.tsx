@@ -68,7 +68,10 @@ export const useStudentTable = () => {
   const genderStrings = useAppTranslation("genderTranslations");
 
   // Build gender options
-  const genderOptions = useMemo(
+  const genderOptions: {
+    label: string;
+    value: Graphql.Gender | null | undefined;
+  }[] = useMemo(
     () => [
       { label: genderStrings.male, value: "MALE" },
       { label: genderStrings.female, value: "FEMALE" },
@@ -241,7 +244,7 @@ export const useStudentTable = () => {
       editRenderer: ({ row, onSave, onCancel }) => (
         <Table.TextEditRenderer
           value={row.name}
-          onSave={async value => onSave(value)}
+          onSave={onSave}
           onCancel={onCancel}
           validator={Validators.validateName}
         />
@@ -264,7 +267,7 @@ export const useStudentTable = () => {
       editRenderer: ({ row, onSave, onCancel }) => (
         <Table.TextEditRenderer
           value={row.email || ""}
-          onSave={async value => onSave(value)}
+          onSave={onSave}
           onCancel={onCancel}
           validator={Validators.validateEmail}
         />
@@ -289,7 +292,7 @@ export const useStudentTable = () => {
       editRenderer: ({ row, onSave, onCancel }) => (
         <Table.DateEditRenderer
           value={row.dateOfBirth}
-          onSave={async value => onSave(value)}
+          onSave={onSave}
           onCancel={onCancel}
           validator={Validators.validateDateOfBirth}
         />
@@ -335,9 +338,9 @@ export const useStudentTable = () => {
       ),
       editRenderer: ({ row, onSave, onCancel }) => (
         <Table.SelectEditRenderer
-          value={row.gender as unknown as string}
+          value={row.gender}
           options={genderOptions}
-          onSave={async value => onSave(value as unknown as Graphql.Gender)}
+          onSave={onSave}
           onCancel={onCancel}
         />
       ),
@@ -383,7 +386,7 @@ export const useStudentTable = () => {
       editRenderer: ({ row, onSave, onCancel }) => (
         <Table.CountryEditRenderer
           value={row.nationality}
-          onSave={async value => onSave(value)}
+          onSave={onSave}
           onCancel={onCancel}
           validator={Validators.validateNationality}
         />
@@ -412,7 +415,7 @@ export const useStudentTable = () => {
       editRenderer: ({ row, onSave, onCancel }) => (
         <Table.PhoneEditRenderer
           value={row.phoneNumber || ""}
-          onSave={async value => onSave(value)}
+          onSave={onSave}
           onCancel={onCancel}
           validator={Validators.validatePhoneNumber}
         />

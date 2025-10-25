@@ -51,8 +51,8 @@ const HeaderContent = styled("div")({
   alignItems: "center",
   width: "100%",
   overflow: "hidden",
-  padding: "8px 12px",
-  gap: "8px",
+  padding: 0,
+  gap: 1,
 });
 
 const ColumnLabel = styled("span")({
@@ -68,11 +68,11 @@ const IconsContainer = styled("div")({
   display: "flex",
   alignItems: "center",
   flexShrink: 0,
-  gap: "2px",
+  gap: 8,
 });
 
 const HeaderIconButton = styled(IconButton)({
-  padding: "4px",
+  padding: 0,
   "&:hover": {
     backgroundColor: "rgba(0, 0, 0, 0.04)",
   },
