@@ -5,6 +5,7 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as Table from "@/client/components/Table";
 import { RecipientVariableDataTranslation } from "@/client/locale/components/RecipientVariableData";
 import { getValidationError } from "../utils/validation";
+import { ReadyStatusViewRenderer } from "../ReadyStatusViewRenderer";
 
 // Row type for variable data table
 export type VariableDataRow = {
@@ -236,22 +237,25 @@ export const useVariableDataTable = ({
       }
     });
 
-    // TODO: Add Ready Status column with custom renderer
-    // const readyStatusColumn: ReadyStatusColumn = {
-    //   id: "readyStatus" as const,
-    //   type: "viewonly" as const,
-    //   label: strings.readyStatus,
-    //   resizable: true,
-    //   initialWidth: 120,
-    //   widthStorageKey: "recipient_variable_data_ready_status_column_width",
-    //   headerRenderer: () => (
-    //     <Table.BaseHeaderRenderer label={strings.readyStatus} />
-    //   ),
-    //   viewRenderer: ({ row }) => (
-    //     <ReadyStatusViewRenderer row={row} variables={variables} />
-    //   ),
-    // };
-    // cols.push(readyStatusColumn);
+    // Ready Status column
+    const readyStatusColumn: ReadyStatusColumn = {
+      id: "readyStatus" as const,
+      type: "viewonly" as const,
+      label: strings.readyStatus,
+      resizable: true,
+      initialWidth: 120,
+      widthStorageKey: "recipient_variable_data_ready_status_column_width",
+      headerRenderer: () => (
+        <Table.BaseHeaderRenderer label={strings.readyStatus} />
+      ),
+      viewRenderer: ({ row }) => (
+        <ReadyStatusViewRenderer
+          variableValues={(row._fullData.variableValues || {}) as Record<string, unknown>}
+          variables={variables}
+        />
+      ),
+    };
+    cols.push(readyStatusColumn);
 
     return cols;
   }, [variables, onUpdateCell, strings]);

@@ -4,8 +4,8 @@ import { CheckCircle, Cancel } from "@mui/icons-material";
 import { isRecipientReady } from "@/client/views/template/manage/data/utils/validation";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
-export interface ReadyStatusViewRendererProps {
-  row: Graphql.RecipientWithVariableValues;
+interface ReadyStatusViewRendererProps {
+  variableValues: Record<string, unknown>;
   variables: Graphql.TemplateVariable[];
 }
 
@@ -134,31 +134,19 @@ const getTooltipMessage = (
  *
  * Displays a validation status icon (CheckCircle or Cancel) with a tooltip
  * showing detailed validation results for template variable values.
- * View-only renderer (no edit mode).
  */
 export const ReadyStatusViewRenderer: React.FC<
   ReadyStatusViewRendererProps
-> = ({ row, variables }) => {
-  // Memoize variableValues
-  const variableValues = useMemo(
-    () => row.variableValues || {},
-    [row.variableValues]
-  );
-
+> = ({ variableValues, variables }) => {
   // Calculate ready status (memoized)
   const isReady = useMemo(
-    () => isRecipientReady(variableValues as Record<string, unknown>, variables),
+    () => isRecipientReady(variableValues, variables),
     [variableValues, variables]
   );
 
   // Calculate tooltip message (memoized)
   const tooltipMessage = useMemo(
-    () =>
-      getTooltipMessage(
-        isReady,
-        variables,
-        variableValues as Record<string, unknown>
-      ),
+    () => getTooltipMessage(isReady, variables, variableValues),
     [isReady, variables, variableValues]
   );
 
