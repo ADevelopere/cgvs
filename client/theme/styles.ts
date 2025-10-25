@@ -2,13 +2,8 @@
 
 import { CSSProperties, useMemo } from "react";
 
-type Props = {
-  thWidth?: number;
-};
-
 // This function can be used to get theme-aware styles
-export const useTableStyles = (props?: Props) => {
-  const { thWidth } = props || {};
+export const useTableStyles = () => {
 
   const inputStyle: CSSProperties = useMemo(() => {
     return {
