@@ -118,38 +118,60 @@ export const TableColumnsProvider = <
     
     const newWidths: Record<string, number> = {};
     
-    // First, handle non-resizable columns and load from localStorage
+    // First, handle columns with saved widths from localStorage
     let totalFixedWidth = 0;
     columns.forEach(column => {
-      // Try localStorage first
       if (column.widthStorageKey) {
         const saved = localStorage.getItem(column.widthStorageKey);
         if (saved) {
           newWidths[column.id] = Math.max(parseInt(saved, 10), 50);
+          totalFixedWidth += newWidths[column.id];
           return;
         }
       }
-      
-      // Non-resizable columns use their initialWidth
-      if (column.resizable === false) {
-        const width = column.initialWidth || 100;
-        newWidths[column.id] = width;
-        totalFixedWidth += width;
-      }
     });
     
-    // Distribute remaining width among resizable columns
-    const resizableColumns = columns.filter(
-      col => col.resizable !== false && !newWidths[col.id]
-    );
+    // Get columns that need width calculation
+    const columnsToCalculate = columns.filter(col => !newWidths[col.id]);
     
-    if (resizableColumns.length > 0) {
-      const remainingWidth = Math.max(availableWidth - totalFixedWidth, 0);
-      const widthPerColumn = Math.floor(remainingWidth / resizableColumns.length);
+    if (columnsToCalculate.length > 0) {
+      // Check if columns have initialWidth set (ratio-based approach)
+      const hasInitialWidths = columnsToCalculate.some(col => col.initialWidth);
       
-      resizableColumns.forEach(column => {
-        newWidths[column.id] = Math.max(widthPerColumn, 50);
-      });
+      if (hasInitialWidths) {
+        // Ratio-based calculation: scale initialWidth proportionally to fill available space
+        const totalRatio = columnsToCalculate.reduce(
+          (sum, col) => sum + (col.initialWidth || 100),
+          0
+        );
+        const remainingWidth = Math.max(availableWidth - totalFixedWidth, 0);
+        
+        columnsToCalculate.forEach(column => {
+          const ratio = (column.initialWidth || 100) / totalRatio;
+          newWidths[column.id] = Math.max(Math.floor(remainingWidth * ratio), 50);
+        });
+      } else {
+        // Equal distribution: separate resizable from non-resizable
+        const nonResizableColumns = columnsToCalculate.filter(col => col.resizable === false);
+        const resizableColumns = columnsToCalculate.filter(col => col.resizable !== false);
+        
+        // Handle non-resizable columns
+        nonResizableColumns.forEach(column => {
+          const width = column.initialWidth || 100;
+          newWidths[column.id] = width;
+          totalFixedWidth += width;
+        });
+        
+        // Distribute remaining width among resizable columns
+        if (resizableColumns.length > 0) {
+          const remainingWidth = Math.max(availableWidth - totalFixedWidth, 0);
+          const widthPerColumn = Math.floor(remainingWidth / resizableColumns.length);
+          
+          resizableColumns.forEach(column => {
+            newWidths[column.id] = Math.max(widthPerColumn, 50);
+          });
+        }
+      }
     }
     
     setColumnWidths(newWidths);
