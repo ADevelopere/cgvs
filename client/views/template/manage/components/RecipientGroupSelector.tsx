@@ -2,21 +2,23 @@
 
 import React from "react";
 import { Autocomplete, TextField, Chip, Box } from "@mui/material";
-import { useRecipientStore } from "./stores/useRecipientStore";
 import { useAppTranslation } from "@/client/locale";
 import { TemplateRecipientGroup } from "@/client/graphql/generated/gql/graphql";
 
 type RecipientGroupSelectorProps = {
   groups: readonly TemplateRecipientGroup[];
+  selectedGroup: TemplateRecipientGroup | null;
+  onGroupChange: (group: TemplateRecipientGroup | null) => void;
   loading?: boolean;
 };
 
 const RecipientGroupSelector: React.FC<RecipientGroupSelectorProps> = ({
   groups,
+  selectedGroup,
+  onGroupChange,
   loading = false,
 }) => {
   const strings = useAppTranslation("recipientGroupTranslations");
-  const { selectedGroup, setSelectedGroup } = useRecipientStore();
 
   return (
     <Autocomplete
@@ -24,7 +26,7 @@ const RecipientGroupSelector: React.FC<RecipientGroupSelectorProps> = ({
       // u cant use selectGroupId here, cause it will need a computed opject, so we need to pass the whole object so it will be the same reference
       onChange={(_, newValue: TemplateRecipientGroup | null) => {
         if (newValue) {
-          setSelectedGroup(newValue);
+          onGroupChange(newValue);
         }
       }}
       options={groups}

@@ -13,7 +13,7 @@ import {
   useRecipientStore,
   useRecipientStoreInitializer,
 } from "./stores/useRecipientStore";
-import RecipientGroupSelector from "./RecipientGroupSelector";
+import RecipientGroupSelector from "../components/RecipientGroupSelector";
 import SelectGroupPrompt from "./SelectGroupPrompt";
 import StudentsNotInGroupTable from "./StudentsNotInGroupTable";
 import StudentsInGroupTable from "./StudentsInGroupTable";
@@ -133,7 +133,12 @@ const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
             minWidth: 0,
           }}
         >
-          <RecipientGroupSelector groups={groups} loading={groupsLoading} />
+          <RecipientGroupSelector
+            groups={groups}
+            selectedGroup={selectedGroup}
+            onGroupChange={setSelectedGroup}
+            loading={groupsLoading}
+          />
         </Box>
       </Box>
 

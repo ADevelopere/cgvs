@@ -9,7 +9,7 @@ import {
 } from "@/client/graphql/generated/gql/graphql";
 import { useRecipientVariableDataOperations } from "./hooks/useRecipientVariableDataOperations";
 import { useRecipientVariableDataStore } from "./stores/useRecipientVariableDataStore";
-import RecipientVariableDataGroupSelector from "./RecipientVariableDataGroupSelector";
+import RecipientGroupSelector from "../components/RecipientGroupSelector";
 import RecipientVariableDataTable from "./RecipientVariableDataTable";
 import { templateRecipientGroupsByTemplateIdQueryDocument } from "../recipientGroup/hooks/recipientGroup.documents";
 import { useAppTranslation } from "@/client/locale";
@@ -138,7 +138,7 @@ const RecipientVariableDataTab: React.FC<RecipientVariableDataTabProps> = ({
           minHeight: 0,
         }}
       >
-        <RecipientVariableDataGroupSelector
+        <RecipientGroupSelector
           groups={groups}
           selectedGroup={store.selectedGroup}
           onGroupChange={operations.setSelectedGroup}

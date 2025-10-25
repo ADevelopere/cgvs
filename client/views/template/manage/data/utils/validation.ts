@@ -13,7 +13,7 @@ export const validateTextVariable = (
 ): string | null => {
   // Handle null/undefined/empty values
   if (!value || value.trim() === "") {
-    return variable.required ? "requiredField" : null;
+    return null;
   }
 
   const trimmedValue = value.trim();
@@ -48,7 +48,7 @@ export const validateNumberVariable = (
 ): string | null => {
   // Handle null/undefined/empty values
   if (value === null || value === undefined || value === "") {
-    return variable.required ? "requiredField" : null;
+    return null;
   }
 
   const numValue = typeof value === "string" ? parseFloat(value) : value;
@@ -96,7 +96,7 @@ export const validateDateVariable = (
 ): string | null => {
   // Handle null/undefined/empty values
   if (!value) {
-    return variable.required ? "requiredField" : null;
+    return null;
   }
 
   const dateValue = value instanceof Date ? value : new Date(value);
@@ -134,7 +134,7 @@ export const validateSelectVariable = (
 ): string | null => {
   // Handle null/undefined/empty values
   if (!value || (Array.isArray(value) && value.length === 0)) {
-    return variable.required ? "requiredField" : null;
+    return null;
   }
 
   const values = Array.isArray(value) ? value : [value];
