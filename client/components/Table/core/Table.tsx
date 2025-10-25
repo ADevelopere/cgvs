@@ -1,215 +1,180 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect, useRef, useMemo } from "react";
-import { useTheme } from "@mui/material/styles";
-import { LinearProgress } from "@mui/material";
-import { ColumnVisibilityPanel } from "../components";
+import { useRef, useMemo, useState } from "react";
 import {
-  useTableContext,
-  useTableColumnContext,
-  useTableRowsContext,
-  useTableLocale,
+  TableContext,
+  TableColumnsProvider,
+  TableDataProvider,
+  TableRowsProvider,
+  type TableContextType,
 } from "../contexts";
-import { TABLE_CHECKBOX_CONTAINER_SIZE } from "../constants";
-import { TableHeader } from "./TableHeader";
-import { TableBody } from "./TableBody";
-import { TableFooter } from "./TableFooter";
+import { AnyColumn, PageInfo, PinPosition } from "../types";
+import { TableRenderer } from "./TableRenderer";
 
-export interface TableProviderProps {
+export interface TableProps<
+  TRowData,
+  TRowId extends string | number = string | number,
+> {
+  // Table data and configuration
+  data: TRowData[];
+  isLoading?: boolean;
+  columns: readonly AnyColumn<TRowData, TRowId>[];
+
+  // Pagination
+  pageInfo?: PageInfo | null;
+  onPageChange?: (newPage: number) => void;
+  onRowsPerPageChange?: (newRowsPerPage: number) => void;
+  rowsPerPageOptions?: number[];
+  initialPageSize?: number;
+
+  // Custom footer content
+  footerStartContent?: React.ReactNode;
+  footerEndContent?: React.ReactNode;
+  hideRowsPerPage?: boolean;
+  compact?: boolean;
+
+  // Selection state management
+  selectedRowIds?: TRowId[];
+  onSelectionChange?: (selectedIds: TRowId[]) => void;
+
+  // Column props
+  initialWidths: Record<string, number>;
+  onResizeColumn?: (columnId: string, newWidth: number) => void;
+  onPinColumn?: (columnId: string, position: PinPosition) => void;
+  onHideColumn?: (columnId: string) => void;
+  onShowColumn?: (columnId: string) => void;
+  onAutosizeColumn?: (columnId: string) => void;
+
+  // Row props
+  getRowId: (row: TRowData) => TRowId;
+  getRowStyle?: (rowData: TRowData, rowIndex: number) => React.CSSProperties;
+  onRowResize?: (rowId: TRowId, newHeight: number) => void;
+  rowSelectionEnabled?: boolean;
+  enableRowResizing?: boolean;
+  onLoadMoreRows?: (params: { visibleStartIndex: number; visibleStopIndex: number }) => Promise<void>;
+
+  // Rendering
   style?: React.CSSProperties;
   creationRow?: React.ReactNode;
 }
 
 export const Table = <
   TRowData,
-  TValue,
   TRowId extends string | number = string | number,
-  TColumnId extends string = string,
 >({
+  // Data and columns
+  data,
+  isLoading = false,
+  columns,
+
+  // Pagination
+  pageInfo,
+  onPageChange,
+  onRowsPerPageChange,
+  rowsPerPageOptions = [10, 25, 50, 100, 200],
+  initialPageSize = 50,
+
+  // Footer
+  footerStartContent,
+  footerEndContent,
+  hideRowsPerPage = false,
+  compact = false,
+
+  // Selection
+  selectedRowIds,
+  onSelectionChange,
+
+  // Column props
+  initialWidths,
+  onResizeColumn,
+  onPinColumn,
+  onHideColumn,
+  onShowColumn,
+  onAutosizeColumn,
+
+  // Row props
+  getRowId,
+  getRowStyle,
+  onRowResize,
+  rowSelectionEnabled = false,
+  enableRowResizing = true,
+  onLoadMoreRows,
+
+  // Rendering
   style,
   creationRow,
-}: TableProviderProps) => {
-  const { strings } = useTableLocale();
-  const { pageInfo, data, isLoading, hideRowsPerPage, compact } =
-    useTableContext<TRowData, TColumnId>();
-  const { visibleColumns, columnWidths } = useTableColumnContext<
-    TRowData,
-    TColumnId
-  >();
-  const { rowSelectionEnabled } = useTableRowsContext<TRowData, TRowId>();
+}: TableProps<TRowData, TRowId>) => {
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [pageSize, setPageSize] = useState<number>(initialPageSize);
 
-  const theme = useTheme();
-  const tableScrollContainerRef = useRef<HTMLDivElement>(null);
-
-  const [showVisibilityPanel, setShowVisibilityPanel] = useState(false);
-
-  // Reset scroll position when page changes
-  useEffect(() => {
-    if (tableScrollContainerRef.current) {
-      tableScrollContainerRef.current.scrollTop = 0;
-    }
-  }, [pageInfo?.currentPage]);
-
-  // Calculate the index column width dynamically based on the maximum index value
-  const maxIndexValue = useMemo(() => {
-    return pageInfo ? pageInfo.total : data.length;
-  }, [pageInfo, data.length]);
-
-  const indexColWidth = useMemo(() => {
-    const maxDigits = maxIndexValue?.toString().length;
-    return Math.max(50, maxDigits * 15 + 20); // Minimum width of 50px, 10px per digit, and 20px padding
-  }, [maxIndexValue]);
-
-  // Get the total width of the table
-  const totalWidth = useMemo(() => {
-    const columnsWidth = visibleColumns.reduce(
-      (sum, column) => sum + (columnWidths[column.id] || 0),
-      0
-    );
-    return (
-      columnsWidth +
-      indexColWidth +
-      (rowSelectionEnabled ? TABLE_CHECKBOX_CONTAINER_SIZE : 0)
-    );
-  }, [visibleColumns, columnWidths, rowSelectionEnabled, indexColWidth]);
-
-  const colSpan = useMemo(() => {
-    return visibleColumns.length + 1 + (rowSelectionEnabled ? 1 : 0);
-  }, [visibleColumns, rowSelectionEnabled]);
+  // Create the table context value
+  const tableContextValue = useMemo<TableContextType<TRowData, TRowId>>(() => {
+    return {
+      data,
+      isLoading,
+      columns,
+      pageInfo,
+      pageSize,
+      setPageSize,
+      rowsPerPageOptions,
+      onPageChange,
+      onRowsPerPageChange,
+      footerStartContent,
+      footerEndContent,
+      hideRowsPerPage,
+      compact,
+    };
+  }, [
+    data,
+    isLoading,
+    columns,
+    pageInfo,
+    rowsPerPageOptions,
+    pageSize,
+    onPageChange,
+    onRowsPerPageChange,
+    footerStartContent,
+    footerEndContent,
+    hideRowsPerPage,
+    compact,
+  ]);
 
   return (
-    <div
-      style={{
-        borderRadius: theme.shape.borderRadius,
-        position: "relative" as const,
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        ...style,
-      }}
-      id="table-container"
-    >
-      {/* Loading indicator */}
-      {isLoading && (
-        <LinearProgress
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: 3,
-          }}
-        />
-      )}
-
-      {/* Single scrollable container with sticky header */}
-      <div
-        ref={tableScrollContainerRef}
-        style={{
-          width: "100%",
-          overflowY: "auto",
-          overflowX: "auto",
-          position: "relative" as const,
-          flexGrow: 1,
-        }}
-      >
-        <table
-          style={{
-            borderCollapse: "collapse" as const,
-            tableLayout: "fixed" as const,
-            backgroundColor: theme.palette.background.paper,
-            width: totalWidth,
-          }}
+    <div ref={tableContainerRef}>
+      <TableContext.Provider value={tableContextValue}>
+        <TableRowsProvider
+          getRowId={getRowId}
+          getRowStyle={getRowStyle}
+          onRowResize={onRowResize}
+          rowSelectionEnabled={rowSelectionEnabled}
+          enableRowResizing={enableRowResizing}
+          onLoadMoreRows={onLoadMoreRows}
+          pageInfo={pageInfo}
+          totalRows={pageInfo?.total}
+          pageSize={pageSize}
+          selectedRowIds={selectedRowIds}
+          onSelectionChange={onSelectionChange}
         >
-          <colgroup>
-            <col
-              style={{
-                width: indexColWidth,
-                maxWidth: indexColWidth,
-              }}
-            />
-            {rowSelectionEnabled && (
-              <col
-                style={{
-                  width: TABLE_CHECKBOX_CONTAINER_SIZE,
-                  maxWidth: TABLE_CHECKBOX_CONTAINER_SIZE,
-                }}
-              />
-            )}
-            {visibleColumns.map(column => (
-              <col
-                key={column.id}
-                style={{
-                  width: `${columnWidths[column.id]}px`,
-                  minWidth: `${columnWidths[column.id]}px`,
-                  maxWidth: `${columnWidths[column.id]}px`,
-                }}
-              />
-            ))}
-          </colgroup>
-          <thead
-            style={{
-              position: "sticky",
-              top: 0,
-              zIndex: 2,
-              backgroundColor: theme.palette.background.paper,
-            }}
+          <TableColumnsProvider
+            initialWidths={initialWidths}
+            containerRef={tableContainerRef as React.RefObject<HTMLDivElement>}
+            rowSelectionEnabled={rowSelectionEnabled}
+            onResizeColumnAction={onResizeColumn}
+            onPinColumnAction={onPinColumn}
+            onHideColumnAction={onHideColumn}
+            onShowColumnAction={onShowColumn}
+            onAutosizeColumnAction={onAutosizeColumn}
           >
-            <TableHeader width={totalWidth} indexColWidth={indexColWidth} />
-          </thead>
-          <tbody
-            style={{
-              display: "table-row-group",
-              overflowX: "hidden",
-            }}
-          >
-            <TableBody<TRowData, TValue, TRowId>
-              data={data}
-              isPaginated={!!pageInfo}
-              pageInfo={pageInfo}
-              indexColWidth={indexColWidth}
-              colSpan={colSpan}
-            />
-            {data.length === 0 && (
-              <tr>
-                <td colSpan={colSpan}>
-                  <div
-                    style={{
-                      textAlign: "center",
-                      padding: theme.spacing(4),
-                      opacity: isLoading ? 0.6 : 1,
-                    }}
-                  >
-                    {isLoading
-                      ? strings.general.loading
-                      : strings.general.noData}
-                  </div>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {creationRow}
-
-      <div
-        style={{
-          maxWidth: "100%",
-        }}
-      >
-        <TableFooter
-          loadedRows={data.length}
-          hideRowsPerPage={hideRowsPerPage}
-          compact={compact}
-        />
-      </div>
-
-      {/* Column Visibility Panel */}
-      {showVisibilityPanel && (
-        <ColumnVisibilityPanel onClose={() => setShowVisibilityPanel(false)} />
-      )}
+            <TableDataProvider>
+              <TableRenderer
+                style={style}
+                creationRow={creationRow}
+              />
+            </TableDataProvider>
+          </TableColumnsProvider>
+        </TableRowsProvider>
+      </TableContext.Provider>
     </div>
   );
 };
