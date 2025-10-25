@@ -9,9 +9,9 @@ export const TemplateRecipientPothosObject = gqlSchemaBuilder
   .objectRef<Types.RecipientEntity>("TemplateRecipient")
   .implement({
     fields: t => ({
-      id: t.exposeInt("id"),
-      recipientGroupId: t.exposeInt("recipientGroupId"),
-      studentId: t.exposeInt("studentId"),
+      id: t.exposeInt("id", { nullable: false }),
+      recipientGroupId: t.exposeInt("recipientGroupId", { nullable: false }),
+      studentId: t.exposeInt("studentId", { nullable: false }),
       createdAt: t.expose("createdAt", {
         type: "DateTime",
         nullable: true,

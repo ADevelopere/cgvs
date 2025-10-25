@@ -1,6 +1,14 @@
 import { RecipientTranslation } from "../components";
 
 export const recipient: RecipientTranslation = {
+  // Table column labels
+  name: "الاسم",
+  nationality: "الجنسية",
+  dateOfBirth: "تاريخ الميلاد",
+  gender: "الجنس",
+  email: "البريد الإلكتروني",
+  createdAt: "تاريخ الإنشاء",
+
   // Success messages
   recipientCreated: "تم إنشاء المستلم بنجاح",
   recipientDeleted: "تم حذف المستلم بنجاح",
