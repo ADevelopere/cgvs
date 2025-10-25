@@ -882,11 +882,11 @@ input TemplateNumberVariableUpdateInput {
 
 type TemplateRecipient {
   createdAt: DateTime
-  id: Int
+  id: Int!
   recipientGroup: TemplateRecipientGroup
-  recipientGroupId: Int
+  recipientGroupId: Int!
   student: Student
-  studentId: Int
+  studentId: Int!
   updatedAt: DateTime
 }
 

@@ -1234,11 +1234,11 @@ export type TemplateNumberVariableUpdateInput = {
 export type TemplateRecipient = {
   __typename?: 'TemplateRecipient';
   createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['Int']['output'];
   recipientGroup?: Maybe<TemplateRecipientGroup>;
-  recipientGroupId?: Maybe<Scalars['Int']['output']>;
+  recipientGroupId: Scalars['Int']['output'];
   student?: Maybe<Student>;
-  studentId?: Maybe<Scalars['Int']['output']>;
+  studentId: Scalars['Int']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -1623,7 +1623,7 @@ export type StudentQueryVariables = Exact<{
 }>;
 
 
-export type StudentQuery = { __typename?: 'Query', student?: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: CountryCode | null, dateOfBirth?: any | null, phoneNumber?: any | null, email?: string | null, createdAt?: any | null, updatedAt?: any | null, recipientRecords?: Array<{ __typename?: 'TemplateRecipient', id?: number | null, studentId?: number | null, recipientGroupId?: number | null, createdAt?: any | null, updatedAt?: any | null }> | null } | null };
+export type StudentQuery = { __typename?: 'Query', student?: { __typename?: 'Student', id: number, name: string, gender?: Gender | null, nationality?: CountryCode | null, dateOfBirth?: any | null, phoneNumber?: any | null, email?: string | null, createdAt?: any | null, updatedAt?: any | null, recipientRecords?: Array<{ __typename?: 'TemplateRecipient', id: number, studentId: number, recipientGroupId: number, createdAt?: any | null, updatedAt?: any | null }> | null } | null };
 
 export type StudentsQueryVariables = Exact<{
   orderBy?: InputMaybe<Array<StudentsOrderByClause> | StudentsOrderByClause>;
@@ -1803,21 +1803,21 @@ export type RecipientQueryVariables = Exact<{
 }>;
 
 
-export type RecipientQuery = { __typename?: 'Query', recipient?: { __typename?: 'TemplateRecipient', id?: number | null, studentId?: number | null, recipientGroupId?: number | null, createdAt?: any | null, updatedAt?: any | null, student?: { __typename?: 'Student', id: number, name: string, email?: string | null, phoneNumber?: any | null, dateOfBirth?: any | null, nationality?: CountryCode | null, gender?: Gender | null, createdAt?: any | null, updatedAt?: any | null } | null, recipientGroup?: { __typename?: 'TemplateRecipientGroup', id?: number | null } | null } | null };
+export type RecipientQuery = { __typename?: 'Query', recipient?: { __typename?: 'TemplateRecipient', id: number, studentId: number, recipientGroupId: number, createdAt?: any | null, updatedAt?: any | null, student?: { __typename?: 'Student', id: number, name: string, email?: string | null, phoneNumber?: any | null, dateOfBirth?: any | null, nationality?: CountryCode | null, gender?: Gender | null, createdAt?: any | null, updatedAt?: any | null } | null, recipientGroup?: { __typename?: 'TemplateRecipientGroup', id?: number | null } | null } | null };
 
 export type RecipientsByGroupIdQueryVariables = Exact<{
   recipientGroupId: Scalars['Int']['input'];
 }>;
 
 
-export type RecipientsByGroupIdQuery = { __typename?: 'Query', recipientsByGroupId: Array<{ __typename?: 'TemplateRecipient', id?: number | null, studentId?: number | null, recipientGroupId?: number | null, createdAt?: any | null, updatedAt?: any | null, student?: { __typename?: 'Student', id: number, name: string, email?: string | null, phoneNumber?: any | null, dateOfBirth?: any | null, nationality?: CountryCode | null, gender?: Gender | null, createdAt?: any | null, updatedAt?: any | null } | null }> };
+export type RecipientsByGroupIdQuery = { __typename?: 'Query', recipientsByGroupId: Array<{ __typename?: 'TemplateRecipient', id: number, studentId: number, recipientGroupId: number, createdAt?: any | null, updatedAt?: any | null, student?: { __typename?: 'Student', id: number, name: string, email?: string | null, phoneNumber?: any | null, dateOfBirth?: any | null, nationality?: CountryCode | null, gender?: Gender | null, createdAt?: any | null, updatedAt?: any | null } | null }> };
 
 export type RecipientsByStudentIdQueryVariables = Exact<{
   studentId: Scalars['Int']['input'];
 }>;
 
 
-export type RecipientsByStudentIdQuery = { __typename?: 'Query', recipientsByStudentId: Array<{ __typename?: 'TemplateRecipient', id?: number | null, studentId?: number | null, recipientGroupId?: number | null, createdAt?: any | null, updatedAt?: any | null, recipientGroup?: { __typename?: 'TemplateRecipientGroup', id?: number | null, template?: { __typename?: 'Template', id: number } | null } | null }> };
+export type RecipientsByStudentIdQuery = { __typename?: 'Query', recipientsByStudentId: Array<{ __typename?: 'TemplateRecipient', id: number, studentId: number, recipientGroupId: number, createdAt?: any | null, updatedAt?: any | null, recipientGroup?: { __typename?: 'TemplateRecipientGroup', id?: number | null, template?: { __typename?: 'Template', id: number } | null } | null }> };
 
 export type RecipientsByGroupIdFilteredQueryVariables = Exact<{
   recipientGroupId: Scalars['Int']['input'];
@@ -1827,35 +1827,35 @@ export type RecipientsByGroupIdFilteredQueryVariables = Exact<{
 }>;
 
 
-export type RecipientsByGroupIdFilteredQuery = { __typename?: 'Query', recipientsByGroupIdFiltered: { __typename?: 'RecipientsWithFiltersResponse', data?: Array<{ __typename?: 'TemplateRecipient', id?: number | null, studentId?: number | null, recipientGroupId?: number | null, createdAt?: any | null, updatedAt?: any | null, student?: { __typename?: 'Student', id: number, name: string, email?: string | null, phoneNumber?: any | null, dateOfBirth?: any | null, nationality?: CountryCode | null, gender?: Gender | null, createdAt?: any | null, updatedAt?: any | null } | null }> | null, pageInfo: { __typename?: 'PageInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } } };
+export type RecipientsByGroupIdFilteredQuery = { __typename?: 'Query', recipientsByGroupIdFiltered: { __typename?: 'RecipientsWithFiltersResponse', data?: Array<{ __typename?: 'TemplateRecipient', id: number, studentId: number, recipientGroupId: number, createdAt?: any | null, updatedAt?: any | null, student?: { __typename?: 'Student', id: number, name: string, email?: string | null, phoneNumber?: any | null, dateOfBirth?: any | null, nationality?: CountryCode | null, gender?: Gender | null, createdAt?: any | null, updatedAt?: any | null } | null }> | null, pageInfo: { __typename?: 'PageInfo', count: number, currentPage: number, firstItem?: number | null, hasMorePages: boolean, lastItem?: number | null, lastPage: number, perPage: number, total: number } } };
 
 export type CreateRecipientMutationVariables = Exact<{
   input: TemplateRecipientCreateInput;
 }>;
 
 
-export type CreateRecipientMutation = { __typename?: 'Mutation', createRecipient: { __typename?: 'TemplateRecipient', id?: number | null, studentId?: number | null, recipientGroupId?: number | null, createdAt?: any | null, updatedAt?: any | null, student?: { __typename?: 'Student', id: number, name: string } | null, recipientGroup?: { __typename?: 'TemplateRecipientGroup', id?: number | null, template?: { __typename?: 'Template', id: number } | null } | null } };
+export type CreateRecipientMutation = { __typename?: 'Mutation', createRecipient: { __typename?: 'TemplateRecipient', id: number, studentId: number, recipientGroupId: number, createdAt?: any | null, updatedAt?: any | null, student?: { __typename?: 'Student', id: number, name: string } | null, recipientGroup?: { __typename?: 'TemplateRecipientGroup', id?: number | null, template?: { __typename?: 'Template', id: number } | null } | null } };
 
 export type CreateRecipientsMutationVariables = Exact<{
   input: TemplateRecipientCreateListInput;
 }>;
 
 
-export type CreateRecipientsMutation = { __typename?: 'Mutation', createRecipients: Array<{ __typename?: 'TemplateRecipient', id?: number | null, studentId?: number | null, recipientGroupId?: number | null, createdAt?: any | null, updatedAt?: any | null }> };
+export type CreateRecipientsMutation = { __typename?: 'Mutation', createRecipients: Array<{ __typename?: 'TemplateRecipient', id: number, studentId: number, recipientGroupId: number, createdAt?: any | null, updatedAt?: any | null }> };
 
 export type DeleteRecipientMutationVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type DeleteRecipientMutation = { __typename?: 'Mutation', deleteRecipient: { __typename?: 'TemplateRecipient', id?: number | null, studentId?: number | null, recipientGroupId?: number | null } };
+export type DeleteRecipientMutation = { __typename?: 'Mutation', deleteRecipient: { __typename?: 'TemplateRecipient', id: number, studentId: number, recipientGroupId: number } };
 
 export type DeleteRecipientsMutationVariables = Exact<{
   ids: Array<Scalars['Int']['input']> | Scalars['Int']['input'];
 }>;
 
 
-export type DeleteRecipientsMutation = { __typename?: 'Mutation', deleteRecipients: Array<{ __typename?: 'TemplateRecipient', id?: number | null, studentId?: number | null, recipientGroupId?: number | null, student?: { __typename?: 'Student', id: number } | null }> };
+export type DeleteRecipientsMutation = { __typename?: 'Mutation', deleteRecipients: Array<{ __typename?: 'TemplateRecipient', id: number, studentId: number, recipientGroupId: number, student?: { __typename?: 'Student', id: number } | null }> };
 
 export type TemplateRecipientGroupByIdQueryVariables = Exact<{
   id: Scalars['Int']['input'];

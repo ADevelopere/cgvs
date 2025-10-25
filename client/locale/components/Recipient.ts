@@ -1,4 +1,12 @@
 export type RecipientTranslation = {
+  // Table column labels
+  name: string;
+  nationality: string;
+  dateOfBirth: string;
+  gender: string;
+  email: string;
+  createdAt: string;
+
   // Success messages
   recipientCreated: string;
   recipientDeleted: string;

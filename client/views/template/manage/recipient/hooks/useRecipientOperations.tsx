@@ -12,7 +12,18 @@ import {
   TextFilterOperation,
   DateFilterOperation,
 } from "@/client/types/filters";
-import { recipientBaseColumns } from "../columns";
+
+/**
+ * Helper function to get column type for filter mapping
+ */
+const getColumnType = (columnId: string): "text" | "date" | null => {
+  const textColumns = ["name", "email"];
+  const dateColumns = ["dateOfBirth", "createdAt"];
+
+  if (textColumns.includes(columnId)) return "text";
+  if (dateColumns.includes(columnId)) return "date";
+  return null;
+};
 
 export const useRecipientOperations = (templateId?: number) => {
   const apollo = useRecipientApolloMutations(templateId);
@@ -193,7 +204,7 @@ export const useRecipientOperations = (templateId?: number) => {
 
   // Filter operations for students NOT in group
   const setColumnFilter = useCallback(
-    (columnId: string, filterClause: FilterClause | null) => {
+    (filterClause: FilterClause | null, columnId: string) => {
       // Update filter in store
       store.setFilterNotInGroup(columnId, filterClause);
 
@@ -208,17 +219,17 @@ export const useRecipientOperations = (templateId?: number) => {
         if (!filterClause) return;
 
         const columnId = filterClause.columnId as keyof Graphql.Student;
-        const column = recipientBaseColumns.find(col => col.id === columnId);
-        if (!column) return;
+        const columnType = getColumnType(columnId as string);
+        if (!columnType) return;
 
         let mappedFilter: Partial<Graphql.StudentFilterArgs> = {};
-        if (column.type === "text") {
+        if (columnType === "text") {
           mappedFilter = StudentUtils.mapTextFilter(
             columnId,
             filterClause.operation as TextFilterOperation,
             filterClause.value as string
           );
-        } else if (column.type === "date") {
+        } else if (columnType === "date") {
           mappedFilter = StudentUtils.mapDateFilter(
             columnId,
             filterClause.operation as DateFilterOperation,
@@ -243,7 +254,7 @@ export const useRecipientOperations = (templateId?: number) => {
 
   // Filter operations for students IN group
   const setColumnFilterInGroup = useCallback(
-    (columnId: string, filterClause: FilterClause | null) => {
+    (filterClause: FilterClause | null, columnId: string) => {
       // Update filter in store
       store.setFilterInGroup(columnId, filterClause);
 
@@ -255,17 +266,17 @@ export const useRecipientOperations = (templateId?: number) => {
         if (!filterClause) return;
 
         const columnId = filterClause.columnId as keyof Graphql.Student;
-        const column = recipientBaseColumns.find(col => col.id === columnId);
-        if (!column) return;
+        const columnType = getColumnType(columnId as string);
+        if (!columnType) return;
 
         let mappedFilter: Partial<Graphql.StudentFilterArgs> = {};
-        if (column.type === "text") {
+        if (columnType === "text") {
           mappedFilter = StudentUtils.mapTextFilter(
             columnId,
             filterClause.operation as TextFilterOperation,
             filterClause.value as string
           );
-        } else if (column.type === "date") {
+        } else if (columnType === "date") {
           mappedFilter = StudentUtils.mapDateFilter(
             columnId,
             filterClause.operation as DateFilterOperation,
@@ -304,21 +315,199 @@ export const useRecipientOperations = (templateId?: number) => {
     [store]
   );
 
+  // Helper function to map column IDs to GraphQL columns
+  const mapColumnIdToGraphQLColumn = (
+    columnId: string
+  ): Graphql.StudentsOrderByColumn | null => {
+    const columnMap: Record<string, Graphql.StudentsOrderByColumn> = {
+      id: "ID",
+      name: "NAME",
+      email: "EMAIL",
+      dateOfBirth: "DATE_OF_BIRTH",
+      gender: "GENDER",
+      createdAt: "CREATED_AT",
+      updatedAt: "UPDATED_AT",
+    };
+    return columnMap[columnId] || null;
+  };
+
+  // Update sort for students NOT in group (with column mapping)
+  const updateSort = useCallback(
+    (
+      orderByClause: {
+        column: string;
+        order: Graphql.OrderSortDirection;
+      }[]
+    ) => {
+      const graphqlOrderBy: Graphql.StudentsOrderByClause[] = [];
+      
+      orderByClause.forEach(clause => {
+        const graphqlColumn = mapColumnIdToGraphQLColumn(clause.column);
+        if (graphqlColumn) {
+          graphqlOrderBy.push({
+            column: graphqlColumn,
+            order: clause.order,
+          });
+        }
+      });
+
+      store.setStudentsNotInGroupQueryParams({
+        orderBy: graphqlOrderBy.length > 0 ? graphqlOrderBy : null,
+      });
+    },
+    [store]
+  );
+
+  // Update sort for students IN group (with column mapping)
+  const updateSortInGroup = useCallback(
+    (
+      orderByClause: {
+        column: string;
+        order: Graphql.OrderSortDirection;
+      }[]
+    ) => {
+      const graphqlOrderBy: Graphql.StudentsOrderByClause[] = [];
+      
+      orderByClause.forEach(clause => {
+        const graphqlColumn = mapColumnIdToGraphQLColumn(clause.column);
+        if (graphqlColumn) {
+          graphqlOrderBy.push({
+            column: graphqlColumn,
+            order: clause.order,
+          });
+        }
+      });
+
+      store.setStudentsInGroupQueryParams({
+        orderBy: graphqlOrderBy.length > 0 ? graphqlOrderBy : null,
+      });
+    },
+    [store]
+  );
+
+  // Clear filter for NotInGroup
+  const clearFilter = useCallback(
+    (columnId: string) => {
+      store.clearFilterNotInGroup(columnId);
+
+      // Recalculate filter args
+      const newFilters = { ...store.filtersNotInGroup };
+      delete newFilters[columnId];
+
+      const newFilterArgs: Partial<Graphql.StudentFilterArgs> = {};
+      Object.values(newFilters).forEach(filterClause => {
+        if (!filterClause) return;
+
+        const columnId = filterClause.columnId as keyof Graphql.Student;
+        const columnType = getColumnType(columnId as string);
+        if (!columnType) return;
+
+        let mappedFilter: Partial<Graphql.StudentFilterArgs> = {};
+        if (columnType === "text") {
+          mappedFilter = StudentUtils.mapTextFilter(
+            columnId,
+            filterClause.operation as TextFilterOperation,
+            filterClause.value as string
+          );
+        } else if (columnType === "date") {
+          mappedFilter = StudentUtils.mapDateFilter(
+            columnId,
+            filterClause.operation as DateFilterOperation,
+            filterClause.value as { from?: Date; to?: Date }
+          );
+        }
+        Object.assign(newFilterArgs, mappedFilter);
+      });
+
+      store.setStudentsNotInGroupQueryParams({
+        filterArgs:
+          Object.keys(newFilterArgs).length > 0
+            ? (newFilterArgs as Graphql.StudentFilterArgs)
+            : null,
+        paginationArgs: store.studentsNotInGroupQueryParams.paginationArgs,
+        orderBy: store.studentsNotInGroupQueryParams.orderBy,
+      });
+    },
+    [store]
+  );
+
+  // Clear filter for InGroup
+  const clearFilterInGroup = useCallback(
+    (columnId: string) => {
+      store.clearFilterInGroup(columnId);
+
+      // Recalculate filter args
+      const newFilters = { ...store.filtersInGroup };
+      delete newFilters[columnId];
+
+      const newFilterArgs: Partial<Graphql.StudentFilterArgs> = {};
+      Object.values(newFilters).forEach(filterClause => {
+        if (!filterClause) return;
+
+        const columnId = filterClause.columnId as keyof Graphql.Student;
+        const columnType = getColumnType(columnId as string);
+        if (!columnType) return;
+
+        let mappedFilter: Partial<Graphql.StudentFilterArgs> = {};
+        if (columnType === "text") {
+          mappedFilter = StudentUtils.mapTextFilter(
+            columnId,
+            filterClause.operation as TextFilterOperation,
+            filterClause.value as string
+          );
+        } else if (columnType === "date") {
+          mappedFilter = StudentUtils.mapDateFilter(
+            columnId,
+            filterClause.operation as DateFilterOperation,
+            filterClause.value as { from?: Date; to?: Date }
+          );
+        }
+        Object.assign(newFilterArgs, mappedFilter);
+      });
+
+      store.setStudentsInGroupQueryParams({
+        filterArgs:
+          Object.keys(newFilterArgs).length > 0
+            ? (newFilterArgs as Graphql.StudentFilterArgs)
+            : null,
+        paginationArgs: store.recipientsByGroupIdFilteredQuery.paginationArgs,
+        orderBy: store.recipientsByGroupIdFilteredQuery.orderBy,
+      });
+    },
+    [store]
+  );
+
   // Return a stable object using useMemo
   return useMemo(
     () => ({
+      // Mutations
       addSingleStudentToGroup,
       addStudentsToGroup,
       deleteRecipient,
       deleteRecipients,
+      // Pagination - NotInGroup
       onPageChange,
       onRowsPerPageChange,
+      // Pagination - InGroup
       onPageChangeInGroup,
       onRowsPerPageChangeInGroup,
+      // Filters - NotInGroup
       setColumnFilter,
+      clearFilter,
+      filtersNotInGroup: store.filtersNotInGroup,
+      // Filters - InGroup
       setColumnFilterInGroup,
+      clearFilterInGroup,
+      filtersInGroup: store.filtersInGroup,
+      // Sorting - NotInGroup
       setSort,
+      updateSort,
+      // Sorting - InGroup
       setSortInGroup,
+      updateSortInGroup,
+      // Store access
+      studentsNotInGroupQueryParams: store.studentsNotInGroupQueryParams,
+      recipientsByGroupIdFilteredQuery: store.recipientsByGroupIdFilteredQuery,
     }),
     [
       addSingleStudentToGroup,
@@ -330,9 +519,17 @@ export const useRecipientOperations = (templateId?: number) => {
       onPageChangeInGroup,
       onRowsPerPageChangeInGroup,
       setColumnFilter,
+      clearFilter,
       setColumnFilterInGroup,
+      clearFilterInGroup,
       setSort,
       setSortInGroup,
+      updateSort,
+      updateSortInGroup,
+      store.filtersNotInGroup,
+      store.filtersInGroup,
+      store.studentsNotInGroupQueryParams,
+      store.recipientsByGroupIdFilteredQuery,
     ]
   );
 };
