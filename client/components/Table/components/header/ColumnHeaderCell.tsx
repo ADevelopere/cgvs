@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import { useTheme, styled } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import {
   IconButton,
   Menu,
@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import { MoreVert, PushPin, VisibilityOff } from "@mui/icons-material";
 import { ResizeHandle } from "./ResizeHandle";
-import { useTableStyles } from "@/client/theme/styles";
 import { AnyColumn, PinPosition } from "../../types";
 import { useTableLocale } from "../../contexts";
 import { TABLE_CHECKBOX_CONTAINER_SIZE } from "../../constants";
@@ -43,13 +42,16 @@ interface HeaderContainerProps {
 }
 
 const HeaderContainer = styled("div")<HeaderContainerProps>(
-  ({ columnWidth }) => ({
+  ({ columnWidth, theme }) => ({
     position: "relative",
     maxWidth: columnWidth,
     width: columnWidth,
     minWidth: columnWidth,
     overflow: "hidden",
     minHeight: TABLE_CHECKBOX_CONTAINER_SIZE,
+    textAlign: "start" as const,
+    color: theme.palette.text.primary,
+    paddingInline: 8,
   })
 );
 
@@ -65,32 +67,28 @@ interface HeaderContentProps {
   isPinned: PinPosition;
   pinnedLeftStyle: CSSProperties;
   pinnedRightStyle: CSSProperties;
-  thStyle: CSSProperties;
 }
 
 const HeaderContent = styled("div")<HeaderContentProps>(({
   isPinned,
   pinnedLeftStyle,
   pinnedRightStyle,
-  thStyle,
 }) => {
-  let style = { ...thStyle };
+  let style: CSSProperties = {};
   if (isPinned === "left") {
-    style = { ...thStyle, ...pinnedLeftStyle };
+    style = { ...pinnedLeftStyle };
   } else if (isPinned === "right") {
-    style = { ...thStyle, ...pinnedRightStyle };
+    style = { ...pinnedRightStyle };
   }
 
   return {
     ...style,
     flex: 1,
     overflow: "hidden",
+    fontWeight: "bold",
+    position: "relative",
+    display: "flex",
   };
-});
-
-const OptionsButton = styled(IconButton)({
-  padding: "4px",
-  marginLeft: "4px",
 });
 
 /**
@@ -119,29 +117,11 @@ const ColumnHeaderCellComponent = <
   onUnpin,
   onHide,
 }: ColumnHeaderProps<TRowData, TRowId>) => {
-  const theme = useTheme();
-  const styles = useTableStyles();
   const locale = useTableLocale();
 
   const [optionsAnchor, setOptionsAnchor] = useState<HTMLElement | null>(null);
   const resizeStartX = useRef<number>(0);
   const resizeStartWidth = useRef<number>(0);
-
-  // Calculate th style based on pin position
-  const thStyle = useMemo<CSSProperties>(() => {
-    const base: CSSProperties = {
-      ...styles.thStyle,
-      backgroundColor: theme.palette.background.paper,
-    };
-
-    if (isPinned === "left") {
-      return { ...base, ...pinnedLeftStyle };
-    } else if (isPinned === "right") {
-      return { ...base, ...pinnedRightStyle };
-    }
-
-    return base;
-  }, [theme, styles, isPinned, pinnedLeftStyle, pinnedRightStyle]);
 
   // Handle resize
   const handleResizeStart = useCallback(
@@ -219,20 +199,19 @@ const ColumnHeaderCellComponent = <
             isPinned={isPinned}
             pinnedLeftStyle={pinnedLeftStyle}
             pinnedRightStyle={pinnedRightStyle}
-            thStyle={thStyle}
           >
             {/* Render custom header content */}
             {column.headerRenderer()}
           </HeaderContent>
 
           {/* Table-managed options menu */}
-          <OptionsButton
+          <IconButton
             onClick={handleOptionsClick}
             size="small"
             aria-label={`${column.id} options`}
           >
             <MoreVert fontSize="small" />
-          </OptionsButton>
+          </IconButton>
 
           <Menu
             anchorEl={optionsAnchor}

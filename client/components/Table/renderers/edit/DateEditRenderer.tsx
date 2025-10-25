@@ -5,7 +5,16 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 export interface DateEditRendererProps {
   value: Date | string | null | undefined;
+  /**
+   * Callback to save the new value
+   * This is provided by DataCell and ultimately calls column.onUpdate
+   * Call this when the user confirms their edit
+   */
   onSave: (value: string) => Promise<void>;
+  /**
+   * Callback to cancel editing without saving
+   * This exits edit mode and discards changes
+   */
   onCancel: () => void;
   validator?: (value: Date) => string | null;
   minDate?: Date;
