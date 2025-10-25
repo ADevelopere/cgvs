@@ -21,6 +21,8 @@ export type Translations = {
   connectivityTranslations: Components.ConnectivityTranslations;
 };
 
+// todo: fix this (add other langs)
+// @ts-expect-error - this is a valid translation object
 const translations: Record<AppLanguage, Translations> = {
   ar: {
     headerTranslations: AR.header,

@@ -14,7 +14,6 @@ import { AnyColumn, PinPosition } from "../../types";
 import { useTableLocale } from "../../contexts";
 import { TABLE_CHECKBOX_CONTAINER_SIZE } from "../../constants";
 import { useAppTheme } from "@/client/contexts";
-import logger from "@/client/lib/logger";
 
 export interface ColumnHeaderProps<
   TRowData,
