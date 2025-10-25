@@ -1,14 +1,14 @@
-export interface ColumnOptionsMenuProps<TColumnId extends string = string> {
+export interface ColumnOptionsMenuProps {
   anchorEl: HTMLElement | null;
   open: boolean;
   onClose: () => void;
-  columnId: TColumnId;
+  columnId: string;
   isPinnedLeft: boolean;
   isPinnedRight: boolean;
-  onPinLeft: (columnId: TColumnId) => void;
-  onPinRight: (columnId: TColumnId) => void;
-  onUnpin: (columnId: TColumnId) => void;
-  onHide: (columnId: TColumnId) => void;
-  onAutosize: (columnId: TColumnId) => void;
+  onPinLeft: (columnId: string) => void;
+  onPinRight: (columnId: string) => void;
+  onUnpin: (columnId: string) => void;
+  onHide: (columnId: string) => void;
+  onAutosize: (columnId: string) => void;
   onShowColumnManager: () => void;
 }

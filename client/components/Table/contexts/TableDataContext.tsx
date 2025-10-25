@@ -12,53 +12,48 @@ export type TableCellEditingState<TValue> = {
   errorMessage: string | null;
 };
 
-export type TableDataContextType<TColumnId extends string = string> = {
+export type TableDataContextType = {
   // Cell Editing
   getEditingState: <TValue>(
     rowId: string | number,
-    columnId: TColumnId
+    columnId: string
   ) => TableCellEditingState<TValue> | null;
   setEditingState: <TValue>(
     rowId: string | number,
-    columnId: TColumnId,
+    columnId: string,
     state: TableCellEditingState<TValue> | null
   ) => void;
 };
 
 const TableDataContext =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  createContext<TableDataContextType<any> | null>(null);
+  createContext<TableDataContextType | null>(null);
 
-export type TableDataProviderProps<_TColumnId extends string = string> = {
+export type TableDataProviderProps = {
   children: React.ReactNode;
 };
 
-export const TableDataProvider = <TColumnId extends string = string>({
-  children,
-}: TableDataProviderProps<TColumnId>) => {
+export const TableDataProvider = ({ children }: TableDataProviderProps) => {
   // Cell editing state management
   const [editingCells, setEditingCells] = useState<
     Record<string, TableCellEditingState<unknown>>
   >({});
 
   const getEditingState = useCallback(
-    (
-      rowId: string | number,
-      columnId: TColumnId
-    ) => {
+    (rowId: string | number, columnId: string) => {
       const cellKey = `${rowId}:${columnId}`;
       return editingCells[cellKey] ?? null;
     },
     [editingCells]
   ) as <TValue>(
     rowId: string | number,
-    columnId: TColumnId
+    columnId: string
   ) => TableCellEditingState<TValue> | null;
 
   const setEditingState = useCallback(
     (
       rowId: string | number,
-      columnId: TColumnId,
+      columnId: string,
       state: TableCellEditingState<unknown> | null
     ) => {
       const cellKey = `${rowId}:${columnId}`;
@@ -73,11 +68,11 @@ export const TableDataProvider = <TColumnId extends string = string>({
     []
   ) as <TValue>(
     rowId: string | number,
-    columnId: TColumnId,
+    columnId: string,
     state: TableCellEditingState<TValue> | null
   ) => void;
 
-  const value: TableDataContextType<TColumnId> = useMemo(
+  const value: TableDataContextType = useMemo(
     () => ({
       getEditingState,
       setEditingState,
@@ -92,9 +87,7 @@ export const TableDataProvider = <TColumnId extends string = string>({
   );
 };
 
-export const useTableDataContext = <
-  TColumnId extends string = string,
->(): TableDataContextType<TColumnId> => {
+export const useTableDataContext = (): TableDataContextType => {
   const context = useContext(TableDataContext);
   if (!context) {
     throw new Error("useTableDataContext must be used within a TableProvider");

@@ -119,13 +119,13 @@ export const useStudentTable = () => {
    * Helper component for text filterable headers
    */
   const TextFilterHeader = useCallback(
-    <TColumnId extends string>({
+    ({
       label,
       columnId,
       sortable = true,
     }: {
       label: string;
-      columnId: TColumnId;
+      columnId: string;
       sortable?: boolean;
     }) => {
       // Get current filter from store
@@ -176,13 +176,7 @@ export const useStudentTable = () => {
    * Helper component for date filterable headers
    */
   const DateFilterHeader = useCallback(
-    <TColumnId extends string>({
-      label,
-      columnId,
-    }: {
-      label: string;
-      columnId: TColumnId;
-    }) => {
+    ({ label, columnId }: { label: string; columnId: string }) => {
       // Get current filter from store
       const currentFilter = filters[columnId];
 

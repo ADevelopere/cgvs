@@ -18,9 +18,15 @@ type CreatedAtColumn = Table.Column<Graphql.Student>;
 interface UseRecipientTableParams {
   filters: Record<string, FilterClause | null>;
   queryParams: {
-    orderBy?: Graphql.StudentsOrderByClause[] | Graphql.StudentsOrderByClause | null;
+    orderBy?:
+      | Graphql.StudentsOrderByClause[]
+      | Graphql.StudentsOrderByClause
+      | null;
   };
-  setColumnFilter: (filterClause: FilterClause | null, columnId: string) => void;
+  setColumnFilter: (
+    filterClause: FilterClause | null,
+    columnId: string
+  ) => void;
   clearFilter: (columnId: string) => void;
   updateSort: (
     orderByClause: {
@@ -57,13 +63,13 @@ export const useRecipientTable = ({
    * Helper component for text filterable headers
    */
   const TextFilterHeader = useCallback(
-    <TColumnId extends string>({
+    ({
       label,
       columnId,
       sortable = true,
     }: {
       label: string;
-      columnId: TColumnId;
+      columnId: string;
       sortable?: boolean;
     }) => {
       // Get current filter from filters
@@ -114,13 +120,7 @@ export const useRecipientTable = ({
    * Helper component for date filterable headers
    */
   const DateFilterHeader = useCallback(
-    <TColumnId extends string>({
-      label,
-      columnId,
-    }: {
-      label: string;
-      columnId: TColumnId;
-    }) => {
+    ({ label, columnId }: { label: string; columnId: string }) => {
       // Get current filter from filters
       const currentFilter = filters[columnId];
 
@@ -314,4 +314,3 @@ export const useRecipientTable = ({
     columns,
   };
 };
-
