@@ -5,11 +5,10 @@ import { Box, Paper, Stack, Typography } from "@mui/material";
 import { People } from "@mui/icons-material";
 import { useAppTranslation } from "@/client/locale";
 import { useDashboardLayout } from "@/client/views/dashboard/layout/DashboardLayoutContext";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect } from "react";
 import { useQuery } from "@apollo/client/react";
-import { TableProvider, Table, AnyColumn } from "@/client/components/Table";
+import { Table, type AnyColumn } from "@/client/components/Table";
 import CreateStudentRow from "./CreateStudentRow";
-import { loadFromLocalStorage } from "@/client/utils/localStorage";
 import { ROWS_PER_PAGE_OPTIONS } from "@/client/components/Table/constants";
 import { useStudentOperations } from "./hook/useStudentOperations";
 import { useStudentTable } from "./hook/useStudentTable";
@@ -38,11 +37,8 @@ const StudentTable: React.FC = () => {
   // Get operations and store state
   const {
     queryParams,
-    filters,
     onPageChange,
     onRowsPerPageChange,
-    setColumnFilter,
-    updateSort,
   } = useStudentOperations();
 
   // Fetch students directly with useQuery - Apollo handles refetch automatically
@@ -66,143 +62,57 @@ const StudentTable: React.FC = () => {
   // Get columns from table hook
   const { columns } = useStudentTable();
 
-  const [initialWidths, setInitialWidths] = useState<Record<string, number>>(
-    {}
-  );
-  const tableContainerRef = useRef<HTMLDivElement>(null);
-  const widthsInitialized = useRef(false);
-
-  const maxIndexValue = useMemo(() => {
-    return pageInfo ? pageInfo.total : students.length;
-  }, [pageInfo, students.length]);
-
-  const indexColWidth = useMemo(() => {
-    const maxDigits = maxIndexValue.toString().length;
-    return Math.max(50, maxDigits * 15 + 20); // Minimum width of 50px, 10px per digit, and 20px padding
-  }, [maxIndexValue]);
-
-  useEffect(() => {
-    if (!tableContainerRef.current || widthsInitialized.current) return;
-    // minus scroll bar width
-    const totalWidth =
-      tableContainerRef.current.offsetWidth - indexColWidth;
-
-    const newWidths: Record<string, number> = {};
-
-    // First, handle non-resizable columns and load from localStorage
-    let totalFixedWidth = 0;
-    columns.forEach(column => {
-      if (!column.resizable) {
-        if (column.initialWidth) {
-          newWidths[column.id] = column.initialWidth;
-          totalFixedWidth += column.initialWidth;
-        } else {
-          // Non-resizable columns must have initialWidth
-          newWidths[column.id] = 100; // Fallback width
-          totalFixedWidth += 100;
-        }
-      }
-    });
-
-    // Then distribute remaining width among resizable columns
-    const resizableColumns = columns.filter(
-      col => col.resizable && !newWidths[col.id] // Only include columns not already set
-    );
-
-    if (resizableColumns.length > 0) {
-      const remainingWidth = Math.max(totalWidth - totalFixedWidth, 0);
-      const widthPerColumn = Math.floor(
-        remainingWidth / resizableColumns.length
-      );
-
-      resizableColumns.forEach(column => {
-        newWidths[column.id] = Math.max(widthPerColumn, 50); // Ensure minimum width
-      });
-    }
-
-    columns.forEach(column => {
-      if (column.widthStorageKey) {
-        const savedWidth = loadFromLocalStorage<string>(column.widthStorageKey);
-        if (savedWidth) {
-          newWidths[column.id] = Math.max(parseInt(savedWidth, 10), 50);
-          return;
-        }
-      }
-    });
-
-    setInitialWidths(newWidths);
-    // Save widths to state
-    widthsInitialized.current = true;
-  }, [columns, indexColWidth, tableContainerRef]);
-
   return (
-    <TableProvider<Student, number>
-      data={students}
-      isLoading={loading}
-      columns={columns as unknown as readonly AnyColumn<Student, number>[]}
-      dataProps={{
-        onFilterChange: setColumnFilter,
-        onSort: updateSort,
-        filters,
+    <Paper
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        overflow: "hidden",
+        maxWidth: "calc(100vw - 48px)",
       }}
-      columnProps={{
-        initialWidths: initialWidths,
-      }}
-      rowsProps={{
-        getRowId: row => row.id,
-        enableRowResizing: false,
-      }}
-      pageInfo={pageInfo}
-      onPageChange={onPageChange}
-      onRowsPerPageChange={onRowsPerPageChange}
-      rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
     >
-      <Paper
+      <Box
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
+          flexGrow: 1,
           overflow: "hidden",
-          maxWidth: "calc(100vw - 48px)",
+          "& table": {
+            width: "100%",
+            borderCollapse: "collapse",
+            tableLayout: "fixed",
+            backgroundColor: "background.paper",
+            color: "text.primary",
+            borderColor: "divider",
+          },
+          "& tr:hover td": {
+            backgroundColor: "action.hover",
+          },
+          "& th, & td": {
+            borderColor: "divider",
+          },
         }}
+        id="student-table"
       >
-        <Box
-          ref={tableContainerRef}
-          sx={{
-            flexGrow: 1,
+        <Table<Student, number>
+          data={students}
+          isLoading={loading}
+          columns={columns as readonly AnyColumn<Student, number>[]}
+          getRowId={row => row.id}
+          pageInfo={pageInfo}
+          onPageChange={onPageChange}
+          onRowsPerPageChange={onRowsPerPageChange}
+          rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
+          initialWidths={{}}
+          enableRowResizing={false}
+          style={{
+            height: "100%",
             overflow: "hidden",
-            "& table": {
-              width: "100%",
-              borderCollapse: "collapse",
-              tableLayout: "fixed",
-              backgroundColor: "background.paper",
-              color: "text.primary",
-              borderColor: "divider",
-            },
-            "& tr:hover td": {
-              backgroundColor: "action.hover",
-            },
-            "& th, & td": {
-              borderColor: "divider",
-            },
+            maxWidth: "calc(100vw - 48px)",
           }}
-          id="student-table"
-        >
-          {widthsInitialized.current &&
-            // check if initialWidths is not empty
-            Object.keys(initialWidths).length > 0 && (
-              <Table
-                style={{
-                  height: "100%",
-                  overflow: "hidden",
-                  maxWidth: "calc(100vw - 48px)",
-                }}
-                creationRow={<CreateStudentRow />}
-              />
-            )}
-        </Box>
-      </Paper>
-    </TableProvider>
+          creationRow={<CreateStudentRow />}
+        />
+      </Box>
+    </Paper>
   );
 };
 
