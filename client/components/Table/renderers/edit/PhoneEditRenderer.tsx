@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { MuiTelInput } from "mui-tel-input";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { preferredCountries } from "@/client/lib/country";
-import logger from "@/client/lib/logger";
 
 export interface PhoneEditRendererProps {
   value: string | null | undefined;
@@ -48,7 +48,6 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
 
   const handleChange = useCallback(
     (newValue: string) => {
-      logger.info("PhoneEditRenderer handleChange", newValue);
       setPhoneValue(newValue);
 
       // Validate on change
@@ -82,7 +81,7 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
 
     // Exit edit mode immediately
     onCancel();
-    
+
     // Save in the background (fire and forget)
     onSave(phoneValue).catch(() => {
       // Error handling is done by the parent component
@@ -104,45 +103,40 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
     [handleSave, onCancel, error]
   );
 
-  const handleBlur = useCallback(() => {
-    if (!error) {
-      handleSave();
-    }
-  }, [handleSave, error]);
+  const handleClickAway = useCallback(() => {
+    handleSave();
+    onCancel();
+  }, [handleSave]);
 
   return (
-    <MuiTelInput
-      inputRef={inputRef}
-      value={phoneValue}
-      onChange={handleChange}
-      onKeyDown={handleKeyDown}
-      onMouseDown={e => e.stopPropagation()} // Stop propagation for input clicks
-      onBlur={handleBlur}
-      langOfCountryName="ar"
-      defaultCountry="EG"
-      focusOnSelectCountry
-      excludedCountries={["IL"]}
-      preferredCountries={preferredCountries}
-      fullWidth
-      size="small"
-      variant="standard"
-      error={!!error}
-      helperText={error}
-      MenuProps={{
-        onMouseDown: e => {
-          // Stop propagation for country menu clicks (rendered in portal) to prevent click outside from closing edit mode
-          e.stopPropagation();
-        },
-      }}
-      sx={{
-        "& .MuiInputBase-input": {
-          padding: 0,
-        },
-        "& .MuiInput-root:before": {
-          borderBottom: error ? undefined : "none",
-        },
-      }}
-    />
+    <ClickAwayListener onClickAway={handleClickAway}>
+      <div>
+        <MuiTelInput
+          inputRef={inputRef}
+          value={phoneValue}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          langOfCountryName="ar"
+          defaultCountry="EG"
+          focusOnSelectCountry
+          excludedCountries={["IL"]}
+          preferredCountries={preferredCountries}
+          fullWidth
+          size="small"
+          variant="standard"
+          error={!!error}
+          helperText={error}
+          sx={{
+            "& .MuiInputBase-input": {
+              padding: 0,
+            },
+            "& .MuiInput-root:before": {
+              borderBottom: error ? undefined : "none",
+            },
+          }}
+        />
+      </div>
+    </ClickAwayListener>
   );
 };
 
