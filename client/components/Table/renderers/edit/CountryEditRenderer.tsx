@@ -7,7 +7,16 @@ import { CountryCode } from "@/client/graphql/generated/gql/graphql";
 
 export interface CountryEditRendererProps {
   value: CountryCode | null | undefined;
+  /**
+   * Callback to save the new value
+   * This is provided by DataCell and ultimately calls column.onUpdate
+   * Call this when the user confirms their edit
+   */
   onSave: (value: CountryCode) => Promise<void>;
+  /**
+   * Callback to cancel editing without saving
+   * This exits edit mode and discards changes
+   */
   onCancel: () => void;
   validator?: (value: CountryCode) => string | null;
 }

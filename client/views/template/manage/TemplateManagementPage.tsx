@@ -13,10 +13,10 @@ import {
   useTemplateUIStore,
 } from "./useTemplateManagementStore";
 import BasicInfoTab from "./BasicInfoTab";
-// import RecipientsManagementTab from "./recipient/RecipientsManagementTab ";
+import RecipientsManagementTab from "./recipient/RecipientsManagementTab ";
 import TemplateVariableManagement from "./variables/TemplateVariableManagement";
-// import RecipientGroupTab from "./recipientGroup/RecipientGroupTab";
-// import RecipientVariableDataTab from "./data/RecipientVariableDataTab";
+import RecipientGroupTab from "./recipientGroup/RecipientGroupTab";
+import RecipientVariableDataTab from "./data/RecipientVariableDataTab";
 import { ManagementTabList } from "./ManagementTabList";
 import { TemplateManagementHeader } from "./components/TemplateManagementHeader";
 import { TemplateNotFoundError } from "./components/TemplateNotFoundError";
@@ -125,7 +125,7 @@ export const TemplateManagementPage: React.FC = () => {
         <TabPanel value="variables">
           <TemplateVariableManagement template={template} />
         </TabPanel>
-        {/* <TabPanel value="recipients">
+        <TabPanel value="recipients">
           <RecipientGroupTab template={template} />
         </TabPanel>
         <TabPanel value="recipientsManagement">
@@ -133,7 +133,7 @@ export const TemplateManagementPage: React.FC = () => {
         </TabPanel>
         <TabPanel value="data">
           <RecipientVariableDataTab template={template} />
-        </TabPanel> */}
+        </TabPanel>
         <TabPanel value="preview">
           <Box
             sx={{

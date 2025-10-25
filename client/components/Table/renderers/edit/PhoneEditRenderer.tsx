@@ -4,7 +4,16 @@ import { preferredCountries } from "@/client/lib/country";
 
 export interface PhoneEditRendererProps {
   value: string | null | undefined;
+  /**
+   * Callback to save the new value
+   * This is provided by DataCell and ultimately calls column.onUpdate
+   * Call this when the user confirms their edit
+   */
   onSave: (value: string) => Promise<void>;
+  /**
+   * Callback to cancel editing without saving
+   * This exits edit mode and discards changes
+   */
   onCancel: () => void;
   validator?: (value: string) => string | null;
 }

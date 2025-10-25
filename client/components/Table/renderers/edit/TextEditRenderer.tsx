@@ -3,7 +3,16 @@ import { TextField } from "@mui/material";
 
 export interface TextEditRendererProps {
   value: string | null | undefined;
+  /**
+   * Callback to save the new value
+   * This is provided by DataCell and ultimately calls column.onUpdate
+   * Call this when the user confirms their edit (e.g., Enter key, blur)
+   */
   onSave: (value: string) => Promise<void>;
+  /**
+   * Callback to cancel editing without saving
+   * This exits edit mode and discards changes
+   */
   onCancel: () => void;
   validator?: (value: string) => string | null;
   placeholder?: string;

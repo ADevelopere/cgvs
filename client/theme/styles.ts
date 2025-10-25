@@ -1,6 +1,5 @@
 "use client";
 
-import { useTheme } from "@mui/material/styles";
 import { CSSProperties, useMemo } from "react";
 
 type Props = {
@@ -10,24 +9,6 @@ type Props = {
 // This function can be used to get theme-aware styles
 export const useTableStyles = (props?: Props) => {
   const { thWidth } = props || {};
-  const theme = useTheme();
-
-  const thStyle: CSSProperties = useMemo(() => {
-    return {
-      padding: theme.spacing(2),
-      textAlign: "start" as const,
-      color: theme.palette.text.primary,
-      fontWeight: "bold",
-      position: "relative" as const,
-      overflow: "hidden" as const,
-
-      width: thWidth ? `${thWidth}px` : "auto",
-
-      backgroundColor: theme.palette.background.paper,
-
-      display: "flex" as const,
-    };
-  }, [theme, thWidth]);
 
   const inputStyle: CSSProperties = useMemo(() => {
     return {
@@ -81,7 +62,6 @@ export const useTableStyles = (props?: Props) => {
   }, []);
 
   return {
-    thStyle,
     inputStyle,
     resizeHandleStyle,
   } as const;
