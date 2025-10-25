@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import type { CSSProperties } from "react";
 import { AnyColumn, isEditableColumn } from "../../types";
+import { useTheme } from "@mui/material";
 
 type DataCellProps<
   TRowData,
@@ -53,6 +54,8 @@ const DataCellComponent = <
   const [hasError, setHasError] = useState(false);
   const cellRef = useRef<HTMLTableCellElement>(null);
 
+  const theme = useTheme();
+
   // Determine if column is editable
   const editable = useMemo(() => isEditableColumn(column), [column]);
 
@@ -75,16 +78,31 @@ const DataCellComponent = <
     }
 
     if (isEditing) {
-      style = { ...style, ...cellEditingStyle };
+      // Use box-shadow instead of borders to avoid border-collapse issues
+      // Extract the color from cellEditingStyle borders
+      const borderColor =
+        typeof cellEditingStyle.borderTop === "string"
+          ? cellEditingStyle.borderTop.split(" ").pop()
+          : "currentColor";
+      style = {
+        ...style,
+        ...cellEditingStyle,
+        // Remove the individual borders since we're using box-shadow
+        border: "none",
+        boxShadow: `inset 0 0 0 2px ${borderColor}`,
+        position: "relative",
+        zIndex: 1,
+      };
     }
 
     if (hasError) {
+      // Use box-shadow for error state as well
       style = {
         ...style,
-        borderTop: "2px solid red",
-        borderRight: "2px solid red",
-        borderBottom: "2px solid red",
-        borderLeft: "2px solid red",
+        border: "none",
+        boxShadow: `inset 0 0 0 2px ${theme.palette.error.main}`,
+        position: "relative",
+        zIndex: 2,
       };
     }
 
