@@ -7,16 +7,18 @@ import {
 } from "drizzle-orm/pg-core";
 import {
   calendarTypeEnum,
-  dataSourceTypeEnum,
-  studentFieldEnum,
-} from "../templateElementEnums";
+  certificateDateFieldEnum,
+  dateDataSourceTypeEnum,
+  studentDateFieldEnum,
+} from "../elements/templateElementEnums";
 
 export const elementDate = pgTable("element_date", {
   id: integer("id").primaryKey(), // One-to-one with certificate_element
   textPropsId: integer("text_props_id").notNull(), // References element_text_props
-  dataSourceType: dataSourceTypeEnum("data_source_type").notNull(),
+  dataSourceType: dateDataSourceTypeEnum("data_source_type").notNull(),
   templateVariableId: integer("template_variable_id"), // Used when dataSourceType is TEMPLATE_VARIABLE (type DATE)
-  studentField: studentFieldEnum("student_field"), // Used when dataSourceType is STUDENT_FIELD (DATE_OF_BIRTH)
+  studentDateField: studentDateFieldEnum("student_date_field"), // Used when dataSourceType is STUDENT_DATE_FIELD (DATE_OF_BIRTH)
+  certificateDateField: certificateDateFieldEnum("certificate_date_field"), // Used when dataSourceType is CERTIFICATE_DATE_FIELD (RELEASE_DATE)
   calendarType: calendarTypeEnum("calendar_type").notNull(),
   offsetDays: integer("offset_days").notNull().default(0),
   format: varchar("format", { length: 100 }).notNull(), // e.g., "YYYY-MM-DD", "DD/MM/YYYY"
