@@ -7,6 +7,8 @@ import {
   useMediaQuery,
   CircularProgress,
   Alert,
+  Fade,
+  Slide,
 } from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
 import {
@@ -23,10 +25,14 @@ import { useQuery } from "@apollo/client/react";
 import { templateRecipientGroupsByTemplateIdQueryDocument } from "../recipientGroup/hooks/recipientGroup.documents";
 import { TemplateRecipientGroup } from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
+import { useAppTheme } from "@/client/contexts";
 
 interface RecipientsManagementTabProps {
   template: Template;
 }
+
+// Sub-tab order for determining slide direction
+const SUB_TAB_ORDER: ("manage" | "add")[] = ["manage", "add"];
 
 const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
   template,
@@ -36,13 +42,30 @@ const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const strings = useAppTranslation("recipientGroupTranslations");
+  const { isRtl } = useAppTheme();
+  const [prevSubTabIndex, setPrevSubTabIndex] = React.useState(
+    SUB_TAB_ORDER.indexOf(activeSubTab)
+  );
 
   const handleTabChange = (
     _: React.SyntheticEvent,
     newValue: "manage" | "add"
   ) => {
+    setPrevSubTabIndex(SUB_TAB_ORDER.indexOf(activeSubTab));
     setActiveSubTab(newValue);
   };
+
+  // Calculate slide direction based on sub-tab indices and RTL mode
+  const slideDirection = React.useMemo(() => {
+    const currentSubTabIndex = SUB_TAB_ORDER.indexOf(activeSubTab);
+    const baseDirection = currentSubTabIndex > prevSubTabIndex ? "left" : "right";
+    // Reverse direction in RTL mode
+    return isRtl
+      ? baseDirection === "left"
+        ? "right"
+        : "left"
+      : baseDirection;
+  }, [activeSubTab, prevSubTabIndex, isRtl]);
 
   const { loading: storeInitializing } = useRecipientStoreInitializer();
   const firstInitializingRef = React.useRef(true);
@@ -167,20 +190,36 @@ const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
         >
           <TabContext value={activeSubTab}>
             <TabPanel value="manage" sx={{ flex: 1, p: 0, overflow: "hidden" }}>
-              <Box sx={{ p: 2, height: "100%", overflow: "hidden" }}>
-                <StudentsInGroupTable
-                  templateId={template.id}
-                  isMobile={isMobile}
-                />
-              </Box>
+              <Fade in={activeSubTab === "manage"} timeout={300}>
+                <Slide
+                  direction={slideDirection}
+                  in={activeSubTab === "manage"}
+                  timeout={250}
+                >
+                  <Box sx={{ p: 2, height: "100%", overflow: "hidden" }}>
+                    <StudentsInGroupTable
+                      templateId={template.id}
+                      isMobile={isMobile}
+                    />
+                  </Box>
+                </Slide>
+              </Fade>
             </TabPanel>
             <TabPanel value="add" sx={{ flex: 1, p: 0, overflow: "hidden" }}>
-              <Box sx={{ p: 2, height: "100%", overflow: "hidden" }}>
-                <StudentsNotInGroupTable
-                  templateId={template.id}
-                  isMobile={isMobile}
-                />
-              </Box>
+              <Fade in={activeSubTab === "add"} timeout={300}>
+                <Slide
+                  direction={slideDirection}
+                  in={activeSubTab === "add"}
+                  timeout={250}
+                >
+                  <Box sx={{ p: 2, height: "100%", overflow: "hidden" }}>
+                    <StudentsNotInGroupTable
+                      templateId={template.id}
+                      isMobile={isMobile}
+                    />
+                  </Box>
+                </Slide>
+              </Fade>
             </TabPanel>
           </TabContext>
         </Box>

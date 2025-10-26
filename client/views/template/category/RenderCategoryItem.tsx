@@ -165,7 +165,7 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
 
         <Box sx={{ flexGrow: 1 }} />
         {/* delete */}
-        <Tooltip title="Delete">
+        <Tooltip title={strings.delete}>
           <span>
             <IconButton
               onClick={e => {
