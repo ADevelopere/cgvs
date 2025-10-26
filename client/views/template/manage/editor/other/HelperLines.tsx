@@ -1,12 +1,12 @@
-import { CSSProperties, useEffect, useRef } from 'react';
-import { ReactFlowState, useStore } from '@xyflow/react';
+import { CSSProperties, useEffect, useRef } from "react";
+import { ReactFlowState, useStore } from "@xyflow/react";
 
 const canvasStyle: CSSProperties = {
-  width: '100%',
-  height: '100%',
-  position: 'absolute',
+  width: "100%",
+  height: "100%",
+  position: "absolute",
   zIndex: 10,
-  pointerEvents: 'none',
+  pointerEvents: "none",
 };
 
 const storeSelector = (state: ReactFlowState) => ({
@@ -29,7 +29,7 @@ function HelperLinesRenderer({ horizontal, vertical }: HelperLinesProps) {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
+    const ctx = canvas?.getContext("2d");
 
     if (!ctx || !canvas) {
       return;
@@ -41,15 +41,15 @@ function HelperLinesRenderer({ horizontal, vertical }: HelperLinesProps) {
 
     ctx.scale(dpi, dpi);
     ctx.clearRect(0, 0, width, height);
-    ctx.strokeStyle = '#0041d0';
+    ctx.strokeStyle = "#0041d0";
 
-    if (typeof vertical === 'number') {
+    if (typeof vertical === "number") {
       ctx.moveTo(vertical * transform[2] + transform[0], 0);
       ctx.lineTo(vertical * transform[2] + transform[0], height);
       ctx.stroke();
     }
 
-    if (typeof horizontal === 'number') {
+    if (typeof horizontal === "number") {
       ctx.moveTo(0, horizontal * transform[2] + transform[1]);
       ctx.lineTo(width, horizontal * transform[2] + transform[1]);
       ctx.stroke();

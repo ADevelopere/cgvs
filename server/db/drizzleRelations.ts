@@ -84,10 +84,6 @@ export const relations = defineRelations(schema, r => ({
       from: r.templates.id,
       to: r.templateVariableBases.templateId,
     }),
-    elements: r.many.templateElements({
-      from: r.templates.id,
-      to: r.templateElements.templateId,
-    }),
   },
   templateCategories: {
     parentCategory: r.one.templateCategories({
@@ -116,13 +112,11 @@ export const relations = defineRelations(schema, r => ({
       to: r.templates.id,
     }),
   },
-  // templateRecipientGroups: {
-  //     template: r.one.templates({
-  //         from: r.templateRecipientGroups.templateId,
-  //         to: r.templates.id,
-  //     }),
-  //     items: r.many.templateRecipientGroupItems(),
-  //     certificates: r.many.certificates(),
-  // },
-  // Cache table has no relations (standalone cache)
+  templateRecipientGroups: {
+    template: r.one.templates({
+      from: r.templateRecipientGroups.templateId,
+      to: r.templates.id,
+    }),
+    items: r.many.templateRecipientGroupItems(),
+  },
 }));

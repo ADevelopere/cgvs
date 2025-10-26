@@ -21,7 +21,7 @@ export const DateViewRenderer: React.FC<DateViewRendererProps> = ({
   tooltip = true,
 }) => {
   const { language } = useAppTheme();
-  
+
   const locale = React.useMemo(() => {
     if (language === "ar") return arEG;
     return enUS;

@@ -32,7 +32,9 @@ export const PhoneViewRenderer: React.FC<PhoneViewRendererProps> = ({
   value,
 }) => {
   const displayValue =
-    value !== null && value !== undefined ? formatPhoneNumber(String(value)) : "";
+    value !== null && value !== undefined
+      ? formatPhoneNumber(String(value))
+      : "";
 
   // Add Unicode LTR mark (U+200E) to force left-to-right display in RTL contexts
   const ltrDisplayValue = displayValue ? `\u200E${displayValue}\u200E` : "";
@@ -54,4 +56,3 @@ export const PhoneViewRenderer: React.FC<PhoneViewRendererProps> = ({
 };
 
 export default PhoneViewRenderer;
-

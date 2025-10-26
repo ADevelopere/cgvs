@@ -1,4 +1,4 @@
-import { Node, NodePositionChange, XYPosition } from '@xyflow/react';
+import { Node, NodePositionChange, XYPosition } from "@xyflow/react";
 
 type GetHelperLinesResult = {
   horizontal?: number;
@@ -18,7 +18,7 @@ export function getHelperLines(
     vertical: undefined,
     snapPosition: { x: undefined, y: undefined },
   };
-  const nodeA = nodes.find((node) => node.id === change.id);
+  const nodeA = nodes.find(node => node.id === change.id);
 
   if (!nodeA || !change.position) {
     return defaultResult;
@@ -37,7 +37,7 @@ export function getHelperLines(
   let verticalDistance = distance;
 
   return nodes
-    .filter((node) => node.id !== nodeA.id)
+    .filter(node => node.id !== nodeA.id)
     .reduce<GetHelperLinesResult>((result, nodeB) => {
       const nodeBBounds = {
         left: nodeB.position.x,

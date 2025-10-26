@@ -167,7 +167,9 @@ export const validateGender = (value: string | undefined): string | null => {
  * @param value - The country code to validate
  * @returns null if valid, error message if invalid
  */
-export const validateNationality = (value: CountryCode | undefined): string | null => {
+export const validateNationality = (
+  value: CountryCode | undefined
+): string | null => {
   if (!value) {
     return null; // Optional field
   }
@@ -180,7 +182,9 @@ export const validateNationality = (value: CountryCode | undefined): string | nu
  * @param value - The phone number to validate
  * @returns null if valid, error message if invalid
  */
-export const validatePhoneNumber = (value: string | null | undefined): string | null => {
+export const validatePhoneNumber = (
+  value: string | null | undefined
+): string | null => {
   if (!value || !value.trim()) {
     return null; // Optional field
   }

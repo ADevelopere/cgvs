@@ -11,7 +11,10 @@ import logger from "@/client/lib/logger";
 export const getColumnType = (
   columnId: keyof Graphql.Student
 ): "text" | "date" | "phone" | "select" | "country" | null => {
-  const typeMap: Record<string, "text" | "date" | "phone" | "select" | "country"> = {
+  const typeMap: Record<
+    string,
+    "text" | "date" | "phone" | "select" | "country"
+  > = {
     name: "text",
     email: "text",
     phoneNumber: "phone",

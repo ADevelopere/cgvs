@@ -1,13 +1,13 @@
 "use client";
 
-import { NodeProps, Handle, Position } from '@xyflow/react';
-import { useEffect } from 'react';
+import { NodeProps, Handle, Position } from "@xyflow/react";
+import { useEffect } from "react";
 
 interface TextNodeData {
   text: string;
   fontSize?: number;
   color?: string;
-  fontFamily?: 'Cairo' | 'Reem Kufi Ink';
+  fontFamily?: "Cairo" | "Reem Kufi Ink";
 }
 
 type TextNodeProps = NodeProps & {
@@ -17,9 +17,10 @@ type TextNodeProps = NodeProps & {
 const TextTestNode = ({ data }: TextNodeProps) => {
   useEffect(() => {
     // Load Google Fonts dynamically
-    const link = document.createElement('link');
-    link.href = 'https://fonts.googleapis.com/css2?family=Cairo&family=Reem+Kufi+Ink&display=swap';
-    link.rel = 'stylesheet';
+    const link = document.createElement("link");
+    link.href =
+      "https://fonts.googleapis.com/css2?family=Cairo&family=Reem+Kufi+Ink&display=swap";
+    link.rel = "stylesheet";
     document.head.appendChild(link);
 
     return () => {
@@ -29,12 +30,12 @@ const TextTestNode = ({ data }: TextNodeProps) => {
 
   const style = {
     fontSize: `${data.fontSize ?? 16}px`,
-    color: data.color ?? '#000000',
-    fontFamily: data.fontFamily ?? 'Cairo',
-    padding: '10px',
-    border: '1px solid #eee',
-    borderRadius: '5px',
-    backgroundColor: 'white'
+    color: data.color ?? "#000000",
+    fontFamily: data.fontFamily ?? "Cairo",
+    padding: "10px",
+    border: "1px solid #eee",
+    borderRadius: "5px",
+    backgroundColor: "white",
   };
 
   return (

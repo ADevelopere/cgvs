@@ -139,7 +139,7 @@ export const BaseHeaderRenderer = ({
   const handleSortClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
-      
+
       // Calculate next sort direction: ASC -> DESC -> null -> ASC
       let nextDirection: SortDirection;
       if (sortDirection === null || sortDirection === undefined) {
@@ -149,7 +149,7 @@ export const BaseHeaderRenderer = ({
       } else {
         nextDirection = null; // Clear sort
       }
-      
+
       onSort?.(nextDirection);
     },
     [onSort, sortDirection]

@@ -115,14 +115,14 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
     }
 
     const originalDate = initialDate;
-    
+
     // Check if newValue is null (empty)
     if (editValue === null && !originalDate) {
       // If original value is null or undefined, cancel (no change to make)
       onCancel();
       return;
     }
-    
+
     // Early return if value hasn't changed
     if (originalDate && editValue.getTime() === originalDate.getTime()) {
       onCancel();
@@ -249,9 +249,7 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
                 borderColor: "divider",
               }}
             >
-              <Button onClick={onCancel}>
-                {generalStrings.cancel}
-              </Button>
+              <Button onClick={onCancel}>{generalStrings.cancel}</Button>
               <Button
                 onClick={handleConfirm}
                 variant="contained"

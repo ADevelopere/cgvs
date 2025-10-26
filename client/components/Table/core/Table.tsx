@@ -52,7 +52,10 @@ export interface TableProps<
   onRowResize?: (rowId: TRowId, newHeight: number) => void;
   rowSelectionEnabled?: boolean;
   enableRowResizing?: boolean;
-  onLoadMoreRows?: (params: { visibleStartIndex: number; visibleStopIndex: number }) => Promise<void>;
+  onLoadMoreRows?: (params: {
+    visibleStartIndex: number;
+    visibleStopIndex: number;
+  }) => Promise<void>;
 
   // Rendering
   style?: React.CSSProperties;
@@ -141,13 +144,13 @@ export const Table = <
   ]);
 
   return (
-    <div 
+    <div
       ref={tableContainerRef}
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        overflow: 'hidden',
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        overflow: "hidden",
       }}
     >
       <TableContext.Provider value={tableContextValue}>
@@ -175,10 +178,7 @@ export const Table = <
             onAutosizeColumnAction={onAutosizeColumn}
           >
             <TableDataProvider>
-              <TableRenderer
-                style={style}
-                creationRow={creationRow}
-              />
+              <TableRenderer style={style} creationRow={creationRow} />
             </TableDataProvider>
           </TableColumnsProvider>
         </TableRowsProvider>

@@ -83,7 +83,10 @@ export const validateNumberVariable = (
   if (variable.decimalPlaces !== null && variable.decimalPlaces !== undefined) {
     const decimalPlaces = (numValue.toString().split(".")[1] || "").length;
     if (decimalPlaces > variable.decimalPlaces) {
-      return strings.tooManyDecimalPlaces.replace("{max}", String(variable.decimalPlaces));
+      return strings.tooManyDecimalPlaces.replace(
+        "{max}",
+        String(variable.decimalPlaces)
+      );
     }
   }
 
@@ -114,7 +117,10 @@ export const validateDateVariable = (
   if (variable.minDate) {
     const minDate = new Date(variable.minDate);
     if (dateValue < minDate) {
-      return strings.dateTooEarly.replace("{min}", minDate.toLocaleDateString());
+      return strings.dateTooEarly.replace(
+        "{min}",
+        minDate.toLocaleDateString()
+      );
     }
   }
 

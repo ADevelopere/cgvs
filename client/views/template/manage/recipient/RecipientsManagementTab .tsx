@@ -58,7 +58,8 @@ const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
   // Calculate slide direction based on sub-tab indices and RTL mode
   const slideDirection = React.useMemo(() => {
     const currentSubTabIndex = SUB_TAB_ORDER.indexOf(activeSubTab);
-    const baseDirection = currentSubTabIndex > prevSubTabIndex ? "left" : "right";
+    const baseDirection =
+      currentSubTabIndex > prevSubTabIndex ? "left" : "right";
     // Reverse direction in RTL mode
     return isRtl
       ? baseDirection === "left"

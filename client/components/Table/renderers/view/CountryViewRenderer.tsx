@@ -46,4 +46,3 @@ export const CountryViewRenderer: React.FC<CountryViewRendererProps> = ({
 };
 
 export default CountryViewRenderer;
-

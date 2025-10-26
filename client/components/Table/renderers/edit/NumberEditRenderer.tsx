@@ -111,14 +111,14 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
 
     const newValue = validation.value;
     const originalValue = value;
-    
+
     // Check if newValue is null (empty)
     if (newValue === null && !originalValue) {
       // If original value is null or undefined, cancel (no change to make)
       onCancel();
       return;
     }
-    
+
     // Early return if value hasn't changed
     if (newValue === originalValue) {
       onCancel();

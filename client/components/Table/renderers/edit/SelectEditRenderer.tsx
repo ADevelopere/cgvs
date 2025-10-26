@@ -1,8 +1,5 @@
 import React, { useState, useCallback } from "react";
-import {
-  TextField,
-  Autocomplete,
-} from "@mui/material";
+import { TextField, Autocomplete } from "@mui/material";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import { Clear as ClearIcon } from "@mui/icons-material";
 import { useTableLocale } from "../../contexts/TableLocaleContext";
@@ -46,7 +43,9 @@ export const SelectEditRenderer = <
   onCancel,
 }: SelectEditRendererProps<TValue>): React.JSX.Element => {
   const [open, setOpen] = useState(true);
-  const { strings: { general} } = useTableLocale();
+  const {
+    strings: { general },
+  } = useTableLocale();
 
   const currentOption = options.find(opt => opt.value === value) || null;
 
@@ -155,15 +154,11 @@ export const SelectEditRenderer = <
             />
           )}
           clearIcon={
-            <>
-              {value && (
-                <ClearIcon fontSize="small" onClick={handleClear} />
-              )}
-            </>
+            <>{value && <ClearIcon fontSize="small" onClick={handleClear} />}</>
           }
-            clearText={general.delete}
-            closeText={general.cancel}
-          />
+          clearText={general.delete}
+          closeText={general.cancel}
+        />
       </div>
     </ClickAwayListener>
   );
