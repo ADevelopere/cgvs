@@ -21,12 +21,15 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState,
 } from "react";
 import EditorPaneResizer from "./EditorPaneResizer";
 import { Box } from "@mui/material";
-import { loadFromLocalStorage } from "@/client/utils/localStorage";
 import { useAppTheme } from "@/client/contexts";
+import { getEditorPaneStore } from "@/client/components/editorPane/editorPaneStoreManager";
+import type {
+  PaneState,
+  PaneInitialConfig,
+} from "@/client/components/editorPane/editorPaneStoreFactory";
 
 // Filter out null or undefined children
 function removeNullChildren(children: ReactNode[]) {
@@ -74,41 +77,14 @@ type EditorPaneProps = {
   resizerProps?: ResizerProps;
   containerRef?: React.RefObject<HTMLElement>;
   width?: number;
-  storageKey?: string;
+  storageKey: string;
 };
 
-// Type for the stored pane state
-type PaneState = {
-  sizes: number[];
-  visibility: {
-    first: boolean;
-    third: boolean;
-  };
-  collapsed: {
-    first: boolean;
-    third: boolean;
-  };
-  previousSizes: {
-    first: number | null;
-    third: number | null;
-  };
-  preCollapseSizes: {
-    first: number | null;
-    third: number | null;
-  };
-};
-
-// Constants for local storage keys and pane state
-const STORAGE_KEY_PREFIX = "editorPane";
-const STORAGE_DEBOUNCE_MS = 300;
+// Constants for pane state
 const MIN_PANE_SIZE = 50; // Minimum width to keep panes visible
 // todo: receive from props
 const COLLAPSED_PANE_WIDTH = 40; // Width when pane is collapsed (header + button)
 const RESIZER_WIDTH = 4; // Width of resizer component (must match EditorPaneResizer minWidth)
-
-// Helper functions for local storage operations
-const getStorageKey = (key?: string) =>
-  key ? `${STORAGE_KEY_PREFIX}_${key}` : null;
 
 // Helper to calculate number of visible resizers
 const getVisibleResizerCount = (
@@ -117,30 +93,6 @@ const getVisibleResizerCount = (
 ) => {
   return (firstVisible ? 1 : 0) + (thirdVisible ? 1 : 0);
 };
-
-// Function to save pane state to local storage
-const savePaneState = (key: string | undefined, state: PaneState) => {
-  if (!key) return;
-  try {
-    localStorage.setItem(getStorageKey(key)!, JSON.stringify(state));
-  } catch {}
-};
-
-// Helper to create a debounced function
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const debounce = <T extends (...args: any[]) => void>(
-  func: T,
-  wait: number
-) => {
-  let timeout: NodeJS.Timeout;
-  return (...args: Parameters<T>) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-};
-
-// Create a stable debounced version of savePaneState
-const debouncedSavePaneState = debounce(savePaneState, STORAGE_DEBOUNCE_MS);
 
 const EditorPane: FC<EditorPaneProps> = ({
   allowResize = true,
@@ -170,103 +122,69 @@ const EditorPane: FC<EditorPaneProps> = ({
   const pane2Ref = useRef<HTMLDivElement | null>(null);
   const pane3Ref = useRef<HTMLDivElement | null>(null);
 
+  // Create initial config for the store
+  const initialConfig = useMemo<PaneInitialConfig>(
+    () => ({
+      firstVisible: firstPane.visible,
+      thirdVisible: thirdPane.visible,
+      firstCollapsed: firstPane.collapsed ?? false,
+      thirdCollapsed: thirdPane.collapsed ?? false,
+    }),
+    [
+      firstPane.visible,
+      thirdPane.visible,
+      firstPane.collapsed,
+      thirdPane.collapsed,
+    ]
+  );
+
+  // Get or create store for this storageKey
+  const store = useMemo(
+    () => getEditorPaneStore(storageKey, initialConfig),
+    [storageKey, initialConfig]
+  );
+
+  // Create a stable ref to the store for use in callbacks
+  const storeRef = useRef(store);
+  storeRef.current = store;
+
+  // State for triggering re-renders when store changes
+  const [, forceUpdate] = React.useReducer((x: number) => x + 1, 0);
+
+  // Subscribe to store changes to trigger re-renders
+  useEffect(() => {
+    if (!store) return;
+
+    const unsubscribe = store.subscribe(() => {
+      forceUpdate();
+    });
+
+    return unsubscribe;
+  }, [store]);
+
+  // Get current pane state from store or create default state
+  const paneState: PaneState = storeRef.current?.getState();
+
+  // Create setPaneState function that works with the store
+  const setPaneState = useCallback((state: PaneState) => {
+    if (storeRef.current) {
+      storeRef.current.getState().setPaneState(state);
+    }
+    // Note: If no store, this is a no-op since we don't support non-persisted panes
+  }, []);
+
   // States for resizing
-  const [active, setActive] = useState(false);
-  const [activeResizer, setActiveResizer] = useState<1 | 2 | null>(null);
-  const [position, setPosition] = useState(0);
-  const [containerWidth, setContainerWidth] = useState<number>(0);
-  const [_containerHeight, setContainerHeight] = useState<number>(0);
+  const [active, setActive] = React.useState(false);
+  const [activeResizer, setActiveResizer] = React.useState<1 | 2 | null>(null);
+  const [position, setPosition] = React.useState(0);
+  const [containerWidth, setContainerWidth] = React.useState<number>(0);
+  const [_containerHeight, setContainerHeight] = React.useState<number>(0);
   const previousContainerWidthRef = useRef<number>(0);
-
-  // Initialize state from local storage if available
-  const initialState = useMemo<PaneState>(() => {
-    if (!storageKey) {
-      return {
-        sizes: [0, 0, 0],
-        visibility: {
-          first: firstPane.visible,
-          third: thirdPane.visible,
-        },
-        collapsed: {
-          first: firstPane.collapsed ?? false,
-          third: thirdPane.collapsed ?? false,
-        },
-        previousSizes: {
-          first: null,
-          third: null,
-        },
-        preCollapseSizes: {
-          first: null,
-          third: null,
-        },
-      };
-    }
-    const state = loadFromLocalStorage<PaneState>(storageKey);
-    if (state) {
-      // Only use stored sizes if visibility matches current state
-      return {
-        sizes: state.sizes.map((size, index) => {
-          if (index === 0 && firstPane.visible !== state.visibility.first)
-            return 0;
-          if (index === 2 && thirdPane.visible !== state.visibility.third)
-            return 0;
-          return size;
-        }),
-        visibility: {
-          first: state.visibility.first,
-          third: state.visibility.third,
-        },
-        collapsed: state.collapsed ?? {
-          first: firstPane.collapsed ?? false,
-          third: thirdPane.collapsed ?? false,
-        },
-        previousSizes: state.previousSizes,
-        preCollapseSizes: state.preCollapseSizes ?? {
-          first: null,
-          third: null,
-        },
-      };
-    }
-    return {
-      sizes: [0, 0, 0],
-      visibility: {
-        first: firstPane.visible,
-        third: thirdPane.visible,
-      },
-      collapsed: {
-        first: firstPane.collapsed ?? false,
-        third: thirdPane.collapsed ?? false,
-      },
-      previousSizes: {
-        first: null,
-        third: null,
-      },
-      preCollapseSizes: {
-        first: null,
-        third: null,
-      },
-    };
-  }, [
-    storageKey,
-    firstPane.visible,
-    thirdPane.visible,
-    firstPane.collapsed,
-    thirdPane.collapsed,
-  ]);
-
-  // Central pane state
-  const [paneState, setPaneState] = useState<PaneState>(initialState);
-
-  // Helper function to save current state
-  const saveCurrentState = useCallback(() => {
-    if (!storageKey || !containerWidth) return;
-
-    // Only save if sizes add up to containerWidth (valid state)
-    const totalSize = paneState.sizes.reduce((sum, size) => sum + size, 0);
-    if (Math.abs(totalSize - containerWidth) > 1) return; // Allow 1px difference for rounding
-
-    debouncedSavePaneState(storageKey, paneState);
-  }, [storageKey, containerWidth, paneState]);
+  const hasInitializedFromHydratedState = useRef<boolean>(false);
+  const initialPropsCollapsed = useRef({
+    first: firstPane.collapsed ?? false,
+    third: thirdPane.collapsed ?? false,
+  });
 
   const updateContainerDimensions = useCallback(() => {
     const element = containerRef?.current || editorPaneRef.current;
@@ -285,6 +203,20 @@ const EditorPane: FC<EditorPaneProps> = ({
   useEffect(() => {
     if (!containerWidth) return;
 
+    // Check if we have valid hydrated state on first render
+    const storeState = storeRef.current?.getState();
+    const hasValidHydratedState =
+      storeState?._hasHydrated && paneState.sizes.some(size => size > 0);
+
+    // If we have valid hydrated state and haven't initialized yet,
+    // skip this effect entirely to preserve the hydrated state
+    // This prevents the component from treating persisted collapsed states as changes
+    if (hasValidHydratedState && !hasInitializedFromHydratedState.current) {
+      hasInitializedFromHydratedState.current = true;
+      previousContainerWidthRef.current = containerWidth;
+      return;
+    }
+
     const currentVisibility = {
       first: firstPane.visible,
       third: thirdPane.visible,
@@ -297,18 +229,37 @@ const EditorPane: FC<EditorPaneProps> = ({
     const prevCollapsed = paneState.collapsed;
     const totalWidth = containerWidth;
 
+    // If we initialized from hydrated state and props haven't changed from initial values,
+    // use the hydrated state to prevent false change detection
+    const propsUnchangedFromInitial =
+      currentCollapsed.first === initialPropsCollapsed.current.first &&
+      currentCollapsed.third === initialPropsCollapsed.current.third;
+
+    const effectiveCurrentCollapsed =
+      hasInitializedFromHydratedState.current && propsUnchangedFromInitial
+        ? prevCollapsed // Use the hydrated state as "current" to avoid false change detection
+        : currentCollapsed;
+
     const firstPaneHidden = prevVisibility.first && !currentVisibility.first;
     const thirdPaneHidden = prevVisibility.third && !currentVisibility.third;
     const firstPaneShown = !prevVisibility.first && currentVisibility.first;
     const thirdPaneShown = !prevVisibility.third && currentVisibility.third;
     const firstPaneCollapsed =
-      !prevCollapsed.first && currentCollapsed.first && currentVisibility.first;
+      !prevCollapsed.first &&
+      effectiveCurrentCollapsed.first &&
+      currentVisibility.first;
     const thirdPaneCollapsed =
-      !prevCollapsed.third && currentCollapsed.third && currentVisibility.third;
+      !prevCollapsed.third &&
+      effectiveCurrentCollapsed.third &&
+      currentVisibility.third;
     const firstPaneUncollapsed =
-      prevCollapsed.first && !currentCollapsed.first && currentVisibility.first;
+      prevCollapsed.first &&
+      !effectiveCurrentCollapsed.first &&
+      currentVisibility.first;
     const thirdPaneUncollapsed =
-      prevCollapsed.third && !currentCollapsed.third && currentVisibility.third;
+      prevCollapsed.third &&
+      !effectiveCurrentCollapsed.third &&
+      currentVisibility.third;
     const visibilityChanged =
       firstPaneHidden || thirdPaneHidden || firstPaneShown || thirdPaneShown;
     const collapseChanged =
@@ -641,10 +592,10 @@ const EditorPane: FC<EditorPaneProps> = ({
       setPaneState(nextState);
 
       if (onChange) onChange(nextSizes);
-      saveCurrentState();
     }
 
     previousContainerWidthRef.current = totalWidth;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     containerWidth,
     firstPane.visible,
@@ -655,7 +606,8 @@ const EditorPane: FC<EditorPaneProps> = ({
     thirdPane.preferredRatio,
     paneState,
     onChange,
-    saveCurrentState,
+    setPaneState,
+    // storageKey is intentionally not in deps - it's used only for logging
   ]);
 
   // Effect for attaching resize observer
@@ -766,7 +718,6 @@ const EditorPane: FC<EditorPaneProps> = ({
         };
         setPaneState(nextState);
         if (onChange) onChange(newSizes);
-        saveCurrentState();
       }
     },
     [
@@ -776,7 +727,7 @@ const EditorPane: FC<EditorPaneProps> = ({
       isRtl,
       paneState,
       onChange,
-      saveCurrentState,
+      setPaneState,
       onFirstPaneUncollapse,
       onThirdPaneUncollapse,
     ]
