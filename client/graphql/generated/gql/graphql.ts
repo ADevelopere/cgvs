@@ -439,6 +439,46 @@ export type FolderCreateInput = {
   protected?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type Font = {
+  __typename?: 'Font';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['Int']['output'];
+  locale: Array<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  storageFileId: Scalars['Int']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type FontCreateInput = {
+  locale: Array<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  storageFileId: Scalars['Int']['input'];
+};
+
+export type FontUpdateInput = {
+  id: Scalars['Int']['input'];
+  locale: Array<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  storageFileId: Scalars['Int']['input'];
+};
+
+export type FontUsageCheckResult = {
+  __typename?: 'FontUsageCheckResult';
+  canDelete: Scalars['Boolean']['output'];
+  deleteBlockReason?: Maybe<Scalars['String']['output']>;
+  isInUse: Scalars['Boolean']['output'];
+  usageCount: Scalars['Int']['output'];
+  usedBy: Array<FontUsageReference>;
+};
+
+export type FontUsageReference = {
+  __typename?: 'FontUsageReference';
+  elementId: Scalars['Int']['output'];
+  elementType: Scalars['String']['output'];
+  templateId?: Maybe<Scalars['Int']['output']>;
+  templateName?: Maybe<Scalars['String']['output']>;
+};
+
 export type Gender =
   | 'FEMALE'
   | 'MALE';
@@ -458,6 +498,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   copyStorageItems?: Maybe<BulkOperationResult>;
   createFolder?: Maybe<FileOperationResult>;
+  createFont: Font;
   createRecipient: TemplateRecipient;
   createRecipients: Array<TemplateRecipient>;
   createStudent?: Maybe<Student>;
@@ -469,6 +510,7 @@ export type Mutation = {
   createTemplateSelectVariable?: Maybe<TemplateSelectVariable>;
   createTemplateTextVariable?: Maybe<TemplateTextVariable>;
   deleteFile?: Maybe<FileOperationResult>;
+  deleteFont: Font;
   deleteRecipient: TemplateRecipient;
   deleteRecipients: Array<TemplateRecipient>;
   deleteStorageItems?: Maybe<BulkOperationResult>;
@@ -490,6 +532,7 @@ export type Mutation = {
   suspendTemplate?: Maybe<Template>;
   unsuspendTemplate?: Maybe<Template>;
   updateDirectoryPermissions?: Maybe<FileOperationResult>;
+  updateFont: Font;
   updateTemplate?: Maybe<Template>;
   updateTemplateCategory: TemplateCategory;
   updateTemplateDateVariable?: Maybe<TemplateDateVariable>;
@@ -507,6 +550,11 @@ export type MutationCopyStorageItemsArgs = {
 
 export type MutationCreateFolderArgs = {
   input: FolderCreateInput;
+};
+
+
+export type MutationCreateFontArgs = {
+  input: FontCreateInput;
 };
 
 
@@ -562,6 +610,11 @@ export type MutationCreateTemplateTextVariableArgs = {
 
 export type MutationDeleteFileArgs = {
   path: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteFontArgs = {
+  id: Scalars['Int']['input'];
 };
 
 
@@ -656,6 +709,11 @@ export type MutationUpdateDirectoryPermissionsArgs = {
 };
 
 
+export type MutationUpdateFontArgs = {
+  input: FontUpdateInput;
+};
+
+
 export type MutationUpdateTemplateArgs = {
   input: TemplateUpdateInput;
 };
@@ -733,10 +791,13 @@ export type PartialStudentUpdateInput = {
 export type Query = {
   __typename?: 'Query';
   categoryChildren: Array<TemplateCategory>;
+  checkFontUsage: FontUsageCheckResult;
   directoryChildren?: Maybe<Array<DirectoryInfo>>;
   fileInfo?: Maybe<FileInfo>;
   fileUsage?: Maybe<FileUsageResult>;
   folderInfo?: Maybe<DirectoryInfo>;
+  font?: Maybe<Font>;
+  fonts: Array<Font>;
   listFiles?: Maybe<StorageObjectList>;
   mainTemplateCategory: TemplateCategory;
   me?: Maybe<User>;
@@ -749,6 +810,7 @@ export type Query = {
   recipientsByGroupIdFiltered: RecipientsWithFiltersResponse;
   recipientsByStudentId: Array<TemplateRecipient>;
   searchFiles?: Maybe<StorageObjectList>;
+  searchFonts: Array<Font>;
   searchTemplateCategories: Array<TemplateCategoryWithParentTree>;
   storageStats?: Maybe<StorageStats>;
   student?: Maybe<Student>;
@@ -777,6 +839,11 @@ export type QueryCategoryChildrenArgs = {
 };
 
 
+export type QueryCheckFontUsageArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
 export type QueryDirectoryChildrenArgs = {
   path?: InputMaybe<Scalars['String']['input']>;
 };
@@ -794,6 +861,11 @@ export type QueryFileUsageArgs = {
 
 export type QueryFolderInfoArgs = {
   path: Scalars['String']['input'];
+};
+
+
+export type QueryFontArgs = {
+  id: Scalars['Int']['input'];
 };
 
 
@@ -842,6 +914,12 @@ export type QuerySearchFilesArgs = {
   folder?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   searchTerm: Scalars['String']['input'];
+};
+
+
+export type QuerySearchFontsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  name: Scalars['String']['input'];
 };
 
 
@@ -1470,6 +1548,54 @@ export type RefreshTokenMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type RefreshTokenMutation = { __typename?: 'Mutation', refreshToken?: { __typename?: 'RefreshTokenResponse', token?: string | null, user?: { __typename?: 'User', createdAt?: any | null, email?: string | null, emailVerifiedAt?: any | null, id?: number | null, name?: string | null, updatedAt?: any | null } | null } | null };
 
+export type FontQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type FontQuery = { __typename?: 'Query', font?: { __typename?: 'Font', id: number, name: string, locale: Array<string>, storageFileId: number, createdAt: any, updatedAt: any } | null };
+
+export type FontsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FontsQuery = { __typename?: 'Query', fonts: Array<{ __typename?: 'Font', id: number, name: string, locale: Array<string>, storageFileId: number, createdAt: any, updatedAt: any }> };
+
+export type SearchFontsQueryVariables = Exact<{
+  name: Scalars['String']['input'];
+  limit?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type SearchFontsQuery = { __typename?: 'Query', searchFonts: Array<{ __typename?: 'Font', id: number, name: string, locale: Array<string>, storageFileId: number, createdAt: any, updatedAt: any }> };
+
+export type CheckFontUsageQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type CheckFontUsageQuery = { __typename?: 'Query', checkFontUsage: { __typename?: 'FontUsageCheckResult', isInUse: boolean, usageCount: number, canDelete: boolean, deleteBlockReason?: string | null, usedBy: Array<{ __typename?: 'FontUsageReference', elementId: number, elementType: string, templateId?: number | null, templateName?: string | null }> } };
+
+export type CreateFontMutationVariables = Exact<{
+  input: FontCreateInput;
+}>;
+
+
+export type CreateFontMutation = { __typename?: 'Mutation', createFont: { __typename?: 'Font', id: number, name: string, locale: Array<string>, storageFileId: number, createdAt: any, updatedAt: any } };
+
+export type UpdateFontMutationVariables = Exact<{
+  input: FontUpdateInput;
+}>;
+
+
+export type UpdateFontMutation = { __typename?: 'Mutation', updateFont: { __typename?: 'Font', id: number, name: string, locale: Array<string>, storageFileId: number, createdAt: any, updatedAt: any } };
+
+export type DeleteFontMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type DeleteFontMutation = { __typename?: 'Mutation', deleteFont: { __typename?: 'Font', id: number, name: string, locale: Array<string>, storageFileId: number, createdAt: any, updatedAt: any } };
+
 export type DirectoryChildrenQueryVariables = Exact<{
   path?: InputMaybe<Scalars['String']['input']>;
 }>;
@@ -1976,6 +2102,13 @@ export const UsersDocument = {"kind":"Document","definitions":[{"kind":"Operatio
 export const LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"emailVerifiedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<LoginMutation, LoginMutationVariables>;
 export const LogoutDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"logout"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"logout"}}]}}]} as unknown as DocumentNode<LogoutMutation, LogoutMutationVariables>;
 export const RefreshTokenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"refreshToken"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refreshToken"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"emailVerifiedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<RefreshTokenMutation, RefreshTokenMutationVariables>;
+export const FontDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"font"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"font"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"storageFileId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<FontQuery, FontQueryVariables>;
+export const FontsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"fonts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fonts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"storageFileId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<FontsQuery, FontsQueryVariables>;
+export const SearchFontsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"searchFonts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"searchFonts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"storageFileId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<SearchFontsQuery, SearchFontsQueryVariables>;
+export const CheckFontUsageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"checkFontUsage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"checkFontUsage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isInUse"}},{"kind":"Field","name":{"kind":"Name","value":"usageCount"}},{"kind":"Field","name":{"kind":"Name","value":"usedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"elementType"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"templateName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"canDelete"}},{"kind":"Field","name":{"kind":"Name","value":"deleteBlockReason"}}]}}]}}]} as unknown as DocumentNode<CheckFontUsageQuery, CheckFontUsageQueryVariables>;
+export const CreateFontDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createFont"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FontCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createFont"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"storageFileId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateFontMutation, CreateFontMutationVariables>;
+export const UpdateFontDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateFont"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FontUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateFont"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"storageFileId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateFontMutation, UpdateFontMutationVariables>;
+export const DeleteFontDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteFont"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteFont"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"storageFileId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<DeleteFontMutation, DeleteFontMutationVariables>;
 export const DirectoryChildrenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"directoryChildren"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"path"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"directoryChildren"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"path"},"value":{"kind":"Variable","name":{"kind":"Name","value":"path"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"fileCount"}},{"kind":"Field","name":{"kind":"Name","value":"folderCount"}},{"kind":"Field","name":{"kind":"Name","value":"isFromBucket"}},{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"lastModified"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"permissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"allowCreateSubDirs"}},{"kind":"Field","name":{"kind":"Name","value":"allowDelete"}},{"kind":"Field","name":{"kind":"Name","value":"allowDeleteFiles"}},{"kind":"Field","name":{"kind":"Name","value":"allowMove"}},{"kind":"Field","name":{"kind":"Name","value":"allowMoveFiles"}},{"kind":"Field","name":{"kind":"Name","value":"allowUploads"}}]}},{"kind":"Field","name":{"kind":"Name","value":"protectChildren"}},{"kind":"Field","name":{"kind":"Name","value":"totalSize"}}]}}]}}]} as unknown as DocumentNode<DirectoryChildrenQuery, DirectoryChildrenQueryVariables>;
 export const FileInfoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"fileInfo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"path"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fileInfo"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"path"},"value":{"kind":"Variable","name":{"kind":"Name","value":"path"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"contentType"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"directoryPath"}},{"kind":"Field","name":{"kind":"Name","value":"fileType"}},{"kind":"Field","name":{"kind":"Name","value":"isFromBucket"}},{"kind":"Field","name":{"kind":"Name","value":"isInUse"}},{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"isPublic"}},{"kind":"Field","name":{"kind":"Name","value":"lastModified"}},{"kind":"Field","name":{"kind":"Name","value":"md5Hash"}},{"kind":"Field","name":{"kind":"Name","value":"mediaLink"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"size"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"usages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"filePath"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"referenceId"}},{"kind":"Field","name":{"kind":"Name","value":"referenceTable"}},{"kind":"Field","name":{"kind":"Name","value":"usageType"}}]}}]}}]}}]} as unknown as DocumentNode<FileInfoQuery, FileInfoQueryVariables>;
 export const FileUsageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"fileUsage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FileUsageCheckInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fileUsage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"canDelete"}},{"kind":"Field","name":{"kind":"Name","value":"deleteBlockReason"}},{"kind":"Field","name":{"kind":"Name","value":"isInUse"}},{"kind":"Field","name":{"kind":"Name","value":"usages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"filePath"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"referenceId"}},{"kind":"Field","name":{"kind":"Name","value":"referenceTable"}},{"kind":"Field","name":{"kind":"Name","value":"usageType"}}]}}]}}]}}]} as unknown as DocumentNode<FileUsageQuery, FileUsageQueryVariables>;
