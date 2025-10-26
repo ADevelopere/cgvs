@@ -23,7 +23,7 @@ export const useRecipientVariableDataOperations = () => {
    * Update a single recipient variable value
    */
   const updateRecipientVariableValue = useCallback(
-    async <T = unknown>(
+    async <T = unknown,>(
       recipientGroupItemId: number,
       variableId: number,
       value: T | null | undefined

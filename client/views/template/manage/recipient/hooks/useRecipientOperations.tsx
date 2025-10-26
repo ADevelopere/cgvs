@@ -340,8 +340,10 @@ export const useRecipientOperations = (templateId?: number) => {
       }[]
     ) => {
       // Filter out clauses with null order (clear sort)
-      const validClauses = orderByClause.filter(clause => clause.order !== null);
-      
+      const validClauses = orderByClause.filter(
+        clause => clause.order !== null
+      );
+
       // If no valid clauses, clear the sort
       if (validClauses.length === 0) {
         store.setStudentsNotInGroupQueryParams({
@@ -351,7 +353,7 @@ export const useRecipientOperations = (templateId?: number) => {
       }
 
       const graphqlOrderBy: Graphql.StudentsOrderByClause[] = [];
-      
+
       validClauses.forEach(clause => {
         const graphqlColumn = mapColumnIdToGraphQLColumn(clause.column);
         if (graphqlColumn) {
@@ -378,8 +380,10 @@ export const useRecipientOperations = (templateId?: number) => {
       }[]
     ) => {
       // Filter out clauses with null order (clear sort)
-      const validClauses = orderByClause.filter(clause => clause.order !== null);
-      
+      const validClauses = orderByClause.filter(
+        clause => clause.order !== null
+      );
+
       // If no valid clauses, clear the sort
       if (validClauses.length === 0) {
         store.setStudentsInGroupQueryParams({
@@ -389,7 +393,7 @@ export const useRecipientOperations = (templateId?: number) => {
       }
 
       const graphqlOrderBy: Graphql.StudentsOrderByClause[] = [];
-      
+
       validClauses.forEach(clause => {
         const graphqlColumn = mapColumnIdToGraphQLColumn(clause.column);
         if (graphqlColumn) {

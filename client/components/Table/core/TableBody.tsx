@@ -10,9 +10,7 @@ import { PageInfo } from "@/client/graphql/generated/gql/graphql";
 
 const loadingRowHeight = 80;
 
-interface TableBodyProps<
-  TRowData,
-> {
+interface TableBodyProps<TRowData> {
   data: TRowData[];
   isPaginated?: boolean;
   pageInfo?: PageInfo | null;

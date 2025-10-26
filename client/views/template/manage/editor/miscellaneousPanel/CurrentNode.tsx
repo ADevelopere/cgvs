@@ -1,1 +1,1 @@
-// it will be used to edit props of the current selected node, 
+// it will be used to edit props of the current selected node,

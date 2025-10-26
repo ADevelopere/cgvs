@@ -18,7 +18,6 @@ export const certificates = pgTable(
     verificationCode: varchar("verification_code", { length: 255 })
       .notNull()
       .unique(),
-    deletedAt: timestamp("deleted_at", { precision: 3 }),
     createdAt: timestamp("created_at", { precision: 3 }).notNull(),
     updatedAt: timestamp("updated_at", { precision: 3 }).notNull(),
   },

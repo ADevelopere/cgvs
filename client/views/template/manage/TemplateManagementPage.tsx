@@ -17,6 +17,7 @@ import RecipientsManagementTab from "./recipient/RecipientsManagementTab ";
 import TemplateVariableManagement from "./variables/TemplateVariableManagement";
 import RecipientGroupTab from "./recipientGroup/RecipientGroupTab";
 import RecipientVariableDataTab from "./data/RecipientVariableDataTab";
+import EditorTab from "./editor/EditorTab";
 import { ManagementTabList } from "./ManagementTabList";
 import { TemplateManagementHeader } from "./components/TemplateManagementHeader";
 import { TemplateNotFoundError } from "./components/TemplateNotFoundError";
@@ -49,8 +50,7 @@ export const TemplateManagementPage: React.FC = () => {
     TAB_ORDER.indexOf(activeTab)
   );
 
-  const {isRtl} = useAppTheme();
-
+  const { isRtl } = useAppTheme();
 
   // Apollo query for template data
   const {
@@ -211,6 +211,19 @@ export const TemplateManagementPage: React.FC = () => {
             >
               <Box>
                 <RecipientVariableDataTab template={template} />
+              </Box>
+            </Slide>
+          </Fade>
+        </TabPanel>
+        <TabPanel value="editor">
+          <Fade in={activeTab === "editor"} timeout={300}>
+            <Slide
+              direction={slideDirection}
+              in={activeTab === "editor"}
+              timeout={250}
+            >
+              <Box>
+                <EditorTab template={template} />
               </Box>
             </Slide>
           </Fade>

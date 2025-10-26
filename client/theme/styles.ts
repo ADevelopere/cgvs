@@ -4,7 +4,6 @@ import { CSSProperties, useMemo } from "react";
 
 // This function can be used to get theme-aware styles
 export const useTableStyles = () => {
-
   const inputStyle: CSSProperties = useMemo(() => {
     return {
       // Styles for MuiTextField-root (the outermost TextField component)

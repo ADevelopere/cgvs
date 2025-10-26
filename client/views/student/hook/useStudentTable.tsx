@@ -148,7 +148,7 @@ export const useStudentTable = () => {
           label={label}
           sortable={sortable}
           filterable
-          onSort={(direction) => {
+          onSort={direction => {
             updateSort([{ column: columnId, order: direction }]);
           }}
           sortDirection={sortDirection}
@@ -196,7 +196,7 @@ export const useStudentTable = () => {
           label={label}
           sortable
           filterable
-          onSort={(direction) => {
+          onSort={direction => {
             updateSort([{ column: columnId, order: direction }]);
           }}
           sortDirection={sortDirection}
@@ -314,7 +314,7 @@ export const useStudentTable = () => {
             label={strings.gender}
             sortable
             filterable={false}
-            onSort={(direction) => {
+            onSort={direction => {
               updateSort([{ column: "gender", order: direction }]);
             }}
             sortDirection={sortDirection}
@@ -359,7 +359,7 @@ export const useStudentTable = () => {
             label={strings.nationality}
             sortable
             filterable={false}
-            onSort={(direction) => {
+            onSort={direction => {
               updateSort([{ column: "nationality", order: direction }]);
             }}
             sortDirection={sortDirection}

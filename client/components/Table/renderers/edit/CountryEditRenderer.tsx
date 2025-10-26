@@ -43,7 +43,9 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
   validator,
 }) => {
   const countryStrings = useAppTranslation("countryTranslations");
-  const { strings: { general } } = useTableLocale();
+  const {
+    strings: { general },
+  } = useTableLocale();
   const [selectedCountry, setSelectedCountry] = useState<CountryType | null>(
     value ? countries.find(c => c.code === value) || null : null
   );
@@ -244,11 +246,7 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
             </Tooltip>
           )}
           clearIcon={
-            <>
-              {value && (
-                <ClearIcon fontSize="small" onClick={handleClear} />
-              )}
-            </>
+            <>{value && <ClearIcon fontSize="small" onClick={handleClear} />}</>
           }
           clearText={general.delete}
           closeText={general.cancel}

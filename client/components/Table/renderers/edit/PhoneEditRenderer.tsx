@@ -65,8 +65,10 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
   );
 
   const handleSave = useCallback(async () => {
-    const currentLength = typeof phoneValue === "string" ? phoneValue.length : 0;
-    const newValue: string | null | undefined = currentLength > 0 ? phoneValue : null;
+    const currentLength =
+      typeof phoneValue === "string" ? phoneValue.length : 0;
+    const newValue: string | null | undefined =
+      currentLength > 0 ? phoneValue : null;
     const originalValue = value;
 
     // Early return if value hasn't changed
@@ -116,7 +118,12 @@ export const PhoneEditRenderer: React.FC<PhoneEditRendererProps> = ({
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <div>
-        <Tooltip open={!!error} title={error ?? ""} arrow placement="bottom-start">
+        <Tooltip
+          open={!!error}
+          title={error ?? ""}
+          arrow
+          placement="bottom-start"
+        >
           <MuiTelInput
             inputRef={inputRef}
             value={phoneValue ?? undefined}

@@ -15,7 +15,9 @@ const getTooltipMessage = (
   isReady: boolean,
   variables: Graphql.TemplateVariable[],
   variableValues: Record<string, unknown>,
-  strings: ReturnType<typeof useAppTranslation<"recipientVariableDataTranslations">>
+  strings: ReturnType<
+    typeof useAppTranslation<"recipientVariableDataTranslations">
+  >
 ): string => {
   if (isReady) {
     return strings.allRequiredFieldsComplete;
@@ -27,7 +29,9 @@ const getTooltipMessage = (
 
   for (const variable of requiredVariables) {
     const value = variableValues[variable.id?.toString() || ""];
-    const varName = variable.name || strings.variableWithId.replace("{id}", String(variable.id));
+    const varName =
+      variable.name ||
+      strings.variableWithId.replace("{id}", String(variable.id));
 
     // Check if value exists
     if (
@@ -48,9 +52,15 @@ const getTooltipMessage = (
         const textVar = variable as Graphql.TemplateTextVariable;
         const textValue = typeof value === "string" ? value : String(value);
         if (textVar.minLength && textValue.length < textVar.minLength) {
-          validationError = strings.textTooShort.replace("{min}", String(textVar.minLength));
+          validationError = strings.textTooShort.replace(
+            "{min}",
+            String(textVar.minLength)
+          );
         } else if (textVar.maxLength && textValue.length > textVar.maxLength) {
-          validationError = strings.textTooLong.replace("{max}", String(textVar.maxLength));
+          validationError = strings.textTooLong.replace(
+            "{max}",
+            String(textVar.maxLength)
+          );
         } else if (textVar.pattern) {
           const regex = new RegExp(textVar.pattern);
           if (!regex.test(textValue)) {
@@ -74,13 +84,19 @@ const getTooltipMessage = (
           numberVar.minValue !== undefined &&
           numValue < numberVar.minValue
         ) {
-          validationError = strings.numberTooLow.replace("{min}", String(numberVar.minValue));
+          validationError = strings.numberTooLow.replace(
+            "{min}",
+            String(numberVar.minValue)
+          );
         } else if (
           numberVar.maxValue !== null &&
           numberVar.maxValue !== undefined &&
           numValue > numberVar.maxValue
         ) {
-          validationError = strings.numberTooHigh.replace("{max}", String(numberVar.maxValue));
+          validationError = strings.numberTooHigh.replace(
+            "{max}",
+            String(numberVar.maxValue)
+          );
         }
         break;
       }
@@ -91,9 +107,15 @@ const getTooltipMessage = (
         if (isNaN(dateValue.getTime())) {
           validationError = strings.invalidDate;
         } else if (dateVar.minDate && dateValue < new Date(dateVar.minDate)) {
-          validationError = strings.dateTooEarly.replace("{min}", new Date(dateVar.minDate).toLocaleDateString());
+          validationError = strings.dateTooEarly.replace(
+            "{min}",
+            new Date(dateVar.minDate).toLocaleDateString()
+          );
         } else if (dateVar.maxDate && dateValue > new Date(dateVar.maxDate)) {
-          validationError = strings.dateTooLate.replace("{max}", new Date(dateVar.maxDate).toLocaleDateString());
+          validationError = strings.dateTooLate.replace(
+            "{max}",
+            new Date(dateVar.maxDate).toLocaleDateString()
+          );
         }
         break;
       }
@@ -124,7 +146,10 @@ const getTooltipMessage = (
       .replace("{missing}", missingFields.join(", "))
       .replace("{invalid}", invalidFields.join(", "));
   } else if (missingFields.length > 0) {
-    return strings.missingRequiredFields.replace("{fields}", missingFields.join(", "));
+    return strings.missingRequiredFields.replace(
+      "{fields}",
+      missingFields.join(", ")
+    );
   } else if (invalidFields.length > 0) {
     return strings.invalidValues.replace("{fields}", invalidFields.join(", "));
   }
@@ -188,4 +213,3 @@ export const ReadyStatusViewRenderer: React.FC<
 };
 
 export default ReadyStatusViewRenderer;
-

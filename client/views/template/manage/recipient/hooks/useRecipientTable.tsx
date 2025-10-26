@@ -92,7 +92,7 @@ export const useRecipientTable = ({
           label={label}
           sortable={sortable}
           filterable
-          onSort={(direction) => {
+          onSort={direction => {
             updateSort([{ column: columnId, order: direction }]);
           }}
           sortDirection={sortDirection}
@@ -140,7 +140,7 @@ export const useRecipientTable = ({
           label={label}
           sortable
           filterable
-          onSort={(direction) => {
+          onSort={direction => {
             updateSort([{ column: columnId, order: direction }]);
           }}
           sortDirection={sortDirection}
@@ -202,7 +202,7 @@ export const useRecipientTable = ({
             label={strings.nationality}
             sortable
             filterable={false}
-            onSort={(direction) => {
+            onSort={direction => {
               updateSort([{ column: "nationality", order: direction }]);
             }}
             sortDirection={sortDirection}
@@ -251,7 +251,7 @@ export const useRecipientTable = ({
             label={strings.gender}
             sortable
             filterable={false}
-            onSort={(direction) => {
+            onSort={direction => {
               updateSort([{ column: "gender", order: direction }]);
             }}
             sortDirection={sortDirection}

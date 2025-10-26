@@ -98,13 +98,18 @@ export const useVariableDataTable = ({
           const textColumn: TextVariableColumn = {
             id: columnId,
             type: "editable" as const,
-            label: variable.name || strings.variableWithId.replace("{id}", String(variable.id)),
+            label:
+              variable.name ||
+              strings.variableWithId.replace("{id}", String(variable.id)),
             resizable: true,
             initialWidth: 150,
             widthStorageKey: `recipient_variable_data_var_${variable.id}_column_width`,
             headerRenderer: () => (
               <Table.BaseHeaderRenderer
-                label={variable.name || strings.variableWithId.replace("{id}", String(variable.id))}
+                label={
+                  variable.name ||
+                  strings.variableWithId.replace("{id}", String(variable.id))
+                }
               />
             ),
             viewRenderer: ({ row }) => (
@@ -129,13 +134,18 @@ export const useVariableDataTable = ({
           const numberColumn: NumberVariableColumn = {
             id: columnId,
             type: "editable" as const,
-            label: variable.name || strings.variableWithId.replace("{id}", String(variable.id)),
+            label:
+              variable.name ||
+              strings.variableWithId.replace("{id}", String(variable.id)),
             resizable: true,
             initialWidth: 150,
             widthStorageKey: `recipient_variable_data_var_${variable.id}_column_width`,
             headerRenderer: () => (
               <Table.BaseHeaderRenderer
-                label={variable.name || strings.variableWithId.replace("{id}", String(variable.id))}
+                label={
+                  variable.name ||
+                  strings.variableWithId.replace("{id}", String(variable.id))
+                }
               />
             ),
             viewRenderer: ({ row }) => (
@@ -145,7 +155,9 @@ export const useVariableDataTable = ({
               <Table.NumberEditRenderer
                 {...props}
                 value={row[columnId] as number}
-                validator={value => getValidationError(value, numberVar, strings)}
+                validator={value =>
+                  getValidationError(value, numberVar, strings)
+                }
               />
             ),
             onUpdate: async (rowId, value) =>
@@ -160,13 +172,18 @@ export const useVariableDataTable = ({
           const dateColumn: DateVariableColumn = {
             id: columnId,
             type: "editable" as const,
-            label: variable.name || strings.variableWithId.replace("{id}", String(variable.id)),
+            label:
+              variable.name ||
+              strings.variableWithId.replace("{id}", String(variable.id)),
             resizable: true,
             initialWidth: 150,
             widthStorageKey: `recipient_variable_data_var_${variable.id}_column_width`,
             headerRenderer: () => (
               <Table.BaseHeaderRenderer
-                label={variable.name || strings.variableWithId.replace("{id}", String(variable.id))}
+                label={
+                  variable.name ||
+                  strings.variableWithId.replace("{id}", String(variable.id))
+                }
               />
             ),
             viewRenderer: ({ row }) => (
@@ -183,11 +200,7 @@ export const useVariableDataTable = ({
               />
             ),
             onUpdate: async (rowId, value) =>
-              await onUpdateCell(
-                rowId,
-                columnId,
-                value
-              ),
+              await onUpdateCell(rowId, columnId, value),
           };
           cols.push(dateColumn);
           break;
@@ -206,13 +219,18 @@ export const useVariableDataTable = ({
           const selectColumn: SelectVariableColumn = {
             id: columnId,
             type: "editable" as const,
-            label: variable.name || strings.variableWithId.replace("{id}", String(variable.id)),
+            label:
+              variable.name ||
+              strings.variableWithId.replace("{id}", String(variable.id)),
             resizable: true,
             initialWidth: 150,
             widthStorageKey: `recipient_variable_data_var_${variable.id}_column_width`,
             headerRenderer: () => (
               <Table.BaseHeaderRenderer
-                label={variable.name || strings.variableWithId.replace("{id}", String(variable.id))}
+                label={
+                  variable.name ||
+                  strings.variableWithId.replace("{id}", String(variable.id))
+                }
               />
             ),
             viewRenderer: ({ row }) => (
@@ -250,7 +268,9 @@ export const useVariableDataTable = ({
       ),
       viewRenderer: ({ row }) => (
         <ReadyStatusViewRenderer
-          variableValues={(row._fullData.variableValues || {}) as Record<string, unknown>}
+          variableValues={
+            (row._fullData.variableValues || {}) as Record<string, unknown>
+          }
           variables={variables}
         />
       ),

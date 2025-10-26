@@ -230,8 +230,10 @@ export const useStudentOperations = () => {
       }[]
     ) => {
       // Filter out clauses with null order (clear sort)
-      const validClauses = orderByClause.filter(clause => clause.order !== null);
-      
+      const validClauses = orderByClause.filter(
+        clause => clause.order !== null
+      );
+
       // If no valid clauses, clear the sort
       if (validClauses.length === 0) {
         store.setQueryParams({

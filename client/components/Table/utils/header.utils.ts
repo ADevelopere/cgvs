@@ -1,7 +1,10 @@
 /**
  * Determine the state of the "select all" checkbox
  */
-export const getSelectAllCheckboxState = <TRowData, TRowId extends string | number>(
+export const getSelectAllCheckboxState = <
+  TRowData,
+  TRowId extends string | number,
+>(
   data: TRowData[],
   selectedRowIds: TRowId[],
   getRowId: (row: TRowData) => TRowId

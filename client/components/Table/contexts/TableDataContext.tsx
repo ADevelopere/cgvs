@@ -25,9 +25,7 @@ export type TableDataContextType = {
   ) => void;
 };
 
-const TableDataContext =
-   
-  createContext<TableDataContextType | null>(null);
+const TableDataContext = createContext<TableDataContextType | null>(null);
 
 export type TableDataProviderProps = {
   children: React.ReactNode;

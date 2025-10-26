@@ -1,2 +1,1 @@
-export { default as ColumnVisibilityPanel } from './ColumnVisibilityPanel';
-
+export { default as ColumnVisibilityPanel } from "./ColumnVisibilityPanel";

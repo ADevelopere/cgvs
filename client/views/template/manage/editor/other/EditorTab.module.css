@@ -1,9 +1,9 @@
 .controlButton {
-    background-color: var(--background-paper) !important;
-    color: var(--text-primary) !important;
-    border: 1px solid var(--divider) !important;
+  background-color: var(--background-paper) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--divider) !important;
 }
 
 .controlButton:hover {
-    background-color: var(--action-hover) !important;
+  background-color: var(--action-hover) !important;
 }
