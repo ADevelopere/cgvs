@@ -40,35 +40,39 @@ function MiscellaneousPane() {
 export default function EditorTab({ template }: { template: Template }) {
   return (
     <EditorPaneViewController
-      firstPaneTitle={
-        <Typography
-          variant="h6"
-          sx={{
-            px: 2,
-          }}
-        >
-          Add Node Panel
-        </Typography>
-      }
-      thirdPaneTitle={
-        <Typography
-          variant="h6"
-          sx={{ 
-            px: 2,
-          }}
-        >
-          Miscellaneous Panel
-        </Typography>
-      }
-      showFirstPaneCollapseButtonInHeader={true}
-      showThirdPaneCollapseButtonInHeader={true}
-      firstPaneButtonTooltip="Toggle Add Node Panel"
-      thirdPaneButtonTooltip="Toggle Miscellaneous Panel"
-      firstPaneButtonDisabled={false}
-      thirdPaneButtonDisabled={false}
-      firstPane={<AddNodePane />}
+      firstPane={{
+        title: (
+          <Typography
+            variant="h6"
+            sx={{
+              px: 2,
+            }}
+          >
+            Add Node Panel
+          </Typography>
+        ),
+        content: <AddNodePane />,
+        buttonTooltip: "Toggle Add Node Panel",
+        buttonDisabled: false,
+        showCollapseButtonInHeader: true,
+      }}
       middlePane={<ReactFlowEditor template={template} />}
-      thirdPane={<MiscellaneousPane />}
+      thirdPane={{
+        title: (
+          <Typography
+            variant="h6"
+            sx={{
+              px: 2,
+            }}
+          >
+            Miscellaneous Panel
+          </Typography>
+        ),
+        content: <MiscellaneousPane />,
+        buttonTooltip: "Toggle Miscellaneous Panel",
+        buttonDisabled: false,
+        showCollapseButtonInHeader: true,
+      }}
       storageKey="templateManagementEditor"
     />
   );
