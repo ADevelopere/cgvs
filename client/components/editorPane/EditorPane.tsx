@@ -26,6 +26,7 @@ import React, {
 import EditorPaneResizer from "./EditorPaneResizer";
 import { Box } from "@mui/material";
 import { loadFromLocalStorage } from "@/client/utils/localStorage";
+import { useAppTheme } from "@/client/contexts";
 
 // Filter out null or undefined children
 function removeNullChildren(children: ReactNode[]) {
@@ -71,7 +72,6 @@ type EditorPaneProps = {
   middlePane?: PaneProps;
   thirdPane?: PaneProps;
   resizerProps?: ResizerProps;
-  direction?: "rtl" | "ltr";
   containerRef?: React.RefObject<HTMLElement>;
   width?: number;
   storageKey?: string;
@@ -149,12 +149,12 @@ const EditorPane: FC<EditorPaneProps> = ({
   middlePane = { ...defaultPaneProps, visible: true }, // Middle pane is always visible
   thirdPane = defaultPaneProps,
   resizerProps,
-  direction = "rtl",
   containerRef,
   width,
   storageKey,
 }) => {
   const notNullChildren = removeNullChildren(children);
+  const { isRtl } = useAppTheme();
   const editorPaneRef = useRef<HTMLDivElement | null>(null);
   const pane1Ref = useRef<HTMLDivElement | null>(null);
   const pane2Ref = useRef<HTMLDivElement | null>(null);
@@ -165,8 +165,7 @@ const EditorPane: FC<EditorPaneProps> = ({
   const [activeResizer, setActiveResizer] = useState<1 | 2 | null>(null);
   const [position, setPosition] = useState(0);
   const [containerWidth, setContainerWidth] = useState<number>(0);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [containerHeight, setContainerHeight] = useState<number>(0);
+  const [_containerHeight, setContainerHeight] = useState<number>(0);
   const previousContainerWidthRef = useRef<number>(0);
 
   // Initialize state from local storage if available
@@ -604,10 +603,7 @@ const EditorPane: FC<EditorPaneProps> = ({
       );
 
       const rawDelta = boundedClientX - position;
-      const deltaX =
-        direction === "rtl" && orientation === "vertical"
-          ? rawDelta
-          : -rawDelta;
+      const deltaX = isRtl ? -rawDelta : rawDelta;
 
       if (deltaX === 0) return;
 
@@ -647,8 +643,7 @@ const EditorPane: FC<EditorPaneProps> = ({
       active,
       activeResizer,
       position,
-      direction,
-      orientation,
+      isRtl,
       paneState,
       onChange,
       saveCurrentState,

@@ -5,7 +5,7 @@ import ReactFlowEditor from "./ReactFlowEditor";
 import EditorPaneViewController from "@/client/components/editorPane/EditorPaneViewController";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 
-function LeftPane() {
+function AddNodePane() {
   return (
     <Box
       sx={{
@@ -21,7 +21,7 @@ function LeftPane() {
   );
 }
 
-function RightPane() {
+function MiscellaneousPane() {
   return (
     <Box
       sx={{
@@ -48,9 +48,9 @@ export default function EditorTab({ template }: { template: Template }) {
       thirdPaneButtonTooltip="Toggle Miscellaneous Panel"
       firstPaneButtonDisabled={false}
       thirdPaneButtonDisabled={false}
-      firstPane={<LeftPane />}
+      firstPane={<AddNodePane />}
       middlePane={<ReactFlowEditor template={template} />}
-      thirdPane={<RightPane />}
+      thirdPane={<MiscellaneousPane />}
       storageKey="templateManagementEditor"
     />
   );

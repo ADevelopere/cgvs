@@ -21,16 +21,18 @@ export const ThemeSwitcher: React.FC = () => {
   const { setThemeMode, themeMode, isDark } = useAppTheme();
   const strings = useAppTranslation("headerTranslations");
 
-  const handleThemeChange = useCallback(
-    (newMode: ThemeMode) => {
-      setThemeMode(newMode);
-    },
-    [setThemeMode]
-  );
-
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement | null>(
     null
+  );
+
+  const handleThemeChange = useCallback(
+    (newMode: ThemeMode) => {
+      setThemeMode(newMode);
+      setIsMenuOpen(false);
+      setMenuAnchorEl(null);
+    },
+    [setThemeMode]
   );
 
   const toggleMenu = React.useCallback(
