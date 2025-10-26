@@ -84,6 +84,14 @@ export const relations = defineRelations(schema, r => ({
       from: r.templates.id,
       to: r.templateVariableBases.templateId,
     }),
+    config: r.one.templateConfig({
+      from: r.templates.id,
+      to: r.templateConfig.templateId,
+    }),
+    elements: r.many.certificateElement({
+      from: r.templates.id,
+      to: r.certificateElement.templateId,
+    }),
   },
   templateCategories: {
     parentCategory: r.one.templateCategories({
@@ -127,6 +135,182 @@ export const relations = defineRelations(schema, r => ({
     templateRecipientGroup: r.one.templateRecipientGroups({
       from: r.templateRecipientGroupItems.recipientGroupId,
       to: r.templateRecipientGroups.id,
+    }),
+  },
+  templateConfig: {
+    template: r.one.templates({
+      from: r.templateConfig.templateId,
+      to: r.templates.id,
+    }),
+  },
+  certificateElement: {
+    template: r.one.templates({
+      from: r.certificateElement.templateId,
+      to: r.templates.id,
+    }),
+    elementImage: r.one.elementImage({
+      from: r.certificateElement.id,
+      to: r.elementImage.id,
+    }),
+    elementQrCode: r.one.elementQrCode({
+      from: r.certificateElement.id,
+      to: r.elementQrCode.id,
+    }),
+    elementText: r.one.elementText({
+      from: r.certificateElement.id,
+      to: r.elementText.id,
+    }),
+    elementDate: r.one.elementDate({
+      from: r.certificateElement.id,
+      to: r.elementDate.id,
+    }),
+    elementNumberVariable: r.one.elementNumberVariable({
+      from: r.certificateElement.id,
+      to: r.elementNumberVariable.id,
+    }),
+    elementGender: r.one.elementGender({
+      from: r.certificateElement.id,
+      to: r.elementGender.id,
+    }),
+    elementNationality: r.one.elementNationality({
+      from: r.certificateElement.id,
+      to: r.elementNationality.id,
+    }),
+    elementCountry: r.one.elementCountry({
+      from: r.certificateElement.id,
+      to: r.elementCountry.id,
+    }),
+  },
+  elementTextProps: {
+    font: r.one.font({
+      from: r.elementTextProps.fontId,
+      to: r.font.id,
+    }),
+    elementTexts: r.many.elementText({
+      from: r.elementTextProps.id,
+      to: r.elementText.textPropsId,
+    }),
+    elementDates: r.many.elementDate({
+      from: r.elementTextProps.id,
+      to: r.elementDate.textPropsId,
+    }),
+    elementNumberVariables: r.many.elementNumberVariable({
+      from: r.elementTextProps.id,
+      to: r.elementNumberVariable.textPropsId,
+    }),
+    elementGenders: r.many.elementGender({
+      from: r.elementTextProps.id,
+      to: r.elementGender.textPropsId,
+    }),
+    elementNationalities: r.many.elementNationality({
+      from: r.elementTextProps.id,
+      to: r.elementNationality.textPropsId,
+    }),
+    elementCountries: r.many.elementCountry({
+      from: r.elementTextProps.id,
+      to: r.elementCountry.textPropsId,
+    }),
+  },
+  font: {
+    storageFile: r.one.storageFiles({
+      from: r.font.storageFileId,
+      to: r.storageFiles.id,
+    }),
+    elementTextProps: r.many.elementTextProps({
+      from: r.font.id,
+      to: r.elementTextProps.fontId,
+    }),
+  },
+  elementImage: {
+    certificateElement: r.one.certificateElement({
+      from: r.elementImage.id,
+      to: r.certificateElement.id,
+    }),
+    storageFile: r.one.storageFiles({
+      from: r.elementImage.storageFileId,
+      to: r.storageFiles.id,
+    }),
+  },
+  elementQrCode: {
+    certificateElement: r.one.certificateElement({
+      from: r.elementQrCode.id,
+      to: r.certificateElement.id,
+    }),
+    templateVariable: r.one.templateVariableBases({
+      from: r.elementQrCode.templateVariableId,
+      to: r.templateVariableBases.id,
+    }),
+  },
+  elementText: {
+    certificateElement: r.one.certificateElement({
+      from: r.elementText.id,
+      to: r.certificateElement.id,
+    }),
+    textProps: r.one.elementTextProps({
+      from: r.elementText.textPropsId,
+      to: r.elementTextProps.id,
+    }),
+    templateVariable: r.one.templateVariableBases({
+      from: r.elementText.templateVariableId,
+      to: r.templateVariableBases.id,
+    }),
+  },
+  elementDate: {
+    certificateElement: r.one.certificateElement({
+      from: r.elementDate.id,
+      to: r.certificateElement.id,
+    }),
+    textProps: r.one.elementTextProps({
+      from: r.elementDate.textPropsId,
+      to: r.elementTextProps.id,
+    }),
+    templateVariable: r.one.templateVariableBases({
+      from: r.elementDate.templateVariableId,
+      to: r.templateVariableBases.id,
+    }),
+  },
+  elementNumberVariable: {
+    certificateElement: r.one.certificateElement({
+      from: r.elementNumberVariable.id,
+      to: r.certificateElement.id,
+    }),
+    textProps: r.one.elementTextProps({
+      from: r.elementNumberVariable.textPropsId,
+      to: r.elementTextProps.id,
+    }),
+    templateVariable: r.one.templateVariableBases({
+      from: r.elementNumberVariable.templateVariableId,
+      to: r.templateVariableBases.id,
+    }),
+  },
+  elementGender: {
+    certificateElement: r.one.certificateElement({
+      from: r.elementGender.id,
+      to: r.certificateElement.id,
+    }),
+    textProps: r.one.elementTextProps({
+      from: r.elementGender.textPropsId,
+      to: r.elementTextProps.id,
+    }),
+  },
+  elementNationality: {
+    certificateElement: r.one.certificateElement({
+      from: r.elementNationality.id,
+      to: r.certificateElement.id,
+    }),
+    textProps: r.one.elementTextProps({
+      from: r.elementNationality.textPropsId,
+      to: r.elementTextProps.id,
+    }),
+  },
+  elementCountry: {
+    certificateElement: r.one.certificateElement({
+      from: r.elementCountry.id,
+      to: r.certificateElement.id,
+    }),
+    textProps: r.one.elementTextProps({
+      from: r.elementCountry.textPropsId,
+      to: r.elementTextProps.id,
     }),
   },
 }));

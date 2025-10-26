@@ -1,0 +1,11 @@
+export enum ElementType {
+  TEXT = "TEXT",
+  IMAGE = "IMAGE",
+  DATE = "DATE",
+  GENDER = "GENDER",
+  NATIONALITY = "NATIONALITY",
+  COUNTRY = "COUNTRY",
+  QR_CODE = "QR_CODE",
+  NUMBER_VARIABLE = "NUMBER_VARIABLE",
+}
+
