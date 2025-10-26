@@ -68,44 +68,31 @@ export type EditorPaneStoreWithPersist = EditorPaneStore & {
 const STORAGE_KEY_PREFIX = "editorPane";
 
 /**
- * Initial values for pane configuration
- */
-export type PaneInitialConfig = {
-  firstVisible: boolean;
-  thirdVisible: boolean;
-  firstCollapsed: boolean;
-  thirdCollapsed: boolean;
-};
-
-/**
  * Factory function to create a new EditorPane store
  *
  * The store handles initialization logic by:
  * 1. Checking if persisted state exists in localStorage
- * 2. If it exists, using persisted state
- * 3. If not, creating initial state from the provided config
+ * 2. If it exists, using persisted state (highest priority)
+ * 3. If not, creating initial state with sensible defaults
  *
  * @param storageKey - Unique key for this store's localStorage persistence
- * @param config - Initial configuration for the pane
  * @returns A new Zustand store instance
  */
-export const createEditorPaneStore = (
-  storageKey: string,
-  config: PaneInitialConfig
-) => {
+export const createEditorPaneStore = (storageKey: string) => {
   const fullStorageKey = `${STORAGE_KEY_PREFIX}_${storageKey}`;
 
-  // Create the initial state from config
+  // Create the initial state with sensible defaults
+  // This will be overridden by persisted state if it exists
   const getInitialState = (): PaneState => {
     const initialState = {
       sizes: [0, 0, 0],
       visibility: {
-        first: config.firstVisible,
-        third: config.thirdVisible,
+        first: true,
+        third: true,
       },
       collapsed: {
-        first: config.firstCollapsed,
-        third: config.thirdCollapsed,
+        first: false,
+        third: false,
       },
       previousSizes: {
         first: null,

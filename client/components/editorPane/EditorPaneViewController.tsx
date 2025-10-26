@@ -7,7 +7,6 @@ import { useAppTheme } from "@/client/contexts/ThemeContext";
 import EditorPane from "./EditorPane";
 import { getEditorPaneStore } from "./editorPaneStoreManager";
 import { useEditorPaneLayout } from "./useEditorPaneLayout";
-import type { PaneInitialConfig } from "./editorPaneStoreFactory";
 
 export type PaneConfig = {
   /**
@@ -69,21 +68,10 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
 }) => {
   const { theme } = useAppTheme();
 
-  // Create initial config for the store
-  const initialConfig = useMemo<PaneInitialConfig>(
-    () => ({
-      firstVisible: true,
-      thirdVisible: true,
-      firstCollapsed: false,
-      thirdCollapsed: false,
-    }),
-    []
-  );
-
   // Get store and subscribe to changes
   const store = useMemo(
-    () => getEditorPaneStore(storageKey, initialConfig),
-    [storageKey, initialConfig]
+    () => getEditorPaneStore(storageKey),
+    [storageKey]
   );
 
   const [, forceUpdate] = React.useReducer((x: number) => x + 1, 0);
@@ -96,7 +84,7 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
   }, [store]);
 
   // Get calculator functions
-  const calculator = useEditorPaneLayout(storageKey, initialConfig);
+  const calculator = useEditorPaneLayout(storageKey);
 
   // Read current state from store
   const paneState = store.getState();

@@ -26,10 +26,7 @@ import EditorPaneResizer from "./EditorPaneResizer";
 import { Box } from "@mui/material";
 import { useAppTheme } from "@/client/contexts";
 import { getEditorPaneStore } from "@/client/components/editorPane/editorPaneStoreManager";
-import type {
-  PaneState,
-  PaneInitialConfig,
-} from "@/client/components/editorPane/editorPaneStoreFactory";
+import type { PaneState } from "@/client/components/editorPane/editorPaneStoreFactory";
 import { useEditorPaneLayout } from "@/client/components/editorPane/useEditorPaneLayout";
 
 // Filter out null or undefined children
@@ -110,26 +107,10 @@ const EditorPane: FC<EditorPaneProps> = ({
   const pane2Ref = useRef<HTMLDivElement | null>(null);
   const pane3Ref = useRef<HTMLDivElement | null>(null);
 
-  // Create initial config for the store
-  const initialConfig = useMemo<PaneInitialConfig>(
-    () => ({
-      firstVisible: firstPane.visible,
-      thirdVisible: thirdPane.visible,
-      firstCollapsed: firstPane.collapsed ?? false,
-      thirdCollapsed: thirdPane.collapsed ?? false,
-    }),
-    [
-      firstPane.visible,
-      thirdPane.visible,
-      firstPane.collapsed,
-      thirdPane.collapsed,
-    ]
-  );
-
   // Get or create store for this storageKey
   const store = useMemo(
-    () => getEditorPaneStore(storageKey, initialConfig),
-    [storageKey, initialConfig]
+    () => getEditorPaneStore(storageKey),
+    [storageKey]
   );
 
   // Create a stable ref to the store for use in callbacks
@@ -154,7 +135,7 @@ const EditorPane: FC<EditorPaneProps> = ({
   const paneState: PaneState = storeRef.current?.getState();
 
   // Get calculator functions
-  const calculator = useEditorPaneLayout(storageKey, initialConfig);
+  const calculator = useEditorPaneLayout(storageKey);
 
   // States for drag UI only
   const [active, setActive] = React.useState(false);
@@ -218,7 +199,7 @@ const EditorPane: FC<EditorPaneProps> = ({
       }
     });
 
-    resizeObserver.observe(element);
+      resizeObserver.observe(element);
 
     return () => {
       resizeObserver.disconnect();
@@ -286,7 +267,7 @@ const EditorPane: FC<EditorPaneProps> = ({
 
       // Use calculator to handle manual resize
       calculator.handleManualResize(activeResizer, deltaX);
-      setPosition(boundedClientX);
+          setPosition(boundedClientX);
 
       if (onChange) onChange(paneState.sizes);
     },
