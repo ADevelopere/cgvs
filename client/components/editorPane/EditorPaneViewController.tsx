@@ -134,7 +134,6 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
       >
         <EditorPane
           orientation="vertical"
-          direction={theme.direction}
           firstPane={{
             visible: firstPaneVisible,
             collapsed: firstPaneCollapsed,
