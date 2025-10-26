@@ -64,7 +64,7 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
   thirdPane,
   storageKey,
 }) => {
-  const { theme, isRtl } = useAppTheme();
+  const { theme } = useAppTheme();
   const [firstPaneVisible, setFirstPaneVisible] = useState<boolean>(true);
   const [thirdPaneVisible, setThirdPaneVisible] = useState<boolean>(true);
   const [firstPaneCollapsed, setFirstPaneCollapsed] = useState<boolean>(false);
