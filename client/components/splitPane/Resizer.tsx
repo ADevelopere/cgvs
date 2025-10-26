@@ -39,6 +39,8 @@ export const Resizer: React.FC<ResizerProps> = props => {
   } = props;
 
   const handleMouseDown = (e: MouseEvent<HTMLSpanElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     setIsResizing(true);
     onMouseDown?.(e);
   };
