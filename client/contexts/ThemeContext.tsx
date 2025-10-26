@@ -15,7 +15,7 @@ import {
   ThemeProvider,
   // Experimental_CssVarsProvider as CssVarsProvider,
 } from "@mui/material/styles"; // Import CssVarsProvider
-import { CssBaseline } from "@mui/material";
+import { CssBaseline, Box } from "@mui/material";
 import {
   ltrLightTheme,
   rtlLightTheme,
@@ -116,6 +116,10 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   const [currentLanguage, setCurrentLanguage] = useState<AppLanguage>(
     AppLanguage.default as AppLanguage
   );
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionDirection, setTransitionDirection] = useState<"rtl" | "ltr">(
+    "ltr"
+  );
   const isInitialized = useRef(false);
 
   // Effect to set theme and language from client-side storage after mount
@@ -168,24 +172,37 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   const handleSetLanguage = useCallback(
     (newLanguage: string | AppLanguage) => {
       const language = newLanguage as AppLanguage;
-      updateLanguage(language);
-      setCurrentLanguage(language);
+      
+      // Set transition direction based on the new language
+      setTransitionDirection(language === "ar" ? "rtl" : "ltr");
+      setIsTransitioning(true);
 
-      const isRtl = language === "ar";
-      const isDarkMode =
-        currentThemeMode === ThemeMode.Dark ||
-        (currentThemeMode === ThemeMode.System &&
-          matchMedia("(prefers-color-scheme: dark)")?.matches);
+      // After 150ms (mid-transition), update the language and theme
+      setTimeout(() => {
+        updateLanguage(language);
+        setCurrentLanguage(language);
 
-      setCurrentTheme(
-        isRtl
-          ? isDarkMode
-            ? rtlDarkTheme
-            : rtlLightTheme
-          : isDarkMode
-            ? ltrDarkTheme
-            : ltrLightTheme
-      );
+        const isRtl = language === "ar";
+        const isDarkMode =
+          currentThemeMode === ThemeMode.Dark ||
+          (currentThemeMode === ThemeMode.System &&
+            matchMedia("(prefers-color-scheme: dark)")?.matches);
+
+        setCurrentTheme(
+          isRtl
+            ? isDarkMode
+              ? rtlDarkTheme
+              : rtlLightTheme
+            : isDarkMode
+              ? ltrDarkTheme
+              : ltrLightTheme
+        );
+      }, 150);
+
+      // After 300ms (end of transition), reset transitioning state
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 300);
     },
     [currentThemeMode]
   );
@@ -261,7 +278,19 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
           {/* <CssVarsProvider theme={currentTheme}> */}
           <ThemeProvider theme={currentTheme}>
             <CssBaseline enableColorScheme /> {/* Add enableColorScheme prop */}
-            {children}
+            <Box
+              sx={{
+                opacity: isTransitioning ? 0 : 1,
+                transform: isTransitioning
+                  ? transitionDirection === "rtl"
+                    ? "translateX(20px)"
+                    : "translateX(-20px)"
+                  : "translateX(0)",
+                transition: "opacity 300ms ease-in-out, transform 300ms ease-in-out",
+              }}
+            >
+              {children}
+            </Box>
           </ThemeProvider>
           {/* </CssVarsProvider> */}
         </CacheProvider>
