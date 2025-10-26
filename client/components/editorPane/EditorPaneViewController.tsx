@@ -1,10 +1,13 @@
 "use client";
 
 import { Box, IconButton, Tooltip } from "@mui/material";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useEffect } from "react";
 import { PanelRight, PanelLeft } from "lucide-react";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import EditorPane from "./EditorPane";
+import { getEditorPaneStore } from "./editorPaneStoreManager";
+import { useEditorPaneLayout } from "./useEditorPaneLayout";
+import type { PaneInitialConfig } from "./editorPaneStoreFactory";
 
 export type PaneConfig = {
   /**
@@ -65,37 +68,65 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
   storageKey,
 }) => {
   const { theme } = useAppTheme();
-  const [firstPaneVisible, setFirstPaneVisible] = useState<boolean>(true);
-  const [thirdPaneVisible, setThirdPaneVisible] = useState<boolean>(true);
-  const [firstPaneCollapsed, setFirstPaneCollapsed] = useState<boolean>(false);
-  const [thirdPaneCollapsed, setThirdPaneCollapsed] = useState<boolean>(false);
+
+  // Create initial config for the store
+  const initialConfig = useMemo<PaneInitialConfig>(
+    () => ({
+      firstVisible: true,
+      thirdVisible: true,
+      firstCollapsed: false,
+      thirdCollapsed: false,
+    }),
+    []
+  );
+
+  // Get store and subscribe to changes
+  const store = useMemo(
+    () => getEditorPaneStore(storageKey, initialConfig),
+    [storageKey, initialConfig]
+  );
+
+  const [, forceUpdate] = React.useReducer((x: number) => x + 1, 0);
+
+  useEffect(() => {
+    const unsubscribe = store.subscribe(() => {
+      forceUpdate();
+    });
+    return unsubscribe;
+  }, [store]);
+
+  // Get calculator functions
+  const calculator = useEditorPaneLayout(storageKey, initialConfig);
+
+  // Read current state from store
+  const paneState = store.getState();
 
   // Header button handlers - toggle collapse state
   const handleFirstPaneCollapse = useCallback(() => {
-    setFirstPaneCollapsed(!firstPaneCollapsed);
-  }, [firstPaneCollapsed]);
+    calculator.handleCollapseToggle("first");
+  }, [calculator]);
 
   const handleThirdPaneCollapse = useCallback(() => {
-    setThirdPaneCollapsed(!thirdPaneCollapsed);
-  }, [thirdPaneCollapsed]);
+    calculator.handleCollapseToggle("third");
+  }, [calculator]);
 
   // Uncollapse handlers - called when pane is resized while collapsed
   const handleFirstPaneUncollapse = useCallback(() => {
-    setFirstPaneCollapsed(false);
-  }, []);
+    calculator.handleCollapseToggle("first");
+  }, [calculator]);
 
   const handleThirdPaneUncollapse = useCallback(() => {
-    setThirdPaneCollapsed(false);
-  }, []);
+    calculator.handleCollapseToggle("third");
+  }, [calculator]);
 
   // Top title button handlers - toggle visibility (hide/show)
   const handleFirstPaneVisibility = useCallback(() => {
-    setFirstPaneVisible(!firstPaneVisible);
-  }, [firstPaneVisible]);
+    calculator.handleVisibilityChange("first", !paneState.visibility.first);
+  }, [calculator, paneState.visibility.first]);
 
   const handleThirdPaneVisibility = useCallback(() => {
-    setThirdPaneVisible(!thirdPaneVisible);
-  }, [thirdPaneVisible]);
+    calculator.handleVisibilityChange("third", !paneState.visibility.third);
+  }, [calculator, paneState.visibility.third]);
 
   return (
     <Box
@@ -160,8 +191,8 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
         <EditorPane
           orientation="vertical"
           firstPane={{
-            visible: firstPaneVisible,
-            collapsed: firstPaneCollapsed,
+            visible: paneState.visibility.first,
+            collapsed: paneState.collapsed.first,
             minRatio: 0.2,
           }}
           middlePane={{
@@ -169,8 +200,8 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
             minRatio: 0.4,
           }}
           thirdPane={{
-            visible: thirdPaneVisible,
-            collapsed: thirdPaneCollapsed,
+            visible: paneState.visibility.third,
+            collapsed: paneState.collapsed.third,
             minRatio: 0.2,
           }}
           onFirstPaneUncollapse={handleFirstPaneUncollapse}
@@ -221,8 +252,8 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
-                  opacity: firstPaneCollapsed ? 0 : 1,
-                  maxWidth: firstPaneCollapsed ? 0 : "100%",
+                  opacity: paneState.collapsed.first ? 0 : 1,
+                  maxWidth: paneState.collapsed.first ? 0 : "100%",
                   transition:
                     "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
@@ -235,8 +266,8 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
               sx={{
                 flex: 1,
                 overflow: "auto",
-                opacity: firstPaneCollapsed ? 0 : 1,
-                maxHeight: firstPaneCollapsed ? 0 : "100%",
+                opacity: paneState.collapsed.first ? 0 : 1,
+                maxHeight: paneState.collapsed.first ? 0 : "100%",
                 transition:
                   "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-height 300ms cubic-bezier(0.4, 0, 0.2, 1)",
               }}
@@ -277,8 +308,8 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
-                  opacity: thirdPaneCollapsed ? 0 : 1,
-                  maxWidth: thirdPaneCollapsed ? 0 : "100%",
+                  opacity: paneState.collapsed.third ? 0 : 1,
+                  maxWidth: paneState.collapsed.third ? 0 : "100%",
                   transition:
                     "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
@@ -304,8 +335,8 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
               sx={{
                 flex: 1,
                 overflow: "auto",
-                opacity: thirdPaneCollapsed ? 0 : 1,
-                maxHeight: thirdPaneCollapsed ? 0 : "100%",
+                opacity: paneState.collapsed.third ? 0 : 1,
+                maxHeight: paneState.collapsed.third ? 0 : "100%",
                 transition:
                   "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-height 300ms cubic-bezier(0.4, 0, 0.2, 1)",
               }}

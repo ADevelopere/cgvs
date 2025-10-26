@@ -45,44 +45,9 @@ export const RESIZER_WIDTH = 4;
  */
 export type EditorPaneStoreActions = {
   /**
-   * Initialize or recalculate layout when container width changes
-   */
-  handleContainerResize: (
-    containerWidth: number,
-    config: {
-      firstVisible: boolean;
-      thirdVisible: boolean;
-      firstCollapsed: boolean;
-      thirdCollapsed: boolean;
-      firstPreferredRatio?: number;
-      thirdPreferredRatio?: number;
-    }
-  ) => void;
-
-  /**
-   * Handle manual resize by dragging resizer
-   */
-  handleManualResize: (resizerIndex: 1 | 2, delta: number) => void;
-
-  /**
-   * Toggle collapse state for a pane
-   */
-  toggleCollapse: (pane: "first" | "third") => void;
-
-  /**
-   * Set visibility for a pane
-   */
-  setVisibility: (pane: "first" | "third", visible: boolean) => void;
-
-  /**
-   * Direct state setter (for migration purposes)
+   * Direct state setter - only way to update store
    */
   setPaneState: (state: PaneState) => void;
-
-  /**
-   * Reset to initial state
-   */
-  reset: (initialState: PaneState) => void;
 };
 
 /**
@@ -164,42 +129,9 @@ export const createEditorPaneStore = (
           ...initialState,
           _hasHydrated: false,
 
-          // Actions
+          // Actions - only setPaneState for updating store
           setPaneState: (state: PaneState) => {
             set(state);
-          },
-
-          updateSizes: (sizes: number[]) => {
-            set({ sizes });
-          },
-
-          updateVisibility: (visibility: {
-            first: boolean;
-            third: boolean;
-          }) => {
-            set({ visibility });
-          },
-
-          updateCollapsed: (collapsed: { first: boolean; third: boolean }) => {
-            set({ collapsed });
-          },
-
-          updatePreviousSizes: (previousSizes: {
-            first: number | null;
-            third: number | null;
-          }) => {
-            set({ previousSizes });
-          },
-
-          updatePreCollapseSizes: (preCollapseSizes: {
-            first: number | null;
-            third: number | null;
-          }) => {
-            set({ preCollapseSizes });
-          },
-
-          reset: (newInitialState: PaneState) => {
-            set(newInitialState);
           },
         };
       },
@@ -220,9 +152,10 @@ export const createEditorPaneStore = (
         // Track when hydration is complete
         onRehydrateStorage: () => {
           return (state, error) => {
-            if (error) {
-              state._hasHydrated = true;
+            if (error || !state) {
+              return;
             }
+            state._hasHydrated = true;
           };
         },
       }
