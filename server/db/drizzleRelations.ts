@@ -152,10 +152,6 @@ export const relations = defineRelations(schema, r => ({
       from: r.certificateElement.id,
       to: r.elementImage.id,
     }),
-    elementQrCode: r.one.elementQrCode({
-      from: r.certificateElement.id,
-      to: r.elementQrCode.id,
-    }),
     elementText: r.one.elementText({
       from: r.certificateElement.id,
       to: r.elementText.id,
@@ -172,10 +168,7 @@ export const relations = defineRelations(schema, r => ({
       from: r.certificateElement.id,
       to: r.elementGender.id,
     }),
-    elementNationality: r.one.elementNationality({
-      from: r.certificateElement.id,
-      to: r.elementNationality.id,
-    }),
+
     elementCountry: r.one.elementCountry({
       from: r.certificateElement.id,
       to: r.elementCountry.id,
@@ -202,10 +195,6 @@ export const relations = defineRelations(schema, r => ({
       from: r.elementTextProps.id,
       to: r.elementGender.textPropsId,
     }),
-    elementNationalities: r.many.elementNationality({
-      from: r.elementTextProps.id,
-      to: r.elementNationality.textPropsId,
-    }),
     elementCountries: r.many.elementCountry({
       from: r.elementTextProps.id,
       to: r.elementCountry.textPropsId,
@@ -231,16 +220,6 @@ export const relations = defineRelations(schema, r => ({
       to: r.storageFiles.id,
     }),
   },
-  elementQrCode: {
-    certificateElement: r.one.certificateElement({
-      from: r.elementQrCode.id,
-      to: r.certificateElement.id,
-    }),
-    templateVariable: r.one.templateVariableBases({
-      from: r.elementQrCode.templateVariableId,
-      to: r.templateVariableBases.id,
-    }),
-  },
   elementText: {
     certificateElement: r.one.certificateElement({
       from: r.elementText.id,
@@ -249,10 +228,6 @@ export const relations = defineRelations(schema, r => ({
     textProps: r.one.elementTextProps({
       from: r.elementText.textPropsId,
       to: r.elementTextProps.id,
-    }),
-    templateVariable: r.one.templateVariableBases({
-      from: r.elementText.templateVariableId,
-      to: r.templateVariableBases.id,
     }),
   },
   elementDate: {
@@ -290,16 +265,6 @@ export const relations = defineRelations(schema, r => ({
     }),
     textProps: r.one.elementTextProps({
       from: r.elementGender.textPropsId,
-      to: r.elementTextProps.id,
-    }),
-  },
-  elementNationality: {
-    certificateElement: r.one.certificateElement({
-      from: r.elementNationality.id,
-      to: r.certificateElement.id,
-    }),
-    textProps: r.one.elementTextProps({
-      from: r.elementNationality.textPropsId,
       to: r.elementTextProps.id,
     }),
   },

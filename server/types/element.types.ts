@@ -1,12 +1,11 @@
 export enum ElementType {
   TEXT = "TEXT",
-  IMAGE = "IMAGE",
+  NUMBER = "NUMBER",
   DATE = "DATE",
+  IMAGE = "IMAGE",
   GENDER = "GENDER",
-  NATIONALITY = "NATIONALITY",
   COUNTRY = "COUNTRY",
   QR_CODE = "QR_CODE",
-  NUMBER_VARIABLE = "NUMBER_VARIABLE",
 }
 
 export enum ElementAlignment {
@@ -73,4 +72,9 @@ export enum CalendarType {
 export enum FontSource {
   GOOGLE = "GOOGLE",
   UPLOADED = "UPLOADED",
+}
+
+export enum CountryRepresentation {
+  COUNTRY_NAME = "COUNTRY_NAME",
+  NATIONALITY = "NATIONALITY",
 }

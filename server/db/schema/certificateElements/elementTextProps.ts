@@ -1,5 +1,5 @@
 import { integer, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
-import { elementOverflowEnum } from "./elements/templateElementEnums";
+import { elementOverflowEnum } from "./templateElementEnums";
 
 export const elementTextProps = pgTable("element_text_props", {
   id: serial("id").primaryKey(),

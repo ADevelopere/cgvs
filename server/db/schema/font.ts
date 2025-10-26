@@ -5,7 +5,7 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import { fontSourceEnum } from "./templateElementEnums";
+import { fontSourceEnum } from "./certificateElements";
 
 export const font = pgTable("font", {
   id: serial("id").primaryKey(),

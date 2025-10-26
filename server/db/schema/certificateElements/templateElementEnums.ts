@@ -66,3 +66,9 @@ export const fontSourceEnum = createPgEnumFromEnum(
   "font_source",
   ElementTypes.FontSource
 );
+
+
+export const countryRepresentationEnum = createPgEnumFromEnum(
+  "country_representation",
+  ElementTypes.CountryRepresentation
+);

@@ -1,10 +1,12 @@
 import { integer, pgTable, timestamp } from "drizzle-orm/pg-core";
+import { countryRepresentationEnum } from "./templateElementEnums";
 
-export const elementNationality = pgTable("element_nationality", {
+export const elementCountry = pgTable("element_country", {
   id: integer("id").primaryKey(), // One-to-one with certificate_element
   textPropsId: integer("text_props_id").notNull(), // References element_text_props
+  representation: countryRepresentationEnum("representation").notNull(),
   // Data source is implicitly student.nationality
-  // The application uses TemplateConfig.locale to map country code to nationality text
+  // The application uses TemplateConfig.locale to map country code to country name
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

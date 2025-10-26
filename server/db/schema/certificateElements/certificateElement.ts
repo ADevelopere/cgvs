@@ -1,8 +1,17 @@
-import { integer, pgTable, serial, timestamp } from "drizzle-orm/pg-core";
-import { elementAlignmentEnum, elementTypeEnum } from "./elements/templateElementEnums";
+import {
+  integer,
+  pgTable,
+  serial,
+  timestamp,
+  varchar,
+  text
+} from "drizzle-orm/pg-core";
+import { elementAlignmentEnum, elementTypeEnum } from "./templateElementEnums";
 
 export const certificateElement = pgTable("certificate_element", {
   id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description").notNull(),
   templateId: integer("template_id").notNull(),
   type: elementTypeEnum("type").notNull(),
   positionX: integer("position_x").notNull(),

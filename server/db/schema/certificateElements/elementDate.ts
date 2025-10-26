@@ -10,7 +10,7 @@ import {
   certificateDateFieldEnum,
   dateDataSourceTypeEnum,
   studentDateFieldEnum,
-} from "../elements/templateElementEnums";
+} from "./templateElementEnums";
 
 export const elementDate = pgTable("element_date", {
   id: integer("id").primaryKey(), // One-to-one with certificate_element
