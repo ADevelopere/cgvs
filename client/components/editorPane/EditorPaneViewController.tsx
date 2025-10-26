@@ -1,13 +1,18 @@
 "use client";
 
-import { Box, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import React, { useCallback, useState } from "react";
 import { PanelRight, PanelLeft } from "lucide-react";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import EditorPane from "./EditorPane";
 
 type EditorPaneViewControllerProps = {
-  title: string;
+  topTitle?: React.ReactNode;
+  firstPaneTitle: React.ReactNode;
+  thirdPaneTitle: React.ReactNode;
+  showVisibilityButtonsInTopTitle?: boolean;
+  showFirstPaneVisibilityInHeader?: boolean;
+  showThirdPaneVisibilityInHeader?: boolean;
   firstPaneButtonDisabled: boolean;
   thirdPaneButtonDisabled: boolean;
   firstPaneButtonTooltip: string;
@@ -19,7 +24,12 @@ type EditorPaneViewControllerProps = {
 };
 
 const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
-  title,
+  topTitle,
+  firstPaneTitle,
+  thirdPaneTitle,
+  showVisibilityButtonsInTopTitle,
+  showFirstPaneVisibilityInHeader,
+  showThirdPaneVisibilityInHeader,
   firstPaneButtonDisabled,
   thirdPaneButtonDisabled,
   firstPaneButtonTooltip,
@@ -32,7 +42,19 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
   const { theme } = useAppTheme();
   const [firstPaneVisible, setFirstPaneVisible] = useState<boolean>(true);
   const [thirdPaneVisible, setThirdPaneVisible] = useState<boolean>(true);
+  const [firstPaneCollapsed, setFirstPaneCollapsed] = useState<boolean>(false);
+  const [thirdPaneCollapsed, setThirdPaneCollapsed] = useState<boolean>(false);
 
+  // Header button handlers - toggle collapse state
+  const handleFirstPaneCollapse = useCallback(() => {
+    setFirstPaneCollapsed(!firstPaneCollapsed);
+  }, [firstPaneCollapsed]);
+
+  const handleThirdPaneCollapse = useCallback(() => {
+    setThirdPaneCollapsed(!thirdPaneCollapsed);
+  }, [thirdPaneCollapsed]);
+
+  // Top title button handlers - toggle visibility (hide/show)
   const handleFirstPaneVisibility = useCallback(() => {
     setFirstPaneVisible(!firstPaneVisible);
   }, [firstPaneVisible]);
@@ -52,44 +74,49 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
         direction: theme.direction,
       }}
     >
-      {/* Header with controls */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "start",
-          borderBottom: "1px solid",
-          borderColor: theme.palette.divider,
-        }}
-      >
-        <Typography variant="h6">{title}</Typography>
-        <Box sx={{ flex: 1 }} />
-        <Box>
-          {/* First pane visibility button */}
-          <Tooltip title={firstPaneButtonTooltip}>
-            <span>
-              <IconButton
-                onClick={handleFirstPaneVisibility}
-                disabled={firstPaneButtonDisabled}
-              >
-                <PanelLeft />
-              </IconButton>
-            </span>
-          </Tooltip>
-          {/* Third pane visibility button */}
-          <Tooltip title={thirdPaneButtonTooltip}>
-            <span>
-              <IconButton
-                onClick={handleThirdPaneVisibility}
-                disabled={thirdPaneButtonDisabled}
-              >
-                <PanelRight />
-              </IconButton>
-            </span>
-          </Tooltip>
+      {/* Optional Top Title Section */}
+      {topTitle && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            borderBottom: "1px solid",
+            borderColor: theme.palette.divider,
+            pb: 1,
+          }}
+        >
+          {topTitle}
+          {showVisibilityButtonsInTopTitle && (
+            <Box>
+              {/* First pane visibility button */}
+              <Tooltip title={firstPaneButtonTooltip}>
+                <span>
+                  <IconButton
+                    onClick={handleFirstPaneVisibility}
+                    disabled={firstPaneButtonDisabled}
+                  >
+                    <PanelLeft />
+                  </IconButton>
+                </span>
+              </Tooltip>
+              {/* Third pane visibility button */}
+              <Tooltip title={thirdPaneButtonTooltip}>
+                <span>
+                  <IconButton
+                    onClick={handleThirdPaneVisibility}
+                    disabled={thirdPaneButtonDisabled}
+                  >
+                    <PanelRight />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            </Box>
+          )}
         </Box>
-      </Box>
+      )}
 
-      {/* Editor Pane Layout */}
+      {/* Main Flex Row Container */}
       <Box
         sx={{
           flex: 1,
@@ -102,6 +129,7 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
           direction={theme.direction}
           firstPane={{
             visible: firstPaneVisible,
+            collapsed: firstPaneCollapsed,
             minRatio: 0.2,
           }}
           middlePane={{
@@ -110,13 +138,121 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
           }}
           thirdPane={{
             visible: thirdPaneVisible,
+            collapsed: thirdPaneCollapsed,
             minRatio: 0.2,
           }}
           storageKey={storageKey}
         >
-          {firstPane}
+          {/* First Pane with Header */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              height: "100%",
+              width: "100%",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: firstPaneCollapsed ? "center" : "space-between",
+                alignItems: "center",
+                borderBottom: "1px solid",
+                borderColor: theme.palette.divider,
+                pb: 1,
+                mb: 1,
+              }}
+            >
+              {!firstPaneCollapsed && (
+                <Box
+                  sx={{
+                    flex: 1,
+                    minWidth: 0,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    mr: 1,
+                  }}
+                >
+                  {firstPaneTitle}
+                </Box>
+              )}
+              {showFirstPaneVisibilityInHeader && (
+                <Box sx={{ flexShrink: 0 }}>
+                  <Tooltip title={firstPaneButtonTooltip}>
+                    <span>
+                      <IconButton
+                        onClick={handleFirstPaneCollapse}
+                        disabled={firstPaneButtonDisabled}
+                      >
+                        <PanelLeft />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                </Box>
+              )}
+            </Box>
+            <Box sx={{ flex: 1, overflow: "auto", display: firstPaneCollapsed ? "none" : "block" }}>
+              {firstPane}
+            </Box>
+          </Box>
+
+          {/* Middle Pane - No Header */}
           {middlePane}
-          {thirdPane}
+
+          {/* Third Pane with Header */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              height: "100%",
+              width: "100%",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: thirdPaneCollapsed ? "center" : "space-between",
+                alignItems: "center",
+                borderBottom: "1px solid",
+                borderColor: theme.palette.divider,
+                pb: 1,
+                mb: 1,
+              }}
+            >
+              {!thirdPaneCollapsed && (
+                <Box
+                  sx={{
+                    flex: 1,
+                    minWidth: 0,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    mr: 1,
+                  }}
+                >
+                  {thirdPaneTitle}
+                </Box>
+              )}
+              {showThirdPaneVisibilityInHeader && (
+                <Box sx={{ flexShrink: 0 }}>
+                  <Tooltip title={thirdPaneButtonTooltip}>
+                    <span>
+                      <IconButton
+                        onClick={handleThirdPaneCollapse}
+                        disabled={thirdPaneButtonDisabled}
+                      >
+                        <PanelRight />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                </Box>
+              )}
+            </Box>
+            <Box sx={{ flex: 1, overflow: "auto", display: thirdPaneCollapsed ? "none" : "block" }}>
+              {thirdPane}
+            </Box>
+          </Box>
         </EditorPane>
       </Box>
     </Box>

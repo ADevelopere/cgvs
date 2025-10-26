@@ -119,4 +119,14 @@ export const relations = defineRelations(schema, r => ({
     }),
     items: r.many.templateRecipientGroupItems(),
   },
+  templateRecipientGroupItems: {
+    student: r.one.students({
+      from: r.templateRecipientGroupItems.studentId,
+      to: r.students.id,
+    }),
+    templateRecipientGroup: r.one.templateRecipientGroups({
+      from: r.templateRecipientGroupItems.recipientGroupId,
+      to: r.templateRecipientGroups.id,
+    }),
+  },
 }));
