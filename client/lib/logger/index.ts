@@ -4,12 +4,14 @@ import { LogEntry, LogLevel, LoggerConfig } from "./types";
 class ClientLogger {
   private config: LoggerConfig;
   private sessionId: string;
+  private sequenceNumber: number;
 
   constructor() {
     // Only enable in development
     const enabled = process.env.NODE_ENV === "development";
 
     this.sessionId = this.generateSessionId();
+    this.sequenceNumber = 0;
     this.config = {
       enabled,
       apiEndpoint: "/api/logs",
@@ -62,6 +64,7 @@ class ClientLogger {
         level,
         message,
         timestamp: this.formatTimestamp(),
+        sequence: ++this.sequenceNumber,
       };
 
       await fetch(this.config.apiEndpoint, {
