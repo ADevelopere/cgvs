@@ -25,9 +25,16 @@ import { TemplateUtils } from "../../utils";
 interface ListViewProps {
   templates: Template[];
   manageTemplate: (templateId: number) => void;
+  failedImages: Set<number>;
+  onImageError: (templateId: number) => void;
 }
 
-const ListView: React.FC<ListViewProps> = ({ templates, manageTemplate }) => {
+const ListView: React.FC<ListViewProps> = ({
+  templates,
+  manageTemplate,
+  failedImages,
+  onImageError,
+}) => {
   const { isDark } = useAppTheme();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -59,6 +66,11 @@ const ListView: React.FC<ListViewProps> = ({ templates, manageTemplate }) => {
               throw new Error("Template name is required");
             }
 
+            const imageHasFailed = failedImages.has(template.id);
+            const imageUrl = imageHasFailed
+              ? TemplateUtils.getTemplateImageUrl({}, isDark)
+              : TemplateUtils.getTemplateImageUrl(template, isDark);
+
             return (
               <TableRow key={template.id}>
                 <TableCell>
@@ -77,8 +89,13 @@ const ListView: React.FC<ListViewProps> = ({ templates, manageTemplate }) => {
                   >
                     <Avatar
                       variant="rounded"
-                      src={TemplateUtils.getTemplateImageUrl(template, isDark)}
+                      src={imageUrl}
                       alt={template.name}
+                      slotProps={{
+                        img: {
+                          onError: () => onImageError(template.id),
+                        },
+                      }}
                       sx={{
                         width: "100%",
                         height: "100%",

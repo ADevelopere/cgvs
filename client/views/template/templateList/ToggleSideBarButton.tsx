@@ -3,6 +3,7 @@
 import { Box, IconButton, Tooltip } from "@mui/material";
 import React from "react";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
+import { useAppTheme } from "@/client/contexts/ThemeContext";
 
 const ToggleSideBarButton: React.FC<{
   open?: boolean;
@@ -19,6 +20,8 @@ const ToggleSideBarButton: React.FC<{
   zIndex,
   title,
 }) => {
+  const { isRtl } = useAppTheme();
+
   if (dashboardsidebarState === "expanded" && isMobile) {
     return null;
   }
@@ -27,14 +30,14 @@ const ToggleSideBarButton: React.FC<{
       sx={{
         position: "absolute",
         top: 16,
-        left: 16,
+        ...(isRtl ? { left: 16 } : { right: 16 }),
         zIndex: zIndex,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
       }}
     >
-      <Tooltip title={title} placement="right">
+      <Tooltip title={title}>
         <IconButton
           onClick={toggleSidebar}
           edge="start"

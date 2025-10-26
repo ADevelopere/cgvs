@@ -8,7 +8,7 @@ import {
   Button,
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
-import { useTemplateCategoryStore } from "./useTemplateCategoryStore";
+import { useTemplateCategoryStore } from "./hooks/useTemplateCategoryStore";
 
 export const CategorySwitchWarningDialog = () => {
   const messages = useAppTranslation("templateCategoryTranslations");

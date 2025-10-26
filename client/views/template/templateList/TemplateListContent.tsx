@@ -35,6 +35,18 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
   // Local state for page input value (can be different from actual current page until confirmed)
   const [pageInputValue, setPageInputValue] = React.useState<number>(1);
 
+  // Shared state for failed images across all views
+  const [failedImages, setFailedImages] = React.useState<Set<number>>(
+    new Set()
+  );
+
+  const handleImageError = React.useCallback(
+    (templateId: number) => {
+      setFailedImages(prev => new Set(prev).add(templateId));
+    },
+    [setFailedImages]
+  );
+
   // Fetch templates with current query variables
   const { data, loading } = useQuery(templatesByCategoryIdQueryDocument, {
     variables: {
@@ -211,18 +223,41 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
     switch (viewMode) {
       case "list":
         return (
-          <ListView templates={templates} manageTemplate={manageTemplate} />
+          <ListView
+            templates={templates}
+            manageTemplate={manageTemplate}
+            failedImages={failedImages}
+            onImageError={handleImageError}
+          />
         );
       case "grid":
         return (
-          <GridView templates={templates} manageTemplate={manageTemplate} />
+          <GridView
+            templates={templates}
+            manageTemplate={manageTemplate}
+            failedImages={failedImages}
+            onImageError={handleImageError}
+          />
         );
       default:
         return (
-          <CardView templates={templates} manageTemplate={manageTemplate} />
+          <CardView
+            templates={templates}
+            manageTemplate={manageTemplate}
+            failedImages={failedImages}
+            onImageError={handleImageError}
+          />
         );
     }
-  }, [templates, loading, viewMode, getEmptyMessage, manageTemplate]);
+  }, [
+    templates,
+    loading,
+    viewMode,
+    getEmptyMessage,
+    manageTemplate,
+    failedImages,
+    handleImageError,
+  ]);
 
   return (
     <Mui.Box

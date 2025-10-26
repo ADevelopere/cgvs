@@ -37,8 +37,8 @@ import {
 import { TemplateDocuments, CategoryDocuments } from "../hooks";
 import { TemplateUtils } from "../utils";
 import TemplateEditDialog from "./TemplateEditDialog";
-import { useTemplateCategoryOperations } from "./useTemplateCategoryOperations";
-import { useTemplateCategoryStore } from "./useTemplateCategoryStore";
+import { useTemplateCategoryOperations } from "./hooks/useTemplateCategoryOperations";
+import { useTemplateCategoryStore } from "./hooks/useTemplateCategoryStore";
 
 const TemplateCategoryManagementTemplatePane: React.FC = () => {
   const {

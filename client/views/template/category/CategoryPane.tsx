@@ -20,8 +20,8 @@ import CategoryEditDialog from "./CategoryEditDialog";
 import RenderCategoryItem from "./RenderCategoryItem";
 
 import { CategoryDocuments } from "@/client/views/template/hooks";
-import { useTemplateCategoryStore } from "./useTemplateCategoryStore";
-import { useTemplateCategoryOperations } from "./useTemplateCategoryOperations";
+import { useTemplateCategoryStore } from "./hooks/useTemplateCategoryStore";
+import { useTemplateCategoryOperations } from "./hooks/useTemplateCategoryOperations";
 
 const TemplateCategoryManagementCategoryPane: React.FC = () => {
   const { theme } = useAppTheme();

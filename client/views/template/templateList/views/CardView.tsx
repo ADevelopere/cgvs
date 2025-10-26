@@ -21,9 +21,16 @@ import { TemplateUtils } from "../../utils";
 interface CardViewProps {
   templates: Template[];
   manageTemplate: (templateId: number) => void;
+  failedImages: Set<number>;
+  onImageError: (templateId: number) => void;
 }
 
-const CardView: React.FC<CardViewProps> = ({ templates, manageTemplate }) => {
+const CardView: React.FC<CardViewProps> = ({
+  templates,
+  manageTemplate,
+  failedImages,
+  onImageError,
+}) => {
   const strings = useAppTranslation("templateCategoryTranslations");
   const { isDark } = useAppTheme();
 
@@ -43,6 +50,11 @@ const CardView: React.FC<CardViewProps> = ({ templates, manageTemplate }) => {
           throw new Error("Template name is required");
         }
 
+        const imageHasFailed = failedImages.has(template.id);
+        const imageUrl = imageHasFailed
+          ? TemplateUtils.getTemplateImageUrl({}, isDark)
+          : TemplateUtils.getTemplateImageUrl(template, isDark);
+
         return (
           <Grid size={{ xs: 16, sm: 6, md: 4 }} key={template.id}>
             <Card>
@@ -54,13 +66,14 @@ const CardView: React.FC<CardViewProps> = ({ templates, manageTemplate }) => {
                 }}
               >
                 <Image
-                  src={TemplateUtils.getTemplateImageUrl(template, isDark)}
+                  src={imageUrl}
                   alt={template.name}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   style={{
                     objectFit: "cover",
                   }}
+                  onError={() => onImageError(template.id)}
                 />
               </CardMedia>
               <CardContent>
