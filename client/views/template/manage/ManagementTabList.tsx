@@ -56,6 +56,7 @@ export const ManagementTabList: React.FC<ManagementTabListProps> = ({
                   backgroundColor: "action.hover",
                   color: "primary.main",
                   fontWeight: 600,
+                  transform: "scale(1.02)",
                 },
                 "&:hover": {
                   backgroundColor: "action.hover",

@@ -3,7 +3,7 @@
 import React from "react";
 import { DeleteOutline } from "@mui/icons-material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Box, IconButton, Tab, Tooltip } from "@mui/material";
+import { Box, IconButton, Tab, Tooltip, Fade, Slide } from "@mui/material";
 import { FileStack, PanelLeft, PanelRight } from "lucide-react";
 import { useAppTheme } from "@/client/contexts";
 import { SplitPane } from "@/client/components";
@@ -16,10 +16,13 @@ import { useTemplateCategoryStore } from "./useTemplateCategoryStore";
 
 export type TemplateCategoryManagementTabType = "all" | "deleted";
 
+// Tab order for determining slide direction
+const TAB_ORDER: TemplateCategoryManagementTabType[] = ["all", "deleted"];
+
 const This: React.FC = () => {
   const strings = useAppTranslation("templateCategoryTranslations");
 
-  const { theme } = useAppTheme();
+  const { theme, isRtl } = useAppTheme();
   const [firstPaneVisible, setFirstPaneVisible] = React.useState<boolean>(true);
   const [secondPaneVisible, setSecondPaneVisible] =
     React.useState<boolean>(true);
@@ -34,13 +37,29 @@ const This: React.FC = () => {
 
   const { activeCategoryTab, setActiveCategoryTab, currentCategory } =
     useTemplateCategoryStore();
+  const [prevTabIndex, setPrevTabIndex] = React.useState(
+    TAB_ORDER.indexOf(activeCategoryTab)
+  );
 
   const handleTabChange = async (
     _: React.SyntheticEvent,
     newValue: TemplateCategoryManagementTabType
   ) => {
+    setPrevTabIndex(TAB_ORDER.indexOf(activeCategoryTab));
     setActiveCategoryTab(newValue);
   };
+
+  // Calculate slide direction based on tab indices and RTL mode
+  const slideDirection = React.useMemo(() => {
+    const currentTabIndex = TAB_ORDER.indexOf(activeCategoryTab);
+    const baseDirection = currentTabIndex > prevTabIndex ? "left" : "right";
+    // Reverse direction in RTL mode
+    return isRtl
+      ? baseDirection === "left"
+        ? "right"
+        : "left"
+      : baseDirection;
+  }, [activeCategoryTab, prevTabIndex, isRtl]);
 
   return (
     <>
@@ -80,6 +99,7 @@ const This: React.FC = () => {
                   "&.Mui-selected": {
                     color: "primary.main",
                     fontWeight: 600,
+                    transform: "scale(1.02)",
                   },
                   "&:hover": {
                     backgroundColor: "action.hover",
@@ -138,33 +158,53 @@ const This: React.FC = () => {
               p: 0,
             }}
           >
-            <SplitPane
-              orientation="vertical"
-              firstPane={{
-                visible: firstPaneVisible,
-                minRatio: 0.3,
-              }}
-              secondPane={{
-                visible: secondPaneVisible,
-                minRatio: 0.3,
-              }}
-              resizerProps={{
-                style: {
-                  cursor: "col-resize",
-                },
-              }}
-              style={{
-                flex: 1,
-                minHeight: `calc(100vh - 220px)`,
-              }}
-              storageKey="templateCategoryManagementSplitPane"
-            >
-              <TemplateCategoryManagementCategoryPane />
-              <TemplateCategoryManagementTemplatePane />
-            </SplitPane>
+            <Fade in={activeCategoryTab === "all"} timeout={300}>
+              <Slide
+                direction={slideDirection}
+                in={activeCategoryTab === "all"}
+                timeout={250}
+              >
+                <Box sx={{ height: "100%" }}>
+                  <SplitPane
+                    orientation="vertical"
+                    firstPane={{
+                      visible: firstPaneVisible,
+                      minRatio: 0.3,
+                    }}
+                    secondPane={{
+                      visible: secondPaneVisible,
+                      minRatio: 0.3,
+                    }}
+                    resizerProps={{
+                      style: {
+                        cursor: "col-resize",
+                      },
+                    }}
+                    style={{
+                      flex: 1,
+                      minHeight: `calc(100vh - 220px)`,
+                    }}
+                    storageKey="templateCategoryManagementSplitPane"
+                  >
+                    <TemplateCategoryManagementCategoryPane />
+                    <TemplateCategoryManagementTemplatePane />
+                  </SplitPane>
+                </Box>
+              </Slide>
+            </Fade>
           </TabPanel>
           <TabPanel value="deleted">
-            <SuspenstionTemplatesCategory />
+            <Fade in={activeCategoryTab === "deleted"} timeout={300}>
+              <Slide
+                direction={slideDirection}
+                in={activeCategoryTab === "deleted"}
+                timeout={250}
+              >
+                <Box>
+                  <SuspenstionTemplatesCategory />
+                </Box>
+              </Slide>
+            </Fade>
           </TabPanel>
         </TabContext>
       </Box>
