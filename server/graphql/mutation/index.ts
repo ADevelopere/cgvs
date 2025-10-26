@@ -1,4 +1,5 @@
 import "./auth.mutation";
+import "./font.mutation";
 import "./recipient.mutation";
 import "./recipientGroup.mutation";
 import "./recipientVariableValue.mutation";
