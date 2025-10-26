@@ -17,16 +17,18 @@ export const LanguageSwitcher: React.FC = () => {
   const strings = useAppTranslation("languageTranslations");
   const { language, setLanguage } = useAppTheme();
 
-  const handleLanguageChange = useCallback(
-    (newLanguage: AppLanguage) => {
-      setLanguage(newLanguage);
-    },
-    [setLanguage]
-  );
-
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement | null>(
     null
+  );
+
+  const handleLanguageChange = useCallback(
+    (newLanguage: AppLanguage) => {
+      setLanguage(newLanguage);
+      setIsMenuOpen(false);
+      setMenuAnchorEl(null);
+    },
+    [setLanguage]
   );
 
   const toggleMenu = React.useCallback(
