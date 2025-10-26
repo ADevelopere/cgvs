@@ -54,6 +54,15 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
     setThirdPaneCollapsed(!thirdPaneCollapsed);
   }, [thirdPaneCollapsed]);
 
+  // Uncollapse handlers - called when pane is resized while collapsed
+  const handleFirstPaneUncollapse = useCallback(() => {
+    setFirstPaneCollapsed(false);
+  }, []);
+
+  const handleThirdPaneUncollapse = useCallback(() => {
+    setThirdPaneCollapsed(false);
+  }, []);
+
   // Top title button handlers - toggle visibility (hide/show)
   const handleFirstPaneVisibility = useCallback(() => {
     setFirstPaneVisible(!firstPaneVisible);
@@ -71,7 +80,6 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
         height: "100%",
         width: "100%",
         gap: 1,
-        direction: theme.direction,
       }}
     >
       {/* Optional Top Title Section */}
@@ -141,6 +149,8 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
             collapsed: thirdPaneCollapsed,
             minRatio: 0.2,
           }}
+          onFirstPaneUncollapse={handleFirstPaneUncollapse}
+          onThirdPaneUncollapse={handleThirdPaneUncollapse}
           storageKey={storageKey}
         >
           {/* First Pane with Header */}
@@ -155,28 +165,29 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
             <Box
               sx={{
                 display: "flex",
-                justifyContent: firstPaneCollapsed ? "center" : "space-between",
+                justifyContent: "space-between",
                 alignItems: "center",
                 borderBottom: "1px solid",
                 borderColor: theme.palette.divider,
                 pb: 1,
                 mb: 1,
+                paddingInlineStart: 1,
               }}
             >
-              {!firstPaneCollapsed && (
-                <Box
-                  sx={{
-                    flex: 1,
-                    minWidth: 0,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    mr: 1,
-                  }}
-                >
-                  {firstPaneTitle}
-                </Box>
-              )}
+              <Box
+                sx={{
+                  flex: 1,
+                  minWidth: 0,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  opacity: firstPaneCollapsed ? 0 : 1,
+                  maxWidth: firstPaneCollapsed ? 0 : "100%",
+                  transition: "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+                }}
+              >
+                {firstPaneTitle}
+              </Box>
               {showFirstPaneVisibilityInHeader && (
                 <Box sx={{ flexShrink: 0 }}>
                   <Tooltip title={firstPaneButtonTooltip}>
@@ -192,7 +203,15 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                 </Box>
               )}
             </Box>
-            <Box sx={{ flex: 1, overflow: "auto", display: firstPaneCollapsed ? "none" : "block" }}>
+            <Box
+              sx={{
+                flex: 1,
+                overflow: "auto",
+                opacity: firstPaneCollapsed ? 0 : 1,
+                maxHeight: firstPaneCollapsed ? 0 : "100%",
+                transition: "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-height 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+              }}
+            >
               {firstPane}
             </Box>
           </Box>
@@ -212,7 +231,7 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
             <Box
               sx={{
                 display: "flex",
-                justifyContent: thirdPaneCollapsed ? "center" : "space-between",
+                justifyContent: "space-between",
                 alignItems: "center",
                 borderBottom: "1px solid",
                 borderColor: theme.palette.divider,
@@ -220,20 +239,21 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                 mb: 1,
               }}
             >
-              {!thirdPaneCollapsed && (
-                <Box
-                  sx={{
-                    flex: 1,
-                    minWidth: 0,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    mr: 1,
-                  }}
-                >
-                  {thirdPaneTitle}
-                </Box>
-              )}
+              <Box
+                sx={{
+                  flex: 1,
+                  minWidth: 0,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  mr: 1,
+                  opacity: thirdPaneCollapsed ? 0 : 1,
+                  maxWidth: thirdPaneCollapsed ? 0 : "100%",
+                  transition: "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+                }}
+              >
+                {thirdPaneTitle}
+              </Box>
               {showThirdPaneVisibilityInHeader && (
                 <Box sx={{ flexShrink: 0 }}>
                   <Tooltip title={thirdPaneButtonTooltip}>
@@ -249,7 +269,15 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                 </Box>
               )}
             </Box>
-            <Box sx={{ flex: 1, overflow: "auto", display: thirdPaneCollapsed ? "none" : "block" }}>
+            <Box
+              sx={{
+                flex: 1,
+                overflow: "auto",
+                opacity: thirdPaneCollapsed ? 0 : 1,
+                maxHeight: thirdPaneCollapsed ? 0 : "100%",
+                transition: "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-height 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+              }}
+            >
               {thirdPane}
             </Box>
           </Box>

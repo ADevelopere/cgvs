@@ -62,6 +62,8 @@ type EditorPaneProps = {
   onDragStarted?: () => void;
   onDragFinished?: (sizes: number[]) => void;
   onChange?: (sizes: number[]) => void;
+  onFirstPaneUncollapse?: () => void;
+  onThirdPaneUncollapse?: () => void;
   style?: CSSProperties;
   paneClassName?: string;
   paneStyle?: CSSProperties;
@@ -100,7 +102,7 @@ type PaneState = {
 const STORAGE_KEY_PREFIX = "editorPane";
 const STORAGE_DEBOUNCE_MS = 300;
 const MIN_PANE_SIZE = 50; // Minimum width to keep panes visible
-const COLLAPSED_PANE_WIDTH = 60; // Width when pane is collapsed (header + button)
+const COLLAPSED_PANE_WIDTH = 50; // Width when pane is collapsed (header + button)
 
 // Helper functions for local storage operations
 const getStorageKey = (key?: string) =>
@@ -138,6 +140,8 @@ const EditorPane: FC<EditorPaneProps> = ({
   onDragStarted,
   onDragFinished,
   onChange,
+  onFirstPaneUncollapse,
+  onThirdPaneUncollapse,
   style: styleProps,
   paneClassName = "",
   paneStyle,
@@ -561,6 +565,33 @@ const EditorPane: FC<EditorPaneProps> = ({
     (clientX: number) => {
       if (!active || !activeResizer) return;
 
+      // Check if we're resizing a collapsed pane and trigger uncollapse
+      if (activeResizer === 1 && paneState.collapsed.first) {
+        // First pane is collapsed, uncollapse it
+        if (onFirstPaneUncollapse) onFirstPaneUncollapse();
+        // Clear preCollapseSize
+        const nextState: PaneState = {
+          ...paneState,
+          collapsed: { ...paneState.collapsed, first: false },
+          preCollapseSizes: { ...paneState.preCollapseSizes, first: null },
+        };
+        setPaneState(nextState);
+        return; // Exit and let next render handle the resize
+      }
+
+      if (activeResizer === 2 && paneState.collapsed.third) {
+        // Third pane is collapsed, uncollapse it
+        if (onThirdPaneUncollapse) onThirdPaneUncollapse();
+        // Clear preCollapseSize
+        const nextState: PaneState = {
+          ...paneState,
+          collapsed: { ...paneState.collapsed, third: false },
+          preCollapseSizes: { ...paneState.preCollapseSizes, third: null },
+        };
+        setPaneState(nextState);
+        return; // Exit and let next render handle the resize
+      }
+
       const containerRect = editorPaneRef.current?.getBoundingClientRect();
       if (!containerRect) return;
 
@@ -621,6 +652,8 @@ const EditorPane: FC<EditorPaneProps> = ({
       paneState,
       onChange,
       saveCurrentState,
+      onFirstPaneUncollapse,
+      onThirdPaneUncollapse,
     ]
   );
 
@@ -678,10 +711,13 @@ const EditorPane: FC<EditorPaneProps> = ({
       flexGrow: 0,
       flexShrink: 0,
       display: paneState.sizes[index] > 0 ? "block" : "none",
+      transition: active
+        ? "none"
+        : "flex-basis 300ms cubic-bezier(0.4, 0, 0.2, 1)",
       ...basePaneStyle,
       ...(paneProps?.style ?? {}),
     }),
-    [paneState.sizes, basePaneStyle]
+    [paneState.sizes, basePaneStyle, active]
   );
 
   // Effect for global mouse listeners
