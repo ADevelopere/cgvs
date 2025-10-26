@@ -4,7 +4,7 @@ import React from "react";
 import { gql } from "@apollo/client";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useMutation } from "@apollo/client/react";
-import { CategoryDocuments } from "../hooks/index";
+import { CategoryDocuments } from "../../hooks/index";
 
 /**
  * A custom React hook that provides mutation functions for managing

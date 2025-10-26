@@ -51,6 +51,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
 
   const [error, setError] = React.useState<string | null>(null);
   const [saving, setSaving] = React.useState(false);
+  const [imageLoadError, setImageLoadError] = React.useState(false);
 
   const [filePickerOpen, setFilePickerOpen] = React.useState(false);
 
@@ -64,6 +65,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
         description: template.description ?? "",
         imageUrl: TemplateUtils.getTemplateImageUrl(template, isDark),
       });
+      setImageLoadError(false);
     }
   }, [template, isDark]);
 
@@ -114,6 +116,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
         imageUrl: file.url,
         imagePath: file.path,
       }));
+      setImageLoadError(false);
       setFilePickerOpen(false);
 
       logger.info("File picker dialog closed after file selection");
@@ -133,6 +136,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
       imageUrl: undefined,
       imagePath: undefined,
     }));
+    setImageLoadError(false);
 
     logger.info("Image removed from template", {
       templateId: template?.id,
@@ -181,6 +185,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
       });
     }
     setError(null);
+    setImageLoadError(false);
   }, [template, isDark]);
 
   return (
@@ -329,7 +334,11 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
             >
               {formData.imageUrl ? (
                 <Image
-                  src={formData.imageUrl}
+                  src={
+                    imageLoadError
+                      ? TemplateUtils.getTemplateImageUrl({}, isDark)
+                      : formData.imageUrl
+                  }
                   alt={
                     formData.imageUrl &&
                     formData.imageUrl !==
@@ -345,6 +354,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
                     maxWidth: "100%",
                     objectFit: "contain",
                   }}
+                  onError={() => setImageLoadError(true)}
                 />
               ) : (
                 <ImageIcon

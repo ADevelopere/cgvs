@@ -20,9 +20,16 @@ import { TemplateUtils } from "../../utils";
 interface GridViewProps {
   templates: Template[];
   manageTemplate: (templateId: number) => void;
+  failedImages: Set<number>;
+  onImageError: (templateId: number) => void;
 }
 
-const GridView: React.FC<GridViewProps> = ({ templates, manageTemplate }) => {
+const GridView: React.FC<GridViewProps> = ({
+  templates,
+  manageTemplate,
+  failedImages,
+  onImageError,
+}) => {
   const strings = useAppTranslation("templateCategoryTranslations");
   const { isDark } = useAppTheme();
   const theme = useTheme();
@@ -54,6 +61,11 @@ const GridView: React.FC<GridViewProps> = ({ templates, manageTemplate }) => {
           throw new Error("Template name is required");
         }
 
+        const imageHasFailed = failedImages.has(template.id);
+        const imageUrl = imageHasFailed
+          ? TemplateUtils.getTemplateImageUrl({}, isDark)
+          : TemplateUtils.getTemplateImageUrl(template, isDark);
+
         return (
           <ImageListItem
             key={template.id}
@@ -80,7 +92,7 @@ const GridView: React.FC<GridViewProps> = ({ templates, manageTemplate }) => {
               }}
             >
               <Image
-                src={TemplateUtils.getTemplateImageUrl(template, isDark)}
+                src={imageUrl}
                 alt={template.name}
                 fill
                 sizes="(max-width: 600px) 100vw, 50vw"
@@ -88,6 +100,7 @@ const GridView: React.FC<GridViewProps> = ({ templates, manageTemplate }) => {
                   objectFit: "cover",
                 }}
                 priority={false}
+                onError={() => onImageError(template.id)}
               />
             </Box>
             <ImageListItemBar

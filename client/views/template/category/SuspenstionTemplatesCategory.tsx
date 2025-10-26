@@ -15,7 +15,7 @@ import { useAppTheme } from "@/client/contexts";
 import { useAppBarHeight } from "@/client/hooks/useAppBarHeight";
 import { TemplateUtils } from "../utils";
 import { TemplateDocuments } from "../hooks";
-import { useTemplateCategoryOperations } from "./useTemplateCategoryOperations";
+import { useTemplateCategoryOperations } from "./hooks/useTemplateCategoryOperations";
 
 interface TemplateRow {
   id: number;
@@ -35,6 +35,11 @@ const SuspenstionTemplatesCategory: React.FC = () => {
       sort: "desc",
     },
   ]);
+  const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
+
+  const handleImageError = (templateId: number) => {
+    setFailedImages(prev => new Set(prev).add(templateId));
+  };
 
   // Fetch suspended templates
   const { data: suspendedData, loading: suspensionTemplatesLoading } = useQuery(
@@ -51,30 +56,41 @@ const SuspenstionTemplatesCategory: React.FC = () => {
       headerName: strings.image,
       width: 100,
       sortable: false,
-      renderCell: (params: GridRenderCellParams<TemplateRow>) => (
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            height: "100%",
-          }}
-        >
-          <Box
-            component="img"
-            src={TemplateUtils.getTemplateImageUrl(
+      renderCell: (params: GridRenderCellParams<TemplateRow>) => {
+        const imageHasFailed = failedImages.has(params.row.id);
+        const imageUrl = imageHasFailed
+          ? TemplateUtils.getTemplateImageUrl(
+              {},
+              theme.palette.mode === "dark"
+            )
+          : TemplateUtils.getTemplateImageUrl(
               { imageUrl: params.row.imageUrl },
               theme.palette.mode === "dark"
-            )}
-            alt={`${params.row.name} ${strings.image}`}
+            );
+
+        return (
+          <Box
             sx={{
-              width: 60,
-              height: 60,
-              objectFit: "cover",
-              borderRadius: 1,
+              display: "flex",
+              alignItems: "center",
+              height: "100%",
             }}
-          />
-        </Box>
-      ),
+          >
+            <Box
+              component="img"
+              src={imageUrl}
+              alt={`${params.row.name} ${strings.image}`}
+              onError={() => handleImageError(params.row.id)}
+              sx={{
+                width: 60,
+                height: 60,
+                objectFit: "cover",
+                borderRadius: 1,
+              }}
+            />
+          </Box>
+        );
+      },
     },
     {
       field: "name",

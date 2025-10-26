@@ -12,7 +12,7 @@ import { useAppBarHeight } from "@/client/hooks/useAppBarHeight";
 import TemplateCategoryManagementCategoryPane from "./CategoryPane";
 import TemplateCategoryManagementTemplatePane from "./TemplatePane";
 import SuspenstionTemplatesCategory from "./SuspenstionTemplatesCategory";
-import { useTemplateCategoryStore } from "./useTemplateCategoryStore";
+import { useTemplateCategoryStore } from "./hooks/useTemplateCategoryStore";
 
 export type TemplateCategoryManagementTabType = "all" | "deleted";
 
