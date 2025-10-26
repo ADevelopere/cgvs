@@ -153,7 +153,7 @@ export function ReactiveCategoryTreeNode<
           display: "flex",
           alignItems: "center",
           height: itemHeight,
-          paddingLeft: `${level * 20}px`,
+          paddingInlineStart: `${level * 20}px`,
           cursor: "pointer",
           borderRadius: 1,
           backgroundColor: isSelected
