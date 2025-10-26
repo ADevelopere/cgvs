@@ -1,4 +1,5 @@
 import * as AR from "@/client/locale/ar";
+import * as EN from "@/client/locale/en";
 
 import * as Components from "./components";
 import AppLanguage from "./AppLanguage";
@@ -21,8 +22,6 @@ export type Translations = {
   connectivityTranslations: Components.ConnectivityTranslations;
 };
 
-// todo: fix this (add other langs)
-// @ts-expect-error - this is a valid translation object
 const translations: Record<AppLanguage, Translations> = {
   ar: {
     headerTranslations: AR.header,
@@ -41,7 +40,23 @@ const translations: Record<AppLanguage, Translations> = {
     storageTranslations: AR.storage,
     connectivityTranslations: AR.connectivity,
   },
-  // Add other languages here as needed
+  en: {
+    headerTranslations: EN.enHeader,
+    authTranslations: EN.enAuth,
+    calendarTranslations: EN.enCalendar,
+    countryTranslations: EN.enCountry,
+    genderTranslations: EN.enGender,
+    languageTranslations: EN.enLanguage,
+    templateCategoryTranslations: EN.enTemplateCategory,
+    errorTranslations: EN.enError,
+    studentTranslations: EN.enStudent,
+    templateVariableTranslations: EN.enTemplateVariable,
+    recipientTranslations: EN.enRecipient,
+    recipientGroupTranslations: EN.enRecipientGroup,
+    recipientVariableDataTranslations: EN.enRecipientVariableData,
+    storageTranslations: EN.enStorage,
+    connectivityTranslations: EN.enConnectivity,
+  },
 };
 
 export default translations;
