@@ -660,6 +660,22 @@ const EditorPane: FC<EditorPaneProps> = ({
           {notNullChildren[2]}
         </Box>
       )}
+
+      {/* Overlay to prevent pointer events during resize */}
+      {active && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999,
+            cursor: orientation === "vertical" ? "col-resize" : "row-resize",
+            userSelect: "none",
+          }}
+        />
+      )}
     </Box>
   );
 };
