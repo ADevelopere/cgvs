@@ -123,10 +123,6 @@ export const STORAGE_CONFIG = {
 export interface StorageUtils {
   getFileTypeFromContentType(contentType?: string): string;
   validatePath(path: string): string | null;
-  validateFileType(
-    contentType: Types.FileContentType,
-    location: Types.UploadLocation
-  ): string | null;
   extractDirectoryPath(filePath: string): string;
   extractFileName(filePath: string): string;
   sanitizePath(path: string): string;

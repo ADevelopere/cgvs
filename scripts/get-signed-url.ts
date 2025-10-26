@@ -170,6 +170,7 @@ function hexToBase64(hex: string): string {
 }
 async function generateSignedUrl(
   filePath: string,
+  uploadPath: string,
   contentType?: string
 ): Promise<string> {
   try {
@@ -177,7 +178,6 @@ async function generateSignedUrl(
     const fileSize = getFileSize(filePath);
     const contentMd5 = await generateMD5Hash(filePath);
     const fileName = filePath.split("/").pop() || "unknown";
-    const uploadPath = `public/templateCover/${fileName}`;
 
     // Determine content type from file extension (matching server logic)
     const contentTypeEnum = contentType
@@ -239,10 +239,10 @@ async function main() {
 
   if (args.length === 0) {
     testLogger.error(
-      "Usage: node get-signed-url.ts <file-path> [content-type]"
+      "Usage: node get-signed-url.ts <file-path> <upload-path> [content-type]"
     );
     testLogger.error(
-      "Example: node get-signed-url.ts public/templateCover/demo1.jpg"
+      "Example: node get-signed-url.ts /path/to/local/file.jpg public/uploads/file.jpg"
     );
     testLogger.error(
       "Note: Content type is automatically detected from file extension if not provided"
@@ -251,10 +251,11 @@ async function main() {
   }
 
   const filePath = args[0];
-  const contentType = args[1]; // Optional - will auto-detect if not provided
+  const uploadPath = args[1] || `public/${args[0].split("/").pop()}`; // Use provided path or default to public/<filename>
+  const contentType = args[2]; // Optional - will auto-detect if not provided
 
   try {
-    const signedUrl = await generateSignedUrl(filePath, contentType);
+    const signedUrl = await generateSignedUrl(filePath, uploadPath, contentType);
 
     // Get file info for display
     const fileSize = getFileSize(filePath);

@@ -132,28 +132,6 @@ export enum FileContentType {
   WAV = "WAV",
 }
 
-export enum UploadLocationPath {
-  TEMPLATE_COVERS = "TEMPLATE_COVERS",
-}
-
-export type UploadLocation = {
-  path: UploadLocationPath;
-  allowedContentTypes: FileContentType[];
-  actualPath: string; // The actual file system path
-};
-
-export const UploadLocations: UploadLocation[] = [
-  {
-    path: UploadLocationPath.TEMPLATE_COVERS,
-    actualPath: "public/templateCover",
-    allowedContentTypes: [
-      FileContentType.JPEG,
-      FileContentType.PNG,
-      FileContentType.WEBP,
-    ],
-  },
-];
-
 // Input types
 export interface FolderCreateInput {
   path: string;

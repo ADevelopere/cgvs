@@ -1058,10 +1058,6 @@ type TemplatesWithFiltersResponse {
   pageInfo: PageInfo!
 }
 
-enum UploadLocationPath {
-  TEMPLATE_COVERS
-}
-
 input UploadSignedUrlGenerateInput {
   contentMd5: String!
   contentType: ContentType!
