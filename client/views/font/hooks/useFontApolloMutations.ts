@@ -20,7 +20,7 @@ export const useFontApolloMutations = () => {
    */
   const evictFontsCache = () => {
     logger.info("Evicting fonts cache");
-    
+
     // Evict fonts query
     client.cache.evict({
       id: "ROOT_QUERY",
@@ -45,7 +45,7 @@ export const useFontApolloMutations = () => {
       if (!data?.createFont) return;
 
       logger.info("Font created, updating cache:", data.createFont);
-      
+
       // Evict cache to force refetch
       evictFontsCache();
     },
@@ -60,10 +60,12 @@ export const useFontApolloMutations = () => {
   const [updateMutation] = useMutation(Document.updateFontMutationDocument, {
     optimisticResponse: vars => {
       logger.info("Optimistic update for font:", vars.input.id);
-      
+
       try {
         // Read existing font from cache
-        const existingFont = client.cache.readFragment<Graphql.FontQuery["font"]>({
+        const existingFont = client.cache.readFragment<
+          Graphql.FontQuery["font"]
+        >({
           id: client.cache.identify({
             __typename: "Font",
             id: vars.input.id,
@@ -114,7 +116,7 @@ export const useFontApolloMutations = () => {
       if (!data?.updateFont) return;
 
       logger.info("Font updated, evicting cache:", data.updateFont);
-      
+
       // Evict fonts list to refetch with updated data
       evictFontsCache();
     },
@@ -161,4 +163,3 @@ export const useFontApolloMutations = () => {
     evictFontsCache,
   };
 };
-

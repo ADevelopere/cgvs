@@ -5,7 +5,8 @@ export const enStorage: StorageTranslations = {
     cancelAllUploads: "Cancel all uploads",
     cancelAllUploadsMessage: "Are you sure you want to cancel all uploads?",
     cancelFileUpload: "Cancel file upload",
-    cancelFileUploadMessage: "Are you sure you want to cancel the upload of %{fileName}?",
+    cancelFileUploadMessage:
+      "Are you sure you want to cancel the upload of %{fileName}?",
     keepUploading: "Keep uploading",
     cancelUpload: "Cancel upload",
     cancelUploadOf: "Cancel upload of %{fileName}",
@@ -42,17 +43,22 @@ export const enStorage: StorageTranslations = {
     successfullyCreatedFolder: "Successfully created folder %{name}",
     successfullyDeleted: "Successfully deleted %{count} items",
     successfullyMoved: "Successfully moved %{count} items",
-    successfullyMovedPartial: "Successfully moved %{successCount} items, but failed to move %{failureCount} items: %{errors}",
+    successfullyMovedPartial:
+      "Successfully moved %{successCount} items, but failed to move %{failureCount} items: %{errors}",
     successfullyCopied: "Successfully copied %{count} items",
-    successfullyCopiedPartial: "Successfully copied %{successCount} items, but failed to copy %{failureCount} items: %{errors}",
+    successfullyCopiedPartial:
+      "Successfully copied %{successCount} items, but failed to copy %{failureCount} items: %{errors}",
     failedToRenameFile: "Failed to rename file",
     failedToCreateFolder: "Failed to create folder",
     failedToDeleteItems: "Failed to delete items",
-    deletedPartial: "Successfully deleted %{successCount} items, but failed to delete %{failureCount} items: %{errors}",
+    deletedPartial:
+      "Successfully deleted %{successCount} items, but failed to delete %{failureCount} items: %{errors}",
     failedToMoveItems: "Failed to move items",
-    movedPartial: "Successfully moved %{successCount} items, but failed to move %{failureCount} items: %{errors}",
+    movedPartial:
+      "Successfully moved %{successCount} items, but failed to move %{failureCount} items: %{errors}",
     failedToCopyItems: "Failed to copy items",
-    copiedPartial: "Successfully copied %{successCount} items, but failed to copy %{failureCount} items: %{errors}",
+    copiedPartial:
+      "Successfully copied %{successCount} items, but failed to copy %{failureCount} items: %{errors}",
     failedToSearchFiles: "Failed to search files",
     items: "items",
     item: "item",
@@ -118,7 +124,8 @@ export const enStorage: StorageTranslations = {
     showFilters: "Show filters",
     hideFilters: "Hide filters",
     focusedItem: "Focused item: %{itemName}",
-    navigationInstructions: "Use arrow keys to navigate, Enter to open, and Escape to close.",
+    navigationInstructions:
+      "Use arrow keys to navigate, Enter to open, and Escape to close.",
     keyboardShortcuts: "Keyboard shortcuts",
     open: "Open",
     rename: "Rename",
@@ -151,7 +158,8 @@ export const enStorage: StorageTranslations = {
     createFolderDialogEmpty: "Folder name cannot be empty.",
     createFolderDialogInvalid: "Invalid folder name.",
     createFolderDialogFailedToCreate: "Failed to create folder.",
-    createFolderDialogUnexpectedError: "An unexpected error occurred while creating the folder.",
+    createFolderDialogUnexpectedError:
+      "An unexpected error occurred while creating the folder.",
     moveDialogTitle: "Move to",
     moveDialogSelectDestination: "Select destination",
     moveDialogRoot: "Root",
@@ -173,7 +181,8 @@ export const enStorage: StorageTranslations = {
     filePickerDialogSelect: "Select",
     filePickerDialogCancel: "Cancel",
     filePickerDialogFailedToLoad: "Failed to load files",
-    filePickerDialogUnexpectedError: "An unexpected error occurred while loading files.",
+    filePickerDialogUnexpectedError:
+      "An unexpected error occurred while loading files.",
     selecting: "Selecting...",
     folder: "Folder",
     files: "Files",

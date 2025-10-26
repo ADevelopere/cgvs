@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, startTransition, lazy, Suspense } from "react";
+import React, {
+  useState,
+  useEffect,
+  startTransition,
+  lazy,
+  Suspense,
+} from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { Box, Fade, Slide, CircularProgress } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
@@ -23,8 +29,12 @@ import { TemplateContentSkeleton } from "./components/TemplateContentSkeleton";
 import { useAppTheme } from "@/client/contexts";
 
 // Lazy load heavy components that block on mount
-const RecipientsManagementTab = lazy(() => import("./recipient/RecipientsManagementTab "));
-const RecipientVariableDataTab = lazy(() => import("./data/RecipientVariableDataTab"));
+const RecipientsManagementTab = lazy(
+  () => import("./recipient/RecipientsManagementTab ")
+);
+const RecipientVariableDataTab = lazy(
+  () => import("./data/RecipientVariableDataTab")
+);
 
 // Fallback component for lazy-loaded tabs
 const TabLoadingFallback = () => (
@@ -109,7 +119,7 @@ export const TemplateManagementPage: React.FC = () => {
   ) => {
     // Update immediately for smooth UI feedback
     setPrevTabIndex(TAB_ORDER.indexOf(activeTab));
-    
+
     // Defer the heavy state updates to prevent blocking
     startTransition(() => {
       setActiveTab(newValue);

@@ -147,7 +147,7 @@ export type DateDataSource =
 // Data source types for QR_CODE elements
 export type QRCodeDataSource =
   | { type: QRCodeDataSourceType.VERIFICATION_URL }
-  | { type: QRCodeDataSourceType.VERIFICATION_CODE }
+  | { type: QRCodeDataSourceType.VERIFICATION_CODE };
 
 // Individual element configuration types
 export interface TextElementConfig {

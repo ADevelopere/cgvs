@@ -78,7 +78,6 @@ type EditorPaneProps = {
   storageKey: string;
 };
 
-
 const EditorPane: FC<EditorPaneProps> = ({
   allowResize = true,
   children,
@@ -108,10 +107,7 @@ const EditorPane: FC<EditorPaneProps> = ({
   const pane3Ref = useRef<HTMLDivElement | null>(null);
 
   // Get or create store for this storageKey
-  const store = useMemo(
-    () => getEditorPaneStore(storageKey),
-    [storageKey]
-  );
+  const store = useMemo(() => getEditorPaneStore(storageKey), [storageKey]);
 
   // Create a stable ref to the store for use in callbacks
   const storeRef = useRef(store);
@@ -199,7 +195,7 @@ const EditorPane: FC<EditorPaneProps> = ({
       }
     });
 
-      resizeObserver.observe(element);
+    resizeObserver.observe(element);
 
     return () => {
       resizeObserver.disconnect();
@@ -267,7 +263,7 @@ const EditorPane: FC<EditorPaneProps> = ({
 
       // Use calculator to handle manual resize
       calculator.handleManualResize(activeResizer, deltaX);
-          setPosition(boundedClientX);
+      setPosition(boundedClientX);
 
       if (onChange) onChange(paneState.sizes);
     },

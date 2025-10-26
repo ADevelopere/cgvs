@@ -325,7 +325,7 @@ type Actions = {
   setFonts: (fonts: FontListItem[]) => void;
   setCurrentFont: (font: FontDetailView | null) => void;
   setSelectedFontId: (id: number | null) => void;
-  
+
   // Search actions
   setSearchTerm: (term: string) => void;
   clearSearch: () => void;
@@ -455,7 +455,8 @@ export const useFontStore = create<FontStoreState>()(
         const typedPersistedState = persistedState as Partial<State>;
         return {
           ...currentState,
-          selectedFontId: typedPersistedState.selectedFontId ?? currentState.selectedFontId,
+          selectedFontId:
+            typedPersistedState.selectedFontId ?? currentState.selectedFontId,
           searchTerm: typedPersistedState.searchTerm ?? currentState.searchTerm,
         };
       },
@@ -511,7 +512,7 @@ export const useFontApolloMutations = () => {
    */
   const evictFontsCache = () => {
     logger.info("Evicting fonts cache");
-    
+
     // Evict fonts query
     client.cache.evict({
       id: "ROOT_QUERY",
@@ -536,7 +537,7 @@ export const useFontApolloMutations = () => {
       if (!data?.createFont) return;
 
       logger.info("Font created, updating cache:", data.createFont);
-      
+
       // Evict cache to force refetch
       evictFontsCache();
     },
@@ -551,10 +552,12 @@ export const useFontApolloMutations = () => {
   const [updateMutation] = useMutation(Document.updateFontMutationDocument, {
     optimisticResponse: vars => {
       logger.info("Optimistic update for font:", vars.input.id);
-      
+
       try {
         // Read existing font from cache
-        const existingFont = client.cache.readFragment<Graphql.FontQuery["font"]>({
+        const existingFont = client.cache.readFragment<
+          Graphql.FontQuery["font"]
+        >({
           id: client.cache.identify({
             __typename: "Font",
             id: vars.input.id,
@@ -605,7 +608,7 @@ export const useFontApolloMutations = () => {
       if (!data?.updateFont) return;
 
       logger.info("Font updated, evicting cache:", data.updateFont);
-      
+
       // Evict fonts list to refetch with updated data
       evictFontsCache();
     },
@@ -697,11 +700,8 @@ import { useToast } from "@/client/hooks/use-toast";
 export const useFontOperations = () => {
   const store = useFontStore();
   const { toast } = useToast();
-  const {
-    createFontMutation,
-    updateFontMutation,
-    deleteFontMutation,
-  } = useFontApolloMutations();
+  const { createFontMutation, updateFontMutation, deleteFontMutation } =
+    useFontApolloMutations();
 
   // Load all fonts query
   const {
@@ -786,7 +786,7 @@ export const useFontOperations = () => {
   const handleSearch = async (term: string) => {
     logger.info("Searching fonts:", term);
     store.setSearchTerm(term);
-    
+
     if (term.trim().length === 0) {
       // If search is empty, load all fonts
       await refetchFonts();
@@ -842,11 +842,11 @@ export const useFontOperations = () => {
           title: "Font created",
           description: `${result.data.createFont.name} has been created successfully`,
         });
-        
+
         // Select the new font
         await selectFont(result.data.createFont.id);
         store.cancelCreating();
-        
+
         return true;
       }
 
@@ -909,11 +909,11 @@ export const useFontOperations = () => {
           title: "Font updated",
           description: `${result.data.updateFont.name} has been updated successfully`,
         });
-        
+
         // Reload the updated font
         await selectFont(id);
         store.cancelEditing();
-        
+
         return true;
       }
 
@@ -943,11 +943,12 @@ export const useFontOperations = () => {
       });
 
       const usageData = usageResult.data?.checkFontUsage;
-      
+
       if (usageData && !usageData.canDelete) {
         toast({
           title: "Cannot delete font",
-          description: usageData.deleteBlockReason || "Font is currently in use",
+          description:
+            usageData.deleteBlockReason || "Font is currently in use",
           variant: "destructive",
         });
         return false;
@@ -966,7 +967,7 @@ export const useFontOperations = () => {
           title: "Font deleted",
           description: `${result.data.deleteFont.name} has been deleted successfully`,
         });
-        
+
         return true;
       }
 
@@ -1078,18 +1079,18 @@ client/views/font/
 After implementation, verify:
 
 1. **TypeScript Compilation**
+
 ```bash
 ~/.bun/bin/bun tsc
 ```
 
-
 Expected: No errors (may have errors about generated types until GraphQL schema is regenerated)
 
 2. **Linting**
+
 ```bash
 ~/.bun/bin/bun lint
 ```
-
 
 Expected: No errors
 

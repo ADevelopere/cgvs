@@ -42,10 +42,7 @@ export const useEditorPaneLayout = (
   storageKey: string
 ): UseEditorPaneLayoutReturn => {
   // Get store reference (stable across renders)
-  const store = useMemo(
-    () => getEditorPaneStore(storageKey),
-    [storageKey]
-  );
+  const store = useMemo(() => getEditorPaneStore(storageKey), [storageKey]);
 
   // Memoize the calculation functions
   const handlers = useMemo(
@@ -55,7 +52,7 @@ export const useEditorPaneLayout = (
        */
       handleContainerResize: (width: number, config: PaneConfig) => {
         const currentState = store.getState();
-        
+
         // If we have valid existing sizes, scale them
         if (currentState.sizes.some(s => s > 0)) {
           const newState = scaleLayout(width, currentState);
@@ -72,7 +69,11 @@ export const useEditorPaneLayout = (
        */
       handleManualResize: (resizerIndex: 1 | 2, delta: number) => {
         const currentState = store.getState();
-        const newState = calculateManualResize(resizerIndex, delta, currentState);
+        const newState = calculateManualResize(
+          resizerIndex,
+          delta,
+          currentState
+        );
         store.getState().setPaneState(newState);
       },
 
@@ -99,4 +100,3 @@ export const useEditorPaneLayout = (
 
   return handlers;
 };
-

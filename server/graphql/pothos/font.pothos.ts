@@ -9,8 +9,7 @@ import {
 import { FontRepository } from "@/server/db/repo";
 
 // Font object
-const FontObjectRef =
-  gqlSchemaBuilder.objectRef<FontPothosDefinition>("Font");
+const FontObjectRef = gqlSchemaBuilder.objectRef<FontPothosDefinition>("Font");
 
 export const FontPothosObject = gqlSchemaBuilder.loadableObject<
   FontPothosDefinition | Error,

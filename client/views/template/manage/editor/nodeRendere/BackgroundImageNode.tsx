@@ -7,7 +7,9 @@ import { NodeProps, Node } from "@xyflow/react";
 const A4_WIDTH = 1123; // 297mm * 96px/25.4mm
 const A4_HEIGHT = 794; // 210mm * 96px/25.4mm
 
-const BackgroundImageNode: React.FC<NodeProps<Node<{ imageUrl: string }>>> = ({ data: { imageUrl } }) => {
+const BackgroundImageNode: React.FC<NodeProps<Node<{ imageUrl: string }>>> = ({
+  data: { imageUrl },
+}) => {
   const [dimensions, setDimensions] = useState({
     width: A4_WIDTH,
     height: A4_HEIGHT,
@@ -33,9 +35,7 @@ const BackgroundImageNode: React.FC<NodeProps<Node<{ imageUrl: string }>>> = ({ 
         minHeight: `${dimensions.height}px`,
         width: `${dimensions.width}px`,
         minWidth: `${dimensions.width}px`,
-        backgroundImage: `url(${
-          imageUrl 
-        })`,
+        backgroundImage: `url(${imageUrl})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
