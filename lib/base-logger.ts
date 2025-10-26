@@ -4,12 +4,16 @@ import { join } from "path";
 
 type LogLevel = "log" | "info" | "warn" | "error" | "debug";
 
+// const cleanLogs = process.env.CLEANUP_OLD_LOGS === "true";
+const cleanLogs = false;
+
 export abstract class BaseLogger {
   protected enabled: boolean;
   protected sessionId: string;
   protected logsDir: string;
   protected prefix: string;
   private readonly maxLogAgeDays: number = 7; // Keep logs for 7 days
+  private readonly cleanupOldLogs: boolean;
 
   constructor(prefix: string) {
     // Only enable in development
@@ -18,13 +22,16 @@ export abstract class BaseLogger {
     this.logsDir = join(process.cwd(), "logs");
     this.prefix = prefix;
 
-    // Clean up old log files on initialization
-    if (this.enabled) {
-      this.cleanupOldLogs();
+    // Check if old logs should be cleaned up (default: false to keep logs)
+    this.cleanupOldLogs = cleanLogs;
+
+    // Clean up old log files on initialization if enabled
+    if (this.enabled && this.cleanupOldLogs) {
+      this.performCleanup();
     }
   }
 
-  private async cleanupOldLogs(): Promise<void> {
+  private async performCleanup(): Promise<void> {
     try {
       // Create logs directory if it doesn't exist
       await mkdir(this.logsDir, { recursive: true });

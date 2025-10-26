@@ -7,16 +7,29 @@ interface LogEntry {
   level: string;
   message: string;
   timestamp: string;
-  caller: string;
+  caller?: string;
+  sequence: number;
 }
+
+// const cleanupEnabled = process.env.CLEANUP_OLD_LOGS === "true";
+const cleanupEnabled = false;
 
 // Track if we've already cleaned up old logs for this session
 const cleanedSessions = new Set<string>();
+
+// Buffer to store out-of-order log entries per session
+const logBuffers = new Map<
+  string,
+  { entries: LogEntry[]; nextSequence: number; writeLock: Promise<void> }
+>();
 
 async function cleanupOldClientLogs(
   logsDir: string,
   sessionId: string
 ): Promise<void> {
+  // Check if cleanup is enabled (default: false to keep logs)
+  if (!cleanupEnabled) return;
+
   // Only cleanup once per session
   if (cleanedSessions.has(sessionId)) return;
 
@@ -46,6 +59,58 @@ async function cleanupOldClientLogs(
   }
 }
 
+async function writeLogEntry(
+  logEntry: LogEntry,
+  logsDir: string
+): Promise<void> {
+  const { sessionId } = logEntry;
+
+  // Get or create buffer for this session
+  if (!logBuffers.has(sessionId)) {
+    logBuffers.set(sessionId, {
+      entries: [],
+      nextSequence: 1,
+      writeLock: Promise.resolve(),
+    });
+  }
+
+  const buffer = logBuffers.get(sessionId)!;
+
+  // Add entry to buffer
+  buffer.entries.push(logEntry);
+
+  // Sort buffer by sequence number
+  buffer.entries.sort((a, b) => a.sequence - b.sequence);
+
+  // Wait for any pending writes to complete
+  await buffer.writeLock;
+
+  // Create a new write lock promise
+  let resolveWriteLock: () => void;
+  buffer.writeLock = new Promise(resolve => {
+    resolveWriteLock = resolve;
+  });
+
+  try {
+    // Write all consecutive entries starting from nextSequence
+    const logFileName = `client_${sessionId}.log`;
+    const logFilePath = join(logsDir, logFileName);
+
+    while (
+      buffer.entries.length > 0 &&
+      buffer.entries[0].sequence === buffer.nextSequence
+    ) {
+      const entry = buffer.entries.shift()!;
+      const logLine = `[${entry.timestamp}] [${entry.level.toUpperCase()}] [${entry.caller || "undefined"}] ${entry.message}\n`;
+
+      await writeFile(logFilePath, logLine, { flag: "a" });
+      buffer.nextSequence++;
+    }
+  } finally {
+    resolveWriteLock!();
+  }
+}
+
 export async function POST(request: NextRequest) {
   // Only allow in development
   if (process.env.NODE_ENV !== "development") {
@@ -56,7 +121,12 @@ export async function POST(request: NextRequest) {
     const logEntry: LogEntry = await request.json();
 
     // Validate required fields
-    if (!logEntry.sessionId || !logEntry.level || !logEntry.message) {
+    if (
+      !logEntry.sessionId ||
+      !logEntry.level ||
+      !logEntry.message ||
+      typeof logEntry.sequence !== "number"
+    ) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -74,18 +144,12 @@ export async function POST(request: NextRequest) {
     // Clean up old client log files for this session
     await cleanupOldClientLogs(logsDir, logEntry.sessionId);
 
-    // Format log entry for file storage
-    const logLine = `[${logEntry.timestamp}] [${logEntry.level.toUpperCase()}] [${logEntry.caller}] ${logEntry.message}\n`;
-
-    // Write to session-based log file with client prefix
-    const logFileName = `client_${logEntry.sessionId}.log`;
-    const logFilePath = join(logsDir, logFileName);
-
-    await writeFile(logFilePath, logLine, { flag: "a" });
+    // Write log entry using buffered writer
+    await writeLogEntry(logEntry, logsDir);
 
     return NextResponse.json({ success: true });
   } catch {
-    // Use a simple error response without console logging to avoid potential issues
+    // Use a simple error response without logging to avoid potential issues
     return NextResponse.json({ error: "Failed to write log" }, { status: 500 });
   }
 }

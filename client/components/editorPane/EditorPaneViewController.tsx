@@ -51,9 +51,9 @@ type EditorPaneViewControllerProps = {
    */
   thirdPane: PaneConfig;
   /**
-   * Storage key for persisting pane states
+   * Storage key for persisting pane states (required)
    */
-  storageKey?: string;
+  storageKey: string;
 };
 
 const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
