@@ -8,6 +8,11 @@ export enum ElementType {
   QR_CODE = "QR_CODE",
 }
 
+export enum FontSource {
+  GOOGLE = "GOOGLE",
+  SELF_HOSTED = "SELF_HOSTED",
+}
+
 export enum ElementAlignment {
   LEFT = "LEFT",
   CENTER = "CENTER",
@@ -69,11 +74,6 @@ export enum CalendarType {
   HIJRI = "HIJRI",
 }
 
-export enum FontSource {
-  GOOGLE = "GOOGLE",
-  UPLOADED = "UPLOADED",
-}
-
 export enum CountryRepresentation {
   COUNTRY_NAME = "COUNTRY_NAME",
   NATIONALITY = "NATIONALITY",
@@ -95,9 +95,14 @@ export enum QRCodeErrorCorrection {
 // Element Configuration Types (for JSONB storage)
 // ============================================================================
 
+// Font reference types
+export type FontReference =
+  | { type: FontSource.GOOGLE; identifier: string }
+  | { type: FontSource.SELF_HOSTED; fontId: number };
+
 // Base text properties shared by text-based elements
 export interface TextProps {
-  fontId: number;
+  fontRef: FontReference;
   fontSize: number;
   color: string; // e.g., "#000000" or "rgba(0,0,0,1)"
   overflow: ElementOverflow;
@@ -143,10 +148,6 @@ export type DateDataSource =
 export type QRCodeDataSource =
   | { type: QRCodeDataSourceType.VERIFICATION_URL }
   | { type: QRCodeDataSourceType.VERIFICATION_CODE }
-  | {
-      type: QRCodeDataSourceType.CUSTOM;
-      template: string; // Template with variable placeholders
-    };
 
 // Individual element configuration types
 export interface TextElementConfig {
