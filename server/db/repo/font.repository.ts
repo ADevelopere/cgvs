@@ -1,5 +1,5 @@
 import { db } from "@/server/db/drizzleDb";
-import { eq, ilike, inArray } from "drizzle-orm";
+import { eq, ilike, inArray, sql } from "drizzle-orm";
 import { font } from "@/server/db/schema/font";
 import { certificateElement } from "@/server/db/schema/certificateElements/certificateElement";
 import { storageFiles } from "@/server/db/schema/storage";

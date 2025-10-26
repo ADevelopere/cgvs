@@ -419,6 +419,43 @@ input FolderCreateInput {
   protected: Boolean
 }
 
+type Font {
+  createdAt: DateTime!
+  id: Int!
+  locale: [String!]!
+  name: String!
+  storageFileId: Int!
+  updatedAt: DateTime!
+}
+
+input FontCreateInput {
+  locale: [String!]!
+  name: String!
+  storageFileId: Int!
+}
+
+input FontUpdateInput {
+  id: Int!
+  locale: [String!]!
+  name: String!
+  storageFileId: Int!
+}
+
+type FontUsageCheckResult {
+  canDelete: Boolean!
+  deleteBlockReason: String
+  isInUse: Boolean!
+  usageCount: Int!
+  usedBy: [FontUsageReference!]!
+}
+
+type FontUsageReference {
+  elementId: Int!
+  elementType: String!
+  templateId: Int
+  templateName: String
+}
+
 enum Gender {
   FEMALE
   MALE
@@ -440,6 +477,7 @@ type LoginResponse {
 type Mutation {
   copyStorageItems(input: StorageItemsCopyInput!): BulkOperationResult
   createFolder(input: FolderCreateInput!): FileOperationResult
+  createFont(input: FontCreateInput!): Font!
   createRecipient(input: TemplateRecipientCreateInput!): TemplateRecipient!
   createRecipients(input: TemplateRecipientCreateListInput!): [TemplateRecipient!]!
   createStudent(input: StudentCreateInput!): Student
@@ -451,6 +489,7 @@ type Mutation {
   createTemplateSelectVariable(input: TemplateSelectVariableCreateInput!): TemplateSelectVariable
   createTemplateTextVariable(input: TemplateTextVariableCreateInput!): TemplateTextVariable
   deleteFile(path: String!): FileOperationResult
+  deleteFont(id: Int!): Font!
   deleteRecipient(id: Int!): TemplateRecipient!
   deleteRecipients(ids: [Int!]!): [TemplateRecipient!]!
   deleteStorageItems(input: StorageItemsDeleteInput!): BulkOperationResult
@@ -473,6 +512,7 @@ type Mutation {
   suspendTemplate(id: Int!): Template
   unsuspendTemplate(id: Int!): Template
   updateDirectoryPermissions(input: DirectoryPermissionsUpdateInput!): FileOperationResult
+  updateFont(input: FontUpdateInput!): Font!
   updateTemplate(input: TemplateUpdateInput!): Template
   updateTemplateCategory(input: TemplateCategoryUpdateInput!): TemplateCategory!
   updateTemplateDateVariable(input: TemplateDateVariableUpdateInput!): TemplateDateVariable
@@ -526,6 +566,7 @@ scalar PhoneNumber
 
 type Query {
   categoryChildren(parentCategoryId: Int): [TemplateCategory!]!
+  checkFontUsage(id: Int!): FontUsageCheckResult!
   directoryChildren(
     """Parent directory path (empty or null for root level)"""
     path: String
@@ -533,6 +574,8 @@ type Query {
   fileInfo(path: String!): FileInfo
   fileUsage(input: FileUsageCheckInput!): FileUsageResult
   folderInfo(path: String!): DirectoryInfo
+  font(id: Int!): Font
+  fonts: [Font!]!
   listFiles(input: FilesListInput!): StorageObjectList
   mainTemplateCategory: TemplateCategory!
   me: User
@@ -563,6 +606,7 @@ type Query {
     limit: Int = 50
     searchTerm: String!
   ): StorageObjectList
+  searchFonts(limit: Int = 50, name: String!): [Font!]!
   searchTemplateCategories(includeParentTree: Boolean, limit: Int, searchTerm: String!): [TemplateCategoryWithParentTree!]!
   storageStats(
     """
