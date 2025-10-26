@@ -154,7 +154,6 @@ export const createEditorPaneStore = (
     return initialState;
   };
 
-  Z;
   return create<EditorPaneStoreWithPersist>()(
     persist(
       set => {
