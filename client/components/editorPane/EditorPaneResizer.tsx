@@ -36,6 +36,8 @@ const EditorPaneResizer: React.FC<EditorPaneResizerProps> = props => {
 
   const handleMouseDown = useCallback(
     (e: MouseEvent<HTMLSpanElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
       setIsResizing(true);
       onMouseDown(e);
     },
