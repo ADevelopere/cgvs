@@ -1,4 +1,5 @@
 <!-- 4cc89b7f-5d73-4c4f-b7d4-47fe66e911d3 edc79b02-e220-42ce-8f2e-03161616116d -->
+
 # Font Management System - Master Plan
 
 ## Overview
@@ -201,10 +202,7 @@ Error handling with toast notifications
 Create `client/views/font/types.ts`:
 
 ```typescript
-- FontFormData
-- FontListItem
-- FontDetailView
-- FilePickerResult
+-FontFormData - FontListItem - FontDetailView - FilePickerResult;
 ```
 
 ### Validation

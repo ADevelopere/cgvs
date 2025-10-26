@@ -90,4 +90,3 @@ export const FONT_MIME_TYPES = [
   "application/x-font-otf",
   "application/x-font-woff",
 ];
-

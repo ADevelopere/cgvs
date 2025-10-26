@@ -1,4 +1,7 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
+import storybook from "eslint-plugin-storybook";
+
+// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
 // import storybook from "eslint-plugin-storybook";
 
 import { dirname } from "path";
@@ -110,7 +113,7 @@ const eslintConfig = [
         },
       ],
     },
-  },
+  }, // ...storybook.configs["flat/recommended"],
   {
     // files: [".storybook/**/*.ts", ".storybook/**/*.tsx"],
     languageOptions: {
@@ -137,7 +140,7 @@ const eslintConfig = [
       "no-console": "error",
     },
   },
-  // ...storybook.configs["flat/recommended"],
+  ...storybook.configs["flat/recommended"],
 ];
 
 export default eslintConfig;

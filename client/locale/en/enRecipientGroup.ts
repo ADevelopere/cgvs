@@ -50,7 +50,8 @@ export const enRecipientGroup: RecipientGroupTranslation = {
   confirmClearSelection: "Confirm clear selection",
   confirmClearSelectionMessage: "Are you sure you want to clear the selection?",
   confirmAddStudents: "Confirm add students",
-  confirmAddStudentsMessage: "Are you sure you want to add the selected students to this group?",
+  confirmAddStudentsMessage:
+    "Are you sure you want to add the selected students to this group?",
   invalidGroupSelected: "Invalid group selected",
   groupNotFoundInTemplate: "Group not found in template",
   loading: "Loading...",

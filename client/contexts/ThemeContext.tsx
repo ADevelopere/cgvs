@@ -172,7 +172,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   const handleSetLanguage = useCallback(
     (newLanguage: string | AppLanguage) => {
       const language = newLanguage as AppLanguage;
-      
+
       // Set transition direction based on the new language
       setTransitionDirection(language === "ar" ? "rtl" : "ltr");
       setIsTransitioning(true);
@@ -286,7 +286,8 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
                     ? "translateX(20px)"
                     : "translateX(-20px)"
                   : "translateX(0)",
-                transition: "opacity 300ms ease-in-out, transform 300ms ease-in-out",
+                transition:
+                  "opacity 300ms ease-in-out, transform 300ms ease-in-out",
               }}
             >
               {children}

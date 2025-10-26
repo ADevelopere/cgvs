@@ -31,7 +31,7 @@ type Actions = {
   setFonts: (fonts: FontListItem[]) => void;
   setCurrentFont: (font: FontDetailView | null) => void;
   setSelectedFontId: (id: number | null) => void;
-  
+
   // Search actions
   setSearchTerm: (term: string) => void;
   clearSearch: () => void;
@@ -161,11 +161,11 @@ export const useFontStore = create<FontStoreState>()(
         const typedPersistedState = persistedState as Partial<State>;
         return {
           ...currentState,
-          selectedFontId: typedPersistedState.selectedFontId ?? currentState.selectedFontId,
+          selectedFontId:
+            typedPersistedState.selectedFontId ?? currentState.selectedFontId,
           searchTerm: typedPersistedState.searchTerm ?? currentState.searchTerm,
         };
       },
     }
   )
 );
-

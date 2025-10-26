@@ -277,7 +277,7 @@ export const LocaleSelector: React.FC<LocaleSelectorProps> = ({
     } else {
       // Remove "all" if present and toggle the locale
       const withoutAll = value.filter(v => v !== "all");
-      
+
       if (withoutAll.includes(localeValue)) {
         newValue = withoutAll.filter(v => v !== localeValue);
       } else {
@@ -426,7 +426,7 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
 
         // Check if font is already loaded
         const fontFace = new FontFace(fontFamily, `url(${fontUrl})`);
-        
+
         await fontFace.load();
         document.fonts.add(fontFace);
 
@@ -1491,6 +1491,7 @@ app/(root)/(auth)/admin/fonts/
 ```
 
 **Key Technologies**:
+
 - **UI**: MUI (Material-UI) components
 - **Layout**: SplitPane component from `client/components/splitPane`
 - **Data**: GraphQL with Apollo Client
@@ -1502,18 +1503,18 @@ app/(root)/(auth)/admin/fonts/
 ## Validation Checklist
 
 1. **TypeScript Compilation**
+
 ```bash
 ~/.bun/bin/bun tsc
 ```
 
-
 Expected: No errors
 
 2. **Linting**
+
 ```bash
 ~/.bun/bin/bun lint
 ```
-
 
 Expected: No errors
 
@@ -1548,7 +1549,6 @@ Expected: No errors
 ## Testing Scenarios
 
 1. **Create Font**
-
    - Click "New Font" button
    - Fill in name
    - Select locales (try "all", try multiple)
@@ -1558,7 +1558,6 @@ Expected: No errors
    - Verify font appears in list
 
 2. **Edit Font**
-
    - Select font from list
    - Click "Edit"
    - Modify fields
@@ -1566,20 +1565,17 @@ Expected: No errors
    - Verify changes
 
 3. **Delete Font**
-
    - Select unused font
    - Click "Delete"
    - Confirm deletion
    - Verify removal
 
 4. **Delete Protection**
-
    - Try to delete font in use
    - See error message
    - Verify cannot delete
 
 5. **Search**
-
    - Type in search box
    - See filtered results
    - Clear search

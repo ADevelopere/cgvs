@@ -55,7 +55,7 @@ export const calculateInitialLayout = (
   );
 
   // If we have a current state with valid sizes, scale them proportionally
-  if (currentState && currentState.sizes.some((s) => s > 0)) {
+  if (currentState && currentState.sizes.some(s => s > 0)) {
     return scaleLayout(containerWidth, currentState);
   }
 
@@ -137,7 +137,7 @@ export const scaleLayout = (
       : 0);
 
   const targetNonCollapsedWidth = availableWidth - collapsedWidth;
-  
+
   if (currentNonCollapsedSize === 0) {
     return currentState;
   }
@@ -146,9 +146,11 @@ export const scaleLayout = (
 
   const newSizes = currentState.sizes.map((size, index) => {
     // Keep collapsed panes at fixed width
-    if (index === 0 && currentState.collapsed.first) return COLLAPSED_PANE_WIDTH;
-    if (index === 2 && currentState.collapsed.third) return COLLAPSED_PANE_WIDTH;
-    
+    if (index === 0 && currentState.collapsed.first)
+      return COLLAPSED_PANE_WIDTH;
+    if (index === 2 && currentState.collapsed.third)
+      return COLLAPSED_PANE_WIDTH;
+
     // Hide invisible panes
     if (index === 0 && !currentState.visibility.first) return 0;
     if (index === 2 && !currentState.visibility.third) return 0;
@@ -166,17 +168,19 @@ export const scaleLayout = (
  * Toggle collapse state for a pane
  */
 export const togglePaneCollapse = (
-  pane: 'first' | 'third',
+  pane: "first" | "third",
   currentState: PaneState
 ): PaneState => {
-  const paneIndex = pane === 'first' ? 0 : 2;
+  const paneIndex = pane === "first" ? 0 : 2;
   const isCurrentlyCollapsed =
-    pane === 'first' ? currentState.collapsed.first : currentState.collapsed.third;
+    pane === "first"
+      ? currentState.collapsed.first
+      : currentState.collapsed.third;
 
   if (isCurrentlyCollapsed) {
     // Uncollapse: restore from preCollapseSizes
     const sizeToRestore =
-      pane === 'first'
+      pane === "first"
         ? currentState.preCollapseSizes.first
         : currentState.preCollapseSizes.third;
 
@@ -288,13 +292,15 @@ export const handleManualResize = (
  * Set visibility for a pane
  */
 export const setPaneVisibility = (
-  pane: 'first' | 'third',
+  pane: "first" | "third",
   visible: boolean,
   currentState: PaneState
 ): PaneState => {
-  const paneIndex = pane === 'first' ? 0 : 2;
+  const paneIndex = pane === "first" ? 0 : 2;
   const isCurrentlyVisible =
-    pane === 'first' ? currentState.visibility.first : currentState.visibility.third;
+    pane === "first"
+      ? currentState.visibility.first
+      : currentState.visibility.third;
 
   if (isCurrentlyVisible === visible) {
     return currentState; // No change
@@ -363,4 +369,3 @@ export const setPaneVisibility = (
     };
   }
 };
-

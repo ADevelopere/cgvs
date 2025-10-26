@@ -17,11 +17,8 @@ import { useEffect } from "react";
 export const useFontOperations = () => {
   const store = useFontStore();
   const notifications = useNotifications();
-  const {
-    createFontMutation,
-    updateFontMutation,
-    deleteFontMutation,
-  } = useFontApolloMutations();
+  const { createFontMutation, updateFontMutation, deleteFontMutation } =
+    useFontApolloMutations();
 
   // Load all fonts query
   const {
@@ -74,8 +71,10 @@ export const useFontOperations = () => {
   }, [fontError, notifications]);
 
   // Lazy query for search
-  const [searchFonts, { data: searchData, loading: searchLoading, error: searchError }] =
-    useLazyQuery(Document.searchFontsQueryDocument);
+  const [
+    searchFonts,
+    { data: searchData, loading: searchLoading, error: searchError },
+  ] = useLazyQuery(Document.searchFontsQueryDocument);
 
   // Update store when search data changes
   useEffect(() => {
@@ -114,7 +113,7 @@ export const useFontOperations = () => {
   const handleSearch = async (term: string) => {
     logger.info("Searching fonts:", term);
     store.setSearchTerm(term);
-    
+
     if (term.trim().length === 0) {
       // If search is empty, load all fonts
       await refetchFonts();
@@ -164,15 +163,18 @@ export const useFontOperations = () => {
       });
 
       if (result.data?.createFont) {
-        notifications.show(`${result.data.createFont.name} has been created successfully`, {
-          severity: "success",
-          autoHideDuration: 3000,
-        });
-        
+        notifications.show(
+          `${result.data.createFont.name} has been created successfully`,
+          {
+            severity: "success",
+            autoHideDuration: 3000,
+          }
+        );
+
         // Select the new font
         await selectFont(result.data.createFont.id);
         store.cancelCreating();
-        
+
         return true;
       }
 
@@ -231,15 +233,18 @@ export const useFontOperations = () => {
       });
 
       if (result.data?.updateFont) {
-        notifications.show(`${result.data.updateFont.name} has been updated successfully`, {
-          severity: "success",
-          autoHideDuration: 3000,
-        });
-        
+        notifications.show(
+          `${result.data.updateFont.name} has been updated successfully`,
+          {
+            severity: "success",
+            autoHideDuration: 3000,
+          }
+        );
+
         // Reload the updated font
         await selectFont(id);
         store.cancelEditing();
-        
+
         return true;
       }
 
@@ -271,7 +276,7 @@ export const useFontOperations = () => {
       });
 
       const usageData = usageResult.data?.checkFontUsage;
-      
+
       if (usageData && !usageData.canDelete) {
         notifications.show(
           usageData.deleteBlockReason || "Font is currently in use",
@@ -292,11 +297,14 @@ export const useFontOperations = () => {
       });
 
       if (result.data?.deleteFont) {
-        notifications.show(`${result.data.deleteFont.name} has been deleted successfully`, {
-          severity: "success",
-          autoHideDuration: 3000,
-        });
-        
+        notifications.show(
+          `${result.data.deleteFont.name} has been deleted successfully`,
+          {
+            severity: "success",
+            autoHideDuration: 3000,
+          }
+        );
+
         return true;
       }
 
@@ -376,4 +384,3 @@ export const useFontOperations = () => {
     isEditing: store.isEditing,
   };
 };
-

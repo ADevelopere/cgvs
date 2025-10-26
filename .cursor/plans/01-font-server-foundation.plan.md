@@ -123,11 +123,7 @@ export namespace FontRepository {
   export const findById = async (
     id: number
   ): Promise<FontSelectType | null> => {
-    const result = await db
-      .select()
-      .from(font)
-      .where(eq(font.id, id))
-      .limit(1);
+    const result = await db.select().from(font).where(eq(font.id, id)).limit(1);
     return result[0] || null;
   };
 
@@ -171,10 +167,7 @@ export namespace FontRepository {
   export const findByStorageFileId = async (
     fileId: number
   ): Promise<FontSelectType[]> => {
-    return db
-      .select()
-      .from(font)
-      .where(eq(font.storageFileId, fileId));
+    return db.select().from(font).where(eq(font.storageFileId, fileId));
   };
 
   /**
@@ -203,11 +196,27 @@ export namespace FontRepository {
     }
 
     // Validate locale codes (basic validation)
-    const validLocales = ["all", "ar", "en", "fr", "de", "es", "zh", "ja", "ru", "pt", "it", "ko", "tr"];
+    const validLocales = [
+      "all",
+      "ar",
+      "en",
+      "fr",
+      "de",
+      "es",
+      "zh",
+      "ja",
+      "ru",
+      "pt",
+      "it",
+      "ko",
+      "tr",
+    ];
     const invalidLocales = locale.filter(l => !validLocales.includes(l));
-    
+
     if (invalidLocales.length > 0) {
-      logger.warn(`Invalid locale codes detected: ${invalidLocales.join(", ")}`);
+      logger.warn(
+        `Invalid locale codes detected: ${invalidLocales.join(", ")}`
+      );
       // Don't throw, just warn - allow flexibility
     }
   };
@@ -339,9 +348,7 @@ export namespace FontRepository {
               .where(inArray(templates.id, uniqueTemplateIds))
           : [];
 
-      const templateMap = new Map(
-        templateNames.map(t => [t.id, t.name])
-      );
+      const templateMap = new Map(templateNames.map(t => [t.id, t.name]));
 
       // Build usage references
       const usedBy: FontUsageReference[] = usages.map(usage => ({
@@ -367,7 +374,8 @@ export namespace FontRepository {
         usageCount: 0,
         usedBy: [],
         canDelete: false,
-        deleteBlockReason: "Unable to verify font usage. Deletion blocked for safety.",
+        deleteBlockReason:
+          "Unable to verify font usage. Deletion blocked for safety.",
       };
     }
   };
@@ -412,10 +420,7 @@ export namespace FontRepository {
   ): Promise<(FontSelectType | Error)[]> => {
     if (ids.length === 0) return [];
 
-    const fonts = await db
-      .select()
-      .from(font)
-      .where(inArray(font.id, ids));
+    const fonts = await db.select().from(font).where(inArray(font.id, ids));
 
     // Map results to maintain order
     return ids.map(id => {
@@ -461,8 +466,7 @@ import {
 import { FontRepository } from "@/server/db/repo";
 
 // Font object
-const FontObjectRef =
-  gqlSchemaBuilder.objectRef<FontPothosDefinition>("Font");
+const FontObjectRef = gqlSchemaBuilder.objectRef<FontPothosDefinition>("Font");
 
 export const FontPothosObject = gqlSchemaBuilder.loadableObject<
   FontPothosDefinition | Error,
@@ -678,10 +682,7 @@ gqlSchemaBuilder.queryFields(t => ({
       }),
     },
     resolve: async (_parent, args) => {
-      return await FontRepository.searchByName(
-        args.name,
-        args.limit || 50
-      );
+      return await FontRepository.searchByName(args.name, args.limit || 50);
     },
   }),
 
@@ -766,18 +767,18 @@ import "./font.query";
 After implementation, verify:
 
 1. **TypeScript Compilation**
+
 ```bash
 ~/.bun/bin/bun tsc
 ```
 
-
 Expected: No errors
 
 2. **Linting**
+
 ```bash
 ~/.bun/bin/bun lint
 ```
-
 
 Expected: No errors
 

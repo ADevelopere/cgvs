@@ -61,7 +61,6 @@ export const calendarTypeEnum = createPgEnumFromEnum(
   ElementTypes.CalendarType
 );
 
-
 export const countryRepresentationEnum = createPgEnumFromEnum(
   "country_representation",
   ElementTypes.CountryRepresentation

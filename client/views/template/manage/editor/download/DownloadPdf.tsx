@@ -16,7 +16,9 @@ async function downloadPdf(
   pdfBytes: Uint8Array,
   filename: string = "reactflow.pdf"
 ) {
-  const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+  const blob = new Blob([pdfBytes.buffer as ArrayBuffer], {
+    type: "application/pdf",
+  });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = filename;
@@ -136,7 +138,10 @@ function DownloadPdf({ imageUrl }: { imageUrl: string }) {
       });
 
       const pdfBytes = await pdfDoc.save();
-      await downloadPdf(pdfBytes, `${imageUrl.split("/").pop() || "flow"}_protected.pdf`);
+      await downloadPdf(
+        pdfBytes,
+        `${imageUrl.split("/").pop() || "flow"}_protected.pdf`
+      );
     } catch (error) {
       logger.error("Error generating PDF:", error);
     }

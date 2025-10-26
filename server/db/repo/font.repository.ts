@@ -20,11 +20,7 @@ export namespace FontRepository {
   export const findById = async (
     id: number
   ): Promise<FontSelectType | null> => {
-    const result = await db
-      .select()
-      .from(font)
-      .where(eq(font.id, id))
-      .limit(1);
+    const result = await db.select().from(font).where(eq(font.id, id)).limit(1);
     return result[0] || null;
   };
 
@@ -68,10 +64,7 @@ export namespace FontRepository {
   export const findByStorageFileId = async (
     fileId: number
   ): Promise<FontSelectType[]> => {
-    return db
-      .select()
-      .from(font)
-      .where(eq(font.storageFileId, fileId));
+    return db.select().from(font).where(eq(font.storageFileId, fileId));
   };
 
   /**
@@ -118,7 +111,9 @@ export namespace FontRepository {
     const invalidLocales = locale.filter(l => !validLocales.includes(l));
 
     if (invalidLocales.length > 0) {
-      logger.warn(`Invalid locale codes detected: ${invalidLocales.join(", ")}`);
+      logger.warn(
+        `Invalid locale codes detected: ${invalidLocales.join(", ")}`
+      );
       // Don't throw, just warn - allow flexibility
     }
   };

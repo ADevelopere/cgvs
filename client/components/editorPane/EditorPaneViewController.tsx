@@ -69,10 +69,7 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
   const { theme } = useAppTheme();
 
   // Get store and subscribe to changes
-  const store = useMemo(
-    () => getEditorPaneStore(storageKey),
-    [storageKey]
-  );
+  const store = useMemo(() => getEditorPaneStore(storageKey), [storageKey]);
 
   const [, forceUpdate] = React.useReducer((x: number) => x + 1, 0);
 

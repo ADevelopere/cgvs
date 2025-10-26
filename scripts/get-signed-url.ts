@@ -255,7 +255,11 @@ async function main() {
   const contentType = args[2]; // Optional - will auto-detect if not provided
 
   try {
-    const signedUrl = await generateSignedUrl(filePath, uploadPath, contentType);
+    const signedUrl = await generateSignedUrl(
+      filePath,
+      uploadPath,
+      contentType
+    );
 
     // Get file info for display
     const fileSize = getFileSize(filePath);

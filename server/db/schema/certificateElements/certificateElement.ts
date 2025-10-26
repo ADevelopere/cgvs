@@ -22,10 +22,10 @@ export const certificateElement = pgTable("certificate_element", {
   height: integer("height").notNull(),
   alignment: elementAlignmentEnum("alignment").notNull(),
   renderOrder: integer("render_order").notNull().default(0), // Lower values render first
-  
+
   // Type-specific configuration stored as typed JSONB
   config: jsonb("config").$type<ElementConfig>().notNull(),
-  
+
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

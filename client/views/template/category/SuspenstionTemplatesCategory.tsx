@@ -59,10 +59,7 @@ const SuspenstionTemplatesCategory: React.FC = () => {
       renderCell: (params: GridRenderCellParams<TemplateRow>) => {
         const imageHasFailed = failedImages.has(params.row.id);
         const imageUrl = imageHasFailed
-          ? TemplateUtils.getTemplateImageUrl(
-              {},
-              theme.palette.mode === "dark"
-            )
+          ? TemplateUtils.getTemplateImageUrl({}, theme.palette.mode === "dark")
           : TemplateUtils.getTemplateImageUrl(
               { imageUrl: params.row.imageUrl },
               theme.palette.mode === "dark"

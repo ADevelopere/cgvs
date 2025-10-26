@@ -85,3 +85,6 @@ tests/fixtures/storage-test/
 # Core dump files (at root only)
 /core
 /core.*
+
+*storybook.log
+storybook-static
