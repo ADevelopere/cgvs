@@ -1,4 +1,5 @@
 import "./auth.query";
+import "./font.query";
 import "./recipient.query";
 import "./recipientGroup.query";
 import "./recipientVariableValue.query";

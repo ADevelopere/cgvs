@@ -1,5 +1,6 @@
 export * from "./auth.pothos";
 export * from "./enum.pothos";
+export * from "./font.pothos";
 export * from "./pagination.objects";
 export * from "./recipient.pothos";
 export * from "./recipientGroup.pothos";

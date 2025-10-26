@@ -13,3 +13,5 @@ export { SessionRepository } from "./session.repository";
 export { StorageDbRepository } from "./storage.repository";
 export { SignedUrlRepository } from "./signedUrl.repository";
 export { CacheDbRepository } from "./cache.repository";
+
+export { FontRepository } from "./font.repository";
