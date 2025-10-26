@@ -9,10 +9,7 @@ import {
   getFileKey,
   generateFileMD5,
 } from "../core/storage.util";
-import {
-  getUploadLocationForPath,
-  getStoragePath,
-} from "../core/storage.location";
+import { getStoragePath } from "../core/storage.location";
 import logger from "@/client/lib/logger";
 import { UploadFileState } from "../core/storage-upload.types";
 import { useMutation, useApolloClient } from "@apollo/client/react";
@@ -327,19 +324,6 @@ export const useStorageUploadOperations = () => {
         return;
       }
 
-      const location = getUploadLocationForPath(targetPath);
-
-      if (!location) {
-        logger.error("Upload not allowed - no valid location", {
-          targetPath,
-        });
-        notifications.show(translations.uploadNotAllowed, {
-          severity: "error",
-          autoHideDuration: 5000,
-        });
-        return;
-      }
-
       const fileMap = new Map<string, UploadFileState>();
       let totalSize = 0;
       validFiles.forEach(file => {
@@ -355,7 +339,6 @@ export const useStorageUploadOperations = () => {
 
       setUploadBatch({
         files: fileMap,
-        location,
         isUploading: true,
         completedCount: 0,
         totalCount: validFiles.length,

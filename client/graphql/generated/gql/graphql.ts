@@ -1413,9 +1413,6 @@ export type TemplatesWithFiltersResponse = {
   pageInfo: PageInfo;
 };
 
-export type UploadLocationPath =
-  | 'TEMPLATE_COVERS';
-
 export type UploadSignedUrlGenerateInput = {
   contentMd5: Scalars['String']['input'];
   contentType: ContentType;

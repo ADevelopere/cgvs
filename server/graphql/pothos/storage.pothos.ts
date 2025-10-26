@@ -258,14 +258,6 @@ export const ContentTypePothosObject = gqlSchemaBuilder.enumType(
   }
 );
 
-// Upload location enum
-export const UploadLocationPathPothosObject = gqlSchemaBuilder.enumType(
-  "UploadLocationPath",
-  {
-    values: Object.values(Types.UploadLocationPath),
-  }
-);
-
 // Generate upload signed URL input
 export const GenerateUploadSignedUrlInputPothosObject = gqlSchemaBuilder
   .inputRef<Types.UploadSignedUrlGenerateInput>("UploadSignedUrlGenerateInput")

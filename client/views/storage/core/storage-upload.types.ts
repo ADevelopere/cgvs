@@ -1,5 +1,3 @@
-import { UploadLocationPath } from "@/client/graphql/generated/gql/graphql";
-
 export interface UploadFileState {
   status:
     | "pending"
@@ -17,7 +15,6 @@ export interface UploadFileState {
 
 export interface UploadBatchState {
   files: Map<string, UploadFileState>;
-  location: UploadLocationPath;
   isUploading: boolean;
   completedCount: number;
   totalCount: number;

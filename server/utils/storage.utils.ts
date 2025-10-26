@@ -24,10 +24,6 @@ export namespace StorageUtils {
     [Types.FileContentType.WAV]: "audio/wav",
   };
 
-  export const UPLOAD_LOCATION_MAP: Record<Types.UploadLocationPath, string> = {
-    [Types.UploadLocationPath.TEMPLATE_COVERS]: "public/templateCover",
-  };
-
   // Reverse mapping for content types
   export const REVERSE_CONTENT_TYPE_MAP: Record<string, Types.FileContentType> =
     Object.entries(CONTENT_TYPE_MAP).reduce(
@@ -48,12 +44,6 @@ export namespace StorageUtils {
     mimeType: string
   ): Types.FileContentType | null => {
     return REVERSE_CONTENT_TYPE_MAP[mimeType] || null;
-  };
-
-  export const uploadLocationEnumToPath = (
-    enumValue: Types.UploadLocationPath
-  ): string => {
-    return UPLOAD_LOCATION_MAP[enumValue];
   };
 
   const PATH_PATTERN = /^[a-zA-Z0-9._/\- ()]+$/;
@@ -91,24 +81,6 @@ export namespace StorageUtils {
     return Promise.resolve(err);
   };
 
-  export const validateFileType = (
-    contentType: Types.FileContentType,
-    location: Types.UploadLocation
-  ): Promise<string | null> => {
-    let err: string | null = null;
-    if (contentType == null) {
-      err = "Content type is required";
-    }
-
-    if (
-      !location.allowedContentTypes.some(allowed => allowed === contentType)
-    ) {
-      err = `File type not allowed for this location: ${contentType}`;
-    }
-
-    return Promise.resolve(err);
-  };
-
   export const validateFileSize = (size: number): Promise<string | null> => {
     let err: string | null = null;
     if (size > STORAGE_CONFIG.MAX_FILE_SIZE) {
@@ -122,9 +94,6 @@ export namespace StorageUtils {
     size: number
   ): Promise<string | null> => {
     let error: string | null = null;
-    if (!path.startsWith("public/")) {
-      error = "Upload signed URLs can only be generated for public paths";
-    }
 
     const fileName = path.slice(path.lastIndexOf("/") + 1);
     validateFileName(fileName).then(err => {
