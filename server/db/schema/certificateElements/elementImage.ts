@@ -1,5 +1,5 @@
 import { bigint, integer, pgTable, timestamp } from "drizzle-orm/pg-core";
-import { elementImageFitEnum } from "../templateElementEnums";
+import { elementImageFitEnum } from "./templateElementEnums";
 
 export const elementImage = pgTable("element_image", {
   id: integer("id").primaryKey(), // One-to-one with certificate_element

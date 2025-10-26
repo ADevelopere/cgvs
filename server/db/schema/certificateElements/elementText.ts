@@ -3,7 +3,7 @@ import {
   certificateTextFieldEnum,
   textDataSourceTypeEnum,
   studentTextFieldEnum,
-} from "../elements/templateElementEnums";
+} from "./templateElementEnums";
 
 export const elementText = pgTable("element_text", {
   id: integer("id").primaryKey(), // One-to-one with certificate_element
