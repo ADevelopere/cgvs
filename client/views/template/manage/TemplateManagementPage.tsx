@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, startTransition, lazy, Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
-import { Box, Fade, Slide } from "@mui/material";
+import { Box, Fade, Slide, CircularProgress } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { templateQueryDocument } from "../hooks/template.documents";
@@ -13,16 +13,33 @@ import {
   useTemplateUIStore,
 } from "./useTemplateManagementStore";
 import BasicInfoTab from "./BasicInfoTab";
-import RecipientsManagementTab from "./recipient/RecipientsManagementTab ";
 import TemplateVariableManagement from "./variables/TemplateVariableManagement";
 import RecipientGroupTab from "./recipientGroup/RecipientGroupTab";
-import RecipientVariableDataTab from "./data/RecipientVariableDataTab";
 import EditorTab from "./editor/EditorTab";
 import { ManagementTabList } from "./ManagementTabList";
 import { TemplateManagementHeader } from "./components/TemplateManagementHeader";
 import { TemplateNotFoundError } from "./components/TemplateNotFoundError";
 import { TemplateContentSkeleton } from "./components/TemplateContentSkeleton";
 import { useAppTheme } from "@/client/contexts";
+
+// Lazy load heavy components that block on mount
+const RecipientsManagementTab = lazy(() => import("./recipient/RecipientsManagementTab "));
+const RecipientVariableDataTab = lazy(() => import("./data/RecipientVariableDataTab"));
+
+// Fallback component for lazy-loaded tabs
+const TabLoadingFallback = () => (
+  <Box
+    sx={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "100%",
+      minHeight: 200,
+    }}
+  >
+    <CircularProgress />
+  </Box>
+);
 
 /**
  * Main template management page component
@@ -86,15 +103,20 @@ export const TemplateManagementPage: React.FC = () => {
     router.push("/admin/templates");
   }, [router]);
 
-  const handleTabChange = async (
+  const handleTabChange = (
     _: React.SyntheticEvent,
     newValue: TemplateManagementTabType
   ) => {
+    // Update immediately for smooth UI feedback
     setPrevTabIndex(TAB_ORDER.indexOf(activeTab));
-    setActiveTab(newValue);
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("tab", newValue);
-    router.push(`?${params.toString()}`);
+    
+    // Defer the heavy state updates to prevent blocking
+    startTransition(() => {
+      setActiveTab(newValue);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("tab", newValue);
+      router.push(`?${params.toString()}`);
+    });
   };
 
   // Calculate slide direction based on tab indices and RTL mode
@@ -190,30 +212,34 @@ export const TemplateManagementPage: React.FC = () => {
           </Fade>
         </TabPanel>
         <TabPanel value="recipientsManagement">
-          <Fade in={activeTab === "recipientsManagement"} timeout={300}>
-            <Slide
-              direction={slideDirection}
-              in={activeTab === "recipientsManagement"}
-              timeout={250}
-            >
-              <Box>
-                <RecipientsManagementTab template={template} />
-              </Box>
-            </Slide>
-          </Fade>
+          <Suspense fallback={<TabLoadingFallback />}>
+            <Fade in={activeTab === "recipientsManagement"} timeout={300}>
+              <Slide
+                direction={slideDirection}
+                in={activeTab === "recipientsManagement"}
+                timeout={250}
+              >
+                <Box>
+                  <RecipientsManagementTab template={template} />
+                </Box>
+              </Slide>
+            </Fade>
+          </Suspense>
         </TabPanel>
         <TabPanel value="data">
-          <Fade in={activeTab === "data"} timeout={300}>
-            <Slide
-              direction={slideDirection}
-              in={activeTab === "data"}
-              timeout={250}
-            >
-              <Box>
-                <RecipientVariableDataTab template={template} />
-              </Box>
-            </Slide>
-          </Fade>
+          <Suspense fallback={<TabLoadingFallback />}>
+            <Fade in={activeTab === "data"} timeout={300}>
+              <Slide
+                direction={slideDirection}
+                in={activeTab === "data"}
+                timeout={250}
+              >
+                <Box>
+                  <RecipientVariableDataTab template={template} />
+                </Box>
+              </Slide>
+            </Fade>
+          </Suspense>
         </TabPanel>
         <TabPanel value="editor">
           <Fade in={activeTab === "editor"} timeout={300}>
