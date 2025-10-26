@@ -102,7 +102,8 @@ type PaneState = {
 const STORAGE_KEY_PREFIX = "editorPane";
 const STORAGE_DEBOUNCE_MS = 300;
 const MIN_PANE_SIZE = 50; // Minimum width to keep panes visible
-const COLLAPSED_PANE_WIDTH = 50; // Width when pane is collapsed (header + button)
+// todo: receive from props
+const COLLAPSED_PANE_WIDTH = 40; // Width when pane is collapsed (header + button)
 
 // Helper functions for local storage operations
 const getStorageKey = (key?: string) =>
@@ -693,9 +694,10 @@ const EditorPane: FC<EditorPaneProps> = ({
       flexDirection: orientation === "vertical" ? "row" : "column",
       left: 0,
       right: 0,
+      direction: isRtl ? "rtl" : "ltr",
       ...styleProps,
     }),
-    [orientation, styleProps]
+    [orientation, styleProps, isRtl]
   );
 
   // Memoized pane styles
@@ -735,6 +737,7 @@ const EditorPane: FC<EditorPaneProps> = ({
       style={wrapperStyle}
       id="editor-pane"
     >
+      {/* First pane */}
       {firstPane.visible && paneState.sizes[0] > 0 && (
         <Box
           ref={pane1Ref}
@@ -745,6 +748,7 @@ const EditorPane: FC<EditorPaneProps> = ({
         </Box>
       )}
 
+      {/* First pane resizer */}
       {firstPane.visible && paneState.sizes[0] > 0 && (
         <EditorPaneResizer
           allowResize={allowResize}
@@ -763,6 +767,7 @@ const EditorPane: FC<EditorPaneProps> = ({
         />
       )}
 
+      {/* Middle pane */}
       {paneState.sizes[1] > 0 && (
         <Box
           ref={pane2Ref}
@@ -773,6 +778,7 @@ const EditorPane: FC<EditorPaneProps> = ({
         </Box>
       )}
 
+      {/* Third pane resizer */}
       {thirdPane.visible && paneState.sizes[2] > 0 && (
         <EditorPaneResizer
           allowResize={allowResize}
@@ -791,6 +797,7 @@ const EditorPane: FC<EditorPaneProps> = ({
         />
       )}
 
+      {/* Third pane */}
       {thirdPane.visible && paneState.sizes[2] > 0 && (
         <Box
           ref={pane3Ref}

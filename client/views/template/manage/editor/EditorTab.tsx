@@ -40,10 +40,28 @@ function MiscellaneousPane() {
 export default function EditorTab({ template }: { template: Template }) {
   return (
     <EditorPaneViewController
-      firstPaneTitle={<Typography variant="h6">Add Node Panel</Typography>}
-      thirdPaneTitle={<Typography variant="h6">Miscellaneous Panel</Typography>}
-      showFirstPaneVisibilityInHeader={true}
-      showThirdPaneVisibilityInHeader={true}
+      firstPaneTitle={
+        <Typography
+          variant="h6"
+          sx={{
+            px: 2,
+          }}
+        >
+          Add Node Panel
+        </Typography>
+      }
+      thirdPaneTitle={
+        <Typography
+          variant="h6"
+          sx={{ 
+            px: 2,
+          }}
+        >
+          Miscellaneous Panel
+        </Typography>
+      }
+      showFirstPaneCollapseButtonInHeader={true}
+      showThirdPaneCollapseButtonInHeader={true}
       firstPaneButtonTooltip="Toggle Add Node Panel"
       thirdPaneButtonTooltip="Toggle Miscellaneous Panel"
       firstPaneButtonDisabled={false}
