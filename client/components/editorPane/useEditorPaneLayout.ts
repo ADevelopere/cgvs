@@ -8,7 +8,6 @@
 
 import { useMemo } from "react";
 import { getEditorPaneStore } from "./editorPaneStoreManager";
-import type { PaneInitialConfig } from "./editorPaneStoreFactory";
 import {
   calculateInitialLayout,
   scaleLayout,
@@ -37,17 +36,15 @@ export type UseEditorPaneLayoutReturn = {
  * Hook that provides layout calculation functions
  *
  * @param storageKey - Unique key for this pane's store
- * @param initialConfig - Initial configuration for the pane
  * @returns Object with calculation functions
  */
 export const useEditorPaneLayout = (
-  storageKey: string,
-  initialConfig: PaneInitialConfig
+  storageKey: string
 ): UseEditorPaneLayoutReturn => {
   // Get store reference (stable across renders)
   const store = useMemo(
-    () => getEditorPaneStore(storageKey, initialConfig),
-    [storageKey, initialConfig]
+    () => getEditorPaneStore(storageKey),
+    [storageKey]
   );
 
   // Memoize the calculation functions

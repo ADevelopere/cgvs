@@ -36,7 +36,6 @@
 import {
   createEditorPaneStore,
   type EditorPaneStoreWithPersist,
-  type PaneInitialConfig,
 } from "./editorPaneStoreFactory";
 import type { StoreApi } from "zustand";
 
@@ -49,15 +48,13 @@ const storeCache = new Map<string, StoreApi<EditorPaneStoreWithPersist>>();
  * Get or create an EditorPane store for the given storage key
  *
  * The store will automatically load persisted state from localStorage if available.
- * If no persisted state exists, it will use the provided config to initialize.
+ * If no persisted state exists, it will initialize with sensible defaults.
  *
  * @param storageKey - Unique identifier for this pane's store
- * @param config - Initial configuration for the pane (visibility and collapsed states)
  * @returns The store instance for this storageKey
  */
 export const getEditorPaneStore = (
-  storageKey: string,
-  config: PaneInitialConfig
+  storageKey: string
 ): StoreApi<EditorPaneStoreWithPersist> => {
   // Return cached store if it exists
   if (storeCache.has(storageKey)) {
@@ -66,7 +63,7 @@ export const getEditorPaneStore = (
   }
 
   // Create new store and cache it
-  const newStore = createEditorPaneStore(storageKey, config);
+  const newStore = createEditorPaneStore(storageKey);
   storeCache.set(storageKey, newStore);
 
   return newStore;
