@@ -39,6 +39,7 @@ type PaneProps = {
   className?: string;
   style?: CSSProperties;
   visible: boolean;
+  collapsed?: boolean;
 };
 
 const defaultPaneProps: PaneProps = {
@@ -81,7 +82,15 @@ type PaneState = {
     first: boolean;
     third: boolean;
   };
+  collapsed: {
+    first: boolean;
+    third: boolean;
+  };
   previousSizes: {
+    first: number | null;
+    third: number | null;
+  };
+  preCollapseSizes: {
     first: number | null;
     third: number | null;
   };
@@ -91,6 +100,7 @@ type PaneState = {
 const STORAGE_KEY_PREFIX = "editorPane";
 const STORAGE_DEBOUNCE_MS = 300;
 const MIN_PANE_SIZE = 50; // Minimum width to keep panes visible
+const COLLAPSED_PANE_WIDTH = 60; // Width when pane is collapsed (header + button)
 
 // Helper functions for local storage operations
 const getStorageKey = (key?: string) =>
@@ -164,7 +174,15 @@ const EditorPane: FC<EditorPaneProps> = ({
           first: firstPane.visible,
           third: thirdPane.visible,
         },
+        collapsed: {
+          first: firstPane.collapsed ?? false,
+          third: thirdPane.collapsed ?? false,
+        },
         previousSizes: {
+          first: null,
+          third: null,
+        },
+        preCollapseSizes: {
           first: null,
           third: null,
         },
@@ -185,7 +203,15 @@ const EditorPane: FC<EditorPaneProps> = ({
           first: state.visibility.first,
           third: state.visibility.third,
         },
+        collapsed: state.collapsed ?? {
+          first: firstPane.collapsed ?? false,
+          third: thirdPane.collapsed ?? false,
+        },
         previousSizes: state.previousSizes,
+        preCollapseSizes: state.preCollapseSizes ?? {
+          first: null,
+          third: null,
+        },
       };
     }
     return {
@@ -194,12 +220,20 @@ const EditorPane: FC<EditorPaneProps> = ({
         first: firstPane.visible,
         third: thirdPane.visible,
       },
+      collapsed: {
+        first: firstPane.collapsed ?? false,
+        third: thirdPane.collapsed ?? false,
+      },
       previousSizes: {
         first: null,
         third: null,
       },
+      preCollapseSizes: {
+        first: null,
+        third: null,
+      },
     };
-  }, [storageKey, firstPane.visible, thirdPane.visible]);
+  }, [storageKey, firstPane.visible, thirdPane.visible, firstPane.collapsed, thirdPane.collapsed]);
 
   // Central pane state
   const [paneState, setPaneState] = useState<PaneState>(initialState);
@@ -228,7 +262,7 @@ const EditorPane: FC<EditorPaneProps> = ({
     }
   }, [containerRef, width]);
 
-  // Effect to handle initialization, visibility changes, and width changes
+  // Effect to handle initialization, visibility changes, collapse changes, and width changes
   useEffect(() => {
     if (!containerWidth) return;
 
@@ -236,19 +270,31 @@ const EditorPane: FC<EditorPaneProps> = ({
       first: firstPane.visible,
       third: thirdPane.visible,
     };
+    const currentCollapsed = {
+      first: firstPane.collapsed ?? false,
+      third: thirdPane.collapsed ?? false,
+    };
     const prevVisibility = paneState.visibility;
+    const prevCollapsed = paneState.collapsed;
     const totalWidth = containerWidth;
 
     const firstPaneHidden = prevVisibility.first && !currentVisibility.first;
     const thirdPaneHidden = prevVisibility.third && !currentVisibility.third;
     const firstPaneShown = !prevVisibility.first && currentVisibility.first;
     const thirdPaneShown = !prevVisibility.third && currentVisibility.third;
+    const firstPaneCollapsed = !prevCollapsed.first && currentCollapsed.first && currentVisibility.first;
+    const thirdPaneCollapsed = !prevCollapsed.third && currentCollapsed.third && currentVisibility.third;
+    const firstPaneUncollapsed = prevCollapsed.first && !currentCollapsed.first && currentVisibility.first;
+    const thirdPaneUncollapsed = prevCollapsed.third && !currentCollapsed.third && currentVisibility.third;
     const visibilityChanged =
       firstPaneHidden || thirdPaneHidden || firstPaneShown || thirdPaneShown;
+    const collapseChanged =
+      firstPaneCollapsed || thirdPaneCollapsed || firstPaneUncollapsed || thirdPaneUncollapsed;
     const widthChanged = totalWidth !== previousContainerWidthRef.current;
 
     let nextSizes = [...paneState.sizes];
     const nextPreviousSizes = { ...paneState.previousSizes };
+    const nextPreCollapseSizes = { ...paneState.preCollapseSizes };
 
     if (visibilityChanged) {
       if (firstPaneHidden) {
@@ -299,6 +345,65 @@ const EditorPane: FC<EditorPaneProps> = ({
 
         nextSizes = [nextSizes[0], newMiddleSize, restoredThirdSize];
         nextPreviousSizes.third = null;
+      }
+    } else if (collapseChanged) {
+      // Handle collapse/uncollapse transitions
+      if (firstPaneCollapsed) {
+        // Save current width before collapsing
+        nextPreCollapseSizes.first = nextSizes[0];
+        const sizeToRedistribute = nextSizes[0] - COLLAPSED_PANE_WIDTH;
+        nextSizes = [
+          COLLAPSED_PANE_WIDTH,
+          nextSizes[1] + sizeToRedistribute,
+          nextSizes[2],
+        ];
+      } else if (firstPaneUncollapsed) {
+        // Restore width from before collapse
+        const sizeToRestore = nextPreCollapseSizes.first;
+        if (sizeToRestore && sizeToRestore > COLLAPSED_PANE_WIDTH) {
+          const sizeToTake = sizeToRestore - COLLAPSED_PANE_WIDTH;
+          const newMiddleSize = nextSizes[1] - sizeToTake;
+          if (newMiddleSize < MIN_PANE_SIZE) {
+            // Can't restore full size, restore what we can
+            const availableSize = nextSizes[1] - MIN_PANE_SIZE;
+            nextSizes = [
+              COLLAPSED_PANE_WIDTH + availableSize,
+              MIN_PANE_SIZE,
+              nextSizes[2],
+            ];
+          } else {
+            nextSizes = [sizeToRestore, newMiddleSize, nextSizes[2]];
+          }
+          nextPreCollapseSizes.first = null;
+        }
+      } else if (thirdPaneCollapsed) {
+        // Save current width before collapsing
+        nextPreCollapseSizes.third = nextSizes[2];
+        const sizeToRedistribute = nextSizes[2] - COLLAPSED_PANE_WIDTH;
+        nextSizes = [
+          nextSizes[0],
+          nextSizes[1] + sizeToRedistribute,
+          COLLAPSED_PANE_WIDTH,
+        ];
+      } else if (thirdPaneUncollapsed) {
+        // Restore width from before collapse
+        const sizeToRestore = nextPreCollapseSizes.third;
+        if (sizeToRestore && sizeToRestore > COLLAPSED_PANE_WIDTH) {
+          const sizeToTake = sizeToRestore - COLLAPSED_PANE_WIDTH;
+          const newMiddleSize = nextSizes[1] - sizeToTake;
+          if (newMiddleSize < MIN_PANE_SIZE) {
+            // Can't restore full size, restore what we can
+            const availableSize = nextSizes[1] - MIN_PANE_SIZE;
+            nextSizes = [
+              nextSizes[0],
+              MIN_PANE_SIZE,
+              COLLAPSED_PANE_WIDTH + availableSize,
+            ];
+          } else {
+            nextSizes = [nextSizes[0], newMiddleSize, sizeToRestore];
+          }
+          nextPreCollapseSizes.third = null;
+        }
       }
     } else if (widthChanged || nextSizes.reduce((a, b) => a + b, 0) === 0) {
       const currentTotalSize = nextSizes.reduce((a, b) => a + b, 0);
@@ -392,11 +497,13 @@ const EditorPane: FC<EditorPaneProps> = ({
       (size, i) => Math.abs(size - paneState.sizes[i]) > 0.1
     );
 
-    if (sizesChanged || visibilityChanged) {
+    if (sizesChanged || visibilityChanged || collapseChanged) {
       const nextState: PaneState = {
         sizes: nextSizes,
         visibility: currentVisibility,
+        collapsed: currentCollapsed,
         previousSizes: nextPreviousSizes,
+        preCollapseSizes: nextPreCollapseSizes,
       };
       setPaneState(nextState);
 
@@ -409,6 +516,8 @@ const EditorPane: FC<EditorPaneProps> = ({
     containerWidth,
     firstPane.visible,
     thirdPane.visible,
+    firstPane.collapsed,
+    thirdPane.collapsed,
     firstPane.preferredRatio,
     thirdPane.preferredRatio,
     paneState,

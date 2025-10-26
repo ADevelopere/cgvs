@@ -1,6 +1,6 @@
 "use client";
 
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import ReactFlowEditor from "./ReactFlowEditor";
 import EditorPaneViewController from "@/client/components/editorPane/EditorPaneViewController";
 import { Template } from "@/client/graphql/generated/gql/graphql";
@@ -16,8 +16,7 @@ function LeftPane() {
       }}
       id="add-node-panel"
     >
-      {/* Add Node Panel */}
-      <h2>Add Node Panel</h2>
+      {/* Add Node Panel Content */}
     </Box>
   );
 }
@@ -33,8 +32,7 @@ function RightPane() {
       }}
       id="miscellaneous-panel"
     >
-      {/* Miscellaneous Panel */}
-      <h2>Miscellaneous Panel</h2>
+      {/* Miscellaneous Panel Content */}
     </Box>
   );
 }
@@ -42,7 +40,10 @@ function RightPane() {
 export default function EditorTab({ template }: { template: Template }) {
   return (
     <EditorPaneViewController
-      title="Editor"
+      firstPaneTitle={<Typography variant="h6">Add Node Panel</Typography>}
+      thirdPaneTitle={<Typography variant="h6">Miscellaneous Panel</Typography>}
+      showFirstPaneVisibilityInHeader={true}
+      showThirdPaneVisibilityInHeader={true}
       firstPaneButtonTooltip="Toggle Add Node Panel"
       thirdPaneButtonTooltip="Toggle Miscellaneous Panel"
       firstPaneButtonDisabled={false}
