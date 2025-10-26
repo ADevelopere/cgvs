@@ -104,10 +104,19 @@ const STORAGE_DEBOUNCE_MS = 300;
 const MIN_PANE_SIZE = 50; // Minimum width to keep panes visible
 // todo: receive from props
 const COLLAPSED_PANE_WIDTH = 40; // Width when pane is collapsed (header + button)
+const RESIZER_WIDTH = 4; // Width of resizer component (must match EditorPaneResizer minWidth)
 
 // Helper functions for local storage operations
 const getStorageKey = (key?: string) =>
   key ? `${STORAGE_KEY_PREFIX}_${key}` : null;
+
+// Helper to calculate number of visible resizers
+const getVisibleResizerCount = (
+  firstVisible: boolean,
+  thirdVisible: boolean
+) => {
+  return (firstVisible ? 1 : 0) + (thirdVisible ? 1 : 0);
+};
 
 // Function to save pane state to local storage
 const savePaneState = (key: string | undefined, state: PaneState) => {
@@ -237,7 +246,13 @@ const EditorPane: FC<EditorPaneProps> = ({
         third: null,
       },
     };
-  }, [storageKey, firstPane.visible, thirdPane.visible, firstPane.collapsed, thirdPane.collapsed]);
+  }, [
+    storageKey,
+    firstPane.visible,
+    thirdPane.visible,
+    firstPane.collapsed,
+    thirdPane.collapsed,
+  ]);
 
   // Central pane state
   const [paneState, setPaneState] = useState<PaneState>(initialState);
@@ -286,19 +301,34 @@ const EditorPane: FC<EditorPaneProps> = ({
     const thirdPaneHidden = prevVisibility.third && !currentVisibility.third;
     const firstPaneShown = !prevVisibility.first && currentVisibility.first;
     const thirdPaneShown = !prevVisibility.third && currentVisibility.third;
-    const firstPaneCollapsed = !prevCollapsed.first && currentCollapsed.first && currentVisibility.first;
-    const thirdPaneCollapsed = !prevCollapsed.third && currentCollapsed.third && currentVisibility.third;
-    const firstPaneUncollapsed = prevCollapsed.first && !currentCollapsed.first && currentVisibility.first;
-    const thirdPaneUncollapsed = prevCollapsed.third && !currentCollapsed.third && currentVisibility.third;
+    const firstPaneCollapsed =
+      !prevCollapsed.first && currentCollapsed.first && currentVisibility.first;
+    const thirdPaneCollapsed =
+      !prevCollapsed.third && currentCollapsed.third && currentVisibility.third;
+    const firstPaneUncollapsed =
+      prevCollapsed.first && !currentCollapsed.first && currentVisibility.first;
+    const thirdPaneUncollapsed =
+      prevCollapsed.third && !currentCollapsed.third && currentVisibility.third;
     const visibilityChanged =
       firstPaneHidden || thirdPaneHidden || firstPaneShown || thirdPaneShown;
     const collapseChanged =
-      firstPaneCollapsed || thirdPaneCollapsed || firstPaneUncollapsed || thirdPaneUncollapsed;
+      firstPaneCollapsed ||
+      thirdPaneCollapsed ||
+      firstPaneUncollapsed ||
+      thirdPaneUncollapsed;
     const widthChanged = totalWidth !== previousContainerWidthRef.current;
 
     let nextSizes = [...paneState.sizes];
     const nextPreviousSizes = { ...paneState.previousSizes };
     const nextPreCollapseSizes = { ...paneState.preCollapseSizes };
+
+    // Calculate available width for panes (excluding resizer widths)
+    const resizerCount = getVisibleResizerCount(
+      currentVisibility.first,
+      currentVisibility.third
+    );
+    const resizerTotalWidth = resizerCount * RESIZER_WIDTH;
+    const availableWidthForPanes = totalWidth - resizerTotalWidth;
 
     if (visibilityChanged) {
       if (firstPaneHidden) {
@@ -320,7 +350,7 @@ const EditorPane: FC<EditorPaneProps> = ({
         const firstInitialRatio = firstPane.preferredRatio ?? 0.33;
         let restoredFirstSize =
           sizeToRestore ??
-          Math.max(MIN_PANE_SIZE, totalWidth * firstInitialRatio);
+          Math.max(MIN_PANE_SIZE, availableWidthForPanes * firstInitialRatio);
         restoredFirstSize = Math.max(MIN_PANE_SIZE, restoredFirstSize);
 
         let newMiddleSize = nextSizes[1] - restoredFirstSize;
@@ -337,7 +367,7 @@ const EditorPane: FC<EditorPaneProps> = ({
         const thirdInitialRatio = thirdPane.preferredRatio ?? 0.33;
         let restoredThirdSize =
           sizeToRestore ??
-          Math.max(MIN_PANE_SIZE, totalWidth * thirdInitialRatio);
+          Math.max(MIN_PANE_SIZE, availableWidthForPanes * thirdInitialRatio);
         restoredThirdSize = Math.max(MIN_PANE_SIZE, restoredThirdSize);
 
         let newMiddleSize = nextSizes[1] - restoredThirdSize;
@@ -416,46 +446,116 @@ const EditorPane: FC<EditorPaneProps> = ({
         currentTotalSize === 0 ||
         (!currentVisibility.first && !currentVisibility.third)
       ) {
+        // Calculate width reserved for collapsed panes and resizers
+        const collapsedWidth =
+          (currentVisibility.first && currentCollapsed.first
+            ? COLLAPSED_PANE_WIDTH
+            : 0) +
+          (currentVisibility.third && currentCollapsed.third
+            ? COLLAPSED_PANE_WIDTH
+            : 0);
+
+        const availableWidth = availableWidthForPanes - collapsedWidth;
+
         const visiblePanesCount = [
-          currentVisibility.first,
-          true,
-          currentVisibility.third,
+          currentVisibility.first && !currentCollapsed.first,
+          true, // Middle pane is always adjustable
+          currentVisibility.third && !currentCollapsed.third,
         ].filter(Boolean).length;
+
         if (visiblePanesCount === 1) {
-          nextSizes = [0, totalWidth, 0];
-        } else {
-          const sizePerPane = totalWidth / visiblePanesCount;
           nextSizes = [
-            currentVisibility.first ? Math.max(MIN_PANE_SIZE, sizePerPane) : 0,
+            currentVisibility.first && currentCollapsed.first
+              ? COLLAPSED_PANE_WIDTH
+              : 0,
+            availableWidth,
+            currentVisibility.third && currentCollapsed.third
+              ? COLLAPSED_PANE_WIDTH
+              : 0,
+          ];
+        } else {
+          const sizePerPane = availableWidth / visiblePanesCount;
+          nextSizes = [
+            currentVisibility.first
+              ? currentCollapsed.first
+                ? COLLAPSED_PANE_WIDTH
+                : Math.max(MIN_PANE_SIZE, sizePerPane)
+              : 0,
             Math.max(MIN_PANE_SIZE, sizePerPane),
-            currentVisibility.third ? Math.max(MIN_PANE_SIZE, sizePerPane) : 0,
+            currentVisibility.third
+              ? currentCollapsed.third
+                ? COLLAPSED_PANE_WIDTH
+                : Math.max(MIN_PANE_SIZE, sizePerPane)
+              : 0,
           ];
         }
       } else if (currentTotalSize > 0) {
-        const scale = totalWidth / currentTotalSize;
-        nextSizes = nextSizes.map((size, index) => {
-          const isVisible =
-            (index === 0 && currentVisibility.first) ||
-            index === 1 ||
-            (index === 2 && currentVisibility.third);
-          return isVisible ? Math.max(MIN_PANE_SIZE, size * scale) : 0;
-        });
+        // Calculate width reserved for collapsed panes and resizers
+        const collapsedWidth =
+          (currentVisibility.first && currentCollapsed.first
+            ? COLLAPSED_PANE_WIDTH
+            : 0) +
+          (currentVisibility.third && currentCollapsed.third
+            ? COLLAPSED_PANE_WIDTH
+            : 0);
+
+        // Calculate current size of non-collapsed panes
+        const currentNonCollapsedSize =
+          (currentVisibility.first && !currentCollapsed.first
+            ? nextSizes[0]
+            : 0) +
+          nextSizes[1] +
+          (currentVisibility.third && !currentCollapsed.third
+            ? nextSizes[2]
+            : 0);
+
+        const availableWidth = availableWidthForPanes - collapsedWidth;
+
+        if (currentNonCollapsedSize > 0) {
+          const scale = availableWidth / currentNonCollapsedSize;
+
+          nextSizes = nextSizes.map((size, index) => {
+            const isVisible =
+              (index === 0 && currentVisibility.first) ||
+              index === 1 ||
+              (index === 2 && currentVisibility.third);
+
+            // Don't scale collapsed panes
+            if (index === 0 && currentCollapsed.first) {
+              return COLLAPSED_PANE_WIDTH;
+            }
+            if (index === 2 && currentCollapsed.third) {
+              return COLLAPSED_PANE_WIDTH;
+            }
+
+            return isVisible ? Math.max(MIN_PANE_SIZE, size * scale) : 0;
+          });
+        }
       }
     }
 
-    // Final adjustments to ensure sizes add up to totalWidth
+    // Final adjustments to ensure sizes add up to availableWidthForPanes
+    // Collapsed panes have the highest priority and must remain at COLLAPSED_PANE_WIDTH
     let currentTotal = nextSizes.reduce((a, b) => a + b, 0);
-    let diff = totalWidth - currentTotal;
+    let diff = availableWidthForPanes - currentTotal;
 
-    const visibleIndices = [
+    // Identify all visible panes (excluding hidden ones)
+    const allVisibleIndices = [
       currentVisibility.first ? 0 : -1,
       1,
       currentVisibility.third ? 2 : -1,
     ].filter(index => index !== -1);
 
-    if (diff !== 0 && visibleIndices.length > 0) {
+    // Identify non-collapsed panes that can be adjusted
+    const adjustableIndices = allVisibleIndices.filter(index => {
+      if (index === 0) return !currentCollapsed.first;
+      if (index === 2) return !currentCollapsed.third;
+      return true; // Middle pane is always adjustable
+    });
+
+    if (diff !== 0 && adjustableIndices.length > 0) {
       const middleIndex = 1;
-      if (visibleIndices.includes(middleIndex)) {
+      if (adjustableIndices.includes(middleIndex)) {
         const middleAdjusted = nextSizes[middleIndex] + diff;
         if (middleAdjusted >= MIN_PANE_SIZE) {
           nextSizes[middleIndex] = middleAdjusted;
@@ -468,12 +568,12 @@ const EditorPane: FC<EditorPaneProps> = ({
       }
 
       if (diff !== 0) {
-        const otherVisibleIndices = visibleIndices.filter(
+        const otherAdjustableIndices = adjustableIndices.filter(
           i => i !== middleIndex
         );
-        if (otherVisibleIndices.length > 0) {
-          const diffPerPane = diff / otherVisibleIndices.length;
-          otherVisibleIndices.forEach(i => {
+        if (otherAdjustableIndices.length > 0) {
+          const diffPerPane = diff / otherAdjustableIndices.length;
+          otherAdjustableIndices.forEach(i => {
             nextSizes[i] = Math.max(MIN_PANE_SIZE, nextSizes[i] + diffPerPane);
           });
         }
@@ -481,17 +581,46 @@ const EditorPane: FC<EditorPaneProps> = ({
 
       currentTotal = nextSizes.reduce((a, b) => a + b, 0);
       diff = totalWidth - currentTotal;
-      if (diff !== 0 && visibleIndices.length > 0) {
-        const finalAdjustIndex = visibleIndices.includes(middleIndex)
+      if (diff !== 0 && adjustableIndices.length > 0) {
+        const finalAdjustIndex = adjustableIndices.includes(middleIndex)
           ? middleIndex
-          : visibleIndices[visibleIndices.length - 1];
+          : adjustableIndices[adjustableIndices.length - 1];
         nextSizes[finalAdjustIndex] = Math.max(
           MIN_PANE_SIZE,
           nextSizes[finalAdjustIndex] + diff
         );
       }
-    } else if (visibleIndices.length === 1) {
-      nextSizes[visibleIndices[0]] = totalWidth;
+    } else if (adjustableIndices.length === 1) {
+      nextSizes[adjustableIndices[0]] =
+        availableWidthForPanes -
+        (currentCollapsed.first && currentVisibility.first
+          ? COLLAPSED_PANE_WIDTH
+          : 0) -
+        (currentCollapsed.third && currentVisibility.third
+          ? COLLAPSED_PANE_WIDTH
+          : 0);
+    }
+
+    // Enforce collapsed pane widths - highest priority
+    if (currentVisibility.first && currentCollapsed.first) {
+      const correction = COLLAPSED_PANE_WIDTH - nextSizes[0];
+      if (correction !== 0) {
+      }
+      nextSizes[0] = COLLAPSED_PANE_WIDTH;
+      // Adjust the middle pane to compensate
+      if (correction !== 0) {
+        nextSizes[1] = Math.max(MIN_PANE_SIZE, nextSizes[1] - correction);
+      }
+    }
+    if (currentVisibility.third && currentCollapsed.third) {
+      const correction = COLLAPSED_PANE_WIDTH - nextSizes[2];
+      if (correction !== 0) {
+      }
+      nextSizes[2] = COLLAPSED_PANE_WIDTH;
+      // Adjust the middle pane to compensate
+      if (correction !== 0) {
+        nextSizes[1] = Math.max(MIN_PANE_SIZE, nextSizes[1] - correction);
+      }
     }
 
     if (!currentVisibility.first) nextSizes[0] = 0;

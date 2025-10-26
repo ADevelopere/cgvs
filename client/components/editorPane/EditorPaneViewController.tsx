@@ -6,79 +6,65 @@ import { PanelRight, PanelLeft } from "lucide-react";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import EditorPane from "./EditorPane";
 
+export type PaneConfig = {
+  /**
+   * Pane header title content
+   */
+  title: React.ReactNode;
+  /**
+   * Pane content
+   */
+  content: React.ReactNode;
+  /**
+   * Disable the pane button
+   */
+  buttonDisabled: boolean;
+  /**
+   * Tooltip for the pane button
+   */
+  buttonTooltip: string;
+  /**
+   * Show the collapse button in the pane header
+   */
+  showCollapseButtonInHeader?: boolean;
+};
+
 type EditorPaneViewControllerProps = {
   /**
    * Top header title content
    */
   topTitle?: React.ReactNode;
   /**
-   * First pane header title content
-   */
-  firstPaneTitle: React.ReactNode;
-  /**
-   * Third pane header title content
-   */
-  thirdPaneTitle: React.ReactNode;
-  /**
    * Show the visibility buttons in the top header (first pane and third pane)
    */
   showVisibilityButtonsInTopTitle?: boolean;
   /**
-   * Show the collapse button in the first pane header
+   * First pane configuration
    */
-  showFirstPaneCollapseButtonInHeader?: boolean;
-  /**
-   * Show the collapse button in the third pane header
-   */
-  showThirdPaneCollapseButtonInHeader?: boolean;
-  /**
-   * Disable the first pane button
-   */
-  firstPaneButtonDisabled: boolean;
-  /**
-   * Disable the third pane button
-   */
-  thirdPaneButtonDisabled: boolean;
-  /**
-   * Tooltip for the first pane button
-   */
-  firstPaneButtonTooltip: string;
-  /**
-   * Tooltip for the third pane button
-   */
-  thirdPaneButtonTooltip: string;
-  /**
-   * First pane content
-   */
-  firstPane: React.ReactNode;
+  firstPane: PaneConfig;
   /**
    * Middle pane content
    */
   middlePane: React.ReactNode;
   /**
-   * Third pane content
+   * Third pane configuration
    */
-  thirdPane: React.ReactNode;
+  thirdPane: PaneConfig;
+  /**
+   * Storage key for persisting pane states
+   */
   storageKey?: string;
 };
 
 const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
   topTitle,
-  firstPaneTitle,
-  thirdPaneTitle,
   showVisibilityButtonsInTopTitle,
-  showFirstPaneCollapseButtonInHeader,
-  showThirdPaneCollapseButtonInHeader,
-  firstPaneButtonDisabled,
-  thirdPaneButtonDisabled,
-  firstPaneButtonTooltip,
-  thirdPaneButtonTooltip,
   firstPane,
   middlePane,
   thirdPane,
   storageKey,
 }) => {
-  const { theme } = useAppTheme();
+  const { theme, isRtl } = useAppTheme();
   const [firstPaneVisible, setFirstPaneVisible] = useState<boolean>(true);
   const [thirdPaneVisible, setThirdPaneVisible] = useState<boolean>(true);
   const [firstPaneCollapsed, setFirstPaneCollapsed] = useState<boolean>(false);
@@ -137,22 +123,22 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
           {showVisibilityButtonsInTopTitle && (
             <Box>
               {/* First pane visibility button */}
-              <Tooltip title={firstPaneButtonTooltip}>
+              <Tooltip title={firstPane.buttonTooltip}>
                 <span>
                   <IconButton
                     onClick={handleFirstPaneVisibility}
-                    disabled={firstPaneButtonDisabled}
+                    disabled={firstPane.buttonDisabled}
                   >
                     <PanelLeft />
                   </IconButton>
                 </span>
               </Tooltip>
               {/* Third pane visibility button */}
-              <Tooltip title={thirdPaneButtonTooltip}>
+              <Tooltip title={thirdPane.buttonTooltip}>
                 <span>
                   <IconButton
                     onClick={handleThirdPaneVisibility}
-                    disabled={thirdPaneButtonDisabled}
+                    disabled={thirdPane.buttonDisabled}
                   >
                     <PanelRight />
                   </IconButton>
@@ -210,13 +196,27 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                 borderColor: theme.palette.divider,
                 pb: 1,
                 mb: 1,
-                backgroundColor: "blue",
               }}
             >
+              {/* First pane collapse button */}
+              {firstPane.showCollapseButtonInHeader && (
+                <Box sx={{ flexShrink: 0 }}>
+                  <Tooltip title={firstPane.buttonTooltip}>
+                    <IconButton
+                      onClick={handleFirstPaneCollapse}
+                      disabled={firstPane.buttonDisabled}
+                    >
+                      <PanelLeft />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              )}
+
               {/* First pane title */}
               <Box
                 sx={{
                   flex: 1,
+                  textAlign: "end",
                   minWidth: 0,
                   overflow: "hidden",
                   textOverflow: "ellipsis",
@@ -227,21 +227,8 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                     "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
               >
-                {firstPaneTitle}
+                {firstPane.title}
               </Box>
-              {/* First pane collapse button */}
-              {showFirstPaneCollapseButtonInHeader && (
-                <Box sx={{ flexShrink: 0 }}>
-                  <Tooltip title={firstPaneButtonTooltip}>
-                    <IconButton
-                      onClick={handleFirstPaneCollapse}
-                      disabled={firstPaneButtonDisabled}
-                    >
-                      <PanelLeft />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-              )}
             </Box>
             {/* First pane content */}
             <Box
@@ -254,7 +241,7 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                   "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-height 300ms cubic-bezier(0.4, 0, 0.2, 1)",
               }}
             >
-              {firstPane}
+              {firstPane.content}
             </Box>
           </Box>
 
@@ -280,7 +267,6 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                 borderColor: theme.palette.divider,
                 pb: 1,
                 mb: 1,
-                backgroundColor: "red",
               }}
             >
               {/* Third pane title */}
@@ -297,15 +283,15 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                     "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
               >
-                {thirdPaneTitle}
+                {thirdPane.title}
               </Box>
               {/* Third pane collapse button */}
-              {showThirdPaneCollapseButtonInHeader && (
+              {thirdPane.showCollapseButtonInHeader && (
                 <Box sx={{ flexShrink: 0 }}>
-                  <Tooltip title={thirdPaneButtonTooltip}>
+                  <Tooltip title={thirdPane.buttonTooltip}>
                     <IconButton
                       onClick={handleThirdPaneCollapse}
-                      disabled={thirdPaneButtonDisabled}
+                      disabled={thirdPane.buttonDisabled}
                     >
                       <PanelRight />
                     </IconButton>
@@ -324,7 +310,7 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                   "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-height 300ms cubic-bezier(0.4, 0, 0.2, 1)",
               }}
             >
-              {thirdPane}
+              {thirdPane.content}
             </Box>
           </Box>
         </EditorPane>
