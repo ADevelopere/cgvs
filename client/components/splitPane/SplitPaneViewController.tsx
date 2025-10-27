@@ -2,7 +2,7 @@ import { Box, IconButton, Tooltip } from "@mui/material";
 import React, { useCallback, useState } from "react";
 import { PanelRight, PanelLeft } from "lucide-react";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
-import { SplitPane } from "./SplitPane";
+import { SplitPane, type PaneProps } from "./SplitPane";
 
 export type SplitPaneViewControllerProps = {
   title: React.ReactNode;
@@ -14,6 +14,8 @@ export type SplitPaneViewControllerProps = {
   secondPane: React.ReactNode;
   style?: React.CSSProperties;
   storageKey?: string;
+  firstPaneProps?: Partial<Omit<PaneProps, "visible">>;
+  secondPaneProps?: Partial<Omit<PaneProps, "visible">>;
 };
 
 export const SplitPaneViewController: React.FC<
@@ -28,6 +30,8 @@ export const SplitPaneViewController: React.FC<
   secondPane,
   style,
   storageKey,
+  firstPaneProps,
+  secondPaneProps,
 }) => {
   const { theme } = useAppTheme();
   const [firstPaneVisible, setFirstPaneVisible] = useState<boolean>(true);
@@ -90,11 +94,11 @@ export const SplitPaneViewController: React.FC<
         orientation="vertical"
         firstPane={{
           visible: firstPaneVisible,
-          minRatio: 0.3,
+          ...firstPaneProps,
         }}
         secondPane={{
           visible: secondPaneVisible,
-          minRatio: 0.3,
+          ...secondPaneProps,
         }}
         resizerProps={{
           style: {
