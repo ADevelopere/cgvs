@@ -205,6 +205,7 @@ export const enStorage: StorageTranslations = {
     spreadsheets: "Spreadsheets",
     presentations: "Presentations",
     videos: "Videos",
+    fonts: "Fonts",
     forms: "Forms",
     photos: "Photos",
     pdfs: "PDFs",

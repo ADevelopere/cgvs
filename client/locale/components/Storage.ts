@@ -240,6 +240,7 @@ export type StorageManagementUITranslations = {
   spreadsheets: string;
   presentations: string;
   videos: string;
+  fonts: string;
   forms: string;
   photos: string;
   pdfs: string;

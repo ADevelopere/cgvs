@@ -6,7 +6,6 @@ import {
   Close as CloseIcon,
 } from "@mui/icons-material";
 import FilePickerDialog from "@/client/views/storage/dialogs/FilePickerDialog";
-import { FONT_FILE_EXTENSIONS } from "../types";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
@@ -43,10 +42,6 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({
 
   const handleClear = () => {
     onChange(null);
-  };
-
-  const getAllowedFileTypes = () => {
-    return FONT_FILE_EXTENSIONS.map(ext => `*${ext}`);
   };
 
   return (
@@ -133,7 +128,7 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({
         onClose={() => setIsPickerOpen(false)}
         onFileSelect={handleFileSelect}
         title="Select Font File"
-        allowedFileTypes={getAllowedFileTypes()}
+        allowedFileTypes={["FONT"]}
       />
     </>
   );

@@ -103,6 +103,7 @@ export enum FileTypes {
   AUDIO = "AUDIO",
   DOCUMENT = "DOCUMENT",
   ARCHIVE = "ARCHIVE",
+  FONT = "FONT",
   OTHER = "OTHER",
 }
 
@@ -112,28 +113,6 @@ export enum FileSortField {
   TYPE = "TYPE",
   CREATED = "CREATED",
   MODIFIED = "MODIFIED",
-}
-
-export enum FileContentType {
-  IMAGE_JPEG = "image/jpeg",
-  IMAGE_PNG = "image/png",
-  IMAGE_GIF = "image/gif",
-  IMAGE_WEBP = "image/webp",
-  APPLICATION_PDF = "application/pdf",
-  APPLICATION_MSWORD = "application/msword",
-  APPLICATION_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  APPLICATION_XLS = "application/vnd.ms-excel",
-  APPLICATION_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  TEXT_PLAIN = "text/plain",
-  APPLICATION_ZIP = "application/zip",
-  APPLICATION_RAR = "application/vnd.rar",
-  VIDEO_MP4 = "video/mp4",
-  AUDIO_MPEG = "audio/mpeg",
-  AUDIO_WAV = "audio/wav",
-  FONT_OTF = "font/otf",
-  FONT_TTF = "font/ttf",
-  FONT_WOFF = "font/woff",
-  FONT_WOFF2 = "font/woff2",
 }
 
 // Input types
@@ -191,14 +170,16 @@ export interface FilesListSearchInput {
   limit?: number | null;
   offset?: number | null;
   searchTerm?: string | null;
-  fileType?: string | null;
+  fileType?: string | null; // Deprecated: Use fileTypes instead
+  fileTypes?: string[] | null; // List of FileTypes enum values
+  contentTypes?: string[] | null; // List of MIME types
   sortBy?: FileSortField | null;
   sortDirection?: OrderSortDirection | null;
 }
 
 export interface UploadSignedUrlGenerateInput {
   path: string;
-  contentType: FileContentType;
+  contentType: string;
   fileSize: number;
   contentMd5: string;
 }

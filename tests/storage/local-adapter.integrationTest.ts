@@ -79,7 +79,6 @@ await (async () => {
 import { createLocalAdapter } from "@/server/storage/disk/local";
 import type { StorageService } from "@/server/storage/disk/storage.service.interface";
 import {
-  FileContentType,
   type FileInfo,
   type DirectoryInfo,
 } from "@/server/types/storage.types";
@@ -222,7 +221,7 @@ describe("Local Storage Adapter", () => {
       testLogger.info("📤 Calling adapter.uploadFile...");
       const result = await adapter.uploadFile(
         "public/test.txt",
-        FileContentType.TEXT_PLAIN,
+        "text/plain",
         buffer
       );
       testLogger.info("📤 Upload result:", {
@@ -243,7 +242,7 @@ describe("Local Storage Adapter", () => {
       const buffer = Buffer.from("nested content");
       const result = await adapter.uploadFile(
         "public/deep/nested/path/file.txt",
-        FileContentType.TEXT_PLAIN,
+        "text/plain",
         buffer
       );
 
@@ -259,7 +258,7 @@ describe("Local Storage Adapter", () => {
       const binaryData = Buffer.from([0x00, 0x01, 0x02, 0xff, 0xfe, 0xfd]);
       const result = await adapter.uploadFile(
         "public/binary.dat",
-        FileContentType.APPLICATION_ZIP,
+        "application/zip",
         binaryData
       );
 

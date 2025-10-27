@@ -12,6 +12,7 @@ import {
 import { StorageDbRepository, SignedUrlRepository } from "@/server/db/repo";
 import { StorageUtils } from "@/server/utils";
 import { OrderSortDirection } from "@/lib/enum";
+import { extToMime } from "@/utils/storage.utils";
 
 /**
  * Clean path for local storage - removes leading slashes and normalizes
@@ -179,7 +180,8 @@ class LocalAdapter implements StorageService {
       // Validate upload
       const validationError = await StorageUtils.validateUpload(
         cleanedPath,
-        input.fileSize
+        input.fileSize,
+        mimeType
       );
       if (validationError) {
         throw new StorageValidationError(validationError);
@@ -250,7 +252,7 @@ class LocalAdapter implements StorageService {
 
   async uploadFile(
     filePath: string,
-    contentType: Types.FileContentType,
+    contentType: string,
     buffer: Buffer
   ): Promise<Types.FileUploadResult> {
     try {
@@ -261,7 +263,8 @@ class LocalAdapter implements StorageService {
       // Validate upload
       const validationError = await StorageUtils.validateUpload(
         filePath,
-        fileSize
+        fileSize,
+        contentType
       );
       if (validationError) {
         return {
@@ -414,33 +417,9 @@ class LocalAdapter implements StorageService {
           const md5Hash = await this.calculateMd5(absoluteFilePath);
           const directoryPath = StorageUtils.extractDirectoryPath(filePath);
 
-          // Detect content type
-          const ext = path.extname(filePath).toLowerCase();
-          const contentTypeMap: Record<string, string> = {
-            ".jpg": "image/jpeg",
-            ".jpeg": "image/jpeg",
-            ".png": "image/png",
-            ".gif": "image/gif",
-            ".webp": "image/webp",
-            ".pdf": "application/pdf",
-            ".doc": "application/msword",
-            ".docx":
-              "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            ".xls": "application/vnd.ms-excel",
-            ".xlsx":
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            ".txt": "text/plain",
-            ".zip": "application/zip",
-            ".rar": "application/vnd.rar",
-            ".mp4": "video/mp4",
-            ".mp3": "audio/mpeg",
-            ".wav": "audio/wav",
-            ".otf": "font/otf",
-            ".ttf": "font/ttf",
-            ".woff": "font/woff",
-            ".woff2": "font/woff2",
-          };
-          const contentType = contentTypeMap[ext] || "application/octet-stream";
+          // Detect content type from extension using shared utility
+          const ext = path.extname(filePath).toLowerCase().slice(1); // Remove leading dot
+          const contentType = extToMime[ext] || "application/octet-stream";
 
           const bucketFile: Types.BucketFile = {
             path: filePath,
@@ -507,15 +486,12 @@ class LocalAdapter implements StorageService {
         );
       }
 
-      // Apply file type filter
-      if (input.fileType) {
-        filteredItems = filteredItems.filter(item => {
-          if ("fileType" in item) {
-            return item.fileType === input.fileType;
-          }
-          return false;
-        });
-      }
+      // Apply file type and content type filters
+      filteredItems = StorageUtils.filterStorageItems(filteredItems, {
+        fileType: input.fileType,
+        fileTypes: input.fileTypes,
+        contentTypes: input.contentTypes,
+      });
 
       // Sort items
       const sortedItems = StorageUtils.sortItems(
@@ -690,33 +666,9 @@ class LocalAdapter implements StorageService {
       const stats = await fs.stat(newAbsolutePath);
       const md5Hash = await this.calculateMd5(newAbsolutePath);
 
-      // Detect content type from file extension
-      const ext = path.extname(newPath).toLowerCase();
-      const contentTypeMap: Record<string, string> = {
-        ".jpg": "image/jpeg",
-        ".jpeg": "image/jpeg",
-        ".png": "image/png",
-        ".gif": "image/gif",
-        ".webp": "image/webp",
-        ".pdf": "application/pdf",
-        ".doc": "application/msword",
-        ".docx":
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        ".xls": "application/vnd.ms-excel",
-        ".xlsx":
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        ".txt": "text/plain",
-        ".zip": "application/zip",
-        ".rar": "application/vnd.rar",
-        ".mp4": "video/mp4",
-        ".mp3": "audio/mpeg",
-        ".wav": "audio/wav",
-        ".otf": "font/otf",
-        ".ttf": "font/ttf",
-        ".woff": "font/woff",
-        ".woff2": "font/woff2",
-      };
-      const contentType = contentTypeMap[ext] || "application/octet-stream";
+      // Detect content type from file extension using shared utility
+      const ext = path.extname(newPath).toLowerCase().slice(1); // Remove leading dot
+      const contentType = extToMime[ext] || "application/octet-stream";
 
       const bucketFile: Types.BucketFile = {
         path: newPath,
@@ -870,33 +822,9 @@ class LocalAdapter implements StorageService {
       const md5Hash = await this.calculateMd5(absolutePath);
       const directoryPath = StorageUtils.extractDirectoryPath(filePath);
 
-      // Detect content type from file extension
-      const ext = path.extname(filePath).toLowerCase();
-      const contentTypeMap: Record<string, string> = {
-        ".jpg": "image/jpeg",
-        ".jpeg": "image/jpeg",
-        ".png": "image/png",
-        ".gif": "image/gif",
-        ".webp": "image/webp",
-        ".pdf": "application/pdf",
-        ".doc": "application/msword",
-        ".docx":
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        ".xls": "application/vnd.ms-excel",
-        ".xlsx":
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        ".txt": "text/plain",
-        ".zip": "application/zip",
-        ".rar": "application/vnd.rar",
-        ".mp4": "video/mp4",
-        ".mp3": "audio/mpeg",
-        ".wav": "audio/wav",
-        ".otf": "font/otf",
-        ".ttf": "font/ttf",
-        ".woff": "font/woff",
-        ".woff2": "font/woff2",
-      };
-      const contentType = contentTypeMap[ext] || "application/octet-stream";
+      // Detect content type from file extension using shared utility
+      const ext = path.extname(filePath).toLowerCase().slice(1); // Remove leading dot
+      const contentType = extToMime[ext] || "application/octet-stream";
 
       const bucketFile: Types.BucketFile = {
         path: filePath,
@@ -945,33 +873,9 @@ class LocalAdapter implements StorageService {
       const md5Hash = await this.calculateMd5(absolutePath);
       const directoryPath = StorageUtils.extractDirectoryPath(dbFile.path);
 
-      // Detect content type from file extension
-      const ext = path.extname(dbFile.path).toLowerCase();
-      const contentTypeMap: Record<string, string> = {
-        ".jpg": "image/jpeg",
-        ".jpeg": "image/jpeg",
-        ".png": "image/png",
-        ".gif": "image/gif",
-        ".webp": "image/webp",
-        ".pdf": "application/pdf",
-        ".doc": "application/msword",
-        ".docx":
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        ".xls": "application/vnd.ms-excel",
-        ".xlsx":
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        ".txt": "text/plain",
-        ".zip": "application/zip",
-        ".rar": "application/vnd.rar",
-        ".mp4": "video/mp4",
-        ".mp3": "audio/mpeg",
-        ".wav": "audio/wav",
-        ".otf": "font/otf",
-        ".ttf": "font/ttf",
-        ".woff": "font/woff",
-        ".woff2": "font/woff2",
-      };
-      const contentType = contentTypeMap[ext] || "application/octet-stream";
+      // Detect content type from file extension using shared utility
+      const ext = path.extname(dbFile.path).toLowerCase().slice(1); // Remove leading dot
+      const contentType = extToMime[ext] || "application/octet-stream";
 
       const bucketFile: Types.BucketFile = {
         path: dbFile.path,
@@ -1026,34 +930,9 @@ class LocalAdapter implements StorageService {
             const size = BigInt(stats.size);
             totalSize += size;
 
-            // Detect content type from file extension
-            const ext = path.extname(entry.name).toLowerCase();
-            const contentTypeMap: Record<string, string> = {
-              ".jpg": "image/jpeg",
-              ".jpeg": "image/jpeg",
-              ".png": "image/png",
-              ".gif": "image/gif",
-              ".webp": "image/webp",
-              ".pdf": "application/pdf",
-              ".doc": "application/msword",
-              ".docx":
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-              ".xls": "application/vnd.ms-excel",
-              ".xlsx":
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-              ".txt": "text/plain",
-              ".zip": "application/zip",
-              ".rar": "application/vnd.rar",
-              ".mp4": "video/mp4",
-              ".mp3": "audio/mpeg",
-              ".wav": "audio/wav",
-              ".otf": "font/otf",
-              ".ttf": "font/ttf",
-              ".woff": "font/woff",
-              ".woff2": "font/woff2",
-            };
-            const contentType =
-              contentTypeMap[ext] || "application/octet-stream";
+            // Detect content type from file extension using shared utility
+            const ext = path.extname(entry.name).toLowerCase().slice(1); // Remove leading dot
+            const contentType = extToMime[ext] || "application/octet-stream";
 
             const fileType =
               StorageUtils.getFileTypeFromContentType(contentType);
@@ -1081,32 +960,8 @@ class LocalAdapter implements StorageService {
           const size = BigInt(stats.size);
           totalSize = size;
 
-          const ext = path.extname(targetPath).toLowerCase();
-          const contentTypeMap: Record<string, string> = {
-            ".jpg": "image/jpeg",
-            ".jpeg": "image/jpeg",
-            ".png": "image/png",
-            ".gif": "image/gif",
-            ".webp": "image/webp",
-            ".pdf": "application/pdf",
-            ".doc": "application/msword",
-            ".docx":
-              "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            ".xls": "application/vnd.ms-excel",
-            ".xlsx":
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            ".txt": "text/plain",
-            ".zip": "application/zip",
-            ".rar": "application/vnd.rar",
-            ".mp4": "video/mp4",
-            ".mp3": "audio/mpeg",
-            ".wav": "audio/wav",
-            ".otf": "font/otf",
-            ".ttf": "font/ttf",
-            ".woff": "font/woff",
-            ".woff2": "font/woff2",
-          };
-          const contentType = contentTypeMap[ext] || "application/octet-stream";
+          const ext = path.extname(targetPath).toLowerCase().slice(1); // Remove leading dot
+          const contentType = extToMime[ext] || "application/octet-stream";
 
           const fileType = StorageUtils.getFileTypeFromContentType(contentType);
           fileTypeMap.set(fileType, {

@@ -17,7 +17,6 @@ import {
   Close,
 } from "@mui/icons-material";
 import FileTypeIcon from "./FileTypeIcon";
-import { mimeToContentType } from "@/client/views/storage/core/storage.constant";
 import Image from "next/image";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { FileInfo } from "@/client/graphql/generated/gql/graphql";
@@ -31,11 +30,7 @@ interface FilePreviewProps {
 function isImage(file: FileInfo) {
   return (
     file.contentType &&
-    ((mimeToContentType[file.contentType] &&
-      ["JPEG", "PNG", "GIF", "WEBP", "SVG"].includes(
-        mimeToContentType[file.contentType]
-      )) ||
-      file.contentType.startsWith("image/"))
+    file.contentType.startsWith("image/")
   );
 }
 

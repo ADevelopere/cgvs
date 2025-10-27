@@ -231,7 +231,7 @@ describe("Upload Integration Test", () => {
       variables: {
         input: {
           path: fullPath,
-          contentType: "IMAGE_JPEG", // Correct content type for .jpg files
+          contentType: "image/jpeg", // Correct content type for .jpg files
           fileSize,
           contentMd5, // Base64-encoded MD5 hash for GCP compatibility
         },

@@ -8,7 +8,6 @@ import {
   inferContentType,
   getFileKey,
   generateFileMD5,
-  contentTypeEnumToMime,
 } from "../core/storage.util";
 import { getStoragePath } from "../core/storage.location";
 import logger from "@/client/lib/logger";
@@ -123,11 +122,9 @@ export const useStorageUploadOperations = () => {
           });
         };
 
-        // Convert ContentType enum to MIME type for the HTTP header
-        const uploadContentType = contentTypeEnumToMime(contentType);
-
+        // contentType is already a MIME type string
         currentXhr.open("PUT", signedUrl);
-        currentXhr.setRequestHeader("Content-Type", uploadContentType);
+        currentXhr.setRequestHeader("Content-Type", contentType);
         currentXhr.setRequestHeader("Content-MD5", contentMd5);
 
         // Set timeout for the request (5 minutes)
@@ -172,7 +169,7 @@ export const useStorageUploadOperations = () => {
                 responseHeaders: currentXhr.getAllResponseHeaders(),
                 signedUrl: signedUrl.substring(0, 200) + "...",
                 sentContentMd5: contentMd5,
-                sentContentType: uploadContentType,
+                sentContentType: contentType,
                 browserFileType: file.type,
                 inferredContentType: contentType,
               });

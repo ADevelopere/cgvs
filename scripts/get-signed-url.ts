@@ -15,8 +15,8 @@ import { spawn } from "child_process";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { HttpLink } from "@apollo/client/link/http";
 import { generateUploadSignedUrlMutationDocument } from "@/client/views/storage/core/storage.documents";
-import type { ContentType } from "@/client/graphql/generated/gql/graphql";
 import { testLogger } from "@/lib/testlogger";
+import { extToMime } from "@/utils/storage.utils";
 
 // GraphQL client setup
 const httpLink = new HttpLink({
@@ -76,105 +76,21 @@ function getFileSize(filePath: string): number {
 }
 
 /**
- * Get content type enum from file extension (matching server logic)
+ * Get MIME type from file extension using shared utility
  */
-function getContentTypeFromFileName(fileName: string): ContentType {
+function getContentTypeFromFileName(fileName: string): string {
   const extension = fileName
     .substring(fileName.lastIndexOf(".") + 1)
     .toLowerCase();
 
-  switch (extension) {
-    case "jpg":
-    case "jpeg":
-      return "IMAGE_JPEG";
-    case "png":
-      return "IMAGE_PNG";
-    case "gif":
-      return "IMAGE_GIF";
-    case "webp":
-      return "IMAGE_WEBP";
-    case "pdf":
-      return "APPLICATION_PDF";
-    case "doc":
-      return "APPLICATION_MSWORD";
-    case "docx":
-      return "APPLICATION_DOCX";
-    case "xls":
-      return "APPLICATION_XLS";
-    case "xlsx":
-      return "APPLICATION_XLSX";
-    case "txt":
-      return "TEXT_PLAIN";
-    case "zip":
-      return "APPLICATION_ZIP";
-    case "rar":
-      return "APPLICATION_RAR";
-    case "mp4":
-      return "VIDEO_MP4";
-    case "mp3":
-      return "AUDIO_MPEG";
-    case "wav":
-      return "AUDIO_WAV";
-    case "otf":
-      return "FONT_OTF";
-    case "ttf":
-      return "FONT_TTF";
-    case "woff":
-      return "FONT_WOFF";
-    case "woff2":
-      return "FONT_WOFF2";
-    default:
-      return "IMAGE_JPEG"; // Default fallback
-  }
+  return extToMime[extension] || "text/plain"; // Default fallback
 }
 
 /**
- * Map MIME type to ContentType enum (for backward compatibility)
+ * Return MIME type as-is (no mapping needed anymore)
  */
-function mapContentType(mimeType: string): ContentType {
-  switch (mimeType.toLowerCase()) {
-    case "image/jpeg":
-    case "image/jpg":
-      return "IMAGE_JPEG";
-    case "image/png":
-      return "IMAGE_PNG";
-    case "image/gif":
-      return "IMAGE_GIF";
-    case "image/webp":
-      return "IMAGE_WEBP";
-    case "application/pdf":
-      return "APPLICATION_PDF";
-    case "application/msword":
-      return "APPLICATION_MSWORD";
-    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-      return "APPLICATION_DOCX";
-    case "application/vnd.ms-excel":
-      return "APPLICATION_XLS";
-    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-      return "APPLICATION_XLSX";
-    case "text/plain":
-      return "TEXT_PLAIN";
-    case "application/zip":
-      return "APPLICATION_ZIP";
-    case "application/vnd.rar":
-      return "APPLICATION_RAR";
-    case "video/mp4":
-      return "VIDEO_MP4";
-    case "audio/mpeg":
-      return "AUDIO_MPEG";
-    case "audio/wav":
-      return "AUDIO_WAV";
-    case "font/otf":
-      return "FONT_OTF";
-    case "font/ttf":
-      return "FONT_TTF";
-    case "font/woff":
-      return "FONT_WOFF";
-    case "font/woff2":
-      return "FONT_WOFF2";
-    default:
-      return "IMAGE_JPEG"; // Default fallback
-  }
+function mapContentType(mimeType: string): string {
+  return mimeType.toLowerCase();
 }
 
 /**

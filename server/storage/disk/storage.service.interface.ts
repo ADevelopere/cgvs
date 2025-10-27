@@ -25,7 +25,7 @@ export interface StorageService {
    */
   uploadFile(
     path: string,
-    contentType: Types.FileContentType,
+    contentType: string,
     buffer: Buffer
   ): Promise<Types.FileUploadResult>;
 

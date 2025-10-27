@@ -1,17 +1,9 @@
 import { STORAGE_CONFIG } from "../storage/disk/storage.service.interface";
 import * as Types from "@/server/types";
 import { OrderSortDirection } from "@/lib/enum";
+import { isAllowedMimeType } from "@/utils/storage.utils";
 
 export namespace StorageUtils {
-  // Whitelist of allowed MIME types for uploads (matching FileContentType enum values)
-  export const ALLOWED_MIME_TYPES: ReadonlySet<string> = new Set(
-    Object.values(Types.FileContentType)
-  );
-
-  export const isAllowedMimeType = (mimeType: string): boolean => {
-    return ALLOWED_MIME_TYPES.has(mimeType);
-  };
-
   const PATH_PATTERN = /^[a-zA-Z0-9._/\- ()]+$/;
   export const validatePath = (path: string): Promise<string | null> => {
     let err: string | null = null;
@@ -58,7 +50,8 @@ export namespace StorageUtils {
 
   export const validateUpload = async (
     path: string,
-    size: number
+    size: number,
+    contentType: string
   ): Promise<string | null> => {
     let error: string | null = null;
 
@@ -68,12 +61,17 @@ export namespace StorageUtils {
     });
 
     validatePath(path).then(err => {
-      if (err) error = err;
+      if (err) error = err + "\n" + error;
     });
 
     validateFileSize(size).then(err => {
-      if (err) error = err;
+      if (err) error = err + "\n" + error;
     });
+
+    if (!isAllowedMimeType(contentType)) {
+      error = error + "\n" + contentType + " is not a allowed MIME type";
+    }
+
     return Promise.resolve(error);
   };
 
@@ -262,6 +260,52 @@ export namespace StorageUtils {
     };
 
     return result;
+  };
+
+  /**
+   * Filter storage items by file types and content types
+   */
+  export const filterStorageItems = (
+    items: Array<Types.FileInfo | Types.DirectoryInfo>,
+    filters: {
+      fileType?: string | null;
+      fileTypes?: string[] | null;
+      contentTypes?: string[] | null;
+    }
+  ): Array<Types.FileInfo | Types.DirectoryInfo> => {
+    let filtered = items;
+
+    // Filter by multiple file types (NEW)
+    if (filters.fileTypes && filters.fileTypes.length > 0) {
+      filtered = filtered.filter(item => {
+        if ("fileType" in item) {
+          return filters.fileTypes!.includes(item.fileType);
+        }
+        return false; // Directories don't have fileType
+      });
+    }
+
+    // Filter by multiple content types (NEW)
+    if (filters.contentTypes && filters.contentTypes.length > 0) {
+      filtered = filtered.filter(item => {
+        if ("contentType" in item && item.contentType) {
+          return filters.contentTypes!.includes(item.contentType);
+        }
+        return false; // Directories don't have contentType
+      });
+    }
+
+    // Keep backward compatibility with single fileType
+    if (filters.fileType) {
+      filtered = filtered.filter(item => {
+        if ("fileType" in item) {
+          return item.fileType === filters.fileType;
+        }
+        return false;
+      });
+    }
+
+    return filtered;
   };
 
   export const sortItems = (
