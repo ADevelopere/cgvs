@@ -61,6 +61,12 @@ export namespace StorageDbRepository {
         path,
         isProtected,
       })
+      .onConflictDoUpdate({
+        target: storageFiles.path,
+        set: {
+          isProtected,
+        },
+      })
       .returning();
     return file;
   };
