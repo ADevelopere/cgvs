@@ -1,1 +1,1 @@
-fix text field directions on ltr
+fix student table hardcoded footer strings
