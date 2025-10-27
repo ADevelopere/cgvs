@@ -18,36 +18,36 @@ export const fontQueryDocument: TypedDocumentNode<
   }
 `;
 
-// Query: Get all fonts
+// Query: Get all fonts with pagination, filtering, and sorting
 export const fontsQueryDocument: TypedDocumentNode<
   Graphql.FontsQuery,
   Graphql.FontsQueryVariables
 > = gql`
-  query fonts {
-    fonts {
-      id
-      name
-      locale
-      storageFileId
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-// Query: Search fonts by name
-export const searchFontsQueryDocument: TypedDocumentNode<
-  Graphql.SearchFontsQuery,
-  Graphql.SearchFontsQueryVariables
-> = gql`
-  query searchFonts($name: String!, $limit: Int) {
-    searchFonts(name: $name, limit: $limit) {
-      id
-      name
-      locale
-      storageFileId
-      createdAt
-      updatedAt
+  query fonts(
+    $paginationArgs: PaginationArgs
+    $orderBy: [FontsOrderByClause!]
+    $filterArgs: FontFilterArgs
+  ) {
+    fonts(
+      paginationArgs: $paginationArgs
+      orderBy: $orderBy
+      filterArgs: $filterArgs
+    ) {
+      data {
+        id
+        name
+        locale
+        storageFileId
+        createdAt
+        updatedAt
+      }
+      pageInfo {
+        total
+        perPage
+        currentPage
+        lastPage
+        hasMorePages
+      }
     }
   }
 `;

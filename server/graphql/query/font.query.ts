@@ -2,8 +2,13 @@ import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import {
   FontPothosObject,
   FontUsageCheckResultPothosObject,
+  FontsWithFiltersPothosObject,
+  FontFilterArgsPothosObject,
+  FontsOrderByClausePothosObject,
 } from "../pothos/font.pothos";
+import { PaginationArgsObject } from "../pothos";
 import { FontRepository } from "@/server/db/repo";
+import * as Types from "@/server/types";
 
 gqlSchemaBuilder.queryFields(t => ({
   font: t.field({
@@ -18,26 +23,28 @@ gqlSchemaBuilder.queryFields(t => ({
   }),
 
   fonts: t.field({
-    type: [FontPothosObject],
-    nullable: false,
-    resolve: async () => {
-      return await FontRepository.findAll();
-    },
-  }),
-
-  searchFonts: t.field({
-    type: [FontPothosObject],
+    type: FontsWithFiltersPothosObject,
     nullable: false,
     args: {
-      name: t.arg.string({ required: true }),
-      limit: t.arg.int({
+      paginationArgs: t.arg({
+        type: PaginationArgsObject,
         required: false,
-        defaultValue: 50,
+      }),
+      orderBy: t.arg({
+        type: [FontsOrderByClausePothosObject],
+        required: false,
+      }),
+      filterArgs: t.arg({
+        type: FontFilterArgsPothosObject,
+        required: false,
       }),
     },
-    resolve: async (_parent, args) => {
-      return await FontRepository.searchByName(args.name, args.limit || 50);
-    },
+    resolve: async (_, args) =>
+      await FontRepository.fetchWithFilters(
+        new Types.PaginationArgs({ ...args.paginationArgs }),
+        args.filterArgs as unknown as Types.FontFilterArgs,
+        args.orderBy
+      ),
   }),
 
   checkFontUsage: t.field({

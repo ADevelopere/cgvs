@@ -10,8 +10,14 @@ import {
   FontUpdateInput,
   FontUsageCheckResult,
   FontUsageReference,
+  FontsWithFiltersResponse,
+  FontFilterArgs,
+  FontsOrderByClause,
 } from "@/server/types/font.types";
+import * as Types from "@/server/types";
 import logger from "@/server/lib/logger";
+import { FontFilterUtils, PaginationUtils } from "@/server/utils";
+import { queryWithPagination } from "@/server/db/query.extentions";
 
 export namespace FontRepository {
   /**
@@ -29,6 +35,43 @@ export namespace FontRepository {
    */
   export const findAll = async (): Promise<FontSelectType[]> => {
     return db.select().from(font).orderBy(font.name);
+  };
+
+  /**
+   * Fetch fonts with filters, pagination, and sorting
+   */
+  export const fetchWithFilters = async (
+    paginationArgs: Types.PaginationArgs | null,
+    filters?: FontFilterArgs | null,
+    orderBy?: FontsOrderByClause[] | null
+  ): Promise<FontsWithFiltersResponse> => {
+    const baseQuery = db
+      .select({
+        font: font,
+        total: sql<number>`cast(count(*) over() as int)`,
+      })
+      .from(font)
+      .$dynamic();
+
+    let processedQuery = baseQuery;
+    processedQuery = FontFilterUtils.applyFilters(processedQuery, filters);
+    processedQuery = FontFilterUtils.applyOrdering(processedQuery, orderBy);
+    processedQuery = queryWithPagination(processedQuery, paginationArgs);
+
+    const results = await processedQuery;
+
+    const total = (results[0] as { total: number })?.total ?? 0;
+    const items: FontSelectType[] = results.map(
+      r => (r as { font: FontSelectType }).font
+    );
+
+    const pageInfo = PaginationUtils.buildPageInfoFromArgs(
+      paginationArgs,
+      items.length,
+      total
+    );
+
+    return { data: items, pageInfo };
   };
 
   /**

@@ -2,6 +2,7 @@ export * from "./Auth";
 export * from "./Calendar";
 export * from "./Connectivity";
 export * from "./Country";
+export * from "./DashboardLayout";
 export * from "./Error";
 export * from "./Gender";
 export * from "./Header";

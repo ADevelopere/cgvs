@@ -2,6 +2,7 @@ export * from "./header";
 export * from "./auth";
 export * from "./calendar";
 export * from "./country";
+export * from "./dashboardLayout";
 export * from "./gender";
 export * from "./language";
 export * from "./recipient";

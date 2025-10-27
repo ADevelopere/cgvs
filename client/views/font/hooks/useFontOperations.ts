@@ -1,285 +1,109 @@
 "use client";
 
-import { useQuery, useLazyQuery } from "@apollo/client/react";
+import { useCallback, useMemo, useRef } from "react";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useFontApolloMutations } from "./useFontApolloMutations";
 import { useFontStore } from "../stores/useFontStore";
-import * as Document from "./font.documents";
-import { FontFormData, FontUsageCheckResult } from "../types";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import logger from "@/client/lib/logger";
-import { useEffect } from "react";
+
+type FontOperations = {
+  selectFont: (font: Graphql.Font) => void;
+  startCreating: () => void;
+  cancelCreating: () => void;
+  startEditing: () => void;
+  cancelEditing: () => void;
+  createFont: (input: Graphql.FontCreateInput) => Promise<boolean>;
+  updateFont: (input: Graphql.FontUpdateInput) => Promise<boolean>;
+  deleteFont: (id: number) => Promise<boolean>;
+};
 
 /**
  * Font operations hook
- * Integrates Apollo mutations with Zustand store
- * Provides high-level operations for font management
+ * Returns ONLY functions for font management
+ * Data is managed by Apollo Client in components
  */
-export const useFontOperations = () => {
+export const useFontOperations = (): FontOperations => {
   const store = useFontStore();
+  const storeRef = useRef(store);
+  storeRef.current = store;
   const notifications = useNotifications();
   const { createFontMutation, updateFontMutation, deleteFontMutation } =
     useFontApolloMutations();
 
-  // Load all fonts query
-  const {
-    data: fontsData,
-    loading: fontsLoading,
-    error: fontsError,
-    refetch: refetchFonts,
-  } = useQuery(Document.fontsQueryDocument);
-
-  // Update store when fonts data changes
-  useEffect(() => {
-    if (fontsData?.fonts) {
-      store.setFonts(fontsData.fonts);
-      logger.info("Fonts loaded:", fontsData.fonts.length);
-    }
-  }, [fontsData, store]);
-
-  // Handle fonts query errors
-  useEffect(() => {
-    if (fontsError) {
-      logger.error("Error loading fonts:", fontsError);
-      notifications.show("Error loading fonts", {
-        severity: "error",
-        autoHideDuration: 3000,
-      });
-    }
-  }, [fontsError, notifications]);
-
-  // Lazy query for single font
-  const [loadFont, { data: fontData, loading: fontLoading, error: fontError }] =
-    useLazyQuery(Document.fontQueryDocument);
-
-  // Update store when font data changes
-  useEffect(() => {
-    if (fontData?.font) {
-      store.setCurrentFont(fontData.font);
-      logger.info("Font loaded:", fontData.font.id);
-    }
-  }, [fontData, store]);
-
-  // Handle font query errors
-  useEffect(() => {
-    if (fontError) {
-      logger.error("Error loading font:", fontError);
-      notifications.show("Error loading font", {
-        severity: "error",
-        autoHideDuration: 3000,
-      });
-    }
-  }, [fontError, notifications]);
-
-  // Lazy query for search
-  const [
-    searchFonts,
-    { data: searchData, loading: searchLoading, error: searchError },
-  ] = useLazyQuery(Document.searchFontsQueryDocument);
-
-  // Update store when search data changes
-  useEffect(() => {
-    if (searchData?.searchFonts) {
-      store.setFonts(searchData.searchFonts);
-      logger.info("Search results:", searchData.searchFonts.length);
-    }
-  }, [searchData, store]);
-
-  // Handle search query errors
-  useEffect(() => {
-    if (searchError) {
-      logger.error("Error searching fonts:", searchError);
-      notifications.show("Error searching fonts", {
-        severity: "error",
-        autoHideDuration: 3000,
-      });
-    }
-  }, [searchError, notifications]);
-
-  // Lazy query for usage check
-  const [checkUsage] = useLazyQuery(Document.checkFontUsageQueryDocument);
+  /**
+   * Select a font
+   */
+  const selectFont = useCallback((font: Graphql.Font) => {
+    logger.info("Selecting font:", font.id);
+    storeRef.current.setSelectedFont(font);
+    storeRef.current.cancelCreating();
+    storeRef.current.cancelEditing();
+  }, []);
 
   /**
-   * Select a font by ID
+   * Start creating a new font
    */
-  const selectFont = async (id: number) => {
-    logger.info("Selecting font:", id);
-    store.setSelectedFontId(id);
-    await loadFont({ variables: { id } });
-  };
+  const startCreating = useCallback(() => {
+    storeRef.current.startCreating();
+  }, []);
 
   /**
-   * Search fonts by name
+   * Cancel creating a font
    */
-  const handleSearch = async (term: string) => {
-    logger.info("Searching fonts:", term);
-    store.setSearchTerm(term);
+  const cancelCreating = useCallback(() => {
+    storeRef.current.cancelCreating();
+  }, []);
 
-    if (term.trim().length === 0) {
-      // If search is empty, load all fonts
-      await refetchFonts();
-    } else {
-      // Search with term
-      await searchFonts({
-        variables: {
-          name: term,
-          limit: 50,
-        },
-      });
-    }
-  };
+  /**
+   * Start editing a font
+   */
+  const startEditing = useCallback(() => {
+    storeRef.current.startEditing();
+  }, []);
+
+  /**
+   * Cancel editing a font
+   */
+  const cancelEditing = useCallback(() => {
+    storeRef.current.cancelEditing();
+  }, []);
 
   /**
    * Create a new font
    */
-  const createFont = async (formData: FontFormData): Promise<boolean> => {
-    if (!formData.storageFileId) {
-      notifications.show("Please select a font file", {
-        severity: "error",
-        autoHideDuration: 3000,
-      });
-      return false;
-    }
+  const createFont = useCallback(
+    async (input: Graphql.FontCreateInput): Promise<boolean> => {
+      try {
+        logger.info("Creating font:", input);
 
-    if (formData.locale.length === 0) {
-      notifications.show("Please select at least one locale", {
-        severity: "error",
-        autoHideDuration: 3000,
-      });
-      return false;
-    }
+        const result = await createFontMutation({
+          variables: { input },
+        });
 
-    try {
-      store.setSaving(true);
-      logger.info("Creating font:", formData);
+        if (result.data?.createFont) {
+          notifications.show(
+            `${result.data.createFont.name} has been created successfully`,
+            {
+              severity: "success",
+              autoHideDuration: 3000,
+            }
+          );
 
-      const result = await createFontMutation({
-        variables: {
-          input: {
-            name: formData.name,
-            locale: formData.locale,
-            storageFileId: formData.storageFileId,
-          },
-        },
-      });
+          // Select the new font and exit create mode
+          storeRef.current.setSelectedFont(
+            result.data.createFont as Graphql.Font
+          );
+          storeRef.current.cancelCreating();
 
-      if (result.data?.createFont) {
-        notifications.show(
-          `${result.data.createFont.name} has been created successfully`,
-          {
-            severity: "success",
-            autoHideDuration: 3000,
-          }
-        );
-
-        // Select the new font
-        await selectFont(result.data.createFont.id);
-        store.cancelCreating();
-
-        return true;
-      }
-
-      return false;
-    } catch (error) {
-      logger.error("Error creating font:", error);
-      notifications.show(
-        error instanceof Error ? error.message : "Error creating font",
-        {
-          severity: "error",
-          autoHideDuration: 3000,
+          return true;
         }
-      );
-      return false;
-    } finally {
-      store.setSaving(false);
-    }
-  };
 
-  /**
-   * Update an existing font
-   */
-  const updateFont = async (
-    id: number,
-    formData: FontFormData
-  ): Promise<boolean> => {
-    if (!formData.storageFileId) {
-      notifications.show("Please select a font file", {
-        severity: "error",
-        autoHideDuration: 3000,
-      });
-      return false;
-    }
-
-    if (formData.locale.length === 0) {
-      notifications.show("Please select at least one locale", {
-        severity: "error",
-        autoHideDuration: 3000,
-      });
-      return false;
-    }
-
-    try {
-      store.setSaving(true);
-      logger.info("Updating font:", id, formData);
-
-      const result = await updateFontMutation({
-        variables: {
-          input: {
-            id,
-            name: formData.name,
-            locale: formData.locale,
-            storageFileId: formData.storageFileId,
-          },
-        },
-      });
-
-      if (result.data?.updateFont) {
+        return false;
+      } catch (error) {
+        logger.error("Error creating font:", error);
         notifications.show(
-          `${result.data.updateFont.name} has been updated successfully`,
-          {
-            severity: "success",
-            autoHideDuration: 3000,
-          }
-        );
-
-        // Reload the updated font
-        await selectFont(id);
-        store.cancelEditing();
-
-        return true;
-      }
-
-      return false;
-    } catch (error) {
-      logger.error("Error updating font:", error);
-      notifications.show(
-        error instanceof Error ? error.message : "Error updating font",
-        {
-          severity: "error",
-          autoHideDuration: 3000,
-        }
-      );
-      return false;
-    } finally {
-      store.setSaving(false);
-    }
-  };
-
-  /**
-   * Delete a font (with usage check)
-   */
-  const deleteFont = async (id: number): Promise<boolean> => {
-    try {
-      // First check usage
-      logger.info("Checking font usage before delete:", id);
-      const usageResult = await checkUsage({
-        variables: { id },
-      });
-
-      const usageData = usageResult.data?.checkFontUsage;
-
-      if (usageData && !usageData.canDelete) {
-        notifications.show(
-          usageData.deleteBlockReason || "Font is currently in use",
+          error instanceof Error ? error.message : "Error creating font",
           {
             severity: "error",
             autoHideDuration: 3000,
@@ -287,100 +111,120 @@ export const useFontOperations = () => {
         );
         return false;
       }
+    },
+    [createFontMutation, notifications]
+  );
 
-      // Proceed with deletion
-      store.setLoading(true);
-      logger.info("Deleting font:", id);
+  /**
+   * Update an existing font
+   */
+  const updateFont = useCallback(
+    async (input: Graphql.FontUpdateInput): Promise<boolean> => {
+      try {
+        logger.info("Updating font:", input);
 
-      const result = await deleteFontMutation({
-        variables: { id },
-      });
+        const result = await updateFontMutation({
+          variables: { input },
+        });
 
-      if (result.data?.deleteFont) {
+        if (result.data?.updateFont) {
+          notifications.show(
+            `${result.data.updateFont.name} has been updated successfully`,
+            {
+              severity: "success",
+              autoHideDuration: 3000,
+            }
+          );
+
+          storeRef.current.cancelEditing();
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        logger.error("Error updating font:", error);
         notifications.show(
-          `${result.data.deleteFont.name} has been deleted successfully`,
+          error instanceof Error ? error.message : "Error updating font",
           {
-            severity: "success",
+            severity: "error",
             autoHideDuration: 3000,
           }
         );
-
-        return true;
+        return false;
       }
-
-      return false;
-    } catch (error) {
-      logger.error("Error deleting font:", error);
-      notifications.show(
-        error instanceof Error ? error.message : "Error deleting font",
-        {
-          severity: "error",
-          autoHideDuration: 3000,
-        }
-      );
-      return false;
-    } finally {
-      store.setLoading(false);
-    }
-  };
+    },
+    [updateFontMutation, notifications]
+  );
 
   /**
-   * Check font usage
+   * Delete a font
    */
-  const checkFontUsage = async (
-    id: number
-  ): Promise<FontUsageCheckResult | null> => {
-    try {
-      logger.info("Checking font usage:", id);
-      const result = await checkUsage({
-        variables: { id },
-      });
+  const deleteFont = useCallback(
+    async (id: number): Promise<boolean> => {
+      try {
+        logger.info("Deleting font:", id);
 
-      return result.data?.checkFontUsage || null;
-    } catch (error) {
-      logger.error("Error checking font usage:", error);
-      return null;
-    }
-  };
+        const result = await deleteFontMutation({
+          variables: { id },
+        });
 
-  return {
-    // Data
-    fonts: fontsData?.fonts || [],
-    currentFont: store.currentFont,
-    selectedFontId: store.selectedFontId,
-    searchTerm: store.searchTerm,
+        if (result.data?.deleteFont) {
+          notifications.show(
+            `${result.data.deleteFont.name} has been deleted successfully`,
+            {
+              severity: "success",
+              autoHideDuration: 3000,
+            }
+          );
 
-    // Loading states
-    isLoading: fontsLoading || fontLoading || store.isLoading,
-    isSaving: store.isSaving,
-    isSearching: searchLoading,
+          // Clear selection if deleted font was selected
+          if (storeRef.current.selectedFont?.id === id) {
+            storeRef.current.setSelectedFont(null);
+          }
 
-    // Operations
-    selectFont,
-    handleSearch,
-    createFont,
-    updateFont,
-    deleteFont,
-    checkFontUsage,
-    refetchFonts,
+          return true;
+        }
 
-    // Store actions (selected)
-    setFonts: store.setFonts,
-    setCurrentFont: store.setCurrentFont,
-    setSelectedFontId: store.setSelectedFontId,
-    setSearchTerm: store.setSearchTerm,
-    clearSearch: store.clearSearch,
-    openFilePicker: store.openFilePicker,
-    closeFilePicker: store.closeFilePicker,
-    startCreating: store.startCreating,
-    cancelCreating: store.cancelCreating,
-    startEditing: store.startEditing,
-    cancelEditing: store.cancelEditing,
-    setLoading: store.setLoading,
-    setSaving: store.setSaving,
-    reset: store.reset,
-    isFilePickerOpen: store.isFilePickerOpen,
-    isCreating: store.isCreating,
-    isEditing: store.isEditing,
-  };
+        return false;
+      } catch (error) {
+        logger.error("Error deleting font:", error);
+        notifications.show(
+          error instanceof Error ? error.message : "Error deleting font",
+          {
+            severity: "error",
+            autoHideDuration: 3000,
+          }
+        );
+        return false;
+      }
+    },
+    [deleteFontMutation, notifications]
+  );
+
+  // Return only functions and store accessors, wrapped in useMemo for stability
+  return useMemo(
+    () => ({
+      // Selection
+      selectFont,
+      // UI actions
+      startCreating,
+      cancelCreating,
+      startEditing,
+      cancelEditing,
+      // Mutations
+      createFont,
+      updateFont,
+      deleteFont,
+    }),
+    [
+      selectFont,
+      startCreating,
+      cancelCreating,
+      startEditing,
+      cancelEditing,
+      createFont,
+      updateFont,
+      deleteFont,
+    ]
+  );
 };

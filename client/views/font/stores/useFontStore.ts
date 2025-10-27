@@ -1,52 +1,37 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { FontListItem, FontDetailView } from "../types";
 import logger from "@/client/lib/logger";
+import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 /**
  * Font UI Store State
- * Manages font selection, search, and UI state
+ * Manages query parameters, selection, and UI state only
+ * Data is managed by Apollo Client
  */
 type State = {
-  // Font data
-  fonts: FontListItem[];
-  currentFont: FontDetailView | null;
-  selectedFontId: number | null;
+  // Query parameters (using GraphQL generated types)
+  queryParams: Graphql.FontsQueryVariables;
 
-  // Search and filters
-  searchTerm: string;
+  // Selection - store the actual font object
+  selectedFont: Graphql.Font | null;
 
   // UI state
-  isFilePickerOpen: boolean;
   isCreating: boolean;
   isEditing: boolean;
-
-  // Loading states
-  isLoading: boolean;
-  isSaving: boolean;
 };
 
 type Actions = {
-  // Font data actions
-  setFonts: (fonts: FontListItem[]) => void;
-  setCurrentFont: (font: FontDetailView | null) => void;
-  setSelectedFontId: (id: number | null) => void;
+  // Query params actions
+  setQueryParams: (params: Partial<Graphql.FontsQueryVariables>) => void;
 
-  // Search actions
-  setSearchTerm: (term: string) => void;
-  clearSearch: () => void;
+  // Selection actions
+  setSelectedFont: (font: Graphql.Font | null) => void;
 
   // UI actions
-  openFilePicker: () => void;
-  closeFilePicker: () => void;
   startCreating: () => void;
   cancelCreating: () => void;
   startEditing: () => void;
   cancelEditing: () => void;
-
-  // Loading actions
-  setLoading: (loading: boolean) => void;
-  setSaving: (saving: boolean) => void;
 
   // Utility actions
   reset: () => void;
@@ -54,72 +39,50 @@ type Actions = {
 
 type FontStoreState = State & Actions;
 
+const DEFAULT_QUERY_PARAMS: Graphql.FontsQueryVariables = {
+  paginationArgs: {
+    first: 50,
+    page: 1,
+  },
+  orderBy: [{ column: "NAME", order: "ASC" }],
+  filterArgs: undefined,
+};
+
 const initialState: State = {
-  fonts: [],
-  currentFont: null,
-  selectedFontId: null,
-  searchTerm: "",
-  isFilePickerOpen: false,
+  queryParams: DEFAULT_QUERY_PARAMS,
+  selectedFont: null,
   isCreating: false,
   isEditing: false,
-  isLoading: false,
-  isSaving: false,
 };
 
 /**
  * Zustand store for font UI state
- * Persists selection and search to sessionStorage
+ * Persists selection and query params to sessionStorage
  */
 export const useFontStore = create<FontStoreState>()(
   persist(
     set => ({
       ...initialState,
 
-      // Font data actions
-      setFonts: fonts => {
-        logger.info("Setting fonts in store:", fonts.length);
-        set({ fonts });
-      },
+      // Query params actions
+      setQueryParams: params =>
+        set(state => ({
+          queryParams: { ...state.queryParams, ...params },
+        })),
 
-      setCurrentFont: font => {
-        logger.info("Setting current font:", font?.id);
-        set({ currentFont: font });
-      },
-
-      setSelectedFontId: id => {
-        logger.info("Setting selected font ID:", id);
-        set({ selectedFontId: id });
-      },
-
-      // Search actions
-      setSearchTerm: term => {
-        logger.info("Setting search term:", term);
-        set({ searchTerm: term });
-      },
-
-      clearSearch: () => {
-        logger.info("Clearing search");
-        set({ searchTerm: "" });
+      // Selection actions
+      setSelectedFont: font => {
+        logger.info("Setting selected font:", font?.id);
+        set({ selectedFont: font });
       },
 
       // UI actions
-      openFilePicker: () => {
-        logger.info("Opening file picker");
-        set({ isFilePickerOpen: true });
-      },
-
-      closeFilePicker: () => {
-        logger.info("Closing file picker");
-        set({ isFilePickerOpen: false });
-      },
-
       startCreating: () => {
         logger.info("Starting font creation");
         set({
           isCreating: true,
           isEditing: false,
-          currentFont: null,
-          selectedFontId: null,
+          selectedFont: null,
         });
       },
 
@@ -138,10 +101,6 @@ export const useFontStore = create<FontStoreState>()(
         set({ isEditing: false });
       },
 
-      // Loading actions
-      setLoading: loading => set({ isLoading: loading }),
-      setSaving: saving => set({ isSaving: saving }),
-
       // Utility
       reset: () => {
         logger.info("Resetting font store");
@@ -151,19 +110,27 @@ export const useFontStore = create<FontStoreState>()(
     {
       name: "font-ui-store",
       storage: createJSONStorage(() => sessionStorage),
-      // Persist only essential state
+      // Persist only essential state (don't persist font object, only ID for restoration)
       partialize: state => ({
-        selectedFontId: state.selectedFontId,
-        searchTerm: state.searchTerm,
+        selectedFontId: state.selectedFont?.id ?? null,
+        queryParams: state.queryParams,
       }),
       // Custom merge to handle restoration
       merge: (persistedState, currentState) => {
-        const typedPersistedState = persistedState as Partial<State>;
+        const typedPersistedState = persistedState as Partial<{
+          selectedFontId: number | null;
+          queryParams: Graphql.FontsQueryVariables;
+        }>;
         return {
           ...currentState,
-          selectedFontId:
-            typedPersistedState.selectedFontId ?? currentState.selectedFontId,
-          searchTerm: typedPersistedState.searchTerm ?? currentState.searchTerm,
+          // Don't restore selectedFont from persistence - will be loaded from query
+          selectedFont: null,
+          queryParams: typedPersistedState.queryParams
+            ? {
+                ...currentState.queryParams,
+                ...typedPersistedState.queryParams,
+              }
+            : currentState.queryParams,
         };
       },
     }

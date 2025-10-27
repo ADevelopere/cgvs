@@ -455,6 +455,26 @@ export type FontCreateInput = {
   storageFileId: Scalars['Int']['input'];
 };
 
+export type FontFilterArgs = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtAfter?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtBefore?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtFrom?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTo?: InputMaybe<Scalars['DateTime']['input']>;
+  locale?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  nameEndsWith?: InputMaybe<Scalars['String']['input']>;
+  nameEquals?: InputMaybe<Scalars['String']['input']>;
+  nameIsEmpty?: InputMaybe<Scalars['Boolean']['input']>;
+  nameIsNotEmpty?: InputMaybe<Scalars['Boolean']['input']>;
+  nameNotContains?: InputMaybe<Scalars['String']['input']>;
+  nameNotEquals?: InputMaybe<Scalars['String']['input']>;
+  nameStartsWith?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtFrom?: InputMaybe<Scalars['DateTime']['input']>;
+  updatedAtTo?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
 export type FontUpdateInput = {
   id: Scalars['Int']['input'];
   locale: Array<Scalars['String']['input']>;
@@ -477,6 +497,23 @@ export type FontUsageReference = {
   elementType: Scalars['String']['output'];
   templateId?: Maybe<Scalars['Int']['output']>;
   templateName?: Maybe<Scalars['String']['output']>;
+};
+
+export type FontsOrderByClause = {
+  column: FontsOrderByColumn;
+  order?: InputMaybe<OrderSortDirection>;
+};
+
+export type FontsOrderByColumn =
+  | 'CREATED_AT'
+  | 'ID'
+  | 'NAME'
+  | 'UPDATED_AT';
+
+export type FontsWithFiltersResponse = {
+  __typename?: 'FontsWithFiltersResponse';
+  data: Array<Font>;
+  pageInfo: PageInfo;
 };
 
 export type Gender =
@@ -797,7 +834,7 @@ export type Query = {
   fileUsage?: Maybe<FileUsageResult>;
   folderInfo?: Maybe<DirectoryInfo>;
   font?: Maybe<Font>;
-  fonts: Array<Font>;
+  fonts: FontsWithFiltersResponse;
   listFiles?: Maybe<StorageObjectList>;
   mainTemplateCategory: TemplateCategory;
   me?: Maybe<User>;
@@ -810,7 +847,6 @@ export type Query = {
   recipientsByGroupIdFiltered: RecipientsWithFiltersResponse;
   recipientsByStudentId: Array<TemplateRecipient>;
   searchFiles?: Maybe<StorageObjectList>;
-  searchFonts: Array<Font>;
   searchTemplateCategories: Array<TemplateCategoryWithParentTree>;
   storageStats?: Maybe<StorageStats>;
   student?: Maybe<Student>;
@@ -869,6 +905,13 @@ export type QueryFontArgs = {
 };
 
 
+export type QueryFontsArgs = {
+  filterArgs?: InputMaybe<FontFilterArgs>;
+  orderBy?: InputMaybe<Array<FontsOrderByClause>>;
+  paginationArgs?: InputMaybe<PaginationArgs>;
+};
+
+
 export type QueryListFilesArgs = {
   input: FilesListInput;
 };
@@ -914,12 +957,6 @@ export type QuerySearchFilesArgs = {
   folder?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   searchTerm: Scalars['String']['input'];
-};
-
-
-export type QuerySearchFontsArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  name: Scalars['String']['input'];
 };
 
 
@@ -1555,18 +1592,14 @@ export type FontQueryVariables = Exact<{
 
 export type FontQuery = { __typename?: 'Query', font?: { __typename?: 'Font', id: number, name: string, locale: Array<string>, storageFileId: number, createdAt: any, updatedAt: any } | null };
 
-export type FontsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type FontsQuery = { __typename?: 'Query', fonts: Array<{ __typename?: 'Font', id: number, name: string, locale: Array<string>, storageFileId: number, createdAt: any, updatedAt: any }> };
-
-export type SearchFontsQueryVariables = Exact<{
-  name: Scalars['String']['input'];
-  limit?: InputMaybe<Scalars['Int']['input']>;
+export type FontsQueryVariables = Exact<{
+  paginationArgs?: InputMaybe<PaginationArgs>;
+  orderBy?: InputMaybe<Array<FontsOrderByClause> | FontsOrderByClause>;
+  filterArgs?: InputMaybe<FontFilterArgs>;
 }>;
 
 
-export type SearchFontsQuery = { __typename?: 'Query', searchFonts: Array<{ __typename?: 'Font', id: number, name: string, locale: Array<string>, storageFileId: number, createdAt: any, updatedAt: any }> };
+export type FontsQuery = { __typename?: 'Query', fonts: { __typename?: 'FontsWithFiltersResponse', data: Array<{ __typename?: 'Font', id: number, name: string, locale: Array<string>, storageFileId: number, createdAt: any, updatedAt: any }>, pageInfo: { __typename?: 'PageInfo', total: number, perPage: number, currentPage: number, lastPage: number, hasMorePages: boolean } } };
 
 export type CheckFontUsageQueryVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -2103,8 +2136,7 @@ export const LoginDocument = {"kind":"Document","definitions":[{"kind":"Operatio
 export const LogoutDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"logout"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"logout"}}]}}]} as unknown as DocumentNode<LogoutMutation, LogoutMutationVariables>;
 export const RefreshTokenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"refreshToken"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refreshToken"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"emailVerifiedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<RefreshTokenMutation, RefreshTokenMutationVariables>;
 export const FontDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"font"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"font"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"storageFileId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<FontQuery, FontQueryVariables>;
-export const FontsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"fonts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fonts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"storageFileId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<FontsQuery, FontsQueryVariables>;
-export const SearchFontsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"searchFonts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"searchFonts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"storageFileId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<SearchFontsQuery, SearchFontsQueryVariables>;
+export const FontsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"fonts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"paginationArgs"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationArgs"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FontsOrderByClause"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filterArgs"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"FontFilterArgs"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fonts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"paginationArgs"},"value":{"kind":"Variable","name":{"kind":"Name","value":"paginationArgs"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"filterArgs"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filterArgs"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"storageFileId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"perPage"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"lastPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasMorePages"}}]}}]}}]}}]} as unknown as DocumentNode<FontsQuery, FontsQueryVariables>;
 export const CheckFontUsageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"checkFontUsage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"checkFontUsage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isInUse"}},{"kind":"Field","name":{"kind":"Name","value":"usageCount"}},{"kind":"Field","name":{"kind":"Name","value":"usedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"elementType"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"templateName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"canDelete"}},{"kind":"Field","name":{"kind":"Name","value":"deleteBlockReason"}}]}}]}}]} as unknown as DocumentNode<CheckFontUsageQuery, CheckFontUsageQueryVariables>;
 export const CreateFontDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createFont"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FontCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createFont"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"storageFileId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateFontMutation, CreateFontMutationVariables>;
 export const UpdateFontDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateFont"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FontUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateFont"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"storageFileId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateFontMutation, UpdateFontMutationVariables>;
