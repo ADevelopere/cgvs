@@ -40,7 +40,7 @@ const TemplateList: React.FC = () => {
           isFirstPaneVisible={isPaneVisible}
         />
       )}
-      breakpointWidth={1100} // switch to drawer mode below 300px
+      breakpointWidth={600} // switch to drawer mode below 300px
       drawerWidth={300}
       toggleButtonInDrawerMode="hidden"
       toggleButtonInSplitMode="hidden"
