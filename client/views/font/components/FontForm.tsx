@@ -4,6 +4,7 @@ import { LocaleSelector } from "./LocaleSelector";
 import { FontFilePicker } from "./FontFilePicker";
 import { FontPreview } from "./FontPreview";
 import { FontFormData } from "../types";
+import { useAppTranslation } from "@/client/locale";
 
 interface FontFormProps {
   initialData?: {
@@ -26,6 +27,8 @@ export const FontForm: React.FC<FontFormProps> = ({
   submitLabel = "Save",
   disabled = false,
 }) => {
+  const strings = useAppTranslation("fontManagementTranslations");
+  
   const [formData, setFormData] = useState<FontFormData>({
     name: initialData?.name || "",
     locale: initialData?.locale || [],
@@ -61,15 +64,15 @@ export const FontForm: React.FC<FontFormProps> = ({
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = "Font name is required";
+      newErrors.name = strings.fontNameRequired;
     }
 
     if (formData.locale.length === 0) {
-      newErrors.locale = "At least one locale must be selected";
+      newErrors.locale = strings.localeRequired;
     }
 
     if (!formData.storageFileId) {
-      newErrors.file = "Font file is required";
+      newErrors.file = strings.fontFileRequired;
     }
 
     setErrors(newErrors);
@@ -96,7 +99,7 @@ export const FontForm: React.FC<FontFormProps> = ({
       <MUI.Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
         {/* Font Name */}
         <MUI.Box>
-          <MUI.FormLabel htmlFor="name">Font Name</MUI.FormLabel>
+          <MUI.FormLabel htmlFor="name">{strings.fontNameLabel}</MUI.FormLabel>
           <MUI.TextField
             id="name"
             fullWidth
@@ -105,7 +108,7 @@ export const FontForm: React.FC<FontFormProps> = ({
             onChange={e =>
               setFormData(prev => ({ ...prev, name: e.target.value }))
             }
-            placeholder="e.g., Roboto, Cairo, Noto Sans"
+            placeholder={strings.fontNamePlaceholder}
             disabled={disabled || isSubmitting}
             error={Boolean(errors.name)}
             helperText={errors.name}
@@ -115,7 +118,7 @@ export const FontForm: React.FC<FontFormProps> = ({
 
         {/* Locales */}
         <MUI.Box>
-          <MUI.FormLabel>Supported Locales</MUI.FormLabel>
+          <MUI.FormLabel>{strings.supportedLocalesLabel}</MUI.FormLabel>
           <MUI.Box sx={{ mt: 1 }}>
             <LocaleSelector
               value={formData.locale}
@@ -127,13 +130,13 @@ export const FontForm: React.FC<FontFormProps> = ({
             <MUI.FormHelperText error>{errors.locale}</MUI.FormHelperText>
           )}
           <MUI.FormHelperText>
-            Select &quot;All Languages&quot; for universal fonts, or choose specific locales
+            {strings.supportedLocalesHelper}
           </MUI.FormHelperText>
         </MUI.Box>
 
         {/* Font File */}
         <MUI.Box>
-          <MUI.FormLabel>Font File</MUI.FormLabel>
+          <MUI.FormLabel>{strings.fontFileLabel}</MUI.FormLabel>
           <MUI.Box sx={{ mt: 1 }}>
             <FontFilePicker
               value={selectedFile}
@@ -149,10 +152,10 @@ export const FontForm: React.FC<FontFormProps> = ({
         {/* Font Preview */}
         {selectedFile?.fileUrl && (
           <MUI.Box>
-            <MUI.FormLabel>Preview</MUI.FormLabel>
+            <MUI.FormLabel>{strings.preview}</MUI.FormLabel>
             <MUI.Box sx={{ mt: 1 }}>
               <FontPreview
-                fontName={formData.name || "Preview"}
+                fontName={formData.name || strings.preview}
                 fontUrl={selectedFile.fileUrl}
               />
             </MUI.Box>
@@ -168,14 +171,14 @@ export const FontForm: React.FC<FontFormProps> = ({
             onClick={onCancel}
             disabled={isSubmitting}
           >
-            Cancel
+            {strings.cancel}
           </MUI.Button>
           <MUI.Button
             type="submit"
             variant="contained"
             disabled={disabled || isSubmitting}
           >
-            {isSubmitting ? "Saving..." : submitLabel}
+            {isSubmitting ? strings.saving : submitLabel}
           </MUI.Button>
         </MUI.Box>
       </MUI.Box>

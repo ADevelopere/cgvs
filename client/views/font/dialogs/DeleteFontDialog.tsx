@@ -4,6 +4,7 @@ import { Warning as WarningIcon } from "@mui/icons-material";
 import { useQuery } from "@apollo/client/react";
 import { useFontOperations } from "../hooks/useFontOperations";
 import { checkFontUsageQueryDocument } from "../hooks/font.documents";
+import { useAppTranslation } from "@/client/locale";
 
 interface DeleteFontDialogProps {
   open: boolean;
@@ -18,6 +19,7 @@ export const DeleteFontDialog: React.FC<DeleteFontDialogProps> = ({
   fontId,
   fontName,
 }) => {
+  const strings = useAppTranslation("fontManagementTranslations");
   const { deleteFont } = useFontOperations();
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -60,10 +62,10 @@ export const DeleteFontDialog: React.FC<DeleteFontDialogProps> = ({
 
   return (
     <MUI.Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <MUI.DialogTitle>Delete Font</MUI.DialogTitle>
+      <MUI.DialogTitle>{strings.deleteFont}</MUI.DialogTitle>
       <MUI.DialogContent>
         <MUI.DialogContentText sx={{ mb: 2 }}>
-          Are you sure you want to delete <strong>{fontName}</strong>?
+          {strings.confirmDeleteMessage.replace("%{fontName}", fontName)}
         </MUI.DialogContentText>
 
         {checkingUsage ? (
@@ -77,28 +79,28 @@ export const DeleteFontDialog: React.FC<DeleteFontDialogProps> = ({
           >
             <MUI.CircularProgress size={24} sx={{ mr: 2 }} />
             <MUI.Typography variant="body2" color="text.secondary">
-              Checking usage...
+              {strings.checkingUsage}
             </MUI.Typography>
           </MUI.Box>
         ) : usageInfo && !usageInfo.canDelete ? (
           <MUI.Alert severity="error" icon={<WarningIcon />}>
-            <MUI.AlertTitle>Cannot delete this font</MUI.AlertTitle>
+            <MUI.AlertTitle>{strings.cannotDeleteFont}</MUI.AlertTitle>
             <MUI.Typography variant="body2">
               {usageInfo.deleteBlockReason ||
-                `This font is used in ${usageInfo.usageCount} certificate element(s).`}
+                strings.fontUsedInElements.replace("%{count}", usageInfo.usageCount.toString())}
             </MUI.Typography>
           </MUI.Alert>
         ) : (
           <MUI.Alert severity="warning" icon={<WarningIcon />}>
             <MUI.Typography variant="body2">
-              This action cannot be undone. The font will be permanently removed from the system.
+              {strings.cannotUndone} {strings.deleteWarning}
             </MUI.Typography>
           </MUI.Alert>
         )}
       </MUI.DialogContent>
       <MUI.DialogActions>
         <MUI.Button variant="outlined" onClick={onClose} disabled={isDeleting}>
-          Cancel
+          {strings.cancel}
         </MUI.Button>
         <MUI.Button
           variant="contained"
@@ -110,7 +112,7 @@ export const DeleteFontDialog: React.FC<DeleteFontDialogProps> = ({
             (usageInfo !== null && !usageInfo.canDelete)
           }
         >
-          {isDeleting ? "Deleting..." : "Delete Font"}
+          {isDeleting ? strings.deletingFont : strings.deleteFont}
         </MUI.Button>
       </MUI.DialogActions>
     </MUI.Dialog>

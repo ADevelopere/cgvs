@@ -1,6 +1,7 @@
 import React from "react";
 import * as MUI from "@mui/material";
 import { LOCALE_OPTIONS } from "../types";
+import { useAppTranslation } from "@/client/locale";
 
 interface LocaleSelectorProps {
   value: string[];
@@ -13,6 +14,8 @@ export const LocaleSelector: React.FC<LocaleSelectorProps> = ({
   onChange,
   disabled = false,
 }) => {
+  const strings = useAppTranslation("fontManagementTranslations");
+  
   const selectedOptions = LOCALE_OPTIONS.filter(opt =>
     value.includes(opt.value)
   );
@@ -45,7 +48,7 @@ export const LocaleSelector: React.FC<LocaleSelectorProps> = ({
       renderInput={params => (
         <MUI.TextField
           {...params}
-          placeholder="Select locales..."
+          placeholder={strings.selectLocalesPlaceholder}
           size="small"
         />
       )}

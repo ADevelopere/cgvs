@@ -7,6 +7,7 @@ import {
 import { createTheme, PaletteMode } from "@mui/material";
 import ThemeMode from "./ThemeMode";
 import { arSD } from "@mui/x-data-grid/locales";
+import { enUS } from "@mui/x-data-grid/locales";
 
 declare module "@mui/material" {
   interface Palette {
@@ -159,10 +160,14 @@ export const createAppTheme = (
       ? "dark"
       : "light";
   }
-  return createTheme({ ...getThemeConfig(effectiveMode, direction) }, arSD, {
-    // colorSchemes: { light: true, dark: true },
-    breakpoints: breakpoints,
-  });
+  return createTheme(
+    { ...getThemeConfig(effectiveMode, direction) },
+    ...(direction === "rtl" ? [arSD] : [enUS]),
+    {
+      // colorSchemes: { light: true, dark: true },
+      breakpoints: breakpoints,
+    }
+  );
 };
 
 export const rtlLightTheme = createAppTheme(ThemeMode.Light, "rtl");

@@ -4,6 +4,7 @@ export * from "./enConnectivity";
 export * from "./enCountry";
 export * from "./enDashboardLayout";
 export * from "./enError";
+export * from "./enFontManagement";
 export * from "./enGender";
 export * from "./enHeader";
 export * from "./enLanguage";
