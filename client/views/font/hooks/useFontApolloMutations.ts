@@ -146,9 +146,8 @@ export const useFontApolloMutations = () => {
       evictFontsCache();
 
       // Clear selection if deleted font was selected
-      if (store.selectedFontId === data.deleteFont.id) {
-        store.setSelectedFontId(null);
-        store.setCurrentFont(null);
+      if (store.selectedFont?.id === data.deleteFont.id) {
+        store.setSelectedFont(null);
       }
     },
     onError(error) {

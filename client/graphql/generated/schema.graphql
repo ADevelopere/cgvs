@@ -434,6 +434,26 @@ input FontCreateInput {
   storageFileId: Int!
 }
 
+input FontFilterArgs {
+  createdAt: DateTime
+  createdAtAfter: DateTime
+  createdAtBefore: DateTime
+  createdAtFrom: DateTime
+  createdAtTo: DateTime
+  locale: String
+  name: String
+  nameEndsWith: String
+  nameEquals: String
+  nameIsEmpty: Boolean
+  nameIsNotEmpty: Boolean
+  nameNotContains: String
+  nameNotEquals: String
+  nameStartsWith: String
+  updatedAt: DateTime
+  updatedAtFrom: DateTime
+  updatedAtTo: DateTime
+}
+
 input FontUpdateInput {
   id: Int!
   locale: [String!]!
@@ -454,6 +474,23 @@ type FontUsageReference {
   elementType: String!
   templateId: Int
   templateName: String
+}
+
+input FontsOrderByClause {
+  column: FontsOrderByColumn!
+  order: OrderSortDirection = ASC
+}
+
+enum FontsOrderByColumn {
+  CREATED_AT
+  ID
+  NAME
+  UPDATED_AT
+}
+
+type FontsWithFiltersResponse {
+  data: [Font!]!
+  pageInfo: PageInfo!
 }
 
 enum Gender {
@@ -575,7 +612,7 @@ type Query {
   fileUsage(input: FileUsageCheckInput!): FileUsageResult
   folderInfo(path: String!): DirectoryInfo
   font(id: Int!): Font
-  fonts: [Font!]!
+  fonts(filterArgs: FontFilterArgs, orderBy: [FontsOrderByClause!], paginationArgs: PaginationArgs): FontsWithFiltersResponse!
   listFiles(input: FilesListInput!): StorageObjectList
   mainTemplateCategory: TemplateCategory!
   me: User
@@ -606,7 +643,6 @@ type Query {
     limit: Int = 50
     searchTerm: String!
   ): StorageObjectList
-  searchFonts(limit: Int = 50, name: String!): [Font!]!
   searchTemplateCategories(includeParentTree: Boolean, limit: Int, searchTerm: String!): [TemplateCategoryWithParentTree!]!
   storageStats(
     """

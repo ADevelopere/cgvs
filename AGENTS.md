@@ -52,3 +52,22 @@
 - Focus on the actual changes made, not on compliance statements
 - NEVER include repetitive endings like "- Ensured all changes comply with Bun package manager rules and maintain code quality standards."
 - Use imperative mood (e.g., "Add feature" not "Added feature" or "Adding feature")
+
+## Translation System
+
+### Creating New Translation Component (6 steps):
+1. Create type in `client/locale/components/MyFeature.ts` with `[key: string]: string;` as first property
+2. Export from `client/locale/components/index.ts`: `export * from "./MyFeature";`
+3. Create AR translation in `client/locale/ar/myFeature.ts`: `export const myFeature: MyFeatureTranslations = {...}`
+4. Create EN translation in `client/locale/en/enMyFeature.ts`: `export const enMyFeature: MyFeatureTranslations = {...}`
+5. Export from `client/locale/ar/index.ts` and `client/locale/en/index.ts`
+6. Register in `client/locale/translations.ts`: Add to `Translations` type, `ar` object (use `AR.myFeature`), and `en` object (use `EN.enMyFeature`)
+
+### Using Translations:
+- Import: `import { useAppTranslation } from "@/client/locale";`
+- Use hook: `const strings = useAppTranslation("myFeatureTranslations");`
+- Access: `{strings.title}`, `{strings.submitButton}` - NO fallbacks like `{strings.title || "Fallback"}`
+- NEVER use hardcoded strings for user-facing text
+- NEVER use fallback strings (e.g., `|| "Default"`, `?? "Fallback"`)
+- Can use multiple namespaces: `const errorStrings = useAppTranslation("errorTranslations");`
+- Naming: AR files are camelCase (e.g., `myFeature.ts`), EN files have `en` prefix (e.g., `enMyFeature.ts`)

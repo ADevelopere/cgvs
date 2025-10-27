@@ -9,6 +9,15 @@ import React, {
   useEffect,
 } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import {
+  Dashboard as DashboardIcon,
+  Description as TemplatesIcon,
+  Category as CategoryIcon,
+  People as StudentsIcon,
+  Storage as StorageIcon,
+  FontDownload as FontIcon,
+} from "@mui/icons-material";
+import { HomeIcon } from "lucide-react";
 
 import {
   DashboardLayoutProviderProps,
@@ -18,9 +27,11 @@ import {
   SlotName,
   DashboardLayoutContextProps,
   Title,
+  Navigation,
 } from "./types";
 import { loadFromLocalStorage } from "@/client/utils/localStorage";
 import { useNavigationStateStore } from "./useNavigationStateStore";
+import { useAppTranslation } from "@/client/locale";
 
 const DashboardLayoutContext = createContext<
   DashboardLayoutContextProps | undefined
@@ -31,6 +42,9 @@ export const DashboardLayoutProvider: React.FC<
 > = ({ initialTitle, initialNavigation, initialSlots, children }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  // Get translation strings
+  const strings = useAppTranslation("dashboardLayoutTranslations");
 
   // Navigation state store
   const {
@@ -54,15 +68,79 @@ export const DashboardLayoutProvider: React.FC<
     return (saved as SidebarState) || "expanded";
   });
 
+  // Define navigation using translations
+  const navigationFromTranslations: Navigation = useMemo(
+    () => [
+      {
+        kind: "header",
+        title: strings.management,
+      },
+      {
+        id: "dashboard",
+        segment: "admin/dashboard",
+        title: strings.dashboard,
+        icon: <DashboardIcon />,
+      },
+      {
+        id: "templateCategories",
+        segment: "admin/categories",
+        title: strings.templateCategories,
+        icon: <CategoryIcon />,
+      },
+      {
+        id: "templates",
+        segment: "admin/templates",
+        title: strings.templates,
+        icon: <TemplatesIcon />,
+      },
+      {
+        id: "storage",
+        segment: "admin/storage",
+        title: strings.storage,
+        icon: <StorageIcon />,
+      },
+      {
+        id: "students",
+        segment: "admin/students",
+        title: strings.students,
+        icon: <StudentsIcon />,
+      },
+      {
+        id: "fonts",
+        segment: "admin/fonts",
+        title: strings.fonts,
+        icon: <FontIcon />,
+      },
+    ],
+    [strings]
+  );
+
+  // Define title using translations
+  const titleFromTranslations: Title = useMemo(
+    () => ({
+      titleText: strings.titleText,
+      logoIcon: <HomeIcon />,
+      titleVisible: true,
+      titleTextVisible: true,
+      titleLogoVisible: true,
+      iconColor: "primary.main",
+      textColor: "text.primary",
+    }),
+    [strings.titleText]
+  );
+
+  // Use navigation from translations or fallback to initialNavigation
+  const baseNavigation = initialNavigation || navigationFromTranslations;
+
   // Compute navigation with dynamic segments based on current path and saved state
   const computedNavigation = useMemo(() => {
-    if (!initialNavigation) {
-      return initialNavigation;
+    if (!baseNavigation) {
+      return baseNavigation;
     }
 
     const normalizedPathname = pathname.replace(/\/$/, "");
 
-    return initialNavigation.map(navItem => {
+    return baseNavigation.map(navItem => {
       // Skip non-page items (headers and dividers)
       if (navItem.kind === "header" || navItem.kind === "divider") {
         return navItem;
@@ -110,7 +188,7 @@ export const DashboardLayoutProvider: React.FC<
       // Default to base path (keep original segment)
       return navItem; // Keep original segment
     });
-  }, [initialNavigation, pathname, restoreLastVisitedChild]);
+  }, [baseNavigation, pathname, restoreLastVisitedChild]);
 
   const [headerHeight, setHeaderHeight] = useState<number>(0);
   const [sideBarToggleWidth, setSideBarToggleWidth] = useState<number>(0);
@@ -219,11 +297,14 @@ export const DashboardLayoutProvider: React.FC<
     };
   }, []);
 
+  // Use title from translations or fallback to initialTitle or titleState
+  const currentTitle = initialTitle || titleState || titleFromTranslations;
+
   const value = useMemo(() => {
     const contextValue = {
       navigation: computedNavigation,
       slots,
-      title: titleState,
+      title: currentTitle,
       sidebarState,
       setDashboardSlot,
       resetSlots,
@@ -246,7 +327,7 @@ export const DashboardLayoutProvider: React.FC<
   }, [
     computedNavigation,
     slots,
-    titleState,
+    currentTitle,
     sidebarState,
     setDashboardSlot,
     resetSlots,

@@ -5,33 +5,6 @@ export interface FontFormData {
   storageFileId: number | null;
 }
 
-// Font list item (for list view)
-export interface FontListItem {
-  id: number;
-  name: string;
-  locale: string[];
-  storageFileId: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-// Font with storage file details (for detail view)
-export interface FontDetailView {
-  id: number;
-  name: string;
-  locale: string[];
-  storageFileId: number;
-  createdAt: Date;
-  updatedAt: Date;
-  storageFile?: {
-    path: string;
-    name: string;
-    url: string;
-    contentType: string | null;
-    size: number;
-  } | null;
-}
-
 // File picker result
 export interface FilePickerResult {
   fileId: number;
@@ -40,23 +13,6 @@ export interface FilePickerResult {
   url: string;
   contentType: string | null;
   size: number;
-}
-
-// Font usage information
-export interface FontUsageInfo {
-  elementId: number;
-  elementType: string;
-  templateId: number | null;
-  templateName: string | null;
-}
-
-// Font usage check result
-export interface FontUsageCheckResult {
-  isInUse: boolean;
-  usageCount: number;
-  usedBy: FontUsageInfo[];
-  canDelete: boolean;
-  deleteBlockReason: string | null;
 }
 
 // Predefined locale options

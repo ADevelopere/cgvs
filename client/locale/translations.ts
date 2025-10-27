@@ -9,6 +9,7 @@ export type Translations = {
   authTranslations: Components.AuthTranslations;
   calendarTranslations: Components.CalendarTranslations;
   countryTranslations: Components.CountryTranslations;
+  dashboardLayoutTranslations: Components.DashboardLayoutTranslations;
   genderTranslations: Components.GenderTranslations;
   languageTranslations: Components.LanguageTranslations;
   templateCategoryTranslations: Components.TemplateCategoryTranslation;
@@ -28,6 +29,7 @@ const translations: Record<AppLanguage, Translations> = {
     authTranslations: AR.auth,
     calendarTranslations: AR.calendar,
     countryTranslations: AR.country,
+    dashboardLayoutTranslations: AR.dashboardLayout,
     genderTranslations: AR.gender,
     languageTranslations: AR.language,
     templateCategoryTranslations: AR.templateCategory,
@@ -45,6 +47,7 @@ const translations: Record<AppLanguage, Translations> = {
     authTranslations: EN.enAuth,
     calendarTranslations: EN.enCalendar,
     countryTranslations: EN.enCountry,
+    dashboardLayoutTranslations: EN.enDashboardLayout,
     genderTranslations: EN.enGender,
     languageTranslations: EN.enLanguage,
     templateCategoryTranslations: EN.enTemplateCategory,

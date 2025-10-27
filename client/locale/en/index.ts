@@ -2,6 +2,7 @@ export * from "./enAuth";
 export * from "./enCalendar";
 export * from "./enConnectivity";
 export * from "./enCountry";
+export * from "./enDashboardLayout";
 export * from "./enError";
 export * from "./enGender";
 export * from "./enHeader";
