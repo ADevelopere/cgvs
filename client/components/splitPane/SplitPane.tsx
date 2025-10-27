@@ -264,7 +264,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
         const rect = element.getBoundingClientRect();
         const newWidth = width ?? rect.width;
         const newHeight = rect.height;
-        
+
         if (
           (newWidth !== previousContainerWidthRef.current && newWidth > 0) ||
           (newHeight !== previousContainerHeightRef.current && newHeight > 0)
@@ -273,7 +273,10 @@ export const SplitPane: FC<SplitPaneProps> = ({
             setContainerWidth(newWidth);
             previousContainerWidthRef.current = newWidth;
           }
-          if (newHeight !== previousContainerHeightRef.current && newHeight > 0) {
+          if (
+            newHeight !== previousContainerHeightRef.current &&
+            newHeight > 0
+          ) {
             setContainerHeight(newHeight);
             previousContainerHeightRef.current = newHeight;
           }
@@ -559,7 +562,9 @@ export const SplitPane: FC<SplitPaneProps> = ({
       <div ref={splitPaneRef} className={classes} style={wrapperStyle}>
         {firstPane?.visible && (
           <div ref={pane1Ref} className={pane1Classes} style={pane1Styles}>
-            {notNullChildren[0]}
+            <div style={{ width: "100%", height: "100%" }}>
+              {notNullChildren[0]}
+            </div>
           </div>
         )}
 
@@ -579,7 +584,9 @@ export const SplitPane: FC<SplitPaneProps> = ({
 
         {secondPane?.visible && (
           <div ref={pane2Ref} className={pane2Classes} style={pane2Styles}>
-            {notNullChildren[1]}
+            <div style={{ width: "100%", height: "100%" }}>
+              {notNullChildren[1]}
+            </div>
           </div>
         )}
       </div>

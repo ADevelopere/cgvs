@@ -2,23 +2,14 @@ import { Box, Drawer, IconButton, Tooltip } from "@mui/material";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { PanelRight, PanelLeft } from "lucide-react";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
-import { SplitPaneViewController } from "./SplitPaneViewController";
+import {
+  SplitPaneViewController,
+  SplitPaneViewControllerProps,
+} from "./SplitPaneViewController";
 import DrawerToggleButton from "./DrawerToggleButton";
 
-interface SplitPaneViewControllerProps {
-  title: React.ReactNode;
-  firstPaneButtonDisabled: boolean;
-  secondPaneButtonDisabled: boolean;
-  firstPaneButtonTooltip: string;
-  secondPaneButtonTooltip: string;
-  firstPane: React.ReactNode;
-  secondPane: React.ReactNode;
-  style?: React.CSSProperties;
-  storageKey?: string;
-}
-
-interface ResponsiveSplitPaneViewControllerProps
-  extends SplitPaneViewControllerProps {
+type ResponsiveSplitPaneViewControllerProps = SplitPaneViewControllerProps & {
+  title?: React.ReactNode;
   breakpointWidth: number;
   drawerWidth?: number;
   drawerVariant?: "temporary" | "persistent";
@@ -26,7 +17,7 @@ interface ResponsiveSplitPaneViewControllerProps
   toggleButtonZIndex?: number;
   headerBehavior?: "above-content" | "in-drawer" | "hidden";
   drawerAnchor?: "left" | "right";
-}
+};
 
 export const ResponsiveSplitPaneViewController: React.FC<
   ResponsiveSplitPaneViewControllerProps
@@ -216,4 +207,3 @@ export const ResponsiveSplitPaneViewController: React.FC<
     </Box>
   );
 };
-
