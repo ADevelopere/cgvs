@@ -22,6 +22,10 @@ export namespace StorageUtils {
     [Types.FileContentType.MP4]: "video/mp4",
     [Types.FileContentType.MP3]: "audio/mpeg",
     [Types.FileContentType.WAV]: "audio/wav",
+    [Types.FileContentType.OTF]: "font/otf",
+    [Types.FileContentType.TTF]: "font/ttf",
+    [Types.FileContentType.WOFF]: "font/woff",
+    [Types.FileContentType.WOFF2]: "font/woff2",
   };
 
   // Reverse mapping for content types

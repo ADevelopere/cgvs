@@ -130,6 +130,10 @@ export enum FileContentType {
   MP4 = "MP4",
   MP3 = "MP3",
   WAV = "WAV",
+  OTF = "OTF",
+  TTF = "TTF",
+  WOFF = "WOFF",
+  WOFF2 = "WOFF2",
 }
 
 // Input types

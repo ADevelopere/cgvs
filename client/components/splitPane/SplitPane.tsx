@@ -16,7 +16,6 @@ import {
   debouncedSaveToLocalStorage,
   loadFromLocalStorage,
 } from "@/client/utils/localStorage";
-import logger from "@/client/lib/logger";
 
 // Helper to remove focus so text isn't selected while dragging
 function unFocus(doc: Document, win: Window) {
@@ -221,7 +220,6 @@ export const SplitPane: FC<SplitPaneProps> = ({
 
   const calculatePaneSizes = useCallback(() => {
     if (!containerWidth || !containerHeight) return;
-    logger.debug("calculatePaneSizes", { containerWidth, containerHeight });
 
     const totalSize =
       orientation === "vertical" ? containerWidth : containerHeight;

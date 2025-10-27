@@ -364,18 +364,26 @@ export const useStorageUploadOperations = () => {
             })
           );
         }
+        const currentBatch = useStorageUploadStore.getState().uploadBatch;
 
         // Update completion status
-        if (uploadBatch) {
-          const successCount = Array.from(uploadBatch.files.values()).filter(
+        if (currentBatch) {
+          const successCount = Array.from(currentBatch.files.values()).filter(
             (f: UploadFileState) => f.status === "success"
           ).length;
-          const errorCount = Array.from(uploadBatch.files.values()).filter(
+          const errorCount = Array.from(currentBatch.files.values()).filter(
             (f: UploadFileState) => f.status === "error"
           ).length;
 
           // Evict cache if any files were successfully uploaded
           if (successCount > 0) {
+            logger.info(
+              "Evicting listFiles and directoryChildren caches for target path",
+              {
+                targetPath,
+                params: paramsRef.current,
+              }
+            );
             // Evict listFiles and directoryChildren caches for target path
             evictListFilesCacheUtil(
               apolloClient,
@@ -407,7 +415,7 @@ export const useStorageUploadOperations = () => {
             }
           }, 0);
 
-          setUploadBatch({ ...uploadBatch, isUploading: false });
+          setUploadBatch({ ...currentBatch, isUploading: false });
         }
       } catch {
         notifications.show(translations.uploadFailed, {

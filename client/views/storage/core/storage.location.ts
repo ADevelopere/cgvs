@@ -11,6 +11,6 @@ export const getDisplayPath = (path: string): string => {
 
 // Get the full storage path
 export const getStoragePath = (displayPath: string): string => {
-  if (displayPath === "") return "public";
-  return `${displayPath}`;
+  // if (displayPath === "") return "public";
+  return displayPath;
 };

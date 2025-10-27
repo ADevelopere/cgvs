@@ -13,10 +13,10 @@ export const mimeToContentType: Record<string, Graphql.ContentType> = {
   "image/webp": "WEBP",
   "application/pdf": "PDF",
   "text/plain": "TXT",
-  // "font/otf": "OTF",
-  // "font/ttf": "TTF",
-  // "font/woff": "WOFF",
-  // "font/woff2": "WOFF2",
+  "font/otf": "OTF",
+  "font/ttf": "TTF",
+  "font/woff": "WOFF",
+  "font/woff2": "WOFF2",
 };
 
 export const extToContentType: Record<string, Graphql.ContentType> = {
@@ -29,8 +29,8 @@ export const extToContentType: Record<string, Graphql.ContentType> = {
   pdf: "PDF",
   txt: "TXT",
   text: "TXT", // Additional text extension
-  // otf: "OTF",
-  // ttf: "TTF",
-  // woff: "WOFF",
-  // woff2: "WOFF2",
+  otf: "OTF",
+  ttf: "TTF",
+  woff: "WOFF",
+  woff2: "WOFF2",
 };

@@ -118,19 +118,18 @@ export const getAcceptAttribute = (
       case "TXT":
         acceptValues.push("text/plain", ".txt", ".text");
         break;
-      // will be added:
-      // case "OTF":
-      //     acceptValues.push("font/otf", ".otf");
-      //     break;
-      // case "TTF":
-      //     acceptValues.push("font/ttf", ".ttf");
-      //     break;
-      // case "WOFF":
-      //     acceptValues.push("font/woff", ".woff");
-      //     break;
-      // case "WOFF2":
-      //     acceptValues.push("font/woff2", ".woff2");
-      //     break;
+      case "OTF":
+        acceptValues.push("font/otf", ".otf");
+        break;
+      case "TTF":
+        acceptValues.push("font/ttf", ".ttf");
+        break;
+      case "WOFF":
+        acceptValues.push("font/woff", ".woff");
+        break;
+      case "WOFF2":
+        acceptValues.push("font/woff2", ".woff2");
+        break;
       default: {
         // Fallback to generic mapping
         const mimeTypes = contentTypesToMimeTypes([contentType]);
