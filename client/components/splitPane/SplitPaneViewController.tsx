@@ -4,7 +4,7 @@ import { PanelRight, PanelLeft } from "lucide-react";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { SplitPane } from "./SplitPane";
 
-type SplitPaneViewControllerProps = {
+export type SplitPaneViewControllerProps = {
   title: React.ReactNode;
   firstPaneButtonDisabled: boolean;
   secondPaneButtonDisabled: boolean;
@@ -67,25 +67,21 @@ export const SplitPaneViewController: React.FC<
         <Box>
           {/* first pane visibility button*/}
           <Tooltip title={firstPaneButtonTooltip}>
-            <span>
-              <IconButton
-                onClick={handleFirstPaneVisibility}
-                disabled={firstPaneButtonDisabled || !secondPaneVisible}
-              >
-                <PanelRight />
-              </IconButton>
-            </span>
+            <IconButton
+              onClick={handleFirstPaneVisibility}
+              disabled={firstPaneButtonDisabled || !secondPaneVisible}
+            >
+              <PanelRight />
+            </IconButton>
           </Tooltip>
           {/* second pane visibility button */}
           <Tooltip title={secondPaneButtonTooltip}>
-            <span>
-              <IconButton
-                onClick={handleSecondPaneVisibility}
-                disabled={secondPaneButtonDisabled || !firstPaneVisible}
-              >
-                <PanelLeft />
-              </IconButton>
-            </span>
+            <IconButton
+              onClick={handleSecondPaneVisibility}
+              disabled={secondPaneButtonDisabled || !firstPaneVisible}
+            >
+              <PanelLeft />
+            </IconButton>
           </Tooltip>
         </Box>
       </Box>
