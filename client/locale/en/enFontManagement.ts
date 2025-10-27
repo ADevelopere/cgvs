@@ -20,7 +20,7 @@ export const enFontManagement: FontManagementTranslations = {
   fontId: "Font ID: %{id}",
   fontName: "Font Name",
   supportedLocales: "Supported Locales",
-  storageFileId: "Storage File ID",
+  storageFilePath: "Storage File Path",
   created: "Created",
   lastUpdated: "Last Updated",
 

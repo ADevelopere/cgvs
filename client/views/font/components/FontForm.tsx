@@ -1,20 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import * as MUI from "@mui/material";
 import { LocaleSelector } from "./LocaleSelector";
 import { FontFilePicker } from "./FontFilePicker";
 import { FontPreview } from "./FontPreview";
 import { FontFormData } from "../types";
 import { useAppTranslation } from "@/client/locale";
+import { FontCreateInput } from "@/client/graphql/generated/gql/graphql";
 
 interface FontFormProps {
   initialData?: {
     name: string;
     locale: string[];
-    storageFileId: number;
+    filePath: string;
     fileName?: string;
     fileUrl?: string;
   };
-  onSubmit: (data: FontFormData) => Promise<void>;
+  
+  onSubmit: (input: FontCreateInput) => Promise<void>;
   onCancel: () => void;
   submitLabel?: string;
   disabled?: boolean;
@@ -24,25 +26,24 @@ export const FontForm: React.FC<FontFormProps> = ({
   initialData,
   onSubmit,
   onCancel,
-  submitLabel = "Save",
   disabled = false,
 }) => {
   const strings = useAppTranslation("fontManagementTranslations");
-  
+
   const [formData, setFormData] = useState<FontFormData>({
     name: initialData?.name || "",
     locale: initialData?.locale || [],
-    storageFileId: initialData?.storageFileId || null,
+    storageFilePath: initialData?.filePath || null,
   });
 
   const [selectedFile, setSelectedFile] = useState<{
-    fileId: number;
+    filePath: string;
     fileName: string;
     fileUrl: string;
   } | null>(
-    initialData?.storageFileId
+    initialData?.filePath
       ? {
-          fileId: initialData.storageFileId,
+          filePath: initialData.filePath,
           fileName: initialData.fileName || "Font file",
           fileUrl: initialData.fileUrl || "",
         }
@@ -51,14 +52,6 @@ export const FontForm: React.FC<FontFormProps> = ({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    if (selectedFile) {
-      setFormData(prev => ({ ...prev, storageFileId: selectedFile.fileId }));
-    } else {
-      setFormData(prev => ({ ...prev, storageFileId: null }));
-    }
-  }, [selectedFile]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -71,7 +64,7 @@ export const FontForm: React.FC<FontFormProps> = ({
       newErrors.locale = strings.localeRequired;
     }
 
-    if (!formData.storageFileId) {
+    if (formData.storageFilePath === null) {
       newErrors.file = strings.fontFileRequired;
     }
 
@@ -82,13 +75,18 @@ export const FontForm: React.FC<FontFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validate()) {
+    if (!validate() || formData.storageFilePath === null) {
       return;
+    }
+    const input: FontCreateInput = {
+      name: formData.name,
+      locale: formData.locale,
+      storageFilePath: formData.storageFilePath
     }
 
     setIsSubmitting(true);
     try {
-      await onSubmit(formData);
+      await onSubmit(input);
     } finally {
       setIsSubmitting(false);
     }
@@ -140,7 +138,15 @@ export const FontForm: React.FC<FontFormProps> = ({
           <MUI.Box sx={{ mt: 1 }}>
             <FontFilePicker
               value={selectedFile}
-              onChange={setSelectedFile}
+              onChange={file => {
+                setSelectedFile(file);
+                if (file) {
+                  setFormData(prev => ({
+                    ...prev,
+                    storageFilePath: file.filePath,
+                  }));
+                }
+              }}
               disabled={disabled || isSubmitting}
             />
           </MUI.Box>
@@ -178,11 +184,10 @@ export const FontForm: React.FC<FontFormProps> = ({
             variant="contained"
             disabled={disabled || isSubmitting}
           >
-            {isSubmitting ? strings.saving : submitLabel}
+            {isSubmitting ? strings.saving : strings.createFont}
           </MUI.Button>
         </MUI.Box>
       </MUI.Box>
     </form>
   );
 };
-

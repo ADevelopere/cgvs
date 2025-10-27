@@ -1,5 +1,5 @@
 {
-  "id": "abc715f9-36dd-47f7-8f3c-1f158c83dc50",
+  "id": "8c91df9d-0930-4ecf-a877-ebf7be5c8140",
   "prevId": "a03697e8-0c3c-4c86-8680-1a949f474bf6",
   "version": "7",
   "dialect": "postgresql",
@@ -160,7 +160,7 @@
         },
         "locale": {
           "name": "locale",
-          "type": "varchar(10)",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true
         },

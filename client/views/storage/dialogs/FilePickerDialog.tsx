@@ -1,11 +1,6 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useTheme } from "@mui/material";
 import * as MUI from "@mui/material";
 import {
@@ -62,7 +57,12 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
     loading,
     error: queryError,
   } = useQuery(listFilesQueryDocument, {
-    variables: queryVariables,
+    variables: {
+      input: {
+        ...queryVariables.input,
+        includeDirectories: true,
+      },
+    },
     skip: !open, // Only run query when dialog is open
   });
 
@@ -106,7 +106,11 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   // Handle dialog open/close
   useEffect(() => {
     if (open) {
-      logger.info("FilePickerDialog opened", { allowedContentTypes, allowedFileTypes, title });
+      logger.info("FilePickerDialog opened", {
+        allowedContentTypes,
+        allowedFileTypes,
+        title,
+      });
       setCurrentPath("");
       setSelectedFile(null);
       setIsSelecting(false);
@@ -257,7 +261,12 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
     apolloClient.cache.evict({
       id: "ROOT_QUERY",
       fieldName: "listFiles",
-      args: queryVariables,
+      args: {
+        input: {
+          ...queryVariables.input,
+          includeDirectories: true,
+        },
+      },
     });
     apolloClient.cache.gc();
   }, [currentPath, apolloClient.cache, queryVariables]);

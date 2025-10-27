@@ -11,6 +11,7 @@ import {
   ne,
   asc,
   desc,
+  sql,
 } from "drizzle-orm";
 import {
   FontFilterArgs,
@@ -54,9 +55,11 @@ export namespace FontFilterUtils {
       conditions.push(ne(font.name, ""));
     }
 
-    // Locale filter
+    // Locale filter - check if JSONB array contains the locale
     if (filters.locale) {
-      conditions.push(ilike(font.locale, `%${filters.locale}%`));
+      conditions.push(
+        sql`${font.locale}::jsonb ? ${filters.locale}`
+      );
     }
 
     // CreatedAt filters

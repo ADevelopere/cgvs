@@ -10,21 +10,21 @@ export type FontSelectType = typeof font.$inferSelect;
 
 // Pothos definition with relations
 export type FontPothosDefinition = FontSelectType & {
-  storageFile?: FileInfo | null;
+  storageFile?: FileInfo;
 };
 
 // Input types for GraphQL
 export type FontCreateInput = {
   name: string;
   locale: string[]; // Array of locale codes: ["all", "en", "ar", etc.]
-  storageFileId: number;
+  storageFilePath: string;
 };
 
 export type FontUpdateInput = {
   id: number;
   name: string;
   locale: string[];
-  storageFileId: number;
+  storageFilePath: string;
 };
 
 // Usage check result

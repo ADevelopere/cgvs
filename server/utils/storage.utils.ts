@@ -2,6 +2,7 @@ import { STORAGE_CONFIG } from "../storage/disk/storage.service.interface";
 import * as Types from "@/server/types";
 import { OrderSortDirection } from "@/lib/enum";
 import { isAllowedMimeType } from "@/utils/storage.utils";
+import logger from "../lib/logger";
 
 export namespace StorageUtils {
   const PATH_PATTERN = /^[a-zA-Z0-9._/\- ()]+$/;
@@ -92,6 +93,9 @@ export namespace StorageUtils {
     if (contentType.includes("zip") || contentType.includes("rar"))
       return Types.FileTypes.ARCHIVE;
 
+    // fonts
+    if (contentType.includes("font")) return Types.FileTypes.FONT;
+    
     return Types.FileTypes.OTHER;
   };
 
@@ -268,20 +272,32 @@ export namespace StorageUtils {
   export const filterStorageItems = (
     items: Array<Types.FileInfo | Types.DirectoryInfo>,
     filters: {
+      includeDirectories?: boolean | null;
       fileType?: string | null;
       fileTypes?: string[] | null;
       contentTypes?: string[] | null;
     }
   ): Array<Types.FileInfo | Types.DirectoryInfo> => {
+    logger.info("[StorageUtils] filterStorageItems", { filters });
+    logger.info("[StorageUtils] items", { items });
+    const itemTypes = new Set<string>();
+
     let filtered = items;
+
+    // Filter directories if includeDirectories is explicitly false
+    if (filters.includeDirectories === false) {
+      filtered = filtered.filter(item => "fileType" in item);
+    }
 
     // Filter by multiple file types (NEW)
     if (filters.fileTypes && filters.fileTypes.length > 0) {
       filtered = filtered.filter(item => {
         if ("fileType" in item) {
+          itemTypes.add(item.fileType);
           return filters.fileTypes!.includes(item.fileType);
         }
-        return false; // Directories don't have fileType
+        // If includeDirectories is true, allow directories to pass through
+        return filters.includeDirectories === true;
       });
     }
 
@@ -289,9 +305,11 @@ export namespace StorageUtils {
     if (filters.contentTypes && filters.contentTypes.length > 0) {
       filtered = filtered.filter(item => {
         if ("contentType" in item && item.contentType) {
+          itemTypes.add(item.contentType);
           return filters.contentTypes!.includes(item.contentType);
         }
-        return false; // Directories don't have contentType
+        // If includeDirectories is true, allow directories to pass through
+        return filters.includeDirectories === true;
       });
     }
 
@@ -299,11 +317,17 @@ export namespace StorageUtils {
     if (filters.fileType) {
       filtered = filtered.filter(item => {
         if ("fileType" in item) {
+          itemTypes.add(item.fileType);
           return item.fileType === filters.fileType;
         }
-        return false;
+        // If includeDirectories is true, allow directories to pass through
+        return filters.includeDirectories === true;
       });
     }
+
+    logger.info("[StorageUtils] itemTypes", { itemTypes });
+
+    logger.info("[StorageUtils] filtered", { filtered });
 
     return filtered;
   };

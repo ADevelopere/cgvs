@@ -486,8 +486,10 @@ class LocalAdapter implements StorageService {
         );
       }
 
+      logger.info("[LocalAdapter] filteredItems", { filteredItems });
       // Apply file type and content type filters
       filteredItems = StorageUtils.filterStorageItems(filteredItems, {
+        includeDirectories: input.includeDirectories,
         fileType: input.fileType,
         fileTypes: input.fileTypes,
         contentTypes: input.contentTypes,

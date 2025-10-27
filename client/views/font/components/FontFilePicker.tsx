@@ -11,12 +11,12 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 interface FontFilePickerProps {
   value: {
-    fileId: number;
+    filePath: string;
     fileName: string;
     fileUrl?: string;
   } | null;
   onChange: (file: {
-    fileId: number;
+    filePath: string;
     fileName: string;
     fileUrl: string;
   } | null) => void;
@@ -33,7 +33,7 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({
 
   const handleFileSelect = (file: Graphql.FileInfo) => {
     onChange({
-      fileId: Number(file.path), // Use path as ID or adjust based on your schema
+      filePath: file.path,
       fileName: file.name,
       fileUrl: file.url,
     });

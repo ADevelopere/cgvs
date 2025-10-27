@@ -20,7 +20,7 @@ export const fontManagement: FontManagementTranslations = {
   fontId: "معرف الخط: %{id}",
   fontName: "اسم الخط",
   supportedLocales: "اللغات المدعومة",
-  storageFileId: "معرف ملف التخزين",
+  storageFilePath: "مسار ملف التخزين",
   created: "تاريخ الإنشاء",
   lastUpdated: "آخر تحديث",
 
