@@ -96,7 +96,7 @@ export const DefaultTitle = forwardRef<HTMLDivElement, DefaultTitleProps>(
           display: "flex",
           alignItems: "center",
           gap: 1,
-          paddingLeft: 1,
+          paddingInlineStart: 1,
           maxWidth: "100%",
         }}
       >

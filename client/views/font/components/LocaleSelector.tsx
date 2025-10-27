@@ -63,7 +63,7 @@ export const LocaleSelector: React.FC<LocaleSelectorProps> = ({
               sx={{ mr: 1 }}
             />
             <MUI.Typography variant="body2">
-              <span style={{ marginRight: 8 }}>{option.flag}</span>
+              <span style={{ marginInlineEnd: 8 }}>{option.flag}</span>
               {option.label}
             </MUI.Typography>
           </li>

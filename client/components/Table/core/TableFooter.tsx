@@ -160,14 +160,14 @@ export const TableFooter: React.FC<TableFooterProps> = ({
                       "& .MuiTablePagination-toolbar": {
                         minHeight: 36,
                         gap: 0.5,
-                        paddingLeft: 0,
-                        paddingRight: 0,
+                        paddingInlineStart: 0,
+                        paddingInlineEnd: 0,
                       },
                       "& .MuiInputBase-root": {
                         fontSize: 12,
                       },
                       "& .MuiTablePagination-actions": {
-                        marginLeft: 0,
+                        marginInlineStart: 0,
                       },
                       "& .MuiTablePagination-displayedRows": {
                         display: "none",
@@ -200,7 +200,7 @@ export const TableFooter: React.FC<TableFooterProps> = ({
                   <>
                     <CircularProgress
                       size={16}
-                      style={{ marginRight: 8, verticalAlign: "middle" }}
+                      style={{ marginInlineEnd: 8, verticalAlign: "middle" }}
                     />
                     {strings.general.loading}
                   </>

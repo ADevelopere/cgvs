@@ -445,7 +445,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
               endAdornment: (
                 <InputAdornment
                   position="end"
-                  sx={{ marginLeft: 0, marginRight: 0 }}
+                  sx={{ marginInlineStart: 0, marginInlineEnd: 0 }}
                 >
                   <IconButton onClick={handleOpenDayMenu}>
                     <ArrowDropDownIcon />
@@ -511,7 +511,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
               endAdornment: (
                 <InputAdornment
                   position="end"
-                  sx={{ marginLeft: 0, marginRight: 0 }}
+                  sx={{ marginInlineStart: 0, marginInlineEnd: 0 }}
                 >
                   <IconButton onClick={handleOpenMonthMenu}>
                     <ArrowDropDownIcon />
@@ -575,7 +575,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
               endAdornment: (
                 <InputAdornment
                   position="end"
-                  sx={{ marginLeft: 0, marginRight: 0 }}
+                  sx={{ marginInlineStart: 0, marginInlineEnd: 0 }}
                 >
                   <IconButton onClick={handleOpenYearMenu}>
                     <ArrowDropDownIcon />

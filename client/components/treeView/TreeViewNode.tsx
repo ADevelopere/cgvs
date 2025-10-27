@@ -83,7 +83,7 @@ export default function TreeViewNode<T extends BaseTreeItem>({
                   disabled={isLoading}
                   sx={{
                     padding: "4px",
-                    marginRight: "4px",
+                    marginInlineEnd: "4px",
                     transform: isExpanded
                       ? isRtl
                         ? "rotate(-90deg)"

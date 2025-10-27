@@ -384,7 +384,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                   alignItems: "center",
                 }}
               >
-                <GraduationCap style={{ marginRight: 2 }} />
+                <GraduationCap style={{ marginInlineEnd: 2 }} />
                 <EditableTypography
                   typography={{
                     variant: "body1",
@@ -457,7 +457,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                 alignItems: "center",
               }}
             >
-              <GraduationCap style={{ marginRight: 2 }} />
+              <GraduationCap style={{ marginInlineEnd: 2 }} />
               <EditableTypography
                 typography={{
                   variant: "body1",

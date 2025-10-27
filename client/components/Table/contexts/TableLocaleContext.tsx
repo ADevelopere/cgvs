@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useMemo, ReactNode } from "react";
 import { TableLocale, SupportedLocale } from "../types/locale.types";
 import { defaultLocaleResources } from "../locale/defaultTableLocales";
+import { useAppTheme } from "@/client/contexts";
 
 interface TableLocaleContextValue {
   locale: SupportedLocale;
@@ -15,18 +16,18 @@ const TableLocaleContext = createContext<TableLocaleContextValue | undefined>(
 
 interface TableLocaleProviderProps {
   children: ReactNode;
-  locale?: SupportedLocale;
+  initialLocale?: SupportedLocale;
   customStrings?: Partial<TableLocale>;
 }
 
 export const TableLocaleProvider: React.FC<TableLocaleProviderProps> = ({
   children,
-  locale: activeLocale = "ar",
   customStrings,
 }) => {
+  const { language } = useAppTheme();
   const strings = useMemo(() => {
     const baseStrings =
-      defaultLocaleResources[activeLocale] || defaultLocaleResources.en;
+      defaultLocaleResources[language] || defaultLocaleResources.en;
 
     if (!customStrings) {
       return baseStrings;
@@ -59,14 +60,14 @@ export const TableLocaleProvider: React.FC<TableLocaleProviderProps> = ({
     };
 
     return mergeDeep(baseStrings, customStrings);
-  }, [activeLocale, customStrings]);
+  }, [language, customStrings]);
 
   const contextValue = useMemo(
     () => ({
-      locale: activeLocale,
+      locale: language,
       strings,
     }),
-    [activeLocale, strings]
+    [language, strings]
   );
 
   return (
