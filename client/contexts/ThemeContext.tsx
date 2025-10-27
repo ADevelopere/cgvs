@@ -108,22 +108,56 @@ type AppThemeProviderProps = {
 
 export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   children,
+  initialLanguage,
+  initialTheme,
 }) => {
+  // Determine if we're using initial props (e.g., from Storybook)
+  const hasInitialProps =
+    initialLanguage !== undefined || initialTheme !== undefined;
+
   const [currentTheme, setCurrentTheme] = useState<Theme>(ltrLightTheme);
   const [currentThemeMode, setCurrentThemeMode] = useState<ThemeMode>(
-    ThemeMode.System
+    hasInitialProps && initialTheme ? initialTheme : ThemeMode.System
   );
   const [currentLanguage, setCurrentLanguage] = useState<AppLanguage>(
-    AppLanguage.default as AppLanguage
+    hasInitialProps && initialLanguage
+      ? (initialLanguage as AppLanguage)
+      : (AppLanguage.default as AppLanguage)
   );
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<"rtl" | "ltr">(
     "ltr"
   );
-  const isInitialized = useRef(false);
+  const isInitialized = useRef(hasInitialProps);
 
   // Effect to set theme and language from client-side storage after mount
   useEffect(() => {
+    // If initial props are provided, use them instead of localStorage
+    if (hasInitialProps) {
+      const language = initialLanguage || AppLanguage.default;
+      const mode = initialTheme || ThemeMode.System;
+
+      updateLanguage(language);
+      setCurrentLanguage(language as AppLanguage);
+      setCurrentThemeMode(mode);
+
+      const isRtl = language === "ar";
+      const isDarkMode =
+        mode === ThemeMode.Dark ||
+        (mode === ThemeMode.System &&
+          matchMedia("(prefers-color-scheme: dark)")?.matches);
+
+      if (isRtl) {
+        setCurrentTheme(isDarkMode ? rtlDarkTheme : rtlLightTheme);
+      } else {
+        setCurrentTheme(isDarkMode ? ltrDarkTheme : ltrLightTheme);
+      }
+
+      isInitialized.current = true;
+      return;
+    }
+
+    // Otherwise, use localStorage behavior
     const storedLanguage = getStoredLanguage();
     const storedMode = getStoredThemeMode();
 
@@ -145,7 +179,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
 
     // Mark as initialized after theme setup is complete
     isInitialized.current = true;
-  }, []);
+  }, [hasInitialProps, initialLanguage, initialTheme]);
 
   // Add effect to listen for system theme changes when in system mode
   useEffect(() => {

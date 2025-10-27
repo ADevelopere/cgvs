@@ -4,7 +4,7 @@ const config: StorybookConfig = {
   stories: [
     "../client/stories/**/*.mdx",
     "../client/stories/**/*.stories.@(js|jsx|mjs|ts|tsx)",
-  ],
+  ],  
   addons: [
     "@chromatic-com/storybook",
     "@storybook/addon-docs",
@@ -16,6 +16,6 @@ const config: StorybookConfig = {
     name: "@storybook/nextjs-vite",
     options: {},
   },
-  staticDirs: ["../public"],
+  staticDirs: ["../public", "../client/stories/assets"],
 };
 export default config;
