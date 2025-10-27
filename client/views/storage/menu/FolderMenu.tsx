@@ -365,7 +365,7 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
                 <strong>{translations.permissions}:</strong>
                 <div
                   style={{
-                    marginLeft: theme.spacing(2),
+                    marginInlineStart: theme.spacing(2),
                     fontSize: "0.9em",
                   }}
                 >

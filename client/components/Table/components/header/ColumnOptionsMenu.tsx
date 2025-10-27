@@ -48,7 +48,7 @@ export const ColumnOptionsMenu = ({
       {isPinnedLeft ? (
         <MenuItem onClick={() => onUnpin(columnId)}>
           <PushPin
-            style={{ marginRight: 8, transform: "rotate(45deg)" }}
+            style={{ marginInlineEnd: 8, transform: "rotate(45deg)" }}
             fontSize="small"
           />
           {strings.column.unpin}
@@ -56,7 +56,7 @@ export const ColumnOptionsMenu = ({
       ) : (
         <MenuItem onClick={() => onPinLeft(columnId)}>
           <PushPin
-            style={{ marginRight: 8, transform: "rotate(45deg)" }}
+            style={{ marginInlineEnd: 8, transform: "rotate(45deg)" }}
             fontSize="small"
           />
           {strings.column.pinLeft}
@@ -65,12 +65,12 @@ export const ColumnOptionsMenu = ({
 
       {isPinnedRight ? (
         <MenuItem onClick={() => onUnpin(columnId)}>
-          <PushPin style={{ marginRight: 8 }} fontSize="small" />
+          <PushPin style={{ marginInlineEnd: 8 }} fontSize="small" />
           {strings.column.unpin}
         </MenuItem>
       ) : (
         <MenuItem onClick={() => onPinRight(columnId)}>
-          <PushPin style={{ marginRight: 8 }} fontSize="small" />
+          <PushPin style={{ marginInlineEnd: 8 }} fontSize="small" />
           {strings.column.pinRight}
         </MenuItem>
       )}
@@ -79,7 +79,7 @@ export const ColumnOptionsMenu = ({
 
       {/* Autosize option */}
       <MenuItem onClick={() => onAutosize(columnId)}>
-        <FitScreen style={{ marginRight: 8 }} fontSize="small" />
+        <FitScreen style={{ marginInlineEnd: 8 }} fontSize="small" />
         {strings.column.autosize}
       </MenuItem>
 
@@ -87,13 +87,13 @@ export const ColumnOptionsMenu = ({
 
       {/* Hide option */}
       <MenuItem onClick={() => onHide(columnId)}>
-        <VisibilityOff style={{ marginRight: 8 }} fontSize="small" />
+        <VisibilityOff style={{ marginInlineEnd: 8 }} fontSize="small" />
         {strings.column.hide}
       </MenuItem>
 
       {/* Column manager option */}
       <MenuItem onClick={onShowColumnManager}>
-        <PinDrop style={{ marginRight: 8 }} fontSize="small" />
+        <PinDrop style={{ marginInlineEnd: 8 }} fontSize="small" />
         {strings.column.showColumnManager}
       </MenuItem>
     </Menu>

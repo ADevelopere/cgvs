@@ -81,7 +81,7 @@ const UploadProgressHeader: React.FC<UploadProgressHeaderProps> = ({
           aria-label={translations.closeUploadProgress}
           sx={{
             color: theme.palette.text.secondary,
-            marginLeft: theme.spacing(0.5),
+            marginInlineStart: theme.spacing(0.5),
             "&:hover": {
               backgroundColor: theme.palette.action.hover,
               color: theme.palette.text.primary,

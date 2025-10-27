@@ -178,7 +178,7 @@ export const TableBody = <
               alignItems="center"
               height="100%"
             >
-              <CircularProgress size={30} style={{ marginRight: 10 }} />
+              <CircularProgress size={30} style={{ marginInlineEnd: 10 }} />
             </Box>
           </td>
         </tr>

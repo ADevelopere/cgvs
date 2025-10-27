@@ -95,7 +95,7 @@ export const _ActionsContainer = styled(Box, {
   gap: theme.spacing(2),
   alignItems: "center",
   marginTop: isMobile ? theme.spacing(2) : 0,
-  marginLeft: isMobile ? 0 : theme.spacing(2),
+  marginInlineStart: isMobile ? 0 : theme.spacing(2),
   flexShrink: 0,
 }));
 
