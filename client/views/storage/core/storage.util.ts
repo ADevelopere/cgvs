@@ -1,6 +1,11 @@
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import CryptoJS from "crypto-js";
-import { extToContentType, mimeToContentType } from "./storage.constant";
+import {
+  extToContentType,
+  mimeToContentType,
+  contentTypeToMime,
+  contentTypeToExtensions,
+} from "./storage.constant";
 
 /**
  * Generate MD5 hash from file content in base64 format
@@ -36,8 +41,12 @@ export const generateFileMD5 = async (file: File): Promise<string> => {
   });
 };
 
+/**
+ * Infer ContentType enum from file
+ * Returns a ContentType enum value (e.g., "IMAGE_JPEG", "FONT_OTF")
+ */
 export const inferContentType = (file: File): Graphql.ContentType => {
-  // Try to map from MIME type
+  // Try to use browser-detected MIME type if it's in our mapping
   if (file.type && mimeToContentType[file.type]) {
     return mimeToContentType[file.type];
   }
@@ -50,93 +59,58 @@ export const inferContentType = (file: File): Graphql.ContentType => {
   }
 
   // Default fallback
-  return "TXT";
+  return "TEXT_PLAIN";
 };
 
 export const getFileKey = (file: File): string =>
   `${file.name}-${file.size}-${file.lastModified}`;
 
-// Convert ContentType array to MIME types for file input except attribute
-export const contentTypesToMimeTypes = (
-  contentTypes: Graphql.ContentType[]
-): string[] => {
-  const mimeTypes: string[] = [];
-
-  contentTypes.forEach(contentType => {
-    // Find all MIME types that map to this content type
-    Object.entries(mimeToContentType).forEach(([mimeType, ct]) => {
-      if (ct === contentType) {
-        mimeTypes.push(mimeType);
-      }
-    });
-  });
-
-  return mimeTypes;
-};
-
-// Convert ContentType array to file extensions for file input except attribute
+/**
+ * Convert array of ContentType enum values to file extensions
+ */
 export const contentTypesToExtensions = (
   contentTypes: Graphql.ContentType[]
 ): string[] => {
   const extensions: string[] = [];
 
   contentTypes.forEach(contentType => {
-    // Find all extensions that map to this content type
-    Object.entries(extToContentType).forEach(([ext, ct]) => {
-      if (ct === contentType) {
-        extensions.push(`.${ext}`);
-      }
-    });
+    const exts = contentTypeToExtensions[contentType];
+    if (exts) {
+      extensions.push(...exts);
+    }
   });
 
   return extensions;
 };
 
-// Get accept attribute string for file input based on allowed content types
+/**
+ * Convert ContentType enum value to MIME type string
+ */
+export const contentTypeEnumToMime = (
+  contentType: Graphql.ContentType
+): string => {
+  return contentTypeToMime[contentType];
+};
+
+/**
+ * Get accept attribute string for file input based on allowed ContentType enums
+ */
 export const getAcceptAttribute = (
   contentTypes: Graphql.ContentType[]
 ): string => {
   const acceptValues: string[] = [];
 
   contentTypes.forEach(contentType => {
-    switch (contentType) {
-      case "JPEG":
-        acceptValues.push("image/jpeg", ".jpg", ".jpeg", ".jpe");
-        break;
-      case "PNG":
-        acceptValues.push("image/png", ".png");
-        break;
-      case "WEBP":
-        acceptValues.push("image/webp", ".webp");
-        break;
-      case "GIF":
-        acceptValues.push("image/gif", ".gif");
-        break;
-      case "PDF":
-        acceptValues.push("application/pdf", ".pdf");
-        break;
-      case "TXT":
-        acceptValues.push("text/plain", ".txt", ".text");
-        break;
-      case "OTF":
-        acceptValues.push("font/otf", ".otf");
-        break;
-      case "TTF":
-        acceptValues.push("font/ttf", ".ttf");
-        break;
-      case "WOFF":
-        acceptValues.push("font/woff", ".woff");
-        break;
-      case "WOFF2":
-        acceptValues.push("font/woff2", ".woff2");
-        break;
-      default: {
-        // Fallback to generic mapping
-        const mimeTypes = contentTypesToMimeTypes([contentType]);
-        const extensions = contentTypesToExtensions([contentType]);
-        acceptValues.push(...mimeTypes, ...extensions);
-        break;
-      }
+    // Add the MIME type
+    const mimeType = contentTypeToMime[contentType];
+    if (mimeType) {
+      acceptValues.push(mimeType);
+    }
+
+    // Add associated file extensions
+    const extensions = contentTypeToExtensions[contentType];
+    if (extensions) {
+      acceptValues.push(...extensions);
     }
   });
 

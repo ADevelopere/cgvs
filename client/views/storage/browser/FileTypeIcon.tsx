@@ -27,14 +27,13 @@ const FileTypeIcon: React.FC<FileTypeIconProps> = ({ item, ...iconProps }) => {
 
       // Map ContentType enum values to appropriate icons
       switch (contentType) {
-        case "JPEG":
-        case "PNG":
-        case "GIF":
-        case "WEBP":
-        // case 'SVG':
-        //     return <ImageIcon {...iconProps} />;
-        case "PDF":
-        case "TXT":
+        case "IMAGE_JPEG":
+        case "IMAGE_PNG":
+        case "IMAGE_GIF":
+        case "IMAGE_WEBP":
+          return <ImageIcon {...iconProps} />;
+        case "APPLICATION_PDF":
+        case "TEXT_PLAIN":
           // case 'JSON':
           return <DocumentIcon {...iconProps} />;
         // case 'OTF':

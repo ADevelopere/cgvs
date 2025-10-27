@@ -3,51 +3,13 @@ import * as Types from "@/server/types";
 import { OrderSortDirection } from "@/lib/enum";
 
 export namespace StorageUtils {
-  // Mapping functions for GraphQL enums to actual values
-  export const CONTENT_TYPE_MAP: Record<Types.FileContentType, string> = {
-    [Types.FileContentType.JPEG]: "image/jpeg",
-    [Types.FileContentType.PNG]: "image/png",
-    [Types.FileContentType.GIF]: "image/gif",
-    [Types.FileContentType.WEBP]: "image/webp",
-    [Types.FileContentType.PDF]: "application/pdf",
-    [Types.FileContentType.DOC]: "application/msword",
-    [Types.FileContentType.DOCX]:
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    [Types.FileContentType.XLS]: "application/vnd.ms-excel",
-    [Types.FileContentType.XLSX]:
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    [Types.FileContentType.TXT]: "text/plain",
-    [Types.FileContentType.ZIP]: "application/zip",
-    [Types.FileContentType.RAR]: "application/vnd.rar",
-    [Types.FileContentType.MP4]: "video/mp4",
-    [Types.FileContentType.MP3]: "audio/mpeg",
-    [Types.FileContentType.WAV]: "audio/wav",
-    [Types.FileContentType.OTF]: "font/otf",
-    [Types.FileContentType.TTF]: "font/ttf",
-    [Types.FileContentType.WOFF]: "font/woff",
-    [Types.FileContentType.WOFF2]: "font/woff2",
-  };
+  // Whitelist of allowed MIME types for uploads (matching FileContentType enum values)
+  export const ALLOWED_MIME_TYPES: ReadonlySet<string> = new Set(
+    Object.values(Types.FileContentType)
+  );
 
-  // Reverse mapping for content types
-  export const REVERSE_CONTENT_TYPE_MAP: Record<string, Types.FileContentType> =
-    Object.entries(CONTENT_TYPE_MAP).reduce(
-      (acc, [key, value]) => {
-        acc[value] = key as Types.FileContentType;
-        return acc;
-      },
-      {} as Record<string, Types.FileContentType>
-    );
-
-  export const contentTypeEnumToMimeType = (
-    enumValue: Types.FileContentType
-  ): string => {
-    return CONTENT_TYPE_MAP[enumValue];
-  };
-
-  export const mimeTypeToContentTypeEnum = (
-    mimeType: string
-  ): Types.FileContentType | null => {
-    return REVERSE_CONTENT_TYPE_MAP[mimeType] || null;
+  export const isAllowedMimeType = (mimeType: string): boolean => {
+    return ALLOWED_MIME_TYPES.has(mimeType);
   };
 
   const PATH_PATTERN = /^[a-zA-Z0-9._/\- ()]+$/;
@@ -68,7 +30,8 @@ export namespace StorageUtils {
     return Promise.resolve(err);
   };
 
-  const FILE_NAME_PATTERN = /^[a-zA-Z0-9._-]+$/;
+  // Allow common file name characters: letters, numbers, spaces, parentheses, brackets, underscores, hyphens, periods
+  const FILE_NAME_PATTERN = /^[a-zA-Z0-9._\-\s()[\]]+$/;
   export const validateFileName = (
     fileName: string
   ): Promise<string | null> => {

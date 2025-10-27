@@ -222,7 +222,7 @@ describe("Local Storage Adapter", () => {
       testLogger.info("📤 Calling adapter.uploadFile...");
       const result = await adapter.uploadFile(
         "public/test.txt",
-        FileContentType.TXT,
+        FileContentType.TEXT_PLAIN,
         buffer
       );
       testLogger.info("📤 Upload result:", {
@@ -243,7 +243,7 @@ describe("Local Storage Adapter", () => {
       const buffer = Buffer.from("nested content");
       const result = await adapter.uploadFile(
         "public/deep/nested/path/file.txt",
-        FileContentType.TXT,
+        FileContentType.TEXT_PLAIN,
         buffer
       );
 
@@ -259,7 +259,7 @@ describe("Local Storage Adapter", () => {
       const binaryData = Buffer.from([0x00, 0x01, 0x02, 0xff, 0xfe, 0xfd]);
       const result = await adapter.uploadFile(
         "public/binary.dat",
-        FileContentType.ZIP,
+        FileContentType.APPLICATION_ZIP,
         binaryData
       );
 

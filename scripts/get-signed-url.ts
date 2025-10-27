@@ -86,37 +86,45 @@ function getContentTypeFromFileName(fileName: string): ContentType {
   switch (extension) {
     case "jpg":
     case "jpeg":
-      return "JPEG";
+      return "IMAGE_JPEG";
     case "png":
-      return "PNG";
+      return "IMAGE_PNG";
     case "gif":
-      return "GIF";
+      return "IMAGE_GIF";
     case "webp":
-      return "WEBP";
+      return "IMAGE_WEBP";
     case "pdf":
-      return "PDF";
+      return "APPLICATION_PDF";
     case "doc":
-      return "DOC";
+      return "APPLICATION_MSWORD";
     case "docx":
-      return "DOCX";
+      return "APPLICATION_DOCX";
     case "xls":
-      return "XLS";
+      return "APPLICATION_XLS";
     case "xlsx":
-      return "XLSX";
+      return "APPLICATION_XLSX";
     case "txt":
-      return "TXT";
+      return "TEXT_PLAIN";
     case "zip":
-      return "ZIP";
+      return "APPLICATION_ZIP";
     case "rar":
-      return "RAR";
+      return "APPLICATION_RAR";
     case "mp4":
-      return "MP4";
+      return "VIDEO_MP4";
     case "mp3":
-      return "MP3";
+      return "AUDIO_MPEG";
     case "wav":
-      return "WAV";
+      return "AUDIO_WAV";
+    case "otf":
+      return "FONT_OTF";
+    case "ttf":
+      return "FONT_TTF";
+    case "woff":
+      return "FONT_WOFF";
+    case "woff2":
+      return "FONT_WOFF2";
     default:
-      return "JPEG"; // Default fallback
+      return "IMAGE_JPEG"; // Default fallback
   }
 }
 
@@ -127,37 +135,45 @@ function mapContentType(mimeType: string): ContentType {
   switch (mimeType.toLowerCase()) {
     case "image/jpeg":
     case "image/jpg":
-      return "JPEG";
+      return "IMAGE_JPEG";
     case "image/png":
-      return "PNG";
+      return "IMAGE_PNG";
     case "image/gif":
-      return "GIF";
+      return "IMAGE_GIF";
     case "image/webp":
-      return "WEBP";
+      return "IMAGE_WEBP";
     case "application/pdf":
-      return "PDF";
+      return "APPLICATION_PDF";
     case "application/msword":
-      return "DOC";
+      return "APPLICATION_MSWORD";
     case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-      return "DOCX";
+      return "APPLICATION_DOCX";
     case "application/vnd.ms-excel":
-      return "XLS";
+      return "APPLICATION_XLS";
     case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-      return "XLSX";
+      return "APPLICATION_XLSX";
     case "text/plain":
-      return "TXT";
+      return "TEXT_PLAIN";
     case "application/zip":
-      return "ZIP";
+      return "APPLICATION_ZIP";
     case "application/vnd.rar":
-      return "RAR";
+      return "APPLICATION_RAR";
     case "video/mp4":
-      return "MP4";
+      return "VIDEO_MP4";
     case "audio/mpeg":
-      return "MP3";
+      return "AUDIO_MPEG";
     case "audio/wav":
-      return "WAV";
+      return "AUDIO_WAV";
+    case "font/otf":
+      return "FONT_OTF";
+    case "font/ttf":
+      return "FONT_TTF";
+    case "font/woff":
+      return "FONT_WOFF";
+    case "font/woff2":
+      return "FONT_WOFF2";
     default:
-      return "JPEG"; // Default fallback
+      return "IMAGE_JPEG"; // Default fallback
   }
 }
 
