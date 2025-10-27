@@ -274,6 +274,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
             manageTemplate={manageTemplate}
             failedImages={failedImages}
             onImageError={handleImageError}
+            containerWidth={containerWidth}
           />
         );
       case "grid":
@@ -303,6 +304,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
     manageTemplate,
     failedImages,
     handleImageError,
+    containerWidth,
   ]);
 
   return (
