@@ -75,7 +75,7 @@ export const useFontApolloMutations = () => {
               id
               name
               locale
-              storageFileId
+              storageFilePath
               createdAt
               updatedAt
             }
@@ -90,7 +90,7 @@ export const useFontApolloMutations = () => {
             id: vars.input.id,
             name: vars.input.name,
             locale: vars.input.locale,
-            storageFileId: vars.input.storageFileId,
+            storageFilePath: vars.input.storageFilePath,
             createdAt: existingFont?.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           },
@@ -105,7 +105,7 @@ export const useFontApolloMutations = () => {
             id: vars.input.id,
             name: vars.input.name,
             locale: vars.input.locale,
-            storageFileId: vars.input.storageFileId,
+            storageFilePath: vars.input.storageFilePath,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           },

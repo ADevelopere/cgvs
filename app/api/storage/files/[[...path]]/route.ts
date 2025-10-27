@@ -3,6 +3,7 @@ import fs from "fs/promises";
 import { createReadStream, statSync } from "fs";
 import path from "path";
 import logger from "@/server/lib/logger";
+import { extToMime } from "@/utils/storage.utils";
 // import { extractTokenFromHeader, verifyToken } from "@/server/lib/auth/jwt";
 // import { StorageDbRepository } from "@/server/db/repo/storage.repository";
 
@@ -28,33 +29,8 @@ function getAbsolutePath(relativePath: string): string {
  * Detect content type from file extension
  */
 function getContentType(filePath: string): string {
-  const ext = path.extname(filePath).toLowerCase();
-  const contentTypeMap: Record<string, string> = {
-    ".jpg": "image/jpeg",
-    ".jpeg": "image/jpeg",
-    ".png": "image/png",
-    ".gif": "image/gif",
-    ".webp": "image/webp",
-    ".svg": "image/svg+xml",
-    ".pdf": "application/pdf",
-    ".doc": "application/msword",
-    ".docx":
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ".xls": "application/vnd.ms-excel",
-    ".xlsx":
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    ".txt": "text/plain",
-    ".json": "application/json",
-    ".xml": "application/xml",
-    ".zip": "application/zip",
-    ".rar": "application/vnd.rar",
-    ".mp4": "video/mp4",
-    ".webm": "video/webm",
-    ".mp3": "audio/mpeg",
-    ".wav": "audio/wav",
-    ".ogg": "audio/ogg",
-  };
-  return contentTypeMap[ext] || "application/octet-stream";
+  const ext = path.extname(filePath).toLowerCase().replace(".", "");
+  return extToMime[ext] || "application/octet-stream";
 }
 
 /**

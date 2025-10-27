@@ -12,8 +12,8 @@ import {
   FontCreateInput,
   FontUpdateInput,
 } from "@/client/graphql/generated/gql/graphql";
-import { FontFormData } from "./types";
 import { useAppTranslation } from "@/client/locale";
+import logger from "@/client/lib/logger";
 
 type FontDetailProps = {
   selectedFont: Font | null;
@@ -43,14 +43,10 @@ export const FontDetail: React.FC<FontDetailProps> = ({
 
   // Handle create font submission
   const handleCreateSubmit = useCallback(
-    async (data: FontFormData) => {
-      if (!data.storageFileId) return;
+    async (input: FontCreateInput) => {
+      logger.debug("[FontDetail] handleCreateSubmit", input);
       setIsSaving(true);
-      await createFont({
-        name: data.name,
-        locale: data.locale,
-        storageFileId: data.storageFileId,
-      });
+      await createFont(input);
       setIsSaving(false);
     },
     [createFont]
@@ -58,14 +54,12 @@ export const FontDetail: React.FC<FontDetailProps> = ({
 
   // Handle update font submission
   const handleUpdateSubmit = useCallback(
-    async (data: FontFormData) => {
-      if (!data.storageFileId || !selectedFont?.id) return;
+    async (input: FontCreateInput) => {
+      if (!selectedFont?.id) return;
       setIsSaving(true);
       await updateFont({
         id: selectedFont.id,
-        name: data.name,
-        locale: data.locale,
-        storageFileId: data.storageFileId,
+        ...input,
       });
       setIsSaving(false);
     },
@@ -154,8 +148,8 @@ export const FontDetail: React.FC<FontDetailProps> = ({
                 initialData={{
                   name: selectedFont.name!,
                   locale: (selectedFont.locale || []) as string[],
-                  storageFileId: selectedFont.storageFileId!,
-                  fileName: `Font file ${selectedFont.storageFileId}`,
+                  filePath: selectedFont.storageFilePath!,
+                  fileName: selectedFont.storageFilePath!.split("/").pop() || "Font file",
                   fileUrl: "", // Would need storage file query
                 }}
                 onSubmit={handleUpdateSubmit}
@@ -255,10 +249,10 @@ export const FontDetail: React.FC<FontDetailProps> = ({
                   color="text.secondary"
                   fontWeight="medium"
                 >
-                  {strings.storageFileId}
+                  {strings.storageFilePath}
                 </MUI.Typography>
                 <MUI.Typography variant="body1" sx={{ mt: 0.5 }}>
-                  {selectedFont.storageFileId!}
+                  {selectedFont.storageFilePath!}
                 </MUI.Typography>
               </MUI.Box>
 

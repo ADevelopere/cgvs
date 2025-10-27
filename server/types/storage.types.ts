@@ -170,6 +170,7 @@ export interface FilesListSearchInput {
   limit?: number | null;
   offset?: number | null;
   searchTerm?: string | null;
+  includeDirectories?: boolean | null;
   fileType?: string | null; // Deprecated: Use fileTypes instead
   fileTypes?: string[] | null; // List of FileTypes enum values
   contentTypes?: string[] | null; // List of MIME types

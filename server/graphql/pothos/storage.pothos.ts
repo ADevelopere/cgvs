@@ -124,6 +124,7 @@ export const ListFileInputPothosObject = gqlSchemaBuilder
       limit: t.int({ required: false }),
       offset: t.int({ required: false }),
       searchTerm: t.string({ required: false }),
+      includeDirectories: t.boolean({ required: false, defaultValue: true }),
       fileType: t.string({ required: false }), // Deprecated: Use fileTypes instead
       fileTypes: t.field({
         type: [FileTypePothosObject],

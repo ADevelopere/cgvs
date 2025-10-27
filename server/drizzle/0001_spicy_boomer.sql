@@ -38,7 +38,7 @@ CREATE TABLE "certificate" (
 CREATE TABLE "font" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" varchar(255) NOT NULL,
-	"locale" varchar(10) NOT NULL,
+	"locale" jsonb NOT NULL,
 	"storage_file_id" bigint NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL

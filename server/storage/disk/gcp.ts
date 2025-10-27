@@ -310,6 +310,7 @@ class GcpAdapter implements StorageService {
 
     // Apply file type and content type filters
     filteredItems = StorageUtils.filterStorageItems(filteredItems, {
+      includeDirectories: input.includeDirectories,
       fileType: input.fileType,
       fileTypes: input.fileTypes,
       contentTypes: input.contentTypes,

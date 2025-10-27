@@ -111,20 +111,61 @@ export namespace FontRepository {
   };
 
   /**
-   * Validate storage file exists
+   * Get storage file path by storage file ID
    */
-  const validateStorageFile = async (storageFileId: number): Promise<void> => {
+  export const getStorageFilePathById = async (
+    storageFileId: number
+  ): Promise<string> => {
     const file = await db
-      .select({ id: storageFiles.id })
+      .select({ path: storageFiles.path })
       .from(storageFiles)
       .where(eq(storageFiles.id, BigInt(storageFileId)))
       .limit(1);
 
     if (file.length === 0) {
       throw new Error(
-        `Storage file with ID ${storageFileId} does not exist. Please upload the font file first.`
+        `Storage file with ID ${storageFileId} does not exist.`
       );
     }
+
+    return file[0].path;
+  };
+
+  /**
+   * Get or create storage file ID by path
+   * Returns the database ID for the given file path
+   */
+  const getOrCreateStorageFileId = async (
+    filePath: string
+  ): Promise<number> => {
+    // First, try to find existing storage file record
+    const existingFile = await db
+      .select({ id: storageFiles.id })
+      .from(storageFiles)
+      .where(eq(storageFiles.path, filePath))
+      .limit(1);
+
+    if (existingFile.length > 0) {
+      return Number(existingFile[0].id);
+    }
+
+    // If not found, create new storage file record
+    logger.info(`Creating new storage file record for path: ${filePath}`);
+    const [newFile] = await db
+      .insert(storageFiles)
+      .values({
+        path: filePath,
+        isProtected: false,
+      })
+      .returning();
+
+    if (!newFile) {
+      throw new Error(
+        `Failed to create storage file record for path: ${filePath}`
+      );
+    }
+
+    return Number(newFile.id);
   };
 
   /**
@@ -182,17 +223,16 @@ export namespace FontRepository {
     // Validate inputs
     validateName(input.name);
     validateLocale(input.locale);
-    await validateStorageFile(input.storageFileId);
 
-    // Convert locale array to comma-separated string for storage
-    const localeString = input.locale.join(",");
+    // Get or create storage file ID from path
+    const storageFileId = await getOrCreateStorageFileId(input.storageFilePath);
 
     const [newFont] = await db
       .insert(font)
       .values({
         name: input.name.trim(),
-        locale: localeString,
-        storageFileId: input.storageFileId,
+        locale: input.locale, // JSONB array stored directly
+        storageFileId: storageFileId,
         createdAt: new Date(),
         updatedAt: new Date(),
       })
@@ -220,17 +260,16 @@ export namespace FontRepository {
     // Validate inputs
     validateName(input.name);
     validateLocale(input.locale);
-    await validateStorageFile(input.storageFileId);
 
-    // Convert locale array to comma-separated string
-    const localeString = input.locale.join(",");
+    // Get or create storage file ID from path
+    const storageFileId = await getOrCreateStorageFileId(input.storageFilePath);
 
     const [updatedFont] = await db
       .update(font)
       .set({
         name: input.name.trim(),
-        locale: localeString,
-        storageFileId: input.storageFileId,
+        locale: input.locale, // JSONB array stored directly
+        storageFileId: storageFileId,
         updatedAt: new Date(),
       })
       .where(eq(font.id, input.id))

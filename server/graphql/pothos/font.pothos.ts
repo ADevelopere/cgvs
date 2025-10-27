@@ -35,11 +35,20 @@ export const FontPothosObject = gqlSchemaBuilder.loadableObject<
       type: ["String"],
       nullable: false,
       resolve: font => {
-        // Parse comma-separated locale string to array
-        return font.locale.split(",").filter(l => l.trim().length > 0);
+        // Locale is stored as JSONB array, return directly
+        return Array.isArray(font.locale) ? font.locale : [];
       },
     }),
-    storageFileId: t.exposeInt("storageFileId", { nullable: false }),
+    storageFilePath: t.field({
+      type: "String",
+      nullable: false,
+      resolve: async font => {
+        const filePath = await FontRepository.getStorageFilePathById(
+          font.storageFileId
+        );
+        return filePath;
+      },
+    }),
     createdAt: t.expose("createdAt", { type: "DateTime", nullable: false }),
     updatedAt: t.expose("updatedAt", { type: "DateTime", nullable: false }),
   }),
@@ -83,7 +92,7 @@ export const FontCreateInputPothosObject = FontCreateInputRef.implement({
   fields: t => ({
     name: t.string({ required: true }),
     locale: t.stringList({ required: true }),
-    storageFileId: t.int({ required: true }),
+    storageFilePath: t.string({ required: true }),
   }),
 });
 
@@ -96,7 +105,7 @@ export const FontUpdateInputPothosObject = FontUpdateInputRef.implement({
     id: t.int({ required: true }),
     name: t.string({ required: true }),
     locale: t.stringList({ required: true }),
-    storageFileId: t.int({ required: true }),
+    storageFilePath: t.string({ required: true }),
   }),
 });
 

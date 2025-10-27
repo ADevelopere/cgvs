@@ -20,7 +20,7 @@ export type FontManagementTranslations = {
   fontId: string;
   fontName: string;
   supportedLocales: string;
-  storageFileId: string;
+  storageFilePath: string;
   created: string;
   lastUpdated: string;
 

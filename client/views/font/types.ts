@@ -2,7 +2,7 @@
 export interface FontFormData {
   name: string;
   locale: string[];
-  storageFileId: number | null;
+  storageFilePath: string | null;
 }
 
 // File picker result

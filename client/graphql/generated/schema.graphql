@@ -389,6 +389,7 @@ input FilesListInput {
   contentTypes: [String!]
   fileType: String
   fileTypes: [FileType!]
+  includeDirectories: Boolean = true
   limit: Int
   offset: Int
   path: String!
@@ -409,14 +410,14 @@ type Font {
   id: Int!
   locale: [String!]!
   name: String!
-  storageFileId: Int!
+  storageFilePath: String!
   updatedAt: DateTime!
 }
 
 input FontCreateInput {
   locale: [String!]!
   name: String!
-  storageFileId: Int!
+  storageFilePath: String!
 }
 
 input FontFilterArgs {
@@ -443,7 +444,7 @@ input FontUpdateInput {
   id: Int!
   locale: [String!]!
   name: String!
-  storageFileId: Int!
+  storageFilePath: String!
 }
 
 type FontUsageCheckResult {

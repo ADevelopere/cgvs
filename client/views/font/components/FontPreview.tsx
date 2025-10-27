@@ -23,20 +23,45 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
       try {
         setLoading(true);
         setError(null);
+        setFontFaceLoaded(false);
 
         // Create unique font family name
         const fontFamily = `font-preview-${fontName.replace(/\s+/g, "-")}`;
 
         // Check if font is already loaded
-        const fontFace = new FontFace(fontFamily, `url(${fontUrl})`);
+        const existingFont = Array.from(document.fonts).find(
+          (font) => font.family === fontFamily
+        );
 
-        await fontFace.load();
-        document.fonts.add(fontFace);
+        if (existingFont && existingFont.status === "loaded") {
+          setFontFaceLoaded(true);
+          setLoading(false);
+          return;
+        }
 
-        logger.info(`Font loaded: ${fontFamily}`);
+        // Remove existing font if present but not loaded
+        if (existingFont) {
+          document.fonts.delete(existingFont);
+        }
+
+        // Load the font
+        const fontFace = new FontFace(fontFamily, `url("${fontUrl}")`);
+        const loadedFont = await fontFace.load();
+        document.fonts.add(loadedFont);
+
+        // Wait for the font to be ready
+        await document.fonts.ready;
+
+        // Verify the font is actually loaded
+        const isFontLoaded = document.fonts.check(`12px "${fontFamily}"`);
+        
+        if (!isFontLoaded) {
+          throw new Error("Font loaded but not available");
+        }
+
         setFontFaceLoaded(true);
       } catch (err) {
-        logger.error("Error loading font:", err);
+        logger.error("[FontPreview] Error loading font:", err);
         setError(strings.failedToLoadPreview);
       } finally {
         setLoading(false);
@@ -49,7 +74,6 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
 
     // Cleanup
     return () => {
-      // Note: FontFace cleanup is complex, skipping for now
       setFontFaceLoaded(false);
     };
   }, [fontUrl, fontName, strings.failedToLoadPreview]);
@@ -86,23 +110,44 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
             display: "flex",
             flexDirection: "column",
             gap: 2,
-            fontFamily: fontFaceLoaded ? fontFamily : "inherit",
+            fontFamily: fontFaceLoaded ? `"${fontFamily}", sans-serif` : "inherit",
           }}
         >
           {/* Preview text in different sizes */}
-          <MUI.Typography variant="h4" component="p" fontWeight="bold">
+          <MUI.Typography 
+            variant="h4" 
+            component="p" 
+            fontWeight="bold"
+            sx={{ fontFamily: "inherit" }}
+          >
             The quick brown fox jumps over the lazy dog
           </MUI.Typography>
-          <MUI.Typography variant="h5" component="p">
+          <MUI.Typography 
+            variant="h5" 
+            component="p"
+            sx={{ fontFamily: "inherit" }}
+          >
             السلام عليكم ورحمة الله وبركاته
           </MUI.Typography>
-          <MUI.Typography variant="h6" component="p">
+          <MUI.Typography 
+            variant="h6" 
+            component="p"
+            sx={{ fontFamily: "inherit" }}
+          >
             ABCDEFGHIJKLMNOPQRSTUVWXYZ
           </MUI.Typography>
-          <MUI.Typography variant="body1" component="p">
+          <MUI.Typography 
+            variant="body1" 
+            component="p"
+            sx={{ fontFamily: "inherit" }}
+          >
             abcdefghijklmnopqrstuvwxyz
           </MUI.Typography>
-          <MUI.Typography variant="body2" component="p">
+          <MUI.Typography 
+            variant="body2" 
+            component="p"
+            sx={{ fontFamily: "inherit" }}
+          >
             0123456789 !@#$%^&*()_+-=[]&#123;&#125;|;&apos;&quot;:,./&lt;&gt;?
           </MUI.Typography>
 
