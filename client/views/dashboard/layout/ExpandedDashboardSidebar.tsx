@@ -234,6 +234,17 @@ export const ExpandedDashboardSidebar: React.FC = () => {
         bgcolor: theme.palette.background.paper,
         overflowY: "auto", // Enable scrolling if content overflows
         borderRight: `1px solid ${theme.palette.divider}`,
+        opacity: 1,
+        transition: theme.transitions.create("opacity", {
+          easing: theme.transitions.easing.easeInOut,
+          duration: theme.transitions.duration.short,
+          delay: 50,
+        }),
+        animation: "fadeIn 0.25s ease-in-out",
+        "@keyframes fadeIn": {
+          from: { opacity: 0 },
+          to: { opacity: 1 },
+        },
       }}
     >
       <List component="nav" sx={{ p: 0 }}>

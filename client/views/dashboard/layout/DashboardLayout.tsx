@@ -155,6 +155,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               flexShrink: 0,
               display: { xs: "none", sm: "block" },
               boxSizing: "border-box",
+              transition: theme.transitions.create("width", {
+                easing: theme.transitions.easing.easeInOut,
+                duration: theme.transitions.duration.standard,
+              }),
             }}
           >
             <CollapsedDashboardSidebar />
@@ -169,6 +173,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               width: 280,
               flexShrink: 0,
               display: { xs: "none", sm: "block" },
+              transition: theme.transitions.create("width", {
+                easing: theme.transitions.easing.easeInOut,
+                duration: theme.transitions.duration.standard,
+              }),
             }}
           >
             <ExpandedDashboardSidebar />
@@ -183,6 +191,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             overflowX: "hidden",
             display: "flex",
             flexDirection: "column",
+            transition: theme.transitions.create("width", {
+              easing: theme.transitions.easing.easeInOut,
+              duration: theme.transitions.duration.standard,
+            }),
           }}
         >
           {children}
