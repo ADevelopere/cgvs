@@ -7,6 +7,7 @@ import {
   ViewList as ViewListIcon,
   GridView as GridViewIcon,
 } from "@mui/icons-material";
+import { PanelRight, PanelLeft } from "lucide-react";
 import * as Mui from "@mui/material";
 import CardView from "./views/CardView";
 import ListView from "./views/ListView";
@@ -20,9 +21,17 @@ import { templatesByCategoryIdQueryDocument } from "../hooks/template.documents"
 
 type TemplateListProps = {
   style?: React.CSSProperties;
+  onToggleFirstPane?: () => void;
+  isDrawerMode?: boolean;
+  isFirstPaneVisible?: boolean;
 };
 
-const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
+const TemplateListContent: React.FC<TemplateListProps> = ({
+  style,
+  onToggleFirstPane,
+  isDrawerMode,
+  isFirstPaneVisible,
+}) => {
   const strings = useAppTranslation("templateCategoryTranslations");
   const {
     templateQueryVariables,
@@ -280,9 +289,37 @@ const TemplateListContent: React.FC<TemplateListProps> = ({ style }) => {
           mb: 3,
         }}
       >
-        <Mui.Typography variant="h6">
-          {currentCategory ? currentCategory.name : strings.allTemplates}
-        </Mui.Typography>
+        {/* Title and toggle button container */}
+        <Mui.Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: { xs: "stretch", sm: "center" },
+            gap: 2,
+          }}
+        >
+          {/* Toggle button for category pane (only in split mode) */}
+          {!isDrawerMode && onToggleFirstPane && (
+            <Mui.IconButton
+              onClick={onToggleFirstPane}
+              sx={{
+                alignSelf: "center",
+              }}
+              aria-label={
+                isFirstPaneVisible
+                  ? strings.hideCategoriesPane
+                  : strings.showCategoriesPane
+              }
+            >
+              {isFirstPaneVisible ? <PanelLeft /> : <PanelRight />}
+            </Mui.IconButton>
+          )}
+
+          {/* Header title */}
+          <Mui.Typography variant="h6">
+            {currentCategory ? currentCategory.name : strings.allTemplates}
+          </Mui.Typography>
+        </Mui.Box>
 
         <Mui.Box
           sx={{

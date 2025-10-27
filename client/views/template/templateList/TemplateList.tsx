@@ -34,7 +34,7 @@ const TemplateList: React.FC = () => {
             <CategoryTreePane isMobile={false} />
           </Paper>
         }
-        secondPane={
+        secondPane={({ togglePane, isPaneVisible }) => (
           <TemplateListContent
             style={{
               paddingInlineStart: 2,
@@ -42,12 +42,16 @@ const TemplateList: React.FC = () => {
               paddingTop: 2,
               paddingBottom: 4,
             }}
+            onToggleFirstPane={togglePane}
+            // used to hide or show toggle button in the second pane
+            isDrawerMode={false}
+            isFirstPaneVisible={isPaneVisible}
           />
-        }
+        )}
         breakpointWidth={600}
         drawerWidth={300}
-        toggleButtonInDrawerMode="floating"
-        toggleButtonInSplitMode="floating"
+        toggleButtonInDrawerMode="hidden"
+        toggleButtonInSplitMode="hidden"
         storageKey="templateListSplitPane"
       />
     </Box>

@@ -37,7 +37,7 @@ function removeNullChildren(children: ReactNode[]) {
   return React.Children.toArray(children).filter(Boolean);
 }
 
-type PaneProps = {
+export type PaneProps = {
   minRatio?: number;
   maxRatio?: number;
   preferredRatio?: number;
