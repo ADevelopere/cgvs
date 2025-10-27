@@ -1,4 +1,5 @@
 import type { DocumentNode } from "@apollo/client";
+import type { SxProps, Theme } from "@mui/material/styles";
 
 export type QueryResolverOptions<TVariables> = {
   query: DocumentNode;
@@ -55,6 +56,7 @@ export interface ReactiveTreeProps<
 
   // Styling
   itemHeight?: number;
+  itemContentStyle?: SxProps<Theme>;
   header?: string;
   noItemsMessage?: string;
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@apollo/client/react";
 import { Box, IconButton, CircularProgress, Typography } from "@mui/material";
+import type { SxProps, Theme } from "@mui/material/styles";
 import { ChevronRight as ChevronRightIcon } from "@mui/icons-material";
 import type { ReactiveTreeNode, QueryResolverOptions } from "./types";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
@@ -32,6 +33,7 @@ interface TreeNodeProps<
   isFetched?: (nodeId: TNode["id"]) => boolean;
   onMarkAsFetched?: (nodeId: TNode["id"]) => void;
   itemHeight?: number;
+  itemContentStyle?: SxProps<Theme>;
 }
 
 export function ReactiveCategoryTreeNode<
@@ -55,6 +57,7 @@ export function ReactiveCategoryTreeNode<
     isFetched: isFetchedExternal,
     onMarkAsFetched,
     itemHeight = 40,
+    itemContentStyle,
   } = props;
 
   // Use external expansion state if provided, otherwise use internal state
@@ -210,7 +213,16 @@ export function ReactiveCategoryTreeNode<
         {itemRenderer ? (
           itemRenderer({ node, level, isExpanded, isSelected })
         ) : (
-          <Typography>{getNodeLabel(node)}</Typography>
+          <Typography
+            sx={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              ...itemContentStyle,
+            }}
+          >
+            {getNodeLabel(node)}
+          </Typography>
         )}
       </Box>
 
@@ -235,6 +247,7 @@ export function ReactiveCategoryTreeNode<
               isFetched={isFetchedExternal}
               onMarkAsFetched={onMarkAsFetched}
               itemHeight={itemHeight}
+              itemContentStyle={itemContentStyle}
             />
           ))}
         </Box>

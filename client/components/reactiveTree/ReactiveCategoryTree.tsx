@@ -99,6 +99,7 @@ export function ReactiveCategoryTree<
                 getItems={getItems}
                 selectedItemId={selectedItemId}
                 onSelectItem={onSelectItem}
+                onUpdateItem={onUpdateItem}
                 {...nodeProps}
               />
             ))
