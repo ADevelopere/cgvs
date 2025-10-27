@@ -7,6 +7,7 @@ import {
 } from "@mui/icons-material";
 import FilePickerDialog from "@/client/views/storage/dialogs/FilePickerDialog";
 import { FONT_FILE_EXTENSIONS } from "../types";
+import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 interface FontFilePickerProps {
@@ -28,6 +29,7 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({
   onChange,
   disabled = false,
 }) => {
+  const strings = useAppTranslation("fontManagementTranslations");
   const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   const handleFileSelect = (file: Graphql.FileInfo) => {
@@ -80,7 +82,7 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({
                       {value.fileName}
                     </MUI.Typography>
                     <MUI.Typography variant="caption" color="text.secondary">
-                      Font file selected
+                      {strings.fontFileSelected}
                     </MUI.Typography>
                   </MUI.Box>
                 </MUI.Box>
@@ -91,7 +93,7 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({
                     onClick={() => setIsPickerOpen(true)}
                     disabled={disabled}
                   >
-                    Change
+                    {strings.change}
                   </MUI.Button>
                   <MUI.IconButton
                     size="small"
@@ -118,9 +120,9 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({
             }}
           >
             <UploadIcon sx={{ fontSize: 32, color: "text.secondary" }} />
-            <MUI.Typography variant="body2">Select Font File</MUI.Typography>
+            <MUI.Typography variant="body2">{strings.selectFontFile}</MUI.Typography>
             <MUI.Typography variant="caption" color="text.secondary">
-              .ttf, .otf, .woff, .woff2
+              {strings.fontFileFormats}
             </MUI.Typography>
           </MUI.Button>
         )}

@@ -13,6 +13,7 @@ import {
   FontUpdateInput,
 } from "@/client/graphql/generated/gql/graphql";
 import { FontFormData } from "./types";
+import { useAppTranslation } from "@/client/locale";
 
 type FontDetailProps = {
   selectedFont: Font | null;
@@ -36,6 +37,7 @@ export const FontDetail: React.FC<FontDetailProps> = ({
   createFont,
   updateFont,
 }) => {
+  const strings = useAppTranslation("fontManagementTranslations");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -76,14 +78,14 @@ export const FontDetail: React.FC<FontDetailProps> = ({
       <MUI.Box sx={{ flex: 1, overflow: "auto", p: 3 }}>
         <MUI.Box sx={{ maxWidth: 900, mx: "auto" }}>
           <MUI.Typography variant="h4" gutterBottom>
-            Create New Font
+            {strings.createNewFont}
           </MUI.Typography>
           <MUI.Card>
             <MUI.CardContent>
               <FontForm
                 onSubmit={handleCreateSubmit}
                 onCancel={cancelCreating}
-                submitLabel="Create Font"
+                submitLabel={strings.createFont}
                 disabled={isSaving}
               />
             </MUI.CardContent>
@@ -108,10 +110,10 @@ export const FontDetail: React.FC<FontDetailProps> = ({
         <MUI.Box sx={{ textAlign: "center" }}>
           <FontIcon sx={{ fontSize: 64, color: "text.secondary", mb: 2 }} />
           <MUI.Typography variant="h6" gutterBottom>
-            No Font Selected
+            {strings.noFontSelected}
           </MUI.Typography>
           <MUI.Typography variant="body2" color="text.secondary">
-            Select a font from the list to view details
+            {strings.selectFontFromList}
           </MUI.Typography>
         </MUI.Box>
       </MUI.Box>
@@ -144,7 +146,7 @@ export const FontDetail: React.FC<FontDetailProps> = ({
       <MUI.Box sx={{ flex: 1, overflow: "auto", p: 3 }}>
         <MUI.Box sx={{ maxWidth: 900, mx: "auto" }}>
           <MUI.Typography variant="h4" gutterBottom>
-            Edit Font
+            {strings.editFont}
           </MUI.Typography>
           <MUI.Card>
             <MUI.CardContent>
@@ -158,7 +160,7 @@ export const FontDetail: React.FC<FontDetailProps> = ({
                 }}
                 onSubmit={handleUpdateSubmit}
                 onCancel={cancelEditing}
-                submitLabel="Save Changes"
+                submitLabel={strings.saveChanges}
                 disabled={isSaving}
               />
             </MUI.CardContent>
@@ -188,7 +190,7 @@ export const FontDetail: React.FC<FontDetailProps> = ({
               color="text.secondary"
               sx={{ mt: 0.5 }}
             >
-              Font ID: {selectedFont.id!}
+              {strings.fontId.replace("%{id}", selectedFont.id!.toString())}
             </MUI.Typography>
           </MUI.Box>
           <MUI.Box sx={{ display: "flex", gap: 1 }}>
@@ -198,7 +200,7 @@ export const FontDetail: React.FC<FontDetailProps> = ({
               onClick={startEditing}
               startIcon={<EditIcon />}
             >
-              Edit
+              {strings.edit}
             </MUI.Button>
             <MUI.Button
               variant="outlined"
@@ -207,7 +209,7 @@ export const FontDetail: React.FC<FontDetailProps> = ({
               onClick={() => setIsDeleteDialogOpen(true)}
               startIcon={<DeleteIcon />}
             >
-              Delete
+              {strings.delete}
             </MUI.Button>
           </MUI.Box>
         </MUI.Box>
@@ -223,7 +225,7 @@ export const FontDetail: React.FC<FontDetailProps> = ({
                   color="text.secondary"
                   fontWeight="medium"
                 >
-                  Font Name
+                  {strings.fontName}
                 </MUI.Typography>
                 <MUI.Typography variant="body1" sx={{ mt: 0.5 }}>
                   {selectedFont.name!}
@@ -236,7 +238,7 @@ export const FontDetail: React.FC<FontDetailProps> = ({
                   color="text.secondary"
                   fontWeight="medium"
                 >
-                  Supported Locales
+                  {strings.supportedLocales}
                 </MUI.Typography>
                 <MUI.Box
                   sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}
@@ -253,7 +255,7 @@ export const FontDetail: React.FC<FontDetailProps> = ({
                   color="text.secondary"
                   fontWeight="medium"
                 >
-                  Storage File ID
+                  {strings.storageFileId}
                 </MUI.Typography>
                 <MUI.Typography variant="body1" sx={{ mt: 0.5 }}>
                   {selectedFont.storageFileId!}
@@ -267,7 +269,7 @@ export const FontDetail: React.FC<FontDetailProps> = ({
                     color="text.secondary"
                     fontWeight="medium"
                   >
-                    Created
+                    {strings.created}
                   </MUI.Typography>
                   <MUI.Typography variant="body2" sx={{ mt: 0.5 }}>
                     {new Date(selectedFont.createdAt!).toLocaleString()}
@@ -279,7 +281,7 @@ export const FontDetail: React.FC<FontDetailProps> = ({
                     color="text.secondary"
                     fontWeight="medium"
                   >
-                    Last Updated
+                    {strings.lastUpdated}
                   </MUI.Typography>
                   <MUI.Typography variant="body2" sx={{ mt: 0.5 }}>
                     {new Date(selectedFont.updatedAt!).toLocaleString()}

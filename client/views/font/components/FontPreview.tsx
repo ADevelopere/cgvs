@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import * as MUI from "@mui/material";
 import { Error as ErrorIcon } from "@mui/icons-material";
 import logger from "@/client/lib/logger";
+import { useAppTranslation } from "@/client/locale";
 
 interface FontPreviewProps {
   fontName: string;
@@ -12,6 +13,7 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
   fontName,
   fontUrl,
 }) => {
+  const strings = useAppTranslation("fontManagementTranslations");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [fontFaceLoaded, setFontFaceLoaded] = useState(false);
@@ -35,7 +37,7 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
         setFontFaceLoaded(true);
       } catch (err) {
         logger.error("Error loading font:", err);
-        setError("Failed to load font preview");
+        setError(strings.failedToLoadPreview);
       } finally {
         setLoading(false);
       }
@@ -50,7 +52,7 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
       // Note: FontFace cleanup is complex, skipping for now
       setFontFaceLoaded(false);
     };
-  }, [fontUrl, fontName]);
+  }, [fontUrl, fontName, strings.failedToLoadPreview]);
 
   const fontFamily = `font-preview-${fontName.replace(/\s+/g, "-")}`;
 
@@ -107,7 +109,7 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
           {/* Font info */}
           <MUI.Divider sx={{ mt: 2 }} />
           <MUI.Typography variant="caption" color="text.secondary">
-            Font: {fontName}
+            {strings.previewFont.replace("%{fontName}", fontName)}
           </MUI.Typography>
         </MUI.Box>
       </MUI.CardContent>

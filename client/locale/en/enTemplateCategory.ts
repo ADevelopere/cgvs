@@ -1,8 +1,8 @@
 import { TemplateCategoryTranslation } from "../components";
 
 export const enTemplateCategory: TemplateCategoryTranslation = {
-  templateCategoriesManagement: "Template Categories Management",
-  theDeleted: "The Deleted",
+  templateCategoriesManagement: "Categories",
+  theDeleted: "Deleted",
   toggleCategoriesPane: "Toggle Categories Pane",
   toggleTemplatesPane: "Toggle Templates Pane",
   showCategoriesPane: "Show Categories Pane",

@@ -8,19 +8,20 @@ export type Translations = {
   headerTranslations: Components.HeaderTranslations;
   authTranslations: Components.AuthTranslations;
   calendarTranslations: Components.CalendarTranslations;
+  connectivityTranslations: Components.ConnectivityTranslations;
   countryTranslations: Components.CountryTranslations;
   dashboardLayoutTranslations: Components.DashboardLayoutTranslations;
+  errorTranslations: Components.ErrorTranslations;
+  fontManagementTranslations: Components.FontManagementTranslations;
   genderTranslations: Components.GenderTranslations;
   languageTranslations: Components.LanguageTranslations;
-  templateCategoryTranslations: Components.TemplateCategoryTranslation;
-  errorTranslations: Components.ErrorTranslations;
-  studentTranslations: Components.StudentTranslations;
-  templateVariableTranslations: Components.TemplateVariableTranslation;
   recipientTranslations: Components.RecipientTranslation;
   recipientGroupTranslations: Components.RecipientGroupTranslation;
   recipientVariableDataTranslations: Components.RecipientVariableDataTranslation;
   storageTranslations: Components.StorageTranslations;
-  connectivityTranslations: Components.ConnectivityTranslations;
+  studentTranslations: Components.StudentTranslations;
+  templateCategoryTranslations: Components.TemplateCategoryTranslation;
+  templateVariableTranslations: Components.TemplateVariableTranslation;
 };
 
 const translations: Record<AppLanguage, Translations> = {
@@ -28,37 +29,39 @@ const translations: Record<AppLanguage, Translations> = {
     headerTranslations: AR.header,
     authTranslations: AR.auth,
     calendarTranslations: AR.calendar,
+    connectivityTranslations: AR.connectivity,
     countryTranslations: AR.country,
     dashboardLayoutTranslations: AR.dashboardLayout,
+    errorTranslations: AR.error,
+    fontManagementTranslations: AR.fontManagement,
     genderTranslations: AR.gender,
     languageTranslations: AR.language,
-    templateCategoryTranslations: AR.templateCategory,
-    errorTranslations: AR.error,
-    studentTranslations: AR.student,
-    templateVariableTranslations: AR.templateVariable,
     recipientTranslations: AR.recipient,
     recipientGroupTranslations: AR.recipientGroup,
     recipientVariableDataTranslations: AR.recipientVariableData,
     storageTranslations: AR.storage,
-    connectivityTranslations: AR.connectivity,
+    studentTranslations: AR.student,
+    templateCategoryTranslations: AR.templateCategory,
+    templateVariableTranslations: AR.templateVariable,
   },
   en: {
     headerTranslations: EN.enHeader,
     authTranslations: EN.enAuth,
     calendarTranslations: EN.enCalendar,
+    connectivityTranslations: EN.enConnectivity,
     countryTranslations: EN.enCountry,
     dashboardLayoutTranslations: EN.enDashboardLayout,
+    errorTranslations: EN.enError,
+    fontManagementTranslations: EN.enFontManagement,
     genderTranslations: EN.enGender,
     languageTranslations: EN.enLanguage,
-    templateCategoryTranslations: EN.enTemplateCategory,
-    errorTranslations: EN.enError,
-    studentTranslations: EN.enStudent,
-    templateVariableTranslations: EN.enTemplateVariable,
     recipientTranslations: EN.enRecipient,
     recipientGroupTranslations: EN.enRecipientGroup,
     recipientVariableDataTranslations: EN.enRecipientVariableData,
     storageTranslations: EN.enStorage,
-    connectivityTranslations: EN.enConnectivity,
+    studentTranslations: EN.enStudent,
+    templateCategoryTranslations: EN.enTemplateCategory,
+    templateVariableTranslations: EN.enTemplateVariable,
   },
 };
 
