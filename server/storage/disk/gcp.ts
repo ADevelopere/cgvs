@@ -80,7 +80,7 @@ class GcpAdapter implements StorageService {
       const result = await file.getSignedUrl({
         version: "v4",
         expires: Date.now() + STORAGE_CONFIG.SIGNED_URL_DURATION * 60 * 1000,
-        contentType: StorageUtils.contentTypeEnumToMimeType(input.contentType),
+        contentType: input.contentType,
         action: "write",
         contentMd5: input.contentMd5,
       });
@@ -152,7 +152,7 @@ class GcpAdapter implements StorageService {
 
       const file = this.bucket.file(path);
       await file.save(buffer, {
-        contentType: StorageUtils.contentTypeEnumToMimeType(contentType),
+        contentType: contentType,
       });
 
       // Create file entity in database

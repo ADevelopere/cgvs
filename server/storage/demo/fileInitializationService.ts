@@ -310,15 +310,45 @@ export class FileInitializationService implements IFileInitializationService {
     switch (extension) {
       case "jpg":
       case "jpeg":
-        return Types.FileContentType.JPEG;
+        return Types.FileContentType.IMAGE_JPEG;
       case "png":
-        return Types.FileContentType.PNG;
+        return Types.FileContentType.IMAGE_PNG;
       case "gif":
-        return Types.FileContentType.GIF;
+        return Types.FileContentType.IMAGE_GIF;
       case "webp":
-        return Types.FileContentType.WEBP;
+        return Types.FileContentType.IMAGE_WEBP;
+      case "pdf":
+        return Types.FileContentType.APPLICATION_PDF;
+      case "doc":
+        return Types.FileContentType.APPLICATION_MSWORD;
+      case "docx":
+        return Types.FileContentType.APPLICATION_DOCX;
+      case "xls":
+        return Types.FileContentType.APPLICATION_XLS;
+      case "xlsx":
+        return Types.FileContentType.APPLICATION_XLSX;
+      case "txt":
+        return Types.FileContentType.TEXT_PLAIN;
+      case "zip":
+        return Types.FileContentType.APPLICATION_ZIP;
+      case "rar":
+        return Types.FileContentType.APPLICATION_RAR;
+      case "mp4":
+        return Types.FileContentType.VIDEO_MP4;
+      case "mp3":
+        return Types.FileContentType.AUDIO_MPEG;
+      case "wav":
+        return Types.FileContentType.AUDIO_WAV;
+      case "otf":
+        return Types.FileContentType.FONT_OTF;
+      case "ttf":
+        return Types.FileContentType.FONT_TTF;
+      case "woff":
+        return Types.FileContentType.FONT_WOFF;
+      case "woff2":
+        return Types.FileContentType.FONT_WOFF2;
       default:
-        return Types.FileContentType.JPEG;
+        return Types.FileContentType.IMAGE_JPEG;
     }
   }
 }

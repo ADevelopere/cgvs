@@ -8,6 +8,7 @@ import {
   inferContentType,
   getFileKey,
   generateFileMD5,
+  contentTypeEnumToMime,
 } from "../core/storage.util";
 import { getStoragePath } from "../core/storage.location";
 import logger from "@/client/lib/logger";
@@ -122,7 +123,8 @@ export const useStorageUploadOperations = () => {
           });
         };
 
-        const uploadContentType = file.type || "application/octet-stream";
+        // Convert ContentType enum to MIME type for the HTTP header
+        const uploadContentType = contentTypeEnumToMime(contentType);
 
         currentXhr.open("PUT", signedUrl);
         currentXhr.setRequestHeader("Content-Type", uploadContentType);

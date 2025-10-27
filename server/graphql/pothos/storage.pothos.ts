@@ -250,11 +250,31 @@ export const FileRenameInputPothosObject = gqlSchemaBuilder
     }),
   });
 
-// Content type enum
+// Content type enum - maps GraphQL enum names to MIME type values
 export const ContentTypePothosObject = gqlSchemaBuilder.enumType(
   "ContentType",
   {
-    values: Object.values(Types.FileContentType),
+    values: {
+      IMAGE_JPEG: { value: Types.FileContentType.IMAGE_JPEG },
+      IMAGE_PNG: { value: Types.FileContentType.IMAGE_PNG },
+      IMAGE_GIF: { value: Types.FileContentType.IMAGE_GIF },
+      IMAGE_WEBP: { value: Types.FileContentType.IMAGE_WEBP },
+      APPLICATION_PDF: { value: Types.FileContentType.APPLICATION_PDF },
+      APPLICATION_MSWORD: { value: Types.FileContentType.APPLICATION_MSWORD },
+      APPLICATION_DOCX: { value: Types.FileContentType.APPLICATION_DOCX },
+      APPLICATION_XLS: { value: Types.FileContentType.APPLICATION_XLS },
+      APPLICATION_XLSX: { value: Types.FileContentType.APPLICATION_XLSX },
+      TEXT_PLAIN: { value: Types.FileContentType.TEXT_PLAIN },
+      APPLICATION_ZIP: { value: Types.FileContentType.APPLICATION_ZIP },
+      APPLICATION_RAR: { value: Types.FileContentType.APPLICATION_RAR },
+      VIDEO_MP4: { value: Types.FileContentType.VIDEO_MP4 },
+      AUDIO_MPEG: { value: Types.FileContentType.AUDIO_MPEG },
+      AUDIO_WAV: { value: Types.FileContentType.AUDIO_WAV },
+      FONT_OTF: { value: Types.FileContentType.FONT_OTF },
+      FONT_TTF: { value: Types.FileContentType.FONT_TTF },
+      FONT_WOFF: { value: Types.FileContentType.FONT_WOFF },
+      FONT_WOFF2: { value: Types.FileContentType.FONT_WOFF2 },
+    },
   }
 );
 

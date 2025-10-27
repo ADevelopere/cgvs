@@ -166,15 +166,13 @@ class LocalAdapter implements StorageService {
       // Clean the path
       const cleanedPath = cleanLocalPath(input.path);
 
-      const mimeType = StorageUtils.contentTypeEnumToMimeType(
-        input.contentType
-      );
+      // The contentType is already a MIME type
+      const mimeType = input.contentType;
 
       logger.info("🔍 [SERVER DEBUG] Generating signed URL", {
         path: cleanedPath,
         fileSize: input.fileSize,
-        inputContentTypeEnum: input.contentType,
-        convertedMimeType: mimeType,
+        contentType: mimeType,
         contentMd5: input.contentMd5,
       });
 
@@ -318,15 +316,13 @@ class LocalAdapter implements StorageService {
         path: cleanedFilePath,
         directoryPath,
         size: BigInt(stats.size),
-        contentType: StorageUtils.contentTypeEnumToMimeType(contentType),
+        contentType: contentType,
         md5Hash,
         createdAt: stats.birthtime,
         lastModified: stats.mtime,
         url: `${this.baseUrl}/api/storage/files/${cleanedFilePath}`,
         mediaLink: undefined,
-        fileType: StorageUtils.getFileTypeFromContentType(
-          StorageUtils.contentTypeEnumToMimeType(contentType)
-        ),
+        fileType: StorageUtils.getFileTypeFromContentType(contentType),
         isPublic: cleanedFilePath.startsWith("public"),
       };
 
