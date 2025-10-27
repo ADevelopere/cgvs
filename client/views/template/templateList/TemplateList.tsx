@@ -20,11 +20,8 @@ const TemplateList: React.FC = () => {
       }}
     >
       <ResponsiveSplitPaneViewController
-        title={<Box />}
-        firstPaneButtonDisabled={false}
-        secondPaneButtonDisabled={true}
-        firstPaneButtonTooltip={strings.showCategoriesPane}
-        secondPaneButtonTooltip=""
+        hidablePane="first"
+        hidablePaneTooltip={strings.showCategoriesPane}
         firstPane={
           <Paper
             sx={{
@@ -49,7 +46,8 @@ const TemplateList: React.FC = () => {
         }
         breakpointWidth={600}
         drawerWidth={300}
-        headerBehavior="hidden"
+        toggleButtonInDrawerMode="floating"
+        toggleButtonInSplitMode="floating"
         storageKey="templateListSplitPane"
       />
     </Box>

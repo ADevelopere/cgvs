@@ -2,14 +2,16 @@ import { Box, Drawer, IconButton, Tooltip } from "@mui/material";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { PanelRight, PanelLeft } from "lucide-react";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
-import {
-  SplitPaneViewController,
-  SplitPaneViewControllerProps,
-} from "./SplitPaneViewController";
+import { SplitPaneViewController } from "./SplitPaneViewController";
+import { SplitPane } from "./SplitPane";
 import DrawerToggleButton from "./DrawerToggleButton";
 
-type ResponsiveSplitPaneViewControllerProps = SplitPaneViewControllerProps & {
+type ResponsiveSplitPaneViewControllerProps = {
   title?: React.ReactNode;
+  firstPane: React.ReactNode;
+  secondPane: React.ReactNode;
+  style?: React.CSSProperties;
+  storageKey?: string;
   breakpointWidth: number;
   drawerWidth?: number;
   drawerVariant?: "temporary" | "persistent";
@@ -17,16 +19,17 @@ type ResponsiveSplitPaneViewControllerProps = SplitPaneViewControllerProps & {
   toggleButtonZIndex?: number;
   headerBehavior?: "above-content" | "in-drawer" | "hidden";
   drawerAnchor?: "left" | "right";
+  hidablePane: "first" | "second";
+  hidablePaneTooltip: string;
+  toggleButtonInSplitMode?: "hidden" | "floating";
+  toggleButtonInDrawerMode?: "hidden" | "floating";
+  onTogglePaneRef?: (toggleFn: () => void) => void;
 };
 
 export const ResponsiveSplitPaneViewController: React.FC<
   ResponsiveSplitPaneViewControllerProps
 > = ({
   title,
-  firstPaneButtonDisabled,
-  secondPaneButtonDisabled,
-  firstPaneButtonTooltip,
-  secondPaneButtonTooltip,
   firstPane,
   secondPane,
   style,
@@ -38,11 +41,16 @@ export const ResponsiveSplitPaneViewController: React.FC<
   toggleButtonZIndex,
   headerBehavior = "above-content",
   drawerAnchor,
+  hidablePane,
+  hidablePaneTooltip,
+  toggleButtonInSplitMode = "hidden",
+  toggleButtonInDrawerMode = "floating",
+  onTogglePaneRef,
 }) => {
   const { theme, isRtl } = useAppTheme();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerWidth, setContainerWidth] = useState<number>(Infinity);
-  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  const [hidablePaneVisible, setHidablePaneVisible] = useState<boolean>(true);
 
   // Determine drawer anchor based on RTL or explicit prop
   const effectiveDrawerAnchor = drawerAnchor ?? (isRtl ? "right" : "left");
@@ -54,6 +62,18 @@ export const ResponsiveSplitPaneViewController: React.FC<
 
   // Calculate if we're in drawer mode
   const isDrawerMode = containerWidth < breakpointWidth;
+
+  // Toggle function for hidable pane
+  const toggleHidablePane = useCallback(() => {
+    setHidablePaneVisible(prev => !prev);
+  }, []);
+
+  // Expose toggle function via callback
+  useEffect(() => {
+    if (onTogglePaneRef) {
+      onTogglePaneRef(toggleHidablePane);
+    }
+  }, [onTogglePaneRef, toggleHidablePane]);
 
   // ResizeObserver to track container width
   useEffect(() => {
@@ -73,29 +93,85 @@ export const ResponsiveSplitPaneViewController: React.FC<
     };
   }, []);
 
-  const handleDrawerToggle = useCallback(() => {
-    setDrawerOpen(prev => !prev);
+  const handleDrawerClose = useCallback(() => {
+    setHidablePaneVisible(false);
   }, []);
 
-  const handleDrawerClose = useCallback(() => {
-    setDrawerOpen(false);
-  }, []);
+  // Determine if we should show floating toggle button
+  const showFloatingToggleButton = () => {
+    // If title exists, don't show floating button (use header buttons instead)
+    if (title !== undefined) return false;
+
+    // When in drawer mode
+    if (isDrawerMode) {
+      return toggleButtonInDrawerMode === "floating";
+    }
+
+    // When in split pane mode
+    return toggleButtonInSplitMode === "floating";
+  };
+
+  // Get the pane that goes in the drawer (for drawer mode)
+  const drawerPaneContent = hidablePane === "first" ? firstPane : secondPane;
+  const mainPaneContent = hidablePane === "first" ? secondPane : firstPane;
 
   // Render normal split pane when width is sufficient
   if (!isDrawerMode) {
     return (
       <Box ref={containerRef} sx={{ height: "100%", width: "100%", ...style }}>
-        <SplitPaneViewController
-          title={title}
-          firstPaneButtonDisabled={firstPaneButtonDisabled}
-          secondPaneButtonDisabled={secondPaneButtonDisabled}
-          firstPaneButtonTooltip={firstPaneButtonTooltip}
-          secondPaneButtonTooltip={secondPaneButtonTooltip}
-          firstPane={firstPane}
-          secondPane={secondPane}
-          style={style}
-          storageKey={storageKey}
-        />
+        {/* Floating toggle button for split mode */}
+        {showFloatingToggleButton() && (
+          <DrawerToggleButton
+            open={hidablePaneVisible}
+            onClick={toggleHidablePane}
+            title={hidablePaneTooltip}
+            zIndex={effectiveToggleButtonZIndex}
+            isRtl={isRtl}
+          />
+        )}
+
+        {title !== undefined ? (
+          <SplitPaneViewController
+            title={title}
+            firstPaneButtonDisabled={hidablePane === "second"}
+            secondPaneButtonDisabled={hidablePane === "first"}
+            firstPaneButtonTooltip={
+              hidablePane === "first" ? hidablePaneTooltip : ""
+            }
+            secondPaneButtonTooltip={
+              hidablePane === "second" ? hidablePaneTooltip : ""
+            }
+            firstPane={firstPane}
+            secondPane={secondPane}
+            style={style}
+            storageKey={storageKey}
+          />
+        ) : (
+          <SplitPane
+            orientation="vertical"
+            firstPane={{
+              visible: hidablePane === "first" ? hidablePaneVisible : true,
+              minRatio: 0.3,
+            }}
+            secondPane={{
+              visible: hidablePane === "second" ? hidablePaneVisible : true,
+              minRatio: 0.3,
+            }}
+            resizerProps={{
+              style: {
+                cursor: "col-resize",
+              },
+            }}
+            style={{
+              flex: 1,
+              minHeight: "100%",
+            }}
+            storageKey={storageKey}
+          >
+            {firstPane}
+            {secondPane}
+          </SplitPane>
+        )}
       </Box>
     );
   }
@@ -113,17 +189,19 @@ export const ResponsiveSplitPaneViewController: React.FC<
         ...style,
       }}
     >
-      {/* Floating toggle button */}
-      <DrawerToggleButton
-        open={drawerOpen}
-        onClick={handleDrawerToggle}
-        title={drawerOpen ? firstPaneButtonTooltip : firstPaneButtonTooltip}
-        zIndex={effectiveToggleButtonZIndex}
-        isRtl={isRtl}
-      />
+      {/* Floating toggle button for drawer mode */}
+      {showFloatingToggleButton() && (
+        <DrawerToggleButton
+          open={hidablePaneVisible}
+          onClick={toggleHidablePane}
+          title={hidablePaneTooltip}
+          zIndex={effectiveToggleButtonZIndex}
+          isRtl={isRtl}
+        />
+      )}
 
-      {/* Header above content (if headerBehavior is 'above-content') */}
-      {headerBehavior === "above-content" && (
+      {/* Header above content (if title is defined and headerBehavior is 'above-content') */}
+      {title !== undefined && headerBehavior === "above-content" && (
         <Box
           sx={{
             display: "flex",
@@ -136,22 +214,19 @@ export const ResponsiveSplitPaneViewController: React.FC<
           {title}
           <Box sx={{ flex: 1 }} />
           <Box>
-            {/* First pane visibility button - opens drawer */}
-            <Tooltip title={firstPaneButtonTooltip}>
+            {/* Hidable pane toggle button */}
+            <Tooltip title={hidablePaneTooltip}>
               <span>
-                <IconButton
-                  onClick={handleDrawerToggle}
-                  disabled={firstPaneButtonDisabled}
-                >
-                  <PanelRight />
+                <IconButton onClick={toggleHidablePane}>
+                  {hidablePane === "first" ? <PanelRight /> : <PanelLeft />}
                 </IconButton>
               </span>
             </Tooltip>
-            {/* Second pane visibility button - disabled in drawer mode */}
-            <Tooltip title={secondPaneButtonTooltip}>
+            {/* Non-hidable pane button (disabled) */}
+            <Tooltip title="">
               <span>
                 <IconButton disabled={true}>
-                  <PanelLeft />
+                  {hidablePane === "first" ? <PanelLeft /> : <PanelRight />}
                 </IconButton>
               </span>
             </Tooltip>
@@ -162,7 +237,7 @@ export const ResponsiveSplitPaneViewController: React.FC<
       {/* MUI Drawer */}
       <Drawer
         anchor={effectiveDrawerAnchor}
-        open={drawerOpen}
+        open={hidablePaneVisible}
         onClose={handleDrawerClose}
         variant={drawerVariant}
         sx={{
@@ -175,8 +250,8 @@ export const ResponsiveSplitPaneViewController: React.FC<
           },
         }}
       >
-        {/* Header in drawer (if headerBehavior is 'in-drawer') */}
-        {headerBehavior === "in-drawer" && (
+        {/* Header in drawer (if title is defined and headerBehavior is 'in-drawer') */}
+        {title !== undefined && headerBehavior === "in-drawer" && (
           <Box
             sx={{
               display: "flex",
@@ -190,11 +265,13 @@ export const ResponsiveSplitPaneViewController: React.FC<
             {title}
           </Box>
         )}
-        {/* First pane content */}
-        <Box sx={{ height: "100%", overflow: "auto" }}>{firstPane}</Box>
+        {/* Drawer pane content */}
+        <Box sx={{ height: "100%", overflow: "auto" }}>
+          {drawerPaneContent}
+        </Box>
       </Drawer>
 
-      {/* Main content area with second pane */}
+      {/* Main content area */}
       <Box
         sx={{
           flex: 1,
@@ -202,7 +279,7 @@ export const ResponsiveSplitPaneViewController: React.FC<
           width: "100%",
         }}
       >
-        {secondPane}
+        {mainPaneContent}
       </Box>
     </Box>
   );
