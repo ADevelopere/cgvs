@@ -16,6 +16,7 @@ import {
   debouncedSaveToLocalStorage,
   loadFromLocalStorage,
 } from "@/client/utils/localStorage";
+import logger from "@/client/lib/logger";
 
 // Helper to remove focus so text isn't selected while dragging
 function unFocus(doc: Document, win: Window) {
@@ -132,6 +133,10 @@ export const SplitPane: FC<SplitPaneProps> = ({
   const [pane1Size, setPane1Size] = useState<number | undefined>(undefined);
   const [pane2Size, setPane2Size] = useState<number | undefined>(undefined);
 
+  // Track previous dimensions to prevent unnecessary updates
+  const previousContainerWidthRef = useRef<number>(0);
+  const previousContainerHeightRef = useRef<number>(0);
+
   // Initialize ratios from storage or defaults
   const initialRatios = useMemo(() => {
     const defaultRatios = {
@@ -214,17 +219,9 @@ export const SplitPane: FC<SplitPaneProps> = ({
     handleVisibilityChange(firstPane.visible, secondPane.visible);
   }, [firstPane.visible, secondPane.visible, handleVisibilityChange]);
 
-  const updateContainerDimensions = useCallback(() => {
-    const element = containerRef?.current || splitPaneRef.current;
-    if (element) {
-      const rect = element.getBoundingClientRect();
-      setContainerWidth(width ?? rect.width);
-      setContainerHeight(rect.height);
-    }
-  }, [containerRef, width]);
-
   const calculatePaneSizes = useCallback(() => {
     if (!containerWidth || !containerHeight) return;
+    logger.debug("calculatePaneSizes", { containerWidth, containerHeight });
 
     const totalSize =
       orientation === "vertical" ? containerWidth : containerHeight;
@@ -261,7 +258,32 @@ export const SplitPane: FC<SplitPaneProps> = ({
   ]);
 
   useEffect(() => {
+    const updateContainerDimensions = () => {
+      const element = containerRef?.current || splitPaneRef.current;
+      if (element) {
+        const rect = element.getBoundingClientRect();
+        const newWidth = width ?? rect.width;
+        const newHeight = rect.height;
+        
+        if (
+          (newWidth !== previousContainerWidthRef.current && newWidth > 0) ||
+          (newHeight !== previousContainerHeightRef.current && newHeight > 0)
+        ) {
+          if (newWidth !== previousContainerWidthRef.current && newWidth > 0) {
+            setContainerWidth(newWidth);
+            previousContainerWidthRef.current = newWidth;
+          }
+          if (newHeight !== previousContainerHeightRef.current && newHeight > 0) {
+            setContainerHeight(newHeight);
+            previousContainerHeightRef.current = newHeight;
+          }
+        }
+      }
+    };
+
+    // Initial measurement
     updateContainerDimensions();
+
     const resizeObserver = new ResizeObserver(() => {
       updateContainerDimensions();
     });
@@ -274,7 +296,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
     return () => {
       resizeObserver.disconnect();
     };
-  }, [updateContainerDimensions, containerRef]);
+  }, [containerRef, width]);
 
   useEffect(() => {
     calculatePaneSizes();
