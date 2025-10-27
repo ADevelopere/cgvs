@@ -5,7 +5,6 @@ import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { SplitPaneViewController } from "./SplitPaneViewController";
 import { SplitPane, type PaneProps } from "./SplitPane";
 import DrawerToggleButton from "./DrawerToggleButton";
-import { logger } from "@/client/lib/logger";
 
 /**
  * Props passed to pane render functions when using callback pattern.
@@ -284,12 +283,6 @@ export const ResponsiveSplitPaneViewController: React.FC<
     toggleButtonZIndex ?? theme.zIndex.drawer + 1;
 
   // Calculate if we're in drawer mode
-  logger.info(
-    "[ResponsiveSplitPaneViewController]",
-    containerWidth,
-    breakpointWidth,
-    containerWidth < breakpointWidth
-  );
   const isDrawerMode = containerWidth < breakpointWidth;
 
   // Toggle function for hidable pane

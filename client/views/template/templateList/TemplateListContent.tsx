@@ -49,6 +49,11 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
     new Set()
   );
 
+  // Container width tracking for responsive layout
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+  const [containerWidth, setContainerWidth] = React.useState<number>(0);
+  const previousContainerWidthRef = React.useRef<number>(0);
+
   const handleImageError = React.useCallback(
     (templateId: number) => {
       setFailedImages(prev => new Set(prev).add(templateId));
@@ -83,6 +88,38 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
       setPageInputValue(pageInfo.currentPage);
     }
   }, [pageInfo?.currentPage]);
+
+  // ResizeObserver to track container width for responsive layout
+  React.useEffect(() => {
+    const updateContainerDimensions = () => {
+      const element = containerRef.current;
+      if (element) {
+        const rect = element.getBoundingClientRect();
+        const newWidth = rect.width;
+
+        if (newWidth !== previousContainerWidthRef.current && newWidth > 0) {
+          setContainerWidth(newWidth);
+          previousContainerWidthRef.current = newWidth;
+        }
+      }
+    };
+
+    // Initial measurement
+    updateContainerDimensions();
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateContainerDimensions();
+    });
+
+    const element = containerRef.current;
+    if (element) {
+      resizeObserver.observe(element);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   // Search query from filter args
   const searchQuery = React.useMemo(
@@ -270,6 +307,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
 
   return (
     <Mui.Box
+      ref={containerRef}
       sx={{
         ...style,
         bgcolor: "background.default",
@@ -279,23 +317,16 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
         height: "100%",
       }}
     >
-      <Mui.Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
-          justifyContent: "space-between",
-          alignItems: { xs: "stretch", sm: "center" },
-          gap: 2,
-          mb: 3,
-        }}
-      >
-        {/* Title and toggle button container */}
+      {containerWidth > 700 ? (
+        // Wide layout: single row with all elements
         <Mui.Box
           sx={{
             display: "flex",
+            flexDirection: "row",
             justifyContent: "space-between",
-            alignItems: { xs: "stretch", sm: "center" },
+            alignItems: "center",
             gap: 2,
+            mb: 3,
           }}
         >
           {/* Toggle button for category pane (only in split mode) */}
@@ -303,7 +334,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
             <Mui.IconButton
               onClick={onToggleFirstPane}
               sx={{
-                alignSelf: "center",
+                flexShrink: 0,
               }}
               aria-label={
                 isFirstPaneVisible
@@ -316,20 +347,21 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
           )}
 
           {/* Header title */}
-          <Mui.Typography variant="h6">
+          <Mui.Typography
+            variant="h6"
+            noWrap
+            sx={{
+              flexGrow: 1,
+              minWidth: 0,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
             {currentCategory ? currentCategory.name : strings.allTemplates}
           </Mui.Typography>
-        </Mui.Box>
 
-        <Mui.Box
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            justifyContent: "space-between",
-            alignItems: { xs: "stretch", sm: "center" },
-            gap: 2,
-          }}
-        >
+          {/* Search field */}
           <Mui.TextField
             placeholder={strings.searchTemplatesPlaceholder}
             value={searchQuery}
@@ -343,14 +375,15 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
                 ),
               },
             }}
-            sx={{ width: { xs: "100%", sm: 300 } }}
+            sx={{ width: 300, flexShrink: 0 }}
           />
 
+          {/* View mode toggle */}
           <Mui.ToggleButtonGroup
             value={viewMode}
             exclusive
             onChange={handleViewChange}
-            sx={{ alignSelf: { xs: "center", sm: "auto" } }}
+            sx={{ flexShrink: 0 }}
           >
             <Mui.ToggleButton value="card">
               <ViewModuleIcon />
@@ -363,7 +396,102 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
             </Mui.ToggleButton>
           </Mui.ToggleButtonGroup>
         </Mui.Box>
-      </Mui.Box>
+      ) : (
+        // Narrow layout: two rows
+        <Mui.Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            mb: 3,
+          }}
+        >
+          {/* First row: toggle button + title + view buttons */}
+          <Mui.Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            {/* Toggle button for category pane (only in split mode) */}
+            {!isDrawerMode && onToggleFirstPane && (
+              <Mui.IconButton
+                onClick={onToggleFirstPane}
+                sx={{
+                  flexShrink: 0,
+                }}
+                aria-label={
+                  isFirstPaneVisible
+                    ? strings.hideCategoriesPane
+                    : strings.showCategoriesPane
+                }
+              >
+                {isFirstPaneVisible ? <PanelLeft /> : <PanelRight />}
+              </Mui.IconButton>
+            )}
+
+            {/* Header title */}
+            <Mui.Typography
+              variant="h6"
+              noWrap
+              sx={{
+                flexGrow: 1,
+                minWidth: 0,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {currentCategory ? currentCategory.name : strings.allTemplates}
+            </Mui.Typography>
+
+            {/* View mode toggle */}
+            <Mui.ToggleButtonGroup
+              value={viewMode}
+              exclusive
+              onChange={handleViewChange}
+              sx={{ flexShrink: 0 }}
+            >
+              <Mui.ToggleButton value="card">
+                <ViewModuleIcon />
+              </Mui.ToggleButton>
+              <Mui.ToggleButton value="grid">
+                <GridViewIcon />
+              </Mui.ToggleButton>
+              <Mui.ToggleButton value="list">
+                <ViewListIcon />
+              </Mui.ToggleButton>
+            </Mui.ToggleButtonGroup>
+          </Mui.Box>
+
+          {/* Second row: search field */}
+          <Mui.Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <Mui.TextField
+              placeholder={strings.searchTemplatesPlaceholder}
+              value={searchQuery}
+              onChange={handleSearchChange}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <Mui.InputAdornment position="start">
+                      <SearchIcon />
+                    </Mui.InputAdornment>
+                  ),
+                },
+              }}
+              sx={{ width: "100%" }}
+            />
+          </Mui.Box>
+        </Mui.Box>
+      )}
 
       {/* Loading progress bar */}
       {loading && (
