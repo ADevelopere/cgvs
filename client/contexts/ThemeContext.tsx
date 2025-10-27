@@ -1,15 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
+import React from "react";
 import {
   Theme,
   ThemeProvider,
@@ -39,8 +30,17 @@ const cacheRtl = createCache({
   stylisPlugins: [prefixer, rtlPlugin],
 });
 
-const jss = create({
+const cacheLtr = createCache({
+  key: "ltr-cache",
+  stylisPlugins: [prefixer],
+});
+
+const jssRtl = create({
   plugins: [...jssPreset().plugins, rtl()],
+});
+
+const jssLtr = create({
+  plugins: [...jssPreset().plugins],
 });
 
 // Utility functions
@@ -98,10 +98,12 @@ type ThemeContextType = {
   isDark: boolean;
 };
 
-const AppThemeContext = createContext<ThemeContextType | undefined>(undefined);
+const AppThemeContext = React.createContext<ThemeContextType | undefined>(
+  undefined
+);
 
 type AppThemeProviderProps = {
-  children: ReactNode;
+  children: React.ReactNode;
   initialLanguage?: string;
   initialTheme?: ThemeMode;
 };
@@ -115,23 +117,23 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   const hasInitialProps =
     initialLanguage !== undefined || initialTheme !== undefined;
 
-  const [currentTheme, setCurrentTheme] = useState<Theme>(ltrLightTheme);
-  const [currentThemeMode, setCurrentThemeMode] = useState<ThemeMode>(
+  const [currentTheme, setCurrentTheme] = React.useState<Theme>(ltrLightTheme);
+  const [currentThemeMode, setCurrentThemeMode] = React.useState<ThemeMode>(
     hasInitialProps && initialTheme ? initialTheme : ThemeMode.System
   );
-  const [currentLanguage, setCurrentLanguage] = useState<AppLanguage>(
+  const [currentLanguage, setCurrentLanguage] = React.useState<AppLanguage>(
     hasInitialProps && initialLanguage
       ? (initialLanguage as AppLanguage)
       : (AppLanguage.default as AppLanguage)
   );
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionDirection, setTransitionDirection] = useState<"rtl" | "ltr">(
-    "ltr"
-  );
-  const isInitialized = useRef(hasInitialProps);
+  const [isTransitioning, setIsTransitioning] = React.useState(false);
+  const [transitionDirection, setTransitionDirection] = React.useState<
+    "rtl" | "ltr"
+  >("ltr");
+  const isInitialized = React.useRef(hasInitialProps);
 
   // Effect to set theme and language from client-side storage after mount
-  useEffect(() => {
+  React.useEffect(() => {
     // If initial props are provided, use them instead of localStorage
     if (hasInitialProps) {
       const language = initialLanguage || AppLanguage.default;
@@ -182,7 +184,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   }, [hasInitialProps, initialLanguage, initialTheme]);
 
   // Add effect to listen for system theme changes when in system mode
-  useEffect(() => {
+  React.useEffect(() => {
     if (currentThemeMode === ThemeMode.System) {
       const mediaQuery = matchMedia("(prefers-color-scheme: dark)");
       const handleChange = (e: MediaQueryListEvent) => {
@@ -203,7 +205,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
     }
   }, [currentThemeMode, currentLanguage]); // Removed setColorSchemeMode dependency
 
-  const handleSetLanguage = useCallback(
+  const handleSetLanguage = React.useCallback(
     (newLanguage: string | AppLanguage) => {
       const language = newLanguage as AppLanguage;
 
@@ -241,7 +243,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
     [currentThemeMode]
   );
 
-  const handleSetThemeMode = useCallback(
+  const handleSetThemeMode = React.useCallback(
     (newMode: ThemeMode) => {
       updateTheme(newMode);
       setCurrentThemeMode(newMode);
@@ -269,15 +271,18 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
     [currentLanguage]
   ); // Removed setColorSchemeMode dependency
 
-  const isRtl = useMemo(() => currentLanguage === "ar", [currentLanguage]);
-  const isDark = useMemo(() => {
+  const isRtl = React.useMemo(
+    () => currentLanguage === "ar",
+    [currentLanguage]
+  );
+  const isDark = React.useMemo(() => {
     if (currentThemeMode === ThemeMode.System) {
       return matchMedia("(prefers-color-scheme: dark)")?.matches ?? false;
     }
     return currentThemeMode === ThemeMode.Dark;
   }, [currentThemeMode]);
 
-  const contextValue = useMemo(
+  const contextValue = React.useMemo(
     () => ({
       theme: currentTheme, // Keep providing the theme object for potential direct use
       language: currentLanguage,
@@ -298,6 +303,10 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
     ]
   );
 
+  const jss = React.useMemo(() => (isRtl ? jssRtl : jssLtr), [isRtl]);
+
+  const cache = React.useMemo(() => (isRtl ? cacheRtl : cacheLtr), [isRtl]);
+
   // Don't render children until theme initialization is complete
   // This prevents race conditions with useStoryTheme in Storybook
   if (!isInitialized.current) {
@@ -307,7 +316,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
   return (
     <AppThemeContext.Provider value={contextValue}>
       <StylesProvider jss={jss}>
-        <CacheProvider value={cacheRtl}>
+        <CacheProvider value={cache}>
           {/* Use CssVarsProvider instead of MuiThemeProvider */}
           {/* <CssVarsProvider theme={currentTheme}> */}
           <ThemeProvider theme={currentTheme}>
@@ -335,7 +344,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
 };
 
 export const useAppTheme = (): ThemeContextType => {
-  const context = useContext(AppThemeContext);
+  const context = React.useContext(AppThemeContext);
   if (!context) {
     throw new Error("useAppTheme must be used within a ThemeProvider");
   }
