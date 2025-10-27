@@ -145,13 +145,7 @@ export const CollapsedDashboardSidebar: React.FC = () => {
         bgcolor: theme.palette.background.paper,
         overflowY: "auto",
         borderRight: `1px solid ${theme.palette.divider}`,
-        opacity: 1,
-        transition: theme.transitions.create("opacity", {
-          easing: theme.transitions.easing.easeInOut,
-          duration: theme.transitions.duration.short,
-          delay: 50,
-        }),
-        animation: "fadeIn 0.25s ease-in-out",
+        animation: "fadeIn 250ms ease-in-out",
         "@keyframes fadeIn": {
           from: { opacity: 0 },
           to: { opacity: 1 },

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, useMediaQuery, useTheme } from "@mui/material";
+import { Box, useMediaQuery } from "@mui/material";
 import React, { useState, useEffect, useMemo } from "react";
 import { ToggleSideBarButton } from "./ToggleSideBarButton";
 import { useDashboardLayout } from "@/client/views/dashboard/layout/DashboardLayoutContext";
@@ -8,6 +8,7 @@ import { CollapsedDashboardSidebar } from "./CollapsedDashboardSidebar";
 import { ExpandedDashboardSidebar } from "./ExpandedDashboardSidebar";
 import { FloatingDashboardSidebar } from "./FloatingDashboardSidebar";
 import { DashboardTitleRenderer } from "./DashboardDefaultTitle";
+import { useAppTheme } from "@/client/contexts";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
@@ -23,7 +24,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const sidebarRef = React.useRef<HTMLDivElement>(null);
 
   // Get theme and media query for responsive design
-  const theme = useTheme();
+  const { theme } = useAppTheme();
   const {
     sidebarState,
     setSidebarState,
@@ -155,10 +156,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               flexShrink: 0,
               display: { xs: "none", sm: "block" },
               boxSizing: "border-box",
-              transition: theme.transitions.create("width", {
-                easing: theme.transitions.easing.easeInOut,
-                duration: theme.transitions.duration.standard,
-              }),
             }}
           >
             <CollapsedDashboardSidebar />
@@ -173,10 +170,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               width: 280,
               flexShrink: 0,
               display: { xs: "none", sm: "block" },
-              transition: theme.transitions.create("width", {
-                easing: theme.transitions.easing.easeInOut,
-                duration: theme.transitions.duration.standard,
-              }),
             }}
           >
             <ExpandedDashboardSidebar />
@@ -191,10 +184,18 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             overflowX: "hidden",
             display: "flex",
             flexDirection: "column",
-            transition: theme.transitions.create("width", {
-              easing: theme.transitions.easing.easeInOut,
-              duration: theme.transitions.duration.standard,
-            }),
+            animation: `flexGrow-${sidebarState} 200ms cubic-bezier(0.4, 0, 0.2, 1)`,
+            [`@keyframes flexGrow-${sidebarState}`]: {
+              "0%": {
+                opacity: 0,
+                flexBasis: "80%", // Starts at 80% width
+              },
+              "100%": {
+                opacity: 1,
+                flexBasis: "100%", // Grows to 100%
+              },
+            },
+            
           }}
         >
           {children}
