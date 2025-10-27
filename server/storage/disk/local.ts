@@ -435,6 +435,10 @@ class LocalAdapter implements StorageService {
             ".mp4": "video/mp4",
             ".mp3": "audio/mpeg",
             ".wav": "audio/wav",
+            ".otf": "font/otf",
+            ".ttf": "font/ttf",
+            ".woff": "font/woff",
+            ".woff2": "font/woff2",
           };
           const contentType = contentTypeMap[ext] || "application/octet-stream";
 
@@ -707,6 +711,10 @@ class LocalAdapter implements StorageService {
         ".mp4": "video/mp4",
         ".mp3": "audio/mpeg",
         ".wav": "audio/wav",
+        ".otf": "font/otf",
+        ".ttf": "font/ttf",
+        ".woff": "font/woff",
+        ".woff2": "font/woff2",
       };
       const contentType = contentTypeMap[ext] || "application/octet-stream";
 
@@ -883,6 +891,10 @@ class LocalAdapter implements StorageService {
         ".mp4": "video/mp4",
         ".mp3": "audio/mpeg",
         ".wav": "audio/wav",
+        ".otf": "font/otf",
+        ".ttf": "font/ttf",
+        ".woff": "font/woff",
+        ".woff2": "font/woff2",
       };
       const contentType = contentTypeMap[ext] || "application/octet-stream";
 
@@ -954,6 +966,10 @@ class LocalAdapter implements StorageService {
         ".mp4": "video/mp4",
         ".mp3": "audio/mpeg",
         ".wav": "audio/wav",
+        ".otf": "font/otf",
+        ".ttf": "font/ttf",
+        ".woff": "font/woff",
+        ".woff2": "font/woff2",
       };
       const contentType = contentTypeMap[ext] || "application/octet-stream";
 
@@ -1031,6 +1047,10 @@ class LocalAdapter implements StorageService {
               ".mp4": "video/mp4",
               ".mp3": "audio/mpeg",
               ".wav": "audio/wav",
+              ".otf": "font/otf",
+              ".ttf": "font/ttf",
+              ".woff": "font/woff",
+              ".woff2": "font/woff2",
             };
             const contentType =
               contentTypeMap[ext] || "application/octet-stream";
@@ -1081,6 +1101,10 @@ class LocalAdapter implements StorageService {
             ".mp4": "video/mp4",
             ".mp3": "audio/mpeg",
             ".wav": "audio/wav",
+            ".otf": "font/otf",
+            ".ttf": "font/ttf",
+            ".woff": "font/woff",
+            ".woff2": "font/woff2",
           };
           const contentType = contentTypeMap[ext] || "application/octet-stream";
 

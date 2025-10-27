@@ -26,6 +26,8 @@ import {
 import { StorageItemUnion } from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
+import DeleteConfirmationDialog from "@/client/views/storage/dialogs/DeleteConfirmationDialog";
+import RenameDialog from "@/client/views/storage/dialogs/RenameDialog";
 
 export interface FileMenuProps {
   anchorPosition?: {
@@ -58,8 +60,8 @@ const FileMenu: React.FC<FileMenuProps> = ({
 
   // State for confirmation dialogs
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [infoDialogOpen, setInfoDialogOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   // Handle menu actions
   const handleCopy = () => {
@@ -90,12 +92,7 @@ const FileMenu: React.FC<FileMenuProps> = ({
   };
 
   const handleRename = () => {
-    // Simple prompt for now - will be replaced with RenameDialog component later
-    const fileName = file.name;
-    const newName = prompt("Enter new name:", fileName);
-    if (newName && newName !== fileName) {
-      onRenameItem(file.path, newName);
-    }
+    setRenameDialogOpen(true);
     onClose();
   };
 
@@ -104,18 +101,14 @@ const FileMenu: React.FC<FileMenuProps> = ({
     onClose();
   };
 
-  const handleDeleteConfirm = async () => {
-    setIsDeleting(true);
-    const success = await onDeleteItems([file.path]);
-    setIsDeleting(false);
+  const handleDeleteSuccess = async () => {
     setDeleteDialogOpen(false);
-    if (success) {
-      onRefresh();
-    }
+    await onRefresh();
   };
 
-  const handleDeleteCancel = () => {
-    setDeleteDialogOpen(false);
+  const handleRenameSuccess = async () => {
+    setRenameDialogOpen(false);
+    await onRefresh();
   };
 
   const handleGetInfo = () => {
@@ -215,67 +208,32 @@ const FileMenu: React.FC<FileMenuProps> = ({
       </Menu>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog
+      <DeleteConfirmationDialog
         open={deleteDialogOpen}
-        onClose={handleDeleteCancel}
-        aria-labelledby="delete-dialog-title"
-        aria-describedby="delete-dialog-description"
-        slotProps={{
-          paper: {
-            sx: {
-              backgroundColor: theme.palette.background.paper,
-              color: theme.palette.text.primary,
-            },
-          },
+        onClose={() => setDeleteDialogOpen(false)}
+        items={[file as StorageItemUnion]}
+        onDelete={async (paths) => {
+          const success = await onDeleteItems(paths);
+          if (success) {
+            handleDeleteSuccess();
+          }
+          return success;
         }}
-      >
-        <DialogTitle
-          id="delete-dialog-title"
-          sx={{ color: theme.palette.text.primary }}
-        >
-          {translations.delete}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText
-            id="delete-dialog-description"
-            sx={{ color: theme.palette.text.secondary }}
-          >
-            {translations.deleteConfirmationMessage.replace(
-              "%{fileName}",
-              file.name
-            )}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ padding: theme.spacing(1, 3, 2) }}>
-          <Button
-            onClick={handleDeleteCancel}
-            disabled={isDeleting}
-            sx={{
-              color: theme.palette.text.secondary,
-              "&:hover": {
-                backgroundColor: theme.palette.action.hover,
-              },
-            }}
-          >
-            {translations.cancel}
-          </Button>
-          <Button
-            onClick={handleDeleteConfirm}
-            variant="contained"
-            disabled={isDeleting}
-            sx={{
-              backgroundColor: theme.palette.error.main,
-              color: theme.palette.error.contrastText,
-              "&:hover": {
-                backgroundColor: theme.palette.error.dark,
-              },
-            }}
-            autoFocus
-          >
-            {isDeleting ? translations.loading : translations.delete}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      />
+
+      {/* Rename Dialog */}
+      <RenameDialog
+        open={renameDialogOpen}
+        onClose={() => setRenameDialogOpen(false)}
+        item={file as StorageItemUnion}
+        onRename={async (path, newName) => {
+          const success = await onRenameItem(path, newName);
+          if (success) {
+            handleRenameSuccess();
+          }
+          return success;
+        }}
+      />
 
       {/* File Info Dialog */}
       <Dialog

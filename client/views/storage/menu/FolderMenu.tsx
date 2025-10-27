@@ -30,6 +30,8 @@ import {
 } from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
+import DeleteConfirmationDialog from "@/client/views/storage/dialogs/DeleteConfirmationDialog";
+import RenameDialog from "@/client/views/storage/dialogs/RenameDialog";
 
 export interface FolderMenuProps {
   anchorPosition?: {
@@ -73,8 +75,8 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
 
   // State for confirmation dialogs
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [infoDialogOpen, setInfoDialogOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [isPasting, setIsPasting] = useState(false);
 
   // Handle menu actions
@@ -104,33 +106,24 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
   }, [onClose, onPasteItems, onRefresh]);
 
   const handleRename = React.useCallback(() => {
-    // Simple prompt for now - will be replaced with RenameDialog component later
-    const folderName = folder.name;
-    const newName = prompt("Enter new name:", folderName);
-    if (newName && newName !== folderName) {
-      onRenameItem(folder.path, newName);
-    }
+    setRenameDialogOpen(true);
     onClose();
-  }, [folder.name, folder.path, onClose, onRenameItem]);
+  }, [onClose]);
 
   const handleDeleteClick = React.useCallback(() => {
     setDeleteDialogOpen(true);
     onClose();
   }, [onClose]);
 
-  const handleDeleteConfirm = React.useCallback(async () => {
-    setIsDeleting(true);
-    const success = await onDeleteItems([folder.path]);
-    setIsDeleting(false);
+  const handleDeleteSuccess = React.useCallback(async () => {
     setDeleteDialogOpen(false);
-    if (success) {
-      onRefresh();
-    }
-  }, [folder.path, onDeleteItems, onRefresh]);
+    await onRefresh();
+  }, [onRefresh]);
 
-  const handleDeleteCancel = React.useCallback(() => {
-    setDeleteDialogOpen(false);
-  }, []);
+  const handleRenameSuccess = React.useCallback(async () => {
+    setRenameDialogOpen(false);
+    await onRefresh();
+  }, [onRefresh]);
 
   const handleGetInfo = React.useCallback(() => {
     setInfoDialogOpen(true);
@@ -240,67 +233,32 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
       </Menu>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog
+      <DeleteConfirmationDialog
         open={deleteDialogOpen}
-        onClose={handleDeleteCancel}
-        aria-labelledby="delete-folder-dialog-title"
-        aria-describedby="delete-folder-dialog-description"
-        slotProps={{
-          paper: {
-            sx: {
-              backgroundColor: theme.palette.background.paper,
-              color: theme.palette.text.primary,
-            },
-          },
+        onClose={() => setDeleteDialogOpen(false)}
+        items={[folder as StorageItemUnion]}
+        onDelete={async (paths) => {
+          const success = await onDeleteItems(paths);
+          if (success) {
+            handleDeleteSuccess();
+          }
+          return success;
         }}
-      >
-        <DialogTitle
-          id="delete-folder-dialog-title"
-          sx={{ color: theme.palette.text.primary }}
-        >
-          {translations.delete}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText
-            id="delete-folder-dialog-description"
-            sx={{ color: theme.palette.text.secondary }}
-          >
-            {translations.deleteConfirmationMessage.replace(
-              "%{fileName}",
-              folder.name
-            )}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ padding: theme.spacing(1, 3, 2) }}>
-          <Button
-            onClick={handleDeleteCancel}
-            disabled={isDeleting}
-            sx={{
-              color: theme.palette.text.secondary,
-              "&:hover": {
-                backgroundColor: theme.palette.action.hover,
-              },
-            }}
-          >
-            {translations.cancel}
-          </Button>
-          <Button
-            onClick={handleDeleteConfirm}
-            variant="contained"
-            disabled={isDeleting}
-            sx={{
-              backgroundColor: theme.palette.error.main,
-              color: theme.palette.error.contrastText,
-              "&:hover": {
-                backgroundColor: theme.palette.error.dark,
-              },
-            }}
-            autoFocus
-          >
-            {isDeleting ? translations.loading : translations.delete}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      />
+
+      {/* Rename Dialog */}
+      <RenameDialog
+        open={renameDialogOpen}
+        onClose={() => setRenameDialogOpen(false)}
+        item={folder as StorageItemUnion}
+        onRename={async (path, newName) => {
+          const success = await onRenameItem(path, newName);
+          if (success) {
+            handleRenameSuccess();
+          }
+          return success;
+        }}
+      />
 
       {/* Folder Info Dialog */}
       <Dialog
