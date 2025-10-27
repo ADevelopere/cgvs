@@ -12,8 +12,6 @@ import {
   Button,
   Avatar,
   Box,
-  useTheme,
-  useMediaQuery,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useAppTheme } from "@/client/contexts";
@@ -27,6 +25,7 @@ interface ListViewProps {
   manageTemplate: (templateId: number) => void;
   failedImages: Set<number>;
   onImageError: (templateId: number) => void;
+  containerWidth?: number;
 }
 
 const ListView: React.FC<ListViewProps> = ({
@@ -34,10 +33,10 @@ const ListView: React.FC<ListViewProps> = ({
   manageTemplate,
   failedImages,
   onImageError,
+  containerWidth = 0,
 }) => {
   const { isDark } = useAppTheme();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = containerWidth > 0 && containerWidth < 900;
   const strings = useAppTranslation("templateCategoryTranslations");
 
   return (
