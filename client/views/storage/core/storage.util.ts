@@ -1,11 +1,7 @@
-import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import CryptoJS from "crypto-js";
 import {
-  extToContentType,
-  mimeToContentType,
-  contentTypeToMime,
-  contentTypeToExtensions,
-} from "./storage.constant";
+  mimeToExtensions,
+} from "@/utils/storage.utils";
 
 /**
  * Generate MD5 hash from file content in base64 format
@@ -41,40 +37,20 @@ export const generateFileMD5 = async (file: File): Promise<string> => {
   });
 };
 
-/**
- * Infer ContentType enum from file
- * Returns a ContentType enum value (e.g., "IMAGE_JPEG", "FONT_OTF")
- */
-export const inferContentType = (file: File): Graphql.ContentType => {
-  // Try to use browser-detected MIME type if it's in our mapping
-  if (file.type && mimeToContentType[file.type]) {
-    return mimeToContentType[file.type];
-  }
-
-  // Fallback: infer from extension
-  const ext = file.name.split(".").pop()?.toLowerCase();
-
-  if (ext && extToContentType[ext]) {
-    return extToContentType[ext];
-  }
-
-  // Default fallback
-  return "TEXT_PLAIN";
-};
+// Re-export inferContentType from shared utils for convenience
+export { inferContentType } from "@/utils/storage.utils";
 
 export const getFileKey = (file: File): string =>
   `${file.name}-${file.size}-${file.lastModified}`;
 
 /**
- * Convert array of ContentType enum values to file extensions
+ * Convert array of MIME types to file extensions
  */
-export const contentTypesToExtensions = (
-  contentTypes: Graphql.ContentType[]
-): string[] => {
+export const contentTypesToExtensions = (mimeTypes: string[]): string[] => {
   const extensions: string[] = [];
 
-  contentTypes.forEach(contentType => {
-    const exts = contentTypeToExtensions[contentType];
+  mimeTypes.forEach(mimeType => {
+    const exts = mimeToExtensions[mimeType];
     if (exts) {
       extensions.push(...exts);
     }
@@ -84,31 +60,17 @@ export const contentTypesToExtensions = (
 };
 
 /**
- * Convert ContentType enum value to MIME type string
+ * Get accept attribute string for file input based on allowed MIME types
  */
-export const contentTypeEnumToMime = (
-  contentType: Graphql.ContentType
-): string => {
-  return contentTypeToMime[contentType];
-};
-
-/**
- * Get accept attribute string for file input based on allowed ContentType enums
- */
-export const getAcceptAttribute = (
-  contentTypes: Graphql.ContentType[]
-): string => {
+export const getAcceptAttribute = (mimeTypes: string[]): string => {
   const acceptValues: string[] = [];
 
-  contentTypes.forEach(contentType => {
+  mimeTypes.forEach(mimeType => {
     // Add the MIME type
-    const mimeType = contentTypeToMime[contentType];
-    if (mimeType) {
-      acceptValues.push(mimeType);
-    }
+    acceptValues.push(mimeType);
 
     // Add associated file extensions
-    const extensions = contentTypeToExtensions[contentType];
+    const extensions = mimeToExtensions[mimeType];
     if (extensions) {
       acceptValues.push(...extensions);
     }

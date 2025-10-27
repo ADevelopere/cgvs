@@ -71,7 +71,7 @@ class GcpAdapter implements StorageService {
         fileSize: input.fileSize,
       });
 
-      StorageUtils.validateUpload(input.path, input.fileSize).then(err => {
+      StorageUtils.validateUpload(input.path, input.fileSize, input.contentType).then(err => {
         if (err) throw new StorageValidationError(err);
       });
 
@@ -98,13 +98,13 @@ class GcpAdapter implements StorageService {
 
   async uploadFile(
     path: string,
-    contentType: Types.FileContentType,
+    contentType: string,
     buffer: Buffer
   ): Promise<Types.FileUploadResult> {
     try {
       const fileSize = buffer.byteLength;
 
-      StorageUtils.validateUpload(path, fileSize).then(err => {
+      StorageUtils.validateUpload(path, fileSize, contentType).then(err => {
         if (err)
           return {
             success: false,
@@ -308,15 +308,12 @@ class GcpAdapter implements StorageService {
       );
     }
 
-    // Apply file type filter
-    if (input.fileType) {
-      filteredItems = filteredItems.filter(item => {
-        if ("fileType" in item) {
-          return item.fileType === input.fileType;
-        }
-        return false;
-      });
-    }
+    // Apply file type and content type filters
+    filteredItems = StorageUtils.filterStorageItems(filteredItems, {
+      fileType: input.fileType,
+      fileTypes: input.fileTypes,
+      contentTypes: input.contentTypes,
+    });
 
     // Sort items
     const sortedItems = StorageUtils.sortItems(

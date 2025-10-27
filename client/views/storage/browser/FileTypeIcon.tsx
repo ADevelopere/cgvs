@@ -8,7 +8,6 @@ import {
   Archive as ArchiveIcon,
 } from "@mui/icons-material";
 import { SvgIconProps } from "@mui/material/SvgIcon";
-import { mimeToContentType } from "@/client/views/storage/core/storage.constant";
 import { StorageItemUnion } from "@/client/views/storage/core/storage.type";
 interface FileTypeIconProps extends Omit<SvgIconProps, "component"> {
   item: StorageItemUnion;
@@ -21,32 +20,7 @@ interface FileTypeIconProps extends Omit<SvgIconProps, "component"> {
 const FileTypeIcon: React.FC<FileTypeIconProps> = ({ item, ...iconProps }) => {
   // Handle file items based on MIME type
   if (item.__typename === "FileInfo") {
-    // Convert MIME type to ContentType using the utility mapping
-    if (item.contentType && mimeToContentType[item.contentType]) {
-      const contentType = mimeToContentType[item.contentType];
-
-      // Map ContentType enum values to appropriate icons
-      switch (contentType) {
-        case "IMAGE_JPEG":
-        case "IMAGE_PNG":
-        case "IMAGE_GIF":
-        case "IMAGE_WEBP":
-          return <ImageIcon {...iconProps} />;
-        case "APPLICATION_PDF":
-        case "TEXT_PLAIN":
-          // case 'JSON':
-          return <DocumentIcon {...iconProps} />;
-        // case 'OTF':
-        // case 'TTF':
-        // case 'WOFF':
-        // case 'WOFF2':
-        //     return <FileIcon {...iconProps} />;
-        default:
-          return <FileIcon {...iconProps} />;
-      }
-    }
-
-    // Fallback: Determine type from MIME type prefix if not in mapping
+    // Work directly with MIME type strings
     if (item.contentType) {
       const mimeType = item.contentType.toLowerCase();
 

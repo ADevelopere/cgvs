@@ -42,27 +42,6 @@ export type BulkOperationResult = {
   successfulItems?: Maybe<Array<StorageObject>>;
 };
 
-export type ContentType =
-  | 'APPLICATION_DOCX'
-  | 'APPLICATION_MSWORD'
-  | 'APPLICATION_PDF'
-  | 'APPLICATION_RAR'
-  | 'APPLICATION_XLS'
-  | 'APPLICATION_XLSX'
-  | 'APPLICATION_ZIP'
-  | 'AUDIO_MPEG'
-  | 'AUDIO_WAV'
-  | 'FONT_OTF'
-  | 'FONT_TTF'
-  | 'FONT_WOFF'
-  | 'FONT_WOFF2'
-  | 'IMAGE_GIF'
-  | 'IMAGE_JPEG'
-  | 'IMAGE_PNG'
-  | 'IMAGE_WEBP'
-  | 'TEXT_PLAIN'
-  | 'VIDEO_MP4';
-
 export type CountryCode =
   | 'AD'
   | 'AE'
@@ -393,6 +372,7 @@ export type FileType =
   | 'ARCHIVE'
   | 'AUDIO'
   | 'DOCUMENT'
+  | 'FONT'
   | 'IMAGE'
   | 'OTHER'
   | 'VIDEO';
@@ -427,7 +407,9 @@ export type FileUsageResult = {
 };
 
 export type FilesListInput = {
+  contentTypes?: InputMaybe<Array<Scalars['String']['input']>>;
   fileType?: InputMaybe<Scalars['String']['input']>;
+  fileTypes?: InputMaybe<Array<FileType>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   path: Scalars['String']['input'];
@@ -1534,7 +1516,7 @@ export type TemplatesWithFiltersResponse = {
 
 export type UploadSignedUrlGenerateInput = {
   contentMd5: Scalars['String']['input'];
-  contentType: ContentType;
+  contentType: Scalars['String']['input'];
   fileSize: Scalars['Int']['input'];
   path: Scalars['String']['input'];
 };

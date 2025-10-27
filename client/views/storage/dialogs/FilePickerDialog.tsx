@@ -5,7 +5,6 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
-  useRef,
 } from "react";
 import { useTheme } from "@mui/material";
 import * as MUI from "@mui/material";
@@ -28,18 +27,16 @@ export interface FilePickerDialogProps {
   open: boolean;
   onClose: () => void;
   onFileSelect: (file: Graphql.FileInfo) => void;
-  allowedFileTypes?: string[]; // Optional array of allowed content types (e.g., ['image/*', 'application/pdf'])
+  allowedContentTypes?: string[]; // Optional array of MIME types (e.g., ['image/jpeg', 'application/pdf'])
+  allowedFileTypes?: Graphql.FileType[]; // Optional array of FileType enum values (e.g., [FileType.Image, FileType.Font])
   title?: string; // Optional custom title
-}
-
-function isFile(item: StorageItemType): item is Graphql.FileInfo {
-  return item.__typename === "FileInfo";
 }
 
 const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   open,
   onClose,
   onFileSelect,
+  allowedContentTypes,
   allowedFileTypes,
   title,
 }) => {
@@ -54,6 +51,8 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
         path: "",
         limit: 1000,
         offset: 0,
+        fileTypes: allowedFileTypes || undefined,
+        contentTypes: allowedContentTypes || undefined,
       },
     });
 
@@ -90,40 +89,8 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
     return null;
   }, [queryError, data, translations]);
 
-  // Use refs to access latest values without causing re-renders
-  const allowedFileTypesRef = useRef(allowedFileTypes);
-  useEffect(() => {
-    allowedFileTypesRef.current = allowedFileTypes;
-  }, [allowedFileTypes]);
-
-  // Filter items to show only folders and allowed files
-  const filteredItems = useMemo(() => {
-    return items.filter(item => {
-      // Always show folders (DirectoryInfo)
-      if (item.__typename === "DirectoryInfo") {
-        return true;
-      }
-
-      // For files (FileInfo), check file type restrictions
-      if (isFile(item)) {
-        // If no file type restrictions, show all files
-        if (!allowedFileTypes || allowedFileTypes.length === 0) {
-          return true;
-        }
-
-        // Check if file matches allowed types
-        return allowedFileTypes.some(allowedType => {
-          if (allowedType.endsWith("/*")) {
-            const baseType = allowedType.slice(0, -2);
-            return item.contentType?.startsWith(baseType);
-          }
-          return item.contentType === allowedType;
-        });
-      }
-
-      return false;
-    });
-  }, [items, allowedFileTypes]);
+  // No need for client-side filtering - server handles it via fileTypes and contentTypes
+  const filteredItems = items;
 
   // Separate folders and files for better organization
   const folders = useMemo(
@@ -139,15 +106,21 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   // Handle dialog open/close
   useEffect(() => {
     if (open) {
-      logger.info("FilePickerDialog opened", { allowedFileTypes, title });
+      logger.info("FilePickerDialog opened", { allowedContentTypes, allowedFileTypes, title });
       setCurrentPath("");
       setSelectedFile(null);
       setIsSelecting(false);
       setQueryVariables({
-        input: { path: "", limit: 1000, offset: 0 },
+        input: {
+          path: "",
+          limit: 1000,
+          offset: 0,
+          fileTypes: allowedFileTypes || undefined,
+          contentTypes: allowedContentTypes || undefined,
+        },
       });
     }
-  }, [open, allowedFileTypes, title]);
+  }, [open, allowedContentTypes, allowedFileTypes, title]);
 
   // Navigate to a directory
   const navigateToDirectory = useCallback(
@@ -163,10 +136,12 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
           path: path,
           limit: 1000,
           offset: 0,
+          fileTypes: allowedFileTypes || undefined,
+          contentTypes: allowedContentTypes || undefined,
         },
       });
     },
-    [currentPath]
+    [currentPath, allowedFileTypes, allowedContentTypes]
   );
 
   // Get breadcrumb segments
@@ -266,12 +241,14 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
           path: parentPath,
           limit: 1000,
           offset: 0,
+          fileTypes: allowedFileTypes || undefined,
+          contentTypes: allowedContentTypes || undefined,
         },
       });
     } else {
       logger.warn("Cannot navigate up - already at root", { currentPath });
     }
-  }, [currentPath]);
+  }, [currentPath, allowedFileTypes, allowedContentTypes]);
 
   // Refresh current directory
   const refreshDirectory = useCallback(() => {

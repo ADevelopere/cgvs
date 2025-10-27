@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React from "react";
 import Image from "next/image";
 import * as Mui from "@mui/material";
 import { useAppTheme } from "@/client/contexts";
@@ -54,9 +54,6 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
   const [imageLoadError, setImageLoadError] = React.useState(false);
 
   const [filePickerOpen, setFilePickerOpen] = React.useState(false);
-
-  // Memoize allowedFileTypes to prevent recreation on every render
-  const allowedFileTypes = useMemo(() => ["image/*"], []);
 
   React.useEffect(() => {
     if (template) {
@@ -379,7 +376,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
           setFilePickerOpen(false);
         }}
         onFileSelect={handleFileSelect}
-        allowedFileTypes={allowedFileTypes} // Only allow image files for template covers
+        allowedFileTypes={["IMAGE"]}
         title={storageStrings.ui.filePickerDialogSelectFile}
       />
     </Mui.Box>

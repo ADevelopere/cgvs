@@ -254,6 +254,7 @@ export const storage: StorageTranslations = {
     spreadsheets: "جداول بيانات",
     presentations: "عروض تقديمية",
     videos: "فيديوهات",
+    fonts: "خطوط",
     forms: "نماذج",
     photos: "صور وصور فوتوغرافية",
     pdfs: "ملفات PDF",

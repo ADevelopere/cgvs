@@ -53,7 +53,7 @@ export interface IFileInitializationService {
   /**
    * Get content type from file name
    */
-  getContentTypeFromFileName(fileName: string): Types.FileContentType;
+  getContentTypeFromFileName(fileName: string): string;
 }
 
 export class FileInitializationService implements IFileInitializationService {
@@ -302,7 +302,7 @@ export class FileInitializationService implements IFileInitializationService {
     }
   }
 
-  getContentTypeFromFileName(fileName: string): Types.FileContentType {
+  getContentTypeFromFileName(fileName: string): string {
     const extension = fileName
       .substring(fileName.lastIndexOf(".") + 1)
       .toLowerCase();
@@ -310,45 +310,45 @@ export class FileInitializationService implements IFileInitializationService {
     switch (extension) {
       case "jpg":
       case "jpeg":
-        return Types.FileContentType.IMAGE_JPEG;
+        return "image/jpeg";
       case "png":
-        return Types.FileContentType.IMAGE_PNG;
+        return "image/png";
       case "gif":
-        return Types.FileContentType.IMAGE_GIF;
+        return "image/gif";
       case "webp":
-        return Types.FileContentType.IMAGE_WEBP;
+        return "image/webp";
       case "pdf":
-        return Types.FileContentType.APPLICATION_PDF;
+        return "application/pdf";
       case "doc":
-        return Types.FileContentType.APPLICATION_MSWORD;
+        return "application/msword";
       case "docx":
-        return Types.FileContentType.APPLICATION_DOCX;
+        return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
       case "xls":
-        return Types.FileContentType.APPLICATION_XLS;
+        return "application/vnd.ms-excel";
       case "xlsx":
-        return Types.FileContentType.APPLICATION_XLSX;
+        return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
       case "txt":
-        return Types.FileContentType.TEXT_PLAIN;
+        return "text/plain";
       case "zip":
-        return Types.FileContentType.APPLICATION_ZIP;
+        return "application/zip";
       case "rar":
-        return Types.FileContentType.APPLICATION_RAR;
+        return "application/vnd.rar";
       case "mp4":
-        return Types.FileContentType.VIDEO_MP4;
+        return "video/mp4";
       case "mp3":
-        return Types.FileContentType.AUDIO_MPEG;
+        return "audio/mpeg";
       case "wav":
-        return Types.FileContentType.AUDIO_WAV;
+        return "audio/wav";
       case "otf":
-        return Types.FileContentType.FONT_OTF;
+        return "font/otf";
       case "ttf":
-        return Types.FileContentType.FONT_TTF;
+        return "font/ttf";
       case "woff":
-        return Types.FileContentType.FONT_WOFF;
+        return "font/woff";
       case "woff2":
-        return Types.FileContentType.FONT_WOFF2;
+        return "font/woff2";
       default:
-        return Types.FileContentType.IMAGE_JPEG;
+        return "image/jpeg";
     }
   }
 }

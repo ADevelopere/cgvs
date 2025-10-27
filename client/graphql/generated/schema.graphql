@@ -12,28 +12,6 @@ type BulkOperationResult {
   successfulItems: [StorageObject!]
 }
 
-enum ContentType {
-  APPLICATION_DOCX
-  APPLICATION_MSWORD
-  APPLICATION_PDF
-  APPLICATION_RAR
-  APPLICATION_XLS
-  APPLICATION_XLSX
-  APPLICATION_ZIP
-  AUDIO_MPEG
-  AUDIO_WAV
-  FONT_OTF
-  FONT_TTF
-  FONT_WOFF
-  FONT_WOFF2
-  IMAGE_GIF
-  IMAGE_JPEG
-  IMAGE_PNG
-  IMAGE_WEBP
-  TEXT_PLAIN
-  VIDEO_MP4
-}
-
 enum CountryCode {
   AD
   AE
@@ -375,6 +353,7 @@ enum FileType {
   ARCHIVE
   AUDIO
   DOCUMENT
+  FONT
   IMAGE
   OTHER
   VIDEO
@@ -407,7 +386,9 @@ type FileUsageResult {
 }
 
 input FilesListInput {
+  contentTypes: [String!]
   fileType: String
+  fileTypes: [FileType!]
   limit: Int
   offset: Int
   path: String!
@@ -1144,7 +1125,7 @@ type TemplatesWithFiltersResponse {
 
 input UploadSignedUrlGenerateInput {
   contentMd5: String!
-  contentType: ContentType!
+  contentType: String!
   fileSize: Int!
   path: String!
 }

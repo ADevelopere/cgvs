@@ -21,16 +21,6 @@ import {
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
-// Type-safe file type mapping
-const FILE_TYPE: Record<Graphql.FileType, Graphql.FileType> = {
-  ARCHIVE: "ARCHIVE",
-  AUDIO: "AUDIO",
-  DOCUMENT: "DOCUMENT",
-  IMAGE: "IMAGE",
-  OTHER: "OTHER",
-  VIDEO: "VIDEO",
-};
-
 interface StorageFiltersProps {
   params: Graphql.FilesListInput;
   updateParams: (updates: Partial<Graphql.FilesListInput>) => void;
@@ -61,22 +51,15 @@ const StorageFilters: React.FC<StorageFiltersProps> = ({
   const fileTypeOptions = React.useMemo(
     () => [
       { value: "", label: translations.allTypes },
-      { value: FILE_TYPE.ARCHIVE, label: translations.archives },
-      { value: FILE_TYPE.AUDIO, label: translations.audio },
-      { value: FILE_TYPE.DOCUMENT, label: translations.documents },
-      { value: FILE_TYPE.IMAGE, label: translations.photos },
-      { value: FILE_TYPE.OTHER, label: translations.otherTypes },
-      { value: FILE_TYPE.VIDEO, label: translations.videos },
+      { value: "ARCHIVE", label: translations.archives },
+      { value: "AUDIO", label: translations.audio },
+      { value: "DOCUMENT", label: translations.documents },
+      { value: "IMAGE", label: translations.photos },
+      { value: "VIDEO", label: translations.videos },
+      { value: "FONT", label: translations.fonts },
+      { value: "OTHER", label: translations.otherTypes },
     ],
-    [
-      translations.allTypes,
-      translations.archives,
-      translations.audio,
-      translations.documents,
-      translations.otherTypes,
-      translations.photos,
-      translations.videos,
-    ]
+    [translations]
   );
 
   // Date filter options
