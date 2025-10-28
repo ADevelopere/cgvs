@@ -70,9 +70,7 @@ export const FontReferenceUnion = gqlSchemaBuilder.unionType("FontReference", {
 // ============================================================================
 // Individual input types for each variant
 export const FontReferenceGoogleInputObject = gqlSchemaBuilder
-  .inputRef<Types.FontReferenceGoogleInputGraphql>(
-    "FontReferenceGoogleInput"
-  )
+  .inputRef<Types.FontReferenceGoogleInputGraphql>("FontReferenceGoogleInput")
   .implement({
     fields: t => ({
       identifier: t.string({ required: true }),
@@ -96,11 +94,9 @@ export const FontReferenceInputObject = gqlSchemaBuilder.inputType(
     fields: t => ({
       google: t.field({
         type: FontReferenceGoogleInputObject,
-        required: false,
       }),
       selfHosted: t.field({
         type: FontReferenceSelfHostedInputObject,
-        required: false,
       }),
     }),
   }

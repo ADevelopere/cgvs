@@ -3,6 +3,7 @@ import {
   TextProps,
   TextPropsInput,
   TextPropsInputGraphql,
+  TextPropsUpdateInputGraphql,
 } from "./config.element.types";
 import { CertificateElementBaseUpdateInput } from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "./union.element.types";
@@ -29,6 +30,10 @@ export enum CertificateDateField {
 export enum CalendarType {
   GREGORIAN = "GREGORIAN",
   HIJRI = "HIJRI",
+}
+
+export enum DateTransformationType {
+  AGE_CALCULATION = "AGE_CALCULATION",
 }
 
 // ============================================================================
@@ -76,6 +81,49 @@ export type DateDataSourceInput =
   | DateDataSourceCertificateFieldInput
   | DateDataSourceTemplateVariableInput;
 
+// GraphQL input types (used in Pothos isOneOf definitions)
+export type DateDataSourceStaticInputGraphql = {
+  value: string;
+};
+
+export type DateDataSourceStudentFieldInputGraphql = {
+  field: StudentDateField;
+};
+
+export type DateDataSourceCertificateFieldInputGraphql = {
+  field: CertificateDateField;
+};
+
+export type DateDataSourceTemplateVariableInputGraphql = {
+  variableId: number;
+};
+
+export type DateDataSourceInputGraphql =
+  | {
+      static: DateDataSourceStaticInputGraphql;
+      studentField?: never;
+      certificateField?: never;
+      templateVariable?: never;
+    }
+  | {
+      studentField: DateDataSourceStudentFieldInputGraphql;
+      static?: never;
+      certificateField?: never;
+      templateVariable?: never;
+    }
+  | {
+      certificateField: DateDataSourceCertificateFieldInputGraphql;
+      static?: never;
+      studentField?: never;
+      templateVariable?: never;
+    }
+  | {
+      templateVariable: DateDataSourceTemplateVariableInputGraphql;
+      static?: never;
+      studentField?: never;
+      certificateField?: never;
+    };
+
 // ============================================================================
 // Element Config
 // ============================================================================
@@ -86,19 +134,28 @@ export interface DateElementConfig {
   calendarType: CalendarType;
   offsetDays: number;
   format: string; // e.g., "YYYY-MM-DD", "DD/MM/YYYY"
-  mapping?: Record<string, string>; // Custom date component mappings (e.g., month names)
+  transformation?: DateTransformationType | null;
   dataSource: DateDataSource;
 }
 
-// GraphQL input type
+// GraphQL input type (type field omitted - implied by mutation)
 export type DateElementConfigInputGraphql = {
-  type: ElementType.DATE;
   textProps: TextPropsInputGraphql;
   calendarType: CalendarType;
   offsetDays: number;
   format: string;
-  mapping?: Record<string, string> | null;
-  dataSource: DateDataSourceInput;
+  transformation?: DateTransformationType | null;
+  dataSource: DateDataSourceInputGraphql;
+};
+
+// GraphQL update input type (deep partial)
+export type DateElementConfigUpdateInputGraphql = {
+  textProps?: TextPropsUpdateInputGraphql;
+  calendarType?: CalendarType;
+  offsetDays?: number;
+  format?: string;
+  transformation?: DateTransformationType | null;
+  dataSource?: DateDataSourceInputGraphql;
 };
 
 // Repository input type (matches Config structure)
@@ -108,7 +165,7 @@ export type DateElementConfigInput = {
   calendarType: CalendarType;
   offsetDays: number;
   format: string;
-  mapping?: Record<string, string> | null;
+  transformation?: DateTransformationType | null;
   dataSource: DateDataSourceInput;
 };
 
@@ -133,13 +190,41 @@ export type DateElementUpdateInput = CertificateElementBaseUpdateInput & {
   config?: Partial<DateElementConfigInput>;
 };
 
+// GraphQL create input type
+export type DateElementCreateInputGraphql = {
+  templateId: number;
+  name: string;
+  description: string;
+  positionX: number;
+  positionY: number;
+  width: number;
+  height: number;
+  alignment: ElementAlignment;
+  renderOrder: number;
+  config: DateElementConfigInputGraphql;
+};
+
+// GraphQL update input type (deep partial support)
+export type DateElementUpdateInputGraphql = {
+  id: number;
+  name?: string;
+  description?: string;
+  positionX?: number;
+  positionY?: number;
+  width?: number;
+  height?: number;
+  alignment?: ElementAlignment;
+  renderOrder?: number;
+  config?: DateElementConfigUpdateInputGraphql;
+};
+
 // ============================================================================
 // Pothos Definition
 // ============================================================================
 
 export type DateElementPothosDefinition = Omit<
   CertificateElementPothosDefinition,
-  "parsedConfig"
+  "config"
 > & {
-  parsedConfig: DateElementConfig;
+  config: DateElementConfig;
 };

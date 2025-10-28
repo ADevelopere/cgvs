@@ -7,6 +7,7 @@ import {
   DateElementUpdateInput,
   ElementType,
   DateElementConfig,
+  DateElementPothosDefinition,
 } from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
 import { ElementUtils, DateElementUtils } from "@/server/utils";
@@ -32,24 +33,18 @@ export namespace DateElementRepository {
     // 1. Validate input
     await DateElementUtils.validateCreateInput(input);
 
-    // 2. Normalize config (convert null to undefined for mapping)
-    const normalizedConfig: DateElementConfig = {
-      ...input.config,
-      mapping: input.config.mapping ?? undefined,
-    };
-
+    const config: DateElementConfig = input.config;
     // 3. Extract FKs from config
-    const fontId = ElementUtils.extractFontId(normalizedConfig);
-    const templateVariableId =
-      ElementUtils.extractTemplateVariableId(normalizedConfig);
-    const storageFileId = ElementUtils.extractStorageFileId(normalizedConfig);
+    const fontId = ElementUtils.extractFontId(config);
+    const templateVariableId = ElementUtils.extractTemplateVariableId(config);
+    const storageFileId = ElementUtils.extractStorageFileId(config);
 
     // 4. Insert element
     const [element] = await db
       .insert(certificateElement)
       .values({
         ...input,
-        config: normalizedConfig,
+        config: config,
         type: ElementType.DATE,
         fontId,
         templateVariableId,
@@ -97,18 +92,11 @@ export namespace DateElementRepository {
 
     // 5. If config is being updated, deep merge and re-extract FKs
     if (input.config) {
-      // Normalize partial config (convert null to undefined for mapping)
-      const normalizedPartialConfig: Partial<DateElementConfig> = {
-        ...input.config,
-        mapping:
-          input.config.mapping === null ? undefined : input.config.mapping,
-      };
-
       // Deep merge partial config with existing to preserve nested properties
       const mergedConfig: DateElementConfig = merge(
         {},
         existing.config,
-        normalizedPartialConfig
+        input.config
       );
 
       // Validate merged config
@@ -131,5 +119,34 @@ export namespace DateElementRepository {
 
     logger.info(`DATE element updated: ${updated.name} (ID: ${updated.id})`);
     return updated;
+  };
+
+  // ============================================================================
+  // Load Operation (for Pothos)
+  // ============================================================================
+
+  /**
+   * Load multiple DATE elements by IDs for Pothos GraphQL layer
+   * Returns elements with typed config for GraphQL schema
+   */
+  export const loadByIds = async (
+    ids: number[]
+  ): Promise<(DateElementPothosDefinition | Error)[]> => {
+    if (ids.length === 0) return [];
+
+    const elements = await ElementRepository.loadByIds(ids);
+
+    return elements.map(element => {
+      if (element instanceof Error) return element;
+
+      if (element.type !== ElementType.DATE) {
+        return new Error(`Element ${element.id} is ${element.type}, not DATE`);
+      }
+
+      return {
+        ...element,
+        config: element.config as DateElementConfig,
+      };
+    });
   };
 }
