@@ -14,8 +14,10 @@ import { FontRepository } from "@/server/db/repo";
 import {
   PageInfoObject,
   OrderSortDirectionPothosObject,
+  FileInfoPothosObject,
 } from "../pothos";
 import { OrderSortDirection } from "@/lib/enum";
+import { getStorageService } from "@/server/storage/storage.service";
 
 // Font object
 const FontObjectRef = gqlSchemaBuilder.objectRef<FontPothosDefinition>("Font");
@@ -39,14 +41,24 @@ export const FontPothosObject = gqlSchemaBuilder.loadableObject<
         return Array.isArray(font.locale) ? font.locale : [];
       },
     }),
-    storageFilePath: t.field({
-      type: "String",
-      nullable: false,
+    file: t.field({
+      type: FileInfoPothosObject,
       resolve: async font => {
-        const filePath = await FontRepository.getStorageFilePathById(
-          font.storageFileId
+        const storageService = await getStorageService();
+        const fileInfo = await storageService.fileInfoByDbFileId(
+          BigInt(font.storageFileId)
         );
-        return filePath;
+        return fileInfo;
+      },
+    }),
+    url: t.field({
+      type: "String",
+      resolve: async font => {
+        const storageService = await getStorageService();
+        const fileInfo = await storageService.fileInfoByDbFileId(
+          BigInt(font.storageFileId)
+        );
+        return fileInfo?.url;
       },
     }),
     createdAt: t.expose("createdAt", { type: "DateTime", nullable: false }),

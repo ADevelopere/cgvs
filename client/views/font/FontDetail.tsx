@@ -6,6 +6,7 @@ import {
   Description as FontIcon,
 } from "@mui/icons-material";
 import { FontForm } from "./components/FontForm";
+import { FontPreview } from "./components/FontPreview";
 import { DeleteFontDialog } from "./dialogs/DeleteFontDialog";
 import {
   Font,
@@ -148,9 +149,9 @@ export const FontDetail: React.FC<FontDetailProps> = ({
                 initialData={{
                   name: selectedFont.name!,
                   locale: (selectedFont.locale || []) as string[],
-                  filePath: selectedFont.storageFilePath!,
-                  fileName: selectedFont.storageFilePath!.split("/").pop() || "Font file",
-                  fileUrl: "", // Would need storage file query
+                  filePath: selectedFont.file?.path ?? "",
+                  fileName: selectedFont.file?.name,
+                  fileUrl: selectedFont.url!,
                 }}
                 onSubmit={handleUpdateSubmit}
                 onCancel={cancelEditing}
@@ -208,6 +209,17 @@ export const FontDetail: React.FC<FontDetailProps> = ({
           </MUI.Box>
         </MUI.Box>
 
+        {/* Font Preview */}
+        <MUI.Box sx={{ mt: 3 }}>
+          <MUI.Typography variant="h6" gutterBottom>
+            {strings.preview}
+          </MUI.Typography>
+          <FontPreview
+            fontName={selectedFont.name!}
+            fontUrl={selectedFont.url!}
+          />
+        </MUI.Box>
+
         {/* Details Card */}
         <MUI.Card>
           <MUI.CardContent>
@@ -252,9 +264,9 @@ export const FontDetail: React.FC<FontDetailProps> = ({
                   {strings.storageFilePath}
                 </MUI.Typography>
                 <MUI.Typography variant="body1" sx={{ mt: 0.5 }}>
-                  {selectedFont.storageFilePath!}
+                  {selectedFont.file?.path ?? ""}
                 </MUI.Typography>
-              </MUI.Box>
+              </MUI.Box>  
 
               <MUI.Box sx={{ display: "flex", gap: 2 }}>
                 <MUI.Box sx={{ flex: 1 }}>

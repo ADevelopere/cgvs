@@ -1,7 +1,7 @@
 import { font } from "@/server/db/schema/font";
-import { FileInfo } from "@/server/types/storage.types";
 import { PageInfo } from "./pagination.types";
 import { OrderSortDirection } from "@/lib/enum";
+import { FileInfo } from "./storage.types";
 
 // Type aliases to match schema
 export type FontEntity = typeof font.$inferSelect;
@@ -10,7 +10,8 @@ export type FontSelectType = typeof font.$inferSelect;
 
 // Pothos definition with relations
 export type FontPothosDefinition = FontSelectType & {
-  storageFile?: FileInfo;
+  file?: FileInfo | null;
+  url?: string | null;
 };
 
 // Input types for GraphQL

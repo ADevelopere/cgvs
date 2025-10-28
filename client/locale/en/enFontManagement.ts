@@ -66,6 +66,14 @@ export const enFontManagement: FontManagementTranslations = {
   // LocaleSelector section
   selectLocalesPlaceholder: "Select locales...",
 
+  // Notification messages
+  fontCreatedSuccess: "%{name} has been created successfully",
+  errorCreatingFont: "Error creating font",
+  fontUpdatedSuccess: "%{name} has been updated successfully",
+  errorUpdatingFont: "Error updating font",
+  fontDeletedSuccess: "%{name} has been deleted successfully",
+  errorDeletingFont: "Error deleting font",
+
   // Common actions
   save: "Save",
   cancel: "Cancel",

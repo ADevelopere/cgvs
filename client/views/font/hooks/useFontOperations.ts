@@ -6,6 +6,7 @@ import { useFontApolloMutations } from "./useFontApolloMutations";
 import { useFontStore } from "../stores/useFontStore";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import logger from "@/client/lib/logger";
+import { useAppTranslation } from "@/client/locale";
 
 type FontOperations = {
   selectFont: (font: Graphql.Font) => void;
@@ -28,6 +29,7 @@ export const useFontOperations = (): FontOperations => {
   const storeRef = useRef(store);
   storeRef.current = store;
   const notifications = useNotifications();
+  const strings = useAppTranslation("fontManagementTranslations");
   const { createFontMutation, updateFontMutation, deleteFontMutation } =
     useFontApolloMutations();
 
@@ -83,7 +85,10 @@ export const useFontOperations = (): FontOperations => {
 
         if (result.data?.createFont) {
           notifications.show(
-            `${result.data.createFont.name} has been created successfully`,
+            strings.fontCreatedSuccess.replace(
+              "%{name}",
+              result.data.createFont.name
+            ),
             {
               severity: "success",
               autoHideDuration: 3000,
@@ -103,7 +108,7 @@ export const useFontOperations = (): FontOperations => {
       } catch (error) {
         logger.error("Error creating font:", error);
         notifications.show(
-          error instanceof Error ? error.message : "Error creating font",
+          error instanceof Error ? error.message : strings.errorCreatingFont,
           {
             severity: "error",
             autoHideDuration: 3000,
@@ -112,7 +117,12 @@ export const useFontOperations = (): FontOperations => {
         return false;
       }
     },
-    [createFontMutation, notifications]
+    [
+      createFontMutation,
+      notifications,
+      strings.errorCreatingFont,
+      strings.fontCreatedSuccess,
+    ]
   );
 
   /**
@@ -129,7 +139,10 @@ export const useFontOperations = (): FontOperations => {
 
         if (result.data?.updateFont) {
           notifications.show(
-            `${result.data.updateFont.name} has been updated successfully`,
+            strings.fontUpdatedSuccess.replace(
+              "%{name}",
+              result.data.updateFont.name
+            ),
             {
               severity: "success",
               autoHideDuration: 3000,
@@ -144,7 +157,7 @@ export const useFontOperations = (): FontOperations => {
       } catch (error) {
         logger.error("Error updating font:", error);
         notifications.show(
-          error instanceof Error ? error.message : "Error updating font",
+          error instanceof Error ? error.message : strings.errorUpdatingFont,
           {
             severity: "error",
             autoHideDuration: 3000,
@@ -153,7 +166,12 @@ export const useFontOperations = (): FontOperations => {
         return false;
       }
     },
-    [updateFontMutation, notifications]
+    [
+      updateFontMutation,
+      notifications,
+      strings.fontUpdatedSuccess,
+      strings.errorUpdatingFont,
+    ]
   );
 
   /**
@@ -170,7 +188,10 @@ export const useFontOperations = (): FontOperations => {
 
         if (result.data?.deleteFont) {
           notifications.show(
-            `${result.data.deleteFont.name} has been deleted successfully`,
+            strings.fontDeletedSuccess.replace(
+              "%{name}",
+              result.data.deleteFont.name
+            ),
             {
               severity: "success",
               autoHideDuration: 3000,
@@ -189,7 +210,7 @@ export const useFontOperations = (): FontOperations => {
       } catch (error) {
         logger.error("Error deleting font:", error);
         notifications.show(
-          error instanceof Error ? error.message : "Error deleting font",
+          error instanceof Error ? error.message : strings.errorDeletingFont,
           {
             severity: "error",
             autoHideDuration: 3000,
@@ -198,7 +219,12 @@ export const useFontOperations = (): FontOperations => {
         return false;
       }
     },
-    [deleteFontMutation, notifications]
+    [
+      deleteFontMutation,
+      notifications,
+      strings.errorDeletingFont,
+      strings.fontDeletedSuccess,
+    ]
   );
 
   // Return only functions and store accessors, wrapped in useMemo for stability

@@ -11,7 +11,12 @@ export const fontQueryDocument: TypedDocumentNode<
       id
       name
       locale
-      storageFilePath
+      file{
+        path
+        url
+        name
+      }
+      url
       createdAt
       updatedAt
     }
@@ -37,7 +42,12 @@ export const fontsQueryDocument: TypedDocumentNode<
         id
         name
         locale
-        storageFilePath
+        file{
+          path
+          url
+          name
+        }
+        url
         createdAt
         updatedAt
       }
@@ -83,7 +93,12 @@ export const createFontMutationDocument: TypedDocumentNode<
       id
       name
       locale
-      storageFilePath
+      file{
+        path
+        url
+        name
+      }
+      url
       createdAt
       updatedAt
     }
@@ -100,7 +115,12 @@ export const updateFontMutationDocument: TypedDocumentNode<
       id
       name
       locale
-      storageFilePath
+      file{
+        path
+        url
+        name
+      }
+      url
       createdAt
       updatedAt
     }
@@ -117,7 +137,12 @@ export const deleteFontMutationDocument: TypedDocumentNode<
       id
       name
       locale
-      storageFilePath
+      file{
+        path
+        url
+        name
+      }
+      url
       createdAt
       updatedAt
     }

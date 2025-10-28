@@ -53,9 +53,10 @@ export const LocaleSelector: React.FC<LocaleSelectorProps> = ({
         />
       )}
       renderOption={(props, option, { selected }) => {
+        const { key, ...otherProps } = props;
         const isDisabled = isAllSelected && option.value !== "all";
         return (
-          <li {...props} key={option.value}>
+          <li key={key} {...otherProps}>
             <MUI.Checkbox
               checked={selected}
               disabled={isDisabled}
