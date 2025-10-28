@@ -15,7 +15,7 @@ interface FontFormProps {
     fileName?: string | null;
     fileUrl?: string | null;
   };
-  
+
   onSubmit: (input: FontCreateInput) => Promise<void>;
   onCancel: () => void;
   submitLabel?: string;
@@ -81,8 +81,8 @@ export const FontForm: React.FC<FontFormProps> = ({
     const input: FontCreateInput = {
       name: formData.name,
       locale: formData.locale,
-      storageFilePath: formData.storageFilePath
-    }
+      storageFilePath: formData.storageFilePath,
+    };
 
     setIsSubmitting(true);
     try {

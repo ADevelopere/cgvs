@@ -3,33 +3,33 @@ import { eq } from "drizzle-orm";
 import { certificateElement } from "@/server/db/schema/certificateElements/certificateElement";
 import {
   CertificateElementEntity,
-  TextElementCreateInput,
-  TextElementUpdateInput,
+  NumberElementCreateInput,
+  NumberElementUpdateInput,
   ElementType,
-  TextElementConfig,
+  NumberElementConfig,
 } from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
-import { ElementUtils, TextElementUtils, deepMerge } from "@/server/utils";
+import { ElementUtils, NumberElementUtils, deepMerge } from "@/server/utils";
 import logger from "@/server/lib/logger";
 
 /**
- * Repository for TEXT element operations
+ * Repository for NUMBER element operations
  * Handles create, update, and validation with automatic FK synchronization
  */
-export namespace TextElementRepository {
+export namespace NumberElementRepository {
   // ============================================================================
   // Create Operation
   // ============================================================================
 
   /**
-   * Create a new TEXT element
+   * Create a new NUMBER element
    * Validates input, extracts FKs from config, and inserts element
    */
   export const create = async (
-    input: TextElementCreateInput
+    input: NumberElementCreateInput
   ): Promise<CertificateElementEntity> => {
     // 1. Validate input
-    await TextElementUtils.validateCreateInput(input);
+    await NumberElementUtils.validateCreateInput(input);
 
     // 2. Extract FKs from config
     const fontId = ElementUtils.extractFontId(input.config);
@@ -43,7 +43,7 @@ export namespace TextElementRepository {
       .insert(certificateElement)
       .values({
         ...input,
-        type: ElementType.TEXT,
+        type: ElementType.NUMBER,
         fontId,
         templateVariableId,
         storageFileId,
@@ -53,7 +53,7 @@ export namespace TextElementRepository {
       .returning();
 
     // 4. Log and return
-    logger.info(`TEXT element created: ${element.name} (ID: ${element.id})`);
+    logger.info(`NUMBER element created: ${element.name} (ID: ${element.id})`);
     return element;
   };
 
@@ -62,24 +62,24 @@ export namespace TextElementRepository {
   // ============================================================================
 
   /**
-   * Update an existing TEXT element
+   * Update an existing NUMBER element
    * Supports partial updates with config merging and FK re-extraction
    */
   export const update = async (
-    input: TextElementUpdateInput
+    input: NumberElementUpdateInput
   ): Promise<CertificateElementEntity> => {
     // 1. Get existing element
     const existing = await ElementRepository.findByIdOrThrow(input.id);
 
-    // 2. Validate it's a TEXT element
-    if (existing.type !== ElementType.TEXT) {
+    // 2. Validate it's a NUMBER element
+    if (existing.type !== ElementType.NUMBER) {
       throw new Error(
-        `Element ${input.id} is ${existing.type}, not TEXT. Use correct repository.`
+        `Element ${input.id} is ${existing.type}, not NUMBER. Use correct repository.`
       );
     }
 
     // 3. Validate update input (pass existing to avoid redundant DB query)
-    await TextElementUtils.validateUpdateInput(input, existing);
+    await NumberElementUtils.validateUpdateInput(input, existing);
 
     // 4. Build update object (exclude config as it needs special handling)
     const { config: _, ...baseUpdates } = input;
@@ -92,12 +92,12 @@ export namespace TextElementRepository {
     if (input.config) {
       // Deep merge partial config with existing to preserve nested properties
       const mergedConfig = deepMerge(
-        existing.config as TextElementConfig,
+        existing.config as NumberElementConfig,
         input.config
       );
 
       // Validate merged config
-      await TextElementUtils.validateConfig(mergedConfig);
+      await NumberElementUtils.validateConfig(mergedConfig);
 
       // Apply merged config and extract FKs
       updates.config = mergedConfig;
@@ -114,7 +114,7 @@ export namespace TextElementRepository {
       .where(eq(certificateElement.id, input.id))
       .returning();
 
-    logger.info(`TEXT element updated: ${updated.name} (ID: ${updated.id})`);
+    logger.info(`NUMBER element updated: ${updated.name} (ID: ${updated.id})`);
     return updated;
   };
 }

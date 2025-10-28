@@ -11,7 +11,7 @@ export const fontQueryDocument: TypedDocumentNode<
       id
       name
       locale
-      file{
+      file {
         path
         url
         name
@@ -43,7 +43,7 @@ export const fontsQueryDocument: TypedDocumentNode<
         id
         name
         locale
-        file{
+        file {
           path
           url
           name
@@ -95,7 +95,7 @@ export const createFontMutationDocument: TypedDocumentNode<
       id
       name
       locale
-      file{
+      file {
         path
         url
         name
@@ -118,7 +118,7 @@ export const updateFontMutationDocument: TypedDocumentNode<
       id
       name
       locale
-      file{
+      file {
         path
         url
         name
@@ -141,7 +141,7 @@ export const deleteFontMutationDocument: TypedDocumentNode<
       id
       name
       locale
-      file{
+      file {
         path
         url
         name

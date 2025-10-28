@@ -29,7 +29,7 @@ export const certificateElement = pgTable("certificate_element", {
   renderOrder: integer("render_order").notNull().default(0), // Lower values render first
 
   type: elementTypeEnum("type").notNull(),
-  
+
   // Type-specific configuration stored as typed JSONB (source of truth)
   // Config contains the complete element configuration including all settings
   config: jsonb("config").$type<ElementConfig>().notNull(),

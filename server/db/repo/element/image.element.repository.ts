@@ -3,47 +3,45 @@ import { eq } from "drizzle-orm";
 import { certificateElement } from "@/server/db/schema/certificateElements/certificateElement";
 import {
   CertificateElementEntity,
-  TextElementCreateInput,
-  TextElementUpdateInput,
+  ImageElementCreateInput,
+  ImageElementUpdateInput,
   ElementType,
-  TextElementConfig,
+  ImageElementConfig,
 } from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
-import { ElementUtils, TextElementUtils, deepMerge } from "@/server/utils";
+import { ElementUtils, ImageElementUtils, deepMerge } from "@/server/utils";
 import logger from "@/server/lib/logger";
 
 /**
- * Repository for TEXT element operations
+ * Repository for IMAGE element operations
  * Handles create, update, and validation with automatic FK synchronization
  */
-export namespace TextElementRepository {
+export namespace ImageElementRepository {
   // ============================================================================
   // Create Operation
   // ============================================================================
 
   /**
-   * Create a new TEXT element
+   * Create a new IMAGE element
    * Validates input, extracts FKs from config, and inserts element
    */
   export const create = async (
-    input: TextElementCreateInput
+    input: ImageElementCreateInput
   ): Promise<CertificateElementEntity> => {
     // 1. Validate input
-    await TextElementUtils.validateCreateInput(input);
+    await ImageElementUtils.validateCreateInput(input);
 
     // 2. Extract FKs from config
-    const fontId = ElementUtils.extractFontId(input.config);
-    const templateVariableId = ElementUtils.extractTemplateVariableId(
-      input.config
-    );
     const storageFileId = ElementUtils.extractStorageFileId(input.config);
+    const fontId = null; // IMAGE elements don't have textProps
+    const templateVariableId = null; // IMAGE elements don't use variables
 
     // 3. Insert element
     const [element] = await db
       .insert(certificateElement)
       .values({
         ...input,
-        type: ElementType.TEXT,
+        type: ElementType.IMAGE,
         fontId,
         templateVariableId,
         storageFileId,
@@ -53,7 +51,7 @@ export namespace TextElementRepository {
       .returning();
 
     // 4. Log and return
-    logger.info(`TEXT element created: ${element.name} (ID: ${element.id})`);
+    logger.info(`IMAGE element created: ${element.name} (ID: ${element.id})`);
     return element;
   };
 
@@ -62,24 +60,24 @@ export namespace TextElementRepository {
   // ============================================================================
 
   /**
-   * Update an existing TEXT element
+   * Update an existing IMAGE element
    * Supports partial updates with config merging and FK re-extraction
    */
   export const update = async (
-    input: TextElementUpdateInput
+    input: ImageElementUpdateInput
   ): Promise<CertificateElementEntity> => {
     // 1. Get existing element
     const existing = await ElementRepository.findByIdOrThrow(input.id);
 
-    // 2. Validate it's a TEXT element
-    if (existing.type !== ElementType.TEXT) {
+    // 2. Validate it's an IMAGE element
+    if (existing.type !== ElementType.IMAGE) {
       throw new Error(
-        `Element ${input.id} is ${existing.type}, not TEXT. Use correct repository.`
+        `Element ${input.id} is ${existing.type}, not IMAGE. Use correct repository.`
       );
     }
 
     // 3. Validate update input (pass existing to avoid redundant DB query)
-    await TextElementUtils.validateUpdateInput(input, existing);
+    await ImageElementUtils.validateUpdateInput(input, existing);
 
     // 4. Build update object (exclude config as it needs special handling)
     const { config: _, ...baseUpdates } = input;
@@ -92,19 +90,17 @@ export namespace TextElementRepository {
     if (input.config) {
       // Deep merge partial config with existing to preserve nested properties
       const mergedConfig = deepMerge(
-        existing.config as TextElementConfig,
+        existing.config as ImageElementConfig,
         input.config
       );
 
       // Validate merged config
-      await TextElementUtils.validateConfig(mergedConfig);
+      await ImageElementUtils.validateConfig(mergedConfig);
 
       // Apply merged config and extract FKs
       updates.config = mergedConfig;
-      updates.fontId = ElementUtils.extractFontId(mergedConfig);
-      updates.templateVariableId =
-        ElementUtils.extractTemplateVariableId(mergedConfig);
       updates.storageFileId = ElementUtils.extractStorageFileId(mergedConfig);
+      // IMAGE elements don't have fontId or templateVariableId
     }
 
     // 6. Update
@@ -114,7 +110,7 @@ export namespace TextElementRepository {
       .where(eq(certificateElement.id, input.id))
       .returning();
 
-    logger.info(`TEXT element updated: ${updated.name} (ID: ${updated.id})`);
+    logger.info(`IMAGE element updated: ${updated.name} (ID: ${updated.id})`);
     return updated;
   };
 }

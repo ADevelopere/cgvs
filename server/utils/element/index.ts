@@ -1,4 +1,9 @@
 export { ElementUtils } from "./element.utils";
+export { CommonElementUtils } from "./common.element.utils";
 export { TextElementUtils } from "./text.element.utils";
 export { DateElementUtils } from "./date.element.utils";
+export { NumberElementUtils } from "./number.element.utils";
+export { CountryElementUtils } from "./country.element.utils";
+export { GenderElementUtils } from "./gender.element.utils";
+export { ImageElementUtils } from "./image.element.utils";
 export { deepMerge } from "./deepMerge.utils";

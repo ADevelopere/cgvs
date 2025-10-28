@@ -10,4 +10,3 @@ export const enDashboardLayout: DashboardLayoutTranslations = {
   fonts: "Fonts",
   titleText: "Certificate Management System",
 };
-

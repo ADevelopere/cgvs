@@ -3,35 +3,35 @@ import { eq } from "drizzle-orm";
 import { certificateElement } from "@/server/db/schema/certificateElements/certificateElement";
 import {
   CertificateElementEntity,
-  TextElementCreateInput,
-  TextElementUpdateInput,
+  CountryElementCreateInput,
+  CountryElementUpdateInput,
   ElementType,
-  TextElementConfig,
+  CountryElementConfig,
 } from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
-import { ElementUtils, TextElementUtils, deepMerge } from "@/server/utils";
+import { ElementUtils, CountryElementUtils, deepMerge } from "@/server/utils";
 import logger from "@/server/lib/logger";
 
 /**
- * Repository for TEXT element operations
+ * Repository for COUNTRY element operations
  * Handles create, update, and validation with automatic FK synchronization
  */
-export namespace TextElementRepository {
+export namespace CountryElementRepository {
   // ============================================================================
   // Create Operation
   // ============================================================================
 
   /**
-   * Create a new TEXT element
+   * Create a new COUNTRY element
    * Validates input, extracts FKs from config, and inserts element
    */
   export const create = async (
-    input: TextElementCreateInput
+    input: CountryElementCreateInput
   ): Promise<CertificateElementEntity> => {
     // 1. Validate input
-    await TextElementUtils.validateCreateInput(input);
+    await CountryElementUtils.validateCreateInput(input);
 
-    // 2. Extract FKs from config
+    // 2. Extract FKs from config (only fontId for COUNTRY elements)
     const fontId = ElementUtils.extractFontId(input.config);
     const templateVariableId = ElementUtils.extractTemplateVariableId(
       input.config
@@ -43,7 +43,7 @@ export namespace TextElementRepository {
       .insert(certificateElement)
       .values({
         ...input,
-        type: ElementType.TEXT,
+        type: ElementType.COUNTRY,
         fontId,
         templateVariableId,
         storageFileId,
@@ -53,7 +53,7 @@ export namespace TextElementRepository {
       .returning();
 
     // 4. Log and return
-    logger.info(`TEXT element created: ${element.name} (ID: ${element.id})`);
+    logger.info(`COUNTRY element created: ${element.name} (ID: ${element.id})`);
     return element;
   };
 
@@ -62,24 +62,24 @@ export namespace TextElementRepository {
   // ============================================================================
 
   /**
-   * Update an existing TEXT element
+   * Update an existing COUNTRY element
    * Supports partial updates with config merging and FK re-extraction
    */
   export const update = async (
-    input: TextElementUpdateInput
+    input: CountryElementUpdateInput
   ): Promise<CertificateElementEntity> => {
     // 1. Get existing element
     const existing = await ElementRepository.findByIdOrThrow(input.id);
 
-    // 2. Validate it's a TEXT element
-    if (existing.type !== ElementType.TEXT) {
+    // 2. Validate it's a COUNTRY element
+    if (existing.type !== ElementType.COUNTRY) {
       throw new Error(
-        `Element ${input.id} is ${existing.type}, not TEXT. Use correct repository.`
+        `Element ${input.id} is ${existing.type}, not COUNTRY. Use correct repository.`
       );
     }
 
     // 3. Validate update input (pass existing to avoid redundant DB query)
-    await TextElementUtils.validateUpdateInput(input, existing);
+    await CountryElementUtils.validateUpdateInput(input, existing);
 
     // 4. Build update object (exclude config as it needs special handling)
     const { config: _, ...baseUpdates } = input;
@@ -92,12 +92,12 @@ export namespace TextElementRepository {
     if (input.config) {
       // Deep merge partial config with existing to preserve nested properties
       const mergedConfig = deepMerge(
-        existing.config as TextElementConfig,
+        existing.config as CountryElementConfig,
         input.config
       );
 
       // Validate merged config
-      await TextElementUtils.validateConfig(mergedConfig);
+      await CountryElementUtils.validateConfig(mergedConfig);
 
       // Apply merged config and extract FKs
       updates.config = mergedConfig;
@@ -114,7 +114,7 @@ export namespace TextElementRepository {
       .where(eq(certificateElement.id, input.id))
       .returning();
 
-    logger.info(`TEXT element updated: ${updated.name} (ID: ${updated.id})`);
+    logger.info(`COUNTRY element updated: ${updated.name} (ID: ${updated.id})`);
     return updated;
   };
 }

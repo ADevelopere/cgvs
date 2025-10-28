@@ -71,7 +71,11 @@ class GcpAdapter implements StorageService {
         fileSize: input.fileSize,
       });
 
-      StorageUtils.validateUpload(input.path, input.fileSize, input.contentType).then(err => {
+      StorageUtils.validateUpload(
+        input.path,
+        input.fileSize,
+        input.contentType
+      ).then(err => {
         if (err) throw new StorageValidationError(err);
       });
 

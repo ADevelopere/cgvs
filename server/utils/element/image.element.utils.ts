@@ -1,10 +1,9 @@
 import {
-  TextElementConfigInput,
-  TextDataSourceType,
-  StudentTextField,
-  CertificateTextField,
-  TextElementCreateInput,
-  TextElementUpdateInput,
+  ImageElementConfigInput,
+  ImageDataSourceType,
+  ElementImageFit,
+  ImageElementCreateInput,
+  ImageElementUpdateInput,
   CertificateElementEntity,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
@@ -12,26 +11,26 @@ import { ElementUtils } from "./element.utils";
 import { CommonElementUtils } from "./common.element.utils";
 
 /**
- * Validation utilities for TEXT elements
- * Contains all TEXT-specific validation logic
+ * Validation utilities for IMAGE elements
+ * Contains all IMAGE-specific validation logic
  */
-export namespace TextElementUtils {
+export namespace ImageElementUtils {
   // ============================================================================
   // Config Validation
   // ============================================================================
 
   /**
-   * Validate complete TEXT element config
-   * Validates font reference, data source, and text properties
+   * Validate complete IMAGE element config
+   * Validates storage file reference and image fit
    */
   export const validateConfig = async (
-    config: TextElementConfigInput
+    config: ImageElementConfigInput
   ): Promise<void> => {
-    // Validate textProps
-    await CommonElementUtils.validateTextProps(config);
-
     // Validate data source
     await validateDataSource(config);
+
+    // Validate image fit
+    validateImageFit(config.fit);
   };
 
   // ============================================================================
@@ -39,75 +38,35 @@ export namespace TextElementUtils {
   // ============================================================================
 
   /**
-   * Validate text data source based on type
+   * Validate image data source
+   * IMAGE elements only support STORAGE_FILE data source
    */
   const validateDataSource = async (
-    config: TextElementConfigInput
+    config: ImageElementConfigInput
   ): Promise<void> => {
     const dataSource = config.dataSource;
-    switch (dataSource.type) {
-      case TextDataSourceType.STATIC:
-        validateStaticDataSource(dataSource.value);
-        break;
 
-      case TextDataSourceType.STUDENT_TEXT_FIELD:
-        validateStudentTextField(dataSource.field);
-        break;
-
-      case TextDataSourceType.CERTIFICATE_TEXT_FIELD:
-        validateCertificateTextField(dataSource.field);
-        break;
-
-      case TextDataSourceType.TEMPLATE_TEXT_VARIABLE:
-      case TextDataSourceType.TEMPLATE_SELECT_VARIABLE:
-        await validateTemplateVariable(dataSource.variableId);
-        break;
-
-      default:
-        throw new Error(`Invalid text data source type}`);
-    }
-  };
-
-  /**
-   * Validate static text value
-   */
-  const validateStaticDataSource = (value: string): void => {
-    if (!value || value.trim().length === 0) {
-      throw new Error("Static text value cannot be empty");
-    }
-  };
-
-  /**
-   * Validate student text field enum
-   */
-  const validateStudentTextField = (field: StudentTextField): void => {
-    const validFields = Object.values(StudentTextField);
-    if (!validFields.includes(field)) {
+    // Validate type is STORAGE_FILE
+    if (dataSource.type !== ImageDataSourceType.STORAGE_FILE) {
       throw new Error(
-        `Invalid student text field: ${field}. Must be one of: ${validFields.join(", ")}`
+        `Invalid image data source type: ${dataSource.type}. Must be STORAGE_FILE`
       );
     }
+
+    // Validate storage file exists
+    await ElementRepository.validateStorageFileId(dataSource.storageFileId);
   };
 
   /**
-   * Validate certificate text field enum
+   * Validate image fit enum
    */
-  const validateCertificateTextField = (field: CertificateTextField): void => {
-    const validFields = Object.values(CertificateTextField);
-    if (!validFields.includes(field)) {
+  const validateImageFit = (fit: ElementImageFit): void => {
+    const validFits = Object.values(ElementImageFit);
+    if (!validFits.includes(fit)) {
       throw new Error(
-        `Invalid certificate text field: ${field}. Must be one of: ${validFields.join(", ")}`
+        `Invalid image fit: ${fit}. Must be one of: ${validFits.join(", ")}`
       );
     }
-  };
-
-  /**
-   * Validate template variable exists
-   */
-  const validateTemplateVariable = async (
-    variableId: number
-  ): Promise<void> => {
-    await ElementRepository.validateTemplateVariableId(variableId);
   };
 
   // ============================================================================
@@ -115,10 +74,10 @@ export namespace TextElementUtils {
   // ============================================================================
 
   /**
-   * Validate all fields for TEXT element creation
+   * Validate all fields for IMAGE element creation
    */
   export const validateCreateInput = async (
-    input: TextElementCreateInput
+    input: ImageElementCreateInput
   ): Promise<void> => {
     // Template exists
     await ElementRepository.validateTemplateId(input.templateId);
@@ -159,11 +118,11 @@ export namespace TextElementUtils {
   // ============================================================================
 
   /**
-   * Validate all fields for TEXT element update (partial)
+   * Validate all fields for IMAGE element update (partial)
    * Caches existing element to avoid multiple DB queries
    */
   export const validateUpdateInput = async (
-    input: TextElementUpdateInput,
+    input: ImageElementUpdateInput,
     existing?: CertificateElementEntity
   ): Promise<void> => {
     // Cache existing element if not provided

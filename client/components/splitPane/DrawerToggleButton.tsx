@@ -67,4 +67,3 @@ const DrawerToggleButton: React.FC<DrawerToggleButtonProps> = ({
 };
 
 export default DrawerToggleButton;
-

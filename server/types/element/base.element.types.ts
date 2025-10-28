@@ -37,4 +37,3 @@ export type ElementOrderUpdateInput = {
 export type BatchElementOrderUpdateInput = {
   elements: ElementOrderUpdateInput[];
 };
-

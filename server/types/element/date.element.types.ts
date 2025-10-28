@@ -127,4 +127,3 @@ export type DateElementPothosDefinition = Omit<
 > & {
   parsedConfig: DateElementConfig;
 };
-

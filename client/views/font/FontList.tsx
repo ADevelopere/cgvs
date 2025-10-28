@@ -28,7 +28,7 @@ export const FontList: React.FC<FontListProps> = ({
   selectFont,
 }) => {
   const strings = useAppTranslation("fontManagementTranslations");
-  
+
   // Local state for immediate input feedback
   const [localSearchTerm, setLocalSearchTerm] = useState("");
 
@@ -142,7 +142,9 @@ export const FontList: React.FC<FontListProps> = ({
           >
             <FontIcon sx={{ fontSize: 48, color: "text.secondary", mb: 2 }} />
             <MUI.Typography variant="body2" color="text.secondary" gutterBottom>
-              {queryParams.filterArgs?.name ? strings.noFontsFound : strings.noFontsYet}
+              {queryParams.filterArgs?.name
+                ? strings.noFontsFound
+                : strings.noFontsYet}
             </MUI.Typography>
             <MUI.Typography
               variant="caption"

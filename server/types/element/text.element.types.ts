@@ -126,4 +126,3 @@ export type TextElementPothosDefinition = Omit<
 > & {
   parsedConfig: TextElementConfig;
 };
-

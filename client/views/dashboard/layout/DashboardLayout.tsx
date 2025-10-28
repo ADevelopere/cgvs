@@ -195,7 +195,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 flexBasis: "100%", // Grows to 100%
               },
             },
-            
           }}
         >
           {children}

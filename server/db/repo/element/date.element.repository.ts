@@ -39,9 +39,8 @@ export namespace DateElementRepository {
 
     // 3. Extract FKs from config
     const fontId = ElementUtils.extractFontId(normalizedConfig);
-    const templateVariableId = ElementUtils.extractTemplateVariableId(
-      normalizedConfig
-    );
+    const templateVariableId =
+      ElementUtils.extractTemplateVariableId(normalizedConfig);
     const storageFileId = ElementUtils.extractStorageFileId(normalizedConfig);
 
     // 4. Insert element
@@ -100,7 +99,8 @@ export namespace DateElementRepository {
       // Normalize partial config (convert null to undefined for mapping)
       const normalizedPartialConfig = {
         ...input.config,
-        mapping: input.config.mapping === null ? undefined : input.config.mapping,
+        mapping:
+          input.config.mapping === null ? undefined : input.config.mapping,
       };
 
       // Deep merge partial config with existing to preserve nested properties

@@ -80,7 +80,8 @@ const StorageDirectoryTree: React.FC<StorageDirectoryTreeProps> = ({
   );
 
   const getNodeLabel = React.useCallback(
-    (node: StorageDirectoryNode) => node.name ?? node.path.split("/").pop() ?? "",
+    (node: StorageDirectoryNode) =>
+      node.name ?? node.path.split("/").pop() ?? "",
     []
   );
 

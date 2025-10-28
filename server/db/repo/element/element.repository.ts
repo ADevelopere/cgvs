@@ -300,4 +300,3 @@ export namespace ElementRepository {
     logger.info(`Updated render order for ${updates.length} element(s)`);
   };
 }
-

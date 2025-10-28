@@ -57,9 +57,7 @@ export namespace FontFilterUtils {
 
     // Locale filter - check if JSONB array contains the locale
     if (filters.locale) {
-      conditions.push(
-        sql`${font.locale}::jsonb ? ${filters.locale}`
-      );
+      conditions.push(sql`${font.locale}::jsonb ? ${filters.locale}`);
     }
 
     // CreatedAt filters
@@ -114,8 +112,7 @@ export namespace FontFilterUtils {
     }
 
     const orderClauses = orderBy.map(clause => {
-      const direction =
-        clause.order === OrderSortDirection.DESC ? desc : asc;
+      const direction = clause.order === OrderSortDirection.DESC ? desc : asc;
 
       switch (clause.column) {
         case FontsOrderByColumn.ID:
@@ -134,4 +131,3 @@ export namespace FontFilterUtils {
     return query.orderBy(...orderClauses);
   };
 }
-

@@ -10,4 +10,3 @@ export const dashboardLayout: DashboardLayoutTranslations = {
   fonts: "الخطوط",
   titleText: "نظام إدارة الشهادات",
 };
-

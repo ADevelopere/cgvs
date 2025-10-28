@@ -87,7 +87,10 @@ export const DeleteFontDialog: React.FC<DeleteFontDialogProps> = ({
             <MUI.AlertTitle>{strings.cannotDeleteFont}</MUI.AlertTitle>
             <MUI.Typography variant="body2">
               {usageInfo.deleteBlockReason ||
-                strings.fontUsedInElements.replace("%{count}", usageInfo.usageCount.toString())}
+                strings.fontUsedInElements.replace(
+                  "%{count}",
+                  usageInfo.usageCount.toString()
+                )}
             </MUI.Typography>
           </MUI.Alert>
         ) : (

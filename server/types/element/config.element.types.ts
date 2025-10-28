@@ -46,4 +46,3 @@ export type TextPropsInput = {
   color: string;
   overflow: ElementOverflow;
 };
-

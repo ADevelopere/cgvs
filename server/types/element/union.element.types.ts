@@ -1,6 +1,4 @@
-import type {
-  CertificateElementEntity,
-} from "./base.element.types";
+import type { CertificateElementEntity } from "./base.element.types";
 import type { TemplatePothosDefintion } from "../template.types";
 import type {
   TextElementConfig,
@@ -103,4 +101,3 @@ export type CertificateElementPothosUnion =
 // Simple array response (no pagination or filters)
 // Query by templateId, returned ordered by renderOrder
 export type CertificateElementsResponse = CertificateElementPothosUnion[];
-

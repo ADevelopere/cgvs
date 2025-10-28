@@ -15,4 +15,3 @@ export type DashboardLayoutTranslations = {
   // Title
   titleText: string;
 };
-
