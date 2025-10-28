@@ -90,7 +90,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
 
     try {
       // For files, we need to preserve the extension
-      let finalName = newName.trim()
+      let finalName = newName.trim();
       if ("contentType" in item && item.contentType) {
         const currentName = item.name ?? item.path.split("/").pop() ?? "";
         const lastDotIndex = currentName.lastIndexOf(".");

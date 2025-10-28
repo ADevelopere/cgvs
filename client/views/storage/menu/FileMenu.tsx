@@ -212,7 +212,7 @@ const FileMenu: React.FC<FileMenuProps> = ({
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
         items={[file as StorageItemUnion]}
-        onDelete={async (paths) => {
+        onDelete={async paths => {
           const success = await onDeleteItems(paths);
           if (success) {
             handleDeleteSuccess();

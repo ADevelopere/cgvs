@@ -5,10 +5,12 @@
 ## The Problem
 
 The `certificate_element` table has both:
+
 1. **config (JSONB)** - Complete element configuration (source of truth)
 2. **FK columns** - Nullable integers/bigints for database integrity
 
 **Why both?**
+
 - **Config**: Portable, versioned, complete configuration
 - **Columns**: Database FK constraints, relations, cascade protection
 
@@ -20,7 +22,7 @@ Three foreign key columns exist:
 
 ```sql
 font_id              INTEGER REFERENCES font(id) ON DELETE RESTRICT
-template_variable_id INTEGER REFERENCES template_variable_base(id) ON DELETE RESTRICT  
+template_variable_id INTEGER REFERENCES template_variable_base(id) ON DELETE RESTRICT
 storage_file_id      BIGINT  REFERENCES storage_files(id) ON DELETE RESTRICT
 ```
 
@@ -30,15 +32,15 @@ All are **nullable** because not every element uses them.
 
 ### By Element Type
 
-| Element | fontId | templateVariableId | storageFileId |
-|---------|--------|-------------------|---------------|
-| TEXT | ✓ if SELF_HOSTED | ✓ if using variable | NULL |
-| DATE | ✓ if SELF_HOSTED | ✓ if using variable | NULL |
-| NUMBER | ✓ if SELF_HOSTED | ✓ ALWAYS | NULL |
-| COUNTRY | ✓ if SELF_HOSTED | NULL | NULL |
-| GENDER | ✓ if SELF_HOSTED | NULL | NULL |
-| IMAGE | NULL | NULL | ✓ ALWAYS |
-| QR_CODE | NULL | NULL | NULL |
+| Element | fontId           | templateVariableId  | storageFileId |
+| ------- | ---------------- | ------------------- | ------------- |
+| TEXT    | ✓ if SELF_HOSTED | ✓ if using variable | NULL          |
+| DATE    | ✓ if SELF_HOSTED | ✓ if using variable | NULL          |
+| NUMBER  | ✓ if SELF_HOSTED | ✓ ALWAYS            | NULL          |
+| COUNTRY | ✓ if SELF_HOSTED | NULL                | NULL          |
+| GENDER  | ✓ if SELF_HOSTED | NULL                | NULL          |
+| IMAGE   | NULL             | NULL                | ✓ ALWAYS      |
+| QR_CODE | NULL             | NULL                | NULL          |
 
 ### Detailed Rules
 
@@ -47,17 +49,19 @@ All are **nullable** because not every element uses them.
 **Source**: `config.textProps.fontRef`
 
 **When to populate**:
+
 ```typescript
 if (config.textProps?.fontRef.type === FontSource.SELF_HOSTED) {
-  fontId = config.textProps.fontRef.fontId
+  fontId = config.textProps.fontRef.fontId;
 } else {
-  fontId = null  // Google font or no font
+  fontId = null; // Google font or no font
 }
 ```
 
 **Applies to**: TEXT, DATE, NUMBER, COUNTRY, GENDER
 
 **Example**:
+
 ```typescript
 // Self-hosted font
 config: {
@@ -85,6 +89,7 @@ config: {
 **Source**: `config.dataSource.variableId`
 
 **When to populate**:
+
 ```typescript
 if (
   config.dataSource.type === TextDataSourceType.TEMPLATE_TEXT_VARIABLE ||
@@ -92,15 +97,16 @@ if (
   config.dataSource.type === DateDataSourceType.TEMPLATE_DATE_VARIABLE ||
   config.dataSource.type === NumberDataSourceType.TEMPLATE_NUMBER_VARIABLE
 ) {
-  templateVariableId = config.dataSource.variableId
+  templateVariableId = config.dataSource.variableId;
 } else {
-  templateVariableId = null
+  templateVariableId = null;
 }
 ```
 
 **Applies to**: TEXT, DATE, NUMBER
 
 **Examples**:
+
 ```typescript
 // TEXT using template variable
 config: {
@@ -138,17 +144,19 @@ config: {
 **Source**: `config.dataSource.storageFileId`
 
 **When to populate**:
+
 ```typescript
 if (config.type === ElementType.IMAGE) {
-  storageFileId = config.dataSource.storageFileId
+  storageFileId = config.dataSource.storageFileId;
 } else {
-  storageFileId = null
+  storageFileId = null;
 }
 ```
 
 **Applies to**: IMAGE only
 
 **Example**:
+
 ```typescript
 // IMAGE element
 config: {
@@ -167,21 +175,21 @@ config: {
 
 ```typescript
 async function createElement(input: TextElementCreateInput) {
-  const { config, ...baseProps } = input
-  
+  const { config, ...baseProps } = input;
+
   // Extract FK IDs from config
-  const fontId = extractFontId(config)
-  const templateVariableId = extractTemplateVariableId(config)
-  const storageFileId = extractStorageFileId(config)
-  
+  const fontId = extractFontId(config);
+  const templateVariableId = extractTemplateVariableId(config);
+  const storageFileId = extractStorageFileId(config);
+
   // Insert with both config and FK columns
   return await db.insert(certificateElement).values({
     ...baseProps,
-    config,  // Complete config
-    fontId,  // Extracted FK
-    templateVariableId,  // Extracted FK
-    storageFileId,  // Extracted FK
-  })
+    config, // Complete config
+    fontId, // Extracted FK
+    templateVariableId, // Extracted FK
+    storageFileId, // Extracted FK
+  });
 }
 ```
 
@@ -191,23 +199,24 @@ For partial updates, only extract FKs if config is being updated:
 
 ```typescript
 async function updateElement(input: TextElementUpdateInput) {
-  const { id, config, ...baseProps } = input
-  
+  const { id, config, ...baseProps } = input;
+
   const updates: Partial<CertificateElementEntityInput> = {
-    ...baseProps
-  }
-  
+    ...baseProps,
+  };
+
   // If config is being updated, re-extract FKs
   if (config) {
-    updates.config = config
-    updates.fontId = extractFontId(config)
-    updates.templateVariableId = extractTemplateVariableId(config)
-    updates.storageFileId = extractStorageFileId(config)
+    updates.config = config;
+    updates.fontId = extractFontId(config);
+    updates.templateVariableId = extractTemplateVariableId(config);
+    updates.storageFileId = extractStorageFileId(config);
   }
-  
-  return await db.update(certificateElement)
+
+  return await db
+    .update(certificateElement)
     .set(updates)
-    .where(eq(certificateElement.id, id))
+    .where(eq(certificateElement.id, id));
 }
 ```
 
@@ -216,31 +225,31 @@ async function updateElement(input: TextElementUpdateInput) {
 ```typescript
 function extractFontId(config: ElementConfig): number | null {
   // Only text-based elements have fontId
-  if (!('textProps' in config)) return null
-  
-  const { textProps } = config
+  if (!("textProps" in config)) return null;
+
+  const { textProps } = config;
   if (textProps.fontRef.type === FontSource.SELF_HOSTED) {
-    return textProps.fontRef.fontId
+    return textProps.fontRef.fontId;
   }
-  return null
+  return null;
 }
 
 function extractTemplateVariableId(config: ElementConfig): number | null {
-  if (!('dataSource' in config)) return null
-  
-  const { dataSource } = config
-  
+  if (!("dataSource" in config)) return null;
+
+  const { dataSource } = config;
+
   // Check if dataSource has variableId
-  if ('variableId' in dataSource) {
-    return dataSource.variableId
+  if ("variableId" in dataSource) {
+    return dataSource.variableId;
   }
-  return null
+  return null;
 }
 
 function extractStorageFileId(config: ElementConfig): number | null {
-  if (config.type !== ElementType.IMAGE) return null
-  
-  return config.dataSource.storageFileId
+  if (config.type !== ElementType.IMAGE) return null;
+
+  return config.dataSource.storageFileId;
 }
 ```
 
@@ -257,6 +266,7 @@ Before saving, validate:
 ### Database Constraints
 
 Foreign keys with `ON DELETE RESTRICT` prevent:
+
 - Deleting a font that's used by elements
 - Deleting a variable that's used by elements
 - Deleting a file that's used by elements
@@ -270,16 +280,17 @@ Before deleting font/variable/file, check if used:
 ```typescript
 async function deleteFontSafely(fontId: number) {
   // Check if any elements use this font
-  const usedBy = await db.select()
+  const usedBy = await db
+    .select()
     .from(certificateElement)
-    .where(eq(certificateElement.fontId, fontId))
-  
+    .where(eq(certificateElement.fontId, fontId));
+
   if (usedBy.length > 0) {
-    throw new Error(`Font is used by ${usedBy.length} element(s)`)
+    throw new Error(`Font is used by ${usedBy.length} element(s)`);
   }
-  
+
   // Safe to delete
-  return await db.delete(font).where(eq(font.id, fontId))
+  return await db.delete(font).where(eq(font.id, fontId));
 }
 ```
 
@@ -292,8 +303,8 @@ Or rely on database `RESTRICT` to throw error.
 ```typescript
 // BAD - Only updating config, forgetting FK columns
 await db.update(certificateElement).set({
-  config: newConfig  // FK columns not updated!
-})
+  config: newConfig, // FK columns not updated!
+});
 ```
 
 **Fix**: Always re-extract FKs when config changes.
@@ -312,7 +323,7 @@ templateVariableId = 123  // COUNTRY doesn't use variables!
 
 ```typescript
 // BAD - Assuming fontId always exists
-const fontId = config.textProps.fontRef.fontId  // Type error if GOOGLE
+const fontId = config.textProps.fontRef.fontId; // Type error if GOOGLE
 ```
 
 **Fix**: Check font type before accessing fontId.
@@ -321,7 +332,7 @@ const fontId = config.textProps.fontRef.fontId  // Type error if GOOGLE
 
 ```typescript
 // BAD - Hardcoding instead of extracting from config
-fontId = 42  // What if config has different fontId?
+fontId = 42; // What if config has different fontId?
 ```
 
 **Fix**: Always extract from config to maintain single source of truth.
@@ -342,7 +353,7 @@ fontId = 42  // What if config has different fontId?
 ### Example Test
 
 ```typescript
-test('sync fontId when using self-hosted font', async () => {
+test("sync fontId when using self-hosted font", async () => {
   const input: TextElementCreateInput = {
     templateId: 1,
     // ... other fields
@@ -352,20 +363,20 @@ test('sync fontId when using self-hosted font', async () => {
         fontRef: { type: FontSource.SELF_HOSTED, fontId: 42 },
         fontSize: 16,
         color: "#000",
-        overflow: ElementOverflow.WRAP
+        overflow: ElementOverflow.WRAP,
       },
       dataSource: {
         type: TextDataSourceType.STATIC,
-        value: "Test"
-      }
-    }
-  }
-  
-  const element = await createElement(input)
-  
-  expect(element.fontId).toBe(42)  // ✓ Synced correctly
-  expect(element.config.textProps.fontRef.fontId).toBe(42)  // ✓ In config too
-})
+        value: "Test",
+      },
+    },
+  };
+
+  const element = await createElement(input);
+
+  expect(element.fontId).toBe(42); // ✓ Synced correctly
+  expect(element.config.textProps.fontRef.fontId).toBe(42); // ✓ In config too
+});
 ```
 
 ## Summary
@@ -373,16 +384,17 @@ test('sync fontId when using self-hosted font', async () => {
 **Golden Rule**: Config is source of truth, columns mirror it.
 
 **On Every Create/Update**:
+
 1. Save complete config to JSONB
 2. Extract FK IDs using helper functions
 3. Populate FK columns
 4. Let database validate references exist
 
 **Benefits**:
+
 - Data integrity guaranteed
 - Can't orphan elements
 - Can use Drizzle relations
 - Can query by FK without parsing JSONB
 
 **Remember**: Application layer responsibility - database only validates!
-

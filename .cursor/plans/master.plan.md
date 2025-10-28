@@ -2,6 +2,7 @@
 # Element Repository Structure
 
 ## Overview
+
 Create repository layer for certificate elements with master orchestrator and type-specific repositories, mirroring the type organization.
 
 ## Directory Structure
@@ -22,6 +23,7 @@ server/db/repo/element/
 ## Repository Responsibilities
 
 ### element.repository.ts (Master) ✅ COMPLETED
+
 **Generic operations that work across all element types:**
 
 ```typescript
@@ -31,14 +33,14 @@ export namespace ElementRepository {
   export const findByIdOrThrow(id: number): Promise<CertificateElementEntity>
   export const findByTemplateId(templateId: number): Promise<CertificateElementEntity[]>
   export const loadByIds(ids: number[]): Promise<CertificateElementEntity[]>  // For dataloader
-  
+
   // Delete operations
   export const deleteById(id: number): Promise<void>
   export const deleteByIds(ids: number[]): Promise<void>
-  
+
   // Batch operations
   export const updateRenderOrder(updates: ElementOrderUpdateInput[]): Promise<void>
-  
+
   // Validation
   export const existsById(id: number): Promise<boolean>
   export const validateTemplateId(templateId: number): Promise<void>
@@ -54,6 +56,7 @@ export namespace ElementRepository {
 Each element type gets its own repository for create/update operations:
 
 **Pattern (all follow this structure):**
+
 ```typescript
 export namespace {Type}ElementRepository {
   export const create(input: {Type}ElementCreateInput): Promise<CertificateElementEntity>
@@ -67,6 +70,7 @@ export namespace {Type}ElementRepository {
 ## Implementation Status
 
 ### ✅ COMPLETED
+
 - **element.repository.ts** - Base repository with generic operations
 - **text.element.repository.ts** - TEXT element operations
 - **index.ts** - Exports element and text repositories
@@ -74,6 +78,7 @@ export namespace {Type}ElementRepository {
 ### 🔲 REMAINING (6 repositories)
 
 1. **date.element.repository.ts** - DATE element
+
    - Similar to TEXT
    - Has textProps
    - Date-specific data sources (STUDENT_DOB, CERTIFICATE_RELEASE_DATE, TEMPLATE_DATE_VARIABLE)
@@ -81,30 +86,35 @@ export namespace {Type}ElementRepository {
    - Date format validation
 
 2. **number.element.repository.ts** - NUMBER element
+
    - Similar to TEXT
    - Has textProps
    - Always uses TEMPLATE_NUMBER_VARIABLE
    - Mapping validation (breakpoint rules)
 
 3. **country.element.repository.ts** - COUNTRY element
+
    - Simpler than TEXT
    - Has textProps
    - Only STUDENT_NATIONALITY data source
    - No variable FK validation needed
 
 4. **gender.element.repository.ts** - GENDER element
+
    - Simpler than TEXT
    - Has textProps
    - Only STUDENT_GENDER data source
    - No variable FK validation needed
 
 5. **image.element.repository.ts** - IMAGE element
+
    - Different from TEXT
    - NO textProps
    - Validates storageFileId
    - Image fit validation
 
 6. **qrcode.element.repository.ts** - QR_CODE element
+
    - Simplest of all
    - NO textProps
    - NO FKs at all
@@ -117,9 +127,9 @@ export namespace {Type}ElementRepository {
 All create/update operations automatically sync FK columns using `ElementUtils`:
 
 ```typescript
-const fontId = ElementUtils.extractFontId(config)
-const templateVariableId = ElementUtils.extractTemplateVariableId(config)
-const storageFileId = ElementUtils.extractStorageFileId(config)
+const fontId = ElementUtils.extractFontId(config);
+const templateVariableId = ElementUtils.extractTemplateVariableId(config);
+const storageFileId = ElementUtils.extractStorageFileId(config);
 ```
 
 ### 2. Type-Safe Operations
@@ -135,6 +145,7 @@ if (existing.type !== ElementType.{TYPE}) {
 ### 3. Validation
 
 Each repository validates:
+
 - Template exists
 - Name, dimensions, position, render order
 - Type-specific config
@@ -143,6 +154,7 @@ Each repository validates:
 ### 4. Partial Updates
 
 All update functions support partial updates:
+
 - Only provided fields are updated
 - Config merging with existing
 - FK re-extraction only when needed
@@ -180,32 +192,34 @@ All update functions support partial updates:
 ## Usage Examples
 
 ### In GraphQL Mutations
+
 ```typescript
-import { TextElementRepository } from "@/server/db/repo/element"
+import { TextElementRepository } from "@/server/db/repo/element";
 
 const createElement = async (input: TextElementCreateInput) => {
-  return TextElementRepository.create(input)
-}
+  return TextElementRepository.create(input);
+};
 ```
 
 ### In GraphQL Queries
+
 ```typescript
-import { ElementRepository } from "@/server/db/repo/element"
+import { ElementRepository } from "@/server/db/repo/element";
 
 const getTemplateElements = async (templateId: number) => {
-  return ElementRepository.findByTemplateId(templateId)
-}
+  return ElementRepository.findByTemplateId(templateId);
+};
 ```
 
 ### Pattern Consistency
 
 All type-specific repositories follow the TEXT pattern:
+
 - Same function names (create, update, validateConfig)
 - Same validation approach
 - Same FK extraction
 - Same error handling
 - Only differences are in type-specific validations
-
 
 ### To-dos
 

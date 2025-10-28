@@ -83,4 +83,3 @@ export const fontManagement: FontManagementTranslations = {
   deleting: "جاري الحذف...",
   saveChanges: "حفظ التغييرات",
 };
-

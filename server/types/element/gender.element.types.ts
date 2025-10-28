@@ -71,4 +71,3 @@ export type GenderElementPothosDefinition = Omit<
 > & {
   parsedConfig: GenderElementConfig;
 };
-

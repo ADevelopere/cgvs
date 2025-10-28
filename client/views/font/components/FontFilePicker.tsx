@@ -15,11 +15,13 @@ interface FontFilePickerProps {
     fileName: string;
     fileUrl?: string;
   } | null;
-  onChange: (file: {
-    filePath: string;
-    fileName: string;
-    fileUrl: string;
-  } | null) => void;
+  onChange: (
+    file: {
+      filePath: string;
+      fileName: string;
+      fileUrl: string;
+    } | null
+  ) => void;
   disabled?: boolean;
 }
 
@@ -69,11 +71,7 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({
                 >
                   <FileIcon sx={{ fontSize: 32, color: "text.secondary" }} />
                   <MUI.Box sx={{ flex: 1, minWidth: 0 }}>
-                    <MUI.Typography
-                      variant="body2"
-                      fontWeight="medium"
-                      noWrap
-                    >
+                    <MUI.Typography variant="body2" fontWeight="medium" noWrap>
                       {value.fileName}
                     </MUI.Typography>
                     <MUI.Typography variant="caption" color="text.secondary">
@@ -115,7 +113,9 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({
             }}
           >
             <UploadIcon sx={{ fontSize: 32, color: "text.secondary" }} />
-            <MUI.Typography variant="body2">{strings.selectFontFile}</MUI.Typography>
+            <MUI.Typography variant="body2">
+              {strings.selectFontFile}
+            </MUI.Typography>
             <MUI.Typography variant="caption" color="text.secondary">
               {strings.fontFileFormats}
             </MUI.Typography>
@@ -133,4 +133,3 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({
     </>
   );
 };
-

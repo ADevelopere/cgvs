@@ -56,6 +56,7 @@
 ## Translation System
 
 ### Creating New Translation Component (6 steps):
+
 1. Create type in `client/locale/components/MyFeature.ts` with `[key: string]: string;` as first property
 2. Export from `client/locale/components/index.ts`: `export * from "./MyFeature";`
 3. Create AR translation in `client/locale/ar/myFeature.ts`: `export const myFeature: MyFeatureTranslations = {...}`
@@ -64,6 +65,7 @@
 6. Register in `client/locale/translations.ts`: Add to `Translations` type, `ar` object (use `AR.myFeature`), and `en` object (use `EN.enMyFeature`)
 
 ### Using Translations:
+
 - Import: `import { useAppTranslation } from "@/client/locale";`
 - Use hook: `const strings = useAppTranslation("myFeatureTranslations");`
 - Access: `{strings.title}`, `{strings.submitButton}` - NO fallbacks like `{strings.title || "Fallback"}`

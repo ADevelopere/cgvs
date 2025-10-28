@@ -81,4 +81,3 @@ export type FontManagementTranslations = {
   deleting: string;
   saveChanges: string;
 };
-

@@ -8,21 +8,22 @@ Data sources determine where an element gets its content from. Each element type
 
 ## Data Source Types by Element
 
-| Element | Student | Certificate | Template Variable | Static | Storage |
-|---------|---------|-------------|-------------------|--------|---------|
-| TEXT | ✓ (name, email) | ✓ (code) | ✓ (text, select) | ✓ | - |
-| DATE | ✓ (DOB) | ✓ (release) | ✓ (date var) | ✓ | - |
-| NUMBER | - | - | ✓ (number var) | - | - |
-| COUNTRY | ✓ (nationality) | - | - | - | - |
-| GENDER | ✓ (gender) | - | - | - | - |
-| IMAGE | - | - | - | - | ✓ |
-| QR_CODE | - | ✓ (implicit) | - | - | - |
+| Element | Student         | Certificate  | Template Variable | Static | Storage |
+| ------- | --------------- | ------------ | ----------------- | ------ | ------- |
+| TEXT    | ✓ (name, email) | ✓ (code)     | ✓ (text, select)  | ✓      | -       |
+| DATE    | ✓ (DOB)         | ✓ (release)  | ✓ (date var)      | ✓      | -       |
+| NUMBER  | -               | -            | ✓ (number var)    | -      | -       |
+| COUNTRY | ✓ (nationality) | -            | -                 | -      | -       |
+| GENDER  | ✓ (gender)      | -            | -                 | -      | -       |
+| IMAGE   | -               | -            | -                 | -      | ✓       |
+| QR_CODE | -               | ✓ (implicit) | -                 | -      | -       |
 
 ## Student Data Sources
 
 Pull data from the student record receiving the certificate.
 
 ### Student Text Fields
+
 ```typescript
 enum StudentTextField {
   STUDENT_NAME = "STUDENT_NAME",
@@ -33,6 +34,7 @@ enum StudentTextField {
 **Used by**: TEXT
 
 **Example**:
+
 ```typescript
 dataSource: {
   type: TextDataSourceType.STUDENT_TEXT_FIELD,
@@ -41,6 +43,7 @@ dataSource: {
 ```
 
 ### Student Date Fields
+
 ```typescript
 enum StudentDateField {
   DATE_OF_BIRTH = "DATE_OF_BIRTH",
@@ -50,6 +53,7 @@ enum StudentDateField {
 **Used by**: DATE
 
 **Example**:
+
 ```typescript
 dataSource: {
   type: DateDataSourceType.STUDENT_DATE_FIELD,
@@ -58,9 +62,10 @@ dataSource: {
 ```
 
 ### Student Nationality
+
 ```typescript
 dataSource: {
-  type: CountryDataSourceType.STUDENT_NATIONALITY
+  type: CountryDataSourceType.STUDENT_NATIONALITY;
 }
 ```
 
@@ -70,9 +75,10 @@ dataSource: {
 **Rendering**: Uses `TemplateConfig.locale` to map code → name/nationality
 
 ### Student Gender
+
 ```typescript
 dataSource: {
-  type: GenderDataSourceType.STUDENT_GENDER
+  type: GenderDataSourceType.STUDENT_GENDER;
 }
 ```
 
@@ -88,6 +94,7 @@ dataSource: {
 Pull data from the certificate itself.
 
 ### Certificate Text Fields
+
 ```typescript
 enum CertificateTextField {
   VERIFICATION_CODE = "VERIFICATION_CODE",
@@ -97,6 +104,7 @@ enum CertificateTextField {
 **Used by**: TEXT
 
 **Example**:
+
 ```typescript
 dataSource: {
   type: TextDataSourceType.CERTIFICATE_TEXT_FIELD,
@@ -105,6 +113,7 @@ dataSource: {
 ```
 
 ### Certificate Date Fields
+
 ```typescript
 enum CertificateDateField {
   RELEASE_DATE = "RELEASE_DATE",
@@ -114,6 +123,7 @@ enum CertificateDateField {
 **Used by**: DATE
 
 **Example**:
+
 ```typescript
 dataSource: {
   type: DateDataSourceType.CERTIFICATE_DATE_FIELD,
@@ -122,23 +132,26 @@ dataSource: {
 ```
 
 ### Certificate Verification (QR Code)
+
 ```typescript
 enum QRCodeDataSourceType {
-  VERIFICATION_URL = "VERIFICATION_URL",    // Full URL
-  VERIFICATION_CODE = "VERIFICATION_CODE",  // Just code
+  VERIFICATION_URL = "VERIFICATION_URL", // Full URL
+  VERIFICATION_CODE = "VERIFICATION_CODE", // Just code
 }
 ```
 
 **Used by**: QR_CODE
 
 **Example**:
+
 ```typescript
 dataSource: {
-  type: QRCodeDataSourceType.VERIFICATION_URL
+  type: QRCodeDataSourceType.VERIFICATION_URL;
 }
 ```
 
 **Rendering**:
+
 - `VERIFICATION_URL` → Generates full URL to verification page
 - `VERIFICATION_CODE` → Encodes just the verification code
 
@@ -149,6 +162,7 @@ dataSource: {
 Pull data from custom variables defined on the template.
 
 ### Text Variables
+
 ```typescript
 dataSource: {
   type: TextDataSourceType.TEMPLATE_TEXT_VARIABLE,
@@ -163,6 +177,7 @@ dataSource: {
 **FK Column**: `templateVariableId`
 
 ### Select Variables
+
 ```typescript
 dataSource: {
   type: TextDataSourceType.TEMPLATE_SELECT_VARIABLE,
@@ -177,6 +192,7 @@ dataSource: {
 **FK Column**: `templateVariableId`
 
 ### Date Variables
+
 ```typescript
 dataSource: {
   type: DateDataSourceType.TEMPLATE_DATE_VARIABLE,
@@ -191,6 +207,7 @@ dataSource: {
 **FK Column**: `templateVariableId`
 
 ### Number Variables
+
 ```typescript
 dataSource: {
   type: NumberDataSourceType.TEMPLATE_NUMBER_VARIABLE,
@@ -211,6 +228,7 @@ dataSource: {
 Hardcoded values in the element configuration.
 
 ### Static Text
+
 ```typescript
 dataSource: {
   type: TextDataSourceType.STATIC,
@@ -223,6 +241,7 @@ dataSource: {
 **Purpose**: Labels, titles, fixed text
 
 ### Static Date
+
 ```typescript
 dataSource: {
   type: DateDataSourceType.STATIC,
@@ -241,6 +260,7 @@ dataSource: {
 Pull files from the storage system.
 
 ### Storage File (Image)
+
 ```typescript
 dataSource: {
   type: ImageDataSourceType.STORAGE_FILE,
@@ -263,13 +283,14 @@ dataSource: {
 All data sources use TypeScript discriminated unions:
 
 ```typescript
-type TextDataSource = 
+type TextDataSource =
   | { type: TextDataSourceType.STATIC; value: string }
   | { type: TextDataSourceType.STUDENT_TEXT_FIELD; field: StudentTextField }
   | ...
 ```
 
 **Benefits**:
+
 - Type-safe narrowing
 - Exhaustive checking
 - Clear intent
@@ -277,11 +298,13 @@ type TextDataSource =
 ### Input vs Runtime
 
 **Runtime types** (for JSONB storage):
+
 ```typescript
 type TextDataSource = { type: ..., value: string }
 ```
 
 **Input types** (for GraphQL mutations):
+
 ```typescript
 type TextDataSourceInput = { type: ..., value: string }
 ```
@@ -295,6 +318,7 @@ Usually identical, but separate for clarity and future flexibility.
 ### For Existing Element Type
 
 1. Add enum value:
+
 ```typescript
 enum TextDataSourceType {
   // ... existing
@@ -303,15 +327,17 @@ enum TextDataSourceType {
 ```
 
 2. Add to discriminated union:
+
 ```typescript
-type TextDataSource = 
+type TextDataSource =
   | ... existing
   | { type: TextDataSourceType.NEW_SOURCE; newField: string }
 ```
 
 3. Add input variant:
+
 ```typescript
-type TextDataSourceInput = 
+type TextDataSourceInput =
   | ... existing
   | { type: TextDataSourceType.NEW_SOURCE; newField: string }
 ```
@@ -329,13 +355,17 @@ See [Type Organization](./type-organization.md) for creating new element files w
 ## Best Practices
 
 ### 1. Explicit Data Sources
+
 Every element has an explicit `dataSource` field. Even for simple cases (GENDER, COUNTRY), we define the source explicitly for:
+
 - Consistency
 - Future extensibility
 - Clear documentation
 
 ### 2. Type Safety
+
 Always use enums and discriminated unions - never magic strings:
+
 ```typescript
 // ✅ Good
 dataSource: {
@@ -351,10 +381,11 @@ dataSource: {
 ```
 
 ### 3. FK Synchronization
+
 When data source includes an ID, ensure it's synced to FK column:
+
 - `variableId` → `templateVariableId` column
 - `storageFileId` → `storageFileId` column
 - `fontId` → `fontId` column
 
 See [Config-Column Sync](./config-column-sync.md) for details.
-

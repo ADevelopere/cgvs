@@ -21,4 +21,3 @@ export enum FontSource {
   GOOGLE = "GOOGLE",
   SELF_HOSTED = "SELF_HOSTED",
 }
-

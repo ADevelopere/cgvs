@@ -237,7 +237,7 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
         items={[folder as StorageItemUnion]}
-        onDelete={async (paths) => {
+        onDelete={async paths => {
           const success = await onDeleteItems(paths);
           if (success) {
             handleDeleteSuccess();

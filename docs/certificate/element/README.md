@@ -24,15 +24,15 @@ Certificate elements are the building blocks of certificate templates. Each elem
 
 ### Element Type Summary
 
-| Type | Purpose | Key Features |
-|------|---------|--------------|
-| **TEXT** | Display text content | Multiple data sources, text styling |
-| **DATE** | Display formatted dates | Calendar types (Gregorian/Hijri), custom formats |
-| **NUMBER** | Display numbers as text | Breakpoint mapping, variable-based |
-| **COUNTRY** | Display student nationality | Country name or nationality format |
-| **GENDER** | Display student gender | Locale-based text mapping |
-| **IMAGE** | Display static images | File storage, fit modes |
-| **QR_CODE** | Display QR codes | Verification URL/code, error correction |
+| Type        | Purpose                     | Key Features                                     |
+| ----------- | --------------------------- | ------------------------------------------------ |
+| **TEXT**    | Display text content        | Multiple data sources, text styling              |
+| **DATE**    | Display formatted dates     | Calendar types (Gregorian/Hijri), custom formats |
+| **NUMBER**  | Display numbers as text     | Breakpoint mapping, variable-based               |
+| **COUNTRY** | Display student nationality | Country name or nationality format               |
+| **GENDER**  | Display student gender      | Locale-based text mapping                        |
+| **IMAGE**   | Display static images       | File storage, fit modes                          |
+| **QR_CODE** | Display QR codes            | Verification URL/code, error correction          |
 
 ### Key Principles
 
@@ -73,6 +73,7 @@ See [Config-Column Sync](./config-column-sync.md) for the critical synchronizati
 ### Querying Elements
 
 Elements are queried by `templateId` and returned ordered by `renderOrder`:
+
 ```typescript
 type CertificateElementsResponse = CertificateElementPothosUnion[];
 ```
@@ -80,6 +81,7 @@ type CertificateElementsResponse = CertificateElementPothosUnion[];
 ### Using Relations
 
 The schema includes relations for efficient data loading:
+
 - `element.font` - Load self-hosted font
 - `element.templateVariable` - Load template variable
 - `element.storageFile` - Load image file
@@ -93,4 +95,3 @@ The schema includes relations for efficient data loading:
 - Start with [Architecture](./architecture.md) to understand design decisions
 - Review [Element Types](./element-types.md) to understand each element
 - Read [Config-Column Sync](./config-column-sync.md) before implementing mutations
-

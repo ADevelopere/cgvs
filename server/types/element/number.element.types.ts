@@ -74,4 +74,3 @@ export type NumberElementPothosDefinition = Omit<
 > & {
   parsedConfig: NumberElementConfig;
 };
-

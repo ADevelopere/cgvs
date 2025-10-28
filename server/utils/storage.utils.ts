@@ -95,7 +95,7 @@ export namespace StorageUtils {
 
     // fonts
     if (contentType.includes("font")) return Types.FileTypes.FONT;
-    
+
     return Types.FileTypes.OTHER;
   };
 

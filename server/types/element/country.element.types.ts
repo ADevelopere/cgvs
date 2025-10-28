@@ -78,4 +78,3 @@ export type CountryElementPothosDefinition = Omit<
 > & {
   parsedConfig: CountryElementConfig;
 };
-

@@ -14,7 +14,9 @@ export namespace ElementUtils {
       return Promise.resolve("Element name cannot be empty.");
     }
     if (name.length < 3) {
-      return Promise.resolve("Element name must be at least 3 characters long.");
+      return Promise.resolve(
+        "Element name must be at least 3 characters long."
+      );
     }
     if (name.length > 255) {
       return Promise.resolve("Element name cannot exceed 255 characters.");
@@ -68,12 +70,12 @@ export namespace ElementUtils {
     renderOrder: number
   ): Promise<string | null> => {
     if (renderOrder < 0) {
-      return Promise.resolve("Render order must be greater than or equal to 0.");
+      return Promise.resolve(
+        "Render order must be greater than or equal to 0."
+      );
     }
     return Promise.resolve(null);
   };
-
-
 
   // ============================================================================
   // FK Extraction Helpers
@@ -134,4 +136,3 @@ export namespace ElementUtils {
     return config.dataSource.storageFileId;
   };
 }
-

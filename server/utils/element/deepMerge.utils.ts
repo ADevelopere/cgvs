@@ -6,7 +6,7 @@
 /**
  * Check if value is a plain object
  */
-const isObject = (item: unknown): item is Record<string, any> => {
+const isObject = (item: unknown): item is Record<string, unknown> => {
   return item !== null && typeof item === "object" && !Array.isArray(item);
 };
 
@@ -24,11 +24,11 @@ const isObject = (item: unknown): item is Record<string, any> => {
  * deepMerge(target, source);
  * // Result: { a: { b: 10, c: 2 }, d: 3 }
  */
-export function deepMerge<T extends Record<string, any>>(
+export function deepMerge<T extends Record<string, unknown>>(
   target: T,
   source: Partial<T>
 ): T {
-  const output: Record<string, any> = { ...target };
+  const output: Record<string, unknown> = { ...target };
 
   if (isObject(target) && isObject(source)) {
     Object.keys(source).forEach(key => {

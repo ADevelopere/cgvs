@@ -59,8 +59,7 @@ export const enFontManagement: FontManagementTranslations = {
   cannotDeleteFont: "Cannot delete this font",
   fontUsedInElements: "This font is used in %{count} certificate element(s).",
   cannotUndone: "This action cannot be undone.",
-  deleteWarning:
-    "The font will be permanently removed from the system.",
+  deleteWarning: "The font will be permanently removed from the system.",
   deletingFont: "Deleting...",
 
   // LocaleSelector section
@@ -83,4 +82,3 @@ export const enFontManagement: FontManagementTranslations = {
   deleting: "Deleting...",
   saveChanges: "Save Changes",
 };
-

@@ -89,4 +89,3 @@ export type QRCodeElementPothosDefinition = Omit<
 > & {
   parsedConfig: QRCodeElementConfig;
 };
-

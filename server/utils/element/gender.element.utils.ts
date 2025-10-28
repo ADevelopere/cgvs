@@ -1,10 +1,8 @@
 import {
-  TextElementConfigInput,
-  TextDataSourceType,
-  StudentTextField,
-  CertificateTextField,
-  TextElementCreateInput,
-  TextElementUpdateInput,
+  GenderElementConfigInput,
+  GenderDataSourceType,
+  GenderElementCreateInput,
+  GenderElementUpdateInput,
   CertificateElementEntity,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
@@ -12,20 +10,20 @@ import { ElementUtils } from "./element.utils";
 import { CommonElementUtils } from "./common.element.utils";
 
 /**
- * Validation utilities for TEXT elements
- * Contains all TEXT-specific validation logic
+ * Validation utilities for GENDER elements
+ * Contains all GENDER-specific validation logic
  */
-export namespace TextElementUtils {
+export namespace GenderElementUtils {
   // ============================================================================
   // Config Validation
   // ============================================================================
 
   /**
-   * Validate complete TEXT element config
-   * Validates font reference, data source, and text properties
+   * Validate complete GENDER element config
+   * Validates font reference and data source
    */
   export const validateConfig = async (
-    config: TextElementConfigInput
+    config: GenderElementConfigInput
   ): Promise<void> => {
     // Validate textProps
     await CommonElementUtils.validateTextProps(config);
@@ -39,75 +37,20 @@ export namespace TextElementUtils {
   // ============================================================================
 
   /**
-   * Validate text data source based on type
+   * Validate gender data source
+   * GENDER elements only support STUDENT_GENDER data source type
    */
   const validateDataSource = async (
-    config: TextElementConfigInput
+    config: GenderElementConfigInput
   ): Promise<void> => {
     const dataSource = config.dataSource;
-    switch (dataSource.type) {
-      case TextDataSourceType.STATIC:
-        validateStaticDataSource(dataSource.value);
-        break;
 
-      case TextDataSourceType.STUDENT_TEXT_FIELD:
-        validateStudentTextField(dataSource.field);
-        break;
-
-      case TextDataSourceType.CERTIFICATE_TEXT_FIELD:
-        validateCertificateTextField(dataSource.field);
-        break;
-
-      case TextDataSourceType.TEMPLATE_TEXT_VARIABLE:
-      case TextDataSourceType.TEMPLATE_SELECT_VARIABLE:
-        await validateTemplateVariable(dataSource.variableId);
-        break;
-
-      default:
-        throw new Error(`Invalid text data source type}`);
-    }
-  };
-
-  /**
-   * Validate static text value
-   */
-  const validateStaticDataSource = (value: string): void => {
-    if (!value || value.trim().length === 0) {
-      throw new Error("Static text value cannot be empty");
-    }
-  };
-
-  /**
-   * Validate student text field enum
-   */
-  const validateStudentTextField = (field: StudentTextField): void => {
-    const validFields = Object.values(StudentTextField);
-    if (!validFields.includes(field)) {
+    // GENDER elements only have one data source type
+    if (dataSource.type !== GenderDataSourceType.STUDENT_GENDER) {
       throw new Error(
-        `Invalid student text field: ${field}. Must be one of: ${validFields.join(", ")}`
+        `Invalid gender data source type: ${dataSource.type}. Must be ${GenderDataSourceType.STUDENT_GENDER}`
       );
     }
-  };
-
-  /**
-   * Validate certificate text field enum
-   */
-  const validateCertificateTextField = (field: CertificateTextField): void => {
-    const validFields = Object.values(CertificateTextField);
-    if (!validFields.includes(field)) {
-      throw new Error(
-        `Invalid certificate text field: ${field}. Must be one of: ${validFields.join(", ")}`
-      );
-    }
-  };
-
-  /**
-   * Validate template variable exists
-   */
-  const validateTemplateVariable = async (
-    variableId: number
-  ): Promise<void> => {
-    await ElementRepository.validateTemplateVariableId(variableId);
   };
 
   // ============================================================================
@@ -115,10 +58,10 @@ export namespace TextElementUtils {
   // ============================================================================
 
   /**
-   * Validate all fields for TEXT element creation
+   * Validate all fields for GENDER element creation
    */
   export const validateCreateInput = async (
-    input: TextElementCreateInput
+    input: GenderElementCreateInput
   ): Promise<void> => {
     // Template exists
     await ElementRepository.validateTemplateId(input.templateId);
@@ -159,11 +102,11 @@ export namespace TextElementUtils {
   // ============================================================================
 
   /**
-   * Validate all fields for TEXT element update (partial)
+   * Validate all fields for GENDER element update (partial)
    * Caches existing element to avoid multiple DB queries
    */
   export const validateUpdateInput = async (
-    input: TextElementUpdateInput,
+    input: GenderElementUpdateInput,
     existing?: CertificateElementEntity
   ): Promise<void> => {
     // Cache existing element if not provided

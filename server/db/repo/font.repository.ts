@@ -110,7 +110,6 @@ export namespace FontRepository {
     return db.select().from(font).where(eq(font.storageFileId, fileId));
   };
 
-
   /**
    * Get or create storage file ID by path
    * Returns the database ID for the given file path

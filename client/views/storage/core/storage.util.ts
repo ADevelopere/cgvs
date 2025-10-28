@@ -1,7 +1,5 @@
 import CryptoJS from "crypto-js";
-import {
-  mimeToExtensions,
-} from "@/utils/storage.utils";
+import { mimeToExtensions } from "@/utils/storage.utils";
 
 /**
  * Generate MD5 hash from file content in base64 format

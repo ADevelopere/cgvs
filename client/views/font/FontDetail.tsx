@@ -149,7 +149,7 @@ export const FontDetail: React.FC<FontDetailProps> = ({
                 initialData={{
                   name: selectedFont.name!,
                   locale: (selectedFont.locale || []) as string[],
-                  filePath: selectedFont.file?.path ,
+                  filePath: selectedFont.file?.path,
                   fileName: selectedFont.file?.name,
                   fileUrl: selectedFont.url!,
                 }}
@@ -266,7 +266,7 @@ export const FontDetail: React.FC<FontDetailProps> = ({
                 <MUI.Typography variant="body1" sx={{ mt: 0.5 }}>
                   {selectedFont.file?.path ?? ""}
                 </MUI.Typography>
-              </MUI.Box>  
+              </MUI.Box>
 
               <MUI.Box sx={{ display: "flex", gap: 2 }}>
                 <MUI.Box sx={{ flex: 1 }}>

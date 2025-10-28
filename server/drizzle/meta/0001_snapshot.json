@@ -133,9 +133,7 @@
         "certificate_verification_code_unique": {
           "name": "certificate_verification_code_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "verification_code"
-          ]
+          "columns": ["verification_code"]
         }
       },
       "policies": {},
@@ -248,9 +246,7 @@
         "roles_name_unique": {
           "name": "roles_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},
@@ -360,12 +356,8 @@
           "name": "user_roles_user_id_users_id_fk",
           "tableFrom": "user_roles",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -373,12 +365,8 @@
           "name": "user_roles_role_id_roles_id_fk",
           "tableFrom": "user_roles",
           "tableTo": "roles",
-          "columnsFrom": [
-            "role_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["role_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -386,10 +374,7 @@
       "compositePrimaryKeys": {
         "user_roles_user_id_role_id_pk": {
           "name": "user_roles_user_id_role_id_pk",
-          "columns": [
-            "user_id",
-            "role_id"
-          ]
+          "columns": ["user_id", "role_id"]
         }
       },
       "uniqueConstraints": {},
@@ -457,9 +442,7 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -1577,9 +1560,7 @@
         "storage_directory_path_unique": {
           "name": "storage_directory_path_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "path"
-          ]
+          "columns": ["path"]
         }
       },
       "policies": {},
@@ -1617,9 +1598,7 @@
         "storage_file_path_unique": {
           "name": "storage_file_path_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "path"
-          ]
+          "columns": ["path"]
         }
       },
       "policies": {},
@@ -1985,66 +1964,42 @@
     "public.gender": {
       "name": "gender",
       "schema": "public",
-      "values": [
-        "MALE",
-        "FEMALE"
-      ]
+      "values": ["MALE", "FEMALE"]
     },
     "public.category_special_type": {
       "name": "category_special_type",
       "schema": "public",
-      "values": [
-        "Main",
-        "Suspension"
-      ]
+      "values": ["Main", "Suspension"]
     },
     "public.template_config_key": {
       "name": "template_config_key",
       "schema": "public",
-      "values": [
-        "MAX_BACKGROUND_SIZE",
-        "ALLOWED_FILE_TYPES"
-      ]
+      "values": ["MAX_BACKGROUND_SIZE", "ALLOWED_FILE_TYPES"]
     },
     "public.template_variable_type": {
       "name": "template_variable_type",
       "schema": "public",
-      "values": [
-        "TEXT",
-        "NUMBER",
-        "DATE",
-        "SELECT"
-      ]
+      "values": ["TEXT", "NUMBER", "DATE", "SELECT"]
     },
     "public.calendar_type": {
       "name": "calendar_type",
       "schema": "public",
-      "values": [
-        "GREGORIAN",
-        "HIJRI"
-      ]
+      "values": ["GREGORIAN", "HIJRI"]
     },
     "public.certificate_date_field": {
       "name": "certificate_date_field",
       "schema": "public",
-      "values": [
-        "RELEASE_DATE"
-      ]
+      "values": ["RELEASE_DATE"]
     },
     "public.certificate_text_field": {
       "name": "certificate_text_field",
       "schema": "public",
-      "values": [
-        "VERIFICATION_CODE"
-      ]
+      "values": ["VERIFICATION_CODE"]
     },
     "public.country_representation": {
       "name": "country_representation",
       "schema": "public",
-      "values": [
-        "COUNTRY_NAME",
-        "NATIONALITY"
-      ]
+      "values": ["COUNTRY_NAME", "NATIONALITY"]
     },
     "public.date_data_source_type": {
       "name": "date_data_source_type",
@@ -2059,33 +2014,17 @@
     "public.element_alignment": {
       "name": "element_alignment",
       "schema": "public",
-      "values": [
-        "LEFT",
-        "CENTER",
-        "RIGHT",
-        "TOP",
-        "MIDDLE",
-        "BOTTOM"
-      ]
+      "values": ["LEFT", "CENTER", "RIGHT", "TOP", "MIDDLE", "BOTTOM"]
     },
     "public.element_image_fit": {
       "name": "element_image_fit",
       "schema": "public",
-      "values": [
-        "COVER",
-        "CONTAIN",
-        "FILL"
-      ]
+      "values": ["COVER", "CONTAIN", "FILL"]
     },
     "public.element_overflow": {
       "name": "element_overflow",
       "schema": "public",
-      "values": [
-        "RESIZE_DOWN",
-        "TRUNCATE",
-        "ELLIPSE",
-        "WRAP"
-      ]
+      "values": ["RESIZE_DOWN", "TRUNCATE", "ELLIPSE", "WRAP"]
     },
     "public.element_type": {
       "name": "element_type",
@@ -2103,35 +2042,22 @@
     "public.qr_code_data_source_type": {
       "name": "qr_code_data_source_type",
       "schema": "public",
-      "values": [
-        "VERIFICATION_URL",
-        "VERIFICATION_CODE"
-      ]
+      "values": ["VERIFICATION_URL", "VERIFICATION_CODE"]
     },
     "public.qr_code_error_correction": {
       "name": "qr_code_error_correction",
       "schema": "public",
-      "values": [
-        "L",
-        "M",
-        "Q",
-        "H"
-      ]
+      "values": ["L", "M", "Q", "H"]
     },
     "public.student_date_field": {
       "name": "student_date_field",
       "schema": "public",
-      "values": [
-        "DATE_OF_BIRTH"
-      ]
+      "values": ["DATE_OF_BIRTH"]
     },
     "public.student_text_field": {
       "name": "student_text_field",
       "schema": "public",
-      "values": [
-        "STUDENT_NAME",
-        "STUDENT_EMAIL"
-      ]
+      "values": ["STUDENT_NAME", "STUDENT_EMAIL"]
     },
     "public.text_data_source_type": {
       "name": "text_data_source_type",

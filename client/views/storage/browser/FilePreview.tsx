@@ -28,10 +28,7 @@ interface FilePreviewProps {
 }
 
 function isImage(file: FileInfo) {
-  return (
-    file.contentType &&
-    file.contentType.startsWith("image/")
-  );
+  return file.contentType && file.contentType.startsWith("image/");
 }
 
 const FolderPreview: React.FC<{ height?: number | string }> = ({
