@@ -5,14 +5,11 @@ import {
   CertificateElementEntity,
   TextElementCreateInput,
   TextElementUpdateInput,
-  TextElementConfigInput,
   ElementType,
-  FontSource,
-  TextDataSourceType,
-  ElementConfig,
+  TextElementConfig,
 } from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
-import { ElementUtils } from "@/server/utils";
+import { ElementUtils, TextElementUtils, deepMerge } from "@/server/utils";
 import logger from "@/server/lib/logger";
 
 /**
@@ -32,7 +29,7 @@ export namespace TextElementRepository {
     input: TextElementCreateInput
   ): Promise<CertificateElementEntity> => {
     // 1. Validate input
-    await validateCreateInput(input);
+    await TextElementUtils.validateCreateInput(input);
 
     // 2. Extract FKs from config
     const fontId = ElementUtils.extractFontId(input.config);
@@ -81,8 +78,8 @@ export namespace TextElementRepository {
       );
     }
 
-    // 3. Validate update input
-    await validateUpdateInput(input);
+    // 3. Validate update input (pass existing to avoid redundant DB query)
+    await TextElementUtils.validateUpdateInput(input, existing);
 
     // 4. Build update object (exclude config as it needs special handling)
     const { config: _, ...baseUpdates } = input;
@@ -91,13 +88,18 @@ export namespace TextElementRepository {
       updatedAt: new Date(),
     };
 
-    // 5. If config is being updated, re-extract FKs
+    // 5. If config is being updated, deep merge and re-extract FKs
     if (input.config) {
-      // Merge partial config with existing - cast to ElementConfig since we know it's TEXT
-      const mergedConfig = {
-        ...existing.config,
-        ...input.config,
-      } as ElementConfig;
+      // Deep merge partial config with existing to preserve nested properties
+      const mergedConfig = deepMerge(
+        existing.config as TextElementConfig,
+        input.config
+      );
+      
+      // Validate merged config
+      await TextElementUtils.validateConfig(mergedConfig);
+      
+      // Apply merged config and extract FKs
       updates.config = mergedConfig;
       updates.fontId = ElementUtils.extractFontId(mergedConfig);
       updates.templateVariableId =
@@ -114,137 +116,6 @@ export namespace TextElementRepository {
 
     logger.info(`TEXT element updated: ${updated.name} (ID: ${updated.id})`);
     return updated;
-  };
-
-  // ============================================================================
-  // Validation
-  // ============================================================================
-
-  /**
-   * Validate TEXT element config
-   * Checks font reference, template variable reference, and static text value
-   */
-  export const validateConfig = async (
-    config: TextElementConfigInput
-  ): Promise<void> => {
-    // Validate font exists (if self-hosted)
-    if (config.textProps.fontRef.type === FontSource.SELF_HOSTED) {
-      await ElementRepository.validateFontId(config.textProps.fontRef.fontId);
-    }
-
-    // Validate template variable (if using)
-    if (
-      config.dataSource.type === TextDataSourceType.TEMPLATE_TEXT_VARIABLE ||
-      config.dataSource.type === TextDataSourceType.TEMPLATE_SELECT_VARIABLE
-    ) {
-      await ElementRepository.validateTemplateVariableId(
-        config.dataSource.variableId
-      );
-    }
-
-    // TEXT-specific validation
-    if (config.dataSource.type === TextDataSourceType.STATIC) {
-      if (!config.dataSource.value || config.dataSource.value.trim().length === 0) {
-        throw new Error("Static text value cannot be empty");
-      }
-    }
-  };
-
-  // ============================================================================
-  // Helper: Validate Create Input
-  // ============================================================================
-
-  /**
-   * Validate all fields for create operation
-   * Checks template, name, dimensions, position, render order, and config
-   */
-  const validateCreateInput = async (
-    input: TextElementCreateInput
-  ): Promise<void> => {
-    // Template exists
-    await ElementRepository.validateTemplateId(input.templateId);
-
-    // Name validation
-    const nameError = await ElementUtils.validateName(input.name);
-    if (nameError) throw new Error(nameError);
-
-    // Dimensions validation
-    const dimError = await ElementUtils.validateDimensions(
-      input.width,
-      input.height
-    );
-    if (dimError) throw new Error(dimError);
-
-    // Position validation
-    const posError = await ElementUtils.validatePosition(
-      input.positionX,
-      input.positionY
-    );
-    if (posError) throw new Error(posError);
-
-    // Render order validation
-    const orderError = await ElementUtils.validateRenderOrder(input.renderOrder);
-    if (orderError) throw new Error(orderError);
-
-    // Config validation
-    await validateConfig(input.config);
-  };
-
-  // ============================================================================
-  // Helper: Validate Update Input
-  // ============================================================================
-
-  /**
-   * Validate all fields for update operation (partial)
-   * Only validates fields that are being updated
-   */
-  const validateUpdateInput = async (
-    input: TextElementUpdateInput
-  ): Promise<void> => {
-    // Name validation (if provided)
-    if (input.name !== undefined) {
-      const nameError = await ElementUtils.validateName(input.name);
-      if (nameError) throw new Error(nameError);
-    }
-
-    // Dimensions validation (if provided)
-    if (input.width !== undefined || input.height !== undefined) {
-      // For partial updates, need to get existing values
-      const existing = await ElementRepository.findByIdOrThrow(input.id);
-      const width = input.width ?? existing.width;
-      const height = input.height ?? existing.height;
-      const dimError = await ElementUtils.validateDimensions(width, height);
-      if (dimError) throw new Error(dimError);
-    }
-
-    // Position validation (if provided)
-    if (input.positionX !== undefined || input.positionY !== undefined) {
-      const existing = await ElementRepository.findByIdOrThrow(input.id);
-      const x = input.positionX ?? existing.positionX;
-      const y = input.positionY ?? existing.positionY;
-      const posError = await ElementUtils.validatePosition(x, y);
-      if (posError) throw new Error(posError);
-    }
-
-    // Render order validation (if provided)
-    if (input.renderOrder !== undefined) {
-      const orderError = await ElementUtils.validateRenderOrder(
-        input.renderOrder
-      );
-      if (orderError) throw new Error(orderError);
-    }
-
-    // Config validation (if provided)
-    if (input.config) {
-      // Get existing element to merge partial config
-      const existing = await ElementRepository.findByIdOrThrow(input.id);
-      // Merge partial config with existing for validation
-      const mergedConfig = {
-        ...existing.config,
-        ...input.config,
-      } as TextElementConfigInput;
-      await validateConfig(mergedConfig);
-    }
   };
 }
 
