@@ -3,6 +3,7 @@ import {
   TextProps,
   TextPropsInput,
   TextPropsInputGraphql,
+  TextPropsUpdateInputGraphql,
 } from "./config.element.types";
 import { CertificateElementBaseUpdateInput } from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "./union.element.types";
@@ -32,6 +33,16 @@ export type CountryDataSourceInput = {
   type: CountryDataSourceType.STUDENT_NATIONALITY;
 };
 
+// GraphQL input types (used in Pothos isOneOf definitions)
+export type CountryDataSourceStudentNationalityInputGraphql = Record<
+  string,
+  never
+>;
+
+export type CountryDataSourceInputGraphql = {
+  studentNationality: CountryDataSourceStudentNationalityInputGraphql;
+};
+
 // ============================================================================
 // Element Config
 // ============================================================================
@@ -44,12 +55,18 @@ export interface CountryElementConfig {
   // The application uses TemplateConfig.locale to map country code to country name
 }
 
-// GraphQL input type
+// GraphQL input type (type field omitted - implied by mutation)
 export type CountryElementConfigInputGraphql = {
-  type: ElementType.COUNTRY;
   textProps: TextPropsInputGraphql;
   representation: CountryRepresentation;
-  dataSource: CountryDataSourceInput;
+  dataSource: CountryDataSourceInputGraphql;
+};
+
+// GraphQL update input type (deep partial)
+export type CountryElementConfigUpdateInputGraphql = {
+  textProps?: TextPropsUpdateInputGraphql;
+  representation?: CountryRepresentation;
+  dataSource?: CountryDataSourceInputGraphql;
 };
 
 // Repository input type (matches Config structure)
@@ -81,13 +98,41 @@ export type CountryElementUpdateInput = CertificateElementBaseUpdateInput & {
   config?: Partial<CountryElementConfigInput>;
 };
 
+// GraphQL create input type
+export type CountryElementCreateInputGraphql = {
+  templateId: number;
+  name: string;
+  description: string;
+  positionX: number;
+  positionY: number;
+  width: number;
+  height: number;
+  alignment: ElementAlignment;
+  renderOrder: number;
+  config: CountryElementConfigInputGraphql;
+};
+
+// GraphQL update input type (deep partial support)
+export type CountryElementUpdateInputGraphql = {
+  id: number;
+  name?: string;
+  description?: string;
+  positionX?: number;
+  positionY?: number;
+  width?: number;
+  height?: number;
+  alignment?: ElementAlignment;
+  renderOrder?: number;
+  config?: CountryElementConfigUpdateInputGraphql;
+};
+
 // ============================================================================
 // Pothos Definition
 // ============================================================================
 
 export type CountryElementPothosDefinition = Omit<
   CertificateElementPothosDefinition,
-  "parsedConfig"
+  "config"
 > & {
-  parsedConfig: CountryElementConfig;
+  config: CountryElementConfig;
 };

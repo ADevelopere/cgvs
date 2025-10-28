@@ -30,6 +30,15 @@ export type ImageDataSourceInput = {
   storageFileId: number;
 };
 
+// GraphQL input types (used in Pothos isOneOf definitions)
+export type ImageDataSourceStorageFileInputGraphql = {
+  storageFileId: number;
+};
+
+export type ImageDataSourceInputGraphql = {
+  storageFile: ImageDataSourceStorageFileInputGraphql;
+};
+
 // ============================================================================
 // Element Config
 // ============================================================================
@@ -40,6 +49,19 @@ export interface ImageElementConfig {
   fit: ElementImageFit;
 }
 
+// GraphQL input type (type field omitted - implied by mutation)
+export type ImageElementConfigInputGraphql = {
+  dataSource: ImageDataSourceInputGraphql;
+  fit: ElementImageFit;
+};
+
+// GraphQL update input type (deep partial)
+export type ImageElementConfigUpdateInputGraphql = {
+  dataSource?: ImageDataSourceInputGraphql;
+  fit?: ElementImageFit;
+};
+
+// Repository input type (matches Config structure)
 export type ImageElementConfigInput = {
   type: ElementType.IMAGE;
   dataSource: ImageDataSourceInput;
@@ -50,6 +72,35 @@ export type ImageElementConfigInput = {
 // Mutation Inputs
 // ============================================================================
 
+// GraphQL create input type
+export type ImageElementCreateInputGraphql = {
+  templateId: number;
+  name: string;
+  description: string;
+  positionX: number;
+  positionY: number;
+  width: number;
+  height: number;
+  alignment: ElementAlignment;
+  renderOrder: number;
+  config: ImageElementConfigInputGraphql;
+};
+
+// GraphQL update input type (deep partial support)
+export type ImageElementUpdateInputGraphql = {
+  id: number;
+  name?: string;
+  description?: string;
+  positionX?: number;
+  positionY?: number;
+  width?: number;
+  height?: number;
+  alignment?: ElementAlignment;
+  renderOrder?: number;
+  config?: ImageElementConfigUpdateInputGraphql;
+};
+
+// Repository mutation inputs (keep existing)
 export type ImageElementCreateInput = {
   templateId: number;
   name: string;
@@ -73,7 +124,7 @@ export type ImageElementUpdateInput = CertificateElementBaseUpdateInput & {
 
 export type ImageElementPothosDefinition = Omit<
   CertificateElementPothosDefinition,
-  "parsedConfig"
+  "config"
 > & {
-  parsedConfig: ImageElementConfig;
+  config: ImageElementConfig;
 };

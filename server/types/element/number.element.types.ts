@@ -3,6 +3,7 @@ import {
   TextProps,
   TextPropsInput,
   TextPropsInputGraphql,
+  TextPropsUpdateInputGraphql,
 } from "./config.element.types";
 import { CertificateElementBaseUpdateInput } from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "./union.element.types";
@@ -29,6 +30,11 @@ export type NumberDataSourceInput = {
   variableId: number;
 };
 
+// GraphQL input type (no discriminator needed - only 1 variant)
+export type NumberDataSourceInputGraphql = {
+  variableId: number;
+};
+
 // ============================================================================
 // Element Config
 // ============================================================================
@@ -40,12 +46,18 @@ export interface NumberElementConfig {
   mapping: Record<string, string>; // Breakpoint-to-text rules
 }
 
-// GraphQL input type
+// GraphQL input type (type field omitted - implied by mutation)
 export type NumberElementConfigInputGraphql = {
-  type: ElementType.NUMBER;
   textProps: TextPropsInputGraphql;
-  dataSource: NumberDataSourceInput;
-  mapping: Record<string, string>;
+  dataSource: NumberDataSourceInputGraphql;
+  mapping: Record<string, string>; // StringMap scalar type
+};
+
+// GraphQL update input type (deep partial)
+export type NumberElementConfigUpdateInputGraphql = {
+  textProps?: TextPropsUpdateInputGraphql;
+  dataSource?: NumberDataSourceInputGraphql;
+  mapping?: Record<string, string>; // StringMap scalar type
 };
 
 // Repository input type (matches Config structure)
@@ -60,6 +72,35 @@ export type NumberElementConfigInput = {
 // Mutation Inputs
 // ============================================================================
 
+// GraphQL create input type
+export type NumberElementCreateInputGraphql = {
+  templateId: number;
+  name: string;
+  description: string;
+  positionX: number;
+  positionY: number;
+  width: number;
+  height: number;
+  alignment: ElementAlignment;
+  renderOrder: number;
+  config: NumberElementConfigInputGraphql;
+};
+
+// GraphQL update input type (deep partial support)
+export type NumberElementUpdateInputGraphql = {
+  id: number;
+  name?: string;
+  description?: string;
+  positionX?: number;
+  positionY?: number;
+  width?: number;
+  height?: number;
+  alignment?: ElementAlignment;
+  renderOrder?: number;
+  config?: NumberElementConfigUpdateInputGraphql;
+};
+
+// Repository input types
 export type NumberElementCreateInput = {
   templateId: number;
   name: string;
@@ -83,7 +124,7 @@ export type NumberElementUpdateInput = CertificateElementBaseUpdateInput & {
 
 export type NumberElementPothosDefinition = Omit<
   CertificateElementPothosDefinition,
-  "parsedConfig"
+  "config"
 > & {
-  parsedConfig: NumberElementConfig;
+  config: NumberElementConfig;
 };
