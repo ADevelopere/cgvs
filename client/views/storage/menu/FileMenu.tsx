@@ -82,7 +82,7 @@ const FileMenu: React.FC<FileMenuProps> = ({
       // Create a temporary link and trigger download
       const link = document.createElement("a");
       link.href = file.mediaLink;
-      link.download = file.name;
+      link.download = file.name ?? file.path.split("/").pop() ?? "";
       link.target = "_blank";
       document.body.appendChild(link);
       link.click();

@@ -10,6 +10,8 @@ export { TemplateRecipientGroupUtils } from "./recipientGroup.utils";
 
 export { FontFilterUtils } from "./font/font.filter.utils";
 
+export { ElementUtils } from "./element/element.utils";
+
 export { PaginationUtils } from "./pagination.utils";
 
 export { StorageUtils } from "./storage.utils";

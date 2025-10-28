@@ -151,8 +151,8 @@ export const useStorageActions = (): StorageActions => {
 
         switch (sortBy) {
           case "name":
-            aValue = a.name;
-            bValue = b.name;
+            aValue = a.name ?? a.path.split("/").pop() ?? "";
+            bValue = b.name ?? b.path.split("/").pop() ?? "";
             break;
           case "size":
             // FileInfo has size, DirectoryInfo has totalSize
@@ -183,8 +183,8 @@ export const useStorageActions = (): StorageActions => {
             bValue = (b as unknown as { created?: number }).created ?? 0;
             break;
           default:
-            aValue = a.name;
-            bValue = b.name;
+            aValue = a.name ?? a.path.split("/").pop() ?? "";
+            bValue = b.name ?? b.path.split("/").pop() ?? "";
         }
 
         if (aValue < bValue) return sortDirection === "ASC" ? -1 : 1;
