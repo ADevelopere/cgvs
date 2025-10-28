@@ -122,3 +122,16 @@ export const TextPropsInputObject = gqlSchemaBuilder
       overflow: t.field({ type: ElementOverflowPothosEnum, required: true }),
     }),
   });
+
+// ============================================================================
+// Element Order Update Input (for batch operations)
+// ============================================================================
+
+export const ElementOrderUpdateInputObject = gqlSchemaBuilder
+  .inputRef<Types.ElementOrderUpdateInput>("ElementOrderUpdateInput")
+  .implement({
+    fields: t => ({
+      id: t.int({ required: true }),
+      renderOrder: t.int({ required: true }),
+    }),
+  });
