@@ -7,7 +7,6 @@ import {
   DateElementCreateInput,
   DateElementUpdateInput,
   CertificateElementEntity,
-  DateTransformation,
   DateTransformationType,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
@@ -121,11 +120,13 @@ export namespace DateElementUtils {
   /**
    * Validate transformation type
    */
-  const validateTransformation = (transformation: DateTransformation): void => {
+  const validateTransformation = (
+    transformation: DateTransformationType
+  ): void => {
     const validTypes = Object.values(DateTransformationType);
-    if (!validTypes.includes(transformation.type)) {
+    if (!validTypes.includes(transformation)) {
       throw new Error(
-        `Invalid transformation type: ${transformation.type}. Must be one of: ${validTypes.join(", ")}`
+        `Invalid transformation type: ${transformation}. Must be one of: ${validTypes.join(", ")}`
       );
     }
   };

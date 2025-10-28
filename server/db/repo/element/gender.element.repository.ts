@@ -7,6 +7,7 @@ import {
   GenderElementUpdateInput,
   ElementType,
   GenderElementConfig,
+  GenderElementPothosDefinition,
 } from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
 import { ElementUtils, GenderElementUtils } from "@/server/utils";
@@ -115,5 +116,36 @@ export namespace GenderElementRepository {
 
     logger.info(`GENDER element updated: ${updated.name} (ID: ${updated.id})`);
     return updated;
+  };
+
+  // ============================================================================
+  // Load Operation (for Pothos DataLoader)
+  // ============================================================================
+
+  /**
+   * Load GENDER elements by IDs (for GraphQL DataLoader)
+   * Returns elements in same order as input IDs, with Error for missing/wrong type
+   */
+  export const loadByIds = async (
+    ids: number[]
+  ): Promise<(GenderElementPothosDefinition | Error)[]> => {
+    if (ids.length === 0) return [];
+
+    const elements = await ElementRepository.loadByIds(ids);
+
+    return elements.map(element => {
+      if (element instanceof Error) return element;
+
+      if (element.type !== ElementType.GENDER) {
+        return new Error(
+          `Element ${element.id} is ${element.type}, not GENDER`
+        );
+      }
+
+      return {
+        ...element,
+        config: element.config as GenderElementConfig,
+      };
+    });
   };
 }

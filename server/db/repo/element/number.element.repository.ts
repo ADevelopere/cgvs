@@ -7,6 +7,7 @@ import {
   NumberElementUpdateInput,
   ElementType,
   NumberElementConfig,
+  NumberElementPothosDefinition,
 } from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
 import { ElementUtils, NumberElementUtils } from "@/server/utils";
@@ -118,5 +119,36 @@ export namespace NumberElementRepository {
 
     logger.info(`NUMBER element updated: ${updated.name} (ID: ${updated.id})`);
     return updated;
+  };
+
+  // ============================================================================
+  // Load Operations
+  // ============================================================================
+
+  /**
+   * Load NUMBER elements by IDs for GraphQL dataloader
+   * Returns Error for missing or mismatched elements
+   */
+  export const loadByIds = async (
+    ids: number[]
+  ): Promise<(NumberElementPothosDefinition | Error)[]> => {
+    if (ids.length === 0) return [];
+
+    const elements = await ElementRepository.loadByIds(ids);
+
+    return elements.map(element => {
+      if (element instanceof Error) return element;
+
+      if (element.type !== ElementType.NUMBER) {
+        return new Error(
+          `Element ${element.id} is ${element.type}, not NUMBER`
+        );
+      }
+
+      return {
+        ...element,
+        config: element.config as NumberElementConfig,
+      };
+    });
   };
 }

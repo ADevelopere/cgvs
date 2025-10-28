@@ -5,6 +5,7 @@ import {
   CertificateElementEntity,
   ImageElementCreateInput,
   ImageElementUpdateInput,
+  ImageElementPothosDefinition,
   ElementType,
   ImageElementConfig,
 } from "@/server/types/element";
@@ -114,5 +115,34 @@ export namespace ImageElementRepository {
 
     logger.info(`IMAGE element updated: ${updated.name} (ID: ${updated.id})`);
     return updated;
+  };
+
+  // ============================================================================
+  // Load Operation (for Pothos DataLoader)
+  // ============================================================================
+
+  /**
+   * Load multiple IMAGE elements by IDs
+   * Used by Pothos DataLoader for efficient batch loading
+   */
+  export const loadByIds = async (
+    ids: number[]
+  ): Promise<(ImageElementPothosDefinition | Error)[]> => {
+    if (ids.length === 0) return [];
+
+    const elements = await ElementRepository.loadByIds(ids);
+
+    return elements.map(element => {
+      if (element instanceof Error) return element;
+
+      if (element.type !== ElementType.IMAGE) {
+        return new Error(`Element ${element.id} is ${element.type}, not IMAGE`);
+      }
+
+      return {
+        ...element,
+        config: element.config as ImageElementConfig,
+      };
+    });
   };
 }

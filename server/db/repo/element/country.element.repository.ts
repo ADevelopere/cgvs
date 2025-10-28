@@ -7,6 +7,7 @@ import {
   CountryElementUpdateInput,
   ElementType,
   CountryElementConfig,
+  CountryElementPothosDefinition,
 } from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
 import { ElementUtils, CountryElementUtils } from "@/server/utils";
@@ -118,5 +119,36 @@ export namespace CountryElementRepository {
 
     logger.info(`COUNTRY element updated: ${updated.name} (ID: ${updated.id})`);
     return updated;
+  };
+
+  // ============================================================================
+  // Load Operations (for Pothos)
+  // ============================================================================
+
+  /**
+   * Load COUNTRY elements by IDs for Pothos GraphQL layer
+   * Returns Error for missing/invalid elements
+   */
+  export const loadByIds = async (
+    ids: number[]
+  ): Promise<(CountryElementPothosDefinition | Error)[]> => {
+    if (ids.length === 0) return [];
+
+    const elements = await ElementRepository.loadByIds(ids);
+
+    return elements.map(element => {
+      if (element instanceof Error) return element;
+
+      if (element.type !== ElementType.COUNTRY) {
+        return new Error(
+          `Element ${element.id} is ${element.type}, not COUNTRY`
+        );
+      }
+
+      return {
+        ...element,
+        config: element.config as CountryElementConfig,
+      };
+    });
   };
 }
