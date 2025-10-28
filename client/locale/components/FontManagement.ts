@@ -64,6 +64,14 @@ export type FontManagementTranslations = {
   // LocaleSelector section
   selectLocalesPlaceholder: string;
 
+  // Notification messages
+  fontCreatedSuccess: string; // %{name}
+  errorCreatingFont: string;
+  fontUpdatedSuccess: string; // %{name}
+  errorUpdatingFont: string;
+  fontDeletedSuccess: string; // %{name}
+  errorDeletingFont: string;
+
   // Common actions
   save: string;
   cancel: string;

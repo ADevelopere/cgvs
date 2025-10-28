@@ -3,6 +3,7 @@ import * as MUI from "@mui/material";
 import { Error as ErrorIcon } from "@mui/icons-material";
 import logger from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale";
+import { useAppTheme } from "@/client/contexts";
 
 interface FontPreviewProps {
   fontName: string;
@@ -17,6 +18,7 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [fontFaceLoaded, setFontFaceLoaded] = useState(false);
+  const { isRtl } = useAppTheme();
 
   useEffect(() => {
     const loadFont = async () => {
@@ -30,7 +32,7 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
 
         // Check if font is already loaded
         const existingFont = Array.from(document.fonts).find(
-          (font) => font.family === fontFamily
+          font => font.family === fontFamily
         );
 
         if (existingFont && existingFont.status === "loaded") {
@@ -54,7 +56,7 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
 
         // Verify the font is actually loaded
         const isFontLoaded = document.fonts.check(`12px "${fontFamily}"`);
-        
+
         if (!isFontLoaded) {
           throw new Error("Font loaded but not available");
         }
@@ -110,41 +112,56 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
             display: "flex",
             flexDirection: "column",
             gap: 2,
-            fontFamily: fontFaceLoaded ? `"${fontFamily}", sans-serif` : "inherit",
+            fontFamily: fontFaceLoaded
+              ? `"${fontFamily}", sans-serif`
+              : "inherit",
+            width: "100%",
           }}
         >
           {/* Preview text in different sizes */}
-          <MUI.Typography 
-            variant="h4" 
-            component="p" 
+          <MUI.Typography
+            variant="h4"
+            component="p"
             fontWeight="bold"
-            sx={{ fontFamily: "inherit" }}
+            sx={{
+              fontFamily: "inherit",
+              alignSelf: isRtl ? "flex-end" : "flex-start",
+            }}
           >
             The quick brown fox jumps over the lazy dog
           </MUI.Typography>
-          <MUI.Typography 
-            variant="h5" 
+          <MUI.Typography
+            variant="h4"
             component="p"
-            sx={{ fontFamily: "inherit" }}
+            sx={{
+              fontFamily: "inherit",
+              alignSelf: isRtl ? "flex-start" : "flex-end",
+            }}
           >
             السلام عليكم ورحمة الله وبركاته
           </MUI.Typography>
-          <MUI.Typography 
-            variant="h6" 
+          <MUI.Typography
+            variant="h4"
             component="p"
-            sx={{ fontFamily: "inherit" }}
+            sx={{
+              fontFamily: "inherit",
+              alignSelf: isRtl ? "flex-end" : "flex-start",
+            }}
           >
             ABCDEFGHIJKLMNOPQRSTUVWXYZ
           </MUI.Typography>
-          <MUI.Typography 
-            variant="body1" 
+          <MUI.Typography
+            variant="h4"
             component="p"
-            sx={{ fontFamily: "inherit" }}
+            sx={{
+              fontFamily: "inherit",
+              alignSelf: isRtl ? "flex-end" : "flex-start",
+            }}
           >
             abcdefghijklmnopqrstuvwxyz
           </MUI.Typography>
-          <MUI.Typography 
-            variant="body2" 
+          <MUI.Typography
+            variant="h4"
             component="p"
             sx={{ fontFamily: "inherit" }}
           >

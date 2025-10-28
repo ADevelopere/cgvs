@@ -110,26 +110,6 @@ export namespace FontRepository {
     return db.select().from(font).where(eq(font.storageFileId, fileId));
   };
 
-  /**
-   * Get storage file path by storage file ID
-   */
-  export const getStorageFilePathById = async (
-    storageFileId: number
-  ): Promise<string> => {
-    const file = await db
-      .select({ path: storageFiles.path })
-      .from(storageFiles)
-      .where(eq(storageFiles.id, BigInt(storageFileId)))
-      .limit(1);
-
-    if (file.length === 0) {
-      throw new Error(
-        `Storage file with ID ${storageFileId} does not exist.`
-      );
-    }
-
-    return file[0].path;
-  };
 
   /**
    * Get or create storage file ID by path
@@ -293,7 +273,7 @@ export namespace FontRepository {
   ): Promise<FontUsageCheckResult> => {
     try {
       // Query certificate elements where config contains this fontId
-      // Using JSON path query: config->>'textProps'->>'fontRef'->>'fontId'
+      // Using JSON path query to extract fontId and compare
       const usages = await db
         .select({
           elementId: certificateElement.id,
@@ -303,7 +283,7 @@ export namespace FontRepository {
         })
         .from(certificateElement)
         .where(
-          sql`${certificateElement.config}::jsonb @> jsonb_build_object('textProps', jsonb_build_object('fontRef', jsonb_build_object('type', 'SELF_HOSTED', 'fontId', ${id})))`
+          sql`(${certificateElement.config}::jsonb->'textProps'->'fontRef'->>'fontId')::int = ${id}`
         );
 
       if (usages.length === 0) {
@@ -360,7 +340,7 @@ export namespace FontRepository {
         usedBy: [],
         canDelete: false,
         deleteBlockReason:
-          "Unable to verify font usage. Deletion blocked for safety.",
+          "Unable to verify font usage. Deletion blocked for safety." + error,
       };
     }
   };

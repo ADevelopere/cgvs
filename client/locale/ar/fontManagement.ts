@@ -66,6 +66,14 @@ export const fontManagement: FontManagementTranslations = {
   // LocaleSelector section
   selectLocalesPlaceholder: "اختر اللغات...",
 
+  // Notification messages
+  fontCreatedSuccess: "تم إنشاء %{name} بنجاح",
+  errorCreatingFont: "خطأ في إنشاء الخط",
+  fontUpdatedSuccess: "تم تحديث %{name} بنجاح",
+  errorUpdatingFont: "خطأ في تحديث الخط",
+  fontDeletedSuccess: "تم حذف %{name} بنجاح",
+  errorDeletingFont: "خطأ في حذف الخط",
+
   // Common actions
   save: "حفظ",
   cancel: "إلغاء",

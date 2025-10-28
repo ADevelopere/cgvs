@@ -407,11 +407,12 @@ input FolderCreateInput {
 
 type Font {
   createdAt: DateTime!
+  file: FileInfo
   id: Int!
   locale: [String!]!
   name: String!
-  storageFilePath: String!
   updatedAt: DateTime!
+  url: String
 }
 
 input FontCreateInput {
