@@ -437,3 +437,12 @@ export * from "./union.element.pothos";
 9. **union.element.pothos.ts** - Create union (requires all element files)
 10. **index.ts** - Export all
 11. **Update graphql/pothos/index.ts** - Add element export
+
+### To-dos
+
+- [ ] Add ElementOrderUpdateInputObject to base.element.pothos.ts for batch render order updates
+- [ ] Complete all 7 element Pothos files (text, date, number, country, gender, image, qrcode)
+- [ ] Create element.mutation.ts with all 14 type-specific mutations (create/update for each type)
+- [ ] Add 3 generic mutations (deleteElement, deleteElements, updateElementsRenderOrder) to element.mutation.ts
+- [ ] Update server/graphql/mutation/index.ts to import element mutations
+- [ ] Test element mutations in GraphQL playground with sample data

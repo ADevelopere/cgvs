@@ -1,0 +1,331 @@
+import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
+import * as Types from "@/server/types/element";
+import { TextElementRepository } from "@/server/db/repo/element";
+import { TemplateRepository } from "@/server/db/repo";
+import { TemplatePothosObject } from "@/server/graphql/pothos/template.pothos";
+import {
+  ElementTypePothosEnum,
+  TextPropsObject,
+  TextPropsInputObject,
+  TextPropsUpdateInputObject,
+  CertificateElementPothosInterface,
+  createBaseElementInputFields,
+  createBaseElementUpdateInputFields,
+} from "./base.element.pothos";
+
+// ============================================================================
+// Enums
+// ============================================================================
+
+export const TextDataSourceTypePothosEnum = gqlSchemaBuilder.enumType(
+  "TextDataSourceType",
+  {
+    values: Object.values(Types.TextDataSourceType),
+  }
+);
+
+export const StudentTextFieldPothosEnum = gqlSchemaBuilder.enumType(
+  "StudentTextField",
+  {
+    values: Object.values(Types.StudentTextField),
+  }
+);
+
+export const CertificateTextFieldPothosEnum = gqlSchemaBuilder.enumType(
+  "CertificateTextField",
+  {
+    values: Object.values(Types.CertificateTextField),
+  }
+);
+
+// ============================================================================
+// Data Source Objects (Output)
+// ============================================================================
+
+export const TextDataSourceStaticObject = gqlSchemaBuilder
+  .objectRef<
+    Extract<Types.TextDataSource, { type: Types.TextDataSourceType.STATIC }>
+  >("TextDataSourceStatic")
+  .implement({
+    fields: t => ({
+      type: t.expose("type", { type: TextDataSourceTypePothosEnum }),
+      value: t.exposeString("value"),
+    }),
+  });
+
+export const TextDataSourceStudentFieldObject = gqlSchemaBuilder
+  .objectRef<
+    Extract<
+      Types.TextDataSource,
+      { type: Types.TextDataSourceType.STUDENT_TEXT_FIELD }
+    >
+  >("TextDataSourceStudentField")
+  .implement({
+    fields: t => ({
+      type: t.expose("type", { type: TextDataSourceTypePothosEnum }),
+      field: t.expose("field", { type: StudentTextFieldPothosEnum }),
+    }),
+  });
+
+export const TextDataSourceCertificateFieldObject = gqlSchemaBuilder
+  .objectRef<
+    Extract<
+      Types.TextDataSource,
+      { type: Types.TextDataSourceType.CERTIFICATE_TEXT_FIELD }
+    >
+  >("TextDataSourceCertificateField")
+  .implement({
+    fields: t => ({
+      type: t.expose("type", { type: TextDataSourceTypePothosEnum }),
+      field: t.expose("field", { type: CertificateTextFieldPothosEnum }),
+    }),
+  });
+
+export const TextDataSourceTemplateTextVariableObject = gqlSchemaBuilder
+  .objectRef<
+    Extract<
+      Types.TextDataSource,
+      { type: Types.TextDataSourceType.TEMPLATE_TEXT_VARIABLE }
+    >
+  >("TextDataSourceTemplateTextVariable")
+  .implement({
+    fields: t => ({
+      type: t.expose("type", { type: TextDataSourceTypePothosEnum }),
+      variableId: t.exposeInt("variableId"),
+    }),
+  });
+
+export const TextDataSourceTemplateSelectVariableObject = gqlSchemaBuilder
+  .objectRef<
+    Extract<
+      Types.TextDataSource,
+      { type: Types.TextDataSourceType.TEMPLATE_SELECT_VARIABLE }
+    >
+  >("TextDataSourceTemplateSelectVariable")
+  .implement({
+    fields: t => ({
+      type: t.expose("type", { type: TextDataSourceTypePothosEnum }),
+      variableId: t.exposeInt("variableId"),
+    }),
+  });
+
+// ============================================================================
+// Data Source Union (Output)
+// ============================================================================
+
+export const TextDataSourceUnion = gqlSchemaBuilder.unionType(
+  "TextDataSource",
+  {
+    types: [
+      TextDataSourceStaticObject,
+      TextDataSourceStudentFieldObject,
+      TextDataSourceCertificateFieldObject,
+      TextDataSourceTemplateTextVariableObject,
+      TextDataSourceTemplateSelectVariableObject,
+    ],
+    resolveType: ds => {
+      switch (ds.type) {
+        case Types.TextDataSourceType.STATIC:
+          return "TextDataSourceStatic";
+        case Types.TextDataSourceType.STUDENT_TEXT_FIELD:
+          return "TextDataSourceStudentField";
+        case Types.TextDataSourceType.CERTIFICATE_TEXT_FIELD:
+          return "TextDataSourceCertificateField";
+        case Types.TextDataSourceType.TEMPLATE_TEXT_VARIABLE:
+          return "TextDataSourceTemplateTextVariable";
+        case Types.TextDataSourceType.TEMPLATE_SELECT_VARIABLE:
+          return "TextDataSourceTemplateSelectVariable";
+        default: {
+          const exhaustiveCheck: never = ds;
+          throw new Error(
+            `Unknown TextDataSource type: ${(exhaustiveCheck as { type: string }).type}`
+          );
+        }
+      }
+    },
+  }
+);
+
+// ============================================================================
+// Data Source Input Objects (isOneOf Pattern)
+// ============================================================================
+
+export const TextDataSourceStaticInputObject = gqlSchemaBuilder
+  .inputRef<Types.TextDataSourceStaticInputGraphql>("TextDataSourceStaticInput")
+  .implement({
+    fields: t => ({
+      value: t.string({ required: true }),
+    }),
+  });
+
+export const TextDataSourceStudentFieldInputObject = gqlSchemaBuilder
+  .inputRef<Types.TextDataSourceStudentFieldInputGraphql>(
+    "TextDataSourceStudentFieldInput"
+  )
+  .implement({
+    fields: t => ({
+      field: t.field({ type: StudentTextFieldPothosEnum, required: true }),
+    }),
+  });
+
+export const TextDataSourceCertificateFieldInputObject = gqlSchemaBuilder
+  .inputRef<Types.TextDataSourceCertificateFieldInputGraphql>(
+    "TextDataSourceCertificateFieldInput"
+  )
+  .implement({
+    fields: t => ({
+      field: t.field({
+        type: CertificateTextFieldPothosEnum,
+        required: true,
+      }),
+    }),
+  });
+
+export const TextDataSourceTemplateTextVariableInputObject = gqlSchemaBuilder
+  .inputRef<Types.TextDataSourceTemplateTextVariableInputGraphql>(
+    "TextDataSourceTemplateTextVariableInput"
+  )
+  .implement({
+    fields: t => ({
+      variableId: t.int({ required: true }),
+    }),
+  });
+
+export const TextDataSourceTemplateSelectVariableInputObject = gqlSchemaBuilder
+  .inputRef<Types.TextDataSourceTemplateSelectVariableInputGraphql>(
+    "TextDataSourceTemplateSelectVariableInput"
+  )
+  .implement({
+    fields: t => ({
+      variableId: t.int({ required: true }),
+    }),
+  });
+
+export const TextDataSourceInputObject = gqlSchemaBuilder.inputType(
+  "TextDataSourceInput",
+  {
+    isOneOf: true,
+    fields: t => ({
+      static: t.field({
+        type: TextDataSourceStaticInputObject,
+        required: false,
+      }),
+      studentField: t.field({
+        type: TextDataSourceStudentFieldInputObject,
+        required: false,
+      }),
+      certificateField: t.field({
+        type: TextDataSourceCertificateFieldInputObject,
+        required: false,
+      }),
+      templateTextVariable: t.field({
+        type: TextDataSourceTemplateTextVariableInputObject,
+        required: false,
+      }),
+      templateSelectVariable: t.field({
+        type: TextDataSourceTemplateSelectVariableInputObject,
+        required: false,
+      }),
+    }),
+  }
+);
+
+// ============================================================================
+// Config Objects
+// ============================================================================
+
+export const TextElementConfigObject = gqlSchemaBuilder
+  .objectRef<Types.TextElementConfig>("TextElementConfig")
+  .implement({
+    fields: t => ({
+      type: t.expose("type", { type: ElementTypePothosEnum }),
+      textProps: t.expose("textProps", { type: TextPropsObject }),
+      dataSource: t.expose("dataSource", { type: TextDataSourceUnion }),
+    }),
+  });
+
+export const TextElementConfigInputObject = gqlSchemaBuilder
+  .inputRef<Types.TextElementConfigInputGraphql>("TextElementConfigInput")
+  .implement({
+    fields: t => ({
+      textProps: t.field({ type: TextPropsInputObject, required: true }),
+      dataSource: t.field({ type: TextDataSourceInputObject, required: true }),
+    }),
+  });
+
+export const TextElementConfigUpdateInputObject = gqlSchemaBuilder
+  .inputRef<Types.TextElementConfigUpdateInputGraphql>(
+    "TextElementConfigUpdateInput"
+  )
+  .implement({
+    fields: t => ({
+      textProps: t.field({
+        type: TextPropsUpdateInputObject,
+        required: false,
+      }),
+      dataSource: t.field({
+        type: TextDataSourceInputObject,
+        required: false,
+      }),
+    }),
+  });
+
+// ============================================================================
+// Mutation Inputs
+// ============================================================================
+
+export const TextElementCreateInputObject = gqlSchemaBuilder
+  .inputRef<Types.TextElementCreateInputGraphql>("TextElementCreateInput")
+  .implement({
+    fields: t => ({
+      ...createBaseElementInputFields(t),
+      config: t.field({ type: TextElementConfigInputObject, required: true }),
+    }),
+  });
+
+export const TextElementUpdateInputObject = gqlSchemaBuilder
+  .inputRef<Types.TextElementUpdateInputGraphql>("TextElementUpdateInput")
+  .implement({
+    fields: t => ({
+      ...createBaseElementUpdateInputFields(t),
+      config: t.field({
+        type: TextElementConfigUpdateInputObject,
+        required: false,
+      }),
+    }),
+  });
+
+// ============================================================================
+// Loadable Element Object
+// ============================================================================
+
+const TextElementObjectRef =
+  gqlSchemaBuilder.objectRef<Types.TextElementPothosDefinition>("TextElement");
+
+export const TextElementObject = gqlSchemaBuilder.loadableObject<
+  Types.TextElementPothosDefinition | Error,
+  number,
+  [typeof CertificateElementPothosInterface],
+  typeof TextElementObjectRef
+>(TextElementObjectRef, {
+  load: async ids => await TextElementRepository.loadByIds(ids),
+  sort: e => e.id,
+  interfaces: [CertificateElementPothosInterface],
+  isTypeOf: item =>
+    typeof item === "object" &&
+    item !== null &&
+    "type" in item &&
+    item.type === Types.ElementType.TEXT,
+  fields: t => ({
+    // Only element-specific field (config)
+    config: t.expose("config", { type: TextElementConfigObject }),
+  }),
+});
+
+gqlSchemaBuilder.objectFields(TextElementObject, t => ({
+  template: t.loadable({
+    type: TemplatePothosObject,
+    load: (ids: number[]) => TemplateRepository.loadByIds(ids),
+    resolve: element => element.templateId,
+  }),
+}));

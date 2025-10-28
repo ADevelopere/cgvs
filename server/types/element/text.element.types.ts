@@ -3,6 +3,7 @@ import {
   TextProps,
   TextPropsInput,
   TextPropsInputGraphql,
+  TextPropsUpdateInputGraphql,
 } from "./config.element.types";
 import { CertificateElementBaseUpdateInput } from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "./union.element.types";
@@ -83,6 +84,64 @@ export type TextDataSourceInput =
   | TextDataSourceTemplateTextVariableInput
   | TextDataSourceTemplateSelectVariableInput;
 
+// GraphQL input types (used in Pothos isOneOf definitions)
+export type TextDataSourceStaticInputGraphql = {
+  value: string;
+};
+
+export type TextDataSourceStudentFieldInputGraphql = {
+  field: StudentTextField;
+};
+
+export type TextDataSourceCertificateFieldInputGraphql = {
+  field: CertificateTextField;
+};
+
+export type TextDataSourceTemplateTextVariableInputGraphql = {
+  variableId: number;
+};
+
+export type TextDataSourceTemplateSelectVariableInputGraphql = {
+  variableId: number;
+};
+
+export type TextDataSourceInputGraphql =
+  | {
+      static: TextDataSourceStaticInputGraphql;
+      studentField?: never;
+      certificateField?: never;
+      templateTextVariable?: never;
+      templateSelectVariable?: never;
+    }
+  | {
+      studentField: TextDataSourceStudentFieldInputGraphql;
+      static?: never;
+      certificateField?: never;
+      templateTextVariable?: never;
+      templateSelectVariable?: never;
+    }
+  | {
+      certificateField: TextDataSourceCertificateFieldInputGraphql;
+      static?: never;
+      studentField?: never;
+      templateTextVariable?: never;
+      templateSelectVariable?: never;
+    }
+  | {
+      templateTextVariable: TextDataSourceTemplateTextVariableInputGraphql;
+      static?: never;
+      studentField?: never;
+      certificateField?: never;
+      templateSelectVariable?: never;
+    }
+  | {
+      templateSelectVariable: TextDataSourceTemplateSelectVariableInputGraphql;
+      static?: never;
+      studentField?: never;
+      certificateField?: never;
+      templateTextVariable?: never;
+    };
+
 // ============================================================================
 // Element Config
 // ============================================================================
@@ -93,11 +152,16 @@ export interface TextElementConfig {
   dataSource: TextDataSource;
 }
 
-// GraphQL input type
+// GraphQL input type (type field omitted - implied by mutation)
 export type TextElementConfigInputGraphql = {
-  type: ElementType.TEXT;
   textProps: TextPropsInputGraphql;
-  dataSource: TextDataSourceInput;
+  dataSource: TextDataSourceInputGraphql;
+};
+
+// GraphQL update input type (deep partial)
+export type TextElementConfigUpdateInputGraphql = {
+  textProps?: TextPropsUpdateInputGraphql;
+  dataSource?: TextDataSourceInputGraphql;
 };
 
 // Repository input type (matches Config structure)
@@ -124,8 +188,36 @@ export type TextElementCreateInput = {
   config: TextElementConfigInput;
 };
 
+// GraphQL create input type
+export type TextElementCreateInputGraphql = {
+  templateId: number;
+  name: string;
+  description: string;
+  positionX: number;
+  positionY: number;
+  width: number;
+  height: number;
+  alignment: ElementAlignment;
+  renderOrder: number;
+  config: TextElementConfigInputGraphql;
+};
+
 export type TextElementUpdateInput = CertificateElementBaseUpdateInput & {
   config?: Partial<TextElementConfigInput>;
+};
+
+// GraphQL update input type (deep partial support)
+export type TextElementUpdateInputGraphql = {
+  id: number;
+  name?: string;
+  description?: string;
+  positionX?: number;
+  positionY?: number;
+  width?: number;
+  height?: number;
+  alignment?: ElementAlignment;
+  renderOrder?: number;
+  config?: TextElementConfigUpdateInputGraphql;
 };
 
 // ============================================================================
@@ -134,7 +226,7 @@ export type TextElementUpdateInput = CertificateElementBaseUpdateInput & {
 
 export type TextElementPothosDefinition = Omit<
   CertificateElementPothosDefinition,
-  "parsedConfig"
+  "config"
 > & {
-  parsedConfig: TextElementConfig;
+  config: TextElementConfig;
 };

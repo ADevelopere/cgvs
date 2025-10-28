@@ -1,5 +1,9 @@
 import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
 import * as Types from "@/server/types/element";
+import { TemplateRepository } from "@/server/db/repo";
+import { ElementRepository } from "@/server/db/repo/element";
+import { TemplatePothosObject } from "@/server/graphql/pothos/template.pothos";
+import type { InputFieldBuilder, SchemaTypes } from "@pothos/core";
 
 // ============================================================================
 // Shared Enums
@@ -127,6 +131,17 @@ export const TextPropsInputObject = gqlSchemaBuilder
     }),
   });
 
+export const TextPropsUpdateInputObject = gqlSchemaBuilder
+  .inputRef<Types.TextPropsUpdateInputGraphql>("TextPropsUpdateInput")
+  .implement({
+    fields: t => ({
+      fontRef: t.field({ type: FontReferenceInputObject, required: false }),
+      fontSize: t.int({ required: false }),
+      color: t.string({ required: false }),
+      overflow: t.field({ type: ElementOverflowPothosEnum, required: false }),
+    }),
+  });
+
 // ============================================================================
 // Element Order Update Input (for batch operations)
 // ============================================================================
@@ -139,3 +154,88 @@ export const ElementOrderUpdateInputObject = gqlSchemaBuilder
       renderOrder: t.int({ required: true }),
     }),
   });
+
+// ============================================================================
+// Input Field Helpers (to reduce duplication across element types)
+// ============================================================================
+
+/**
+ * Helper to create shared base element input fields for create operations
+ * All fields are required
+ */
+export const createBaseElementInputFields = <Types extends SchemaTypes>(
+  t: InputFieldBuilder<Types, "InputObject">
+) => ({
+  templateId: t.int({ required: true }),
+  name: t.string({ required: true }),
+  description: t.string({ required: true }),
+  positionX: t.int({ required: true }),
+  positionY: t.int({ required: true }),
+  width: t.int({ required: true }),
+  height: t.int({ required: true }),
+  alignment: t.field({ type: ElementAlignmentPothosEnum, required: true }),
+  renderOrder: t.int({ required: true }),
+});
+
+/**
+ * Helper to create shared base element input fields for update operations
+ * All fields are optional (except id which should be added separately)
+ */
+export const createBaseElementUpdateInputFields = <Types extends SchemaTypes>(
+  t: InputFieldBuilder<Types, "InputObject">
+) => ({
+  id: t.int({ required: true }),
+  name: t.string({ required: false }),
+  description: t.string({ required: false }),
+  positionX: t.int({ required: false }),
+  positionY: t.int({ required: false }),
+  width: t.int({ required: false }),
+  height: t.int({ required: false }),
+  alignment: t.field({ type: ElementAlignmentPothosEnum, required: false }),
+  renderOrder: t.int({ required: false }),
+});
+
+// ============================================================================
+// CertificateElement Interface (shared fields for all element types)
+// ============================================================================
+
+export const CertificateElementPothosInterface = gqlSchemaBuilder
+  .loadableInterfaceRef<Types.CertificateElementPothosBase, number>(
+    "CertificateElement",
+    {
+      load: async ids => await ElementRepository.loadByIds(ids),
+      sort: e => e.id,
+    }
+  )
+  .implement({
+    fields: t => ({
+      id: t.exposeInt("id"),
+      name: t.exposeString("name"),
+      description: t.exposeString("description"),
+      templateId: t.exposeInt("templateId"),
+      type: t.field({
+        type: ElementTypePothosEnum,
+        resolve: element => element.type as Types.ElementType,
+      }),
+      positionX: t.exposeInt("positionX"),
+      positionY: t.exposeInt("positionY"),
+      width: t.exposeInt("width"),
+      height: t.exposeInt("height"),
+      alignment: t.field({
+        type: ElementAlignmentPothosEnum,
+        resolve: element => element.alignment as Types.ElementAlignment,
+      }),
+      renderOrder: t.exposeInt("renderOrder"),
+      createdAt: t.expose("createdAt", { type: "DateTime" }),
+      updatedAt: t.expose("updatedAt", { type: "DateTime" }),
+    }),
+  });
+
+// Add template field using interfaceFields (separate from interface definition)
+gqlSchemaBuilder.interfaceFields(CertificateElementPothosInterface, t => ({
+  template: t.loadable({
+    type: TemplatePothosObject,
+    load: (ids: number[]) => TemplateRepository.loadByIds(ids),
+    resolve: element => element.templateId,
+  }),
+}));

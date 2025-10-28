@@ -7,6 +7,7 @@ import {
   TextElementUpdateInput,
   ElementType,
   TextElementConfig,
+  TextElementPothosDefinition,
 } from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
 import { ElementUtils, TextElementUtils } from "@/server/utils";
@@ -118,5 +119,38 @@ export namespace TextElementRepository {
 
     logger.info(`TEXT element updated: ${updated.name} (ID: ${updated.id})`);
     return updated;
+  };
+
+  // ============================================================================
+  // Load Operations (for Pothos Dataloader)
+  // ============================================================================
+
+  /**
+   * Load TEXT elements by IDs for Pothos dataloader
+   * Returns array with TextElementPothosDefinition or Error per ID
+   */
+  export const loadByIds = async (
+    ids: number[]
+  ): Promise<(TextElementPothosDefinition | Error)[]> => {
+    if (ids.length === 0) return [];
+
+    // Get elements from repository
+    const elements = await ElementRepository.loadByIds(ids);
+
+    // Map to maintain order and validate TEXT type
+    return elements.map((element) => {
+      if (element instanceof Error) return element;
+
+      // Validate element type
+      if (element.type !== ElementType.TEXT) {
+        return new Error(`Element ${element.id} is ${element.type}, not TEXT`);
+      }
+
+      // Return as TextElementPothosDefinition
+      return {
+        ...element,
+        config: element.config as TextElementConfig,
+      };
+    });
   };
 }
