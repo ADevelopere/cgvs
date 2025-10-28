@@ -1,5 +1,9 @@
 import { ElementType, ElementAlignment } from "./enum.element.types";
-import { TextProps, TextPropsInput } from "./config.element.types";
+import {
+  TextProps,
+  TextPropsInput,
+  TextPropsInputGraphql,
+} from "./config.element.types";
 import { CertificateElementBaseUpdateInput } from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "./union.element.types";
 
@@ -40,6 +44,15 @@ export interface CountryElementConfig {
   // The application uses TemplateConfig.locale to map country code to country name
 }
 
+// GraphQL input type
+export type CountryElementConfigInputGraphql = {
+  type: ElementType.COUNTRY;
+  textProps: TextPropsInputGraphql;
+  representation: CountryRepresentation;
+  dataSource: CountryDataSourceInput;
+};
+
+// Repository input type (matches Config structure)
 export type CountryElementConfigInput = {
   type: ElementType.COUNTRY;
   textProps: TextPropsInput;

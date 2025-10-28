@@ -1,6 +1,6 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
-import { certificateElement } from "@/server/db/schema/certificateElements/certificateElement";
+import { certificateElement } from "@/server/db/schema";
 import {
   CertificateElementEntity,
   DateElementCreateInput,
@@ -9,8 +9,9 @@ import {
   DateElementConfig,
 } from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
-import { ElementUtils, DateElementUtils, deepMerge } from "@/server/utils";
+import { ElementUtils, DateElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
+import { merge } from "lodash";
 
 /**
  * Repository for DATE element operations
@@ -97,15 +98,16 @@ export namespace DateElementRepository {
     // 5. If config is being updated, deep merge and re-extract FKs
     if (input.config) {
       // Normalize partial config (convert null to undefined for mapping)
-      const normalizedPartialConfig = {
+      const normalizedPartialConfig: Partial<DateElementConfig> = {
         ...input.config,
         mapping:
           input.config.mapping === null ? undefined : input.config.mapping,
       };
 
       // Deep merge partial config with existing to preserve nested properties
-      const mergedConfig = deepMerge(
-        existing.config as DateElementConfig,
+      const mergedConfig: DateElementConfig = merge(
+        {},
+        existing.config,
         normalizedPartialConfig
       );
 

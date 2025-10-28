@@ -9,8 +9,9 @@ import {
   GenderElementConfig,
 } from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
-import { ElementUtils, GenderElementUtils, deepMerge } from "@/server/utils";
+import { ElementUtils, GenderElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
+import { merge } from "lodash";
 
 /**
  * Repository for GENDER element operations
@@ -89,8 +90,9 @@ export namespace GenderElementRepository {
     // 5. If config is being updated, deep merge and re-extract FKs
     if (input.config) {
       // Deep merge partial config with existing to preserve nested properties
-      const mergedConfig = deepMerge(
-        existing.config as GenderElementConfig,
+      const mergedConfig: GenderElementConfig = merge(
+        {},
+        existing.config,
         input.config
       );
 

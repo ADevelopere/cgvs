@@ -15,17 +15,25 @@ export type FontReference =
   | { type: FontSource.GOOGLE; identifier: string }
   | { type: FontSource.SELF_HOSTED; fontId: number };
 
-export type FontReferenceGoogleInput = {
+// GraphQL input types (used in Pothos definitions)
+export type FontReferenceGoogleInputGraphql = {
   identifier: string;
 };
 
-export type FontReferenceSelfHostedInput = {
+export type FontReferenceSelfHostedInputGraphql = {
   fontId: number;
 };
 
-export type FontReferenceInput =
-  | { google: FontReferenceGoogleInput; selfHosted?: never }
-  | { selfHosted: FontReferenceSelfHostedInput; google?: never };
+export type FontReferenceInputGraphql =
+  | { google: FontReferenceGoogleInputGraphql; selfHosted?: never }
+  | { selfHosted: FontReferenceSelfHostedInputGraphql; google?: never };
+
+export type TextPropsInputGraphql = {
+  fontRef: FontReferenceInputGraphql;
+  fontSize: number;
+  color: string;
+  overflow: ElementOverflow;
+};
 
 // ============================================================================
 // Text Props (shared by TEXT, DATE, NUMBER, COUNTRY, GENDER elements)
@@ -37,6 +45,9 @@ export type TextProps = {
   color: string; // e.g., "#000000" or "rgba(0,0,0,1)"
   overflow: ElementOverflow;
 };
+
+// Repository input types (match Config structure)
+export type FontReferenceInput = FontReference;
 
 export type TextPropsInput = {
   fontRef: FontReferenceInput;

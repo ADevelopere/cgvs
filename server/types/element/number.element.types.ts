@@ -1,5 +1,9 @@
 import { ElementType, ElementAlignment } from "./enum.element.types";
-import { TextProps, TextPropsInput } from "./config.element.types";
+import {
+  TextProps,
+  TextPropsInput,
+  TextPropsInputGraphql,
+} from "./config.element.types";
 import { CertificateElementBaseUpdateInput } from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "./union.element.types";
 
@@ -36,6 +40,15 @@ export interface NumberElementConfig {
   mapping: Record<string, string>; // Breakpoint-to-text rules
 }
 
+// GraphQL input type
+export type NumberElementConfigInputGraphql = {
+  type: ElementType.NUMBER;
+  textProps: TextPropsInputGraphql;
+  dataSource: NumberDataSourceInput;
+  mapping: Record<string, string>;
+};
+
+// Repository input type (matches Config structure)
 export type NumberElementConfigInput = {
   type: ElementType.NUMBER;
   textProps: TextPropsInput;

@@ -9,8 +9,9 @@ import {
   TextElementConfig,
 } from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
-import { ElementUtils, TextElementUtils, deepMerge } from "@/server/utils";
+import { ElementUtils, TextElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
+import { merge } from "lodash";
 
 /**
  * Repository for TEXT element operations
@@ -91,8 +92,9 @@ export namespace TextElementRepository {
     // 5. If config is being updated, deep merge and re-extract FKs
     if (input.config) {
       // Deep merge partial config with existing to preserve nested properties
-      const mergedConfig = deepMerge(
-        existing.config as TextElementConfig,
+      const mergedConfig: TextElementConfig = merge(
+        {},
+        existing.config,
         input.config
       );
 

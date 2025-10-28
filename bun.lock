@@ -56,6 +56,7 @@
         "jose": "^6.1.0",
         "jss": "^10.10.0",
         "jss-rtl": "^0.3.0",
+        "lodash": "^4.17.21",
         "lucide-react": "^0.545.0",
         "moment-hijri": "^3.0.0",
         "mui-tel-input": "^9.0.1",
@@ -91,6 +92,7 @@
         "@types/bcryptjs": "^3.0.0",
         "@types/crypto-js": "^4.2.2",
         "@types/jest": "^30.0.0",
+        "@types/lodash": "^4.17.20",
         "@types/node": "^24.9.1",
         "@types/pg": "^8.15.5",
         "@types/react": "^19.2.2",
@@ -895,6 +897,8 @@
     "@types/json-schema": ["@types/json-schema@7.0.15", "", {}, "sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA=="],
 
     "@types/json5": ["@types/json5@0.0.29", "", {}, "sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ=="],
+
+    "@types/lodash": ["@types/lodash@4.17.20", "", {}, "sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA=="],
 
     "@types/long": ["@types/long@4.0.2", "", {}, "sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA=="],
 
