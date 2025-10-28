@@ -296,9 +296,9 @@ export type DirectoryInfo = StorageObject & {
   fileCount?: Maybe<Scalars['Int']['output']>;
   folderCount?: Maybe<Scalars['Int']['output']>;
   isFromBucket?: Maybe<Scalars['Boolean']['output']>;
-  isProtected: Scalars['Boolean']['output'];
+  isProtected?: Maybe<Scalars['Boolean']['output']>;
   lastModified?: Maybe<Scalars['DateTime']['output']>;
-  name: Scalars['String']['output'];
+  name?: Maybe<Scalars['String']['output']>;
   path: Scalars['String']['output'];
   permissions?: Maybe<DirectoryPermissions>;
   protectChildren?: Maybe<Scalars['Boolean']['output']>;
@@ -337,12 +337,12 @@ export type FileInfo = StorageObject & {
   fileType?: Maybe<FileType>;
   isFromBucket?: Maybe<Scalars['Boolean']['output']>;
   isInUse?: Maybe<Scalars['Boolean']['output']>;
-  isProtected: Scalars['Boolean']['output'];
+  isProtected?: Maybe<Scalars['Boolean']['output']>;
   isPublic?: Maybe<Scalars['Boolean']['output']>;
   lastModified?: Maybe<Scalars['DateTime']['output']>;
   md5Hash?: Maybe<Scalars['String']['output']>;
   mediaLink?: Maybe<Scalars['String']['output']>;
-  name: Scalars['String']['output'];
+  name?: Maybe<Scalars['String']['output']>;
   path: Scalars['String']['output'];
   size: Scalars['Int']['output'];
   url: Scalars['String']['output'];
@@ -1084,8 +1084,8 @@ export type StorageItemsMoveInput = {
 };
 
 export type StorageObject = {
-  isProtected: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
+  isProtected?: Maybe<Scalars['Boolean']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
   path: Scalars['String']['output'];
 };
 
@@ -1578,7 +1578,7 @@ export type FontQueryVariables = Exact<{
 }>;
 
 
-export type FontQuery = { __typename?: 'Query', font?: { __typename?: 'Font', id: number, name: string, locale: Array<string>, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name: string } | null } | null };
+export type FontQuery = { __typename?: 'Query', font?: { __typename?: 'Font', id: number, name: string, locale: Array<string>, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null } | null } | null };
 
 export type FontsQueryVariables = Exact<{
   paginationArgs?: InputMaybe<PaginationArgs>;
@@ -1587,7 +1587,7 @@ export type FontsQueryVariables = Exact<{
 }>;
 
 
-export type FontsQuery = { __typename?: 'Query', fonts: { __typename?: 'FontsWithFiltersResponse', data: Array<{ __typename?: 'Font', id: number, name: string, locale: Array<string>, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name: string } | null }>, pageInfo: { __typename?: 'PageInfo', total: number, perPage: number, currentPage: number, lastPage: number, hasMorePages: boolean } } };
+export type FontsQuery = { __typename?: 'Query', fonts: { __typename?: 'FontsWithFiltersResponse', data: Array<{ __typename?: 'Font', id: number, name: string, locale: Array<string>, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null } | null }>, pageInfo: { __typename?: 'PageInfo', total: number, perPage: number, currentPage: number, lastPage: number, hasMorePages: boolean } } };
 
 export type CheckFontUsageQueryVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -1601,35 +1601,35 @@ export type CreateFontMutationVariables = Exact<{
 }>;
 
 
-export type CreateFontMutation = { __typename?: 'Mutation', createFont: { __typename?: 'Font', id: number, name: string, locale: Array<string>, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name: string } | null } };
+export type CreateFontMutation = { __typename?: 'Mutation', createFont: { __typename?: 'Font', id: number, name: string, locale: Array<string>, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null } | null } };
 
 export type UpdateFontMutationVariables = Exact<{
   input: FontUpdateInput;
 }>;
 
 
-export type UpdateFontMutation = { __typename?: 'Mutation', updateFont: { __typename?: 'Font', id: number, name: string, locale: Array<string>, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name: string } | null } };
+export type UpdateFontMutation = { __typename?: 'Mutation', updateFont: { __typename?: 'Font', id: number, name: string, locale: Array<string>, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null } | null } };
 
 export type DeleteFontMutationVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type DeleteFontMutation = { __typename?: 'Mutation', deleteFont: { __typename?: 'Font', id: number, name: string, locale: Array<string>, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name: string } | null } };
+export type DeleteFontMutation = { __typename?: 'Mutation', deleteFont: { __typename?: 'Font', id: number, name: string, locale: Array<string>, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null } | null } };
 
 export type DirectoryChildrenQueryVariables = Exact<{
   path?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type DirectoryChildrenQuery = { __typename?: 'Query', directoryChildren?: Array<{ __typename?: 'DirectoryInfo', createdAt?: any | null, fileCount?: number | null, folderCount?: number | null, isFromBucket?: boolean | null, isProtected: boolean, lastModified?: any | null, name: string, path: string, protectChildren?: boolean | null, totalSize?: number | null, permissions?: { __typename?: 'DirectoryPermissions', allowCreateSubDirs?: boolean | null, allowDelete?: boolean | null, allowDeleteFiles?: boolean | null, allowMove?: boolean | null, allowMoveFiles?: boolean | null, allowUploads?: boolean | null } | null }> | null };
+export type DirectoryChildrenQuery = { __typename?: 'Query', directoryChildren?: Array<{ __typename?: 'DirectoryInfo', createdAt?: any | null, fileCount?: number | null, folderCount?: number | null, isFromBucket?: boolean | null, isProtected?: boolean | null, lastModified?: any | null, name?: string | null, path: string, protectChildren?: boolean | null, totalSize?: number | null, permissions?: { __typename?: 'DirectoryPermissions', allowCreateSubDirs?: boolean | null, allowDelete?: boolean | null, allowDeleteFiles?: boolean | null, allowMove?: boolean | null, allowMoveFiles?: boolean | null, allowUploads?: boolean | null } | null }> | null };
 
 export type FileInfoQueryVariables = Exact<{
   path: Scalars['String']['input'];
 }>;
 
 
-export type FileInfoQuery = { __typename?: 'Query', fileInfo?: { __typename?: 'FileInfo', contentType?: string | null, createdAt?: any | null, directoryPath?: string | null, fileType?: FileType | null, isFromBucket?: boolean | null, isInUse?: boolean | null, isProtected: boolean, isPublic?: boolean | null, lastModified?: any | null, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size: number, url: string, usages?: Array<{ __typename?: 'FileUsageInfo', createdAt?: any | null, filePath?: string | null, id?: string | null, referenceId?: string | null, referenceTable?: string | null, usageType?: string | null }> | null } | null };
+export type FileInfoQuery = { __typename?: 'Query', fileInfo?: { __typename?: 'FileInfo', contentType?: string | null, createdAt?: any | null, directoryPath?: string | null, fileType?: FileType | null, isFromBucket?: boolean | null, isInUse?: boolean | null, isProtected?: boolean | null, isPublic?: boolean | null, lastModified?: any | null, md5Hash?: string | null, mediaLink?: string | null, name?: string | null, path: string, size: number, url: string, usages?: Array<{ __typename?: 'FileUsageInfo', createdAt?: any | null, filePath?: string | null, id?: string | null, referenceId?: string | null, referenceTable?: string | null, usageType?: string | null }> | null } | null };
 
 export type FileUsageQueryVariables = Exact<{
   input: FileUsageCheckInput;
@@ -1643,7 +1643,7 @@ export type FolderInfoQueryVariables = Exact<{
 }>;
 
 
-export type FolderInfoQuery = { __typename?: 'Query', folderInfo?: { __typename?: 'DirectoryInfo', createdAt?: any | null, fileCount?: number | null, folderCount?: number | null, isFromBucket?: boolean | null, isProtected: boolean, lastModified?: any | null, name: string, path: string, protectChildren?: boolean | null, totalSize?: number | null, permissions?: { __typename?: 'DirectoryPermissions', allowCreateSubDirs?: boolean | null, allowDelete?: boolean | null, allowDeleteFiles?: boolean | null, allowMove?: boolean | null, allowMoveFiles?: boolean | null, allowUploads?: boolean | null } | null } | null };
+export type FolderInfoQuery = { __typename?: 'Query', folderInfo?: { __typename?: 'DirectoryInfo', createdAt?: any | null, fileCount?: number | null, folderCount?: number | null, isFromBucket?: boolean | null, isProtected?: boolean | null, lastModified?: any | null, name?: string | null, path: string, protectChildren?: boolean | null, totalSize?: number | null, permissions?: { __typename?: 'DirectoryPermissions', allowCreateSubDirs?: boolean | null, allowDelete?: boolean | null, allowDeleteFiles?: boolean | null, allowMove?: boolean | null, allowMoveFiles?: boolean | null, allowUploads?: boolean | null } | null } | null };
 
 export type ListFilesQueryVariables = Exact<{
   input: FilesListInput;
@@ -1651,8 +1651,8 @@ export type ListFilesQueryVariables = Exact<{
 
 
 export type ListFilesQuery = { __typename?: 'Query', listFiles?: { __typename?: 'StorageObjectList', hasMore: boolean, limit: number, offset: number, totalCount: number, items?: Array<
-      | { __typename?: 'DirectoryInfo', createdAt?: any | null, fileCount?: number | null, folderCount?: number | null, isFromBucket?: boolean | null, isProtected: boolean, lastModified?: any | null, name: string, path: string, protectChildren?: boolean | null, totalSize?: number | null, permissions?: { __typename?: 'DirectoryPermissions', allowCreateSubDirs?: boolean | null, allowDelete?: boolean | null, allowDeleteFiles?: boolean | null, allowMove?: boolean | null, allowMoveFiles?: boolean | null, allowUploads?: boolean | null } | null }
-      | { __typename?: 'FileInfo', contentType?: string | null, createdAt?: any | null, directoryPath?: string | null, fileType?: FileType | null, isFromBucket?: boolean | null, isInUse?: boolean | null, isProtected: boolean, isPublic?: boolean | null, lastModified?: any | null, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size: number, url: string, usages?: Array<{ __typename?: 'FileUsageInfo', createdAt?: any | null, filePath?: string | null, id?: string | null, referenceId?: string | null, referenceTable?: string | null, usageType?: string | null }> | null }
+      | { __typename?: 'DirectoryInfo', createdAt?: any | null, fileCount?: number | null, folderCount?: number | null, isFromBucket?: boolean | null, isProtected?: boolean | null, lastModified?: any | null, name?: string | null, path: string, protectChildren?: boolean | null, totalSize?: number | null, permissions?: { __typename?: 'DirectoryPermissions', allowCreateSubDirs?: boolean | null, allowDelete?: boolean | null, allowDeleteFiles?: boolean | null, allowMove?: boolean | null, allowMoveFiles?: boolean | null, allowUploads?: boolean | null } | null }
+      | { __typename?: 'FileInfo', contentType?: string | null, createdAt?: any | null, directoryPath?: string | null, fileType?: FileType | null, isFromBucket?: boolean | null, isInUse?: boolean | null, isProtected?: boolean | null, isPublic?: boolean | null, lastModified?: any | null, md5Hash?: string | null, mediaLink?: string | null, name?: string | null, path: string, size: number, url: string, usages?: Array<{ __typename?: 'FileUsageInfo', createdAt?: any | null, filePath?: string | null, id?: string | null, referenceId?: string | null, referenceTable?: string | null, usageType?: string | null }> | null }
     > | null } | null };
 
 export type SearchFilesQueryVariables = Exact<{
@@ -1664,8 +1664,8 @@ export type SearchFilesQueryVariables = Exact<{
 
 
 export type SearchFilesQuery = { __typename?: 'Query', searchFiles?: { __typename?: 'StorageObjectList', hasMore: boolean, limit: number, offset: number, totalCount: number, items?: Array<
-      | { __typename?: 'DirectoryInfo', createdAt?: any | null, fileCount?: number | null, folderCount?: number | null, isFromBucket?: boolean | null, isProtected: boolean, lastModified?: any | null, name: string, path: string, protectChildren?: boolean | null, totalSize?: number | null, permissions?: { __typename?: 'DirectoryPermissions', allowCreateSubDirs?: boolean | null, allowDelete?: boolean | null, allowDeleteFiles?: boolean | null, allowMove?: boolean | null, allowMoveFiles?: boolean | null, allowUploads?: boolean | null } | null }
-      | { __typename?: 'FileInfo', contentType?: string | null, createdAt?: any | null, directoryPath?: string | null, fileType?: FileType | null, isFromBucket?: boolean | null, isInUse?: boolean | null, isProtected: boolean, isPublic?: boolean | null, lastModified?: any | null, md5Hash?: string | null, mediaLink?: string | null, name: string, path: string, size: number, url: string, usages?: Array<{ __typename?: 'FileUsageInfo', createdAt?: any | null, filePath?: string | null, id?: string | null, referenceId?: string | null, referenceTable?: string | null, usageType?: string | null }> | null }
+      | { __typename?: 'DirectoryInfo', createdAt?: any | null, fileCount?: number | null, folderCount?: number | null, isFromBucket?: boolean | null, isProtected?: boolean | null, lastModified?: any | null, name?: string | null, path: string, protectChildren?: boolean | null, totalSize?: number | null, permissions?: { __typename?: 'DirectoryPermissions', allowCreateSubDirs?: boolean | null, allowDelete?: boolean | null, allowDeleteFiles?: boolean | null, allowMove?: boolean | null, allowMoveFiles?: boolean | null, allowUploads?: boolean | null } | null }
+      | { __typename?: 'FileInfo', contentType?: string | null, createdAt?: any | null, directoryPath?: string | null, fileType?: FileType | null, isFromBucket?: boolean | null, isInUse?: boolean | null, isProtected?: boolean | null, isPublic?: boolean | null, lastModified?: any | null, md5Hash?: string | null, mediaLink?: string | null, name?: string | null, path: string, size: number, url: string, usages?: Array<{ __typename?: 'FileUsageInfo', createdAt?: any | null, filePath?: string | null, id?: string | null, referenceId?: string | null, referenceTable?: string | null, usageType?: string | null }> | null }
     > | null } | null };
 
 export type StorageStatsQueryVariables = Exact<{
@@ -1681,8 +1681,8 @@ export type CopyStorageItemsMutationVariables = Exact<{
 
 
 export type CopyStorageItemsMutation = { __typename?: 'Mutation', copyStorageItems?: { __typename?: 'BulkOperationResult', message?: string | null, success?: boolean | null, failureCount?: number | null, successCount?: number | null, failures?: Array<{ __typename?: 'BulkOperationFailure', error?: string | null, path?: string | null }> | null, successfulItems?: Array<
-      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
-      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'DirectoryInfo', isProtected?: boolean | null, name?: string | null, path: string }
+      | { __typename?: 'FileInfo', isProtected?: boolean | null, name?: string | null, path: string }
     > | null } | null };
 
 export type CreateFolderMutationVariables = Exact<{
@@ -1691,8 +1691,8 @@ export type CreateFolderMutationVariables = Exact<{
 
 
 export type CreateFolderMutation = { __typename?: 'Mutation', createFolder?: { __typename?: 'FileOperationResult', message?: string | null, success?: boolean | null, data?:
-      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
-      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'DirectoryInfo', isProtected?: boolean | null, name?: string | null, path: string }
+      | { __typename?: 'FileInfo', isProtected?: boolean | null, name?: string | null, path: string }
      | null } | null };
 
 export type DeleteFileMutationVariables = Exact<{
@@ -1701,8 +1701,8 @@ export type DeleteFileMutationVariables = Exact<{
 
 
 export type DeleteFileMutation = { __typename?: 'Mutation', deleteFile?: { __typename?: 'FileOperationResult', message?: string | null, success?: boolean | null, data?:
-      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
-      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'DirectoryInfo', isProtected?: boolean | null, name?: string | null, path: string }
+      | { __typename?: 'FileInfo', isProtected?: boolean | null, name?: string | null, path: string }
      | null } | null };
 
 export type DeleteStorageItemsMutationVariables = Exact<{
@@ -1711,8 +1711,8 @@ export type DeleteStorageItemsMutationVariables = Exact<{
 
 
 export type DeleteStorageItemsMutation = { __typename?: 'Mutation', deleteStorageItems?: { __typename?: 'BulkOperationResult', message?: string | null, success?: boolean | null, failureCount?: number | null, successCount?: number | null, failures?: Array<{ __typename?: 'BulkOperationFailure', error?: string | null, path?: string | null }> | null, successfulItems?: Array<
-      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
-      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'DirectoryInfo', isProtected?: boolean | null, name?: string | null, path: string }
+      | { __typename?: 'FileInfo', isProtected?: boolean | null, name?: string | null, path: string }
     > | null } | null };
 
 export type GenerateUploadSignedUrlMutationVariables = Exact<{
@@ -1728,8 +1728,8 @@ export type MoveStorageItemsMutationVariables = Exact<{
 
 
 export type MoveStorageItemsMutation = { __typename?: 'Mutation', moveStorageItems?: { __typename?: 'BulkOperationResult', message?: string | null, success?: boolean | null, failureCount?: number | null, successCount?: number | null, failures?: Array<{ __typename?: 'BulkOperationFailure', error?: string | null, path?: string | null }> | null, successfulItems?: Array<
-      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
-      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'DirectoryInfo', isProtected?: boolean | null, name?: string | null, path: string }
+      | { __typename?: 'FileInfo', isProtected?: boolean | null, name?: string | null, path: string }
     > | null } | null };
 
 export type RenameFileMutationVariables = Exact<{
@@ -1738,8 +1738,8 @@ export type RenameFileMutationVariables = Exact<{
 
 
 export type RenameFileMutation = { __typename?: 'Mutation', renameFile?: { __typename?: 'FileOperationResult', message?: string | null, success?: boolean | null, data?:
-      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
-      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'DirectoryInfo', isProtected?: boolean | null, name?: string | null, path: string }
+      | { __typename?: 'FileInfo', isProtected?: boolean | null, name?: string | null, path: string }
      | null } | null };
 
 export type SetStorageItemProtectionMutationVariables = Exact<{
@@ -1748,8 +1748,8 @@ export type SetStorageItemProtectionMutationVariables = Exact<{
 
 
 export type SetStorageItemProtectionMutation = { __typename?: 'Mutation', setStorageItemProtection?: { __typename?: 'FileOperationResult', message?: string | null, success?: boolean | null, data?:
-      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
-      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'DirectoryInfo', isProtected?: boolean | null, name?: string | null, path: string }
+      | { __typename?: 'FileInfo', isProtected?: boolean | null, name?: string | null, path: string }
      | null } | null };
 
 export type UpdateDirectoryPermissionsMutationVariables = Exact<{
@@ -1758,8 +1758,8 @@ export type UpdateDirectoryPermissionsMutationVariables = Exact<{
 
 
 export type UpdateDirectoryPermissionsMutation = { __typename?: 'Mutation', updateDirectoryPermissions?: { __typename?: 'FileOperationResult', message?: string | null, success?: boolean | null, data?:
-      | { __typename?: 'DirectoryInfo', isProtected: boolean, name: string, path: string }
-      | { __typename?: 'FileInfo', isProtected: boolean, name: string, path: string }
+      | { __typename?: 'DirectoryInfo', isProtected?: boolean | null, name?: string | null, path: string }
+      | { __typename?: 'FileInfo', isProtected?: boolean | null, name?: string | null, path: string }
      | null } | null };
 
 export type StudentQueryVariables = Exact<{

@@ -119,6 +119,10 @@ export const relations = defineRelations(schema, r => ({
       from: r.templateVariableBases.templateId,
       to: r.templates.id,
     }),
+    elements: r.many.certificateElement({
+      from: r.templateVariableBases.id,
+      to: r.certificateElement.templateVariableId,
+    }),
   },
   templateRecipientGroups: {
     template: r.one.templates({
@@ -148,11 +152,27 @@ export const relations = defineRelations(schema, r => ({
       from: r.certificateElement.templateId,
       to: r.templates.id,
     }),
+    font: r.one.font({
+      from: r.certificateElement.fontId,
+      to: r.font.id,
+    }),
+    templateVariable: r.one.templateVariableBases({
+      from: r.certificateElement.templateVariableId,
+      to: r.templateVariableBases.id,
+    }),
+    storageFile: r.one.storageFiles({
+      from: r.certificateElement.storageFileId,
+      to: r.storageFiles.id,
+    }),
   },
   font: {
     storageFile: r.one.storageFiles({
       from: r.font.storageFileId,
       to: r.storageFiles.id,
+    }),
+    elements: r.many.certificateElement({
+      from: r.font.id,
+      to: r.certificateElement.fontId,
     }),
   },
 }));
