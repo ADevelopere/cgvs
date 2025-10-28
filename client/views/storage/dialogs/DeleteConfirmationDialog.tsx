@@ -87,11 +87,11 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
       return {
         title: translations.deleteConfirmation.replace(
           "%{fileName}",
-          item.name
+          item.name ?? item.path.split("/").pop() ?? ""
         ),
         message: translations.deleteConfirmationMessage.replace(
           "%{fileName}",
-          item.name
+          item.name ?? item.path.split("/").pop() ?? ""
         ),
       };
     } else {

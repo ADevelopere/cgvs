@@ -169,7 +169,7 @@ const ImagePreview: React.FC<{ file: FileInfo; height: number | string }> = ({
                 <TransformComponent>
                   <Image
                     src={file.url}
-                    alt={file.name}
+                    alt={file.name ?? file.path.split("/").pop() ?? ""}
                     width={1920}
                     height={1080}
                     style={{

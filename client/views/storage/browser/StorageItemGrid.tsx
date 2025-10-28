@@ -176,7 +176,7 @@ const StorageItemGrid: React.FC<StorageItemGridProps> = ({
               lineHeight: 1.3,
               width: "100%",
             }}
-            title={item.name}
+            title={item.name ?? item.path.split("/").pop() ?? ""}
           >
             {item.name}
           </Typography>

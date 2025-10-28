@@ -34,7 +34,7 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({
   const handleFileSelect = (file: Graphql.FileInfo) => {
     onChange({
       filePath: file.path,
-      fileName: file.name,
+      fileName: file.name ?? file.path.split("/").pop() ?? "",
       fileUrl: file.url,
     });
     setIsPickerOpen(false);

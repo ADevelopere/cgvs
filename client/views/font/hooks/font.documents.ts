@@ -15,6 +15,7 @@ export const fontQueryDocument: TypedDocumentNode<
         path
         url
         name
+        size
       }
       url
       createdAt
@@ -46,6 +47,7 @@ export const fontsQueryDocument: TypedDocumentNode<
           path
           url
           name
+          size
         }
         url
         createdAt
@@ -97,6 +99,7 @@ export const createFontMutationDocument: TypedDocumentNode<
         path
         url
         name
+        size
       }
       url
       createdAt
@@ -119,6 +122,7 @@ export const updateFontMutationDocument: TypedDocumentNode<
         path
         url
         name
+        size
       }
       url
       createdAt
@@ -141,6 +145,7 @@ export const deleteFontMutationDocument: TypedDocumentNode<
         path
         url
         name
+        size
       }
       url
       createdAt

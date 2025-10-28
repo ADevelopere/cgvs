@@ -149,7 +149,7 @@ export const FontDetail: React.FC<FontDetailProps> = ({
                 initialData={{
                   name: selectedFont.name!,
                   locale: (selectedFont.locale || []) as string[],
-                  filePath: selectedFont.file?.path ?? "",
+                  filePath: selectedFont.file?.path ,
                   fileName: selectedFont.file?.name,
                   fileUrl: selectedFont.url!,
                 }}

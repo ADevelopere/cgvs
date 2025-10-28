@@ -11,9 +11,9 @@ interface FontFormProps {
   initialData?: {
     name: string;
     locale: string[];
-    filePath: string;
-    fileName?: string;
-    fileUrl?: string;
+    filePath?: string | null;
+    fileName?: string | null;
+    fileUrl?: string | null;
   };
   
   onSubmit: (input: FontCreateInput) => Promise<void>;

@@ -30,7 +30,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
   useEffect(() => {
     if (open && item) {
       // Pre-populate with current name, excluding extension for files
-      const currentName = item.name;
+      const currentName = item.name ?? item.path.split("/").pop() ?? "";
       let nameWithoutExtension = currentName;
 
       // For files, try to separate name and extension
@@ -90,9 +90,9 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
 
     try {
       // For files, we need to preserve the extension
-      let finalName = newName.trim();
+      let finalName = newName.trim()
       if ("contentType" in item && item.contentType) {
-        const currentName = item.name;
+        const currentName = item.name ?? item.path.split("/").pop() ?? "";
         const lastDotIndex = currentName.lastIndexOf(".");
         if (lastDotIndex > 0) {
           const extension = currentName.substring(lastDotIndex);
