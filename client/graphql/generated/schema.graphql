@@ -276,9 +276,9 @@ type DirectoryInfo implements StorageObject {
   fileCount: Int
   folderCount: Int
   isFromBucket: Boolean
-  isProtected: Boolean!
+  isProtected: Boolean
   lastModified: DateTime
-  name: String!
+  name: String
   path: String!
   permissions: DirectoryPermissions
   protectChildren: Boolean
@@ -318,12 +318,12 @@ type FileInfo implements StorageObject {
   fileType: FileType
   isFromBucket: Boolean
   isInUse: Boolean
-  isProtected: Boolean!
+  isProtected: Boolean
   isPublic: Boolean
   lastModified: DateTime
   md5Hash: String
   mediaLink: String
-  name: String!
+  name: String
   path: String!
   size: Int!
   url: String!
@@ -705,8 +705,8 @@ input StorageItemsMoveInput {
 }
 
 interface StorageObject {
-  isProtected: Boolean!
-  name: String!
+  isProtected: Boolean
+  name: String
   path: String!
 }
 

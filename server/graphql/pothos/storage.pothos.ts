@@ -46,8 +46,8 @@ const StorageItemPothosInterface = gqlSchemaBuilder
   .implement({
     fields: t => ({
       path: t.exposeString("path", { nullable: false }),
-      name: t.exposeString("name", { nullable: false }),
-      isProtected: t.exposeBoolean("isProtected", { nullable: false }),
+      name: t.exposeString("name"),
+      isProtected: t.exposeBoolean("isProtected"),
     }),
   });
 

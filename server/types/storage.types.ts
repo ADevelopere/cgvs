@@ -37,8 +37,8 @@ export interface FileUsageInfo {
 
 export type StorageObject = {
   path: string;
-  name: string;
-  isProtected: boolean;
+  name?: string | null;
+  isProtected?: boolean | null;
 };
 
 export type BucketDirectory = {
