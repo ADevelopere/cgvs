@@ -16,18 +16,16 @@ export type FontReference =
   | { type: FontSource.SELF_HOSTED; fontId: number };
 
 export type FontReferenceGoogleInput = {
-  type: FontSource.GOOGLE;
   identifier: string;
 };
 
 export type FontReferenceSelfHostedInput = {
-  type: FontSource.SELF_HOSTED;
   fontId: number;
 };
 
 export type FontReferenceInput =
-  | FontReferenceGoogleInput
-  | FontReferenceSelfHostedInput;
+  | { google: FontReferenceGoogleInput; selfHosted?: never }
+  | { selfHosted: FontReferenceSelfHostedInput; google?: never };
 
 // ============================================================================
 // Text Props (shared by TEXT, DATE, NUMBER, COUNTRY, GENDER elements)
