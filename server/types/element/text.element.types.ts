@@ -1,11 +1,14 @@
-import { ElementType, ElementAlignment } from "./enum.element.types";
+import { ElementType } from "./enum.element.types";
 import {
   TextProps,
-  TextPropsInput,
-  TextPropsInputGraphql,
+  TextPropsCreateInput,
+  TextPropsCreateInputGraphql,
   TextPropsUpdateInputGraphql,
 } from "./config.element.types";
-import { CertificateElementBaseUpdateInput } from "./base.element.types";
+import {
+  CertificateElementBaseCreateInput,
+  CertificateElementBaseUpdateInput,
+} from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "./union.element.types";
 
 // ============================================================================
@@ -108,38 +111,38 @@ export type TextDataSourceTemplateSelectVariableInputGraphql = {
 export type TextDataSourceInputGraphql =
   | {
       static: TextDataSourceStaticInputGraphql;
-      studentField?: never;
-      certificateField?: never;
-      templateTextVariable?: never;
-      templateSelectVariable?: never;
+      studentField?: never | null;
+      certificateField?: never | null;
+      templateTextVariable?: never | null;
+      templateSelectVariable?: never | null;
     }
   | {
       studentField: TextDataSourceStudentFieldInputGraphql;
-      static?: never;
-      certificateField?: never;
-      templateTextVariable?: never;
-      templateSelectVariable?: never;
+      static?: never | null;
+      certificateField?: never | null;
+      templateTextVariable?: never | null;
+      templateSelectVariable?: never | null;
     }
   | {
       certificateField: TextDataSourceCertificateFieldInputGraphql;
-      static?: never;
-      studentField?: never;
-      templateTextVariable?: never;
-      templateSelectVariable?: never;
+      static?: never | null;
+      studentField?: never | null;
+      templateTextVariable?: never | null;
+      templateSelectVariable?: never | null;
     }
   | {
       templateTextVariable: TextDataSourceTemplateTextVariableInputGraphql;
-      static?: never;
-      studentField?: never;
-      certificateField?: never;
-      templateSelectVariable?: never;
+      static?: never | null;
+      studentField?: never | null;
+      certificateField?: never | null;
+      templateSelectVariable?: never | null;
     }
   | {
       templateSelectVariable: TextDataSourceTemplateSelectVariableInputGraphql;
-      static?: never;
-      studentField?: never;
-      certificateField?: never;
-      templateTextVariable?: never;
+      static?: never | null;
+      studentField?: never | null;
+      certificateField?: never | null;
+      templateTextVariable?: never | null;
     };
 
 // ============================================================================
@@ -154,20 +157,20 @@ export interface TextElementConfig {
 
 // GraphQL input type (type field omitted - implied by mutation)
 export type TextElementConfigInputGraphql = {
-  textProps: TextPropsInputGraphql;
+  textProps: TextPropsCreateInputGraphql;
   dataSource: TextDataSourceInputGraphql;
 };
 
 // GraphQL update input type (deep partial)
 export type TextElementConfigUpdateInputGraphql = {
-  textProps?: TextPropsUpdateInputGraphql;
-  dataSource?: TextDataSourceInputGraphql;
+  textProps?: TextPropsUpdateInputGraphql | null;
+  dataSource?: TextDataSourceInputGraphql | null;
 };
 
 // Repository input type (matches Config structure)
 export type TextElementConfigInput = {
   type: ElementType.TEXT;
-  textProps: TextPropsInput;
+  textProps: TextPropsCreateInput;
   dataSource: TextDataSourceInput;
 };
 
@@ -175,50 +178,25 @@ export type TextElementConfigInput = {
 // Mutation Inputs
 // ============================================================================
 
-export type TextElementCreateInput = {
-  templateId: number;
-  name: string;
-  description: string;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
-  alignment: ElementAlignment;
-  renderOrder: number;
+export type TextElementCreateInput = CertificateElementBaseCreateInput & {
   config: TextElementConfigInput;
 };
 
 // GraphQL create input type
-export type TextElementCreateInputGraphql = {
-  templateId: number;
-  name: string;
-  description: string;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
-  alignment: ElementAlignment;
-  renderOrder: number;
-  config: TextElementConfigInputGraphql;
-};
+export type TextElementCreateInputGraphql =
+  CertificateElementBaseCreateInput & {
+    config: TextElementConfigInputGraphql;
+  };
 
 export type TextElementUpdateInput = CertificateElementBaseUpdateInput & {
   config?: Partial<TextElementConfigInput>;
 };
 
 // GraphQL update input type (deep partial support)
-export type TextElementUpdateInputGraphql = {
-  id: number;
-  name?: string;
-  description?: string;
-  positionX?: number;
-  positionY?: number;
-  width?: number;
-  height?: number;
-  alignment?: ElementAlignment;
-  renderOrder?: number;
-  config?: TextElementConfigUpdateInputGraphql;
-};
+export type TextElementUpdateInputGraphql =
+  CertificateElementBaseUpdateInput & {
+    config?: TextElementConfigUpdateInputGraphql | null;
+  };
 
 // ============================================================================
 // Pothos Definition

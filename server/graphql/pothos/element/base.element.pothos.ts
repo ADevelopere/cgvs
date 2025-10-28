@@ -117,7 +117,7 @@ export const TextPropsObject = gqlSchemaBuilder
   });
 
 export const TextPropsInputObject = gqlSchemaBuilder
-  .inputRef<Types.TextPropsInputGraphql>("TextPropsInput")
+  .inputRef<Types.TextPropsCreateInputGraphql>("TextPropsInput")
   .implement({
     fields: t => ({
       fontRef: t.field({ type: FontReferenceInputObject, required: true }),
@@ -132,8 +132,8 @@ export const TextPropsUpdateInputObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       fontRef: t.field({ type: FontReferenceInputObject, required: false }),
-      fontSize: t.int({ required: false }),
-      color: t.string({ required: false }),
+      fontSize: t.int(),
+      color: t.string(),
       overflow: t.field({ type: ElementOverflowPothosEnum, required: false }),
     }),
   });
@@ -181,14 +181,14 @@ export const createBaseElementUpdateInputFields = <Types extends SchemaTypes>(
   t: InputFieldBuilder<Types, "InputObject">
 ) => ({
   id: t.int({ required: true }),
-  name: t.string({ required: false }),
-  description: t.string({ required: false }),
-  positionX: t.int({ required: false }),
-  positionY: t.int({ required: false }),
-  width: t.int({ required: false }),
-  height: t.int({ required: false }),
+  name: t.string(),
+  description: t.string(),
+  positionX: t.int(),
+  positionY: t.int(),
+  width: t.int(),
+  height: t.int(),
   alignment: t.field({ type: ElementAlignmentPothosEnum, required: false }),
-  renderOrder: t.int({ required: false }),
+  renderOrder: t.int(),
 });
 
 // ============================================================================

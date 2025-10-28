@@ -1,4 +1,13 @@
-import { FontSource, ElementOverflow } from "@/server/types/element";
+import {
+  FontSource,
+  ElementOverflow,
+  FontReferenceInputGraphql,
+  FontReference,
+  TextPropsCreateInputGraphql,
+  TextPropsCreateInput,
+  TextPropsUpdateInputGraphql,
+  TextPropsUpdateInput,
+} from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 
 /**
@@ -6,6 +15,64 @@ import { ElementRepository } from "@/server/db/repo/element/element.repository";
  * Contains validation logic that is not specific to any element type
  */
 export namespace CommonElementUtils {
+  // ============================================================================
+  // GraphQL Input Mappers
+  // ============================================================================
+
+  /**
+   * Map GraphQL FontReference input (isOneOf) to repository FontReference input (discriminated union)
+   */
+  export const mapFontReferenceGraphqlToInput = (
+    input?: FontReferenceInputGraphql | null
+  ): FontReference | null | undefined => {
+    if (!input) {
+      return input;
+    }
+    if (input?.google) {
+      return {
+        type: FontSource.GOOGLE,
+        identifier: input?.google?.identifier,
+      };
+    } else if (input?.selfHosted) {
+      return {
+        type: FontSource.SELF_HOSTED,
+        fontId: input.selfHosted.fontId,
+      };
+    }
+    throw new Error(
+      "Invalid FontReference input: must specify either google or selfHosted"
+    );
+  };
+
+  /**
+   * Map GraphQL TextProps input to repository TextProps input
+   */
+  export const mapTextPropsGraphqlCreateToInput = (
+    input?: TextPropsCreateInputGraphql | null
+  ): TextPropsCreateInput | null | undefined => {
+    if (!input) {
+      return input;
+    }
+    return {
+      ...input,
+      fontRef: mapFontReferenceGraphqlToInput(input.fontRef)!,
+    };
+  };
+
+  /**
+   * Map GraphQL TextProps update input (partial) to repository TextProps input (partial)
+   */
+  export const mapTextPropsUpdateGraphqlToInput = (
+    input?: TextPropsUpdateInputGraphql | null
+  ): TextPropsUpdateInput | null | undefined => {
+    if (!input) {
+      return input;
+    }
+    return {
+      ...input,
+      fontRef: mapFontReferenceGraphqlToInput(input.fontRef),
+    };
+  };
   // ============================================================================
   // Text Props Validation
   // ============================================================================
@@ -125,19 +192,6 @@ export namespace CommonElementUtils {
       throw new Error(
         `Invalid overflow value: ${overflow}. Must be one of: ${validOverflows.join(", ")}`
       );
-    }
-  };
-
-  // ============================================================================
-  // Description Validation
-  // ============================================================================
-
-  /**
-   * Validate description is not empty
-   */
-  export const validateDescription = (description: string): void => {
-    if (!description || description.trim().length === 0) {
-      throw new Error("Description cannot be empty");
     }
   };
 }

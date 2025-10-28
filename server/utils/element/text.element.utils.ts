@@ -6,6 +6,13 @@ import {
   TextElementCreateInput,
   TextElementUpdateInput,
   CertificateElementEntity,
+  TextDataSourceInput,
+  TextDataSourceInputGraphql,
+  TextElementConfigInputGraphql,
+  TextElementConfigUpdateInputGraphql,
+  TextElementCreateInputGraphql,
+  TextElementUpdateInputGraphql,
+  ElementType,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { ElementUtils } from "./element.utils";
@@ -16,6 +23,128 @@ import { CommonElementUtils } from "./common.element.utils";
  * Contains all TEXT-specific validation logic
  */
 export namespace TextElementUtils {
+  // ============================================================================
+  // GraphQL Input Mappers
+  // ============================================================================
+
+  /**
+   * Map GraphQL TextDataSource input (isOneOf) to repository TextDataSource input (discriminated union)
+   */
+  export const mapTextDataSourceGraphqlToInput = (
+    input: TextDataSourceInputGraphql
+  ): TextDataSourceInput => {
+    if (input.static !== undefined) {
+      return {
+        type: TextDataSourceType.STATIC,
+        value: input.static.value,
+      };
+    } else if (input.studentField !== undefined) {
+      return {
+        type: TextDataSourceType.STUDENT_TEXT_FIELD,
+        field: input.studentField.field,
+      };
+    } else if (input.certificateField !== undefined) {
+      return {
+        type: TextDataSourceType.CERTIFICATE_TEXT_FIELD,
+        field: input.certificateField.field,
+      };
+    } else if (input.templateTextVariable !== undefined) {
+      return {
+        type: TextDataSourceType.TEMPLATE_TEXT_VARIABLE,
+        variableId: input.templateTextVariable.variableId,
+      };
+    } else if (input.templateSelectVariable !== undefined) {
+      return {
+        type: TextDataSourceType.TEMPLATE_SELECT_VARIABLE,
+        variableId: input.templateSelectVariable.variableId,
+      };
+    }
+    throw new Error(
+      "Invalid TextDataSource input: must specify one of static, studentField, certificateField, templateTextVariable, or templateSelectVariable"
+    );
+  };
+
+  /**
+   * Map GraphQL TextElementConfig input to repository TextElementConfig input
+   */
+  export const mapTextElementConfigGraphqlToInput = (
+    input: TextElementConfigInputGraphql
+  ): TextElementConfigInput => {
+    return {
+      type: ElementType.TEXT,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps),
+      dataSource: mapTextDataSourceGraphqlToInput(input.dataSource),
+    };
+  };
+
+  /**
+   * Map GraphQL TextElementConfig update input (partial) to repository TextElementConfig input (partial)
+   */
+  export const mapTextElementConfigUpdateGraphqlToInput = (
+    input: TextElementConfigUpdateInputGraphql
+  ): Partial<TextElementConfigInput> => {
+    const result: Partial<TextElementConfigInput> = {};
+
+    if (input.textProps !== undefined) {
+      const textPropsUpdate = CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
+        input.textProps
+      );
+      if (Object.keys(textPropsUpdate).length > 0) {
+        result.textProps = textPropsUpdate as Types.TextPropsInput;
+      }
+    }
+    if (input.dataSource !== undefined) {
+      result.dataSource = mapTextDataSourceGraphqlToInput(input.dataSource);
+    }
+
+    return result;
+  };
+
+  /**
+   * Map GraphQL TextElement create input to repository TextElement create input
+   */
+  export const mapTextElementCreateGraphqlToInput = (
+    input: TextElementCreateInputGraphql
+  ): TextElementCreateInput => {
+    return {
+      templateId: input.templateId,
+      name: input.name,
+      description: input.description,
+      positionX: input.positionX,
+      positionY: input.positionY,
+      width: input.width,
+      height: input.height,
+      alignment: input.alignment,
+      renderOrder: input.renderOrder,
+      config: mapTextElementConfigGraphqlToInput(input.config),
+    };
+  };
+
+  /**
+   * Map GraphQL TextElement update input to repository TextElement update input
+   */
+  export const mapTextElementUpdateGraphqlToInput = (
+    input: TextElementUpdateInputGraphql
+  ): TextElementUpdateInput => {
+    const result: TextElementUpdateInput = {
+      id: input.id,
+    };
+
+    if (input.name !== undefined) result.name = input.name;
+    if (input.description !== undefined) result.description = input.description;
+    if (input.positionX !== undefined) result.positionX = input.positionX;
+    if (input.positionY !== undefined) result.positionY = input.positionY;
+    if (input.width !== undefined) result.width = input.width;
+    if (input.height !== undefined) result.height = input.height;
+    if (input.alignment !== undefined) result.alignment = input.alignment;
+    if (input.renderOrder !== undefined) result.renderOrder = input.renderOrder;
+
+    if (input.config !== undefined) {
+      result.config = mapTextElementConfigUpdateGraphqlToInput(input.config);
+    }
+
+    return result;
+  };
   // ============================================================================
   // Config Validation
   // ============================================================================

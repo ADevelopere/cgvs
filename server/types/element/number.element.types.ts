@@ -1,11 +1,14 @@
-import { ElementType, ElementAlignment } from "./enum.element.types";
+import { ElementType } from "./enum.element.types";
 import {
   TextProps,
-  TextPropsInput,
-  TextPropsInputGraphql,
+  TextPropsCreateInput,
+  TextPropsCreateInputGraphql,
   TextPropsUpdateInputGraphql,
 } from "./config.element.types";
-import { CertificateElementBaseUpdateInput } from "./base.element.types";
+import {
+  CertificateElementBaseCreateInput,
+  CertificateElementBaseUpdateInput,
+} from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "./union.element.types";
 
 // ============================================================================
@@ -48,7 +51,7 @@ export interface NumberElementConfig {
 
 // GraphQL input type (type field omitted - implied by mutation)
 export type NumberElementConfigInputGraphql = {
-  textProps: TextPropsInputGraphql;
+  textProps: TextPropsCreateInputGraphql;
   dataSource: NumberDataSourceInputGraphql;
   mapping: Record<string, string>; // StringMap scalar type
 };
@@ -63,7 +66,7 @@ export type NumberElementConfigUpdateInputGraphql = {
 // Repository input type (matches Config structure)
 export type NumberElementConfigInput = {
   type: ElementType.NUMBER;
-  textProps: TextPropsInput;
+  textProps: TextPropsCreateInput;
   dataSource: NumberDataSourceInput;
   mapping: Record<string, string>;
 };
@@ -73,44 +76,19 @@ export type NumberElementConfigInput = {
 // ============================================================================
 
 // GraphQL create input type
-export type NumberElementCreateInputGraphql = {
-  templateId: number;
-  name: string;
-  description: string;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
-  alignment: ElementAlignment;
-  renderOrder: number;
-  config: NumberElementConfigInputGraphql;
-};
+export type NumberElementCreateInputGraphql =
+  CertificateElementBaseCreateInput & {
+    config: NumberElementConfigInputGraphql;
+  };
 
 // GraphQL update input type (deep partial support)
-export type NumberElementUpdateInputGraphql = {
-  id: number;
-  name?: string;
-  description?: string;
-  positionX?: number;
-  positionY?: number;
-  width?: number;
-  height?: number;
-  alignment?: ElementAlignment;
-  renderOrder?: number;
-  config?: NumberElementConfigUpdateInputGraphql;
-};
+export type NumberElementUpdateInputGraphql =
+  CertificateElementBaseUpdateInput & {
+    config?: NumberElementConfigUpdateInputGraphql;
+  };
 
 // Repository input types
-export type NumberElementCreateInput = {
-  templateId: number;
-  name: string;
-  description: string;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
-  alignment: ElementAlignment;
-  renderOrder: number;
+export type NumberElementCreateInput = CertificateElementBaseCreateInput & {
   config: NumberElementConfigInput;
 };
 

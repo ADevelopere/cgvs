@@ -1,5 +1,8 @@
-import { ElementType, ElementAlignment } from "./enum.element.types";
-import { CertificateElementBaseUpdateInput } from "./base.element.types";
+import { ElementType } from "./enum.element.types";
+import {
+  CertificateElementBaseCreateInput,
+  CertificateElementBaseUpdateInput,
+} from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "./union.element.types";
 
 // ============================================================================
@@ -73,44 +76,19 @@ export type ImageElementConfigInput = {
 // ============================================================================
 
 // GraphQL create input type
-export type ImageElementCreateInputGraphql = {
-  templateId: number;
-  name: string;
-  description: string;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
-  alignment: ElementAlignment;
-  renderOrder: number;
-  config: ImageElementConfigInputGraphql;
-};
+export type ImageElementCreateInputGraphql =
+  CertificateElementBaseCreateInput & {
+    config: ImageElementConfigInputGraphql;
+  };
 
 // GraphQL update input type (deep partial support)
-export type ImageElementUpdateInputGraphql = {
-  id: number;
-  name?: string;
-  description?: string;
-  positionX?: number;
-  positionY?: number;
-  width?: number;
-  height?: number;
-  alignment?: ElementAlignment;
-  renderOrder?: number;
-  config?: ImageElementConfigUpdateInputGraphql;
-};
+export type ImageElementUpdateInputGraphql =
+  CertificateElementBaseUpdateInput & {
+    config?: ImageElementConfigUpdateInputGraphql;
+  };
 
 // Repository mutation inputs (keep existing)
-export type ImageElementCreateInput = {
-  templateId: number;
-  name: string;
-  description: string;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
-  alignment: ElementAlignment;
-  renderOrder: number;
+export type ImageElementCreateInput = CertificateElementBaseCreateInput & {
   config: ImageElementConfigInput;
 };
 

@@ -1,10 +1,18 @@
 import {
-  CountryElementConfigInput,
+  CountryElementConfigCreateInput,
   CountryDataSourceType,
   CountryRepresentation,
   CountryElementCreateInput,
   CountryElementUpdateInput,
   CertificateElementEntity,
+  CountryDataSourceInput,
+  CountryDataSourceInputGraphql,
+  CountryElementConfigCreateInputGraphql,
+  CountryElementConfigUpdateInputGraphql,
+  CountryElementCreateInputGraphql,
+  CountryElementUpdateInputGraphql,
+  ElementType,
+  CountryElementConfigUpdateInput,
 } from "@/server/types/element";
 import { ElementUtils } from "./element.utils";
 import { CommonElementUtils } from "./common.element.utils";
@@ -16,6 +24,93 @@ import { ElementRepository } from "@/server/db/repo/element/element.repository";
  */
 export namespace CountryElementUtils {
   // ============================================================================
+  // GraphQL Input Mappers
+  // ============================================================================
+
+  /**
+   * Map GraphQL CountryDataSource input to repository CountryDataSource input
+   * Note: COUNTRY has only one data source variant (studentNationality)
+   */
+  export const mapCountryDataSourceGraphqlToInput = (
+    input?: CountryDataSourceInputGraphql | null
+  ): CountryDataSourceInput | null | undefined => {
+    if (!input) {
+      return input;
+    }
+    if (input.studentNationality !== undefined) {
+      return {
+        type: CountryDataSourceType.STUDENT_NATIONALITY,
+      };
+    }
+    throw new Error(
+      "Invalid CountryDataSource input: must specify studentNationality"
+    );
+  };
+
+  /**
+   * Map GraphQL CountryElementConfig input to repository CountryElementConfig input
+   */
+  export const mapCountryElementConfigCreateGraphqlToInput = (
+    input: CountryElementConfigCreateInputGraphql
+  ): CountryElementConfigCreateInput => {
+    return {
+      ...input,
+      type: ElementType.COUNTRY,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
+        input.textProps
+      )!,
+      dataSource: mapCountryDataSourceGraphqlToInput(input.dataSource)!,
+    };
+  };
+
+  /**
+   * Map GraphQL CountryElementConfig update input (partial) to repository CountryElementConfig input (partial)
+   */
+  export const mapCountryElementConfigUpdateGraphqlToInput = (
+    input?: CountryElementConfigUpdateInputGraphql | null
+  ): CountryElementConfigUpdateInput | null | undefined => {
+    if (!input) {
+      return input;
+    }
+
+    return {
+      ...input,
+      type: ElementType.COUNTRY,
+      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
+        input.textProps
+      ),
+      dataSource: mapCountryDataSourceGraphqlToInput(input.dataSource),
+    };
+  };
+
+  /**
+   * Map GraphQL CountryElement create input to repository CountryElement create input
+   */
+  export const mapCountryElementCreateGraphqlToInput = (
+    input: CountryElementCreateInputGraphql
+  ): CountryElementCreateInput => {
+    return {
+      ...input,
+      config: mapCountryElementConfigCreateGraphqlToInput(input.config),
+    };
+  };
+
+  /**
+   * Map GraphQL CountryElement update input to repository CountryElement update input
+   */
+  export const mapCountryElementUpdateGraphqlToInput = (
+    input?: CountryElementUpdateInputGraphql | null
+  ): CountryElementUpdateInput | null | undefined => {
+    if (!input) {
+      return input;
+    }
+
+    return {
+      ...input,
+      config: mapCountryElementConfigUpdateGraphqlToInput(input.config),
+    };
+  };
+  // ============================================================================
   // Config Validation
   // ============================================================================
 
@@ -24,7 +119,7 @@ export namespace CountryElementUtils {
    * Validates font reference, representation, and data source
    */
   export const validateConfig = async (
-    config: CountryElementConfigInput
+    config: CountryElementConfigCreateInput
   ): Promise<void> => {
     // Validate textProps
     await CommonElementUtils.validateTextProps(config);
@@ -62,7 +157,9 @@ export namespace CountryElementUtils {
    * Validate country data source
    * COUNTRY elements only support STUDENT_NATIONALITY
    */
-  const validateDataSource = (config: CountryElementConfigInput): void => {
+  const validateDataSource = (
+    config: CountryElementConfigCreateInput
+  ): void => {
     const dataSource = config.dataSource;
     if (dataSource.type !== CountryDataSourceType.STUDENT_NATIONALITY) {
       throw new Error(
@@ -87,9 +184,6 @@ export namespace CountryElementUtils {
     // Name validation
     const nameError = await ElementUtils.validateName(input.name);
     if (nameError) throw new Error(nameError);
-
-    // Description validation
-    CommonElementUtils.validateDescription(input.description);
 
     // Dimensions validation
     const dimError = await ElementUtils.validateDimensions(
@@ -125,43 +219,26 @@ export namespace CountryElementUtils {
    */
   export const validateUpdateInput = async (
     input: CountryElementUpdateInput,
-    existing?: CertificateElementEntity
+    existing: CertificateElementEntity
   ): Promise<void> => {
-    // Cache existing element if not provided
-    let cachedExisting = existing;
-
-    const getExisting = async () => {
-      if (!cachedExisting) {
-        cachedExisting = await ElementRepository.findByIdOrThrow(input.id);
-      }
-      return cachedExisting;
-    };
-
     // Name validation (if provided)
-    if (input.name !== undefined) {
+    if (input.name) {
       const nameError = await ElementUtils.validateName(input.name);
       if (nameError) throw new Error(nameError);
     }
 
-    // Description validation (if provided)
-    if (input.description !== undefined) {
-      CommonElementUtils.validateDescription(input.description);
-    }
-
     // Dimensions validation (if provided)
-    if (input.width !== undefined || input.height !== undefined) {
-      const elem = await getExisting();
-      const width = input.width ?? elem!.width;
-      const height = input.height ?? elem!.height;
+    if (input.width || input.height) {
+      const width = input.width ?? existing.width;
+      const height = input.height ?? existing.height;
       const dimError = await ElementUtils.validateDimensions(width, height);
       if (dimError) throw new Error(dimError);
     }
 
     // Position validation (if provided)
     if (input.positionX !== undefined || input.positionY !== undefined) {
-      const elem = await getExisting();
-      const x = input.positionX ?? elem!.positionX;
-      const y = input.positionY ?? elem!.positionY;
+      const x = input.positionX ?? existing.positionX;
+      const y = input.positionY ?? existing.positionY;
       const posError = await ElementUtils.validatePosition(x, y);
       if (posError) throw new Error(posError);
     }

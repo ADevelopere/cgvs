@@ -4,6 +4,13 @@ import {
   GenderElementCreateInput,
   GenderElementUpdateInput,
   CertificateElementEntity,
+  GenderDataSourceInput,
+  GenderDataSourceInputGraphql,
+  GenderElementConfigInputGraphql,
+  GenderElementConfigUpdateInputGraphql,
+  GenderElementCreateInputGraphql,
+  GenderElementUpdateInputGraphql,
+  ElementType,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { ElementUtils } from "./element.utils";
@@ -14,6 +21,108 @@ import { CommonElementUtils } from "./common.element.utils";
  * Contains all GENDER-specific validation logic
  */
 export namespace GenderElementUtils {
+  // ============================================================================
+  // GraphQL Input Mappers
+  // ============================================================================
+
+  /**
+   * Map GraphQL GenderDataSource input to repository GenderDataSource input
+   * Note: GENDER has only one data source variant (studentGender)
+   */
+  export const mapGenderDataSourceGraphqlToInput = (
+    input: GenderDataSourceInputGraphql
+  ): GenderDataSourceInput => {
+    if (input.studentGender !== undefined) {
+      return {
+        type: GenderDataSourceType.STUDENT_GENDER,
+      };
+    }
+    throw new Error(
+      "Invalid GenderDataSource input: must specify studentGender"
+    );
+  };
+
+  /**
+   * Map GraphQL GenderElementConfig input to repository GenderElementConfig input
+   */
+  export const mapGenderElementConfigGraphqlToInput = (
+    input: GenderElementConfigInputGraphql
+  ): GenderElementConfigInput => {
+    return {
+      type: ElementType.GENDER,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps),
+      dataSource: mapGenderDataSourceGraphqlToInput(input.dataSource),
+    };
+  };
+
+  /**
+   * Map GraphQL GenderElementConfig update input (partial) to repository GenderElementConfig input (partial)
+   */
+  export const mapGenderElementConfigUpdateGraphqlToInput = (
+    input: GenderElementConfigUpdateInputGraphql
+  ): Partial<GenderElementConfigInput> => {
+    const result: Partial<GenderElementConfigInput> = {};
+
+    if (input.textProps !== undefined) {
+      const textPropsUpdate = CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
+        input.textProps
+      );
+      if (Object.keys(textPropsUpdate).length > 0) {
+        result.textProps = textPropsUpdate as Types.TextPropsInput;
+      }
+    }
+    if (input.dataSource !== undefined) {
+      result.dataSource = mapGenderDataSourceGraphqlToInput(input.dataSource);
+    }
+
+    return result;
+  };
+
+  /**
+   * Map GraphQL GenderElement create input to repository GenderElement create input
+   */
+  export const mapGenderElementCreateGraphqlToInput = (
+    input: GenderElementCreateInputGraphql
+  ): GenderElementCreateInput => {
+    return {
+      templateId: input.templateId,
+      name: input.name,
+      description: input.description,
+      positionX: input.positionX,
+      positionY: input.positionY,
+      width: input.width,
+      height: input.height,
+      alignment: input.alignment,
+      renderOrder: input.renderOrder,
+      config: mapGenderElementConfigGraphqlToInput(input.config),
+    };
+  };
+
+  /**
+   * Map GraphQL GenderElement update input to repository GenderElement update input
+   */
+  export const mapGenderElementUpdateGraphqlToInput = (
+    input: GenderElementUpdateInputGraphql
+  ): GenderElementUpdateInput => {
+    const result: GenderElementUpdateInput = {
+      id: input.id,
+    };
+
+    if (input.name !== undefined) result.name = input.name;
+    if (input.description !== undefined) result.description = input.description;
+    if (input.positionX !== undefined) result.positionX = input.positionX;
+    if (input.positionY !== undefined) result.positionY = input.positionY;
+    if (input.width !== undefined) result.width = input.width;
+    if (input.height !== undefined) result.height = input.height;
+    if (input.alignment !== undefined) result.alignment = input.alignment;
+    if (input.renderOrder !== undefined) result.renderOrder = input.renderOrder;
+
+    if (input.config !== undefined) {
+      result.config = mapGenderElementConfigUpdateGraphqlToInput(input.config);
+    }
+
+    return result;
+  };
   // ============================================================================
   // Config Validation
   // ============================================================================

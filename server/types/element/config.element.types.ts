@@ -25,40 +25,44 @@ export type FontReferenceSelfHostedInputGraphql = {
 };
 
 export type FontReferenceInputGraphql =
-  | { google: FontReferenceGoogleInputGraphql; selfHosted?: never }
-  | { selfHosted: FontReferenceSelfHostedInputGraphql; google?: never };
-
-export type TextPropsInputGraphql = {
-  fontRef: FontReferenceInputGraphql;
-  fontSize: number;
-  color: string;
-  overflow: ElementOverflow;
-};
-
-export type TextPropsUpdateInputGraphql = {
-  fontRef?: FontReferenceInputGraphql;
-  fontSize?: number;
-  color?: string;
-  overflow?: ElementOverflow;
-};
+  | { google: FontReferenceGoogleInputGraphql; selfHosted?: never | null }
+  | { selfHosted: FontReferenceSelfHostedInputGraphql; google?: never | null };
 
 // ============================================================================
 // Text Props (shared by TEXT, DATE, NUMBER, COUNTRY, GENDER elements)
 // ============================================================================
 
 export type TextProps = {
-  fontRef: FontReference;
-  fontSize: number;
-  color: string; // e.g., "#000000" or "rgba(0,0,0,1)"
-  overflow: ElementOverflow;
+  fontRef?: FontReference | null;
+  fontSize?: number | null;
+  color?: string | null; // e.g., "#000000" or "rgba(0,0,0,1)"
+  overflow?: ElementOverflow | null;
 };
 
-// Repository input types (match Config structure)
-export type FontReferenceInput = FontReference;
-
-export type TextPropsInput = {
-  fontRef: FontReferenceInput;
+export type TextPropsCreateInput = {
+  fontRef: FontReference;
   fontSize: number;
   color: string;
   overflow: ElementOverflow;
+};
+
+export type TextPropsCreateInputGraphql = {
+  fontRef: FontReferenceInputGraphql;
+  fontSize: number;
+  color: string;
+  overflow: ElementOverflow;
+};
+
+export type TextPropsUpdateInput = {
+  fontRef?: FontReference | null;
+  fontSize?: number | null;
+  color?: string | null;
+  overflow?: ElementOverflow | null;
+};
+
+export type TextPropsUpdateInputGraphql = {
+  fontRef?: FontReferenceInputGraphql | null;
+  fontSize?: number | null;
+  color?: string | null;
+  overflow?: ElementOverflow | null;
 };
