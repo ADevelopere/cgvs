@@ -7,6 +7,8 @@ import {
   DateElementCreateInput,
   DateElementUpdateInput,
   CertificateElementEntity,
+  DateTransformation,
+  DateTransformationType,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { ElementUtils } from "./element.utils";
@@ -40,9 +42,9 @@ export namespace DateElementUtils {
     // Validate date format
     validateDateFormat(config.format);
 
-    // Validate mapping (if provided)
-    if (config.mapping !== undefined && config.mapping !== null) {
-      validateMapping(config.mapping);
+    // Validate transformation (if provided)
+    if (config.transformation !== undefined && config.transformation !== null) {
+      validateTransformation(config.transformation);
     }
 
     // Validate data source
@@ -113,25 +115,18 @@ export namespace DateElementUtils {
   };
 
   // ============================================================================
-  // Mapping Validation
+  // Transformation Validation
   // ============================================================================
 
   /**
-   * Validate mapping object (custom date component mappings)
+   * Validate transformation type
    */
-  const validateMapping = (mapping: Record<string, string>): void => {
-    if (typeof mapping !== "object" || mapping === null) {
-      throw new Error("Mapping must be an object");
-    }
-
-    // Check that all keys and values are strings
-    for (const [key, value] of Object.entries(mapping)) {
-      if (typeof key !== "string" || key.trim().length === 0) {
-        throw new Error("Mapping keys must be non-empty strings");
-      }
-      if (typeof value !== "string") {
-        throw new Error("Mapping values must be strings");
-      }
+  const validateTransformation = (transformation: DateTransformation): void => {
+    const validTypes = Object.values(DateTransformationType);
+    if (!validTypes.includes(transformation.type)) {
+      throw new Error(
+        `Invalid transformation type: ${transformation.type}. Must be one of: ${validTypes.join(", ")}`
+      );
     }
   };
 

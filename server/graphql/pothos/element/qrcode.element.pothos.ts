@@ -113,11 +113,9 @@ export const QRCodeDataSourceInputObject = gqlSchemaBuilder.inputType(
     fields: t => ({
       verificationUrl: t.field({
         type: QRCodeDataSourceVerificationUrlInputObject,
-        required: false,
       }),
       verificationCode: t.field({
         type: QRCodeDataSourceVerificationCodeInputObject,
-        required: false,
       }),
     }),
   }
@@ -142,9 +140,7 @@ export const QRCodeElementConfigObject = gqlSchemaBuilder
   });
 
 export const QRCodeElementConfigInputObject = gqlSchemaBuilder
-  .inputRef<Types.QRCodeElementConfigInputGraphql>(
-    "QRCodeElementConfigInput"
-  )
+  .inputRef<Types.QRCodeElementConfigInputGraphql>("QRCodeElementConfigInput")
   .implement({
     fields: t => ({
       dataSource: t.field({
@@ -168,11 +164,9 @@ export const QRCodeElementConfigUpdateInputObject = gqlSchemaBuilder
     fields: t => ({
       dataSource: t.field({
         type: QRCodeDataSourceInputObject,
-        required: false,
       }),
       errorCorrection: t.field({
         type: QRCodeErrorCorrectionPothosEnum,
-        required: false,
       }),
       foregroundColor: t.string({ required: false }),
       backgroundColor: t.string({ required: false }),
@@ -184,9 +178,7 @@ export const QRCodeElementConfigUpdateInputObject = gqlSchemaBuilder
 // ============================================================================
 
 export const QRCodeElementCreateInputObject = gqlSchemaBuilder
-  .inputRef<Types.QRCodeElementCreateInputGraphql>(
-    "QRCodeElementCreateInput"
-  )
+  .inputRef<Types.QRCodeElementCreateInputGraphql>("QRCodeElementCreateInput")
   .implement({
     fields: t => ({
       ...createBaseElementInputFields(t),
@@ -198,15 +190,12 @@ export const QRCodeElementCreateInputObject = gqlSchemaBuilder
   });
 
 export const QRCodeElementUpdateInputObject = gqlSchemaBuilder
-  .inputRef<Types.QRCodeElementUpdateInputGraphql>(
-    "QRCodeElementUpdateInput"
-  )
+  .inputRef<Types.QRCodeElementUpdateInputGraphql>("QRCodeElementUpdateInput")
   .implement({
     fields: t => ({
       ...createBaseElementUpdateInputFields(t),
       config: t.field({
         type: QRCodeElementConfigUpdateInputObject,
-        required: false,
       }),
     }),
   });
@@ -247,4 +236,3 @@ gqlSchemaBuilder.objectFields(QRCodeElementObject, t => ({
     resolve: element => element.templateId,
   }),
 }));
-

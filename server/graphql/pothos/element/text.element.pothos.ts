@@ -208,23 +208,18 @@ export const TextDataSourceInputObject = gqlSchemaBuilder.inputType(
     fields: t => ({
       static: t.field({
         type: TextDataSourceStaticInputObject,
-        required: false,
       }),
       studentField: t.field({
         type: TextDataSourceStudentFieldInputObject,
-        required: false,
       }),
       certificateField: t.field({
         type: TextDataSourceCertificateFieldInputObject,
-        required: false,
       }),
       templateTextVariable: t.field({
         type: TextDataSourceTemplateTextVariableInputObject,
-        required: false,
       }),
       templateSelectVariable: t.field({
         type: TextDataSourceTemplateSelectVariableInputObject,
-        required: false,
       }),
     }),
   }
@@ -261,11 +256,9 @@ export const TextElementConfigUpdateInputObject = gqlSchemaBuilder
     fields: t => ({
       textProps: t.field({
         type: TextPropsUpdateInputObject,
-        required: false,
       }),
       dataSource: t.field({
         type: TextDataSourceInputObject,
-        required: false,
       }),
     }),
   });
@@ -290,7 +283,6 @@ export const TextElementUpdateInputObject = gqlSchemaBuilder
       ...createBaseElementUpdateInputFields(t),
       config: t.field({
         type: TextElementConfigUpdateInputObject,
-        required: false,
       }),
     }),
   });
