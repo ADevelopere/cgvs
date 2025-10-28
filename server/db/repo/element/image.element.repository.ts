@@ -9,8 +9,9 @@ import {
   ImageElementConfig,
 } from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
-import { ElementUtils, ImageElementUtils, deepMerge } from "@/server/utils";
+import { ElementUtils, ImageElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
+import { merge } from "lodash";
 
 /**
  * Repository for IMAGE element operations
@@ -89,8 +90,9 @@ export namespace ImageElementRepository {
     // 5. If config is being updated, deep merge and re-extract FKs
     if (input.config) {
       // Deep merge partial config with existing to preserve nested properties
-      const mergedConfig = deepMerge(
-        existing.config as ImageElementConfig,
+      const mergedConfig: ImageElementConfig = merge(
+        {},
+        existing.config,
         input.config
       );
 

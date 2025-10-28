@@ -1,5 +1,9 @@
 import { ElementType, ElementAlignment } from "./enum.element.types";
-import { TextProps, TextPropsInput } from "./config.element.types";
+import {
+  TextProps,
+  TextPropsInput,
+  TextPropsInputGraphql,
+} from "./config.element.types";
 import { CertificateElementBaseUpdateInput } from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "./union.element.types";
 
@@ -89,6 +93,14 @@ export interface TextElementConfig {
   dataSource: TextDataSource;
 }
 
+// GraphQL input type
+export type TextElementConfigInputGraphql = {
+  type: ElementType.TEXT;
+  textProps: TextPropsInputGraphql;
+  dataSource: TextDataSourceInput;
+};
+
+// Repository input type (matches Config structure)
 export type TextElementConfigInput = {
   type: ElementType.TEXT;
   textProps: TextPropsInput;

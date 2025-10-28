@@ -8,6 +8,7 @@ import {
 } from "@/server/types/element";
 import { ElementUtils } from "./element.utils";
 import { CommonElementUtils } from "./common.element.utils";
+import { ElementRepository } from "@/server/db/repo/element/element.repository";
 
 /**
  * Validation utilities for COUNTRY elements
@@ -150,8 +151,8 @@ export namespace CountryElementUtils {
     // Dimensions validation (if provided)
     if (input.width !== undefined || input.height !== undefined) {
       const elem = await getExisting();
-      const width = input.width ?? elem.width;
-      const height = input.height ?? elem.height;
+      const width = input.width ?? elem!.width;
+      const height = input.height ?? elem!.height;
       const dimError = await ElementUtils.validateDimensions(width, height);
       if (dimError) throw new Error(dimError);
     }
@@ -159,8 +160,8 @@ export namespace CountryElementUtils {
     // Position validation (if provided)
     if (input.positionX !== undefined || input.positionY !== undefined) {
       const elem = await getExisting();
-      const x = input.positionX ?? elem.positionX;
-      const y = input.positionY ?? elem.positionY;
+      const x = input.positionX ?? elem!.positionX;
+      const y = input.positionY ?? elem!.positionY;
       const posError = await ElementUtils.validatePosition(x, y);
       if (posError) throw new Error(posError);
     }

@@ -9,8 +9,9 @@ import {
   NumberElementConfig,
 } from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
-import { ElementUtils, NumberElementUtils, deepMerge } from "@/server/utils";
+import { ElementUtils, NumberElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
+import { merge } from "lodash";
 
 /**
  * Repository for NUMBER element operations
@@ -91,8 +92,9 @@ export namespace NumberElementRepository {
     // 5. If config is being updated, deep merge and re-extract FKs
     if (input.config) {
       // Deep merge partial config with existing to preserve nested properties
-      const mergedConfig = deepMerge(
-        existing.config as NumberElementConfig,
+      const mergedConfig: NumberElementConfig = merge(
+        {},
+        existing.config,
         input.config
       );
 

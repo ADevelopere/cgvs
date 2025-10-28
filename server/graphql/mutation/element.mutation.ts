@@ -1,5 +1,4 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
-// TODO: Uncomment when element Pothos files are implemented
 import * as ElementPothos from "../pothos/element";
 import { ElementRepository } from "@/server/db/repo/element";
 // TODO: Uncomment individual repositories when their Pothos files are ready
@@ -16,6 +15,29 @@ import { ElementRepository } from "@/server/db/repo/element";
 // import * as Types from "@/server/types/element";
 
 gqlSchemaBuilder.mutationFields(t => ({
+  // =========================================================================
+  // TEST: FontReference Mutations (for schema testing)
+  // =========================================================================
+  testFontReferenceInput: t.field({
+    type: "String",
+    args: {
+      fontRef: t.arg({
+        type: ElementPothos.FontReferenceInputObject,
+        required: true,
+      }),
+    },
+    resolve: async (_, args) => {
+      // This is a fake mutation to test the schema
+      // Check if it's Google or SelfHosted
+      if (args.fontRef.google) {
+        return `Google Font: ${args.fontRef.google.identifier}`;
+      } else if (args.fontRef.selfHosted) {
+        return `Self-Hosted Font ID: ${args.fontRef.selfHosted.fontId}`;
+      }
+      return "Invalid font reference";
+    },
+  }),
+
   // =========================================================================
   // TEXT Element Mutations
   // =========================================================================
@@ -273,7 +295,6 @@ gqlSchemaBuilder.mutationFields(t => ({
     },
   }),
 
-  // TODO: Implement when base.element.pothos.ts exports ElementOrderUpdateInputObject
   updateElementsRenderOrder: t.field({
     type: "Boolean",
     args: {

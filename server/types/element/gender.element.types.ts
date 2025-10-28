@@ -1,5 +1,9 @@
 import { ElementType, ElementAlignment } from "./enum.element.types";
-import { TextProps, TextPropsInput } from "./config.element.types";
+import {
+  TextProps,
+  TextPropsInput,
+  TextPropsInputGraphql,
+} from "./config.element.types";
 import { CertificateElementBaseUpdateInput } from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "./union.element.types";
 
@@ -34,6 +38,14 @@ export interface GenderElementConfig {
   // The application uses TemplateConfig.locale for mapping gender to text
 }
 
+// GraphQL input type
+export type GenderElementConfigInputGraphql = {
+  type: ElementType.GENDER;
+  textProps: TextPropsInputGraphql;
+  dataSource: GenderDataSourceInput;
+};
+
+// Repository input type (matches Config structure)
 export type GenderElementConfigInput = {
   type: ElementType.GENDER;
   textProps: TextPropsInput;

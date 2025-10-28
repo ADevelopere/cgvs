@@ -1,5 +1,9 @@
 import { ElementType, ElementAlignment } from "./enum.element.types";
-import { TextProps, TextPropsInput } from "./config.element.types";
+import {
+  TextProps,
+  TextPropsInput,
+  TextPropsInputGraphql,
+} from "./config.element.types";
 import { CertificateElementBaseUpdateInput } from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "./union.element.types";
 
@@ -86,6 +90,18 @@ export interface DateElementConfig {
   dataSource: DateDataSource;
 }
 
+// GraphQL input type
+export type DateElementConfigInputGraphql = {
+  type: ElementType.DATE;
+  textProps: TextPropsInputGraphql;
+  calendarType: CalendarType;
+  offsetDays: number;
+  format: string;
+  mapping?: Record<string, string> | null;
+  dataSource: DateDataSourceInput;
+};
+
+// Repository input type (matches Config structure)
 export type DateElementConfigInput = {
   type: ElementType.DATE;
   textProps: TextPropsInput;
