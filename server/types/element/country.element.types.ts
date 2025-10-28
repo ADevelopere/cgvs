@@ -1,11 +1,15 @@
-import { ElementType, ElementAlignment } from "./enum.element.types";
+import { ElementType } from "./enum.element.types";
 import {
   TextProps,
-  TextPropsInput,
-  TextPropsInputGraphql,
+  TextPropsCreateInput,
+  TextPropsCreateInputGraphql,
+  TextPropsUpdateInput,
   TextPropsUpdateInputGraphql,
 } from "./config.element.types";
-import { CertificateElementBaseUpdateInput } from "./base.element.types";
+import {
+  CertificateElementBaseCreateInput,
+  CertificateElementBaseUpdateInput,
+} from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "./union.element.types";
 
 // ============================================================================
@@ -56,75 +60,58 @@ export interface CountryElementConfig {
 }
 
 // GraphQL input type (type field omitted - implied by mutation)
-export type CountryElementConfigInputGraphql = {
-  textProps: TextPropsInputGraphql;
+
+// Repository input type (matches Config structure)
+export type CountryElementConfigCreateInput = {
+  type: ElementType.COUNTRY;
+  textProps: TextPropsCreateInput;
+  representation: CountryRepresentation;
+  dataSource: CountryDataSourceInput;
+};
+
+// compatible with isOneOf definitions
+export type CountryElementConfigCreateInputGraphql = {
+  textProps: TextPropsCreateInputGraphql;
   representation: CountryRepresentation;
   dataSource: CountryDataSourceInputGraphql;
 };
 
-// GraphQL update input type (deep partial)
-export type CountryElementConfigUpdateInputGraphql = {
-  textProps?: TextPropsUpdateInputGraphql;
-  representation?: CountryRepresentation;
-  dataSource?: CountryDataSourceInputGraphql;
+export type CountryElementConfigUpdateInput = {
+  type: ElementType.COUNTRY;
+  textProps?: TextPropsUpdateInput | null;
+  representation?: CountryRepresentation | null;
+  dataSource?: CountryDataSourceInput | null;
 };
 
-// Repository input type (matches Config structure)
-export type CountryElementConfigInput = {
-  type: ElementType.COUNTRY;
-  textProps: TextPropsInput;
-  representation: CountryRepresentation;
-  dataSource: CountryDataSourceInput;
+// GraphQL update input type (deep partial)
+export type CountryElementConfigUpdateInputGraphql = {
+  textProps?: TextPropsUpdateInputGraphql | null;
+  representation?: CountryRepresentation | null;
+  dataSource?: CountryDataSourceInputGraphql | null;
 };
 
 // ============================================================================
 // Mutation Inputs
 // ============================================================================
 
-export type CountryElementCreateInput = {
-  templateId: number;
-  name: string;
-  description: string;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
-  alignment: ElementAlignment;
-  renderOrder: number;
-  config: CountryElementConfigInput;
+// create input type
+export type CountryElementCreateInput = CertificateElementBaseCreateInput & {
+  config: CountryElementConfigCreateInput;
 };
+export type CountryElementCreateInputGraphql =
+  CertificateElementBaseCreateInput & {
+    config: CountryElementConfigCreateInputGraphql;
+  };
 
+// update input type (deep partial support)
 export type CountryElementUpdateInput = CertificateElementBaseUpdateInput & {
-  config?: Partial<CountryElementConfigInput>;
+  config?: CountryElementConfigUpdateInput | null;
 };
 
-// GraphQL create input type
-export type CountryElementCreateInputGraphql = {
-  templateId: number;
-  name: string;
-  description: string;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
-  alignment: ElementAlignment;
-  renderOrder: number;
-  config: CountryElementConfigInputGraphql;
-};
-
-// GraphQL update input type (deep partial support)
-export type CountryElementUpdateInputGraphql = {
-  id: number;
-  name?: string;
-  description?: string;
-  positionX?: number;
-  positionY?: number;
-  width?: number;
-  height?: number;
-  alignment?: ElementAlignment;
-  renderOrder?: number;
-  config?: CountryElementConfigUpdateInputGraphql;
-};
+export type CountryElementUpdateInputGraphql =
+  CertificateElementBaseUpdateInput & {
+    config?: CountryElementConfigUpdateInputGraphql | null;
+  };
 
 // ============================================================================
 // Pothos Definition

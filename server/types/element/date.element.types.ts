@@ -1,11 +1,14 @@
-import { ElementType, ElementAlignment } from "./enum.element.types";
+import { ElementType } from "./enum.element.types";
 import {
   TextProps,
-  TextPropsInput,
-  TextPropsInputGraphql,
+  TextPropsCreateInput,
+  TextPropsCreateInputGraphql,
   TextPropsUpdateInputGraphql,
 } from "./config.element.types";
-import { CertificateElementBaseUpdateInput } from "./base.element.types";
+import {
+  CertificateElementBaseCreateInput,
+  CertificateElementBaseUpdateInput,
+} from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "./union.element.types";
 
 // ============================================================================
@@ -101,27 +104,27 @@ export type DateDataSourceTemplateVariableInputGraphql = {
 export type DateDataSourceInputGraphql =
   | {
       static: DateDataSourceStaticInputGraphql;
-      studentField?: never;
-      certificateField?: never;
-      templateVariable?: never;
+      studentField?: never | null;
+      certificateField?: never | null;
+      templateVariable?: never | null;
     }
   | {
       studentField: DateDataSourceStudentFieldInputGraphql;
-      static?: never;
-      certificateField?: never;
-      templateVariable?: never;
+      static?: never | null;
+      certificateField?: never | null;
+      templateVariable?: never | null;
     }
   | {
       certificateField: DateDataSourceCertificateFieldInputGraphql;
-      static?: never;
-      studentField?: never;
-      templateVariable?: never;
+      static?: never | null;
+      studentField?: never | null;
+      templateVariable?: never | null;
     }
   | {
       templateVariable: DateDataSourceTemplateVariableInputGraphql;
-      static?: never;
-      studentField?: never;
-      certificateField?: never;
+      static?: never | null;
+      studentField?: never | null;
+      certificateField?: never | null;
     };
 
 // ============================================================================
@@ -140,7 +143,7 @@ export interface DateElementConfig {
 
 // GraphQL input type (type field omitted - implied by mutation)
 export type DateElementConfigInputGraphql = {
-  textProps: TextPropsInputGraphql;
+  textProps: TextPropsCreateInputGraphql;
   calendarType: CalendarType;
   offsetDays: number;
   format: string;
@@ -150,18 +153,18 @@ export type DateElementConfigInputGraphql = {
 
 // GraphQL update input type (deep partial)
 export type DateElementConfigUpdateInputGraphql = {
-  textProps?: TextPropsUpdateInputGraphql;
-  calendarType?: CalendarType;
-  offsetDays?: number;
-  format?: string;
+  textProps?: TextPropsUpdateInputGraphql | null;
+  calendarType?: CalendarType | null;
+  offsetDays?: number | null;
+  format?: string | null;
   transformation?: DateTransformationType | null;
-  dataSource?: DateDataSourceInputGraphql;
+  dataSource?: DateDataSourceInputGraphql | null;
 };
 
 // Repository input type (matches Config structure)
 export type DateElementConfigInput = {
   type: ElementType.DATE;
-  textProps: TextPropsInput;
+  textProps: TextPropsCreateInput;
   calendarType: CalendarType;
   offsetDays: number;
   format: string;
@@ -173,50 +176,25 @@ export type DateElementConfigInput = {
 // Mutation Inputs
 // ============================================================================
 
-export type DateElementCreateInput = {
-  templateId: number;
-  name: string;
-  description: string;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
-  alignment: ElementAlignment;
-  renderOrder: number;
+export type DateElementCreateInput = CertificateElementBaseCreateInput & {
   config: DateElementConfigInput;
 };
 
 export type DateElementUpdateInput = CertificateElementBaseUpdateInput & {
-  config?: Partial<DateElementConfigInput>;
+  config?: Partial<DateElementConfigInput> | null;
 };
 
 // GraphQL create input type
-export type DateElementCreateInputGraphql = {
-  templateId: number;
-  name: string;
-  description: string;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
-  alignment: ElementAlignment;
-  renderOrder: number;
-  config: DateElementConfigInputGraphql;
-};
+export type DateElementCreateInputGraphql =
+  CertificateElementBaseCreateInput & {
+    config: DateElementConfigInputGraphql;
+  };
 
 // GraphQL update input type (deep partial support)
-export type DateElementUpdateInputGraphql = {
-  id: number;
-  name?: string;
-  description?: string;
-  positionX?: number;
-  positionY?: number;
-  width?: number;
-  height?: number;
-  alignment?: ElementAlignment;
-  renderOrder?: number;
-  config?: DateElementConfigUpdateInputGraphql;
-};
+export type DateElementUpdateInputGraphql =
+  CertificateElementBaseUpdateInput & {
+    config?: DateElementConfigUpdateInputGraphql | null;
+  };
 
 // ============================================================================
 // Pothos Definition

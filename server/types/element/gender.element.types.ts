@@ -1,11 +1,14 @@
-import { ElementType, ElementAlignment } from "./enum.element.types";
+import { ElementType } from "./enum.element.types";
 import {
   TextProps,
-  TextPropsInput,
-  TextPropsInputGraphql,
+  TextPropsCreateInput,
+  TextPropsCreateInputGraphql,
   TextPropsUpdateInputGraphql,
 } from "./config.element.types";
-import { CertificateElementBaseUpdateInput } from "./base.element.types";
+import {
+  CertificateElementBaseCreateInput,
+  CertificateElementBaseUpdateInput,
+} from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "./union.element.types";
 
 // ============================================================================
@@ -48,7 +51,7 @@ export interface GenderElementConfig {
 
 // GraphQL input type (type field omitted - implied by mutation)
 export type GenderElementConfigInputGraphql = {
-  textProps: TextPropsInputGraphql;
+  textProps: TextPropsCreateInputGraphql;
   dataSource: GenderDataSourceInputGraphql;
 };
 
@@ -61,7 +64,7 @@ export type GenderElementConfigUpdateInputGraphql = {
 // Repository input type (matches Config structure)
 export type GenderElementConfigInput = {
   type: ElementType.GENDER;
-  textProps: TextPropsInput;
+  textProps: TextPropsCreateInput;
   dataSource: GenderDataSourceInput;
 };
 
@@ -69,16 +72,7 @@ export type GenderElementConfigInput = {
 // Mutation Inputs
 // ============================================================================
 
-export type GenderElementCreateInput = {
-  templateId: number;
-  name: string;
-  description: string;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
-  alignment: ElementAlignment;
-  renderOrder: number;
+export type GenderElementCreateInput = CertificateElementBaseCreateInput & {
   config: GenderElementConfigInput;
 };
 
@@ -87,32 +81,16 @@ export type GenderElementUpdateInput = CertificateElementBaseUpdateInput & {
 };
 
 // GraphQL create input type
-export type GenderElementCreateInputGraphql = {
-  templateId: number;
-  name: string;
-  description: string;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
-  alignment: ElementAlignment;
-  renderOrder: number;
-  config: GenderElementConfigInputGraphql;
-};
+export type GenderElementCreateInputGraphql =
+  CertificateElementBaseCreateInput & {
+    config: GenderElementConfigInputGraphql;
+  };
 
 // GraphQL update input type (deep partial support)
-export type GenderElementUpdateInputGraphql = {
-  id: number;
-  name?: string;
-  description?: string;
-  positionX?: number;
-  positionY?: number;
-  width?: number;
-  height?: number;
-  alignment?: ElementAlignment;
-  renderOrder?: number;
-  config?: GenderElementConfigUpdateInputGraphql;
-};
+export type GenderElementUpdateInputGraphql =
+  CertificateElementBaseUpdateInput & {
+    config?: GenderElementConfigUpdateInputGraphql;
+  };
 
 // ============================================================================
 // Pothos Definition

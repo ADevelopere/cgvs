@@ -6,4 +6,5 @@ export { NumberElementUtils } from "./number.element.utils";
 export { CountryElementUtils } from "./country.element.utils";
 export { GenderElementUtils } from "./gender.element.utils";
 export { ImageElementUtils } from "./image.element.utils";
+export { QRCodeElementUtils } from "./qrcode.element.utils";
 export { deepMerge } from "./deepMerge.utils";

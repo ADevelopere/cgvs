@@ -5,6 +5,13 @@ import {
   ImageElementCreateInput,
   ImageElementUpdateInput,
   CertificateElementEntity,
+  ImageDataSourceInput,
+  ImageDataSourceInputGraphql,
+  ImageElementConfigInputGraphql,
+  ImageElementConfigUpdateInputGraphql,
+  ImageElementCreateInputGraphql,
+  ImageElementUpdateInputGraphql,
+  ElementType,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { ElementUtils } from "./element.utils";
@@ -15,6 +22,104 @@ import { CommonElementUtils } from "./common.element.utils";
  * Contains all IMAGE-specific validation logic
  */
 export namespace ImageElementUtils {
+  // ============================================================================
+  // GraphQL Input Mappers
+  // ============================================================================
+
+  /**
+   * Map GraphQL ImageDataSource input to repository ImageDataSource input
+   * Note: IMAGE has only one data source variant (storageFile)
+   */
+  export const mapImageDataSourceGraphqlToInput = (
+    input: ImageDataSourceInputGraphql
+  ): ImageDataSourceInput => {
+    if (input.storageFile !== undefined) {
+      return {
+        type: ImageDataSourceType.STORAGE_FILE,
+        storageFileId: input.storageFile.storageFileId,
+      };
+    }
+    throw new Error(
+      "Invalid ImageDataSource input: must specify storageFile"
+    );
+  };
+
+  /**
+   * Map GraphQL ImageElementConfig input to repository ImageElementConfig input
+   */
+  export const mapImageElementConfigGraphqlToInput = (
+    input: ImageElementConfigInputGraphql
+  ): ImageElementConfigInput => {
+    return {
+      type: ElementType.IMAGE,
+      dataSource: mapImageDataSourceGraphqlToInput(input.dataSource),
+      fit: input.fit,
+    };
+  };
+
+  /**
+   * Map GraphQL ImageElementConfig update input (partial) to repository ImageElementConfig input (partial)
+   */
+  export const mapImageElementConfigUpdateGraphqlToInput = (
+    input: ImageElementConfigUpdateInputGraphql
+  ): Partial<ImageElementConfigInput> => {
+    const result: Partial<ImageElementConfigInput> = {};
+
+    if (input.dataSource !== undefined) {
+      result.dataSource = mapImageDataSourceGraphqlToInput(input.dataSource);
+    }
+    if (input.fit !== undefined) {
+      result.fit = input.fit;
+    }
+
+    return result;
+  };
+
+  /**
+   * Map GraphQL ImageElement create input to repository ImageElement create input
+   */
+  export const mapImageElementCreateGraphqlToInput = (
+    input: ImageElementCreateInputGraphql
+  ): ImageElementCreateInput => {
+    return {
+      templateId: input.templateId,
+      name: input.name,
+      description: input.description,
+      positionX: input.positionX,
+      positionY: input.positionY,
+      width: input.width,
+      height: input.height,
+      alignment: input.alignment,
+      renderOrder: input.renderOrder,
+      config: mapImageElementConfigGraphqlToInput(input.config),
+    };
+  };
+
+  /**
+   * Map GraphQL ImageElement update input to repository ImageElement update input
+   */
+  export const mapImageElementUpdateGraphqlToInput = (
+    input: ImageElementUpdateInputGraphql
+  ): ImageElementUpdateInput => {
+    const result: ImageElementUpdateInput = {
+      id: input.id,
+    };
+
+    if (input.name !== undefined) result.name = input.name;
+    if (input.description !== undefined) result.description = input.description;
+    if (input.positionX !== undefined) result.positionX = input.positionX;
+    if (input.positionY !== undefined) result.positionY = input.positionY;
+    if (input.width !== undefined) result.width = input.width;
+    if (input.height !== undefined) result.height = input.height;
+    if (input.alignment !== undefined) result.alignment = input.alignment;
+    if (input.renderOrder !== undefined) result.renderOrder = input.renderOrder;
+
+    if (input.config !== undefined) {
+      result.config = mapImageElementConfigUpdateGraphqlToInput(input.config);
+    }
+
+    return result;
+  };
   // ============================================================================
   // Config Validation
   // ============================================================================

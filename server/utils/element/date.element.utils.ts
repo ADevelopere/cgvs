@@ -8,6 +8,13 @@ import {
   DateElementUpdateInput,
   CertificateElementEntity,
   DateTransformationType,
+  DateDataSourceInput,
+  DateDataSourceInputGraphql,
+  DateElementConfigInputGraphql,
+  DateElementConfigUpdateInputGraphql,
+  DateElementCreateInputGraphql,
+  DateElementUpdateInputGraphql,
+  ElementType,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { ElementUtils } from "./element.utils";
@@ -18,6 +25,139 @@ import { CommonElementUtils } from "./common.element.utils";
  * Contains all DATE-specific validation logic
  */
 export namespace DateElementUtils {
+  // ============================================================================
+  // GraphQL Input Mappers
+  // ============================================================================
+
+  /**
+   * Map GraphQL DateDataSource input (isOneOf) to repository DateDataSource input (discriminated union)
+   */
+  export const mapDateDataSourceGraphqlToInput = (
+    input: DateDataSourceInputGraphql
+  ): DateDataSourceInput => {
+    if (input.static !== undefined) {
+      return {
+        type: DateDataSourceType.STATIC,
+        value: input.static.value,
+      };
+    } else if (input.studentField !== undefined) {
+      return {
+        type: DateDataSourceType.STUDENT_DATE_FIELD,
+        field: input.studentField.field,
+      };
+    } else if (input.certificateField !== undefined) {
+      return {
+        type: DateDataSourceType.CERTIFICATE_DATE_FIELD,
+        field: input.certificateField.field,
+      };
+    } else if (input.templateVariable !== undefined) {
+      return {
+        type: DateDataSourceType.TEMPLATE_DATE_VARIABLE,
+        variableId: input.templateVariable.variableId,
+      };
+    }
+    throw new Error(
+      "Invalid DateDataSource input: must specify one of static, studentField, certificateField, or templateVariable"
+    );
+  };
+
+  /**
+   * Map GraphQL DateElementConfig input to repository DateElementConfig input
+   */
+  export const mapDateElementConfigGraphqlToInput = (
+    input: DateElementConfigInputGraphql
+  ): DateElementConfigInput => {
+    return {
+      type: ElementType.DATE,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps),
+      calendarType: input.calendarType,
+      offsetDays: input.offsetDays,
+      format: input.format,
+      transformation: input.transformation ?? undefined,
+      dataSource: mapDateDataSourceGraphqlToInput(input.dataSource),
+    };
+  };
+
+  /**
+   * Map GraphQL DateElementConfig update input (partial) to repository DateElementConfig input (partial)
+   */
+  export const mapDateElementConfigUpdateGraphqlToInput = (
+    input: DateElementConfigUpdateInputGraphql
+  ): Partial<DateElementConfigInput> => {
+    const result: Partial<DateElementConfigInput> = {};
+
+    if (input.textProps !== undefined) {
+      const textPropsUpdate = CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
+        input.textProps
+      );
+      if (Object.keys(textPropsUpdate).length > 0) {
+        result.textProps = textPropsUpdate as Types.TextPropsInput;
+      }
+    }
+    if (input.calendarType !== undefined) {
+      result.calendarType = input.calendarType;
+    }
+    if (input.offsetDays !== undefined) {
+      result.offsetDays = input.offsetDays;
+    }
+    if (input.format !== undefined) {
+      result.format = input.format;
+    }
+    if (input.transformation !== undefined) {
+      result.transformation = input.transformation ?? undefined;
+    }
+    if (input.dataSource !== undefined) {
+      result.dataSource = mapDateDataSourceGraphqlToInput(input.dataSource);
+    }
+
+    return result;
+  };
+
+  /**
+   * Map GraphQL DateElement create input to repository DateElement create input
+   */
+  export const mapDateElementCreateGraphqlToInput = (
+    input: DateElementCreateInputGraphql
+  ): DateElementCreateInput => {
+    return {
+      templateId: input.templateId,
+      name: input.name,
+      description: input.description,
+      positionX: input.positionX,
+      positionY: input.positionY,
+      width: input.width,
+      height: input.height,
+      alignment: input.alignment,
+      renderOrder: input.renderOrder,
+      config: mapDateElementConfigGraphqlToInput(input.config),
+    };
+  };
+
+  /**
+   * Map GraphQL DateElement update input to repository DateElement update input
+   */
+  export const mapDateElementUpdateGraphqlToInput = (
+    input: DateElementUpdateInputGraphql
+  ): DateElementUpdateInput => {
+    const result: DateElementUpdateInput = {
+      id: input.id,
+    };
+
+    if (input.name !== undefined) result.name = input.name;
+    if (input.description !== undefined) result.description = input.description;
+    if (input.positionX !== undefined) result.positionX = input.positionX;
+    if (input.positionY !== undefined) result.positionY = input.positionY;
+    if (input.width !== undefined) result.width = input.width;
+    if (input.height !== undefined) result.height = input.height;
+    if (input.alignment !== undefined) result.alignment = input.alignment;
+    if (input.renderOrder !== undefined) result.renderOrder = input.renderOrder;
+
+    if (input.config !== undefined) {
+      result.config = mapDateElementConfigUpdateGraphqlToInput(input.config);
+    }
+
+    return result;
+  };
   // ============================================================================
   // Config Validation
   // ============================================================================

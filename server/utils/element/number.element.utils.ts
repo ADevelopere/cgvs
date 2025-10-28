@@ -4,6 +4,13 @@ import {
   NumberElementCreateInput,
   NumberElementUpdateInput,
   CertificateElementEntity,
+  NumberDataSourceInput,
+  NumberDataSourceInputGraphql,
+  NumberElementConfigInputGraphql,
+  NumberElementConfigUpdateInputGraphql,
+  NumberElementCreateInputGraphql,
+  NumberElementUpdateInputGraphql,
+  ElementType,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { ElementUtils } from "./element.utils";
@@ -14,6 +21,108 @@ import { CommonElementUtils } from "./common.element.utils";
  * Contains all NUMBER-specific validation logic
  */
 export namespace NumberElementUtils {
+  // ============================================================================
+  // GraphQL Input Mappers
+  // ============================================================================
+
+  /**
+   * Map GraphQL NumberDataSource input to repository NumberDataSource input
+   * Note: NUMBER has only one data source variant, so no isOneOf pattern needed
+   */
+  export const mapNumberDataSourceGraphqlToInput = (
+    input: NumberDataSourceInputGraphql
+  ): NumberDataSourceInput => {
+    return {
+      type: NumberDataSourceType.TEMPLATE_NUMBER_VARIABLE,
+      variableId: input.variableId,
+    };
+  };
+
+  /**
+   * Map GraphQL NumberElementConfig input to repository NumberElementConfig input
+   */
+  export const mapNumberElementConfigGraphqlToInput = (
+    input: NumberElementConfigInputGraphql
+  ): NumberElementConfigInput => {
+    return {
+      type: ElementType.NUMBER,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps),
+      dataSource: mapNumberDataSourceGraphqlToInput(input.dataSource),
+      mapping: input.mapping,
+    };
+  };
+
+  /**
+   * Map GraphQL NumberElementConfig update input (partial) to repository NumberElementConfig input (partial)
+   */
+  export const mapNumberElementConfigUpdateGraphqlToInput = (
+    input: NumberElementConfigUpdateInputGraphql
+  ): Partial<NumberElementConfigInput> => {
+    const result: Partial<NumberElementConfigInput> = {};
+
+    if (input.textProps !== undefined) {
+      const textPropsUpdate = CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
+        input.textProps
+      );
+      if (Object.keys(textPropsUpdate).length > 0) {
+        result.textProps = textPropsUpdate as Types.TextPropsInput;
+      }
+    }
+    if (input.dataSource !== undefined) {
+      result.dataSource = mapNumberDataSourceGraphqlToInput(input.dataSource);
+    }
+    if (input.mapping !== undefined) {
+      result.mapping = input.mapping;
+    }
+
+    return result;
+  };
+
+  /**
+   * Map GraphQL NumberElement create input to repository NumberElement create input
+   */
+  export const mapNumberElementCreateGraphqlToInput = (
+    input: NumberElementCreateInputGraphql
+  ): NumberElementCreateInput => {
+    return {
+      templateId: input.templateId,
+      name: input.name,
+      description: input.description,
+      positionX: input.positionX,
+      positionY: input.positionY,
+      width: input.width,
+      height: input.height,
+      alignment: input.alignment,
+      renderOrder: input.renderOrder,
+      config: mapNumberElementConfigGraphqlToInput(input.config),
+    };
+  };
+
+  /**
+   * Map GraphQL NumberElement update input to repository NumberElement update input
+   */
+  export const mapNumberElementUpdateGraphqlToInput = (
+    input: NumberElementUpdateInputGraphql
+  ): NumberElementUpdateInput => {
+    const result: NumberElementUpdateInput = {
+      id: input.id,
+    };
+
+    if (input.name !== undefined) result.name = input.name;
+    if (input.description !== undefined) result.description = input.description;
+    if (input.positionX !== undefined) result.positionX = input.positionX;
+    if (input.positionY !== undefined) result.positionY = input.positionY;
+    if (input.width !== undefined) result.width = input.width;
+    if (input.height !== undefined) result.height = input.height;
+    if (input.alignment !== undefined) result.alignment = input.alignment;
+    if (input.renderOrder !== undefined) result.renderOrder = input.renderOrder;
+
+    if (input.config !== undefined) {
+      result.config = mapNumberElementConfigUpdateGraphqlToInput(input.config);
+    }
+
+    return result;
+  };
   // ============================================================================
   // Config Validation
   // ============================================================================

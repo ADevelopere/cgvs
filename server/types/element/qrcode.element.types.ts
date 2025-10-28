@@ -1,5 +1,8 @@
-import { ElementType, ElementAlignment } from "./enum.element.types";
-import { CertificateElementBaseUpdateInput } from "./base.element.types";
+import { ElementType } from "./enum.element.types";
+import {
+  CertificateElementBaseCreateInput,
+  CertificateElementBaseUpdateInput,
+} from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "./union.element.types";
 
 // ============================================================================
@@ -39,10 +42,7 @@ export type QRCodeDataSourceInput =
   | QRCodeDataSourceVerificationCodeInput;
 
 // GraphQL input types (used in Pothos isOneOf definitions)
-export type QRCodeDataSourceVerificationUrlInputGraphql = Record<
-  string,
-  never
->;
+export type QRCodeDataSourceVerificationUrlInputGraphql = Record<string, never>;
 
 export type QRCodeDataSourceVerificationCodeInputGraphql = Record<
   string,
@@ -52,11 +52,11 @@ export type QRCodeDataSourceVerificationCodeInputGraphql = Record<
 export type QRCodeDataSourceInputGraphql =
   | {
       verificationUrl: QRCodeDataSourceVerificationUrlInputGraphql;
-      verificationCode?: never;
+      verificationCode?: never | null;
     }
   | {
       verificationCode: QRCodeDataSourceVerificationCodeInputGraphql;
-      verificationUrl?: never;
+      verificationUrl?: never | null;
     };
 
 // ============================================================================
@@ -100,50 +100,25 @@ export type QRCodeElementConfigInput = {
 // Mutation Inputs
 // ============================================================================
 
-export type QRCodeElementCreateInput = {
-  templateId: number;
-  name: string;
-  description: string;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
-  alignment: ElementAlignment;
-  renderOrder: number;
+export type QRCodeElementCreateInput = CertificateElementBaseCreateInput & {
   config: QRCodeElementConfigInput;
 };
 
 // GraphQL create input type
-export type QRCodeElementCreateInputGraphql = {
-  templateId: number;
-  name: string;
-  description: string;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
-  alignment: ElementAlignment;
-  renderOrder: number;
-  config: QRCodeElementConfigInputGraphql;
-};
+export type QRCodeElementCreateInputGraphql =
+  CertificateElementBaseCreateInput & {
+    config: QRCodeElementConfigInputGraphql;
+  };
 
 export type QRCodeElementUpdateInput = CertificateElementBaseUpdateInput & {
   config?: Partial<QRCodeElementConfigInput>;
 };
 
 // GraphQL update input type (deep partial support)
-export type QRCodeElementUpdateInputGraphql = {
-  id: number;
-  name?: string;
-  description?: string;
-  positionX?: number;
-  positionY?: number;
-  width?: number;
-  height?: number;
-  alignment?: ElementAlignment;
-  renderOrder?: number;
-  config?: QRCodeElementConfigUpdateInputGraphql;
-};
+export type QRCodeElementUpdateInputGraphql =
+  CertificateElementBaseUpdateInput & {
+    config?: QRCodeElementConfigUpdateInputGraphql;
+  };
 
 // ============================================================================
 // Pothos Definition

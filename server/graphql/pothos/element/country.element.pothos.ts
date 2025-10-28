@@ -107,7 +107,7 @@ export const CountryElementConfigObject = gqlSchemaBuilder
   });
 
 export const CountryElementConfigInputObject = gqlSchemaBuilder
-  .inputRef<Types.CountryElementConfigInputGraphql>(
+  .inputRef<Types.CountryElementConfigCreateInputGraphql>(
     "CountryElementConfigInput"
   )
   .implement({

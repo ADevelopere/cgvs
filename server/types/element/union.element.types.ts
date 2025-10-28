@@ -17,7 +17,7 @@ import type {
 } from "./number.element.types";
 import type {
   CountryElementConfig,
-  CountryElementConfigInput,
+  CountryElementConfigCreateInput,
   CountryElementPothosDefinition,
 } from "./country.element.types";
 import type {
@@ -53,7 +53,7 @@ export type ElementConfigInput =
   | TextElementConfigInput
   | DateElementConfigInput
   | NumberElementConfigInput
-  | CountryElementConfigInput
+  | CountryElementConfigCreateInput
   | GenderElementConfigInput
   | ImageElementConfigInput
   | QRCodeElementConfigInput;
