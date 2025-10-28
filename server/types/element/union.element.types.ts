@@ -76,9 +76,17 @@ export type ElementConfigInput =
 // - Extract IDs from config and populate corresponding FK columns
 // - See certificateElement.ts schema comments for sync rules per element type
 //
+// Base type for Pothos interface (without config)
+export type CertificateElementPothosBase = Omit<
+  CertificateElementEntity,
+  "config"
+> & {
+  template?: TemplatePothosDefintion | null;
+};
+
 export type CertificateElementPothosDefinition = CertificateElementEntity & {
   template?: TemplatePothosDefintion | null;
-  parsedConfig: ElementConfig;
+  config: ElementConfig;
 };
 
 // ============================================================================

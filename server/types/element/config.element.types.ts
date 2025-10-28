@@ -35,6 +35,13 @@ export type TextPropsInputGraphql = {
   overflow: ElementOverflow;
 };
 
+export type TextPropsUpdateInputGraphql = {
+  fontRef?: FontReferenceInputGraphql;
+  fontSize?: number;
+  color?: string;
+  overflow?: ElementOverflow;
+};
+
 // ============================================================================
 // Text Props (shared by TEXT, DATE, NUMBER, COUNTRY, GENDER elements)
 // ============================================================================
