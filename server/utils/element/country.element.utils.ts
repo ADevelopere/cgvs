@@ -1,5 +1,4 @@
 import {
-  CountryElementConfigCreateInput,
   CountryDataSourceType,
   CountryRepresentation,
   CountryElementCreateInput,
@@ -7,11 +6,8 @@ import {
   CertificateElementEntity,
   CountryDataSourceInput,
   CountryDataSourceInputGraphql,
-  CountryElementConfigCreateInputGraphql,
-  CountryElementConfigUpdateInputGraphql,
   CountryElementCreateInputGraphql,
   CountryElementUpdateInputGraphql,
-  CountryElementConfigUpdateInput,
 } from "@/server/types/element";
 import { CommonElementUtils } from "./common.element.utils";
 
@@ -45,40 +41,6 @@ export namespace CountryElementUtils {
   };
 
   /**
-   * Map GraphQL CountryElementConfig input to repository CountryElementConfig input
-   */
-  export const mapCountryElementConfigCreateGraphqlToInput = (
-    input: CountryElementConfigCreateInputGraphql
-  ): CountryElementConfigCreateInput => {
-    return {
-      ...input,
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
-        input.textProps
-      )!,
-      // dataSource: mapCountryDataSourceGraphqlToInput(input.dataSource)!,
-    };
-  };
-
-  /**
-   * Map GraphQL CountryElementConfig update input (partial) to repository CountryElementConfig input (partial)
-   */
-  export const mapCountryElementConfigUpdateGraphqlToInput = (
-    input?: CountryElementConfigUpdateInputGraphql | null
-  ): CountryElementConfigUpdateInput | null | undefined => {
-    if (!input) {
-      return input;
-    }
-
-    return {
-      ...input,
-      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
-        input.textProps
-      ),
-      // dataSource: mapCountryDataSourceGraphqlToInput(input.dataSource),
-    };
-  };
-
-  /**
    * Map GraphQL CountryElement create input to repository CountryElement create input
    */
   export const mapCountryElementCreateGraphqlToInput = (
@@ -86,7 +48,9 @@ export namespace CountryElementUtils {
   ): CountryElementCreateInput => {
     return {
       ...input,
-      config: mapCountryElementConfigCreateGraphqlToInput(input.config),
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
+        input.textProps
+      )!,
     };
   };
 
@@ -98,30 +62,11 @@ export namespace CountryElementUtils {
   ): CountryElementUpdateInput => {
     return {
       ...input,
-      config: mapCountryElementConfigUpdateGraphqlToInput(input.config),
+      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
+        input.textProps
+      ),
     };
   };
-  // ============================================================================
-  // Config Validation
-  // ============================================================================
-
-  /**
-   * Validate complete COUNTRY element config
-   * Validates font reference, representation, and data source
-   */
-  export const validateConfigCreateInput = async (
-    config: CountryElementConfigCreateInput
-  ): Promise<void> => {
-    // Validate textProps
-    await CommonElementUtils.validateTextProps(config);
-
-    // Validate representation
-    validateRepresentation(config.representation);
-
-    // Validate data source
-    validateDataSource(config);
-  };
-
   // ============================================================================
   // Representation Validation
   // ============================================================================
@@ -148,16 +93,13 @@ export namespace CountryElementUtils {
    * Validate country data source
    * COUNTRY elements only support STUDENT_NATIONALITY
    */
-  const validateDataSource = (
-    _config: CountryElementConfigCreateInput
-  ): void => {
-    // const dataSource = config.dataSource;
-    // if (dataSource.type !== CountryDataSourceType.STUDENT_NATIONALITY) {
-    //   throw new Error(
-    //     `Invalid country data source type. Must be STUDENT_NATIONALITY`
-    //   );
-    // }
-  };
+  // const validateDataSource = (dataSource: CountryDataSourceInput): void => {
+  //   if (dataSource.type !== CountryDataSourceType.STUDENT_NATIONALITY) {
+  //     throw new Error(
+  //       `Invalid country data source type. Must be STUDENT_NATIONALITY`
+  //     );
+  //   }
+  // };
 
   // ============================================================================
   // Create Input Validation
@@ -172,8 +114,13 @@ export namespace CountryElementUtils {
     // Validate base element properties
     await CommonElementUtils.validateBaseCreateInput(input);
 
-    // Config validation
-    await validateConfigCreateInput(input.config);
+    // Validate textProps
+    await CommonElementUtils.validateTextProps(input.textProps);
+
+    // Validate representation
+    validateRepresentation(input.representation);
+
+    // COUNTRY has fixed data source (STUDENT_NATIONALITY), no validation needed
   };
 
   // ============================================================================
@@ -191,27 +138,14 @@ export namespace CountryElementUtils {
     // Validate base element properties
     await CommonElementUtils.validateBaseUpdateInput(input, existing);
 
-    // Config validation (if provided) - handled separately with deep merge
-  };
-
-  export const extractStorageFileIdFromConfigTextProps = (
-    config?:
-      | CountryElementConfigCreateInput
-      | CountryElementConfigUpdateInput
-      | null
-  ): number | null | undefined => {
-    if (!config) return config;
-
-    const { textProps } = config;
-    if (!textProps) return textProps;
-
-    const fontRef = config.textProps?.fontRef;
-
-    if (fontRef) {
-      if (fontRef.type === "SELF_HOSTED") {
-        return fontRef.fontId;
-      }
+    // Validate textProps (if provided)
+    if (input.textProps) {
+      await CommonElementUtils.validateTextProps(input.textProps);
     }
-    return null;
+
+    // Validate representation (if provided)
+    if (input.representation !== undefined && input.representation !== null) {
+      validateRepresentation(input.representation);
+    }
   };
 }

@@ -1,5 +1,4 @@
 import {
-  DateElementConfigCreateInput,
   DateDataSourceType,
   StudentDateField,
   CertificateDateField,
@@ -10,11 +9,8 @@ import {
   DateTransformationType,
   DateDataSourceInput,
   DateDataSourceInputGraphql,
-  DateElementConfigInputGraphql,
-  DateElementConfigUpdateInputGraphql,
   DateElementCreateInputGraphql,
   DateElementUpdateInputGraphql,
-  DateElementConfigUpdateInput,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { CommonElementUtils } from "./common.element.utils";
@@ -64,39 +60,6 @@ export namespace DateElementUtils {
   };
 
   /**
-   * Map GraphQL DateElementConfig input to repository DateElementConfig input
-   */
-  export const mapDateElementConfigGraphqlToInput = (
-    input: DateElementConfigInputGraphql
-  ): DateElementConfigCreateInput => {
-    return {
-      ...input,
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
-        input.textProps
-      )!,
-      dataSource: mapDateDataSourceGraphqlToInput(input.dataSource)!,
-    };
-  };
-
-  /**
-   * Map GraphQL DateElementConfig update input (partial) to repository DateElementConfig input (partial)
-   */
-  export const mapDateElementConfigUpdateGraphqlToInput = (
-    input?: DateElementConfigUpdateInputGraphql | null
-  ): DateElementConfigUpdateInput | null | undefined => {
-    if (!input) {
-      return input;
-    }
-    return {
-      ...input,
-      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
-        input.textProps
-      ),
-      dataSource: mapDateDataSourceGraphqlToInput(input.dataSource),
-    };
-  };
-
-  /**
    * Map GraphQL DateElement create input to repository DateElement create input
    */
   export const mapDateElementCreateGraphqlToInput = (
@@ -104,7 +67,10 @@ export namespace DateElementUtils {
   ): DateElementCreateInput => {
     return {
       ...input,
-      config: mapDateElementConfigGraphqlToInput(input.config),
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
+        input.textProps
+      )!,
+      dataSource: mapDateDataSourceGraphqlToInput(input.dataSource)!,
     };
   };
 
@@ -116,41 +82,12 @@ export namespace DateElementUtils {
   ): DateElementUpdateInput => {
     return {
       ...input,
-      config: mapDateElementConfigUpdateGraphqlToInput(input.config),
+      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
+        input.textProps
+      ),
+      dataSource: mapDateDataSourceGraphqlToInput(input.dataSource),
     };
   };
-  // ============================================================================
-  // Config Validation
-  // ============================================================================
-
-  /**
-   * Validate complete DATE element config
-   * Validates font reference, data source, calendar type, format, and text properties
-   */
-  export const validateConfig = async (
-    config: DateElementConfigCreateInput
-  ): Promise<void> => {
-    // Validate textProps (font, size, color, overflow)
-    await CommonElementUtils.validateTextProps(config);
-
-    // Validate calendar type
-    validateCalendarType(config.calendarType);
-
-    // Validate offset days
-    validateOffsetDays(config.offsetDays);
-
-    // Validate date format
-    validateDateFormat(config.format);
-
-    // Validate transformation (if provided)
-    if (config.transformation !== undefined && config.transformation !== null) {
-      validateTransformation(config.transformation);
-    }
-
-    // Validate data source
-    await validateDataSource(config);
-  };
-
   // ============================================================================
   // Calendar Type Validation
   // ============================================================================
@@ -240,9 +177,8 @@ export namespace DateElementUtils {
    * Validate date data source based on type
    */
   const validateDataSource = async (
-    config: DateElementConfigCreateInput
+    dataSource: DateDataSourceInput
   ): Promise<void> => {
-    const dataSource = config.dataSource;
     switch (dataSource.type) {
       case DateDataSourceType.STATIC:
         validateStaticDataSource(dataSource.value);
@@ -328,8 +264,25 @@ export namespace DateElementUtils {
     // Validate base element properties
     await CommonElementUtils.validateBaseCreateInput(input);
 
-    // Config validation
-    await validateConfig(input.config);
+    // Validate textProps
+    await CommonElementUtils.validateTextProps(input.textProps);
+
+    // Validate calendar type
+    validateCalendarType(input.calendarType);
+
+    // Validate offset days
+    validateOffsetDays(input.offsetDays);
+
+    // Validate date format
+    validateDateFormat(input.format);
+
+    // Validate transformation (if provided)
+    if (input.transformation !== undefined && input.transformation !== null) {
+      validateTransformation(input.transformation);
+    }
+
+    // Validate data source
+    await validateDataSource(input.dataSource);
   };
 
   // ============================================================================
@@ -347,6 +300,36 @@ export namespace DateElementUtils {
     // Validate base element properties
     await CommonElementUtils.validateBaseUpdateInput(input, existing);
 
-    // Config validation (if provided) - handled separately with deep merge
+    // Validate textProps (if provided)
+    if (input.textProps) {
+      await CommonElementUtils.validateTextProps(input.textProps);
+    }
+
+    // Validate calendar type (if provided)
+    if (input.calendarType !== undefined && input.calendarType !== null) {
+      validateCalendarType(input.calendarType);
+    }
+
+    // Validate offset days (if provided)
+    if (input.offsetDays !== undefined && input.offsetDays !== null) {
+      validateOffsetDays(input.offsetDays);
+    }
+
+    // Validate date format (if provided)
+    if (input.format !== undefined && input.format !== null) {
+      validateDateFormat(input.format);
+    }
+
+    // Validate transformation (if provided)
+    if (input.transformation !== undefined) {
+      if (input.transformation !== null) {
+        validateTransformation(input.transformation);
+      }
+    }
+
+    // Validate data source (if provided)
+    if (input.dataSource) {
+      await validateDataSource(input.dataSource);
+    }
   };
 }

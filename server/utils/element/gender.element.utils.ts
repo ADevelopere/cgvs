@@ -1,16 +1,12 @@
 import {
-  GenderElementConfigCreateInput,
   GenderDataSourceType,
   GenderElementCreateInput,
   GenderElementUpdateInput,
   CertificateElementEntity,
   GenderDataSourceInput,
   GenderDataSourceInputGraphql,
-  GenderElementConfigInputGraphql,
-  GenderElementConfigUpdateInputGraphql,
   GenderElementCreateInputGraphql,
   GenderElementUpdateInputGraphql,
-  GenderElementConfigUpdateInput,
 } from "@/server/types/element";
 import { CommonElementUtils } from "./common.element.utils";
 
@@ -44,38 +40,6 @@ export namespace GenderElementUtils {
   };
 
   /**
-   * Map GraphQL GenderElementConfig input to repository GenderElementConfig input
-   */
-  export const mapGenderElementConfigGraphqlToInput = (
-    input?: GenderElementConfigInputGraphql | null
-  ): GenderElementConfigCreateInput | null | undefined => {
-    if (!input) {
-      return input;
-    }
-    return {
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps)!,
-      // dataSource: mapGenderDataSourceGraphqlToInput(input.dataSource)!,
-    };
-  };
-
-  /**
-   * Map GraphQL GenderElementConfig update input (partial) to repository GenderElementConfig input (partial)
-   */
-  export const mapGenderElementConfigUpdateGraphqlToInput = (
-    input?: GenderElementConfigUpdateInputGraphql | null
-  ): GenderElementConfigUpdateInput | null | undefined => {
-    if (!input) {
-      return input;
-    }
-
-    return {
-      ...input,
-      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(input.textProps),
-      // dataSource: mapGenderDataSourceGraphqlToInput(input.dataSource),
-    };
-  };
-
-  /**
    * Map GraphQL GenderElement create input to repository GenderElement create input
    */
   export const mapGenderElementCreateGraphqlToInput = (
@@ -83,7 +47,7 @@ export namespace GenderElementUtils {
   ): GenderElementCreateInput => {
     return {
       ...input,
-      config: mapGenderElementConfigGraphqlToInput(input.config)!,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps)!,
     };
   };
 
@@ -95,48 +59,9 @@ export namespace GenderElementUtils {
   ): GenderElementUpdateInput => {
     return {
       ...input,
-      config: mapGenderElementConfigUpdateGraphqlToInput(input.config),
+      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(input.textProps),
     };
   };
-  // ============================================================================
-  // Config Validation
-  // ============================================================================
-
-  /**
-   * Validate complete GENDER element config
-   * Validates font reference and data source
-   */
-  export const validateConfig = async (
-    config: GenderElementConfigCreateInput
-  ): Promise<void> => {
-    // Validate textProps
-    await CommonElementUtils.validateTextProps(config);
-
-    // Validate data source
-    await validateDataSource(config);
-  };
-
-  // ============================================================================
-  // Data Source Validation
-  // ============================================================================
-
-  /**
-   * Validate gender data source
-   * GENDER elements only support STUDENT_GENDER data source type
-   */
-  const validateDataSource = async (
-    _config: GenderElementConfigCreateInput
-  ): Promise<void> => {
-    // const dataSource = config.dataSource;
-
-    // // GENDER elements only have one data source type
-    // if (dataSource.type !== GenderDataSourceType.STUDENT_GENDER) {
-    //   throw new Error(
-    //     `Invalid gender data source type: ${dataSource.type}. Must be ${GenderDataSourceType.STUDENT_GENDER}`
-    //   );
-    // }
-  };
-
   // ============================================================================
   // Create Input Validation
   // ============================================================================
@@ -150,8 +75,10 @@ export namespace GenderElementUtils {
     // Validate base element properties
     await CommonElementUtils.validateBaseCreateInput(input);
 
-    // Config validation
-    await validateConfig(input.config);
+    // Validate textProps
+    await CommonElementUtils.validateTextProps(input.textProps);
+
+    // GENDER has fixed data source (STUDENT_GENDER), no validation needed
   };
 
   // ============================================================================
@@ -169,6 +96,9 @@ export namespace GenderElementUtils {
     // Validate base element properties
     await CommonElementUtils.validateBaseUpdateInput(input, existing);
 
-    // Config validation (if provided) - handled separately with deep merge
+    // Validate textProps (if provided)
+    if (input.textProps) {
+      await CommonElementUtils.validateTextProps(input.textProps);
+    }
   };
 }
