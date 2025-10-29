@@ -42,25 +42,25 @@ export const GenderDataSourceStudentGenderObject = gqlSchemaBuilder
 // Data Source Input Objects (isOneOf Pattern)
 // ============================================================================
 
-export const GenderDataSourceStudentGenderInputObject = gqlSchemaBuilder
-  .inputRef<Types.GenderDataSourceStudentGenderInputGraphql>(
-    "GenderDataSourceStudentGenderInput"
-  )
-  .implement({
-    fields: () => ({}), // No fields - discriminator only
-  });
+// export const GenderDataSourceStudentGenderInputObject = gqlSchemaBuilder
+//   .inputRef<Types.GenderDataSourceStudentGenderInputGraphql>(
+//     "GenderDataSourceStudentGenderInput"
+//   )
+//   .implement({
+//     fields: () => ({}), // No fields - discriminator only
+//   });
 
-export const GenderDataSourceInputObject = gqlSchemaBuilder.inputType(
-  "GenderDataSourceInput",
-  {
-    isOneOf: true,
-    fields: t => ({
-      studentGender: t.field({
-        type: GenderDataSourceStudentGenderInputObject,
-      }),
-    }),
-  }
-);
+// export const GenderDataSourceInputObject = gqlSchemaBuilder.inputType(
+//   "GenderDataSourceInput",
+//   {
+//     isOneOf: true,
+//     fields: t => ({
+//       studentGender: t.field({
+//         type: GenderDataSourceStudentGenderInputObject,
+//       }),
+//     }),
+//   }
+// );
 
 // ============================================================================
 // Config Objects
@@ -71,9 +71,9 @@ export const GenderElementConfigObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       textProps: t.expose("textProps", { type: TextPropsObject }),
-      dataSource: t.expose("dataSource", {
-        type: GenderDataSourceStudentGenderObject,
-      }),
+      // dataSource: t.expose("dataSource", {
+      //   type: GenderDataSourceStudentGenderObject,
+      // }),
     }),
   });
 
@@ -82,10 +82,10 @@ export const GenderElementConfigInputObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       textProps: t.field({ type: TextPropsInputObject, required: true }),
-      dataSource: t.field({
-        type: GenderDataSourceInputObject,
-        required: true,
-      }),
+      // dataSource: t.field({
+      //   type: GenderDataSourceInputObject,
+      //   required: true,
+      // }),
     }),
   });
 
@@ -99,10 +99,10 @@ export const GenderElementConfigUpdateInputObject = gqlSchemaBuilder
         type: TextPropsUpdateInputObject,
         required: false,
       }),
-      dataSource: t.field({
-        type: GenderDataSourceInputObject,
-        required: false,
-      }),
+      // dataSource: t.field({
+      //   type: GenderDataSourceInputObject,
+      //   required: false,
+      // }),
     }),
   });
 

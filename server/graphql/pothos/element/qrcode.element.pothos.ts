@@ -87,36 +87,36 @@ export const QRCodeDataSourceUnion = gqlSchemaBuilder.unionType(
 // Data Source Input Objects (isOneOf Pattern)
 // ============================================================================
 
-export const QRCodeDataSourceVerificationUrlInputObject = gqlSchemaBuilder
-  .inputRef<Types.QRCodeDataSourceVerificationUrlInputGraphql>(
-    "QRCodeDataSourceVerificationUrlInput"
-  )
-  .implement({
-    fields: () => ({}),
-  });
+// export const QRCodeDataSourceVerificationUrlInputObject = gqlSchemaBuilder
+//   .inputRef<Types.QRCodeDataSourceVerificationUrlInputGraphql>(
+//     "QRCodeDataSourceVerificationUrlInput"
+//   )
+//   .implement({
+//     fields: () => ({}),
+//   });
 
-export const QRCodeDataSourceVerificationCodeInputObject = gqlSchemaBuilder
-  .inputRef<Types.QRCodeDataSourceVerificationCodeInputGraphql>(
-    "QRCodeDataSourceVerificationCodeInput"
-  )
-  .implement({
-    fields: () => ({}),
-  });
+// export const QRCodeDataSourceVerificationCodeInputObject = gqlSchemaBuilder
+//   .inputRef<Types.QRCodeDataSourceVerificationCodeInputGraphql>(
+//     "QRCodeDataSourceVerificationCodeInput"
+//   )
+//   .implement({
+//     fields: () => ({}),
+//   });
 
-export const QRCodeDataSourceInputObject = gqlSchemaBuilder.inputType(
-  "QRCodeDataSourceInput",
-  {
-    isOneOf: true,
-    fields: t => ({
-      verificationUrl: t.field({
-        type: QRCodeDataSourceVerificationUrlInputObject,
-      }),
-      verificationCode: t.field({
-        type: QRCodeDataSourceVerificationCodeInputObject,
-      }),
-    }),
-  }
-);
+// export const QRCodeDataSourceInputObject = gqlSchemaBuilder.inputType(
+//   "QRCodeDataSourceInput",
+//   {
+//     isOneOf: true,
+//     fields: t => ({
+//       verificationUrl: t.field({
+//         type: QRCodeDataSourceVerificationUrlInputObject,
+//       }),
+//       verificationCode: t.field({
+//         type: QRCodeDataSourceVerificationCodeInputObject,
+//       }),
+//     }),
+//   }
+// );
 
 // ============================================================================
 // Config Objects
@@ -126,7 +126,7 @@ export const QRCodeElementConfigObject = gqlSchemaBuilder
   .objectRef<Types.QRCodeElementConfig>("QRCodeElementConfig")
   .implement({
     fields: t => ({
-      dataSource: t.expose("dataSource", { type: QRCodeDataSourceUnion }),
+      // dataSource: t.expose("dataSource", { type: QRCodeDataSourceUnion }),
       errorCorrection: t.expose("errorCorrection", {
         type: QRCodeErrorCorrectionPothosEnum,
       }),
@@ -139,10 +139,10 @@ export const QRCodeElementConfigInputObject = gqlSchemaBuilder
   .inputRef<Types.QRCodeElementConfigInputGraphql>("QRCodeElementConfigInput")
   .implement({
     fields: t => ({
-      dataSource: t.field({
-        type: QRCodeDataSourceInputObject,
-        required: true,
-      }),
+      // dataSource: t.field({
+      //   type: QRCodeDataSourceInputObject,
+      //   required: true,
+      // }),
       errorCorrection: t.field({
         type: QRCodeErrorCorrectionPothosEnum,
         required: true,
@@ -158,9 +158,9 @@ export const QRCodeElementConfigUpdateInputObject = gqlSchemaBuilder
   )
   .implement({
     fields: t => ({
-      dataSource: t.field({
-        type: QRCodeDataSourceInputObject,
-      }),
+      // dataSource: t.field({
+      //   type: QRCodeDataSourceInputObject,
+      // }),
       errorCorrection: t.field({
         type: QRCodeErrorCorrectionPothosEnum,
       }),

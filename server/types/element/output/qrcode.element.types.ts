@@ -29,7 +29,7 @@ export type QRCodeDataSource =
 // ============================================================================
 
 export interface QRCodeElementConfig {
-  dataSource: QRCodeDataSource;
+  // dataSource: QRCodeDataSource;
   errorCorrection: QRCodeErrorCorrection;
   foregroundColor: string; // e.g., "#000000"
   backgroundColor: string; // e.g., "#FFFFFF"

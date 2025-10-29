@@ -54,7 +54,7 @@ export namespace GenderElementUtils {
     }
     return {
       textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps)!,
-      dataSource: mapGenderDataSourceGraphqlToInput(input.dataSource)!,
+      // dataSource: mapGenderDataSourceGraphqlToInput(input.dataSource)!,
     };
   };
 
@@ -71,7 +71,7 @@ export namespace GenderElementUtils {
     return {
       ...input,
       textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(input.textProps),
-      dataSource: mapGenderDataSourceGraphqlToInput(input.dataSource),
+      // dataSource: mapGenderDataSourceGraphqlToInput(input.dataSource),
     };
   };
 
@@ -125,16 +125,16 @@ export namespace GenderElementUtils {
    * GENDER elements only support STUDENT_GENDER data source type
    */
   const validateDataSource = async (
-    config: GenderElementConfigCreateInput
+    _config: GenderElementConfigCreateInput
   ): Promise<void> => {
-    const dataSource = config.dataSource;
+    // const dataSource = config.dataSource;
 
-    // GENDER elements only have one data source type
-    if (dataSource.type !== GenderDataSourceType.STUDENT_GENDER) {
-      throw new Error(
-        `Invalid gender data source type: ${dataSource.type}. Must be ${GenderDataSourceType.STUDENT_GENDER}`
-      );
-    }
+    // // GENDER elements only have one data source type
+    // if (dataSource.type !== GenderDataSourceType.STUDENT_GENDER) {
+    //   throw new Error(
+    //     `Invalid gender data source type: ${dataSource.type}. Must be ${GenderDataSourceType.STUDENT_GENDER}`
+    //   );
+    // }
   };
 
   // ============================================================================

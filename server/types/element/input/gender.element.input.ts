@@ -20,12 +20,12 @@ export type GenderDataSourceInput = {
 // Repository input type (matches Config structure)
 export type GenderElementConfigCreateInput = {
   textProps: TextPropsCreateInput;
-  dataSource: GenderDataSourceInput;
+  // dataSource: GenderDataSourceInput;
 };
 
 export type GenderElementConfigUpdateInput = {
   textProps?: TextPropsUpdateInput | null;
-  dataSource?: GenderDataSourceInput | null;
+  // dataSource?: GenderDataSourceInput | null;
 };
 
 // ============================================================================

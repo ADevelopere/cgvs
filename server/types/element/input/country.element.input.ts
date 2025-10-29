@@ -27,13 +27,13 @@ export type CountryDataSourceInput = {
 export type CountryElementConfigCreateInput = {
   textProps: TextPropsCreateInput;
   representation: CountryRepresentation;
-  dataSource: CountryDataSourceInput;
+  // dataSource: CountryDataSourceInput;
 };
 
 export type CountryElementConfigUpdateInput = {
   textProps?: TextPropsUpdateInput | null;
   representation?: CountryRepresentation | null;
-  dataSource?: CountryDataSourceInput | null;
+  // dataSource?: CountryDataSourceInput | null;
 };
 
 // ============================================================================

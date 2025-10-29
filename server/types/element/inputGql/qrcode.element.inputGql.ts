@@ -30,7 +30,7 @@ export type QRCodeDataSourceInputGraphql =
 
 // GraphQL input type (type field omitted - implied by mutation)
 export type QRCodeElementConfigInputGraphql = {
-  dataSource: QRCodeDataSourceInputGraphql;
+  // dataSource: QRCodeDataSourceInputGraphql;
   errorCorrection: QRCodeErrorCorrection;
   foregroundColor: string;
   backgroundColor: string;
@@ -38,7 +38,7 @@ export type QRCodeElementConfigInputGraphql = {
 
 // GraphQL update input type (all optional)
 export type QRCodeElementConfigUpdateInputGraphql = {
-  dataSource?: QRCodeDataSourceInputGraphql | null;
+  // dataSource?: QRCodeDataSourceInputGraphql | null;
   errorCorrection?: QRCodeErrorCorrection | null;
   foregroundColor?: string | null;
   backgroundColor?: string | null;

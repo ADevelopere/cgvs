@@ -66,25 +66,25 @@ export const CountryDataSourceUnion = gqlSchemaBuilder.unionType(
 // Data Source Input Objects (isOneOf Pattern)
 // ============================================================================
 
-export const CountryDataSourceStudentNationalityInputObject = gqlSchemaBuilder
-  .inputRef<Types.CountryDataSourceStudentNationalityInputGraphql>(
-    "CountryDataSourceStudentNationalityInput"
-  )
-  .implement({
-    fields: () => ({}),
-  });
+// export const CountryDataSourceStudentNationalityInputObject = gqlSchemaBuilder
+//   .inputRef<Types.CountryDataSourceStudentNationalityInputGraphql>(
+//     "CountryDataSourceStudentNationalityInput"
+//   )
+//   .implement({
+//     fields: () => ({}),
+//   });
 
-export const CountryDataSourceInputObject = gqlSchemaBuilder.inputType(
-  "CountryDataSourceInput",
-  {
-    isOneOf: true,
-    fields: t => ({
-      studentNationality: t.field({
-        type: CountryDataSourceStudentNationalityInputObject,
-      }),
-    }),
-  }
-);
+// export const CountryDataSourceInputObject = gqlSchemaBuilder.inputType(
+//   "CountryDataSourceInput",
+//   {
+//     isOneOf: true,
+//     fields: t => ({
+//       studentNationality: t.field({
+//         type: CountryDataSourceStudentNationalityInputObject,
+//       }),
+//     }),
+//   }
+// );
 
 // ============================================================================
 // Config Objects
@@ -98,7 +98,7 @@ export const CountryElementConfigObject = gqlSchemaBuilder
       representation: t.expose("representation", {
         type: CountryRepresentationPothosEnum,
       }),
-      dataSource: t.expose("dataSource", { type: CountryDataSourceUnion }),
+      // dataSource: t.expose("dataSource", { type: CountryDataSourceUnion }),
     }),
   });
 
@@ -113,10 +113,10 @@ export const CountryElementConfigInputObject = gqlSchemaBuilder
         type: CountryRepresentationPothosEnum,
         required: true,
       }),
-      dataSource: t.field({
-        type: CountryDataSourceInputObject,
-        required: true,
-      }),
+      // dataSource: t.field({
+      //   type: CountryDataSourceInputObject,
+      //   required: true,
+      // }),
     }),
   });
 
@@ -134,10 +134,10 @@ export const CountryElementConfigUpdateInputObject = gqlSchemaBuilder
         type: CountryRepresentationPothosEnum,
         required: false,
       }),
-      dataSource: t.field({
-        type: CountryDataSourceInputObject,
-        required: false,
-      }),
+      // dataSource: t.field({
+      //   type: CountryDataSourceInputObject,
+      //   required: false,
+      // }),
     }),
   });
 
