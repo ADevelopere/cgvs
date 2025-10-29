@@ -13,10 +13,8 @@ import {
   CountryElementUpdateInputGraphql,
   ElementType,
   CountryElementConfigUpdateInput,
-} from "@/server/types/element";
-import { ElementUtils } from "./element.utils";
+} from "@/server/types/element/output";
 import { CommonElementUtils } from "./common.element.utils";
-import { ElementRepository } from "@/server/db/repo/element/element.repository";
 
 /**
  * Validation utilities for COUNTRY elements
@@ -178,32 +176,8 @@ export namespace CountryElementUtils {
   export const validateCreateInput = async (
     input: CountryElementCreateInput
   ): Promise<void> => {
-    // Template exists
-    await ElementRepository.validateTemplateId(input.templateId);
-
-    // Name validation
-    const nameError = await ElementUtils.validateName(input.name);
-    if (nameError) throw new Error(nameError);
-
-    // Dimensions validation
-    const dimError = await ElementUtils.validateDimensions(
-      input.width,
-      input.height
-    );
-    if (dimError) throw new Error(dimError);
-
-    // Position validation
-    const posError = await ElementUtils.validatePosition(
-      input.positionX,
-      input.positionY
-    );
-    if (posError) throw new Error(posError);
-
-    // Render order validation
-    const orderError = await ElementUtils.validateRenderOrder(
-      input.renderOrder
-    );
-    if (orderError) throw new Error(orderError);
+    // Validate base element properties
+    await CommonElementUtils.validateBaseCreateInput(input);
 
     // Config validation
     await validateConfig(input.config);
@@ -221,35 +195,8 @@ export namespace CountryElementUtils {
     input: CountryElementUpdateInput,
     existing: CertificateElementEntity
   ): Promise<void> => {
-    // Name validation (if provided)
-    if (input.name) {
-      const nameError = await ElementUtils.validateName(input.name);
-      if (nameError) throw new Error(nameError);
-    }
-
-    // Dimensions validation (if provided)
-    if (input.width || input.height) {
-      const width = input.width ?? existing.width;
-      const height = input.height ?? existing.height;
-      const dimError = await ElementUtils.validateDimensions(width, height);
-      if (dimError) throw new Error(dimError);
-    }
-
-    // Position validation (if provided)
-    if (input.positionX !== undefined || input.positionY !== undefined) {
-      const x = input.positionX ?? existing.positionX;
-      const y = input.positionY ?? existing.positionY;
-      const posError = await ElementUtils.validatePosition(x, y);
-      if (posError) throw new Error(posError);
-    }
-
-    // Render order validation (if provided)
-    if (input.renderOrder !== undefined && input.renderOrder !== null) {
-      const orderError = await ElementUtils.validateRenderOrder(
-        input.renderOrder
-      );
-      if (orderError) throw new Error(orderError);
-    }
+    // Validate base element properties
+    await CommonElementUtils.validateBaseUpdateInput(input, existing);
 
     // Config validation (if provided) - handled separately with deep merge
   };

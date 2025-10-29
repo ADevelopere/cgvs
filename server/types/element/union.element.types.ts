@@ -1,62 +1,30 @@
-import type { CertificateElementEntity } from "./base.element.types";
 import type { TemplatePothosDefintion } from "../template.types";
-import type {
-  TextElementConfig,
-  TextElementConfigInput,
-  TextElementPothosDefinition,
-} from "./text.element.types";
-import type {
-  DateElementConfig,
-  DateElementConfigInput,
-  DateElementPothosDefinition,
-} from "./date.element.types";
-import type {
-  NumberElementConfig,
-  NumberElementConfigInput,
-  NumberElementPothosDefinition,
-} from "./number.element.types";
-import type {
-  CountryElementConfig,
-  CountryElementConfigCreateInput,
-  CountryElementPothosDefinition,
-} from "./country.element.types";
-import type {
-  GenderElementConfig,
-  GenderElementConfigInput,
-  GenderElementPothosDefinition,
-} from "./gender.element.types";
-import type {
-  ImageElementConfig,
-  ImageElementConfigInput,
-  ImageElementPothosDefinition,
-} from "./image.element.types";
-import type {
-  QRCodeElementConfig,
-  QRCodeElementConfigInput,
-  QRCodeElementPothosDefinition,
-} from "./qrcode.element.types";
+
+import * as Output from "./output";
+
+import * as Input from "./input";
 
 // ============================================================================
 // Config Unions
 // ============================================================================
 
-export type ElementConfig =
-  | TextElementConfig
-  | DateElementConfig
-  | NumberElementConfig
-  | CountryElementConfig
-  | GenderElementConfig
-  | ImageElementConfig
-  | QRCodeElementConfig;
+export type ElementConfigUnion =
+  | Output.TextElementConfig
+  | Output.DateElementConfig
+  | Output.NumberElementConfig
+  | Output.CountryElementConfig
+  | Output.GenderElementConfig
+  | Output.ImageElementConfig
+  | Output.QRCodeElementConfig;
 
 export type ElementConfigInput =
-  | TextElementConfigInput
-  | DateElementConfigInput
-  | NumberElementConfigInput
-  | CountryElementConfigCreateInput
-  | GenderElementConfigInput
-  | ImageElementConfigInput
-  | QRCodeElementConfigInput;
+  | Input.TextElementConfigCreateInput
+  | Input.DateElementConfigInput
+  | Input.NumberElementConfigInput
+  | Input.CountryElementConfigCreateInput
+  | Input.GenderElementConfigInput
+  | Input.ImageElementConfigInput
+  | Input.QRCodeElementConfigInput;
 
 // ============================================================================
 // Base Pothos Definition (extended by all element Pothos types)
@@ -78,29 +46,30 @@ export type ElementConfigInput =
 //
 // Base type for Pothos interface (without config)
 export type CertificateElementPothosBase = Omit<
-  CertificateElementEntity,
+  Output.CertificateElementEntity,
   "config"
 > & {
   template?: TemplatePothosDefintion | null;
 };
 
-export type CertificateElementPothosDefinition = CertificateElementEntity & {
-  template?: TemplatePothosDefintion | null;
-  config: ElementConfig;
-};
+export type CertificateElementPothosDefinition =
+  Output.CertificateElementEntity & {
+    template?: TemplatePothosDefintion | null;
+    config: ElementConfigUnion;
+  };
 
 // ============================================================================
 // Pothos Union
 // ============================================================================
 
 export type CertificateElementPothosUnion =
-  | TextElementPothosDefinition
-  | DateElementPothosDefinition
-  | NumberElementPothosDefinition
-  | CountryElementPothosDefinition
-  | GenderElementPothosDefinition
-  | ImageElementPothosDefinition
-  | QRCodeElementPothosDefinition;
+  | Output.TextElementPothosDefinition
+  | Output.DateElementPothosDefinition
+  | Output.NumberElementPothosDefinition
+  | Output.CountryElementPothosDefinition
+  | Output.GenderElementPothosDefinition
+  | Output.ImageElementPothosDefinition
+  | Output.QRCodeElementPothosDefinition;
 
 // ============================================================================
 // Response Type

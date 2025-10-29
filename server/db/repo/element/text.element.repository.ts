@@ -8,7 +8,7 @@ import {
   ElementType,
   TextElementConfig,
   TextElementPothosDefinition,
-} from "@/server/types/element";
+} from "@/server/types/element/output";
 import { ElementRepository } from "./element.repository";
 import { ElementUtils, TextElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";

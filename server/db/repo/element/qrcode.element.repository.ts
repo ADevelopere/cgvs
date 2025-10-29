@@ -8,7 +8,7 @@ import {
   ElementType,
   QRCodeElementConfig,
   QRCodeElementPothosDefinition,
-} from "@/server/types/element";
+} from "@/server/types/element/output";
 import { ElementRepository } from "./element.repository";
 import { ElementUtils, QRCodeElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";

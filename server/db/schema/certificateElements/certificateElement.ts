@@ -9,7 +9,7 @@ import {
   bigint,
 } from "drizzle-orm/pg-core";
 import { elementAlignmentEnum, elementTypeEnum } from "./templateElementEnums";
-import type { ElementConfig } from "@/server/types/element";
+import type { ElementConfigUnion } from "@/server/types/element/output";
 import { font } from "../font";
 import { templateVariableBases } from "../templateVariables";
 import { storageFiles } from "../storage";
@@ -32,7 +32,7 @@ export const certificateElement = pgTable("certificate_element", {
 
   // Type-specific configuration stored as typed JSONB (source of truth)
   // Config contains the complete element configuration including all settings
-  config: jsonb("config").$type<ElementConfig>().notNull(),
+  config: jsonb("config").$type<ElementConfigUnion>().notNull(),
 
   // ============================================================================
   // Foreign Key Columns (mirrored from config for DB integrity & relations)

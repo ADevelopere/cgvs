@@ -1,5 +1,5 @@
 import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
-import * as Types from "@/server/types/element";
+import * as Types from "@/server/types/element/output";
 import { QRCodeElementRepository } from "@/server/db/repo/element";
 import { TemplateRepository } from "@/server/db/repo";
 import { TemplatePothosObject } from "@/server/graphql/pothos/template.pothos";
