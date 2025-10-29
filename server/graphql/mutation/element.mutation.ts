@@ -1,7 +1,7 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import * as ElementPothos from "../pothos/element";
-import { ElementRepository } from "@/server/db/repo/element";
 import {
+  ElementRepository,
   TextElementRepository,
   DateElementRepository,
   NumberElementRepository,
@@ -9,8 +9,8 @@ import {
   GenderElementRepository,
   ImageElementRepository,
   QRCodeElementRepository,
-} from "@/server/db/repo/element";
-import * as Types from "@/server/types/element";
+} from "@/server/db/repo";
+import * as Types from "@/server/types";
 import {
   TextElementUtils,
   DateElementUtils,
@@ -19,7 +19,7 @@ import {
   GenderElementUtils,
   ImageElementUtils,
   QRCodeElementUtils,
-} from "@/server/utils/element";
+} from "@/server/utils";
 
 gqlSchemaBuilder.mutationFields(t => ({
   // =========================================================================
@@ -57,7 +57,9 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = TextElementUtils.mapTextElementCreateGraphqlToInput(args.input);
+      const input = TextElementUtils.mapTextElementCreateGraphqlToInput(
+        args.input
+      );
       const element = await TextElementRepository.create(input);
       return element as Types.TextElementPothosDefinition;
     },
@@ -72,7 +74,9 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = TextElementUtils.mapTextElementUpdateGraphqlToInput(args.input);
+      const input = TextElementUtils.mapTextElementUpdateGraphqlToInput(
+        args.input
+      );
       const element = await TextElementRepository.update(input);
       return element as Types.TextElementPothosDefinition;
     },
@@ -90,7 +94,9 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = DateElementUtils.mapDateElementCreateGraphqlToInput(args.input);
+      const input = DateElementUtils.mapDateElementCreateGraphqlToInput(
+        args.input
+      );
       const element = await DateElementRepository.create(input);
       return element as Types.DateElementPothosDefinition;
     },
@@ -105,7 +111,9 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = DateElementUtils.mapDateElementUpdateGraphqlToInput(args.input);
+      const input = DateElementUtils.mapDateElementUpdateGraphqlToInput(
+        args.input
+      );
       const element = await DateElementRepository.update(input);
       return element as Types.DateElementPothosDefinition;
     },
@@ -123,7 +131,9 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = NumberElementUtils.mapNumberElementCreateGraphqlToInput(args.input);
+      const input = NumberElementUtils.mapNumberElementCreateGraphqlToInput(
+        args.input
+      );
       const element = await NumberElementRepository.create(input);
       return element as Types.NumberElementPothosDefinition;
     },
@@ -138,7 +148,9 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = NumberElementUtils.mapNumberElementUpdateGraphqlToInput(args.input);
+      const input = NumberElementUtils.mapNumberElementUpdateGraphqlToInput(
+        args.input
+      );
       const element = await NumberElementRepository.update(input);
       return element as Types.NumberElementPothosDefinition;
     },
@@ -156,7 +168,9 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = CountryElementUtils.mapCountryElementCreateGraphqlToInput(args.input);
+      const input = CountryElementUtils.mapCountryElementCreateGraphqlToInput(
+        args.input
+      );
       const element = await CountryElementRepository.create(input);
       return element as Types.CountryElementPothosDefinition;
     },
@@ -171,7 +185,9 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = CountryElementUtils.mapCountryElementUpdateGraphqlToInput(args.input);
+      const input = CountryElementUtils.mapCountryElementUpdateGraphqlToInput(
+        args.input
+      );
       const element = await CountryElementRepository.update(input);
       return element as Types.CountryElementPothosDefinition;
     },
@@ -189,7 +205,9 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = GenderElementUtils.mapGenderElementCreateGraphqlToInput(args.input);
+      const input = GenderElementUtils.mapGenderElementCreateGraphqlToInput(
+        args.input
+      );
       const element = await GenderElementRepository.create(input);
       return element as Types.GenderElementPothosDefinition;
     },
@@ -204,7 +222,9 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = GenderElementUtils.mapGenderElementUpdateGraphqlToInput(args.input);
+      const input = GenderElementUtils.mapGenderElementUpdateGraphqlToInput(
+        args.input
+      );
       const element = await GenderElementRepository.update(input);
       return element as Types.GenderElementPothosDefinition;
     },
@@ -222,7 +242,9 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = ImageElementUtils.mapImageElementCreateGraphqlToInput(args.input);
+      const input = ImageElementUtils.mapImageElementCreateGraphqlToInput(
+        args.input
+      );
       const element = await ImageElementRepository.create(input);
       return element as Types.ImageElementPothosDefinition;
     },
@@ -237,7 +259,9 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = ImageElementUtils.mapImageElementUpdateGraphqlToInput(args.input);
+      const input = ImageElementUtils.mapImageElementUpdateGraphqlToInput(
+        args.input
+      );
       const element = await ImageElementRepository.update(input);
       return element as Types.ImageElementPothosDefinition;
     },
@@ -255,7 +279,9 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = QRCodeElementUtils.mapQRCodeElementCreateGraphqlToInput(args.input);
+      const input = QRCodeElementUtils.mapQRCodeElementCreateGraphqlToInput(
+        args.input
+      );
       const element = await QRCodeElementRepository.create(input);
       return element as Types.QRCodeElementPothosDefinition;
     },
@@ -270,7 +296,9 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = QRCodeElementUtils.mapQRCodeElementUpdateGraphqlToInput(args.input);
+      const input = QRCodeElementUtils.mapQRCodeElementUpdateGraphqlToInput(
+        args.input
+      );
       const element = await QRCodeElementRepository.update(input);
       return element as Types.QRCodeElementPothosDefinition;
     },
