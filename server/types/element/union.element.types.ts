@@ -3,49 +3,26 @@ import type { TemplatePothosDefintion } from "../template.types";
 import * as Output from "./output";
 
 // ============================================================================
-// Config Unions
-// ============================================================================
-
-export type ElementConfigUnion =
-  | Output.TextElementConfig
-  | Output.DateElementConfig
-  | Output.NumberElementConfig
-  | Output.CountryElementConfig
-  | Output.GenderElementConfig
-  | Output.ImageElementConfig
-  | Output.QRCodeElementConfig;
-
-// ============================================================================
 // Base Pothos Definition (extended by all element Pothos types)
 // ============================================================================
 
-// IMPORTANT: Config-Column Synchronization Strategy
-// ===================================================
-// The certificate_element table has BOTH:
-// 1. config (JSONB) - Source of truth for complete element configuration
-// 2. FK columns (fontId, templateVariableId, storageFileId) - Mirrored for DB integrity
+// IMPORTANT: Table-Per-Type Architecture
+// =======================================
+// Element data is now split across multiple tables:
+// 1. certificate_element - Base fields (id, name, position, alignment, etc.)
+// 2. Type-specific tables - Element-specific fields (text_element, date_element, etc.)
+// 3. element_text_props - Shared TextProps (used by 5 element types)
 //
-// WHY BOTH?
-// - Config: Portable, versioned, complete configuration
-// - Columns: Database FK constraints, relations, cascade protection, efficient queries
+// WHY TABLE-PER-TYPE?
+// - Proper normalization and referential integrity
+// - No JSONB config field - all fields are typed columns
+// - Efficient queries with proper indexes
+// - FK constraints enforced at database level
 //
-// APPLICATION LAYER MUST ensure these stay in sync when creating/updating:
-// - Extract IDs from config and populate corresponding FK columns
-// - See certificateElement.ts schema comments for sync rules per element type
-//
-// Base type for Pothos interface (without config)
-export type CertificateElementPothosBase = Omit<
-  Output.CertificateElementEntity,
-  "config"
-> & {
+// Base type for Pothos interface (with template relation)
+export type CertificateElementPothosBase = Output.CertificateElementEntity & {
   template?: TemplatePothosDefintion | null;
 };
-
-export type CertificateElementPothosDefinition =
-  Output.CertificateElementEntity & {
-    template?: TemplatePothosDefintion | null;
-    config: ElementConfigUnion;
-  };
 
 // ============================================================================
 // Pothos Union

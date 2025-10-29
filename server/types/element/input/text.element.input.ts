@@ -1,4 +1,4 @@
-import { TextPropsCreateInput, TextPropsUpdateInput } from "./config.element.input";
+import { TextPropsCreateInput, TextPropsUpdateInput } from "../output";
 import {
   CertificateElementBaseCreateInput,
   CertificateElementBaseUpdateInput,
@@ -46,27 +46,16 @@ export type TextDataSourceInput =
   | TextDataSourceTemplateSelectVariableInput;
 
 // ============================================================================
-// Element Config
-// ============================================================================
-
-export type TextElementConfigCreateInput = {
-  textProps: TextPropsCreateInput;
-  dataSource: TextDataSourceInput;
-};
-
-export type TextElementConfigUpdateInput = {
-  textProps?: TextPropsUpdateInput | null;
-  dataSource?: TextDataSourceInput | null;
-};
-
-// ============================================================================
 // Mutation Inputs
 // ============================================================================
 
 export type TextElementCreateInput = CertificateElementBaseCreateInput & {
-  config: TextElementConfigCreateInput;
+  textProps: TextPropsCreateInput;
+  dataSource: TextDataSourceInput;
+  // variableId is NOT in input - extracted from dataSource
 };
 
 export type TextElementUpdateInput = CertificateElementBaseUpdateInput & {
-  config?: TextElementConfigUpdateInput | null;
+  textProps?: TextPropsUpdateInput | null;
+  dataSource?: TextDataSourceInput | null;
 };

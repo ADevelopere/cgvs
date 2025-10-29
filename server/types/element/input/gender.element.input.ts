@@ -1,4 +1,4 @@
-import { TextPropsCreateInput, TextPropsUpdateInput } from "./config.element.input";
+import { TextPropsCreateInput, TextPropsUpdateInput } from "../output";
 import {
   CertificateElementBaseCreateInput,
   CertificateElementBaseUpdateInput,
@@ -14,28 +14,13 @@ export type GenderDataSourceInput = {
 };
 
 // ============================================================================
-// Element Config
-// ============================================================================
-
-// Repository input type (matches Config structure)
-export type GenderElementConfigCreateInput = {
-  textProps: TextPropsCreateInput;
-  // dataSource: GenderDataSourceInput;
-};
-
-export type GenderElementConfigUpdateInput = {
-  textProps?: TextPropsUpdateInput | null;
-  // dataSource?: GenderDataSourceInput | null;
-};
-
-// ============================================================================
-// Mutation Inputs
+// Mutation Inputs (no config field)
 // ============================================================================
 
 export type GenderElementCreateInput = CertificateElementBaseCreateInput & {
-  config: GenderElementConfigCreateInput;
+  textProps: TextPropsCreateInput;
 };
 
 export type GenderElementUpdateInput = CertificateElementBaseUpdateInput & {
-  config?: GenderElementConfigUpdateInput | null;
+  textProps?: TextPropsUpdateInput | null;
 };

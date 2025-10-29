@@ -13,29 +13,15 @@ export type ImageDataSourceInput = {
 };
 
 // ============================================================================
-// Element Config
-// ============================================================================
-
-// Repository input type (matches Config structure)
-export type ImageElementConfigCreateInput = {
-  dataSource: ImageDataSourceInput;
-  fit: ElementImageFit;
-};
-
-export type ImageElementConfigUpdateInput = {
-  dataSource?: ImageDataSourceInput | null;
-  fit?: ElementImageFit | null;
-};
-
-// ============================================================================
 // Mutation Inputs
 // ============================================================================
 
-// Repository mutation inputs (keep existing)
 export type ImageElementCreateInput = CertificateElementBaseCreateInput & {
-  config: ImageElementConfigCreateInput;
+  fit: ElementImageFit;
+  dataSource: ImageDataSourceInput;
 };
 
 export type ImageElementUpdateInput = CertificateElementBaseUpdateInput & {
-  config?: ImageElementConfigUpdateInput | null;
+  fit?: ElementImageFit | null;
+  dataSource?: ImageDataSourceInput | null;
 };

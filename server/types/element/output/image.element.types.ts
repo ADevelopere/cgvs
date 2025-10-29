@@ -1,4 +1,5 @@
-import type { CertificateElementPothosDefinition } from "../union.element.types";
+import type { CertificateElementEntity } from "./base.element.types";
+import type { imageElement } from "@/server/db/schema";
 
 // ============================================================================
 // IMAGE-specific Enums
@@ -24,21 +25,25 @@ export type ImageDataSource = {
 };
 
 // ============================================================================
-// Element Config
+// Raw Entity (from Drizzle schema)
 // ============================================================================
 
-export interface ImageElementConfig {
-  dataSource: ImageDataSource;
+export type ImageElementEntity = typeof imageElement.$inferSelect;
+// { elementId, fit, dataSource, storageFileId }
+
+// ============================================================================
+// Output Type (mirrors database - base + image_element joined)
+// ============================================================================
+
+export type ImageElementOutput = CertificateElementEntity & {
+  // No textProps
   fit: ElementImageFit;
-}
+  dataSource: ImageDataSource;
+  storageFileId: number; // Mirrored FK
+};
 
 // ============================================================================
 // Pothos Definition
 // ============================================================================
 
-export type ImageElementPothosDefinition = Omit<
-  CertificateElementPothosDefinition,
-  "config"
-> & {
-  config: ImageElementConfig;
-};
+export type ImageElementPothosDefinition = ImageElementOutput;

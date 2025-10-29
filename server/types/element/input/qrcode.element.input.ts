@@ -22,32 +22,17 @@ export type QRCodeDataSourceInput =
   | QRCodeDataSourceVerificationCodeInput;
 
 // ============================================================================
-// Element Config
+// Mutation Inputs
 // ============================================================================
 
-// Repository input type (matches Config structure)
-export type QRCodeElementConfigCreateInput = {
-  // dataSource: QRCodeDataSourceInput;
+export type QRCodeElementCreateInput = CertificateElementBaseCreateInput & {
   errorCorrection: QRCodeErrorCorrection;
   foregroundColor: string;
   backgroundColor: string;
 };
 
-export type QRCodeElementConfigUpdateInput = {
-  // dataSource?: QRCodeDataSourceInput | null;
+export type QRCodeElementUpdateInput = CertificateElementBaseUpdateInput & {
   errorCorrection?: QRCodeErrorCorrection | null;
   foregroundColor?: string | null;
   backgroundColor?: string | null;
-};
-
-// ============================================================================
-// Mutation Inputs
-// ============================================================================
-
-export type QRCodeElementCreateInput = CertificateElementBaseCreateInput & {
-  config: QRCodeElementConfigCreateInput;
-};
-
-export type QRCodeElementUpdateInput = CertificateElementBaseUpdateInput & {
-  config?: QRCodeElementConfigUpdateInput | null;
 };

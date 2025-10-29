@@ -1,7 +1,7 @@
 import {
   TextPropsCreateInput,
   TextPropsUpdateInput,
-} from "./config.element.input";
+} from "../output";
 import {
   CertificateElementBaseCreateInput,
   CertificateElementBaseUpdateInput,
@@ -45,11 +45,10 @@ export type DateDataSourceInput =
   | DateDataSourceTemplateVariableInput;
 
 // ============================================================================
-// Element Config
+// Mutation Inputs
 // ============================================================================
 
-// Repository input type (matches Config structure)
-export type DateElementConfigCreateInput = {
+export type DateElementCreateInput = CertificateElementBaseCreateInput & {
   textProps: TextPropsCreateInput;
   calendarType: CalendarType;
   offsetDays: number;
@@ -58,23 +57,11 @@ export type DateElementConfigCreateInput = {
   dataSource: DateDataSourceInput;
 };
 
-export type DateElementConfigUpdateInput = {
+export type DateElementUpdateInput = CertificateElementBaseUpdateInput & {
   textProps?: TextPropsUpdateInput | null;
   calendarType?: CalendarType | null;
   offsetDays?: number | null;
   format?: string | null;
   transformation?: DateTransformationType | null;
   dataSource?: DateDataSourceInput | null;
-};
-
-// ============================================================================
-// Mutation Inputs
-// ============================================================================
-
-export type DateElementCreateInput = CertificateElementBaseCreateInput & {
-  config: DateElementConfigCreateInput;
-};
-
-export type DateElementUpdateInput = CertificateElementBaseUpdateInput & {
-  config?: DateElementConfigUpdateInput | null;
 };

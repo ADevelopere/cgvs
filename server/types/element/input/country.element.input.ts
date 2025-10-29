@@ -1,7 +1,7 @@
 import {
   TextPropsCreateInput,
   TextPropsUpdateInput,
-} from "./config.element.input";
+} from "../output";
 import {
   CertificateElementBaseCreateInput,
   CertificateElementBaseUpdateInput,
@@ -20,32 +20,15 @@ export type CountryDataSourceInput = {
 };
 
 // ============================================================================
-// Element Config
+// Mutation Inputs (no config field)
 // ============================================================================
 
-// Repository input type (matches Config structure)
-export type CountryElementConfigCreateInput = {
+export type CountryElementCreateInput = CertificateElementBaseCreateInput & {
   textProps: TextPropsCreateInput;
   representation: CountryRepresentation;
-  // dataSource: CountryDataSourceInput;
 };
 
-export type CountryElementConfigUpdateInput = {
+export type CountryElementUpdateInput = CertificateElementBaseUpdateInput & {
   textProps?: TextPropsUpdateInput | null;
   representation?: CountryRepresentation | null;
-  // dataSource?: CountryDataSourceInput | null;
-};
-
-// ============================================================================
-// Mutation Inputs
-// ============================================================================
-
-// create input type
-export type CountryElementCreateInput = CertificateElementBaseCreateInput & {
-  config: CountryElementConfigCreateInput;
-};
-
-// update input type (deep partial support)
-export type CountryElementUpdateInput = CertificateElementBaseUpdateInput & {
-  config?: CountryElementConfigUpdateInput | null;
 };
