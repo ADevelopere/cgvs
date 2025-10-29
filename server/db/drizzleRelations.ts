@@ -119,9 +119,17 @@ export const relations = defineRelations(schema, r => ({
       from: r.templateVariableBases.templateId,
       to: r.templates.id,
     }),
-    elements: r.many.certificateElement({
+    textElements: r.many.textElement({
       from: r.templateVariableBases.id,
-      to: r.certificateElement.templateVariableId,
+      to: r.textElement.variableId,
+    }),
+    dateElements: r.many.dateElement({
+      from: r.templateVariableBases.id,
+      to: r.dateElement.variableId,
+    }),
+    numberElements: r.many.numberElement({
+      from: r.templateVariableBases.id,
+      to: r.numberElement.variableId,
     }),
   },
   templateRecipientGroups: {
@@ -152,17 +160,33 @@ export const relations = defineRelations(schema, r => ({
       from: r.certificateElement.templateId,
       to: r.templates.id,
     }),
-    font: r.one.font({
-      from: r.certificateElement.fontId,
-      to: r.font.id,
+    textElement: r.one.textElement({
+      from: r.certificateElement.id,
+      to: r.textElement.elementId,
     }),
-    templateVariable: r.one.templateVariableBases({
-      from: r.certificateElement.templateVariableId,
-      to: r.templateVariableBases.id,
+    dateElement: r.one.dateElement({
+      from: r.certificateElement.id,
+      to: r.dateElement.elementId,
     }),
-    storageFile: r.one.storageFiles({
-      from: r.certificateElement.storageFileId,
-      to: r.storageFiles.id,
+    numberElement: r.one.numberElement({
+      from: r.certificateElement.id,
+      to: r.numberElement.elementId,
+    }),
+    countryElement: r.one.countryElement({
+      from: r.certificateElement.id,
+      to: r.countryElement.elementId,
+    }),
+    genderElement: r.one.genderElement({
+      from: r.certificateElement.id,
+      to: r.genderElement.elementId,
+    }),
+    imageElement: r.one.imageElement({
+      from: r.certificateElement.id,
+      to: r.imageElement.elementId,
+    }),
+    qrCodeElement: r.one.qrCodeElement({
+      from: r.certificateElement.id,
+      to: r.qrCodeElement.elementId,
     }),
   },
   font: {
@@ -170,9 +194,119 @@ export const relations = defineRelations(schema, r => ({
       from: r.font.storageFileId,
       to: r.storageFiles.id,
     }),
-    elements: r.many.certificateElement({
+    textProps: r.many.elementTextProps({
       from: r.font.id,
-      to: r.certificateElement.fontId,
+      to: r.elementTextProps.fontId,
+    }),
+  },
+  elementTextProps: {
+    font: r.one.font({
+      from: r.elementTextProps.fontId,
+      to: r.font.id,
+    }),
+    textElements: r.many.textElement({
+      from: r.elementTextProps.id,
+      to: r.textElement.textPropsId,
+    }),
+    dateElements: r.many.dateElement({
+      from: r.elementTextProps.id,
+      to: r.dateElement.textPropsId,
+    }),
+    numberElements: r.many.numberElement({
+      from: r.elementTextProps.id,
+      to: r.numberElement.textPropsId,
+    }),
+    countryElements: r.many.countryElement({
+      from: r.elementTextProps.id,
+      to: r.countryElement.textPropsId,
+    }),
+    genderElements: r.many.genderElement({
+      from: r.elementTextProps.id,
+      to: r.genderElement.textPropsId,
+    }),
+  },
+  textElement: {
+    element: r.one.certificateElement({
+      from: r.textElement.elementId,
+      to: r.certificateElement.id,
+    }),
+    textProps: r.one.elementTextProps({
+      from: r.textElement.textPropsId,
+      to: r.elementTextProps.id,
+    }),
+    variable: r.one.templateVariableBases({
+      from: r.textElement.variableId,
+      to: r.templateVariableBases.id,
+    }),
+  },
+  dateElement: {
+    element: r.one.certificateElement({
+      from: r.dateElement.elementId,
+      to: r.certificateElement.id,
+    }),
+    textProps: r.one.elementTextProps({
+      from: r.dateElement.textPropsId,
+      to: r.elementTextProps.id,
+    }),
+    variable: r.one.templateVariableBases({
+      from: r.dateElement.variableId,
+      to: r.templateVariableBases.id,
+    }),
+  },
+  numberElement: {
+    element: r.one.certificateElement({
+      from: r.numberElement.elementId,
+      to: r.certificateElement.id,
+    }),
+    textProps: r.one.elementTextProps({
+      from: r.numberElement.textPropsId,
+      to: r.elementTextProps.id,
+    }),
+    variable: r.one.templateVariableBases({
+      from: r.numberElement.variableId,
+      to: r.templateVariableBases.id,
+    }),
+  },
+  countryElement: {
+    element: r.one.certificateElement({
+      from: r.countryElement.elementId,
+      to: r.certificateElement.id,
+    }),
+    textProps: r.one.elementTextProps({
+      from: r.countryElement.textPropsId,
+      to: r.elementTextProps.id,
+    }),
+  },
+  genderElement: {
+    element: r.one.certificateElement({
+      from: r.genderElement.elementId,
+      to: r.certificateElement.id,
+    }),
+    textProps: r.one.elementTextProps({
+      from: r.genderElement.textPropsId,
+      to: r.elementTextProps.id,
+    }),
+  },
+  imageElement: {
+    element: r.one.certificateElement({
+      from: r.imageElement.elementId,
+      to: r.certificateElement.id,
+    }),
+    storageFile: r.one.storageFiles({
+      from: r.imageElement.storageFileId,
+      to: r.storageFiles.id,
+    }),
+  },
+  qrCodeElement: {
+    element: r.one.certificateElement({
+      from: r.qrCodeElement.elementId,
+      to: r.certificateElement.id,
+    }),
+  },
+  storageFiles: {
+    imageElements: r.many.imageElement({
+      from: r.storageFiles.id,
+      to: r.imageElement.storageFileId,
     }),
   },
 }));
