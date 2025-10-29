@@ -4,17 +4,10 @@ import { elementTextProps } from "./elementTextProps";
 import { templateVariableBases } from "../templateVariables";
 import {
   calendarTypeEnum,
+  dateTransformationTypeEnum,
 } from "./templateElementEnums";
-import { DateTransformationType, type DateDataSource } from "@/server/types/element";
-import { createPgEnumFromEnum } from "../..";
+import { type DateDataSource } from "@/server/types/element";
 
-// Date Transformation
-export const dateTransformationTypeEnum = createPgEnumFromEnum(
-    "date_transformation_type",
-    DateTransformationType
-  );
-
-  
 export const dateElement = pgTable("date_element", {
   elementId: integer("element_id")
     .primaryKey()

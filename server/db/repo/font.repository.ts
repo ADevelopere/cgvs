@@ -1,15 +1,17 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq, ilike, inArray, sql } from "drizzle-orm";
 import { font } from "@/server/db/schema/font";
-import { certificateElement } from "@/server/db/schema/certificateElement";
-import { elementTextProps } from "@/server/db/schema/elementTextProps";
-import { textElement } from "@/server/db/schema/textElement";
-// import { dateElement } from "@/server/db/schema/certificateElements/dateElement";
-import { numberElement } from "@/server/db/schema/numberElement";
-import { countryElement } from "@/server/db/schema/countryElement";
-// import { genderElement } from "@/server/db/schema/certificateElements/genderElement";
-import { storageFiles } from "@/server/db/schema/storage";
-import { templates } from "@/server/db/schema";
+import {
+  certificateElement,
+  elementTextProps,
+  textElement,
+  dateElement,
+  numberElement,
+  countryElement,
+  genderElement,
+  storageFiles,
+  templates,
+} from "@/server/db/schema";
 import {
   FontSelectType,
   FontCreateInput,
@@ -360,10 +362,10 @@ export namespace FontRepository {
 
         // Gender elements
         db
-        .select({
+          .select({
             elementId: genderElement.elementId,
             type: certificateElement.type,
-          templateId: certificateElement.templateId,
+            templateId: certificateElement.templateId,
           })
           .from(genderElement)
           .innerJoin(

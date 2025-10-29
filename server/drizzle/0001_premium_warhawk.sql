@@ -8,6 +8,7 @@ CREATE TYPE "public"."certificate_date_field" AS ENUM('RELEASE_DATE');--> statem
 CREATE TYPE "public"."certificate_text_field" AS ENUM('VERIFICATION_CODE');--> statement-breakpoint
 CREATE TYPE "public"."country_representation" AS ENUM('COUNTRY_NAME', 'NATIONALITY');--> statement-breakpoint
 CREATE TYPE "public"."date_data_source_type" AS ENUM('STATIC', 'TEMPLATE_DATE_VARIABLE', 'STUDENT_DATE_FIELD', 'CERTIFICATE_DATE_FIELD');--> statement-breakpoint
+CREATE TYPE "public"."date_transformation_type" AS ENUM('AGE_CALCULATION');--> statement-breakpoint
 CREATE TYPE "public"."element_alignment" AS ENUM('START', 'END', 'TOP', 'BOTTOM', 'CENTER', 'BASELINE');--> statement-breakpoint
 CREATE TYPE "public"."element_image_fit" AS ENUM('COVER', 'CONTAIN', 'FILL');--> statement-breakpoint
 CREATE TYPE "public"."element_overflow" AS ENUM('RESIZE_DOWN', 'TRUNCATE', 'ELLIPSE', 'WRAP');--> statement-breakpoint
@@ -18,7 +19,6 @@ CREATE TYPE "public"."qr_code_error_correction" AS ENUM('L', 'M', 'Q', 'H');--> 
 CREATE TYPE "public"."student_date_field" AS ENUM('DATE_OF_BIRTH');--> statement-breakpoint
 CREATE TYPE "public"."student_text_field" AS ENUM('STUDENT_NAME', 'STUDENT_EMAIL');--> statement-breakpoint
 CREATE TYPE "public"."text_data_source_type" AS ENUM('STATIC', 'TEMPLATE_TEXT_VARIABLE', 'TEMPLATE_SELECT_VARIABLE', 'STUDENT_TEXT_FIELD', 'CERTIFICATE_TEXT_FIELD');--> statement-breakpoint
-CREATE TYPE "public"."date_transformation_type" AS ENUM('AGE_CALCULATION');--> statement-breakpoint
 CREATE TABLE "cache" (
 	"key" text PRIMARY KEY NOT NULL,
 	"value" text NOT NULL,
@@ -46,12 +46,6 @@ CREATE TABLE "font" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "country_element" (
-	"element_id" integer PRIMARY KEY NOT NULL,
-	"text_props_id" integer NOT NULL,
-	"representation" "country_representation" NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE "file_usage" (
 	"id" bigserial PRIMARY KEY NOT NULL,
 	"file_path" varchar(1024) NOT NULL,
@@ -59,38 +53,6 @@ CREATE TABLE "file_usage" (
 	"reference_id" bigint NOT NULL,
 	"reference_table" varchar(100) NOT NULL,
 	"created_at" timestamp (3) NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "passwordResetTokens" (
-	"email" varchar(255) PRIMARY KEY NOT NULL,
-	"token" varchar(255) NOT NULL,
-	"created_at" timestamp (3)
-);
---> statement-breakpoint
-CREATE TABLE "recipient_group_item_variable_value" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"template_recipient_group_item_id" integer NOT NULL,
-	"template_id" integer NOT NULL,
-	"recipient_group_id" integer NOT NULL,
-	"student_id" integer NOT NULL,
-	"variable_values" jsonb DEFAULT '{}'::jsonb NOT NULL,
-	"created_at" timestamp (3) NOT NULL,
-	"updated_at" timestamp (3) NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "roles" (
-	"id" integer PRIMARY KEY NOT NULL,
-	"name" text NOT NULL,
-	CONSTRAINT "roles_name_unique" UNIQUE("name")
-);
---> statement-breakpoint
-CREATE TABLE "sessions" (
-	"id" varchar(255) PRIMARY KEY NOT NULL,
-	"userId" integer,
-	"ipAddress" varchar(45),
-	"userAgent" text,
-	"payload" text NOT NULL,
-	"lastActivity" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "signed_url" (
@@ -137,17 +99,6 @@ CREATE TABLE "student" (
 	"updated_at" timestamp (3) NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "TemplateCategory" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"name" varchar(255) NOT NULL,
-	"description" text,
-	"parent_category_id" integer,
-	"order" integer NOT NULL,
-	"special_type" "category_special_type",
-	"created_at" timestamp (3) NOT NULL,
-	"updated_at" timestamp (3) NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE "template_config" (
 	"template_id" integer PRIMARY KEY NOT NULL,
 	"width" integer NOT NULL,
@@ -157,18 +108,15 @@ CREATE TABLE "template_config" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "template_date_variable" (
-	"id" integer PRIMARY KEY NOT NULL,
-	"min_date" timestamp (3),
-	"max_date" timestamp (3),
-	"format" varchar(50)
-);
---> statement-breakpoint
-CREATE TABLE "template_number_variable" (
-	"id" integer PRIMARY KEY NOT NULL,
-	"min_value" numeric,
-	"max_value" numeric,
-	"decimal_places" integer
+CREATE TABLE "recipient_group_item_variable_value" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"template_recipient_group_item_id" integer NOT NULL,
+	"template_id" integer NOT NULL,
+	"recipient_group_id" integer NOT NULL,
+	"student_id" integer NOT NULL,
+	"variable_values" jsonb DEFAULT '{}'::jsonb NOT NULL,
+	"created_at" timestamp (3) NOT NULL,
+	"updated_at" timestamp (3) NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "template_recipient_group_item" (
@@ -187,6 +135,20 @@ CREATE TABLE "template_recipient_group" (
 	"date" timestamp (3),
 	"created_at" timestamp (3) NOT NULL,
 	"updated_at" timestamp (3) NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "template_date_variable" (
+	"id" integer PRIMARY KEY NOT NULL,
+	"min_date" timestamp (3),
+	"max_date" timestamp (3),
+	"format" varchar(50)
+);
+--> statement-breakpoint
+CREATE TABLE "template_number_variable" (
+	"id" integer PRIMARY KEY NOT NULL,
+	"min_value" numeric,
+	"max_value" numeric,
+	"decimal_places" integer
 );
 --> statement-breakpoint
 CREATE TABLE "template_select_variable" (
@@ -215,6 +177,17 @@ CREATE TABLE "template_variable_base" (
 	"updated_at" timestamp (3) NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "TemplateCategory" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" varchar(255) NOT NULL,
+	"description" text,
+	"parent_category_id" integer,
+	"order" integer NOT NULL,
+	"special_type" "category_special_type",
+	"created_at" timestamp (3) NOT NULL,
+	"updated_at" timestamp (3) NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "template" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" varchar(255) NOT NULL,
@@ -230,6 +203,27 @@ CREATE TABLE "template" (
 CREATE TABLE "templates_config" (
 	"key" "template_config_key" PRIMARY KEY NOT NULL,
 	"value" text NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "passwordResetTokens" (
+	"email" varchar(255) PRIMARY KEY NOT NULL,
+	"token" varchar(255) NOT NULL,
+	"created_at" timestamp (3)
+);
+--> statement-breakpoint
+CREATE TABLE "roles" (
+	"id" integer PRIMARY KEY NOT NULL,
+	"name" text NOT NULL,
+	CONSTRAINT "roles_name_unique" UNIQUE("name")
+);
+--> statement-breakpoint
+CREATE TABLE "sessions" (
+	"id" varchar(255) PRIMARY KEY NOT NULL,
+	"userId" integer,
+	"ipAddress" varchar(45),
+	"userAgent" text,
+	"payload" text NOT NULL,
+	"lastActivity" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "user_roles" (
@@ -264,6 +258,12 @@ CREATE TABLE "certificate_element" (
 	"type" "element_type" NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "country_element" (
+	"element_id" integer PRIMARY KEY NOT NULL,
+	"text_props_id" integer NOT NULL,
+	"representation" "country_representation" NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "date_element" (
@@ -326,10 +326,12 @@ CREATE TABLE "text_element" (
 	"variable_id" integer
 );
 --> statement-breakpoint
-ALTER TABLE "country_element" ADD CONSTRAINT "country_element_element_id_certificate_element_id_fk" FOREIGN KEY ("element_id") REFERENCES "public"."certificate_element"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_role_id_roles_id_fk" FOREIGN KEY ("role_id") REFERENCES "public"."roles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "country_element" ADD CONSTRAINT "country_element_element_id_certificate_element_id_fk" FOREIGN KEY ("element_id") REFERENCES "public"."certificate_element"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "country_element" ADD CONSTRAINT "country_element_text_props_id_element_text_props_id_fk" FOREIGN KEY ("text_props_id") REFERENCES "public"."element_text_props"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "date_element" ADD CONSTRAINT "date_element_element_id_certificate_element_id_fk" FOREIGN KEY ("element_id") REFERENCES "public"."certificate_element"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "date_element" ADD CONSTRAINT "date_element_text_props_id_element_text_props_id_fk" FOREIGN KEY ("text_props_id") REFERENCES "public"."element_text_props"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "date_element" ADD CONSTRAINT "date_element_variable_id_template_variable_base_id_fk" FOREIGN KEY ("variable_id") REFERENCES "public"."template_variable_base"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "element_text_props" ADD CONSTRAINT "element_text_props_font_id_font_id_fk" FOREIGN KEY ("font_id") REFERENCES "public"."font"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "gender_element" ADD CONSTRAINT "gender_element_element_id_certificate_element_id_fk" FOREIGN KEY ("element_id") REFERENCES "public"."certificate_element"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -345,21 +347,21 @@ ALTER TABLE "text_element" ADD CONSTRAINT "text_element_text_props_id_element_te
 ALTER TABLE "text_element" ADD CONSTRAINT "text_element_variable_id_template_variable_base_id_fk" FOREIGN KEY ("variable_id") REFERENCES "public"."template_variable_base"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "cache_expires_at_idx" ON "cache" USING btree ("expires_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "unique_student_template_certificate" ON "certificate" USING btree ("template_id","student_id");--> statement-breakpoint
+CREATE INDEX "signed_url_expires_at_idx" ON "signed_url" USING btree ("expires_at");--> statement-breakpoint
+CREATE INDEX "signed_url_used_expires_idx" ON "signed_url" USING btree ("used","expires_at");--> statement-breakpoint
+CREATE INDEX "idx_students_name_fts" ON "student" USING gin (to_tsvector('simple', "name"));--> statement-breakpoint
+CREATE INDEX "idx_students_name_trgm" ON "student" USING gist ("name" gist_trgm_ops);--> statement-breakpoint
 CREATE UNIQUE INDEX "rgiv_group_item_unique" ON "recipient_group_item_variable_value" USING btree ("template_recipient_group_item_id");--> statement-breakpoint
 CREATE INDEX "rgiv_student_idx" ON "recipient_group_item_variable_value" USING btree ("student_id");--> statement-breakpoint
 CREATE INDEX "rgiv_template_idx" ON "recipient_group_item_variable_value" USING btree ("template_id");--> statement-breakpoint
 CREATE INDEX "rgiv_recipient_group_idx" ON "recipient_group_item_variable_value" USING btree ("recipient_group_id");--> statement-breakpoint
 CREATE INDEX "rgiv_variable_values_gin_idx" ON "recipient_group_item_variable_value" USING gin ("variable_values");--> statement-breakpoint
-CREATE INDEX "sessions_user_id_index" ON "sessions" USING btree ("userId");--> statement-breakpoint
-CREATE INDEX "sessions_last_activity_index" ON "sessions" USING btree ("lastActivity");--> statement-breakpoint
-CREATE INDEX "signed_url_expires_at_idx" ON "signed_url" USING btree ("expires_at");--> statement-breakpoint
-CREATE INDEX "signed_url_used_expires_idx" ON "signed_url" USING btree ("used","expires_at");--> statement-breakpoint
-CREATE INDEX "idx_students_name_fts" ON "student" USING gin (to_tsvector('simple', "name"));--> statement-breakpoint
-CREATE INDEX "idx_students_name_trgm" ON "student" USING gist ("name" gist_trgm_ops);--> statement-breakpoint
+CREATE UNIQUE INDEX "trgi_student_group_unique" ON "template_recipient_group_item" USING btree ("student_id","template_recipient_group_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "template_base_variable_template_id_name_key" ON "template_variable_base" USING btree ("template_id","name");--> statement-breakpoint
 CREATE UNIQUE INDEX "template_category_special_type_key" ON "TemplateCategory" USING btree ("special_type");--> statement-breakpoint
 CREATE INDEX "idx_template_categories_name_fts" ON "TemplateCategory" USING gin (to_tsvector('simple', "name"));--> statement-breakpoint
 CREATE INDEX "idx_template_categories_name_trgm" ON "TemplateCategory" USING gist ("name" gist_trgm_ops);--> statement-breakpoint
-CREATE UNIQUE INDEX "trgi_student_group_unique" ON "template_recipient_group_item" USING btree ("student_id","template_recipient_group_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "template_base_variable_template_id_name_key" ON "template_variable_base" USING btree ("template_id","name");--> statement-breakpoint
 CREATE INDEX "idx_templates_name_fts" ON "template" USING gin (to_tsvector('simple', "name"));--> statement-breakpoint
-CREATE INDEX "idx_templates_name_trgm" ON "template" USING gist ("name" gist_trgm_ops);
+CREATE INDEX "idx_templates_name_trgm" ON "template" USING gist ("name" gist_trgm_ops);--> statement-breakpoint
+CREATE INDEX "sessions_user_id_index" ON "sessions" USING btree ("userId");--> statement-breakpoint
+CREATE INDEX "sessions_last_activity_index" ON "sessions" USING btree ("lastActivity");
