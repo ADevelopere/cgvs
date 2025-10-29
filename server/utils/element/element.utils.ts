@@ -1,4 +1,4 @@
-import { ElementConfig, ElementType, FontSource } from "../../types";
+import { ElementConfigUnion, ElementType, FontSource } from "../../types";
 
 /**
  * Element utility functions for validation and business logic
@@ -89,7 +89,7 @@ export namespace ElementUtils {
    * Returns fontId if element has textProps and uses SELF_HOSTED font
    * Applies to: TEXT, DATE, NUMBER, COUNTRY, GENDER
    */
-  export const extractFontId = (config: ElementConfig): number | null => {
+  export const extractFontId = (config: ElementConfigUnion): number | null => {
     // Only TEXT, DATE, NUMBER, COUNTRY, GENDER have textProps
     if (!("textProps" in config)) return null;
 
@@ -109,7 +109,7 @@ export namespace ElementUtils {
    * - NUMBER: ALWAYS (always uses TEMPLATE_NUMBER_VARIABLE)
    */
   export const extractTemplateVariableId = (
-    config: ElementConfig
+    config: ElementConfigUnion
   ): number | null => {
     if (!("dataSource" in config)) return null;
 
@@ -128,7 +128,7 @@ export namespace ElementUtils {
    * Applies to: IMAGE only
    */
   export const extractStorageFileId = (
-    config: ElementConfig
+    config: ElementConfigUnion
   ): number | null => {
     // Only IMAGE elements have storageFileId
     if (config.type !== ElementType.IMAGE) return null;

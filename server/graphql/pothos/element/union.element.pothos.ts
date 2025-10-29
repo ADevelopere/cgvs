@@ -1,5 +1,5 @@
 import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
-import * as Types from "@/server/types/element";
+import * as Types from "@/server/types/element/output";
 import { TextElementObject } from "./text.element.pothos";
 import { DateElementObject } from "./date.element.pothos";
 import { NumberElementObject } from "./number.element.pothos";

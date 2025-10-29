@@ -8,7 +8,7 @@ import {
   ElementType,
   GenderElementConfig,
   GenderElementPothosDefinition,
-} from "@/server/types/element";
+} from "@/server/types/element/output";
 import { ElementRepository } from "./element.repository";
 import { ElementUtils, GenderElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";

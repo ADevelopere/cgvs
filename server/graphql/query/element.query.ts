@@ -1,6 +1,6 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import * as ElementPothos from "../pothos/element";
-import * as Types from "@/server/types/element";
+import * as Types from "@/server/types/element/output";
 
 gqlSchemaBuilder.queryFields(t => ({
   // =========================================================================

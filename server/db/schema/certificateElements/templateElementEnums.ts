@@ -1,4 +1,4 @@
-import * as ElementTypes from "@/server/types/element";
+import * as ElementTypes from "@/server/types/element/output";
 import { createPgEnumFromEnum } from "@/server/utils/db.utils";
 
 // Element Types

@@ -8,7 +8,7 @@ import {
   ElementType,
   DateElementConfig,
   DateElementPothosDefinition,
-} from "@/server/types/element";
+} from "@/server/types/element/output";
 import { ElementRepository } from "./element.repository";
 import { ElementUtils, DateElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";

@@ -12,9 +12,7 @@ import {
   ElementType,
   CertificateElementEntity,
   QRCodeErrorCorrection,
-} from "@/server/types/element";
-import { ElementRepository } from "@/server/db/repo/element/element.repository";
-import { ElementUtils } from "./element.utils";
+} from "@/server/types/element/output";
 import { CommonElementUtils } from "./common.element.utils";
 
 /**
@@ -88,15 +86,7 @@ export namespace QRCodeElementUtils {
     input: QRCodeElementCreateInputGraphql
   ): QRCodeElementCreateInput => {
     return {
-      templateId: input.templateId,
-      name: input.name,
-      description: input.description,
-      positionX: input.positionX,
-      positionY: input.positionY,
-      width: input.width,
-      height: input.height,
-      alignment: input.alignment,
-      renderOrder: input.renderOrder,
+      ...input,
       config: mapQRCodeElementConfigGraphqlToInput(input.config),
     };
   };
@@ -107,24 +97,10 @@ export namespace QRCodeElementUtils {
   export const mapQRCodeElementUpdateGraphqlToInput = (
     input: QRCodeElementUpdateInputGraphql
   ): QRCodeElementUpdateInput => {
-    const result: QRCodeElementUpdateInput = {
-      id: input.id,
+    return {
+      ...input,
+      config: input.config !== undefined ? mapQRCodeElementConfigUpdateGraphqlToInput(input.config) : undefined,
     };
-
-    if (input.name !== undefined) result.name = input.name;
-    if (input.description !== undefined) result.description = input.description;
-    if (input.positionX !== undefined) result.positionX = input.positionX;
-    if (input.positionY !== undefined) result.positionY = input.positionY;
-    if (input.width !== undefined) result.width = input.width;
-    if (input.height !== undefined) result.height = input.height;
-    if (input.alignment !== undefined) result.alignment = input.alignment;
-    if (input.renderOrder !== undefined) result.renderOrder = input.renderOrder;
-
-    if (input.config !== undefined) {
-      result.config = mapQRCodeElementConfigUpdateGraphqlToInput(input.config);
-    }
-
-    return result;
   };
 
   // ============================================================================
@@ -191,31 +167,11 @@ export namespace QRCodeElementUtils {
   export const validateCreateInput = async (
     input: QRCodeElementCreateInput
   ): Promise<void> => {
+    // Validate base element properties
+    await CommonElementUtils.validateBaseCreateInput(input);
+
     // Validate config
     await validateConfig(input.config);
-
-    // Validate common properties
-    const nameError = await ElementUtils.validateName(input.name);
-    if (nameError) throw new Error(nameError);
-
-    const dimensionsError = await ElementUtils.validateDimensions(
-      input.width,
-      input.height
-    );
-    if (dimensionsError) throw new Error(dimensionsError);
-
-    const positionError = await ElementUtils.validatePosition(
-      input.positionX,
-      input.positionY
-    );
-    if (positionError) throw new Error(positionError);
-
-    const renderOrderError = await ElementUtils.validateRenderOrder(
-      input.renderOrder
-    );
-    if (renderOrderError) throw new Error(renderOrderError);
-
-    CommonElementUtils.validateDescription(input.description);
   };
 
   /**
@@ -223,18 +179,17 @@ export namespace QRCodeElementUtils {
    */
   export const validateUpdateInput = async (
     input: QRCodeElementUpdateInput,
-    existing?: CertificateElementEntity
+    existing: CertificateElementEntity
   ): Promise<void> => {
-    // Get existing element if not provided
-    const element =
-      existing || (await ElementRepository.findByIdOrThrow(input.id));
-
     // Validate element type
-    if (element.type !== ElementType.QR_CODE) {
+    if (existing.type !== ElementType.QR_CODE) {
       throw new Error(
-        `Element ${input.id} is ${element.type}, not QR_CODE. Use correct repository.`
+        `Element ${input.id} is ${existing.type}, not QR_CODE. Use correct repository.`
       );
     }
+
+    // Validate base element properties
+    await CommonElementUtils.validateBaseUpdateInput(input, existing);
 
     // Validate updated config if provided
     if (input.config) {
@@ -243,52 +198,18 @@ export namespace QRCodeElementUtils {
         type: ElementType.QR_CODE,
         dataSource:
           input.config.dataSource ||
-          (element.config as QRCodeElementConfigInput).dataSource,
+          (existing.config as QRCodeElementConfigInput).dataSource,
         errorCorrection:
           input.config.errorCorrection ??
-          (element.config as QRCodeElementConfigInput).errorCorrection,
+          (existing.config as QRCodeElementConfigInput).errorCorrection,
         foregroundColor:
           input.config.foregroundColor ??
-          (element.config as QRCodeElementConfigInput).foregroundColor,
+          (existing.config as QRCodeElementConfigInput).foregroundColor,
         backgroundColor:
           input.config.backgroundColor ??
-          (element.config as QRCodeElementConfigInput).backgroundColor,
+          (existing.config as QRCodeElementConfigInput).backgroundColor,
       };
       await validateConfig(mergedConfig);
-    }
-
-    // Validate updated common properties if provided
-    if (input.name !== undefined) {
-      const nameError = await ElementUtils.validateName(input.name);
-      if (nameError) throw new Error(nameError);
-    }
-
-    if (input.width !== undefined || input.height !== undefined) {
-      const width = input.width ?? element.width;
-      const height = input.height ?? element.height;
-      const dimensionsError = await ElementUtils.validateDimensions(
-        width,
-        height
-      );
-      if (dimensionsError) throw new Error(dimensionsError);
-    }
-
-    if (input.positionX !== undefined || input.positionY !== undefined) {
-      const x = input.positionX ?? element.positionX;
-      const y = input.positionY ?? element.positionY;
-      const positionError = await ElementUtils.validatePosition(x, y);
-      if (positionError) throw new Error(positionError);
-    }
-
-    if (input.renderOrder !== undefined) {
-      const renderOrderError = await ElementUtils.validateRenderOrder(
-        input.renderOrder
-      );
-      if (renderOrderError) throw new Error(renderOrderError);
-    }
-
-    if (input.description !== undefined) {
-      CommonElementUtils.validateDescription(input.description);
     }
   };
 }

@@ -15,9 +15,8 @@ import {
   DateElementCreateInputGraphql,
   DateElementUpdateInputGraphql,
   ElementType,
-} from "@/server/types/element";
+} from "@/server/types/element/output";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
-import { ElementUtils } from "./element.utils";
 import { CommonElementUtils } from "./common.element.utils";
 
 /**
@@ -120,15 +119,7 @@ export namespace DateElementUtils {
     input: DateElementCreateInputGraphql
   ): DateElementCreateInput => {
     return {
-      templateId: input.templateId,
-      name: input.name,
-      description: input.description,
-      positionX: input.positionX,
-      positionY: input.positionY,
-      width: input.width,
-      height: input.height,
-      alignment: input.alignment,
-      renderOrder: input.renderOrder,
+      ...input,
       config: mapDateElementConfigGraphqlToInput(input.config),
     };
   };
@@ -139,24 +130,10 @@ export namespace DateElementUtils {
   export const mapDateElementUpdateGraphqlToInput = (
     input: DateElementUpdateInputGraphql
   ): DateElementUpdateInput => {
-    const result: DateElementUpdateInput = {
-      id: input.id,
+    return {
+      ...input,
+      config: input.config !== undefined ? mapDateElementConfigUpdateGraphqlToInput(input.config) : undefined,
     };
-
-    if (input.name !== undefined) result.name = input.name;
-    if (input.description !== undefined) result.description = input.description;
-    if (input.positionX !== undefined) result.positionX = input.positionX;
-    if (input.positionY !== undefined) result.positionY = input.positionY;
-    if (input.width !== undefined) result.width = input.width;
-    if (input.height !== undefined) result.height = input.height;
-    if (input.alignment !== undefined) result.alignment = input.alignment;
-    if (input.renderOrder !== undefined) result.renderOrder = input.renderOrder;
-
-    if (input.config !== undefined) {
-      result.config = mapDateElementConfigUpdateGraphqlToInput(input.config);
-    }
-
-    return result;
   };
   // ============================================================================
   // Config Validation
@@ -364,35 +341,8 @@ export namespace DateElementUtils {
   export const validateCreateInput = async (
     input: DateElementCreateInput
   ): Promise<void> => {
-    // Template exists
-    await ElementRepository.validateTemplateId(input.templateId);
-
-    // Name validation
-    const nameError = await ElementUtils.validateName(input.name);
-    if (nameError) throw new Error(nameError);
-
-    // Description validation
-    CommonElementUtils.validateDescription(input.description);
-
-    // Dimensions validation
-    const dimError = await ElementUtils.validateDimensions(
-      input.width,
-      input.height
-    );
-    if (dimError) throw new Error(dimError);
-
-    // Position validation
-    const posError = await ElementUtils.validatePosition(
-      input.positionX,
-      input.positionY
-    );
-    if (posError) throw new Error(posError);
-
-    // Render order validation
-    const orderError = await ElementUtils.validateRenderOrder(
-      input.renderOrder
-    );
-    if (orderError) throw new Error(orderError);
+    // Validate base element properties
+    await CommonElementUtils.validateBaseCreateInput(input);
 
     // Config validation
     await validateConfig(input.config);
@@ -408,54 +358,10 @@ export namespace DateElementUtils {
    */
   export const validateUpdateInput = async (
     input: DateElementUpdateInput,
-    existing?: CertificateElementEntity
+    existing: CertificateElementEntity
   ): Promise<void> => {
-    // Cache existing element if not provideda
-    let cachedExisting = existing;
-
-    const getExisting = async () => {
-      if (!cachedExisting) {
-        cachedExisting = await ElementRepository.findByIdOrThrow(input.id);
-      }
-      return cachedExisting;
-    };
-
-    // Name validation (if provided)
-    if (input.name !== undefined) {
-      const nameError = await ElementUtils.validateName(input.name);
-      if (nameError) throw new Error(nameError);
-    }
-
-    // Description validation (if provided)
-    if (input.description !== undefined) {
-      CommonElementUtils.validateDescription(input.description);
-    }
-
-    // Dimensions validation (if provided)
-    if (input.width !== undefined || input.height !== undefined) {
-      const elem = await getExisting();
-      const width = input.width ?? elem.width;
-      const height = input.height ?? elem.height;
-      const dimError = await ElementUtils.validateDimensions(width, height);
-      if (dimError) throw new Error(dimError);
-    }
-
-    // Position validation (if provided)
-    if (input.positionX !== undefined || input.positionY !== undefined) {
-      const elem = await getExisting();
-      const x = input.positionX ?? elem.positionX;
-      const y = input.positionY ?? elem.positionY;
-      const posError = await ElementUtils.validatePosition(x, y);
-      if (posError) throw new Error(posError);
-    }
-
-    // Render order validation (if provided)
-    if (input.renderOrder !== undefined) {
-      const orderError = await ElementUtils.validateRenderOrder(
-        input.renderOrder
-      );
-      if (orderError) throw new Error(orderError);
-    }
+    // Validate base element properties
+    await CommonElementUtils.validateBaseUpdateInput(input, existing);
 
     // Config validation (if provided) - handled separately with deep merge
   };

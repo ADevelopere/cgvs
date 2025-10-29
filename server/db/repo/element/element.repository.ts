@@ -6,11 +6,11 @@ import { templateVariableBases } from "@/server/db/schema/templateVariables";
 import { storageFiles } from "@/server/db/schema/storage";
 import {
   CertificateElementEntity,
-  ElementConfig,
+  ElementConfigUnion,
   ElementType,
   FontSource,
   ElementOrderUpdateInput,
-} from "@/server/types/element";
+} from "@/server/types/element/output";
 import logger from "@/server/lib/logger";
 import { TemplateRepository } from "../template.repository";
 
@@ -217,7 +217,7 @@ export namespace ElementRepository {
    * @throws Error if any reference is invalid
    */
   export const validateConfigReferences = async (
-    config: ElementConfig
+    config: ElementConfigUnion
   ): Promise<void> => {
     // Validate font reference (for text-based elements)
     if ("textProps" in config) {

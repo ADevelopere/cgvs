@@ -8,7 +8,7 @@ import {
   ElementType,
   CountryElementConfig,
   CountryElementPothosDefinition,
-} from "@/server/types/element";
+} from "@/server/types/element/output";
 import { ElementRepository } from "./element.repository";
 import { ElementUtils, CountryElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";

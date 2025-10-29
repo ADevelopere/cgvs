@@ -8,7 +8,7 @@ import {
   ImageElementPothosDefinition,
   ElementType,
   ImageElementConfig,
-} from "@/server/types/element";
+} from "@/server/types/element/output";
 import { ElementRepository } from "./element.repository";
 import { ElementUtils, ImageElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
