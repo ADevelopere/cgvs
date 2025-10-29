@@ -1,16 +1,12 @@
 import {
-  NumberElementConfigCreateInput,
   NumberDataSourceType,
   NumberElementCreateInput,
   NumberElementUpdateInput,
   CertificateElementEntity,
   NumberDataSourceInput,
   NumberDataSourceInputGraphql,
-  NumberElementConfigInputGraphql,
-  NumberElementConfigUpdateInputGraphql,
   NumberElementCreateInputGraphql,
   NumberElementUpdateInputGraphql,
-  NumberElementConfigUpdateInput,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { CommonElementUtils } from "./common.element.utils";
@@ -42,42 +38,6 @@ export namespace NumberElementUtils {
   };
 
   /**
-   * Map GraphQL NumberElementConfig input to repository NumberElementConfig input
-   */
-  export const mapNumberElementConfigGraphqlToInput = (
-    input?: NumberElementConfigInputGraphql | null
-  ): NumberElementConfigCreateInput | null | undefined => {
-    if (!input) {
-      return input;
-    }
-    return {
-      ...input,
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
-        input.textProps
-      )!,
-      dataSource: mapNumberDataSourceGraphqlToInput(input.dataSource)!,
-    };
-  };
-
-  /**
-   * Map GraphQL NumberElementConfig update input (partial) to repository NumberElementConfig input (partial)
-   */
-  export const mapNumberElementConfigUpdateGraphqlToInput = (
-    input?: NumberElementConfigUpdateInputGraphql | null
-  ): NumberElementConfigUpdateInput | null | undefined => {
-    if (!input) {
-      return input;
-    }
-    return {
-      ...input,
-      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
-        input.textProps
-      )!,
-      dataSource: mapNumberDataSourceGraphqlToInput(input.dataSource),
-    };
-  };
-
-  /**
    * Map GraphQL NumberElement create input to repository NumberElement create input
    */
   export const mapNumberElementCreateGraphqlToInput = (
@@ -85,7 +45,10 @@ export namespace NumberElementUtils {
   ): NumberElementCreateInput => {
     return {
       ...input,
-      config: mapNumberElementConfigGraphqlToInput(input.config)!,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
+        input.textProps
+      )!,
+      dataSource: mapNumberDataSourceGraphqlToInput(input.dataSource)!,
     };
   };
 
@@ -97,30 +60,12 @@ export namespace NumberElementUtils {
   ): NumberElementUpdateInput => {
     return {
       ...input,
-      config: mapNumberElementConfigUpdateGraphqlToInput(input.config),
+      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
+        input.textProps
+      ),
+      dataSource: mapNumberDataSourceGraphqlToInput(input.dataSource),
     };
   };
-  // ============================================================================
-  // Config Validation
-  // ============================================================================
-
-  /**
-   * Validate complete NUMBER element config
-   * Validates font reference, data source, and mapping
-   */
-  export const validateConfig = async (
-    config: NumberElementConfigCreateInput
-  ): Promise<void> => {
-    // Validate textProps
-    await CommonElementUtils.validateTextProps(config);
-
-    // Validate data source
-    await validateDataSource(config);
-
-    // Validate mapping
-    validateMapping(config.mapping);
-  };
-
   // ============================================================================
   // Data Source Validation
   // ============================================================================
@@ -130,9 +75,8 @@ export namespace NumberElementUtils {
    * NUMBER elements only support TEMPLATE_NUMBER_VARIABLE
    */
   const validateDataSource = async (
-    config: NumberElementConfigCreateInput
+    dataSource: NumberDataSourceInput
   ): Promise<void> => {
-    const dataSource = config.dataSource;
     if (dataSource.type !== NumberDataSourceType.TEMPLATE_NUMBER_VARIABLE) {
       throw new Error(
         `Invalid number data source type: ${dataSource.type}. Must be TEMPLATE_NUMBER_VARIABLE`
@@ -293,8 +237,14 @@ export namespace NumberElementUtils {
     // Validate base element properties
     await CommonElementUtils.validateBaseCreateInput(input);
 
-    // Config validation
-    await validateConfig(input.config);
+    // Validate textProps
+    await CommonElementUtils.validateTextProps(input.textProps);
+
+    // Validate data source
+    await validateDataSource(input.dataSource);
+
+    // Validate mapping
+    validateMapping(input.mapping);
   };
 
   // ============================================================================
@@ -312,6 +262,19 @@ export namespace NumberElementUtils {
     // Validate base element properties
     await CommonElementUtils.validateBaseUpdateInput(input, existing);
 
-    // Config validation (if provided) - handled separately with deep merge
+    // Validate textProps (if provided)
+    if (input.textProps) {
+      await CommonElementUtils.validateTextProps(input.textProps);
+    }
+
+    // Validate data source (if provided)
+    if (input.dataSource) {
+      await validateDataSource(input.dataSource);
+    }
+
+    // Validate mapping (if provided)
+    if (input.mapping !== undefined && input.mapping !== null) {
+      validateMapping(input.mapping);
+    }
   };
 }

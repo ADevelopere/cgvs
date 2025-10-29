@@ -85,37 +85,36 @@ export namespace CommonElementUtils {
    * Validate text properties (font, size, color, overflow)
    * Used by TEXT, DATE, NUMBER, COUNTRY, GENDER elements
    */
-  export const validateTextProps = async (config: {
-    textProps: {
-      fontRef: { type: FontSource; fontId?: number; identifier?: string };
-      fontSize: number;
-      color: string;
-      overflow: ElementOverflow;
-    };
-  }): Promise<void> => {
-    const textProps = config.textProps;
+  export const validateTextProps = async (
+    textProps: TextPropsCreateInput | TextPropsUpdateInput
+  ): Promise<void> => {
     // Validate font reference
-    await validateFontReference(config);
+    if (textProps.fontRef) {
+      await validateFontReference(textProps.fontRef);
+    }
 
-    // Validate font size
-    validateFontSize(textProps.fontSize);
+    // Validate font size (if provided)
+    if (textProps.fontSize !== undefined && textProps.fontSize !== null) {
+      validateFontSize(textProps.fontSize);
+    }
 
-    // Validate color format
-    validateColor(textProps.color);
+    // Validate color format (if provided)
+    if (textProps.color) {
+      validateColor(textProps.color);
+    }
 
-    // Validate overflow enum
-    validateOverflow(textProps.overflow);
+    // Validate overflow enum (if provided)
+    if (textProps.overflow) {
+      validateOverflow(textProps.overflow);
+    }
   };
 
   /**
    * Validate font reference (Google or Self-Hosted)
    */
-  export const validateFontReference = async (config: {
-    textProps: {
-      fontRef: { type: FontSource; fontId?: number; identifier?: string };
-    };
-  }): Promise<void> => {
-    const fontRef = config.textProps.fontRef;
+  export const validateFontReference = async (
+    fontRef: FontReference
+  ): Promise<void> => {
     if (fontRef.type === FontSource.SELF_HOSTED) {
       // Validate font ID exists in database
       if (!fontRef.fontId) {

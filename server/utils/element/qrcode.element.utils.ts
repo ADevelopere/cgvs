@@ -1,10 +1,7 @@
 import {
-  QRCodeElementConfigCreateInput,
   QRCodeDataSourceType,
   QRCodeDataSourceInput,
   QRCodeDataSourceInputGraphql,
-  QRCodeElementConfigInputGraphql,
-  QRCodeElementConfigUpdateInputGraphql,
   QRCodeElementCreateInput,
   QRCodeElementCreateInputGraphql,
   QRCodeElementUpdateInput,
@@ -12,7 +9,6 @@ import {
   ElementType,
   CertificateElementEntity,
   QRCodeErrorCorrection,
-  QRCodeElementConfigUpdateInput,
 } from "@/server/types/element";
 import { CommonElementUtils } from "./common.element.utils";
 
@@ -45,34 +41,6 @@ export namespace QRCodeElementUtils {
   };
 
   /**
-   * Map GraphQL QRCodeElementConfig input to repository QRCodeElementConfig input
-   */
-  export const mapQRCodeElementConfigGraphqlToInput = (
-    input: QRCodeElementConfigInputGraphql
-  ): QRCodeElementConfigCreateInput => {
-    return {
-      ...input,
-      // dataSource: mapQRCodeDataSourceGraphqlToInput(input.dataSource)!,
-    };
-  };
-
-  /**
-   * Map GraphQL QRCodeElementConfig update input (partial) to repository QRCodeElementConfig input (partial)
-   */
-  export const mapQRCodeElementConfigUpdateGraphqlToInput = (
-    input?: QRCodeElementConfigUpdateInputGraphql | null
-  ): QRCodeElementConfigUpdateInput | null | undefined => {
-    if (!input) {
-      return input;
-    }
-
-    return {
-      ...input,
-      // dataSource: mapQRCodeDataSourceGraphqlToInput(input.dataSource)!,
-    };
-  };
-
-  /**
    * Map GraphQL QRCodeElement create input to repository QRCodeElement create input
    */
   export const mapQRCodeElementCreateGraphqlToInput = (
@@ -80,7 +48,6 @@ export namespace QRCodeElementUtils {
   ): QRCodeElementCreateInput => {
     return {
       ...input,
-      config: mapQRCodeElementConfigGraphqlToInput(input.config),
     };
   };
 
@@ -92,48 +59,7 @@ export namespace QRCodeElementUtils {
   ): QRCodeElementUpdateInput => {
     return {
       ...input,
-      config: mapQRCodeElementConfigUpdateGraphqlToInput(input.config),
     };
-  };
-
-  // ============================================================================
-  // Config Validation
-  // ============================================================================
-
-  /**
-   * Validate complete QR_CODE element config
-   * Validates data source, error correction, and colors
-   */
-  export const validateConfig = async (
-    config: QRCodeElementConfigCreateInput
-  ): Promise<void> => {
-    // Validate data source
-    validateDataSource(config);
-
-    // Validate error correction level
-    validateErrorCorrection(config.errorCorrection);
-
-    // Validate colors
-    CommonElementUtils.validateColor(config.foregroundColor);
-    CommonElementUtils.validateColor(config.backgroundColor);
-  };
-
-  // ============================================================================
-  // Data Source Validation
-  // ============================================================================
-
-  /**
-   * Validate QR code data source
-   */
-  const validateDataSource = (_config: QRCodeElementConfigCreateInput): void => {
-    // const dataSource = config.dataSource;
-    // const validTypes = Object.values(QRCodeDataSourceType);
-
-    // if (!validTypes.includes(dataSource.type)) {
-    //   throw new Error(
-    //     `Invalid QR code data source type: ${dataSource.type}. Must be one of: ${validTypes.join(", ")}`
-    //   );
-    // }
   };
 
   /**
@@ -163,8 +89,12 @@ export namespace QRCodeElementUtils {
     // Validate base element properties
     await CommonElementUtils.validateBaseCreateInput(input);
 
-    // Validate config
-    await validateConfig(input.config);
+    // Validate error correction level
+    validateErrorCorrection(input.errorCorrection);
+
+    // Validate colors
+    CommonElementUtils.validateColor(input.foregroundColor);
+    CommonElementUtils.validateColor(input.backgroundColor);
   };
 
   /**
@@ -184,24 +114,19 @@ export namespace QRCodeElementUtils {
     // Validate base element properties
     await CommonElementUtils.validateBaseUpdateInput(input, existing);
 
-    // Validate updated config if provided
-    if (input.config) {
-      // For partial updates, merge with existing config for validation
-      const mergedConfig: QRCodeElementConfigCreateInput = {
-        // dataSource:
-        //   input.config.dataSource ||
-        //   (existing.config as QRCodeElementConfigCreateInput).dataSource,
-        errorCorrection:
-          input.config.errorCorrection ??
-          (existing.config as QRCodeElementConfigCreateInput).errorCorrection,
-        foregroundColor:
-          input.config.foregroundColor ??
-          (existing.config as QRCodeElementConfigCreateInput).foregroundColor,
-        backgroundColor:
-          input.config.backgroundColor ??
-          (existing.config as QRCodeElementConfigCreateInput).backgroundColor,
-      };
-      await validateConfig(mergedConfig);
+    // Validate error correction (if provided)
+    if (input.errorCorrection !== undefined && input.errorCorrection !== null) {
+      validateErrorCorrection(input.errorCorrection);
+    }
+
+    // Validate foreground color (if provided)
+    if (input.foregroundColor !== undefined && input.foregroundColor !== null) {
+      CommonElementUtils.validateColor(input.foregroundColor);
+    }
+
+    // Validate background color (if provided)
+    if (input.backgroundColor !== undefined && input.backgroundColor !== null) {
+      CommonElementUtils.validateColor(input.backgroundColor);
     }
   };
 }

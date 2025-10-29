@@ -1,5 +1,4 @@
 import {
-  TextElementConfigCreateInput,
   TextDataSourceType,
   StudentTextField,
   CertificateTextField,
@@ -8,11 +7,8 @@ import {
   CertificateElementEntity,
   TextDataSourceInput,
   TextDataSourceInputGraphql,
-  TextElementConfigInputGraphql,
-  TextElementConfigUpdateInputGraphql,
   TextElementCreateInputGraphql,
   TextElementUpdateInputGraphql,
-  TextElementConfigUpdateInput,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { CommonElementUtils } from "./common.element.utils";
@@ -68,39 +64,6 @@ export namespace TextElementUtils {
   };
 
   /**
-   * Map GraphQL TextElementConfig input to repository TextElementConfig input
-   */
-  export const mapTextElementConfigGraphqlToInput = (
-    input: TextElementConfigInputGraphql
-  ): TextElementConfigCreateInput => {
-    return {
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
-        input.textProps
-      )!,
-      dataSource: mapTextDataSourceGraphqlToInput(input.dataSource)!,
-    };
-  };
-
-  /**
-   * Map GraphQL TextElementConfig update input (partial) to repository TextElementConfig input (partial)
-   */
-  export const mapTextElementConfigUpdateGraphqlToInput = (
-    input?: TextElementConfigUpdateInputGraphql | null
-  ): TextElementConfigUpdateInput | null | undefined => {
-    if (!input) {
-      return input;
-    }
-
-    return {
-      ...input,
-      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
-        input.textProps
-      ),
-      dataSource: mapTextDataSourceGraphqlToInput(input.dataSource),
-    };
-  };
-
-  /**
    * Map GraphQL TextElement create input to repository TextElement create input
    */
   export const mapTextElementCreateGraphqlToInput = (
@@ -108,7 +71,10 @@ export namespace TextElementUtils {
   ): TextElementCreateInput => {
     return {
       ...input,
-      config: mapTextElementConfigGraphqlToInput(input.config),
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
+        input.textProps
+      )!,
+      dataSource: mapTextDataSourceGraphqlToInput(input.dataSource)!,
     };
   };
 
@@ -120,27 +86,12 @@ export namespace TextElementUtils {
   ): TextElementUpdateInput => {
     return {
       ...input,
-      config: mapTextElementConfigUpdateGraphqlToInput(input.config),
+      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
+        input.textProps
+      ),
+      dataSource: mapTextDataSourceGraphqlToInput(input.dataSource),
     };
   };
-  // ============================================================================
-  // Config Validation
-  // ============================================================================
-
-  /**
-   * Validate complete TEXT element config
-   * Validates font reference, data source, and text properties
-   */
-  export const validateConfig = async (
-    config: TextElementConfigCreateInput
-  ): Promise<void> => {
-    // Validate textProps
-    await CommonElementUtils.validateTextProps(config);
-
-    // Validate data source
-    await validateDataSource(config);
-  };
-
   // ============================================================================
   // Data Source Validation
   // ============================================================================
@@ -149,9 +100,8 @@ export namespace TextElementUtils {
    * Validate text data source based on type
    */
   const validateDataSource = async (
-    config: TextElementConfigCreateInput
+    dataSource: TextDataSourceInput
   ): Promise<void> => {
-    const dataSource = config.dataSource;
     switch (dataSource.type) {
       case TextDataSourceType.STATIC:
         validateStaticDataSource(dataSource.value);
@@ -230,8 +180,11 @@ export namespace TextElementUtils {
     // Validate base element properties
     await CommonElementUtils.validateBaseCreateInput(input);
 
-    // Config validation
-    await validateConfig(input.config);
+    // Validate textProps
+    await CommonElementUtils.validateTextProps(input.textProps);
+
+    // Validate data source
+    await validateDataSource(input.dataSource);
   };
 
   // ============================================================================
@@ -249,6 +202,15 @@ export namespace TextElementUtils {
     // Validate base element properties
     await CommonElementUtils.validateBaseUpdateInput(input, existing);
 
-    // Config validation (if provided) - handled separately with deep merge
+    // Validate textProps (if provided)
+    if (input.textProps) {
+      await CommonElementUtils.validateTextProps(input.textProps);
+    }
+
+    // Validate data source (if provided)
+    if (input.dataSource) {
+      await validateDataSource(input.dataSource);
+    }
   };
 }
+
