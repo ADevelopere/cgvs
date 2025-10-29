@@ -1,6 +1,6 @@
 {
-  "id": "6a5136a0-4fc8-44ec-a2e3-afe988268e2e",
-  "prevId": "a03697e8-0c3c-4c86-8680-1a949f474bf6",
+  "id": "3e342689-c9a2-4eed-92b1-25a815b252ec",
+  "prevId": "6a5136a0-4fc8-44ec-a2e3-afe988268e2e",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -193,52 +193,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.country_element": {
-      "name": "country_element",
-      "schema": "",
-      "columns": {
-        "element_id": {
-          "name": "element_id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "text_props_id": {
-          "name": "text_props_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "representation": {
-          "name": "representation",
-          "type": "country_representation",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "country_element_element_id_certificate_element_id_fk": {
-          "name": "country_element_element_id_certificate_element_id_fk",
-          "tableFrom": "country_element",
-          "tableTo": "certificate_element",
-          "columnsFrom": [
-            "element_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.file_usage": {
       "name": "file_usage",
       "schema": "",
@@ -281,288 +235,6 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.passwordResetTokens": {
-      "name": "passwordResetTokens",
-      "schema": "",
-      "columns": {
-        "email": {
-          "name": "email",
-          "type": "varchar(255)",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "token": {
-          "name": "token",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp (3)",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.recipient_group_item_variable_value": {
-      "name": "recipient_group_item_variable_value",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "template_recipient_group_item_id": {
-          "name": "template_recipient_group_item_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "template_id": {
-          "name": "template_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "recipient_group_id": {
-          "name": "recipient_group_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "student_id": {
-          "name": "student_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "variable_values": {
-          "name": "variable_values",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'{}'::jsonb"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp (3)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp (3)",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {
-        "rgiv_group_item_unique": {
-          "name": "rgiv_group_item_unique",
-          "columns": [
-            {
-              "expression": "template_recipient_group_item_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "rgiv_student_idx": {
-          "name": "rgiv_student_idx",
-          "columns": [
-            {
-              "expression": "student_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "rgiv_template_idx": {
-          "name": "rgiv_template_idx",
-          "columns": [
-            {
-              "expression": "template_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "rgiv_recipient_group_idx": {
-          "name": "rgiv_recipient_group_idx",
-          "columns": [
-            {
-              "expression": "recipient_group_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "rgiv_variable_values_gin_idx": {
-          "name": "rgiv_variable_values_gin_idx",
-          "columns": [
-            {
-              "expression": "variable_values",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "gin",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.roles": {
-      "name": "roles",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "roles_name_unique": {
-          "name": "roles_name_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.sessions": {
-      "name": "sessions",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "varchar(255)",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "userId": {
-          "name": "userId",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "ipAddress": {
-          "name": "ipAddress",
-          "type": "varchar(45)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "userAgent": {
-          "name": "userAgent",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "payload": {
-          "name": "payload",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "lastActivity": {
-          "name": "lastActivity",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {
-        "sessions_user_id_index": {
-          "name": "sessions_user_id_index",
-          "columns": [
-            {
-              "expression": "userId",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "sessions_last_activity_index": {
-          "name": "sessions_last_activity_index",
-          "columns": [
-            {
-              "expression": "lastActivity",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -899,115 +571,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.TemplateCategory": {
-      "name": "TemplateCategory",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "parent_category_id": {
-          "name": "parent_category_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "order": {
-          "name": "order",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "special_type": {
-          "name": "special_type",
-          "type": "category_special_type",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp (3)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp (3)",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {
-        "template_category_special_type_key": {
-          "name": "template_category_special_type_key",
-          "columns": [
-            {
-              "expression": "special_type",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_template_categories_name_fts": {
-          "name": "idx_template_categories_name_fts",
-          "columns": [
-            {
-              "expression": "to_tsvector('simple', \"name\")",
-              "asc": true,
-              "isExpression": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "gin",
-          "with": {}
-        },
-        "idx_template_categories_name_trgm": {
-          "name": "idx_template_categories_name_trgm",
-          "columns": [
-            {
-              "expression": "name",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last",
-              "opclass": "gist_trgm_ops"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "gist",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.template_config": {
       "name": "template_config",
       "schema": "",
@@ -1059,73 +622,137 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.template_date_variable": {
-      "name": "template_date_variable",
+    "public.recipient_group_item_variable_value": {
+      "name": "recipient_group_item_variable_value",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "serial",
           "primaryKey": true,
           "notNull": true
         },
-        "min_date": {
-          "name": "min_date",
-          "type": "timestamp (3)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "max_date": {
-          "name": "max_date",
-          "type": "timestamp (3)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "format": {
-          "name": "format",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.template_number_variable": {
-      "name": "template_number_variable",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
+        "template_recipient_group_item_id": {
+          "name": "template_recipient_group_item_id",
           "type": "integer",
-          "primaryKey": true,
+          "primaryKey": false,
           "notNull": true
         },
-        "min_value": {
-          "name": "min_value",
-          "type": "numeric",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "max_value": {
-          "name": "max_value",
-          "type": "numeric",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "decimal_places": {
-          "name": "decimal_places",
+        "template_id": {
+          "name": "template_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
+        },
+        "recipient_group_id": {
+          "name": "recipient_group_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "student_id": {
+          "name": "student_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "variable_values": {
+          "name": "variable_values",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "rgiv_group_item_unique": {
+          "name": "rgiv_group_item_unique",
+          "columns": [
+            {
+              "expression": "template_recipient_group_item_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "rgiv_student_idx": {
+          "name": "rgiv_student_idx",
+          "columns": [
+            {
+              "expression": "student_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "rgiv_template_idx": {
+          "name": "rgiv_template_idx",
+          "columns": [
+            {
+              "expression": "template_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "rgiv_recipient_group_idx": {
+          "name": "rgiv_recipient_group_idx",
+          "columns": [
+            {
+              "expression": "recipient_group_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "rgiv_variable_values_gin_idx": {
+          "name": "rgiv_variable_values_gin_idx",
+          "columns": [
+            {
+              "expression": "variable_values",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -1243,6 +870,80 @@
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.template_date_variable": {
+      "name": "template_date_variable",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "min_date": {
+          "name": "min_date",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "max_date": {
+          "name": "max_date",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "format": {
+          "name": "format",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.template_number_variable": {
+      "name": "template_number_variable",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "min_value": {
+          "name": "min_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "max_value": {
+          "name": "max_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "decimal_places": {
+          "name": "decimal_places",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -1418,6 +1119,115 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.TemplateCategory": {
+      "name": "TemplateCategory",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_category_id": {
+          "name": "parent_category_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "special_type": {
+          "name": "special_type",
+          "type": "category_special_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "template_category_special_type_key": {
+          "name": "template_category_special_type_key",
+          "columns": [
+            {
+              "expression": "special_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_template_categories_name_fts": {
+          "name": "idx_template_categories_name_fts",
+          "columns": [
+            {
+              "expression": "to_tsvector('simple', \"name\")",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        },
+        "idx_template_categories_name_trgm": {
+          "name": "idx_template_categories_name_trgm",
+          "columns": [
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last",
+              "opclass": "gist_trgm_ops"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gist",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.template": {
       "name": "template",
       "schema": "",
@@ -1536,6 +1346,150 @@
         }
       },
       "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.passwordResetTokens": {
+      "name": "passwordResetTokens",
+      "schema": "",
+      "columns": {
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.roles": {
+      "name": "roles",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "roles_name_unique": {
+          "name": "roles_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.sessions": {
+      "name": "sessions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ipAddress": {
+          "name": "ipAddress",
+          "type": "varchar(45)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "userAgent": {
+          "name": "userAgent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "payload": {
+          "name": "payload",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lastActivity": {
+          "name": "lastActivity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "sessions_user_id_index": {
+          "name": "sessions_user_id_index",
+          "columns": [
+            {
+              "expression": "userId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "sessions_last_activity_index": {
+          "name": "sessions_last_activity_index",
+          "columns": [
+            {
+              "expression": "lastActivity",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -1767,8 +1721,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.date_element": {
-      "name": "date_element",
+    "public.country_element": {
+      "name": "country_element",
       "schema": "",
       "columns": {
         "element_id": {
@@ -1783,51 +1737,19 @@
           "primaryKey": false,
           "notNull": true
         },
-        "calendar_type": {
-          "name": "calendar_type",
-          "type": "calendar_type",
+        "representation": {
+          "name": "representation",
+          "type": "country_representation",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
-        },
-        "offset_days": {
-          "name": "offset_days",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "format": {
-          "name": "format",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "transformation": {
-          "name": "transformation",
-          "type": "date_transformation_type",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "date_data_source": {
-          "name": "date_data_source",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "variable_id": {
-          "name": "variable_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "date_element_element_id_certificate_element_id_fk": {
-          "name": "date_element_element_id_certificate_element_id_fk",
-          "tableFrom": "date_element",
+        "country_element_element_id_certificate_element_id_fk": {
+          "name": "country_element_element_id_certificate_element_id_fk",
+          "tableFrom": "country_element",
           "tableTo": "certificate_element",
           "columnsFrom": [
             "element_id"
@@ -1838,12 +1760,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "date_element_variable_id_template_variable_base_id_fk": {
-          "name": "date_element_variable_id_template_variable_base_id_fk",
-          "tableFrom": "date_element",
-          "tableTo": "template_variable_base",
+        "country_element_text_props_id_element_text_props_id_fk": {
+          "name": "country_element_text_props_id_element_text_props_id_fk",
+          "tableFrom": "country_element",
+          "tableTo": "element_text_props",
           "columnsFrom": [
-            "variable_id"
+            "text_props_id"
           ],
           "columnsTo": [
             "id"
@@ -2685,13 +2607,6 @@
         "TEMPLATE_SELECT_VARIABLE",
         "STUDENT_TEXT_FIELD",
         "CERTIFICATE_TEXT_FIELD"
-      ]
-    },
-    "public.date_transformation_type": {
-      "name": "date_transformation_type",
-      "schema": "public",
-      "values": [
-        "AGE_CALCULATION"
       ]
     }
   },
