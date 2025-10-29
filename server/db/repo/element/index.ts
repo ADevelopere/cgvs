@@ -1,5 +1,6 @@
 // Export all element repositories
 export * from "./element.repository";
+export * from "./textProps.element.repository";
 export * from "./text.element.repository";
 export * from "./date.element.repository";
 export * from "./number.element.repository";

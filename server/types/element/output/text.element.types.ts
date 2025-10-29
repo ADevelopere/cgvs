@@ -1,5 +1,5 @@
 import type { CertificateElementEntity } from "./base.element.types";
-import type { TextProps } from "./config.element.types";
+import type { ElementTextPropsEntity, TextProps } from "./config.element.types";
 import type { textElement } from "@/server/db/schema";
 
 // ============================================================================
@@ -57,17 +57,14 @@ export type TextElementEntity = typeof textElement.$inferSelect;
 // Output Type (mirrors database - base + text_element + element_text_props joined)
 // ============================================================================
 
-export type TextElementOutput = CertificateElementEntity & {
-  // From element_text_props table (joined)
-  textProps: TextProps;
-  
-  // From text_element table
-  dataSource: TextDataSource;
-  variableId: number | null;
-};
+// fields are not loadable, so we return them in repositories directly
+export type TextElementOutput = CertificateElementEntity &
+  TextElementEntity & {
+    // From element_text_props table (joined)
+    textPropsEntity: ElementTextPropsEntity;
+    textProps?: TextProps | null;
 
-// ============================================================================
-// Pothos Definition
-// ============================================================================
-
-export type TextElementPothosDefinition = TextElementOutput;
+    // From text_element table
+    dataSource?: TextDataSource | null;
+    variableId?: number | null;
+  };
