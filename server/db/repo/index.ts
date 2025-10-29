@@ -15,3 +15,5 @@ export { SignedUrlRepository } from "./signedUrl.repository";
 export { CacheDbRepository } from "./cache.repository";
 
 export { FontRepository } from "./font.repository";
+
+export * from "./element";
