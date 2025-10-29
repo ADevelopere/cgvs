@@ -1,9 +1,11 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq, inArray, asc } from "drizzle-orm";
-import { certificateElement } from "@/server/db/schema/certificateElements/certificateElement";
-import { font } from "@/server/db/schema/font";
-import { templateVariableBases } from "@/server/db/schema/templateVariables";
-import { storageFiles } from "@/server/db/schema/storage";
+import {
+  font,
+  certificateElement,
+  storageFiles,
+  templateVariableBases,
+} from "@/server/db/schema";
 import {
   CertificateElementEntity,
   ElementOrderUpdateInput,
@@ -11,7 +13,7 @@ import {
 } from "@/server/types/element";
 import logger from "@/server/lib/logger";
 import { TemplateRepository } from "../template.repository";
-import { BaseElementUtils } from "@/server/utils/element/base.element.utils";
+import { BaseElementUtils } from "@/server/utils";
 
 /**
  * Master repository for certificate elements
@@ -233,7 +235,6 @@ export namespace ElementRepository {
   // ============================================================================
   // Config Validation
   // ============================================================================
-
 
   // ============================================================================
   // Delete Operations

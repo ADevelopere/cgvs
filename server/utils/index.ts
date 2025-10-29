@@ -23,3 +23,5 @@ export {
 export { PaginationUtils } from "./pagination.utils";
 
 export { StorageUtils } from "./storage.utils";
+
+export * from "./element";

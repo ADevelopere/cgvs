@@ -1,8 +1,6 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
-import { certificateElement } from "@/server/db/schema/certificateElements/certificateElement";
-import { genderElement } from "@/server/db/schema/certificateElements/genderElement";
-import { elementTextProps } from "@/server/db/schema/certificateElements/elementTextProps";
+import { certificateElement, genderElement, elementTextProps } from "@/server/db/schema";
 import {
   GenderElementCreateInput,
   GenderElementUpdateInput,

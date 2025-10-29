@@ -1,8 +1,6 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
-import { certificateElement } from "@/server/db/schema/certificateElements/certificateElement";
-import { textElement } from "@/server/db/schema/certificateElements/textElement";
-import { elementTextProps } from "@/server/db/schema/certificateElements/elementTextProps";
+import { certificateElement , textElement, elementTextProps} from "@/server/db/schema";
 import {
   TextElementCreateInput,
   TextElementUpdateInput,
@@ -70,7 +68,7 @@ export namespace TextElementRepository {
       .values({
         elementId: baseElement.id,
         textPropsId: newTextProps.id,
-        dataSource: newDataSource,
+        textDataSource: newDataSource,
         variableId,
       })
       .returning();
@@ -86,7 +84,7 @@ export namespace TextElementRepository {
       textPropsId: newTextElement.textPropsId,
       textPropsEntity: newTextProps,
       textProps: TextPropsUtils.entityToTextProps(newTextProps),
-      dataSource: newDataSource,
+      textDataSource: newDataSource,
       variableId,
     };
   };
@@ -160,7 +158,7 @@ export namespace TextElementRepository {
       textPropsId: updatedTextElement.textPropsId,
       textPropsEntity: updatedTextProps,
       textProps: TextPropsUtils.entityToTextProps(updatedTextProps),
-      dataSource: updatedTextElement.dataSource,
+      textDataSource: updatedTextElement.textDataSource,
       variableId: updatedTextElement.variableId,
     };
   };
@@ -200,7 +198,7 @@ export namespace TextElementRepository {
       ...row.text_element,
       textPropsEntity: row.element_text_props,
       textProps: TextPropsUtils.entityToTextProps(row.element_text_props),
-      dataSource: row.text_element.dataSource,
+      textDataSource: row.text_element.textDataSource,
       variableId: row.text_element.variableId,
     };
   };
@@ -266,7 +264,7 @@ export namespace TextElementRepository {
         throw new Error("dataSource cannot be null for TEXT element");
       }
       const dataSource = convertInputDataSourceToOutput(input.dataSource);
-      textUpdates.dataSource = dataSource;
+      textUpdates.textDataSource = dataSource;
       textUpdates.variableId = extractVariableIdFromDataSource(dataSource);
     }
 

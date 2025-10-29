@@ -1,8 +1,10 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
-import { certificateElement } from "@/server/db/schema/certificateElements/certificateElement";
-import { countryElement } from "@/server/db/schema/certificateElements/countryElement";
-import { elementTextProps } from "@/server/db/schema/certificateElements/elementTextProps";
+import {
+  certificateElement,
+  countryElement,
+  elementTextProps,
+} from "@/server/db/schema";
 import {
   CountryElementCreateInput,
   CountryElementUpdateInput,
@@ -14,9 +16,8 @@ import {
   CountryRepresentation,
 } from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
-import { CountryElementUtils } from "@/server/utils";
+import { CountryElementUtils, TextPropsUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
-import { TextPropsUtils } from "@/server/utils/element/textProps.utils";
 import { ElementRepository } from ".";
 
 /**
@@ -150,7 +151,8 @@ export namespace CountryElementRepository {
       textPropsId: updatedCountryElement.textPropsId,
       textPropsEntity: updatedTextProps,
       textProps: TextPropsUtils.entityToTextProps(updatedTextProps),
-      representation: updatedCountryElement.representation as CountryRepresentation,
+      representation:
+        updatedCountryElement.representation as CountryRepresentation,
     };
   };
 
@@ -192,7 +194,8 @@ export namespace CountryElementRepository {
       ...row.country_element,
       textPropsEntity: row.element_text_props,
       textProps: TextPropsUtils.entityToTextProps(row.element_text_props),
-      representation: row.country_element.representation as CountryRepresentation,
+      representation: row.country_element
+        .representation as CountryRepresentation,
     };
   };
 

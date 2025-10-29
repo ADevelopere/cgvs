@@ -1,7 +1,6 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
-import { certificateElement } from "@/server/db/schema/certificateElements/certificateElement";
-import { qrCodeElement } from "@/server/db/schema/certificateElements/qrCodeElement";
+import { certificateElement, qrCodeElement } from "@/server/db/schema";
 import {
   QRCodeElementCreateInput,
   QRCodeElementUpdateInput,
