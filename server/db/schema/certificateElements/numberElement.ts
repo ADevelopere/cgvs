@@ -12,11 +12,12 @@ export const numberElement = pgTable("number_element", {
     .notNull()
     .references(() => elementTextProps.id, { onDelete: "restrict" }),
   mapping: jsonb("mapping").$type<Record<string, string>>().notNull(), // Breakpoint-to-text rules
-  dataSource: jsonb("data_source").$type<NumberDataSource>().notNull(),
+  numberDataSource: jsonb("number_data_source")
+    .$type<NumberDataSource>()
+    .notNull(),
   // Mirrored from data_source.numberVariableId
   // Always populated (NumberDataSource only has one variant)
   variableId: integer("variable_id")
     .notNull()
     .references(() => templateVariableBases.id, { onDelete: "restrict" }),
 });
-

@@ -1,5 +1,8 @@
 CREATE TYPE "public"."country_code" AS ENUM('SA', 'PS', 'YE', 'SY', 'EG', 'KW', 'QA', 'OM', 'BH', 'LB', 'JO', 'IQ', 'LY', 'AE', 'TN', 'DZ', 'MA', 'SD', 'ID', 'MR', 'SO', 'KM', 'DJ', 'ER', 'SS', 'EH', 'AD', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DK', 'DM', 'DO', 'EC', 'EE', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'IE', 'IM', 'IN', 'IO', 'IR', 'IS', 'IT', 'JE', 'JM', 'JP', 'KE', 'KG', 'KH', 'KI', 'KN', 'KP', 'KR', 'KY', 'KZ', 'LA', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PT', 'PW', 'PY', 'RE', 'RO', 'RS', 'RU', 'RW', 'SB', 'SC', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SR', 'ST', 'SV', 'SX', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TO', 'TR', 'TV', 'TW', 'TZ', 'UA', 'UG', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'XK', 'YT', 'ZA', 'ZM', 'ZW');--> statement-breakpoint
 CREATE TYPE "public"."gender" AS ENUM('MALE', 'FEMALE');--> statement-breakpoint
+CREATE TYPE "public"."template_variable_type" AS ENUM('TEXT', 'NUMBER', 'DATE', 'SELECT');--> statement-breakpoint
+CREATE TYPE "public"."category_special_type" AS ENUM('Main', 'Suspension');--> statement-breakpoint
+CREATE TYPE "public"."template_config_key" AS ENUM('MAX_BACKGROUND_SIZE', 'ALLOWED_FILE_TYPES');--> statement-breakpoint
 CREATE TYPE "public"."calendar_type" AS ENUM('GREGORIAN', 'HIJRI');--> statement-breakpoint
 CREATE TYPE "public"."certificate_date_field" AS ENUM('RELEASE_DATE');--> statement-breakpoint
 CREATE TYPE "public"."certificate_text_field" AS ENUM('VERIFICATION_CODE');--> statement-breakpoint
@@ -9,14 +12,13 @@ CREATE TYPE "public"."element_alignment" AS ENUM('START', 'END', 'TOP', 'BOTTOM'
 CREATE TYPE "public"."element_image_fit" AS ENUM('COVER', 'CONTAIN', 'FILL');--> statement-breakpoint
 CREATE TYPE "public"."element_overflow" AS ENUM('RESIZE_DOWN', 'TRUNCATE', 'ELLIPSE', 'WRAP');--> statement-breakpoint
 CREATE TYPE "public"."element_type" AS ENUM('TEXT', 'NUMBER', 'DATE', 'IMAGE', 'GENDER', 'COUNTRY', 'QR_CODE');--> statement-breakpoint
+CREATE TYPE "public"."font_source" AS ENUM('GOOGLE', 'SELF_HOSTED');--> statement-breakpoint
 CREATE TYPE "public"."qr_code_data_source_type" AS ENUM('VERIFICATION_URL', 'VERIFICATION_CODE');--> statement-breakpoint
 CREATE TYPE "public"."qr_code_error_correction" AS ENUM('L', 'M', 'Q', 'H');--> statement-breakpoint
 CREATE TYPE "public"."student_date_field" AS ENUM('DATE_OF_BIRTH');--> statement-breakpoint
 CREATE TYPE "public"."student_text_field" AS ENUM('STUDENT_NAME', 'STUDENT_EMAIL');--> statement-breakpoint
-CREATE TYPE "public"."template_variable_type" AS ENUM('TEXT', 'NUMBER', 'DATE', 'SELECT');--> statement-breakpoint
-CREATE TYPE "public"."category_special_type" AS ENUM('Main', 'Suspension');--> statement-breakpoint
-CREATE TYPE "public"."template_config_key" AS ENUM('MAX_BACKGROUND_SIZE', 'ALLOWED_FILE_TYPES');--> statement-breakpoint
 CREATE TYPE "public"."text_data_source_type" AS ENUM('STATIC', 'TEMPLATE_TEXT_VARIABLE', 'TEMPLATE_SELECT_VARIABLE', 'STUDENT_TEXT_FIELD', 'CERTIFICATE_TEXT_FIELD');--> statement-breakpoint
+CREATE TYPE "public"."date_transformation_type" AS ENUM('AGE_CALCULATION');--> statement-breakpoint
 CREATE TABLE "cache" (
 	"key" text PRIMARY KEY NOT NULL,
 	"value" text NOT NULL,
@@ -44,24 +46,10 @@ CREATE TABLE "font" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "certificate_element" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"name" varchar(255) NOT NULL,
-	"description" text NOT NULL,
-	"template_id" integer NOT NULL,
-	"position_x" integer NOT NULL,
-	"position_y" integer NOT NULL,
-	"width" integer NOT NULL,
-	"height" integer NOT NULL,
-	"alignment" "element_alignment" NOT NULL,
-	"render_order" integer DEFAULT 0 NOT NULL,
-	"type" "element_type" NOT NULL,
-	"config" jsonb NOT NULL,
-	"font_id" integer,
-	"template_variable_id" integer,
-	"storage_file_id" bigint,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+CREATE TABLE "country_element" (
+	"element_id" integer PRIMARY KEY NOT NULL,
+	"text_props_id" integer NOT NULL,
+	"representation" "country_representation" NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "file_usage" (
@@ -262,11 +250,99 @@ CREATE TABLE "users" (
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
-ALTER TABLE "certificate_element" ADD CONSTRAINT "certificate_element_font_id_font_id_fk" FOREIGN KEY ("font_id") REFERENCES "public"."font"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "certificate_element" ADD CONSTRAINT "certificate_element_template_variable_id_template_variable_base_id_fk" FOREIGN KEY ("template_variable_id") REFERENCES "public"."template_variable_base"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "certificate_element" ADD CONSTRAINT "certificate_element_storage_file_id_storage_file_id_fk" FOREIGN KEY ("storage_file_id") REFERENCES "public"."storage_file"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+CREATE TABLE "certificate_element" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" varchar(255) NOT NULL,
+	"description" text,
+	"template_id" integer NOT NULL,
+	"position_x" integer NOT NULL,
+	"position_y" integer NOT NULL,
+	"width" integer NOT NULL,
+	"height" integer NOT NULL,
+	"alignment" "element_alignment",
+	"render_order" integer NOT NULL,
+	"type" "element_type" NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "date_element" (
+	"element_id" integer PRIMARY KEY NOT NULL,
+	"text_props_id" integer NOT NULL,
+	"calendar_type" "calendar_type" NOT NULL,
+	"offset_days" integer DEFAULT 0 NOT NULL,
+	"format" varchar(100) NOT NULL,
+	"transformation" date_transformation_type,
+	"date_data_source" jsonb NOT NULL,
+	"variable_id" integer
+);
+--> statement-breakpoint
+CREATE TABLE "element_text_props" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"font_source" "font_source" NOT NULL,
+	"font_id" integer,
+	"google_font_identifier" varchar(255),
+	"font_size" integer NOT NULL,
+	"color" varchar(50) NOT NULL,
+	"overflow" "element_overflow" NOT NULL,
+	CONSTRAINT "font_source_check" CHECK ((
+        ("element_text_props"."font_source" = 'SELF_HOSTED' AND "element_text_props"."font_id" IS NOT NULL AND "element_text_props"."google_font_identifier" IS NULL)
+        OR
+        ("element_text_props"."font_source" = 'GOOGLE' AND "element_text_props"."google_font_identifier" IS NOT NULL AND "element_text_props"."font_id" IS NULL)
+      ))
+);
+--> statement-breakpoint
+CREATE TABLE "gender_element" (
+	"element_id" integer PRIMARY KEY NOT NULL,
+	"text_props_id" integer NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "image_element" (
+	"element_id" integer PRIMARY KEY NOT NULL,
+	"fit" "element_image_fit" NOT NULL,
+	"image_data_source" jsonb NOT NULL,
+	"storage_file_id" bigint NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "number_element" (
+	"element_id" integer PRIMARY KEY NOT NULL,
+	"text_props_id" integer NOT NULL,
+	"mapping" jsonb NOT NULL,
+	"number_data_source" jsonb NOT NULL,
+	"variable_id" integer NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "qr_code_element" (
+	"element_id" integer PRIMARY KEY NOT NULL,
+	"error_correction" "qr_code_error_correction" NOT NULL,
+	"foreground_color" varchar(50) NOT NULL,
+	"background_color" varchar(50) NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "text_element" (
+	"element_id" integer PRIMARY KEY NOT NULL,
+	"text_props_id" integer NOT NULL,
+	"text_data_source" jsonb NOT NULL,
+	"variable_id" integer
+);
+--> statement-breakpoint
+ALTER TABLE "country_element" ADD CONSTRAINT "country_element_element_id_certificate_element_id_fk" FOREIGN KEY ("element_id") REFERENCES "public"."certificate_element"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_role_id_roles_id_fk" FOREIGN KEY ("role_id") REFERENCES "public"."roles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "date_element" ADD CONSTRAINT "date_element_element_id_certificate_element_id_fk" FOREIGN KEY ("element_id") REFERENCES "public"."certificate_element"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "date_element" ADD CONSTRAINT "date_element_variable_id_template_variable_base_id_fk" FOREIGN KEY ("variable_id") REFERENCES "public"."template_variable_base"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "element_text_props" ADD CONSTRAINT "element_text_props_font_id_font_id_fk" FOREIGN KEY ("font_id") REFERENCES "public"."font"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "gender_element" ADD CONSTRAINT "gender_element_element_id_certificate_element_id_fk" FOREIGN KEY ("element_id") REFERENCES "public"."certificate_element"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "gender_element" ADD CONSTRAINT "gender_element_text_props_id_element_text_props_id_fk" FOREIGN KEY ("text_props_id") REFERENCES "public"."element_text_props"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "image_element" ADD CONSTRAINT "image_element_element_id_certificate_element_id_fk" FOREIGN KEY ("element_id") REFERENCES "public"."certificate_element"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "image_element" ADD CONSTRAINT "image_element_storage_file_id_storage_file_id_fk" FOREIGN KEY ("storage_file_id") REFERENCES "public"."storage_file"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "number_element" ADD CONSTRAINT "number_element_element_id_certificate_element_id_fk" FOREIGN KEY ("element_id") REFERENCES "public"."certificate_element"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "number_element" ADD CONSTRAINT "number_element_text_props_id_element_text_props_id_fk" FOREIGN KEY ("text_props_id") REFERENCES "public"."element_text_props"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "number_element" ADD CONSTRAINT "number_element_variable_id_template_variable_base_id_fk" FOREIGN KEY ("variable_id") REFERENCES "public"."template_variable_base"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "qr_code_element" ADD CONSTRAINT "qr_code_element_element_id_certificate_element_id_fk" FOREIGN KEY ("element_id") REFERENCES "public"."certificate_element"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "text_element" ADD CONSTRAINT "text_element_element_id_certificate_element_id_fk" FOREIGN KEY ("element_id") REFERENCES "public"."certificate_element"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "text_element" ADD CONSTRAINT "text_element_text_props_id_element_text_props_id_fk" FOREIGN KEY ("text_props_id") REFERENCES "public"."element_text_props"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "text_element" ADD CONSTRAINT "text_element_variable_id_template_variable_base_id_fk" FOREIGN KEY ("variable_id") REFERENCES "public"."template_variable_base"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "cache_expires_at_idx" ON "cache" USING btree ("expires_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "unique_student_template_certificate" ON "certificate" USING btree ("template_id","student_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "rgiv_group_item_unique" ON "recipient_group_item_variable_value" USING btree ("template_recipient_group_item_id");--> statement-breakpoint

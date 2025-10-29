@@ -26,7 +26,7 @@ export const dateElement = pgTable("date_element", {
   offsetDays: integer("offset_days").notNull().default(0),
   format: varchar("format", { length: 100 }).notNull(), // e.g., "YYYY-MM-DD", "DD/MM/YYYY"
   transformation: dateTransformationTypeEnum("transformation"), // AGE_CALCULATION
-  dataSource: jsonb("data_source").$type<DateDataSource>().notNull(),
+  dateDataSource: jsonb("date_data_source").$type<DateDataSource>().notNull(),
   // Mirrored from data_source.dateVariableId
   // Populated when data_source.type = 'TEMPLATE_DATE_VARIABLE'
   variableId: integer("variable_id").references(
