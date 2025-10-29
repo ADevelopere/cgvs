@@ -30,19 +30,19 @@ export type TextDataSource =
   | { type: TextDataSourceType.STATIC; value: string }
   | {
       type: TextDataSourceType.STUDENT_TEXT_FIELD;
-      field: StudentTextField;
+      studentField: StudentTextField;
     }
   | {
       type: TextDataSourceType.CERTIFICATE_TEXT_FIELD;
-      field: CertificateTextField;
+      certificateField: CertificateTextField;
     }
   | {
       type: TextDataSourceType.TEMPLATE_TEXT_VARIABLE;
-      variableId: number;
+      textVariableId: number;
     }
   | {
       type: TextDataSourceType.TEMPLATE_SELECT_VARIABLE;
-      variableId: number;
+      selectVariableId: number;
     };
 
 // ============================================================================

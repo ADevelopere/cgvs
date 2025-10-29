@@ -230,7 +230,7 @@ export namespace ElementRepository {
     if ("dataSource" in config) {
       const { dataSource } = config;
       if ("variableId" in dataSource) {
-        await validateTemplateVariableId(dataSource.variableId);
+        await validateTemplateVariableId(dataSource.textVariableId);
         // Validate storage file reference (for IMAGE elements)
       } else if ("storageFileId" in dataSource) {
         await validateStorageFileId(dataSource.storageFileId);

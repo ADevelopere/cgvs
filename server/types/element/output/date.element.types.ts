@@ -40,15 +40,15 @@ export type DateDataSource =
   | { type: DateDataSourceType.STATIC; value: string }
   | {
       type: DateDataSourceType.STUDENT_DATE_FIELD;
-      field: StudentDateField;
+      studentField: StudentDateField;
     }
   | {
       type: DateDataSourceType.CERTIFICATE_DATE_FIELD;
-      field: CertificateDateField;
+      certificateField: CertificateDateField;
     }
   | {
       type: DateDataSourceType.TEMPLATE_DATE_VARIABLE;
-      variableId: number;
+      dateVariableId: number;
     };
 
 // ============================================================================

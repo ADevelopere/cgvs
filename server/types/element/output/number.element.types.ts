@@ -15,7 +15,7 @@ export enum NumberDataSourceType {
 
 export type NumberDataSource = {
   type: NumberDataSourceType.TEMPLATE_NUMBER_VARIABLE;
-  variableId: number;
+  numberVariableId: number;
 };
 
 // ============================================================================
