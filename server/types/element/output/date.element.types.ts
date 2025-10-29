@@ -1,5 +1,5 @@
 import type { CertificateElementEntity } from "./base.element.types";
-import type { TextProps } from "./config.element.types";
+import type { TextProps, ElementTextPropsEntity } from "./config.element.types";
 import type { dateElement } from "@/server/db/schema";
 
 // ============================================================================
@@ -60,21 +60,12 @@ export type DateElementEntity = typeof dateElement.$inferSelect;
 // Output Type (mirrors database - base + date_element + element_text_props joined)
 // ============================================================================
 
-export type DateElementOutput = CertificateElementEntity & {
+export type DateElementOutput = CertificateElementEntity & DateElementEntity & {
   // From element_text_props (joined)
+  textPropsEntity: ElementTextPropsEntity;
   textProps: TextProps;
   
-  // From date_element table
+  // Type overrides to use enums instead of strings
   calendarType: CalendarType;
-  offsetDays: number;
-  format: string;
   transformation: DateTransformationType | null;
-  dataSource: DateDataSource;
-  variableId: number | null;
 };
-
-// ============================================================================
-// Pothos Definition
-// ============================================================================
-
-export type DateElementPothosDefinition = DateElementOutput;

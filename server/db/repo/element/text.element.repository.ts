@@ -56,8 +56,6 @@ export namespace TextElementRepository {
     const baseInput: CertificateElementEntityInput = {
       ...input,
       type: ElementType.TEXT,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     };
 
     // 4. Insert into certificate_element (base table)

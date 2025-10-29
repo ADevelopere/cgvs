@@ -35,11 +35,10 @@ export type ImageElementEntity = typeof imageElement.$inferSelect;
 // Output Type (mirrors database - base + image_element joined)
 // ============================================================================
 
-export type ImageElementOutput = CertificateElementEntity & {
-  // No textProps
+export type ImageElementOutput = CertificateElementEntity & ImageElementEntity & {
+  // Type overrides to use enums instead of strings
   fit: ElementImageFit;
   dataSource: ImageDataSource;
-  storageFileId: number; // Mirrored FK
 };
 
 // ============================================================================

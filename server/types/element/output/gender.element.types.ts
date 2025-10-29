@@ -1,5 +1,5 @@
 import type { CertificateElementEntity } from "./base.element.types";
-import type { TextProps } from "./config.element.types";
+import type { TextProps, ElementTextPropsEntity } from "./config.element.types";
 import type { genderElement } from "@/server/db/schema";
 
 // ============================================================================
@@ -29,7 +29,9 @@ export type GenderElementEntity = typeof genderElement.$inferSelect;
 // Output Type (mirrors database - base + gender_element + element_text_props joined)
 // ============================================================================
 
-export type GenderElementOutput = CertificateElementEntity & {
+export type GenderElementOutput = CertificateElementEntity & GenderElementEntity & {
+  // From element_text_props (joined)
+  textPropsEntity: ElementTextPropsEntity;
   textProps: TextProps;
 };
 

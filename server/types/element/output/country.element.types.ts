@@ -1,5 +1,5 @@
 import type { CertificateElementEntity } from "./base.element.types";
-import type { TextProps } from "./config.element.types";
+import type { TextProps, ElementTextPropsEntity } from "./config.element.types";
 import type { countryElement } from "@/server/db/schema";
 
 // ============================================================================
@@ -34,10 +34,15 @@ export type CountryElementEntity = typeof countryElement.$inferSelect;
 // Output Type (mirrors database - base + country_element + element_text_props joined)
 // ============================================================================
 
-export type CountryElementOutput = CertificateElementEntity & {
-  textProps: TextProps;
-  representation: CountryRepresentation;
-};
+export type CountryElementOutput = CertificateElementEntity &
+  CountryElementEntity & {
+    // From element_text_props table (joined)
+    textPropsEntity: ElementTextPropsEntity;
+    textProps: TextProps;
+    
+    // From country_element table
+    representation: CountryRepresentation;
+  };
 
 // ============================================================================
 // Pothos Definition

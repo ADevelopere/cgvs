@@ -68,3 +68,9 @@ export type TextElementOutput = CertificateElementEntity &
     dataSource?: TextDataSource | null;
     variableId?: number | null;
   };
+
+// ============================================================================
+// Pothos Definition
+// ============================================================================
+
+export type TextElementPothosDefinition = TextElementOutput;

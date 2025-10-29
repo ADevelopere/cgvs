@@ -1,5 +1,5 @@
 import type { CertificateElementEntity } from "./base.element.types";
-import type { TextProps } from "./config.element.types";
+import type { TextProps, ElementTextPropsEntity } from "./config.element.types";
 import type { numberElement } from "@/server/db/schema";
 
 // ============================================================================
@@ -30,11 +30,14 @@ export type NumberElementEntity = typeof numberElement.$inferSelect;
 // Output Type (mirrors database - base + number_element + element_text_props joined)
 // ============================================================================
 
-export type NumberElementOutput = CertificateElementEntity & {
+export type NumberElementOutput = CertificateElementEntity & NumberElementEntity & {
+  // From element_text_props (joined)
+  textPropsEntity: ElementTextPropsEntity;
   textProps: TextProps;
+  
+  // Type overrides to use proper types
   mapping: Record<string, string>;
   dataSource: NumberDataSource;
-  variableId: number; // Always present (NOT NULL in DB)
 };
 
 // ============================================================================

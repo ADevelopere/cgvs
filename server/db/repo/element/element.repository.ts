@@ -6,7 +6,6 @@ import { templateVariableBases } from "@/server/db/schema/templateVariables";
 import { storageFiles } from "@/server/db/schema/storage";
 import {
   CertificateElementEntity,
-  FontSource,
   ElementOrderUpdateInput,
   CertificateElementBaseUpdateInput,
 } from "@/server/types/element";
@@ -235,33 +234,6 @@ export namespace ElementRepository {
   // Config Validation
   // ============================================================================
 
-  /**
-   * Validate all FK references in element config
-   * Checks that fonts, variables, and files referenced in config actually exist
-   * @throws Error if any reference is invalid
-   */
-  export const validateConfigReferences = async (
-    config: ElementConfigUnion
-  ): Promise<void> => {
-    // Validate font reference (for text-based elements)
-    if ("textProps" in config) {
-      const { textProps } = config;
-      if (textProps.fontRef.type === FontSource.SELF_HOSTED) {
-        await validateFontId(textProps.fontRef.fontId);
-      }
-    }
-
-    // Validate template variable reference
-    if ("dataSource" in config) {
-      const { dataSource } = config;
-      if ("variableId" in dataSource) {
-        await validateTemplateVariableId(dataSource.textVariableId);
-        // Validate storage file reference (for IMAGE elements)
-      } else if ("storageFileId" in dataSource) {
-        await validateStorageFileId(dataSource.storageFileId);
-      }
-    }
-  };
 
   // ============================================================================
   // Delete Operations
