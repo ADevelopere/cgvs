@@ -19,5 +19,10 @@
     "ghcr.io/devcontainers/features/sshd:1": {
       "version": "latest"
     }
+  },
+  // Commands to run after the container is created (runs once)
+  "postCreateCommand": {
+    "install-bun": "bash /workspaces/${localWorkspaceFolderBasename}/scripts/install_bun.sh",
+    "install-ohmyzsh": "bash /workspaces/${localWorkspaceFolderBasename}/scripts/install_ohmyzsh.sh"
   }
 }
