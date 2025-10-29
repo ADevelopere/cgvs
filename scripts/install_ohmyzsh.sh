@@ -83,36 +83,68 @@ install_plugin() {
 add_plugin_to_zshrc() {
     local plugin_name=$1
     local zshrc_file="$HOME/.zshrc"
+    local temp_file="${zshrc_file}.tmp"
+    local backup_file="${zshrc_file}.backup.$(date +%s)"
 
     # Check if plugin is already in the plugins array
     if grep -q "plugins=.*${plugin_name}" "$zshrc_file"; then
         echo "  ✔️ Plugin '$plugin_name' already configured in .zshrc"
-    else
-        echo "  📝 Adding '$plugin_name' to .zshrc plugins array..."
-        
-        # Check if the plugins=() pattern exists and is in the expected format
-        if ! grep -q "^plugins=(" "$zshrc_file"; then
-            echo "  ❌ ERROR: Could not find 'plugins=()' line in .zshrc"
-            echo "  💡 Expected format: plugins=(git ...)"
-            return 1
-        fi
-        
-        # Create a backup before modification
-        cp "$zshrc_file" "${zshrc_file}.backup"
-        
-        # Use a more robust sed command to add the plugin
-        sed -i "s/plugins=(\([^)]*\))/plugins=(\1 ${plugin_name})/" "$zshrc_file"
-        
-        # Verify the change was applied
-        if grep -q "plugins=.*${plugin_name}" "$zshrc_file"; then
-            echo "  ✅ Added '$plugin_name' to plugins configuration"
-            rm -f "${zshrc_file}.backup"
+        return 0
+    fi
+    
+    echo "  📝 Adding '$plugin_name' to .zshrc plugins array..."
+    
+    # Check if the plugins=() pattern exists
+    if ! grep -q "^plugins=(" "$zshrc_file"; then
+        echo "  ❌ ERROR: Could not find 'plugins=()' line in .zshrc"
+        echo "  💡 Expected format: plugins=(git ...)"
+        return 1
+    fi
+    
+    # Create backup
+    if ! cp "$zshrc_file" "$backup_file"; then
+        echo "  ❌ ERROR: Failed to create backup"
+        return 1
+    fi
+    
+    # Process file line by line, adding plugin to plugins array
+    local plugin_added=false
+    while IFS= read -r line || [ -n "$line" ]; do
+        if [[ "$line" =~ ^plugins=\((.*)\)$ ]]; then
+            local current_plugins="${BASH_REMATCH[1]}"
+            echo "plugins=(${current_plugins} ${plugin_name})"
+            plugin_added=true
         else
-            echo "  ❌ ERROR: Failed to add '$plugin_name' to plugins"
-            echo "  🔄 Restoring backup..."
-            mv "${zshrc_file}.backup" "$zshrc_file"
-            return 1
+            echo "$line"
         fi
+    done < "$zshrc_file" > "$temp_file"
+    
+    # Verify the temp file was created successfully
+    if [ ! -s "$temp_file" ]; then
+        echo "  ❌ ERROR: Failed to create temporary file"
+        rm -f "$temp_file"
+        return 1
+    fi
+    
+    # Verify plugin was added
+    if [ "$plugin_added" = false ]; then
+        echo "  ❌ ERROR: Failed to add '$plugin_name' to plugins"
+        rm -f "$temp_file"
+        return 1
+    fi
+    
+    # Atomically replace the file using cat
+    if cat "$temp_file" > "$zshrc_file"; then
+        echo "  ✅ Added '$plugin_name' to plugins configuration"
+        rm -f "$temp_file"
+        # Keep backup for safety
+        return 0
+    else
+        echo "  ❌ ERROR: Failed to update .zshrc"
+        echo "  🔄 Restoring backup..."
+        cat "$backup_file" > "$zshrc_file"
+        rm -f "$temp_file"
+        return 1
     fi
 }
 
@@ -125,28 +157,95 @@ install_plugin "zsh-autocomplete" "https://github.com/marlonrichert/zsh-autocomp
 # --- Step 6: Configure .zshrc ---
 echo "📝 Step 6/7: Configuring .zshrc to enable theme and plugins..."
 
+# Function to safely update .zshrc using structured approach
+update_zshrc_config() {
+    local zshrc_file="$HOME/.zshrc"
+    local temp_file="${zshrc_file}.tmp"
+    local backup_file="${zshrc_file}.backup.$(date +%s)"
+    
+    # Configuration object (key-value pairs to update)
+    declare -A config_updates=(
+        ["ZSH_THEME"]="powerlevel10k/powerlevel10k"
+    )
+    
+    # Create backup
+    if ! cp "$zshrc_file" "$backup_file"; then
+        echo "  ❌ ERROR: Failed to create backup"
+        return 1
+    fi
+    
+    # Process file line by line with proper updates
+    local line_updated=false
+    while IFS= read -r line || [ -n "$line" ]; do
+        local updated=false
+        
+        # Check each config key
+        for key in "${!config_updates[@]}"; do
+            if [[ "$line" =~ ^${key}=\".*\"$ ]] || [[ "$line" =~ ^${key}=\'.*\'$ ]]; then
+                echo "${key}=\"${config_updates[$key]}\""
+                updated=true
+                line_updated=true
+                break
+            fi
+        done
+        
+        # If line wasn't updated, keep original
+        if [ "$updated" = false ]; then
+            echo "$line"
+        fi
+    done < "$zshrc_file" > "$temp_file"
+    
+    # Verify the temp file was created successfully
+    if [ ! -s "$temp_file" ]; then
+        echo "  ❌ ERROR: Failed to create temporary file"
+        rm -f "$temp_file"
+        return 1
+    fi
+    
+    # Verify changes were applied
+    if [ "$line_updated" = false ]; then
+        echo "  ❌ ERROR: Could not find ZSH_THEME line in .zshrc"
+        echo "  💡 Expected format: ZSH_THEME=\"theme-name\""
+        rm -f "$temp_file"
+        return 1
+    fi
+    
+    # Atomically replace the file using cat (safer than mv when file might be open)
+    if cat "$temp_file" > "$zshrc_file"; then
+        echo "  ✅ Theme successfully changed to Powerlevel10k"
+        rm -f "$temp_file"
+        # Keep backup for safety
+        echo "  💾 Backup saved to: $backup_file"
+        return 0
+    else
+        echo "  ❌ ERROR: Failed to update .zshrc"
+        echo "  🔄 Restoring backup..."
+        cat "$backup_file" > "$zshrc_file"
+        rm -f "$temp_file"
+        return 1
+    fi
+}
+
 # Check if ZSH_THEME line exists in the expected format
-if ! grep -q '^ZSH_THEME="' ~/.zshrc; then
+if ! grep -q '^ZSH_THEME=' ~/.zshrc; then
     echo "  ❌ ERROR: Could not find ZSH_THEME line in .zshrc"
     echo "  💡 Expected format: ZSH_THEME=\"theme-name\""
     echo "  📄 Please manually set ZSH_THEME=\"powerlevel10k/powerlevel10k\" in ~/.zshrc"
     exit 1
 fi
 
-# Create a backup before modification
-cp ~/.zshrc ~/.zshrc.backup
+# Apply the configuration updates
+if ! update_zshrc_config; then
+    echo "  💡 Please manually set ZSH_THEME=\"powerlevel10k/powerlevel10k\" in ~/.zshrc"
+    exit 1
+fi
 
-# Set ZSH_THEME to Powerlevel10k
-sed -i 's/^ZSH_THEME="[^"]*"/ZSH_THEME="powerlevel10k\/powerlevel10k"/' ~/.zshrc
-
-# Verify the theme was changed successfully
+# Verify theme configuration
+echo "🔍 Verifying theme configuration in .zshrc..."
 if grep -q 'ZSH_THEME="powerlevel10k/powerlevel10k"' ~/.zshrc; then
-    echo "  ✅ Theme successfully changed to Powerlevel10k"
-    rm -f ~/.zshrc.backup
+    echo "  ✅ Theme configuration verified successfully"
 else
-    echo "  ❌ ERROR: Theme change failed!"
-    echo "  🔄 Restoring backup..."
-    mv ~/.zshrc.backup ~/.zshrc
+    echo "  ❌ ERROR: Theme verification failed!"
     echo "  💡 Please manually set ZSH_THEME=\"powerlevel10k/powerlevel10k\" in ~/.zshrc"
     exit 1
 fi
@@ -155,19 +254,48 @@ fi
 echo "🔧 Configuring plugins in .zshrc..."
 PLUGIN_ERRORS=0
 
-add_plugin_to_zshrc "zsh-autosuggestions" || PLUGIN_ERRORS=$((PLUGIN_ERRORS + 1))
-add_plugin_to_zshrc "zsh-syntax-highlighting" || PLUGIN_ERRORS=$((PLUGIN_ERRORS + 1))
-add_plugin_to_zshrc "fast-syntax-highlighting" || PLUGIN_ERRORS=$((PLUGIN_ERRORS + 1))
-add_plugin_to_zshrc "zsh-autocomplete" || PLUGIN_ERRORS=$((PLUGIN_ERRORS + 1))
+# Define required plugins
+declare -a REQUIRED_PLUGINS=(
+    "zsh-autosuggestions"
+    "zsh-syntax-highlighting"
+    "fast-syntax-highlighting"
+    "zsh-autocomplete"
+)
+
+# Add each plugin
+for plugin in "${REQUIRED_PLUGINS[@]}"; do
+    add_plugin_to_zshrc "$plugin" || PLUGIN_ERRORS=$((PLUGIN_ERRORS + 1))
+done
+
+# Verify all plugins are in .zshrc
+echo "🔍 Verifying plugin installation in .zshrc..."
+MISSING_PLUGINS=()
+for plugin in "${REQUIRED_PLUGINS[@]}"; do
+    if ! grep -q "plugins=.*${plugin}" ~/.zshrc; then
+        MISSING_PLUGINS+=("$plugin")
+    fi
+done
+
+# Report verification results
+if [ ${#MISSING_PLUGINS[@]} -eq 0 ]; then
+    echo "  ✅ All plugins successfully configured in .zshrc"
+else
+    echo ""
+    echo "  ❌ ERROR: ${#MISSING_PLUGINS[@]} plugin(s) missing from .zshrc:"
+    for plugin in "${MISSING_PLUGINS[@]}"; do
+        echo "     - $plugin"
+    done
+    echo ""
+    echo "  💡 Please manually add them by editing ~/.zshrc"
+    echo "  📝 Change the plugins line to:"
+    echo "     plugins=(git ${REQUIRED_PLUGINS[*]})"
+    echo ""
+    PLUGIN_ERRORS=$((PLUGIN_ERRORS + ${#MISSING_PLUGINS[@]}))
+fi
 
 # Check if any plugin additions failed
 if [ $PLUGIN_ERRORS -gt 0 ]; then
-    echo ""
-    echo "  ⚠️  WARNING: $PLUGIN_ERRORS plugin(s) failed to be added to .zshrc"
-    echo "  💡 You can manually add them by editing ~/.zshrc"
-    echo "  📝 Change the plugins line to:"
-    echo "     plugins=(git zsh-autosuggestions zsh-syntax-highlighting fast-syntax-highlighting zsh-autocomplete)"
-    echo ""
+    echo "  ⚠️  WARNING: $PLUGIN_ERRORS total plugin error(s) detected"
 fi
 
 # Install Powerlevel10k configuration
@@ -205,6 +333,65 @@ fi
 
 # --- Final Instructions ---
 echo ""
+echo "🔍 Running final configuration verification..."
+echo ""
+
+# Final verification summary
+declare -A VERIFICATION_RESULTS=(
+    ["Oh My Zsh installed"]="false"
+    ["Powerlevel10k theme installed"]="false"
+    ["Theme configured in .zshrc"]="false"
+    ["Plugins directory exists"]="false"
+    ["All plugins configured"]="false"
+    ["Fonts installed"]="false"
+)
+
+# Check Oh My Zsh
+[ -d "$HOME/.oh-my-zsh" ] && VERIFICATION_RESULTS["Oh My Zsh installed"]="true"
+
+# Check Powerlevel10k installation
+ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
+[ -d "${ZSH_CUSTOM}/themes/powerlevel10k" ] && VERIFICATION_RESULTS["Powerlevel10k theme installed"]="true"
+
+# Check theme configuration
+grep -q 'ZSH_THEME="powerlevel10k/powerlevel10k"' ~/.zshrc && VERIFICATION_RESULTS["Theme configured in .zshrc"]="true"
+
+# Check plugins directory
+[ -d "${ZSH_CUSTOM}/plugins" ] && VERIFICATION_RESULTS["Plugins directory exists"]="true"
+
+# Check all required plugins in .zshrc
+ALL_PLUGINS_CONFIGURED=true
+for plugin in "${REQUIRED_PLUGINS[@]}"; do
+    if ! grep -q "plugins=.*${plugin}" ~/.zshrc; then
+        ALL_PLUGINS_CONFIGURED=false
+        break
+    fi
+done
+[ "$ALL_PLUGINS_CONFIGURED" = true ] && VERIFICATION_RESULTS["All plugins configured"]="true"
+
+# Check fonts
+[ -f "$HOME/.local/share/fonts/MesloLGS NF Regular.ttf" ] && VERIFICATION_RESULTS["Fonts installed"]="true"
+
+# Display verification results
+echo "📋 Verification Results:"
+echo "═══════════════════════════════════════════════════"
+VERIFICATION_FAILED=false
+for check in "Oh My Zsh installed" "Powerlevel10k theme installed" "Theme configured in .zshrc" "Plugins directory exists" "All plugins configured" "Fonts installed"; do
+    if [ "${VERIFICATION_RESULTS[$check]}" = "true" ]; then
+        echo "  ✅ $check"
+    else
+        echo "  ❌ $check"
+        VERIFICATION_FAILED=true
+    fi
+done
+echo "═══════════════════════════════════════════════════"
+echo ""
+
+if [ "$VERIFICATION_FAILED" = true ]; then
+    echo "⚠️  Some verification checks failed. Review the output above."
+    echo ""
+fi
+
 echo "✅ Installation Complete!"
 echo ""
 echo "#####################################################################"
