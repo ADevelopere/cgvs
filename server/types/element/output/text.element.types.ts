@@ -65,7 +65,6 @@ export type TextElementOutput = CertificateElementEntity &
     textProps?: TextProps | null;
 
     // From text_element table
-    dataSource?: TextDataSource | null;
     variableId?: number | null;
   };
 

@@ -132,6 +132,6 @@ export const ImageElementObject = gqlSchemaBuilder.loadableObject<
     item.type === Types.ElementType.IMAGE,
   fields: t => ({
     fit: t.expose("fit", { type: ElementImageFitPothosEnum }),
-    dataSource: t.expose("dataSource", { type: ImageDataSourceUnion }),
+    imageDataSource: t.expose("imageDataSource", { type: ImageDataSourceUnion }),
   }),
 });

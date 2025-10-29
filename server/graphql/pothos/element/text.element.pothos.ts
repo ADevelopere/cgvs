@@ -60,7 +60,7 @@ export const TextDataSourceStudentFieldObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: TextDataSourceTypePothosEnum }),
-      field: t.expose("studentField", { type: StudentTextFieldPothosEnum }),
+      studentField: t.expose("studentField", { type: StudentTextFieldPothosEnum }),
     }),
   });
 
@@ -74,7 +74,7 @@ export const TextDataSourceCertificateFieldObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: TextDataSourceTypePothosEnum }),
-      field: t.expose("certificateField", { type: CertificateTextFieldPothosEnum }),
+      certificateField: t.expose("certificateField", { type: CertificateTextFieldPothosEnum }),
     }),
   });
 
@@ -88,7 +88,7 @@ export const TextDataSourceTemplateTextVariableObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: TextDataSourceTypePothosEnum }),
-      variableId: t.exposeInt("textVariableId"),
+      textVariableId: t.exposeInt("textVariableId"),
     }),
   });
 
@@ -102,7 +102,7 @@ export const TextDataSourceTemplateSelectVariableObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: TextDataSourceTypePothosEnum }),
-      variableId: t.exposeInt("selectVariableId"),
+      selectVariableId: t.exposeInt("selectVariableId"),
     }),
   });
 
@@ -273,7 +273,7 @@ export const TextElementObject = gqlSchemaBuilder.loadableObject<
     item.type === Types.ElementType.TEXT,
   fields: t => ({
     textProps: t.expose("textProps", { type: TextPropsObject, nullable: true }),
-    dataSource: t.expose("dataSource", {
+    textDataSource: t.expose("textDataSource", {
       type: TextDataSourceUnion,
       nullable: true,
     }),

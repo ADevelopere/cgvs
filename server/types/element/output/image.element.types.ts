@@ -38,7 +38,6 @@ export type ImageElementEntity = typeof imageElement.$inferSelect;
 export type ImageElementOutput = CertificateElementEntity & ImageElementEntity & {
   // Type overrides to use enums instead of strings
   fit: ElementImageFit;
-  dataSource: ImageDataSource;
 };
 
 // ============================================================================
