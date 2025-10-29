@@ -1,5 +1,6 @@
-import { ElementConfigBase } from "./base.element.types";
-import type { CertificateElementPothosDefinition } from "../union.element.types";
+import type { CertificateElementEntity } from "./base.element.types";
+import type { TextProps } from "./config.element.types";
+import type { textElement } from "@/server/db/schema";
 
 // ============================================================================
 // TEXT-specific Enums
@@ -46,20 +47,27 @@ export type TextDataSource =
     };
 
 // ============================================================================
-// Element Config
+// Raw Entity (from Drizzle schema)
 // ============================================================================
 
-export type TextElementConfig = ElementConfigBase & {
+export type TextElementEntity = typeof textElement.$inferSelect;
+// { elementId, textPropsId, dataSource, variableId }
+
+// ============================================================================
+// Output Type (mirrors database - base + text_element + element_text_props joined)
+// ============================================================================
+
+export type TextElementOutput = CertificateElementEntity & {
+  // From element_text_props table (joined)
+  textProps: TextProps;
+  
+  // From text_element table
   dataSource: TextDataSource;
+  variableId: number | null;
 };
 
 // ============================================================================
 // Pothos Definition
 // ============================================================================
 
-export type TextElementPothosDefinition = Omit<
-  CertificateElementPothosDefinition,
-  "config"
-> & {
-  config: TextElementConfig;
-};
+export type TextElementPothosDefinition = TextElementOutput;

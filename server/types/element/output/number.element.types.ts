@@ -1,5 +1,6 @@
-import { TextProps } from "./config.element.types";
-import type { CertificateElementPothosDefinition } from "../union.element.types";
+import type { CertificateElementEntity } from "./base.element.types";
+import type { TextProps } from "./config.element.types";
+import type { numberElement } from "@/server/db/schema";
 
 // ============================================================================
 // NUMBER-specific Enum
@@ -19,22 +20,25 @@ export type NumberDataSource = {
 };
 
 // ============================================================================
-// Element Config
+// Raw Entity (from Drizzle schema)
 // ============================================================================
 
-export interface NumberElementConfig {
+export type NumberElementEntity = typeof numberElement.$inferSelect;
+// { elementId, textPropsId, mapping, dataSource, variableId }
+
+// ============================================================================
+// Output Type (mirrors database - base + number_element + element_text_props joined)
+// ============================================================================
+
+export type NumberElementOutput = CertificateElementEntity & {
   textProps: TextProps;
+  mapping: Record<string, string>;
   dataSource: NumberDataSource;
-  mapping: Record<string, string>; // Breakpoint-to-text rules
-}
+  variableId: number; // Always present (NOT NULL in DB)
+};
 
 // ============================================================================
 // Pothos Definition
 // ============================================================================
 
-export type NumberElementPothosDefinition = Omit<
-  CertificateElementPothosDefinition,
-  "config"
-> & {
-  config: NumberElementConfig;
-};
+export type NumberElementPothosDefinition = NumberElementOutput;

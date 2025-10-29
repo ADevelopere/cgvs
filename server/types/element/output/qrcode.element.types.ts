@@ -1,4 +1,5 @@
-import type { CertificateElementPothosDefinition } from "../union.element.types";
+import type { CertificateElementEntity } from "./base.element.types";
+import type { qrCodeElement } from "@/server/db/schema";
 
 // ============================================================================
 // QR_CODE-specific Enums
@@ -25,23 +26,25 @@ export type QRCodeDataSource =
   | { type: QRCodeDataSourceType.VERIFICATION_CODE };
 
 // ============================================================================
-// Element Config
+// Raw Entity (from Drizzle schema)
 // ============================================================================
 
-export interface QRCodeElementConfig {
-  // dataSource: QRCodeDataSource;
+export type QRCodeElementEntity = typeof qrCodeElement.$inferSelect;
+// { elementId, errorCorrection, foregroundColor, backgroundColor }
+
+// ============================================================================
+// Output Type (mirrors database - base + qr_code_element joined)
+// ============================================================================
+
+export type QRCodeElementOutput = CertificateElementEntity & {
+  // No textProps, no dataSource
   errorCorrection: QRCodeErrorCorrection;
-  foregroundColor: string; // e.g., "#000000"
-  backgroundColor: string; // e.g., "#FFFFFF"
-}
+  foregroundColor: string;
+  backgroundColor: string;
+};
 
 // ============================================================================
 // Pothos Definition
 // ============================================================================
 
-export type QRCodeElementPothosDefinition = Omit<
-  CertificateElementPothosDefinition,
-  "config"
-> & {
-  config: QRCodeElementConfig;
-};
+export type QRCodeElementPothosDefinition = QRCodeElementOutput;

@@ -1,5 +1,6 @@
-import { TextProps } from "./config.element.types";
-import type { CertificateElementPothosDefinition } from "../union.element.types";
+import type { CertificateElementEntity } from "./base.element.types";
+import type { TextProps } from "./config.element.types";
+import type { countryElement } from "@/server/db/schema";
 
 // ============================================================================
 // COUNTRY-specific Enums
@@ -23,23 +24,23 @@ export type CountryDataSource = {
 };
 
 // ============================================================================
-// Element Config
+// Raw Entity (from Drizzle schema)
 // ============================================================================
 
-export interface CountryElementConfig {
+export type CountryElementEntity = typeof countryElement.$inferSelect;
+// { elementId, textPropsId, representation }
+
+// ============================================================================
+// Output Type (mirrors database - base + country_element + element_text_props joined)
+// ============================================================================
+
+export type CountryElementOutput = CertificateElementEntity & {
   textProps: TextProps;
   representation: CountryRepresentation;
-  // dataSource: CountryDataSource;
-  // The application uses TemplateConfig.locale to map country code to country name
-}
+};
 
 // ============================================================================
 // Pothos Definition
 // ============================================================================
 
-export type CountryElementPothosDefinition = Omit<
-  CertificateElementPothosDefinition,
-  "config"
-> & {
-  config: CountryElementConfig;
-};
+export type CountryElementPothosDefinition = CountryElementOutput;

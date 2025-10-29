@@ -1,8 +1,6 @@
-import {
-  TextProps,
-} from "./config.element.types";
-
-import type { CertificateElementPothosDefinition } from "../union.element.types";
+import type { CertificateElementEntity } from "./base.element.types";
+import type { TextProps } from "./config.element.types";
+import type { dateElement } from "@/server/db/schema";
 
 // ============================================================================
 // DATE-specific Enums
@@ -52,25 +50,31 @@ export type DateDataSource =
     };
 
 // ============================================================================
-// Element Config
+// Raw Entity (from Drizzle schema)
 // ============================================================================
 
-export interface DateElementConfig {
+export type DateElementEntity = typeof dateElement.$inferSelect;
+// { elementId, textPropsId, calendarType, offsetDays, format, transformation, dataSource, variableId }
+
+// ============================================================================
+// Output Type (mirrors database - base + date_element + element_text_props joined)
+// ============================================================================
+
+export type DateElementOutput = CertificateElementEntity & {
+  // From element_text_props (joined)
   textProps: TextProps;
+  
+  // From date_element table
   calendarType: CalendarType;
   offsetDays: number;
-  format: string; // e.g., "YYYY-MM-DD", "DD/MM/YYYY"
-  transformation?: DateTransformationType | null;
+  format: string;
+  transformation: DateTransformationType | null;
   dataSource: DateDataSource;
-}
+  variableId: number | null;
+};
 
 // ============================================================================
 // Pothos Definition
 // ============================================================================
 
-export type DateElementPothosDefinition = Omit<
-  CertificateElementPothosDefinition,
-  "config"
-> & {
-  config: DateElementConfig;
-};
+export type DateElementPothosDefinition = DateElementOutput;
