@@ -32,10 +32,10 @@ export type TextProps = {
 export type TextPropsCreateInput = TextProps;
 
 export type TextPropsUpdateInput = {
-  fontRef?: FontReference | null;
-  fontSize?: number | null;
-  color?: string | null;
-  overflow?: ElementOverflow | null;
+  fontRef?: FontReference;
+  fontSize?: number;
+  color?: string;
+  overflow?: ElementOverflow;
 };
 
 // ============================================================================

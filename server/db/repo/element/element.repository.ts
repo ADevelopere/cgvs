@@ -6,18 +6,43 @@ import { templateVariableBases } from "@/server/db/schema/templateVariables";
 import { storageFiles } from "@/server/db/schema/storage";
 import {
   CertificateElementEntity,
-  ElementConfigUnion,
   FontSource,
   ElementOrderUpdateInput,
+  CertificateElementBaseUpdateInput,
 } from "@/server/types/element";
 import logger from "@/server/lib/logger";
 import { TemplateRepository } from "../template.repository";
+import { BaseElementUtils } from "@/server/utils/element/base.element.utils";
 
 /**
  * Master repository for certificate elements
  * Provides generic CRUD operations and FK extraction helpers
  */
 export namespace ElementRepository {
+  /**
+   * Update certificate_element (base table)
+   * Returns updated entity or existing if no changes
+   */
+  export const updateBaseElement = async (
+    elementId: number,
+    input: CertificateElementBaseUpdateInput,
+    existing: CertificateElementEntity
+  ): Promise<CertificateElementEntity> => {
+    const baseUpdates = BaseElementUtils.baseUpdates(input, existing);
+
+    if (Object.keys(baseUpdates).length === 0) {
+      return existing;
+    }
+
+    baseUpdates.updatedAt = new Date();
+    const [updated] = await db
+      .update(certificateElement)
+      .set(baseUpdates)
+      .where(eq(certificateElement.id, elementId))
+      .returning();
+
+    return updated;
+  };
   // ============================================================================
   // Read Operations
   // ============================================================================
