@@ -1,4 +1,3 @@
-import { ElementType } from "./enum.element.types";
 import { ElementConfigBase } from "./base.element.types";
 import type { CertificateElementPothosDefinition } from "../union.element.types";
 
@@ -51,7 +50,6 @@ export type TextDataSource =
 // ============================================================================
 
 export type TextElementConfig = ElementConfigBase & {
-  type: ElementType.TEXT;
   dataSource: TextDataSource;
 };
 

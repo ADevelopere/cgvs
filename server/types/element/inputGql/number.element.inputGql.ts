@@ -29,9 +29,9 @@ export type NumberElementConfigInputGraphql = {
 
 // GraphQL update input type (deep partial)
 export type NumberElementConfigUpdateInputGraphql = {
-  textProps?: TextPropsUpdateInputGraphql;
-  dataSource?: NumberDataSourceInputGraphql;
-  mapping?: Record<string, string>; // StringMap scalar type
+  textProps?: TextPropsUpdateInputGraphql | null;
+  dataSource?: NumberDataSourceInputGraphql | null;
+  mapping?: Record<string, string> | null; // StringMap scalar type
 };
 
 
@@ -48,5 +48,5 @@ export type NumberElementCreateInputGraphql =
 // GraphQL update input type (deep partial support)
 export type NumberElementUpdateInputGraphql =
   CertificateElementBaseUpdateInput & {
-    config?: NumberElementConfigUpdateInputGraphql;
+    config?: NumberElementConfigUpdateInputGraphql | null;
   };

@@ -1,5 +1,5 @@
 import {
-  DateElementConfigInput,
+  DateElementConfigCreateInput,
   DateDataSourceType,
   StudentDateField,
   CertificateDateField,
@@ -14,8 +14,8 @@ import {
   DateElementConfigUpdateInputGraphql,
   DateElementCreateInputGraphql,
   DateElementUpdateInputGraphql,
-  ElementType,
-} from "@/server/types/element/output";
+  DateElementConfigUpdateInput,
+} from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { CommonElementUtils } from "./common.element.utils";
 
@@ -32,24 +32,27 @@ export namespace DateElementUtils {
    * Map GraphQL DateDataSource input (isOneOf) to repository DateDataSource input (discriminated union)
    */
   export const mapDateDataSourceGraphqlToInput = (
-    input: DateDataSourceInputGraphql
-  ): DateDataSourceInput => {
-    if (input.static !== undefined) {
+    input?: DateDataSourceInputGraphql | null
+  ): DateDataSourceInput | null | undefined => {
+    if (!input) {
+      return input;
+    }
+    if (input.static) {
       return {
         type: DateDataSourceType.STATIC,
         value: input.static.value,
       };
-    } else if (input.studentField !== undefined) {
+    } else if (input.studentField) {
       return {
         type: DateDataSourceType.STUDENT_DATE_FIELD,
         field: input.studentField.field,
       };
-    } else if (input.certificateField !== undefined) {
+    } else if (input.certificateField) {
       return {
         type: DateDataSourceType.CERTIFICATE_DATE_FIELD,
         field: input.certificateField.field,
       };
-    } else if (input.templateVariable !== undefined) {
+    } else if (input.templateVariable) {
       return {
         type: DateDataSourceType.TEMPLATE_DATE_VARIABLE,
         variableId: input.templateVariable.variableId,
@@ -65,15 +68,13 @@ export namespace DateElementUtils {
    */
   export const mapDateElementConfigGraphqlToInput = (
     input: DateElementConfigInputGraphql
-  ): DateElementConfigInput => {
+  ): DateElementConfigCreateInput => {
     return {
-      type: ElementType.DATE,
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps),
-      calendarType: input.calendarType,
-      offsetDays: input.offsetDays,
-      format: input.format,
-      transformation: input.transformation ?? undefined,
-      dataSource: mapDateDataSourceGraphqlToInput(input.dataSource),
+      ...input,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
+        input.textProps
+      )!,
+      dataSource: mapDateDataSourceGraphqlToInput(input.dataSource)!,
     };
   };
 
@@ -81,35 +82,18 @@ export namespace DateElementUtils {
    * Map GraphQL DateElementConfig update input (partial) to repository DateElementConfig input (partial)
    */
   export const mapDateElementConfigUpdateGraphqlToInput = (
-    input: DateElementConfigUpdateInputGraphql
-  ): Partial<DateElementConfigInput> => {
-    const result: Partial<DateElementConfigInput> = {};
-
-    if (input.textProps !== undefined) {
-      const textPropsUpdate = CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
+    input?: DateElementConfigUpdateInputGraphql | null
+  ): DateElementConfigUpdateInput | null | undefined => {
+    if (!input) {
+      return input;
+    }
+    return {
+      ...input,
+      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
         input.textProps
-      );
-      if (Object.keys(textPropsUpdate).length > 0) {
-        result.textProps = textPropsUpdate as Types.TextPropsInput;
-      }
-    }
-    if (input.calendarType !== undefined) {
-      result.calendarType = input.calendarType;
-    }
-    if (input.offsetDays !== undefined) {
-      result.offsetDays = input.offsetDays;
-    }
-    if (input.format !== undefined) {
-      result.format = input.format;
-    }
-    if (input.transformation !== undefined) {
-      result.transformation = input.transformation ?? undefined;
-    }
-    if (input.dataSource !== undefined) {
-      result.dataSource = mapDateDataSourceGraphqlToInput(input.dataSource);
-    }
-
-    return result;
+      ),
+      dataSource: mapDateDataSourceGraphqlToInput(input.dataSource),
+    };
   };
 
   /**
@@ -132,7 +116,7 @@ export namespace DateElementUtils {
   ): DateElementUpdateInput => {
     return {
       ...input,
-      config: input.config !== undefined ? mapDateElementConfigUpdateGraphqlToInput(input.config) : undefined,
+      config: mapDateElementConfigUpdateGraphqlToInput(input.config),
     };
   };
   // ============================================================================
@@ -144,7 +128,7 @@ export namespace DateElementUtils {
    * Validates font reference, data source, calendar type, format, and text properties
    */
   export const validateConfig = async (
-    config: DateElementConfigInput
+    config: DateElementConfigCreateInput
   ): Promise<void> => {
     // Validate textProps (font, size, color, overflow)
     await CommonElementUtils.validateTextProps(config);
@@ -256,7 +240,7 @@ export namespace DateElementUtils {
    * Validate date data source based on type
    */
   const validateDataSource = async (
-    config: DateElementConfigInput
+    config: DateElementConfigCreateInput
   ): Promise<void> => {
     const dataSource = config.dataSource;
     switch (dataSource.type) {

@@ -1,5 +1,5 @@
 import {
-  NumberElementConfigInput,
+  NumberElementConfigCreateInput,
   NumberDataSourceType,
   NumberElementCreateInput,
   NumberElementUpdateInput,
@@ -10,8 +10,8 @@ import {
   NumberElementConfigUpdateInputGraphql,
   NumberElementCreateInputGraphql,
   NumberElementUpdateInputGraphql,
-  ElementType,
-} from "@/server/types/element/output";
+  NumberElementConfigUpdateInput,
+} from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { CommonElementUtils } from "./common.element.utils";
 
@@ -29,8 +29,12 @@ export namespace NumberElementUtils {
    * Note: NUMBER has only one data source variant, so no isOneOf pattern needed
    */
   export const mapNumberDataSourceGraphqlToInput = (
-    input: NumberDataSourceInputGraphql
-  ): NumberDataSourceInput => {
+    input?: NumberDataSourceInputGraphql | null
+  ): NumberDataSourceInput | null | undefined => {
+    if (!input) {
+      return input;
+    }
+
     return {
       type: NumberDataSourceType.TEMPLATE_NUMBER_VARIABLE,
       variableId: input.variableId,
@@ -41,13 +45,17 @@ export namespace NumberElementUtils {
    * Map GraphQL NumberElementConfig input to repository NumberElementConfig input
    */
   export const mapNumberElementConfigGraphqlToInput = (
-    input: NumberElementConfigInputGraphql
-  ): NumberElementConfigInput => {
+    input?: NumberElementConfigInputGraphql | null
+  ): NumberElementConfigCreateInput | null | undefined => {
+    if (!input) {
+      return input;
+    }
     return {
-      type: ElementType.NUMBER,
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps),
-      dataSource: mapNumberDataSourceGraphqlToInput(input.dataSource),
-      mapping: input.mapping,
+      ...input,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
+        input.textProps
+      )!,
+      dataSource: mapNumberDataSourceGraphqlToInput(input.dataSource)!,
     };
   };
 
@@ -55,26 +63,18 @@ export namespace NumberElementUtils {
    * Map GraphQL NumberElementConfig update input (partial) to repository NumberElementConfig input (partial)
    */
   export const mapNumberElementConfigUpdateGraphqlToInput = (
-    input: NumberElementConfigUpdateInputGraphql
-  ): Partial<NumberElementConfigInput> => {
-    const result: Partial<NumberElementConfigInput> = {};
-
-    if (input.textProps !== undefined) {
-      const textPropsUpdate = CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
+    input?: NumberElementConfigUpdateInputGraphql | null
+  ): NumberElementConfigUpdateInput | null | undefined => {
+    if (!input) {
+      return input;
+    }
+    return {
+      ...input,
+      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
         input.textProps
-      );
-      if (Object.keys(textPropsUpdate).length > 0) {
-        result.textProps = textPropsUpdate as Types.TextPropsInput;
-      }
-    }
-    if (input.dataSource !== undefined) {
-      result.dataSource = mapNumberDataSourceGraphqlToInput(input.dataSource);
-    }
-    if (input.mapping !== undefined) {
-      result.mapping = input.mapping;
-    }
-
-    return result;
+      )!,
+      dataSource: mapNumberDataSourceGraphqlToInput(input.dataSource),
+    };
   };
 
   /**
@@ -85,7 +85,7 @@ export namespace NumberElementUtils {
   ): NumberElementCreateInput => {
     return {
       ...input,
-      config: mapNumberElementConfigGraphqlToInput(input.config),
+      config: mapNumberElementConfigGraphqlToInput(input.config)!,
     };
   };
 
@@ -97,7 +97,7 @@ export namespace NumberElementUtils {
   ): NumberElementUpdateInput => {
     return {
       ...input,
-      config: input.config !== undefined ? mapNumberElementConfigUpdateGraphqlToInput(input.config) : undefined,
+      config: mapNumberElementConfigUpdateGraphqlToInput(input.config),
     };
   };
   // ============================================================================
@@ -109,7 +109,7 @@ export namespace NumberElementUtils {
    * Validates font reference, data source, and mapping
    */
   export const validateConfig = async (
-    config: NumberElementConfigInput
+    config: NumberElementConfigCreateInput
   ): Promise<void> => {
     // Validate textProps
     await CommonElementUtils.validateTextProps(config);
@@ -130,7 +130,7 @@ export namespace NumberElementUtils {
    * NUMBER elements only support TEMPLATE_NUMBER_VARIABLE
    */
   const validateDataSource = async (
-    config: NumberElementConfigInput
+    config: NumberElementConfigCreateInput
   ): Promise<void> => {
     const dataSource = config.dataSource;
     if (dataSource.type !== NumberDataSourceType.TEMPLATE_NUMBER_VARIABLE) {

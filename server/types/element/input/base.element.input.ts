@@ -1,5 +1,4 @@
-import type { ElementAlignment } from "./enum.element.types";
-
+import { ElementAlignment } from "../output";
 
 export type CertificateElementBaseCreateInput = {
   templateId: number;

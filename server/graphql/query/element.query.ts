@@ -1,42 +1,25 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
+import { ElementRepository } from "@/server/db/repo/element";
 import * as ElementPothos from "../pothos/element";
-import * as Types from "@/server/types/element/output";
+import { CertificateElementPothosUnion } from "@/server/types";
 
 gqlSchemaBuilder.queryFields(t => ({
-  // =========================================================================
-  // TEST: FontReference Query (for schema testing)
-  // =========================================================================
-  testFontReferenceOutput: t.field({
-    type: [ElementPothos.FontReferenceUnion],
-    resolve: async (): Promise<Types.FontReference[]> => {
-      // This is a fake query to test the schema
-      return [
-        {
-          type: Types.FontSource.GOOGLE,
-          identifier: "Roboto",
-        },
-        {
-          type: Types.FontSource.SELF_HOSTED,
-          fontId: 1,
-        },
-      ];
+  /**
+   * Get all elements for a template by templateId
+   * Returns elements ordered by renderOrder
+   */
+  elementsByTemplateId: t.loadableList({
+    type: ElementPothos.CertificateElementUnion,
+    args: {
+      templateId: t.arg.int({ required: true }),
     },
-  }),
-
-  testTextProps: t.field({
-    type: ElementPothos.TextPropsObject,
-    resolve: async (): Promise<Types.TextProps> => {
-      // This is a fake query to test the schema
-      return {
-        fontRef: {
-          type: Types.FontSource.GOOGLE,
-          identifier: "Inter",
-        },
-        fontSize: 24,
-        color: "#000000",
-        overflow: Types.ElementOverflow.TRUNCATE,
-      };
+    load: async (ids: number[]) => {
+      const results = await ElementRepository.loadByTemplateIds(ids);
+      return results.map(elements => 
+        elements instanceof Error ? elements : elements as CertificateElementPothosUnion[]
+      );
     },
+    resolve: (_parent, args) => args.templateId,
   }),
 }));
 

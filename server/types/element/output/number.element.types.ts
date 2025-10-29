@@ -1,4 +1,3 @@
-import { ElementType } from "./enum.element.types";
 import { TextProps } from "./config.element.types";
 import type { CertificateElementPothosDefinition } from "../union.element.types";
 
@@ -24,7 +23,6 @@ export type NumberDataSource = {
 // ============================================================================
 
 export interface NumberElementConfig {
-  type: ElementType.NUMBER;
   textProps: TextProps;
   dataSource: NumberDataSource;
   mapping: Record<string, string>; // Breakpoint-to-text rules

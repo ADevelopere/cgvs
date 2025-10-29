@@ -1,4 +1,3 @@
-import { ElementType } from "./enum.element.types";
 import type { CertificateElementPothosDefinition } from "../union.element.types";
 
 // ============================================================================
@@ -29,7 +28,6 @@ export type ImageDataSource = {
 // ============================================================================
 
 export interface ImageElementConfig {
-  type: ElementType.IMAGE;
   dataSource: ImageDataSource;
   fit: ElementImageFit;
 }

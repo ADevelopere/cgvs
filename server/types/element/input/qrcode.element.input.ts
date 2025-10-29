@@ -1,4 +1,4 @@
-import { ElementType, QRCodeDataSourceType, QRCodeErrorCorrection } from "../output";
+import { QRCodeDataSourceType, QRCodeErrorCorrection } from "../output";
 import {
   CertificateElementBaseCreateInput,
   CertificateElementBaseUpdateInput,
@@ -26,12 +26,18 @@ export type QRCodeDataSourceInput =
 // ============================================================================
 
 // Repository input type (matches Config structure)
-export type QRCodeElementConfigInput = {
-  type: ElementType.QR_CODE;
+export type QRCodeElementConfigCreateInput = {
   dataSource: QRCodeDataSourceInput;
   errorCorrection: QRCodeErrorCorrection;
   foregroundColor: string;
   backgroundColor: string;
+};
+
+export type QRCodeElementConfigUpdateInput = {
+  dataSource?: QRCodeDataSourceInput | null;
+  errorCorrection?: QRCodeErrorCorrection | null;
+  foregroundColor?: string | null;
+  backgroundColor?: string | null;
 };
 
 // ============================================================================
@@ -39,9 +45,9 @@ export type QRCodeElementConfigInput = {
 // ============================================================================
 
 export type QRCodeElementCreateInput = CertificateElementBaseCreateInput & {
-  config: QRCodeElementConfigInput;
+  config: QRCodeElementConfigCreateInput;
 };
 
 export type QRCodeElementUpdateInput = CertificateElementBaseUpdateInput & {
-  config?: Partial<QRCodeElementConfigInput>;
+  config?: QRCodeElementConfigUpdateInput | null;
 };

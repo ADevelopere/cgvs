@@ -8,11 +8,12 @@ import {
   ElementType,
   TextElementConfig,
   TextElementPothosDefinition,
-} from "@/server/types/element/output";
+} from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
 import { ElementUtils, TextElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
 import { merge } from "lodash";
+import { BaseElementUtils } from "@/server/utils/element";
 
 /**
  * Repository for TEXT element operations
@@ -34,11 +35,12 @@ export namespace TextElementRepository {
     await TextElementUtils.validateCreateInput(input);
 
     // 2. Extract FKs from config
-    const fontId = ElementUtils.extractFontId(input.config);
-    const templateVariableId = ElementUtils.extractTemplateVariableId(
+    const fontId = ElementUtils.extractFontIdFromConfigTextProps(input.config);
+    const templateVariableId =
+      ElementUtils.extractTemplateVariableIdFromConfigDataSource(input.config);
+    const storageFileId = ElementUtils.extractStorageFileIdFromConfigTextProps(
       input.config
     );
-    const storageFileId = ElementUtils.extractStorageFileId(input.config);
 
     // 3. Insert element
     const [element] = await db
@@ -85,29 +87,27 @@ export namespace TextElementRepository {
 
     // 4. Build update object (exclude config as it needs special handling)
     const { config: _, ...baseUpdates } = input;
-    const updates: Partial<CertificateElementEntity> = {
-      ...baseUpdates,
-      updatedAt: new Date(),
-    };
+    const updates = BaseElementUtils.baseUpdates(baseUpdates, existing);
 
     // 5. If config is being updated, deep merge and re-extract FKs
     if (input.config) {
       // Deep merge partial config with existing to preserve nested properties
-      const mergedConfig: TextElementConfig = merge(
-        {},
-        existing.config,
-        input.config
-      );
+      const mergedConfig = merge({}, existing.config, input.config);
 
       // Validate merged config
-      await TextElementUtils.validateConfig(mergedConfig);
+      // await TextElementUtils.validateConfig(mergedConfig);
 
       // Apply merged config and extract FKs
-      updates.config = mergedConfig;
-      updates.fontId = ElementUtils.extractFontId(mergedConfig);
+      updates.fontId = ElementUtils.extractFontIdFromConfigTextProps(
+        input.config
+      );
       updates.templateVariableId =
-        ElementUtils.extractTemplateVariableId(mergedConfig);
-      updates.storageFileId = ElementUtils.extractStorageFileId(mergedConfig);
+        ElementUtils.extractTemplateVariableIdFromConfigDataSource(
+          input.config
+        );
+      updates.storageFileId =
+        ElementUtils.extractStorageFileIdFromConfigTextProps(input.config);
+      updates.config = mergedConfig;
     }
 
     // 6. Update
@@ -138,7 +138,7 @@ export namespace TextElementRepository {
     const elements = await ElementRepository.loadByIds(ids);
 
     // Map to maintain order and validate TEXT type
-    return elements.map((element) => {
+    return elements.map(element => {
       if (element instanceof Error) return element;
 
       // Validate element type

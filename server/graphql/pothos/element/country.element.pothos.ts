@@ -1,10 +1,7 @@
 import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
-import * as Types from "@/server/types/element/output";
+import * as Types from "@/server/types/element";
 import { CountryElementRepository } from "@/server/db/repo/element";
-import { TemplateRepository } from "@/server/db/repo";
-import { TemplatePothosObject } from "@/server/graphql/pothos/template.pothos";
 import {
-  ElementTypePothosEnum,
   TextPropsObject,
   TextPropsInputObject,
   TextPropsUpdateInputObject,
@@ -97,7 +94,6 @@ export const CountryElementConfigObject = gqlSchemaBuilder
   .objectRef<Types.CountryElementConfig>("CountryElementConfig")
   .implement({
     fields: t => ({
-      type: t.expose("type", { type: ElementTypePothosEnum }),
       textProps: t.expose("textProps", { type: TextPropsObject }),
       representation: t.expose("representation", {
         type: CountryRepresentationPothosEnum,
@@ -204,12 +200,3 @@ export const CountryElementObject = gqlSchemaBuilder.loadableObject<
     config: t.expose("config", { type: CountryElementConfigObject }),
   }),
 });
-
-gqlSchemaBuilder.objectFields(CountryElementObject, t => ({
-  template: t.loadable({
-    type: TemplatePothosObject,
-    load: (ids: number[]) => TemplateRepository.loadByIds(ids),
-    resolve: element => element.templateId,
-  }),
-}));
-

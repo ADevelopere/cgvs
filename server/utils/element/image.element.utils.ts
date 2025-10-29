@@ -1,5 +1,5 @@
 import {
-  ImageElementConfigInput,
+  ImageElementConfigCreateInput,
   ImageDataSourceType,
   ElementImageFit,
   ImageElementCreateInput,
@@ -11,8 +11,8 @@ import {
   ImageElementConfigUpdateInputGraphql,
   ImageElementCreateInputGraphql,
   ImageElementUpdateInputGraphql,
-  ElementType,
-} from "@/server/types/element/output";
+  ImageElementConfigUpdateInput,
+} from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { CommonElementUtils } from "./common.element.utils";
 
@@ -30,17 +30,18 @@ export namespace ImageElementUtils {
    * Note: IMAGE has only one data source variant (storageFile)
    */
   export const mapImageDataSourceGraphqlToInput = (
-    input: ImageDataSourceInputGraphql
-  ): ImageDataSourceInput => {
+    input?: ImageDataSourceInputGraphql | null
+  ): ImageDataSourceInput | null | undefined => {
+    if (!input) {
+      return input;
+    }
     if (input.storageFile !== undefined) {
       return {
         type: ImageDataSourceType.STORAGE_FILE,
         storageFileId: input.storageFile.storageFileId,
       };
     }
-    throw new Error(
-      "Invalid ImageDataSource input: must specify storageFile"
-    );
+    throw new Error("Invalid ImageDataSource input: must specify storageFile");
   };
 
   /**
@@ -48,11 +49,10 @@ export namespace ImageElementUtils {
    */
   export const mapImageElementConfigGraphqlToInput = (
     input: ImageElementConfigInputGraphql
-  ): ImageElementConfigInput => {
+  ): ImageElementConfigCreateInput => {
     return {
-      type: ElementType.IMAGE,
-      dataSource: mapImageDataSourceGraphqlToInput(input.dataSource),
-      fit: input.fit,
+      ...input,
+      dataSource: mapImageDataSourceGraphqlToInput(input.dataSource)!,
     };
   };
 
@@ -60,18 +60,15 @@ export namespace ImageElementUtils {
    * Map GraphQL ImageElementConfig update input (partial) to repository ImageElementConfig input (partial)
    */
   export const mapImageElementConfigUpdateGraphqlToInput = (
-    input: ImageElementConfigUpdateInputGraphql
-  ): Partial<ImageElementConfigInput> => {
-    const result: Partial<ImageElementConfigInput> = {};
-
-    if (input.dataSource !== undefined) {
-      result.dataSource = mapImageDataSourceGraphqlToInput(input.dataSource);
+    input?: ImageElementConfigUpdateInputGraphql | null
+  ): ImageElementConfigUpdateInput | null | undefined => {
+    if (!input) {
+      return input;
     }
-    if (input.fit !== undefined) {
-      result.fit = input.fit;
-    }
-
-    return result;
+    return {
+      ...input,
+      dataSource: mapImageDataSourceGraphqlToInput(input.dataSource),
+    };
   };
 
   /**
@@ -94,7 +91,7 @@ export namespace ImageElementUtils {
   ): ImageElementUpdateInput => {
     return {
       ...input,
-      config: input.config !== undefined ? mapImageElementConfigUpdateGraphqlToInput(input.config) : undefined,
+      config: mapImageElementConfigUpdateGraphqlToInput(input.config),
     };
   };
   // ============================================================================
@@ -106,7 +103,7 @@ export namespace ImageElementUtils {
    * Validates storage file reference and image fit
    */
   export const validateConfig = async (
-    config: ImageElementConfigInput
+    config: ImageElementConfigCreateInput
   ): Promise<void> => {
     // Validate data source
     await validateDataSource(config);
@@ -124,7 +121,7 @@ export namespace ImageElementUtils {
    * IMAGE elements only support STORAGE_FILE data source
    */
   const validateDataSource = async (
-    config: ImageElementConfigInput
+    config: ImageElementConfigCreateInput
   ): Promise<void> => {
     const dataSource = config.dataSource;
 
@@ -184,5 +181,25 @@ export namespace ImageElementUtils {
     await CommonElementUtils.validateBaseUpdateInput(input, existing);
 
     // Config validation (if provided) - handled separately with deep merge
+  };
+
+  export const extractStorageFileId = (
+    config?:
+      | ImageElementConfigCreateInput
+      | ImageElementConfigUpdateInput
+      | null
+  ): number | null | undefined => {
+    if (!config) return config;
+
+    const { dataSource } = config;
+    if (!dataSource) return dataSource;
+
+    if (dataSource.type !== ImageDataSourceType.STORAGE_FILE) {
+      throw new Error(
+        `Invalid image data source type: ${dataSource.type}. Must be STORAGE_FILE`
+      );
+    }
+
+    return dataSource.storageFileId;
   };
 }

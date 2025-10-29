@@ -9,7 +9,7 @@ import {
   bigint,
 } from "drizzle-orm/pg-core";
 import { elementAlignmentEnum, elementTypeEnum } from "./templateElementEnums";
-import type { ElementConfigUnion } from "@/server/types/element/output";
+import type { ElementConfigUnion } from "@/server/types/element";
 import { font } from "../font";
 import { templateVariableBases } from "../templateVariables";
 import { storageFiles } from "../storage";

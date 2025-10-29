@@ -1,5 +1,5 @@
 import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
-import * as Types from "@/server/types/element/output";
+import * as Types from "@/server/types/element";
 import { TemplateRepository } from "@/server/db/repo";
 import { ElementRepository } from "@/server/db/repo/element";
 import { TemplatePothosObject } from "@/server/graphql/pothos/template.pothos";

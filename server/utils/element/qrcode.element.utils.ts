@@ -1,5 +1,5 @@
 import {
-  QRCodeElementConfigInput,
+  QRCodeElementConfigCreateInput,
   QRCodeDataSourceType,
   QRCodeDataSourceInput,
   QRCodeDataSourceInputGraphql,
@@ -12,7 +12,8 @@ import {
   ElementType,
   CertificateElementEntity,
   QRCodeErrorCorrection,
-} from "@/server/types/element/output";
+  QRCodeElementConfigUpdateInput,
+} from "@/server/types/element";
 import { CommonElementUtils } from "./common.element.utils";
 
 /**
@@ -28,8 +29,11 @@ export namespace QRCodeElementUtils {
    * Map GraphQL QRCodeDataSource input (isOneOf) to repository QRCodeDataSource input (discriminated union)
    */
   export const mapQRCodeDataSourceGraphqlToInput = (
-    input: QRCodeDataSourceInputGraphql
-  ): QRCodeDataSourceInput => {
+    input?: QRCodeDataSourceInputGraphql | null
+  ): QRCodeDataSourceInput | null | undefined => {
+    if (!input) {
+      return input;
+    }
     if (input.verificationUrl !== undefined) {
       return { type: QRCodeDataSourceType.VERIFICATION_URL };
     } else if (input.verificationCode !== undefined) {
@@ -45,13 +49,10 @@ export namespace QRCodeElementUtils {
    */
   export const mapQRCodeElementConfigGraphqlToInput = (
     input: QRCodeElementConfigInputGraphql
-  ): QRCodeElementConfigInput => {
+  ): QRCodeElementConfigCreateInput => {
     return {
-      type: ElementType.QR_CODE,
-      dataSource: mapQRCodeDataSourceGraphqlToInput(input.dataSource),
-      errorCorrection: input.errorCorrection,
-      foregroundColor: input.foregroundColor,
-      backgroundColor: input.backgroundColor,
+      ...input,
+      dataSource: mapQRCodeDataSourceGraphqlToInput(input.dataSource)!,
     };
   };
 
@@ -59,24 +60,16 @@ export namespace QRCodeElementUtils {
    * Map GraphQL QRCodeElementConfig update input (partial) to repository QRCodeElementConfig input (partial)
    */
   export const mapQRCodeElementConfigUpdateGraphqlToInput = (
-    input: QRCodeElementConfigUpdateInputGraphql
-  ): Partial<QRCodeElementConfigInput> => {
-    const result: Partial<QRCodeElementConfigInput> = {};
-
-    if (input.dataSource !== undefined) {
-      result.dataSource = mapQRCodeDataSourceGraphqlToInput(input.dataSource);
-    }
-    if (input.errorCorrection !== undefined) {
-      result.errorCorrection = input.errorCorrection;
-    }
-    if (input.foregroundColor !== undefined) {
-      result.foregroundColor = input.foregroundColor;
-    }
-    if (input.backgroundColor !== undefined) {
-      result.backgroundColor = input.backgroundColor;
+    input?: QRCodeElementConfigUpdateInputGraphql | null
+  ): QRCodeElementConfigUpdateInput | null | undefined => {
+    if (!input) {
+      return input;
     }
 
-    return result;
+    return {
+      ...input,
+      dataSource: mapQRCodeDataSourceGraphqlToInput(input.dataSource)!,
+    };
   };
 
   /**
@@ -99,7 +92,7 @@ export namespace QRCodeElementUtils {
   ): QRCodeElementUpdateInput => {
     return {
       ...input,
-      config: input.config !== undefined ? mapQRCodeElementConfigUpdateGraphqlToInput(input.config) : undefined,
+      config: mapQRCodeElementConfigUpdateGraphqlToInput(input.config),
     };
   };
 
@@ -112,7 +105,7 @@ export namespace QRCodeElementUtils {
    * Validates data source, error correction, and colors
    */
   export const validateConfig = async (
-    config: QRCodeElementConfigInput
+    config: QRCodeElementConfigCreateInput
   ): Promise<void> => {
     // Validate data source
     validateDataSource(config);
@@ -132,7 +125,7 @@ export namespace QRCodeElementUtils {
   /**
    * Validate QR code data source
    */
-  const validateDataSource = (config: QRCodeElementConfigInput): void => {
+  const validateDataSource = (config: QRCodeElementConfigCreateInput): void => {
     const dataSource = config.dataSource;
     const validTypes = Object.values(QRCodeDataSourceType);
 
@@ -194,23 +187,21 @@ export namespace QRCodeElementUtils {
     // Validate updated config if provided
     if (input.config) {
       // For partial updates, merge with existing config for validation
-      const mergedConfig: QRCodeElementConfigInput = {
-        type: ElementType.QR_CODE,
+      const mergedConfig: QRCodeElementConfigCreateInput = {
         dataSource:
           input.config.dataSource ||
-          (existing.config as QRCodeElementConfigInput).dataSource,
+          (existing.config as QRCodeElementConfigCreateInput).dataSource,
         errorCorrection:
           input.config.errorCorrection ??
-          (existing.config as QRCodeElementConfigInput).errorCorrection,
+          (existing.config as QRCodeElementConfigCreateInput).errorCorrection,
         foregroundColor:
           input.config.foregroundColor ??
-          (existing.config as QRCodeElementConfigInput).foregroundColor,
+          (existing.config as QRCodeElementConfigCreateInput).foregroundColor,
         backgroundColor:
           input.config.backgroundColor ??
-          (existing.config as QRCodeElementConfigInput).backgroundColor,
+          (existing.config as QRCodeElementConfigCreateInput).backgroundColor,
       };
       await validateConfig(mergedConfig);
     }
   };
 }
-

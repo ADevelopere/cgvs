@@ -8,11 +8,12 @@ import {
   ElementType,
   NumberElementConfig,
   NumberElementPothosDefinition,
-} from "@/server/types/element/output";
+} from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
 import { ElementUtils, NumberElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
 import { merge } from "lodash";
+import { BaseElementUtils } from "@/server/utils/element";
 
 /**
  * Repository for NUMBER element operations
@@ -34,11 +35,12 @@ export namespace NumberElementRepository {
     await NumberElementUtils.validateCreateInput(input);
 
     // 2. Extract FKs from config
-    const fontId = ElementUtils.extractFontId(input.config);
-    const templateVariableId = ElementUtils.extractTemplateVariableId(
+    const fontId = ElementUtils.extractFontIdFromConfigTextProps(input.config);
+    const templateVariableId =
+      ElementUtils.extractTemplateVariableIdFromConfigDataSource(input.config);
+    const storageFileId = ElementUtils.extractStorageFileIdFromConfigTextProps(
       input.config
     );
-    const storageFileId = ElementUtils.extractStorageFileId(input.config);
 
     // 3. Insert element
     const [element] = await db
@@ -85,29 +87,27 @@ export namespace NumberElementRepository {
 
     // 4. Build update object (exclude config as it needs special handling)
     const { config: _, ...baseUpdates } = input;
-    const updates: Partial<CertificateElementEntity> = {
-      ...baseUpdates,
-      updatedAt: new Date(),
-    };
+    const updates = BaseElementUtils.baseUpdates(baseUpdates, existing);
 
     // 5. If config is being updated, deep merge and re-extract FKs
     if (input.config) {
       // Deep merge partial config with existing to preserve nested properties
-      const mergedConfig: NumberElementConfig = merge(
-        {},
-        existing.config,
-        input.config
-      );
+      const mergedConfig = merge({}, existing.config, input.config);
 
       // Validate merged config
-      await NumberElementUtils.validateConfig(mergedConfig);
+      // await NumberElementUtils.validateConfig(input.config);
 
       // Apply merged config and extract FKs
-      updates.config = mergedConfig;
-      updates.fontId = ElementUtils.extractFontId(mergedConfig);
+      updates.fontId = ElementUtils.extractFontIdFromConfigTextProps(
+        input.config
+      );
       updates.templateVariableId =
-        ElementUtils.extractTemplateVariableId(mergedConfig);
-      updates.storageFileId = ElementUtils.extractStorageFileId(mergedConfig);
+        ElementUtils.extractTemplateVariableIdFromConfigDataSource(
+          input.config
+        );
+      updates.storageFileId =
+        ElementUtils.extractStorageFileIdFromConfigTextProps(input.config);
+      updates.config = mergedConfig;
     }
 
     // 6. Update

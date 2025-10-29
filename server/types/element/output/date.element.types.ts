@@ -1,4 +1,3 @@
-import { ElementType } from "./enum.element.types";
 import {
   TextProps,
 } from "./config.element.types";
@@ -57,7 +56,6 @@ export type DateDataSource =
 // ============================================================================
 
 export interface DateElementConfig {
-  type: ElementType.DATE;
   textProps: TextProps;
   calendarType: CalendarType;
   offsetDays: number;

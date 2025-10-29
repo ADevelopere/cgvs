@@ -27,8 +27,8 @@ export type ImageElementConfigInputGraphql = {
 
 // GraphQL update input type (deep partial)
 export type ImageElementConfigUpdateInputGraphql = {
-  dataSource?: ImageDataSourceInputGraphql;
-  fit?: ElementImageFit;
+  dataSource?: ImageDataSourceInputGraphql | null;
+  fit?: ElementImageFit | null;
 };
 
 
@@ -45,5 +45,5 @@ export type ImageElementCreateInputGraphql =
 // GraphQL update input type (deep partial support)
 export type ImageElementUpdateInputGraphql =
   CertificateElementBaseUpdateInput & {
-    config?: ImageElementConfigUpdateInputGraphql;
+    config?: ImageElementConfigUpdateInputGraphql | null;
   };

@@ -18,7 +18,6 @@ export {
   CountryElementUtils,
   GenderElementUtils,
   ImageElementUtils,
-  deepMerge,
 } from "./element";
 
 export { PaginationUtils } from "./pagination.utils";

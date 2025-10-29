@@ -38,10 +38,10 @@ export type QRCodeElementConfigInputGraphql = {
 
 // GraphQL update input type (all optional)
 export type QRCodeElementConfigUpdateInputGraphql = {
-  dataSource?: QRCodeDataSourceInputGraphql;
-  errorCorrection?: QRCodeErrorCorrection;
-  foregroundColor?: string;
-  backgroundColor?: string;
+  dataSource?: QRCodeDataSourceInputGraphql | null;
+  errorCorrection?: QRCodeErrorCorrection | null;
+  foregroundColor?: string | null;
+  backgroundColor?: string | null;
 };
 
 
@@ -59,5 +59,5 @@ export type QRCodeElementCreateInputGraphql =
 // GraphQL update input type (deep partial support)
 export type QRCodeElementUpdateInputGraphql =
   CertificateElementBaseUpdateInput & {
-    config?: QRCodeElementConfigUpdateInputGraphql;
+    config?: QRCodeElementConfigUpdateInputGraphql | null;
   };

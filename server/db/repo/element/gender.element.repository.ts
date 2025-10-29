@@ -8,11 +8,12 @@ import {
   ElementType,
   GenderElementConfig,
   GenderElementPothosDefinition,
-} from "@/server/types/element/output";
+} from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
 import { ElementUtils, GenderElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
 import { merge } from "lodash";
+import { BaseElementUtils } from "@/server/utils/element";
 
 /**
  * Repository for GENDER element operations
@@ -34,9 +35,7 @@ export namespace GenderElementRepository {
     await GenderElementUtils.validateCreateInput(input);
 
     // 2. Extract FKs from config (GENDER only has fontId)
-    const fontId = ElementUtils.extractFontId(input.config);
-    const templateVariableId = null; // GENDER doesn't use template variables
-    const storageFileId = null; // GENDER doesn't use storage files
+    const fontId = ElementUtils.extractFontIdFromConfigTextProps(input.config);
 
     // 3. Insert element
     const [element] = await db
@@ -45,8 +44,6 @@ export namespace GenderElementRepository {
         ...input,
         type: ElementType.GENDER,
         fontId,
-        templateVariableId,
-        storageFileId,
         createdAt: new Date(),
         updatedAt: new Date(),
       })
@@ -83,28 +80,21 @@ export namespace GenderElementRepository {
 
     // 4. Build update object (exclude config as it needs special handling)
     const { config: _, ...baseUpdates } = input;
-    const updates: Partial<CertificateElementEntity> = {
-      ...baseUpdates,
-      updatedAt: new Date(),
-    };
+    const updates = BaseElementUtils.baseUpdates(baseUpdates, existing);
 
     // 5. If config is being updated, deep merge and re-extract FKs
     if (input.config) {
       // Deep merge partial config with existing to preserve nested properties
-      const mergedConfig: GenderElementConfig = merge(
-        {},
-        existing.config,
-        input.config
-      );
+      const mergedConfig = merge({}, existing.config, input.config);
 
       // Validate merged config
-      await GenderElementUtils.validateConfig(mergedConfig);
+      // await GenderElementUtils.validateConfig(input.config);
 
       // Apply merged config and extract FKs (GENDER only has fontId)
+      updates.fontId = ElementUtils.extractFontIdFromConfigTextProps(
+        input.config
+      );
       updates.config = mergedConfig;
-      updates.fontId = ElementUtils.extractFontId(mergedConfig);
-      updates.templateVariableId = null; // GENDER doesn't use template variables
-      updates.storageFileId = null; // GENDER doesn't use storage files
     }
 
     // 6. Update

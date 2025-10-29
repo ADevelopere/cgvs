@@ -1,10 +1,7 @@
 import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
-import * as Types from "@/server/types/element/output";
+import * as Types from "@/server/types/element";
 import { DateElementRepository } from "@/server/db/repo/element";
-import { TemplateRepository } from "@/server/db/repo";
-import { TemplatePothosObject } from "@/server/graphql/pothos/template.pothos";
 import {
-  ElementTypePothosEnum,
   TextPropsObject,
   TextPropsInputObject,
   TextPropsUpdateInputObject,
@@ -207,7 +204,6 @@ export const DateElementConfigObject = gqlSchemaBuilder
   .objectRef<Types.DateElementConfig>("DateElementConfig")
   .implement({
     fields: t => ({
-      type: t.expose("type", { type: ElementTypePothosEnum }),
       textProps: t.expose("textProps", { type: TextPropsObject }),
       calendarType: t.expose("calendarType", { type: CalendarTypePothosEnum }),
       offsetDays: t.exposeInt("offsetDays"),
@@ -306,11 +302,3 @@ export const DateElementObject = gqlSchemaBuilder.loadableObject<
     config: t.expose("config", { type: DateElementConfigObject }),
   }),
 });
-
-gqlSchemaBuilder.objectFields(DateElementObject, t => ({
-  template: t.loadable({
-    type: TemplatePothosObject,
-    load: (ids: number[]) => TemplateRepository.loadByIds(ids),
-    resolve: element => element.templateId,
-  }),
-}));

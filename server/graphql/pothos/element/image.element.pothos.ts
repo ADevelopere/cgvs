@@ -1,10 +1,7 @@
 import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
-import * as Types from "@/server/types/element/output";
+import * as Types from "@/server/types/element";
 import { ImageElementRepository } from "@/server/db/repo/element";
-import { TemplateRepository } from "@/server/db/repo";
-import { TemplatePothosObject } from "@/server/graphql/pothos/template.pothos";
 import {
-  ElementTypePothosEnum,
   CertificateElementPothosInterface,
   createBaseElementInputFields,
   createBaseElementUpdateInputFields,
@@ -96,7 +93,6 @@ export const ImageElementConfigObject = gqlSchemaBuilder
   .objectRef<Types.ImageElementConfig>("ImageElementConfig")
   .implement({
     fields: t => ({
-      type: t.expose("type", { type: ElementTypePothosEnum }),
       dataSource: t.expose("dataSource", { type: ImageDataSourceUnion }),
       fit: t.expose("fit", { type: ElementImageFitPothosEnum }),
     }),
@@ -172,12 +168,3 @@ export const ImageElementObject = gqlSchemaBuilder.loadableObject<
     config: t.expose("config", { type: ImageElementConfigObject }),
   }),
 });
-
-gqlSchemaBuilder.objectFields(ImageElementObject, t => ({
-  template: t.loadable({
-    type: TemplatePothosObject,
-    load: (ids: number[]) => TemplateRepository.loadByIds(ids),
-    resolve: element => element.templateId,
-  }),
-}));
-

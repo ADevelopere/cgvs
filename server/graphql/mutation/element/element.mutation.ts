@@ -10,7 +10,7 @@ import {
   ImageElementRepository,
   QRCodeElementRepository,
 } from "@/server/db/repo/element";
-import * as Types from "@/server/types/element/output";
+import * as Types from "@/server/types/element";
 import {
   TextElementUtils,
   DateElementUtils,

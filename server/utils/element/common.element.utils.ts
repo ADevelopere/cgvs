@@ -10,7 +10,7 @@ import {
   CertificateElementBaseCreateInput,
   CertificateElementBaseUpdateInput,
   CertificateElementEntity,
-} from "@/server/types/element/output";
+} from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { ElementUtils } from "./element.utils";
 
@@ -118,7 +118,10 @@ export namespace CommonElementUtils {
     const fontRef = config.textProps.fontRef;
     if (fontRef.type === FontSource.SELF_HOSTED) {
       // Validate font ID exists in database
-      await ElementRepository.validateFontId(fontRef.fontId!);
+      if (!fontRef.fontId) {
+        throw new Error("Font ID is required for SELF_HOSTED fonts");
+      }
+      await ElementRepository.validateFontId(fontRef.fontId);
     } else if (fontRef.type === FontSource.GOOGLE) {
       // Validate Google font identifier is not empty
       if (!fontRef.identifier || fontRef.identifier.trim().length === 0) {
@@ -255,7 +258,10 @@ export namespace CommonElementUtils {
     }
 
     // Dimensions validation (if provided)
-    if (input.width !== undefined && input.width !== null || input.height !== undefined && input.height !== null) {
+    if (
+      (input.width !== undefined && input.width !== null) ||
+      (input.height !== undefined && input.height !== null)
+    ) {
       const width = input.width ?? existing.width;
       const height = input.height ?? existing.height;
       const dimError = await ElementUtils.validateDimensions(width, height);

@@ -1,5 +1,5 @@
 import {
-  GenderElementConfigInput,
+  GenderElementConfigCreateInput,
   GenderDataSourceType,
   GenderElementCreateInput,
   GenderElementUpdateInput,
@@ -10,8 +10,8 @@ import {
   GenderElementConfigUpdateInputGraphql,
   GenderElementCreateInputGraphql,
   GenderElementUpdateInputGraphql,
-  ElementType,
-} from "@/server/types/element/output";
+  GenderElementConfigUpdateInput,
+} from "@/server/types/element";
 import { CommonElementUtils } from "./common.element.utils";
 
 /**
@@ -28,8 +28,11 @@ export namespace GenderElementUtils {
    * Note: GENDER has only one data source variant (studentGender)
    */
   export const mapGenderDataSourceGraphqlToInput = (
-    input: GenderDataSourceInputGraphql
-  ): GenderDataSourceInput => {
+    input?: GenderDataSourceInputGraphql | null
+  ): GenderDataSourceInput | null | undefined => {
+    if (!input) {
+      return input;
+    }
     if (input.studentGender !== undefined) {
       return {
         type: GenderDataSourceType.STUDENT_GENDER,
@@ -44,12 +47,14 @@ export namespace GenderElementUtils {
    * Map GraphQL GenderElementConfig input to repository GenderElementConfig input
    */
   export const mapGenderElementConfigGraphqlToInput = (
-    input: GenderElementConfigInputGraphql
-  ): GenderElementConfigInput => {
+    input?: GenderElementConfigInputGraphql | null
+  ): GenderElementConfigCreateInput | null | undefined => {
+    if (!input) {
+      return input;
+    }
     return {
-      type: ElementType.GENDER,
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps),
-      dataSource: mapGenderDataSourceGraphqlToInput(input.dataSource),
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps)!,
+      dataSource: mapGenderDataSourceGraphqlToInput(input.dataSource)!,
     };
   };
 
@@ -57,23 +62,17 @@ export namespace GenderElementUtils {
    * Map GraphQL GenderElementConfig update input (partial) to repository GenderElementConfig input (partial)
    */
   export const mapGenderElementConfigUpdateGraphqlToInput = (
-    input: GenderElementConfigUpdateInputGraphql
-  ): Partial<GenderElementConfigInput> => {
-    const result: Partial<GenderElementConfigInput> = {};
-
-    if (input.textProps !== undefined) {
-      const textPropsUpdate = CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
-        input.textProps
-      );
-      if (Object.keys(textPropsUpdate).length > 0) {
-        result.textProps = textPropsUpdate as Types.TextPropsInput;
-      }
-    }
-    if (input.dataSource !== undefined) {
-      result.dataSource = mapGenderDataSourceGraphqlToInput(input.dataSource);
+    input?: GenderElementConfigUpdateInputGraphql | null
+  ): GenderElementConfigUpdateInput | null | undefined => {
+    if (!input) {
+      return input;
     }
 
-    return result;
+    return {
+      ...input,
+      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(input.textProps),
+      dataSource: mapGenderDataSourceGraphqlToInput(input.dataSource),
+    };
   };
 
   /**
@@ -84,7 +83,7 @@ export namespace GenderElementUtils {
   ): GenderElementCreateInput => {
     return {
       ...input,
-      config: mapGenderElementConfigGraphqlToInput(input.config),
+      config: mapGenderElementConfigGraphqlToInput(input.config)!,
     };
   };
 
@@ -96,7 +95,7 @@ export namespace GenderElementUtils {
   ): GenderElementUpdateInput => {
     return {
       ...input,
-      config: input.config !== undefined ? mapGenderElementConfigUpdateGraphqlToInput(input.config) : undefined,
+      config: mapGenderElementConfigUpdateGraphqlToInput(input.config),
     };
   };
   // ============================================================================
@@ -108,7 +107,7 @@ export namespace GenderElementUtils {
    * Validates font reference and data source
    */
   export const validateConfig = async (
-    config: GenderElementConfigInput
+    config: GenderElementConfigCreateInput
   ): Promise<void> => {
     // Validate textProps
     await CommonElementUtils.validateTextProps(config);
@@ -126,7 +125,7 @@ export namespace GenderElementUtils {
    * GENDER elements only support STUDENT_GENDER data source type
    */
   const validateDataSource = async (
-    config: GenderElementConfigInput
+    config: GenderElementConfigCreateInput
   ): Promise<void> => {
     const dataSource = config.dataSource;
 

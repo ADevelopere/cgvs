@@ -7,10 +7,9 @@ import { storageFiles } from "@/server/db/schema/storage";
 import {
   CertificateElementEntity,
   ElementConfigUnion,
-  ElementType,
   FontSource,
   ElementOrderUpdateInput,
-} from "@/server/types/element/output";
+} from "@/server/types/element";
 import logger from "@/server/lib/logger";
 import { TemplateRepository } from "../template.repository";
 
@@ -232,12 +231,10 @@ export namespace ElementRepository {
       const { dataSource } = config;
       if ("variableId" in dataSource) {
         await validateTemplateVariableId(dataSource.variableId);
+        // Validate storage file reference (for IMAGE elements)
+      } else if ("storageFileId" in dataSource) {
+        await validateStorageFileId(dataSource.storageFileId);
       }
-    }
-
-    // Validate storage file reference (for IMAGE elements)
-    if (config.type === ElementType.IMAGE) {
-      await validateStorageFileId(config.dataSource.storageFileId);
     }
   };
 
