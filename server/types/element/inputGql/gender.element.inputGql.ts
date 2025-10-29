@@ -19,33 +19,17 @@ export type GenderDataSourceInputGraphql = {
 };
 
 // ============================================================================
-// Element Config
-// ============================================================================
-
-// GraphQL input type (type field omitted - implied by mutation)
-export type GenderElementConfigInputGraphql = {
-  textProps: TextPropsCreateInputGraphql;
-  // dataSource: GenderDataSourceInputGraphql;
-};
-
-// GraphQL update input type (deep partial)
-export type GenderElementConfigUpdateInputGraphql = {
-  textProps?: TextPropsUpdateInputGraphql | null;
-  // dataSource?: GenderDataSourceInputGraphql | null;
-};
-
-// ============================================================================
 // Mutation Inputs
 // ============================================================================
 
 // GraphQL create input type
 export type GenderElementCreateInputGraphql =
   CertificateElementBaseCreateInput & {
-    config: GenderElementConfigInputGraphql;
+    textProps: TextPropsCreateInputGraphql;
   };
 
 // GraphQL update input type (deep partial support)
 export type GenderElementUpdateInputGraphql =
   CertificateElementBaseUpdateInput & {
-    config?: GenderElementConfigUpdateInputGraphql | null;
+    textProps?: TextPropsUpdateInputGraphql | null;
   };

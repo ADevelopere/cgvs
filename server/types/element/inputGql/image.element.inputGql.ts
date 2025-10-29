@@ -16,34 +16,19 @@ export type ImageDataSourceInputGraphql = {
 };
 
 // ============================================================================
-// Element Config
-// ============================================================================
-
-// GraphQL input type (type field omitted - implied by mutation)
-export type ImageElementConfigInputGraphql = {
-  dataSource: ImageDataSourceInputGraphql;
-  fit: ElementImageFit;
-};
-
-// GraphQL update input type (deep partial)
-export type ImageElementConfigUpdateInputGraphql = {
-  dataSource?: ImageDataSourceInputGraphql | null;
-  fit?: ElementImageFit | null;
-};
-
-
-// ============================================================================
 // Mutation Inputs
 // ============================================================================
 
 // GraphQL create input type
 export type ImageElementCreateInputGraphql =
   CertificateElementBaseCreateInput & {
-    config: ImageElementConfigInputGraphql;
+    fit: ElementImageFit;
+    dataSource: ImageDataSourceInputGraphql;
   };
 
 // GraphQL update input type (deep partial support)
 export type ImageElementUpdateInputGraphql =
   CertificateElementBaseUpdateInput & {
-    config?: ImageElementConfigUpdateInputGraphql | null;
+    fit?: ElementImageFit | null;
+    dataSource?: ImageDataSourceInputGraphql | null;
   };

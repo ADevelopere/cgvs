@@ -31,7 +31,12 @@ export type TextProps = {
 // Input versions
 export type TextPropsCreateInput = TextProps;
 
-export type TextPropsUpdateInput = Partial<TextProps>;
+export type TextPropsUpdateInput = {
+  fontRef?: FontReference | null;
+  fontSize?: number | null;
+  color?: string | null;
+  overflow?: ElementOverflow | null;
+};
 
 // ============================================================================
 // Element Text Props Entity (Raw DB - for repository internal use)

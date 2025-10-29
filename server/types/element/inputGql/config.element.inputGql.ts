@@ -1,4 +1,8 @@
-import { ElementOverflow } from "../output";
+import { TextPropsCreateInput, TextPropsUpdateInput } from "../output";
+
+// ============================================================================
+// Font Reference (GraphQL isOneOf pattern)
+// ============================================================================
 
 export type FontReferenceGoogleInputGraphql = {
   identifier: string;
@@ -13,19 +17,20 @@ export type FontReferenceInputGraphql =
   | { selfHosted: FontReferenceSelfHostedInputGraphql; google?: never | null };
 
 // ============================================================================
-// Text Props (shared by TEXT, DATE, NUMBER, COUNTRY, GENDER elements)
+// Text Props (GraphQL version with isOneOf font reference)
 // ============================================================================
 
-export type TextPropsCreateInputGraphql = {
+// Re-export TextProps types with GraphQL naming and font reference pattern
+export type TextPropsCreateInputGraphql = Omit<
+  TextPropsCreateInput,
+  "fontRef"
+> & {
   fontRef: FontReferenceInputGraphql;
-  fontSize: number;
-  color: string;
-  overflow: ElementOverflow;
 };
 
-export type TextPropsUpdateInputGraphql = {
+export type TextPropsUpdateInputGraphql = Omit<
+TextPropsUpdateInput,
+  "fontRef"
+> & {
   fontRef?: FontReferenceInputGraphql | null;
-  fontSize?: number | null;
-  color?: string | null;
-  overflow?: ElementOverflow | null;
 };

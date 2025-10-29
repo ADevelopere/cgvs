@@ -54,42 +54,27 @@ export type DateDataSourceInputGraphql =
     };
 
 // ============================================================================
-// Element Config
-// ============================================================================
-
-// GraphQL input type (type field omitted - implied by mutation)
-export type DateElementConfigInputGraphql = {
-  textProps: TextPropsCreateInputGraphql;
-  calendarType: CalendarType;
-  offsetDays: number;
-  format: string;
-  transformation?: DateTransformationType | null;
-  dataSource: DateDataSourceInputGraphql;
-};
-
-// GraphQL update input type (deep partial)
-export type DateElementConfigUpdateInputGraphql = {
-  textProps?: TextPropsUpdateInputGraphql | null;
-  calendarType?: CalendarType | null;
-  offsetDays?: number | null;
-  format?: string | null;
-  transformation?: DateTransformationType | null;
-  dataSource?: DateDataSourceInputGraphql | null;
-};
-
-
-// ============================================================================
 // Mutation Inputs
-// ========
+// ============================================================================
 
 // GraphQL create input type
 export type DateElementCreateInputGraphql =
   CertificateElementBaseCreateInput & {
-    config: DateElementConfigInputGraphql;
+    textProps: TextPropsCreateInputGraphql;
+    calendarType: CalendarType;
+    offsetDays: number;
+    format: string;
+    transformation?: DateTransformationType | null;
+    dataSource: DateDataSourceInputGraphql;
   };
 
 // GraphQL update input type (deep partial support)
 export type DateElementUpdateInputGraphql =
   CertificateElementBaseUpdateInput & {
-    config?: DateElementConfigUpdateInputGraphql | null;
+    textProps?: TextPropsUpdateInputGraphql | null;
+    calendarType?: CalendarType | null;
+    offsetDays?: number | null;
+    format?: string | null;
+    transformation?: DateTransformationType | null;
+    dataSource?: DateDataSourceInputGraphql | null;
   };
