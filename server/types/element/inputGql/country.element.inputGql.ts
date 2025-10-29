@@ -23,33 +23,17 @@ export type CountryDataSourceInputGraphql = {
 };
 
 // ============================================================================
-// Element Config
-// ============================================================================
-
-// compatible with isOneOf definitions
-export type CountryElementConfigCreateInputGraphql = {
-  textProps: TextPropsCreateInputGraphql;
-  representation: CountryRepresentation;
-  // dataSource: CountryDataSourceInputGraphql;
-};
-
-// GraphQL update input type (deep partial)
-export type CountryElementConfigUpdateInputGraphql = {
-  textProps?: TextPropsUpdateInputGraphql | null;
-  representation?: CountryRepresentation | null;
-  // dataSource?: CountryDataSourceInputGraphql | null;
-};
-
-// ============================================================================
 // Mutation Inputs
 // ============================================================================
 
 export type CountryElementCreateInputGraphql =
   CertificateElementBaseCreateInput & {
-    config: CountryElementConfigCreateInputGraphql;
+    textProps: TextPropsCreateInputGraphql;
+    representation: CountryRepresentation;
   };
 
 export type CountryElementUpdateInputGraphql =
   CertificateElementBaseUpdateInput & {
-    config?: CountryElementConfigUpdateInputGraphql | null;
+    textProps?: TextPropsUpdateInputGraphql | null;
+    representation?: CountryRepresentation | null;
   };

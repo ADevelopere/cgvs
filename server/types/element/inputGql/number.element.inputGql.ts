@@ -17,36 +17,21 @@ export type NumberDataSourceInputGraphql = {
 };
 
 // ============================================================================
-// Element Config
-// ============================================================================
-
-// GraphQL input type (type field omitted - implied by mutation)
-export type NumberElementConfigInputGraphql = {
-  textProps: TextPropsCreateInputGraphql;
-  dataSource: NumberDataSourceInputGraphql;
-  mapping: Record<string, string>; // StringMap scalar type
-};
-
-// GraphQL update input type (deep partial)
-export type NumberElementConfigUpdateInputGraphql = {
-  textProps?: TextPropsUpdateInputGraphql | null;
-  dataSource?: NumberDataSourceInputGraphql | null;
-  mapping?: Record<string, string> | null; // StringMap scalar type
-};
-
-
-// ============================================================================
 // Mutation Inputs
 // ============================================================================
 
 // GraphQL create input type
 export type NumberElementCreateInputGraphql =
   CertificateElementBaseCreateInput & {
-    config: NumberElementConfigInputGraphql;
+    textProps: TextPropsCreateInputGraphql;
+    mapping: Record<string, string>; // StringMap scalar type
+    dataSource: NumberDataSourceInputGraphql;
   };
 
 // GraphQL update input type (deep partial support)
 export type NumberElementUpdateInputGraphql =
   CertificateElementBaseUpdateInput & {
-    config?: NumberElementConfigUpdateInputGraphql | null;
+    textProps?: TextPropsUpdateInputGraphql | null;
+    mapping?: Record<string, string> | null; // StringMap scalar type
+    dataSource?: NumberDataSourceInputGraphql | null;
   };

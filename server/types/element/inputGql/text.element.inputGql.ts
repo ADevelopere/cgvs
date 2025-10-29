@@ -69,36 +69,19 @@ export type TextDataSourceInputGraphql =
     };
 
 // ============================================================================
-// Element Config
-// ============================================================================
-
-
-// GraphQL input type (type field omitted - implied by mutation)
-export type TextElementConfigInputGraphql = {
-  textProps: TextPropsCreateInputGraphql;
-  dataSource: TextDataSourceInputGraphql;
-};
-
-// GraphQL update input type (deep partial)
-export type TextElementConfigUpdateInputGraphql = {
-  textProps?: TextPropsUpdateInputGraphql | null;
-  dataSource?: TextDataSourceInputGraphql | null;
-};
-
-// ============================================================================
 // Mutation Inputs
 // ============================================================================
-
-
 
 // GraphQL create input type
 export type TextElementCreateInputGraphql =
   CertificateElementBaseCreateInput & {
-    config: TextElementConfigInputGraphql;
+    textProps: TextPropsCreateInputGraphql;
+    dataSource: TextDataSourceInputGraphql;
   };
 
 // GraphQL update input type (deep partial support)
 export type TextElementUpdateInputGraphql =
   CertificateElementBaseUpdateInput & {
-    config?: TextElementConfigUpdateInputGraphql | null;
+    textProps?: TextPropsUpdateInputGraphql | null;
+    dataSource?: TextDataSourceInputGraphql | null;
   };
