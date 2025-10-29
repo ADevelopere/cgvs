@@ -37,7 +37,6 @@ export type NumberElementOutput = CertificateElementEntity & NumberElementEntity
   
   // Type overrides to use proper types
   mapping: Record<string, string>;
-  dataSource: NumberDataSource;
 };
 
 // ============================================================================

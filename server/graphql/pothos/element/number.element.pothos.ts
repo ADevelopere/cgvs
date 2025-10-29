@@ -98,7 +98,7 @@ export const NumberElementObject = gqlSchemaBuilder.loadableObject<
     item.type === Types.ElementType.NUMBER,
   fields: t => ({
     textProps: t.expose("textProps", { type: TextPropsObject }),
-    dataSource: t.expose("dataSource", { type: NumberDataSourceObject }),
+    numberDataSource: t.expose("numberDataSource", { type: NumberDataSourceObject }),
     mapping: t.field({
       type: "StringMap",
       resolve: element => element.mapping,

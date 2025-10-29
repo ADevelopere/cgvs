@@ -270,6 +270,6 @@ export const DateElementObject = gqlSchemaBuilder.loadableObject<
       type: DateTransformationTypePothosEnum,
       nullable: true,
     }),
-    dataSource: t.expose("dataSource", { type: DateDataSourceUnion }),
+    dateDataSource: t.expose("dateDataSource", { type: DateDataSourceUnion }),
   }),
 });

@@ -208,7 +208,6 @@ export const CertificateElementPothosInterface = gqlSchemaBuilder
       id: t.exposeInt("id"),
       name: t.exposeString("name"),
       description: t.exposeString("description"),
-      templateId: t.exposeInt("templateId"),
       type: t.field({
         type: ElementTypePothosEnum,
         resolve: element => element.type as Types.ElementType,

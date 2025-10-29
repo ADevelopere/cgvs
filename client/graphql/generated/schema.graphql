@@ -32,7 +32,6 @@ interface CertificateElement {
   positionY: Int
   renderOrder: Int
   template: Template
-  templateId: Int
   type: ElementType
   updatedAt: DateTime
   width: Int
@@ -293,25 +292,8 @@ enum CountryCode {
   ZW
 }
 
-union CountryDataSource = CountryDataSourceStudentNationality
-
-input CountryDataSourceInput @oneOf {
-  studentNationality: CountryDataSourceStudentNationalityInput
-}
-
-type CountryDataSourceStudentNationality {
-  type: CountryDataSourceType
-}
-
-input CountryDataSourceStudentNationalityInput
-
-enum CountryDataSourceType {
-  STUDENT_NATIONALITY
-}
-
 type CountryElement implements CertificateElement {
   alignment: ElementAlignment
-  config: CountryElementConfig
   createdAt: DateTime
   description: String
   height: Int
@@ -320,47 +302,30 @@ type CountryElement implements CertificateElement {
   positionX: Int
   positionY: Int
   renderOrder: Int
+  representation: CountryRepresentation
   template: Template
-  templateId: Int
+  textProps: TextProps
   type: ElementType
   updatedAt: DateTime
   width: Int
 }
 
-type CountryElementConfig {
-  dataSource: CountryDataSource
-  representation: CountryRepresentation
-  textProps: TextProps
-}
-
-input CountryElementConfigInput {
-  dataSource: CountryDataSourceInput!
-  representation: CountryRepresentation!
-  textProps: TextPropsInput!
-}
-
-input CountryElementConfigUpdateInput {
-  dataSource: CountryDataSourceInput
-  representation: CountryRepresentation
-  textProps: TextPropsUpdateInput
-}
-
 input CountryElementCreateInput {
   alignment: ElementAlignment!
-  config: CountryElementConfigInput!
   description: String!
   height: Int!
   name: String!
   positionX: Int!
   positionY: Int!
   renderOrder: Int!
+  representation: CountryRepresentation!
   templateId: Int!
+  textProps: TextPropsInput!
   width: Int!
 }
 
 input CountryElementUpdateInput {
   alignment: ElementAlignment
-  config: CountryElementConfigUpdateInput
   description: String
   height: Int
   id: Int!
@@ -368,6 +333,8 @@ input CountryElementUpdateInput {
   positionX: Int
   positionY: Int
   renderOrder: Int
+  representation: CountryRepresentation
+  textProps: TextPropsUpdateInput
   width: Int
 }
 
@@ -384,7 +351,7 @@ scalar Date
 union DateDataSource = DateDataSourceCertificateField | DateDataSourceStatic | DateDataSourceStudentField | DateDataSourceTemplateVariable
 
 type DateDataSourceCertificateField {
-  field: CertificateDateField
+  certificateField: CertificateDateField
   type: DateDataSourceType
 }
 
@@ -409,7 +376,7 @@ input DateDataSourceStaticInput {
 }
 
 type DateDataSourceStudentField {
-  field: StudentDateField
+  studentField: StudentDateField
   type: DateDataSourceType
 }
 
@@ -418,8 +385,8 @@ input DateDataSourceStudentFieldInput {
 }
 
 type DateDataSourceTemplateVariable {
+  dateVariableId: Int
   type: DateDataSourceType
-  variableId: Int
 }
 
 input DateDataSourceTemplateVariableInput {
@@ -435,72 +402,59 @@ enum DateDataSourceType {
 
 type DateElement implements CertificateElement {
   alignment: ElementAlignment
-  config: DateElementConfig
+  calendarType: CalendarType
   createdAt: DateTime
+  dateDataSource: DateDataSource
   description: String
+  format: String
   height: Int
   id: Int
   name: String
+  offsetDays: Int
   positionX: Int
   positionY: Int
   renderOrder: Int
   template: Template
-  templateId: Int
+  textProps: TextProps
+  transformation: DateTransformationType
   type: ElementType
   updatedAt: DateTime
   width: Int
 }
 
-type DateElementConfig {
-  calendarType: CalendarType
-  dataSource: DateDataSource
-  format: String
-  offsetDays: Int
-  textProps: TextProps
-  transformation: DateTransformationType
-}
-
-input DateElementConfigInput {
-  calendarType: CalendarType!
-  dataSource: DateDataSourceInput!
-  format: String!
-  offsetDays: Int!
-  textProps: TextPropsInput!
-  transformation: DateTransformationType
-}
-
-input DateElementConfigUpdateInput {
-  calendarType: CalendarType
-  dataSource: DateDataSourceInput
-  format: String
-  offsetDays: Int
-  textProps: TextPropsUpdateInput
-  transformation: DateTransformationType
-}
-
 input DateElementCreateInput {
   alignment: ElementAlignment!
-  config: DateElementConfigInput!
+  calendarType: CalendarType!
+  dataSource: DateDataSourceInput!
   description: String!
+  format: String!
   height: Int!
   name: String!
+  offsetDays: Int!
   positionX: Int!
   positionY: Int!
   renderOrder: Int!
   templateId: Int!
+  textProps: TextPropsInput!
+  transformation: DateTransformationType
   width: Int!
 }
 
 input DateElementUpdateInput {
   alignment: ElementAlignment
-  config: DateElementConfigUpdateInput
+  calendarType: CalendarType
+  dataSource: DateDataSourceInput
   description: String
+  format: String
   height: Int
   id: Int!
   name: String
+  offsetDays: Int
   positionX: Int
   positionY: Int
   renderOrder: Int
+  textProps: TextPropsUpdateInput
+  transformation: DateTransformationType
   width: Int
 }
 
@@ -794,23 +748,8 @@ enum Gender {
   MALE
 }
 
-input GenderDataSourceInput @oneOf {
-  studentGender: GenderDataSourceStudentGenderInput
-}
-
-type GenderDataSourceStudentGender {
-  type: GenderDataSourceType
-}
-
-input GenderDataSourceStudentGenderInput
-
-enum GenderDataSourceType {
-  STUDENT_GENDER
-}
-
 type GenderElement implements CertificateElement {
   alignment: ElementAlignment
-  config: GenderElementConfig
   createdAt: DateTime
   description: String
   height: Int
@@ -820,30 +759,14 @@ type GenderElement implements CertificateElement {
   positionY: Int
   renderOrder: Int
   template: Template
-  templateId: Int
+  textProps: TextProps
   type: ElementType
   updatedAt: DateTime
   width: Int
 }
 
-type GenderElementConfig {
-  dataSource: GenderDataSourceStudentGender
-  textProps: TextProps
-}
-
-input GenderElementConfigInput {
-  dataSource: GenderDataSourceInput!
-  textProps: TextPropsInput!
-}
-
-input GenderElementConfigUpdateInput {
-  dataSource: GenderDataSourceInput
-  textProps: TextPropsUpdateInput
-}
-
 input GenderElementCreateInput {
   alignment: ElementAlignment!
-  config: GenderElementConfigInput!
   description: String!
   height: Int!
   name: String!
@@ -851,12 +774,12 @@ input GenderElementCreateInput {
   positionY: Int!
   renderOrder: Int!
   templateId: Int!
+  textProps: TextPropsInput!
   width: Int!
 }
 
 input GenderElementUpdateInput {
   alignment: ElementAlignment
-  config: GenderElementConfigUpdateInput
   description: String
   height: Int
   id: Int!
@@ -864,6 +787,7 @@ input GenderElementUpdateInput {
   positionX: Int
   positionY: Int
   renderOrder: Int
+  textProps: TextPropsUpdateInput
   width: Int
 }
 
@@ -888,41 +812,27 @@ enum ImageDataSourceType {
 
 type ImageElement implements CertificateElement {
   alignment: ElementAlignment
-  config: ImageElementConfig
   createdAt: DateTime
   description: String
+  fit: ElementImageFit
   height: Int
   id: Int
+  imageDataSource: ImageDataSource
   name: String
   positionX: Int
   positionY: Int
   renderOrder: Int
   template: Template
-  templateId: Int
   type: ElementType
   updatedAt: DateTime
   width: Int
 }
 
-type ImageElementConfig {
-  dataSource: ImageDataSource
-  fit: ElementImageFit
-}
-
-input ImageElementConfigInput {
-  dataSource: ImageDataSourceInput!
-  fit: ElementImageFit!
-}
-
-input ImageElementConfigUpdateInput {
-  dataSource: ImageDataSourceInput
-  fit: ElementImageFit
-}
-
 input ImageElementCreateInput {
   alignment: ElementAlignment!
-  config: ImageElementConfigInput!
+  dataSource: ImageDataSourceInput!
   description: String!
+  fit: ElementImageFit!
   height: Int!
   name: String!
   positionX: Int!
@@ -934,8 +844,9 @@ input ImageElementCreateInput {
 
 input ImageElementUpdateInput {
   alignment: ElementAlignment
-  config: ImageElementConfigUpdateInput
+  dataSource: ImageDataSourceInput
   description: String
+  fit: ElementImageFit
   height: Int
   id: Int!
   name: String
@@ -1025,8 +936,8 @@ type Mutation {
 }
 
 type NumberDataSource {
+  numberVariableId: Int
   type: NumberDataSourceType
-  variableId: Int
 }
 
 input NumberDataSourceInput {
@@ -1039,63 +950,50 @@ enum NumberDataSourceType {
 
 type NumberElement implements CertificateElement {
   alignment: ElementAlignment
-  config: NumberElementConfig
   createdAt: DateTime
   description: String
   height: Int
   id: Int
+  mapping: StringMap
   name: String
+  numberDataSource: NumberDataSource
   positionX: Int
   positionY: Int
   renderOrder: Int
   template: Template
-  templateId: Int
+  textProps: TextProps
   type: ElementType
   updatedAt: DateTime
   width: Int
 }
 
-type NumberElementConfig {
-  dataSource: NumberDataSource
-  mapping: StringMap
-  textProps: TextProps
-}
-
-input NumberElementConfigInput {
-  dataSource: NumberDataSourceInput!
-  mapping: StringMap!
-  textProps: TextPropsInput!
-}
-
-input NumberElementConfigUpdateInput {
-  dataSource: NumberDataSourceInput
-  mapping: StringMap
-  textProps: TextPropsUpdateInput
-}
-
 input NumberElementCreateInput {
   alignment: ElementAlignment!
-  config: NumberElementConfigInput!
+  dataSource: NumberDataSourceInput!
   description: String!
   height: Int!
+  mapping: StringMap!
   name: String!
   positionX: Int!
   positionY: Int!
   renderOrder: Int!
   templateId: Int!
+  textProps: TextPropsInput!
   width: Int!
 }
 
 input NumberElementUpdateInput {
   alignment: ElementAlignment
-  config: NumberElementConfigUpdateInput
+  dataSource: NumberDataSourceInput
   description: String
   height: Int
   id: Int!
+  mapping: StringMap
   name: String
   positionX: Int
   positionY: Int
   renderOrder: Int
+  textProps: TextPropsUpdateInput
   width: Int
 }
 
@@ -1141,35 +1039,13 @@ input PartialStudentUpdateInput {
 """A type representing a validated phone number"""
 scalar PhoneNumber
 
-union QRCodeDataSource = QRCodeDataSourceVerificationCode | QRCodeDataSourceVerificationUrl
-
-input QRCodeDataSourceInput @oneOf {
-  verificationCode: QRCodeDataSourceVerificationCodeInput
-  verificationUrl: QRCodeDataSourceVerificationUrlInput
-}
-
-enum QRCodeDataSourceType {
-  VERIFICATION_CODE
-  VERIFICATION_URL
-}
-
-type QRCodeDataSourceVerificationCode {
-  type: QRCodeDataSourceType
-}
-
-input QRCodeDataSourceVerificationCodeInput
-
-type QRCodeDataSourceVerificationUrl {
-  type: QRCodeDataSourceType
-}
-
-input QRCodeDataSourceVerificationUrlInput
-
 type QRCodeElement implements CertificateElement {
   alignment: ElementAlignment
-  config: QRCodeElementConfig
+  backgroundColor: String
   createdAt: DateTime
   description: String
+  errorCorrection: QRCodeErrorCorrection
+  foregroundColor: String
   height: Int
   id: Int
   name: String
@@ -1177,37 +1053,17 @@ type QRCodeElement implements CertificateElement {
   positionY: Int
   renderOrder: Int
   template: Template
-  templateId: Int
   type: ElementType
   updatedAt: DateTime
   width: Int
 }
 
-type QRCodeElementConfig {
-  backgroundColor: String
-  dataSource: QRCodeDataSource
-  errorCorrection: QRCodeErrorCorrection
-  foregroundColor: String
-}
-
-input QRCodeElementConfigInput {
-  backgroundColor: String!
-  dataSource: QRCodeDataSourceInput!
-  errorCorrection: QRCodeErrorCorrection!
-  foregroundColor: String!
-}
-
-input QRCodeElementConfigUpdateInput {
-  backgroundColor: String
-  dataSource: QRCodeDataSourceInput
-  errorCorrection: QRCodeErrorCorrection
-  foregroundColor: String
-}
-
 input QRCodeElementCreateInput {
   alignment: ElementAlignment!
-  config: QRCodeElementConfigInput!
+  backgroundColor: String!
   description: String!
+  errorCorrection: QRCodeErrorCorrection!
+  foregroundColor: String!
   height: Int!
   name: String!
   positionX: Int!
@@ -1219,8 +1075,10 @@ input QRCodeElementCreateInput {
 
 input QRCodeElementUpdateInput {
   alignment: ElementAlignment
-  config: QRCodeElementConfigUpdateInput
+  backgroundColor: String
   description: String
+  errorCorrection: QRCodeErrorCorrection
+  foregroundColor: String
   height: Int
   id: Int!
   name: String
@@ -1244,7 +1102,7 @@ type Query {
     """Parent directory path (empty or null for root level)"""
     path: String
   ): [DirectoryInfo!]
-  elementsByTemplateId(templateId: Int!): [CertificateElementUnion!]
+  elementsByTemplateId(templateId: Int!): [CertificateElement!]
   fileInfo(path: String!): FileInfo
   fileUsage(input: FileUsageCheckInput!): FileUsageResult
   folderInfo(path: String!): DirectoryInfo
@@ -1790,7 +1648,7 @@ type TemplatesWithFiltersResponse {
 union TextDataSource = TextDataSourceCertificateField | TextDataSourceStatic | TextDataSourceStudentField | TextDataSourceTemplateSelectVariable | TextDataSourceTemplateTextVariable
 
 type TextDataSourceCertificateField {
-  field: CertificateTextField
+  certificateField: CertificateTextField
   type: TextDataSourceType
 }
 
@@ -1816,7 +1674,7 @@ input TextDataSourceStaticInput {
 }
 
 type TextDataSourceStudentField {
-  field: StudentTextField
+  studentField: StudentTextField
   type: TextDataSourceType
 }
 
@@ -1825,8 +1683,8 @@ input TextDataSourceStudentFieldInput {
 }
 
 type TextDataSourceTemplateSelectVariable {
+  selectVariableId: Int
   type: TextDataSourceType
-  variableId: Int
 }
 
 input TextDataSourceTemplateSelectVariableInput {
@@ -1834,8 +1692,8 @@ input TextDataSourceTemplateSelectVariableInput {
 }
 
 type TextDataSourceTemplateTextVariable {
+  textVariableId: Int
   type: TextDataSourceType
-  variableId: Int
 }
 
 input TextDataSourceTemplateTextVariableInput {
@@ -1852,7 +1710,6 @@ enum TextDataSourceType {
 
 type TextElement implements CertificateElement {
   alignment: ElementAlignment
-  config: TextElementConfig
   createdAt: DateTime
   description: String
   height: Int
@@ -1862,30 +1719,16 @@ type TextElement implements CertificateElement {
   positionY: Int
   renderOrder: Int
   template: Template
-  templateId: Int
+  textDataSource: TextDataSource
+  textProps: TextProps
   type: ElementType
   updatedAt: DateTime
   width: Int
 }
 
-type TextElementConfig {
-  dataSource: TextDataSource
-  textProps: TextProps
-}
-
-input TextElementConfigInput {
-  dataSource: TextDataSourceInput!
-  textProps: TextPropsInput!
-}
-
-input TextElementConfigUpdateInput {
-  dataSource: TextDataSourceInput
-  textProps: TextPropsUpdateInput
-}
-
 input TextElementCreateInput {
   alignment: ElementAlignment!
-  config: TextElementConfigInput!
+  dataSource: TextDataSourceInput!
   description: String!
   height: Int!
   name: String!
@@ -1893,12 +1736,13 @@ input TextElementCreateInput {
   positionY: Int!
   renderOrder: Int!
   templateId: Int!
+  textProps: TextPropsInput!
   width: Int!
 }
 
 input TextElementUpdateInput {
   alignment: ElementAlignment
-  config: TextElementConfigUpdateInput
+  dataSource: TextDataSourceInput
   description: String
   height: Int
   id: Int!
@@ -1906,6 +1750,7 @@ input TextElementUpdateInput {
   positionX: Int
   positionY: Int
   renderOrder: Int
+  textProps: TextPropsUpdateInput
   width: Int
 }
 
@@ -1924,10 +1769,10 @@ input TextPropsInput {
 }
 
 input TextPropsUpdateInput {
-  color: String
-  fontRef: FontReferenceInput
-  fontSize: Int
-  overflow: ElementOverflow
+  color: String!
+  fontRef: FontReferenceInput!
+  fontSize: Int!
+  overflow: ElementOverflow!
 }
 
 input UploadSignedUrlGenerateInput {
