@@ -13,7 +13,7 @@ export const elementTextProps = pgTable(
     }), // Only populated when fontSource = SELF_HOSTED
     googleFontIdentifier: varchar("google_font_identifier", { length: 255 }), // Only populated when fontSource = GOOGLE
     fontSize: integer("font_size").notNull(),
-    color: varchar("color", { length: 50 }), // e.g., "#000000", "rgba(0,0,0,1)"
+    color: varchar("color", { length: 50 }).notNull(), // e.g., "#000000", "rgba(0,0,0,1)"
     overflow: elementOverflowEnum("overflow").notNull(),
   },
   table => [

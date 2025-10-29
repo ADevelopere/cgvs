@@ -1,4 +1,4 @@
-import { TextPropsCreateInput, TextPropsUpdateInput } from "../output";
+import { TextPropsCreateInput, TextPropsUpdateInput } from "./textProps.input";
 import {
   CertificateElementBaseCreateInput,
   CertificateElementBaseUpdateInput,

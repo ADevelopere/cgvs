@@ -11,163 +11,12 @@ import {
 // Enums
 // ============================================================================
 
-export const QRCodeDataSourceTypePothosEnum = gqlSchemaBuilder.enumType(
-  "QRCodeDataSourceType",
-  {
-    values: Object.values(Types.QRCodeDataSourceType),
-  }
-);
-
 export const QRCodeErrorCorrectionPothosEnum = gqlSchemaBuilder.enumType(
   "QRCodeErrorCorrection",
   {
     values: Object.values(Types.QRCodeErrorCorrection),
   }
 );
-
-// ============================================================================
-// Data Source Objects (Output)
-// ============================================================================
-
-export const QRCodeDataSourceVerificationUrlObject = gqlSchemaBuilder
-  .objectRef<
-    Extract<
-      Types.QRCodeDataSource,
-      { type: Types.QRCodeDataSourceType.VERIFICATION_URL }
-    >
-  >("QRCodeDataSourceVerificationUrl")
-  .implement({
-    fields: t => ({
-      type: t.expose("type", { type: QRCodeDataSourceTypePothosEnum }),
-    }),
-  });
-
-export const QRCodeDataSourceVerificationCodeObject = gqlSchemaBuilder
-  .objectRef<
-    Extract<
-      Types.QRCodeDataSource,
-      { type: Types.QRCodeDataSourceType.VERIFICATION_CODE }
-    >
-  >("QRCodeDataSourceVerificationCode")
-  .implement({
-    fields: t => ({
-      type: t.expose("type", { type: QRCodeDataSourceTypePothosEnum }),
-    }),
-  });
-
-// ============================================================================
-// Data Source Union (Output)
-// ============================================================================
-
-export const QRCodeDataSourceUnion = gqlSchemaBuilder.unionType(
-  "QRCodeDataSource",
-  {
-    types: [
-      QRCodeDataSourceVerificationUrlObject,
-      QRCodeDataSourceVerificationCodeObject,
-    ],
-    resolveType: ds => {
-      switch (ds.type) {
-        case Types.QRCodeDataSourceType.VERIFICATION_URL:
-          return "QRCodeDataSourceVerificationUrl";
-        case Types.QRCodeDataSourceType.VERIFICATION_CODE:
-          return "QRCodeDataSourceVerificationCode";
-        default: {
-          const exhaustiveCheck: never = ds;
-          throw new Error(
-            `Unknown QRCodeDataSource type: ${(exhaustiveCheck as { type: string }).type}`
-          );
-        }
-      }
-    },
-  }
-);
-
-// ============================================================================
-// Data Source Input Objects (isOneOf Pattern)
-// ============================================================================
-
-// export const QRCodeDataSourceVerificationUrlInputObject = gqlSchemaBuilder
-//   .inputRef<Types.QRCodeDataSourceVerificationUrlInputGraphql>(
-//     "QRCodeDataSourceVerificationUrlInput"
-//   )
-//   .implement({
-//     fields: () => ({}),
-//   });
-
-// export const QRCodeDataSourceVerificationCodeInputObject = gqlSchemaBuilder
-//   .inputRef<Types.QRCodeDataSourceVerificationCodeInputGraphql>(
-//     "QRCodeDataSourceVerificationCodeInput"
-//   )
-//   .implement({
-//     fields: () => ({}),
-//   });
-
-// export const QRCodeDataSourceInputObject = gqlSchemaBuilder.inputType(
-//   "QRCodeDataSourceInput",
-//   {
-//     isOneOf: true,
-//     fields: t => ({
-//       verificationUrl: t.field({
-//         type: QRCodeDataSourceVerificationUrlInputObject,
-//       }),
-//       verificationCode: t.field({
-//         type: QRCodeDataSourceVerificationCodeInputObject,
-//       }),
-//     }),
-//   }
-// );
-
-// ============================================================================
-// Config Objects
-// ============================================================================
-
-export const QRCodeElementConfigObject = gqlSchemaBuilder
-  .objectRef<Types.QRCodeElementConfig>("QRCodeElementConfig")
-  .implement({
-    fields: t => ({
-      // dataSource: t.expose("dataSource", { type: QRCodeDataSourceUnion }),
-      errorCorrection: t.expose("errorCorrection", {
-        type: QRCodeErrorCorrectionPothosEnum,
-      }),
-      foregroundColor: t.exposeString("foregroundColor"),
-      backgroundColor: t.exposeString("backgroundColor"),
-    }),
-  });
-
-export const QRCodeElementConfigInputObject = gqlSchemaBuilder
-  .inputRef<Types.QRCodeElementConfigInputGraphql>("QRCodeElementConfigInput")
-  .implement({
-    fields: t => ({
-      // dataSource: t.field({
-      //   type: QRCodeDataSourceInputObject,
-      //   required: true,
-      // }),
-      errorCorrection: t.field({
-        type: QRCodeErrorCorrectionPothosEnum,
-        required: true,
-      }),
-      foregroundColor: t.string({ required: true }),
-      backgroundColor: t.string({ required: true }),
-    }),
-  });
-
-export const QRCodeElementConfigUpdateInputObject = gqlSchemaBuilder
-  .inputRef<Types.QRCodeElementConfigUpdateInputGraphql>(
-    "QRCodeElementConfigUpdateInput"
-  )
-  .implement({
-    fields: t => ({
-      // dataSource: t.field({
-      //   type: QRCodeDataSourceInputObject,
-      // }),
-      errorCorrection: t.field({
-        type: QRCodeErrorCorrectionPothosEnum,
-      }),
-      foregroundColor: t.string({ required: false }),
-      backgroundColor: t.string({ required: false }),
-    }),
-  });
 
 // ============================================================================
 // Mutation Inputs
@@ -178,10 +27,12 @@ export const QRCodeElementCreateInputObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       ...createBaseElementInputFields(t),
-      config: t.field({
-        type: QRCodeElementConfigInputObject,
+      errorCorrection: t.field({
+        type: QRCodeErrorCorrectionPothosEnum,
         required: true,
       }),
+      foregroundColor: t.string({ required: true }),
+      backgroundColor: t.string({ required: true }),
     }),
   });
 
@@ -190,9 +41,11 @@ export const QRCodeElementUpdateInputObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       ...createBaseElementUpdateInputFields(t),
-      config: t.field({
-        type: QRCodeElementConfigUpdateInputObject,
+      errorCorrection: t.field({
+        type: QRCodeErrorCorrectionPothosEnum,
       }),
+      foregroundColor: t.string(),
+      backgroundColor: t.string(),
     }),
   });
 
@@ -220,7 +73,10 @@ export const QRCodeElementObject = gqlSchemaBuilder.loadableObject<
     "type" in item &&
     item.type === Types.ElementType.QR_CODE,
   fields: t => ({
-    // Only element-specific field (config)
-    config: t.expose("config", { type: QRCodeElementConfigObject }),
+    errorCorrection: t.expose("errorCorrection", {
+      type: QRCodeErrorCorrectionPothosEnum,
+    }),
+    foregroundColor: t.exposeString("foregroundColor"),
+    backgroundColor: t.exposeString("backgroundColor"),
   }),
 });

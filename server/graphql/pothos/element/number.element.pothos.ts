@@ -28,7 +28,7 @@ export const NumberDataSourceObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: NumberDataSourceTypePothosEnum }),
-      variableId: t.exposeInt("variableId"),
+      numberVariableId: t.exposeInt("numberVariableId"),
     }),
   });
 
@@ -45,26 +45,14 @@ export const NumberDataSourceInputObject = gqlSchemaBuilder
   });
 
 // ============================================================================
-// Config Objects
+// Mutation Inputs
 // ============================================================================
 
-export const NumberElementConfigObject = gqlSchemaBuilder
-  .objectRef<Types.NumberElementConfig>("NumberElementConfig")
+export const NumberElementCreateInputObject = gqlSchemaBuilder
+  .inputRef<Types.NumberElementCreateInputGraphql>("NumberElementCreateInput")
   .implement({
     fields: t => ({
-      textProps: t.expose("textProps", { type: TextPropsObject }),
-      dataSource: t.expose("dataSource", { type: NumberDataSourceObject }),
-      mapping: t.field({
-        type: "StringMap",
-        resolve: config => config.mapping,
-      }),
-    }),
-  });
-
-export const NumberElementConfigInputObject = gqlSchemaBuilder
-  .inputRef<Types.NumberElementConfigInputGraphql>("NumberElementConfigInput")
-  .implement({
-    fields: t => ({
+      ...createBaseElementInputFields(t),
       textProps: t.field({ type: TextPropsInputObject, required: true }),
       dataSource: t.field({
         type: NumberDataSourceInputObject,
@@ -74,40 +62,14 @@ export const NumberElementConfigInputObject = gqlSchemaBuilder
     }),
   });
 
-export const NumberElementConfigUpdateInputObject = gqlSchemaBuilder
-  .inputRef<Types.NumberElementConfigUpdateInputGraphql>(
-    "NumberElementConfigUpdateInput"
-  )
-  .implement({
-    fields: t => ({
-      textProps: t.field({ type: TextPropsUpdateInputObject }),
-      dataSource: t.field({ type: NumberDataSourceInputObject }),
-      mapping: t.field({ type: "StringMap" }),
-    }),
-  });
-
-// ============================================================================
-// Mutation Inputs
-// ============================================================================
-
-export const NumberElementCreateInputObject = gqlSchemaBuilder
-  .inputRef<Types.NumberElementCreateInputGraphql>("NumberElementCreateInput")
-  .implement({
-    fields: t => ({
-      ...createBaseElementInputFields(t),
-      config: t.field({
-        type: NumberElementConfigInputObject,
-        required: true,
-      }),
-    }),
-  });
-
 export const NumberElementUpdateInputObject = gqlSchemaBuilder
   .inputRef<Types.NumberElementUpdateInputGraphql>("NumberElementUpdateInput")
   .implement({
     fields: t => ({
       ...createBaseElementUpdateInputFields(t),
-      config: t.field({ type: NumberElementConfigUpdateInputObject }),
+      textProps: t.field({ type: TextPropsUpdateInputObject }),
+      dataSource: t.field({ type: NumberDataSourceInputObject }),
+      mapping: t.field({ type: "StringMap" }),
     }),
   });
 
@@ -135,6 +97,11 @@ export const NumberElementObject = gqlSchemaBuilder.loadableObject<
     "type" in item &&
     item.type === Types.ElementType.NUMBER,
   fields: t => ({
-    config: t.expose("config", { type: NumberElementConfigObject }),
+    textProps: t.expose("textProps", { type: TextPropsObject }),
+    dataSource: t.expose("dataSource", { type: NumberDataSourceObject }),
+    mapping: t.field({
+      type: "StringMap",
+      resolve: element => element.mapping,
+    }),
   }),
 });

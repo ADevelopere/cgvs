@@ -1,5 +1,5 @@
-import { gqlSchemaBuilder } from "../../gqlSchemaBuilder";
-import * as ElementPothos from "../../pothos/element";
+import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
+import * as ElementPothos from "../pothos/element";
 import { ElementRepository } from "@/server/db/repo/element";
 import {
   TextElementRepository,

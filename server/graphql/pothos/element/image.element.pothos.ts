@@ -86,39 +86,6 @@ export const ImageDataSourceInputObject = gqlSchemaBuilder.inputType(
 );
 
 // ============================================================================
-// Config Objects
-// ============================================================================
-
-export const ImageElementConfigObject = gqlSchemaBuilder
-  .objectRef<Types.ImageElementConfig>("ImageElementConfig")
-  .implement({
-    fields: t => ({
-      dataSource: t.expose("dataSource", { type: ImageDataSourceUnion }),
-      fit: t.expose("fit", { type: ElementImageFitPothosEnum }),
-    }),
-  });
-
-export const ImageElementConfigInputObject = gqlSchemaBuilder
-  .inputRef<Types.ImageElementConfigInputGraphql>("ImageElementConfigInput")
-  .implement({
-    fields: t => ({
-      dataSource: t.field({ type: ImageDataSourceInputObject, required: true }),
-      fit: t.field({ type: ElementImageFitPothosEnum, required: true }),
-    }),
-  });
-
-export const ImageElementConfigUpdateInputObject = gqlSchemaBuilder
-  .inputRef<Types.ImageElementConfigUpdateInputGraphql>(
-    "ImageElementConfigUpdateInput"
-  )
-  .implement({
-    fields: t => ({
-      dataSource: t.field({ type: ImageDataSourceInputObject, required: false }),
-      fit: t.field({ type: ElementImageFitPothosEnum, required: false }),
-    }),
-  });
-
-// ============================================================================
 // Mutation Inputs
 // ============================================================================
 
@@ -127,7 +94,8 @@ export const ImageElementCreateInputObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       ...createBaseElementInputFields(t),
-      config: t.field({ type: ImageElementConfigInputObject, required: true }),
+      fit: t.field({ type: ElementImageFitPothosEnum, required: true }),
+      dataSource: t.field({ type: ImageDataSourceInputObject, required: true }),
     }),
   });
 
@@ -136,10 +104,8 @@ export const ImageElementUpdateInputObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       ...createBaseElementUpdateInputFields(t),
-      config: t.field({
-        type: ImageElementConfigUpdateInputObject,
-        required: false,
-      }),
+      fit: t.field({ type: ElementImageFitPothosEnum }),
+      dataSource: t.field({ type: ImageDataSourceInputObject }),
     }),
   });
 
@@ -165,6 +131,7 @@ export const ImageElementObject = gqlSchemaBuilder.loadableObject<
     "type" in item &&
     item.type === Types.ElementType.IMAGE,
   fields: t => ({
-    config: t.expose("config", { type: ImageElementConfigObject }),
+    fit: t.expose("fit", { type: ElementImageFitPothosEnum }),
+    dataSource: t.expose("dataSource", { type: ImageDataSourceUnion }),
   }),
 });

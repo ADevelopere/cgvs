@@ -69,3 +69,9 @@ export type DateElementOutput = CertificateElementEntity & DateElementEntity & {
   calendarType: CalendarType;
   transformation: DateTransformationType | null;
 };
+
+// ============================================================================
+// Pothos Definition
+// ============================================================================
+
+export type DateElementPothosDefinition = DateElementOutput;

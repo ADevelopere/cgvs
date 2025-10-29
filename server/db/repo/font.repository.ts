@@ -2,6 +2,12 @@ import { db } from "@/server/db/drizzleDb";
 import { eq, ilike, inArray, sql } from "drizzle-orm";
 import { font } from "@/server/db/schema/font";
 import { certificateElement } from "@/server/db/schema/certificateElements/certificateElement";
+import { elementTextProps } from "@/server/db/schema/certificateElements/elementTextProps";
+import { textElement } from "@/server/db/schema/certificateElements/textElement";
+import { dateElement } from "@/server/db/schema/certificateElements/dateElement";
+import { numberElement } from "@/server/db/schema/certificateElements/numberElement";
+import { countryElement } from "@/server/db/schema/certificateElements/countryElement";
+import { genderElement } from "@/server/db/schema/certificateElements/genderElement";
 import { storageFiles } from "@/server/db/schema/storage";
 import { templates } from "@/server/db/schema";
 import {
@@ -264,28 +270,119 @@ export namespace FontRepository {
 
   /**
    * Check font usage in certificate elements
-   * Fonts are stored in the config JSONB field as:
-   * { textProps: { fontRef: { type: "SELF_HOSTED", fontId: number } } }
+   * Fonts are stored in element_text_props table via fontId FK
    */
   export const checkUsage = async (
     id: number
   ): Promise<FontUsageCheckResult> => {
     try {
-      // Query certificate elements where config contains this fontId
-      // Using JSON path query to extract fontId and compare
-      const usages = await db
-        .select({
-          elementId: certificateElement.id,
-          elementType: certificateElement.type,
-          templateId: certificateElement.templateId,
-          config: certificateElement.config,
-        })
-        .from(certificateElement)
-        .where(
-          sql`(${certificateElement.config}::jsonb->'textProps'->'fontRef'->>'fontId')::int = ${id}`
-        );
+      // Step 1: Find all elementTextProps that use this font
+      const textPropsWithFont = await db
+        .select({ id: elementTextProps.id })
+        .from(elementTextProps)
+        .where(eq(elementTextProps.fontId, id));
 
-      if (usages.length === 0) {
+      if (textPropsWithFont.length === 0) {
+        return {
+          isInUse: false,
+          usageCount: 0,
+          usedBy: [],
+          canDelete: true,
+        };
+      }
+
+      const textPropsIds = textPropsWithFont.map(tp => tp.id);
+
+      // Step 2: Find all elements using these textProps across all element types
+      // Query each element type table and join with certificate_element
+      const [
+        textElements,
+        dateElements,
+        numberElements,
+        countryElements,
+        genderElements,
+      ] = await Promise.all([
+        // Text elements
+        db
+          .select({
+            elementId: textElement.elementId,
+            type: certificateElement.type,
+            templateId: certificateElement.templateId,
+          })
+          .from(textElement)
+          .innerJoin(
+            certificateElement,
+            eq(certificateElement.id, textElement.elementId)
+          )
+          .where(inArray(textElement.textPropsId, textPropsIds)),
+
+        // Date elements
+        db
+          .select({
+            elementId: dateElement.elementId,
+            type: certificateElement.type,
+            templateId: certificateElement.templateId,
+          })
+          .from(dateElement)
+          .innerJoin(
+            certificateElement,
+            eq(certificateElement.id, dateElement.elementId)
+          )
+          .where(inArray(dateElement.textPropsId, textPropsIds)),
+
+        // Number elements
+        db
+          .select({
+            elementId: numberElement.elementId,
+            type: certificateElement.type,
+            templateId: certificateElement.templateId,
+          })
+          .from(numberElement)
+          .innerJoin(
+            certificateElement,
+            eq(certificateElement.id, numberElement.elementId)
+          )
+          .where(inArray(numberElement.textPropsId, textPropsIds)),
+
+        // Country elements
+        db
+          .select({
+            elementId: countryElement.elementId,
+            type: certificateElement.type,
+            templateId: certificateElement.templateId,
+          })
+          .from(countryElement)
+          .innerJoin(
+            certificateElement,
+            eq(certificateElement.id, countryElement.elementId)
+          )
+          .where(inArray(countryElement.textPropsId, textPropsIds)),
+
+        // Gender elements
+        db
+          .select({
+            elementId: genderElement.elementId,
+            type: certificateElement.type,
+            templateId: certificateElement.templateId,
+          })
+          .from(genderElement)
+          .innerJoin(
+            certificateElement,
+            eq(certificateElement.id, genderElement.elementId)
+          )
+          .where(inArray(genderElement.textPropsId, textPropsIds)),
+      ]);
+
+      // Combine all usages
+      const allUsages = [
+        ...textElements,
+        ...dateElements,
+        ...numberElements,
+        ...countryElements,
+        ...genderElements,
+      ];
+
+      if (allUsages.length === 0) {
         return {
           isInUse: false,
           usageCount: 0,
@@ -295,7 +392,7 @@ export namespace FontRepository {
       }
 
       // Get template names for context
-      const templateIds = usages
+      const templateIds = allUsages
         .map(u => u.templateId)
         .filter((id): id is number => id !== null);
 
@@ -315,9 +412,9 @@ export namespace FontRepository {
       const templateMap = new Map(templateNames.map(t => [t.id, t.name]));
 
       // Build usage references
-      const usedBy: FontUsageReference[] = usages.map(usage => ({
+      const usedBy: FontUsageReference[] = allUsages.map(usage => ({
         elementId: usage.elementId,
-        elementType: usage.elementType,
+        elementType: usage.type,
         templateId: usage.templateId,
         templateName: usage.templateId
           ? templateMap.get(usage.templateId) || null
@@ -326,10 +423,10 @@ export namespace FontRepository {
 
       return {
         isInUse: true,
-        usageCount: usages.length,
+        usageCount: allUsages.length,
         usedBy,
         canDelete: false,
-        deleteBlockReason: `Font is currently used in ${usages.length} certificate element(s). Remove the font from these elements before deleting.`,
+        deleteBlockReason: `Font is currently used in ${allUsages.length} certificate element(s). Remove the font from these elements before deleting.`,
       };
     } catch (error) {
       logger.error("Error checking font usage:", error);

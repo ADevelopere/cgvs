@@ -1,8 +1,4 @@
 import {
-  TextPropsCreateInput,
-  TextPropsUpdateInput,
-} from "../output";
-import {
   CertificateElementBaseCreateInput,
   CertificateElementBaseUpdateInput,
 } from "./base.element.input";
@@ -10,6 +6,7 @@ import {
   CountryDataSourceType,
   CountryRepresentation,
 } from "../output";
+import { TextPropsCreateInput, TextPropsUpdateInput } from "./textProps.input";
 
 // ============================================================================
 // Data Source Types

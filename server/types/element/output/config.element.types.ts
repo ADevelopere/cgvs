@@ -24,18 +24,8 @@ export type FontReference =
 export type TextProps = {
   fontRef: FontReference;
   fontSize: number;
-  color?: string; // e.g., "#000000" or "rgba(0,0,0,1)"
+  color: string; // e.g., "#000000" or "rgba(0,0,0,1)"
   overflow: ElementOverflow;
-};
-
-// Input versions
-export type TextPropsCreateInput = TextProps;
-
-export type TextPropsUpdateInput = {
-  fontRef?: FontReference;
-  fontSize?: number;
-  color?: string;
-  overflow?: ElementOverflow;
 };
 
 // ============================================================================
