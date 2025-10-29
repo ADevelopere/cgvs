@@ -131,10 +131,10 @@ export const TextPropsUpdateInputObject = gqlSchemaBuilder
   .inputRef<Types.TextPropsUpdateInputGraphql>("TextPropsUpdateInput")
   .implement({
     fields: t => ({
-      fontRef: t.field({ type: FontReferenceInputObject, required: false }),
-      fontSize: t.int(),
-      color: t.string(),
-      overflow: t.field({ type: ElementOverflowPothosEnum, required: false }),
+      fontRef: t.field({ type: FontReferenceInputObject, required: true }),
+      fontSize: t.int({ required: true }),
+      color: t.string({ required: true }),
+      overflow: t.field({ type: ElementOverflowPothosEnum, required: true }),
     }),
   });
 

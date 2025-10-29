@@ -64,7 +64,9 @@ export const DateDataSourceStudentFieldObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: DateDataSourceTypePothosEnum }),
-      field: t.expose("field", { type: StudentDateFieldPothosEnum }),
+      studentField: t.expose("studentField", {
+        type: StudentDateFieldPothosEnum,
+      }),
     }),
   });
 
@@ -78,7 +80,9 @@ export const DateDataSourceCertificateFieldObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: DateDataSourceTypePothosEnum }),
-      field: t.expose("field", { type: CertificateDateFieldPothosEnum }),
+      certificateField: t.expose("certificateField", {
+        type: CertificateDateFieldPothosEnum,
+      }),
     }),
   });
 
@@ -92,7 +96,7 @@ export const DateDataSourceTemplateVariableObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: DateDataSourceTypePothosEnum }),
-      variableId: t.exposeInt("variableId"),
+      dateVariableId: t.exposeInt("dateVariableId"),
     }),
   });
 
@@ -197,30 +201,14 @@ export const DateDataSourceInputObject = gqlSchemaBuilder.inputType(
 );
 
 // ============================================================================
-// Config Objects
+// Mutation Inputs
 // ============================================================================
 
-export const DateElementConfigObject = gqlSchemaBuilder
-  .objectRef<Types.DateElementConfig>("DateElementConfig")
+export const DateElementCreateInputObject = gqlSchemaBuilder
+  .inputRef<Types.DateElementCreateInputGraphql>("DateElementCreateInput")
   .implement({
     fields: t => ({
-      textProps: t.expose("textProps", { type: TextPropsObject }),
-      calendarType: t.expose("calendarType", { type: CalendarTypePothosEnum }),
-      offsetDays: t.exposeInt("offsetDays"),
-      format: t.exposeString("format"),
-      transformation: t.field({
-        type: DateTransformationTypePothosEnum,
-        nullable: true,
-        resolve: config => config.transformation ?? null,
-      }),
-      dataSource: t.expose("dataSource", { type: DateDataSourceUnion }),
-    }),
-  });
-
-export const DateElementConfigInputObject = gqlSchemaBuilder
-  .inputRef<Types.DateElementConfigInputGraphql>("DateElementConfigInput")
-  .implement({
-    fields: t => ({
+      ...createBaseElementInputFields(t),
       textProps: t.field({ type: TextPropsInputObject, required: true }),
       calendarType: t.field({ type: CalendarTypePothosEnum, required: true }),
       offsetDays: t.int({ required: true }),
@@ -232,12 +220,11 @@ export const DateElementConfigInputObject = gqlSchemaBuilder
     }),
   });
 
-export const DateElementConfigUpdateInputObject = gqlSchemaBuilder
-  .inputRef<Types.DateElementConfigUpdateInputGraphql>(
-    "DateElementConfigUpdateInput"
-  )
+export const DateElementUpdateInputObject = gqlSchemaBuilder
+  .inputRef<Types.DateElementUpdateInputGraphql>("DateElementUpdateInput")
   .implement({
     fields: t => ({
+      ...createBaseElementUpdateInputFields(t),
       textProps: t.field({
         type: TextPropsUpdateInputObject,
       }),
@@ -249,30 +236,6 @@ export const DateElementConfigUpdateInputObject = gqlSchemaBuilder
       }),
       dataSource: t.field({
         type: DateDataSourceInputObject,
-      }),
-    }),
-  });
-
-// ============================================================================
-// Mutation Inputs
-// ============================================================================
-
-export const DateElementCreateInputObject = gqlSchemaBuilder
-  .inputRef<Types.DateElementCreateInputGraphql>("DateElementCreateInput")
-  .implement({
-    fields: t => ({
-      ...createBaseElementInputFields(t),
-      config: t.field({ type: DateElementConfigInputObject, required: true }),
-    }),
-  });
-
-export const DateElementUpdateInputObject = gqlSchemaBuilder
-  .inputRef<Types.DateElementUpdateInputGraphql>("DateElementUpdateInput")
-  .implement({
-    fields: t => ({
-      ...createBaseElementUpdateInputFields(t),
-      config: t.field({
-        type: DateElementConfigUpdateInputObject,
       }),
     }),
   });
@@ -299,6 +262,14 @@ export const DateElementObject = gqlSchemaBuilder.loadableObject<
     "type" in item &&
     item.type === Types.ElementType.DATE,
   fields: t => ({
-    config: t.expose("config", { type: DateElementConfigObject }),
+    textProps: t.expose("textProps", { type: TextPropsObject }),
+    calendarType: t.expose("calendarType", { type: CalendarTypePothosEnum }),
+    offsetDays: t.exposeInt("offsetDays"),
+    format: t.exposeString("format"),
+    transformation: t.expose("transformation", {
+      type: DateTransformationTypePothosEnum,
+      nullable: true,
+    }),
+    dataSource: t.expose("dataSource", { type: DateDataSourceUnion }),
   }),
 });

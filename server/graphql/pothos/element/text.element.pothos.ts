@@ -60,7 +60,7 @@ export const TextDataSourceStudentFieldObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: TextDataSourceTypePothosEnum }),
-      field: t.expose("field", { type: StudentTextFieldPothosEnum }),
+      field: t.expose("studentField", { type: StudentTextFieldPothosEnum }),
     }),
   });
 
@@ -74,7 +74,7 @@ export const TextDataSourceCertificateFieldObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: TextDataSourceTypePothosEnum }),
-      field: t.expose("field", { type: CertificateTextFieldPothosEnum }),
+      field: t.expose("certificateField", { type: CertificateTextFieldPothosEnum }),
     }),
   });
 
@@ -88,7 +88,7 @@ export const TextDataSourceTemplateTextVariableObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: TextDataSourceTypePothosEnum }),
-      variableId: t.exposeInt("variableId"),
+      variableId: t.exposeInt("textVariableId"),
     }),
   });
 
@@ -102,7 +102,7 @@ export const TextDataSourceTemplateSelectVariableObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: TextDataSourceTypePothosEnum }),
-      variableId: t.exposeInt("variableId"),
+      variableId: t.exposeInt("selectVariableId"),
     }),
   });
 
@@ -223,43 +223,6 @@ export const TextDataSourceInputObject = gqlSchemaBuilder.inputType(
 );
 
 // ============================================================================
-// Config Objects
-// ============================================================================
-
-export const TextElementConfigObject = gqlSchemaBuilder
-  .objectRef<Types.TextElementConfig>("TextElementConfig")
-  .implement({
-    fields: t => ({
-      textProps: t.expose("textProps", { type: TextPropsObject }),
-      dataSource: t.expose("dataSource", { type: TextDataSourceUnion }),
-    }),
-  });
-
-export const TextElementConfigInputObject = gqlSchemaBuilder
-  .inputRef<Types.TextElementConfigInputGraphql>("TextElementConfigInput")
-  .implement({
-    fields: t => ({
-      textProps: t.field({ type: TextPropsInputObject, required: true }),
-      dataSource: t.field({ type: TextDataSourceInputObject, required: true }),
-    }),
-  });
-
-export const TextElementConfigUpdateInputObject = gqlSchemaBuilder
-  .inputRef<Types.TextElementConfigUpdateInputGraphql>(
-    "TextElementConfigUpdateInput"
-  )
-  .implement({
-    fields: t => ({
-      textProps: t.field({
-        type: TextPropsUpdateInputObject,
-      }),
-      dataSource: t.field({
-        type: TextDataSourceInputObject,
-      }),
-    }),
-  });
-
-// ============================================================================
 // Mutation Inputs
 // ============================================================================
 
@@ -268,7 +231,8 @@ export const TextElementCreateInputObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       ...createBaseElementInputFields(t),
-      config: t.field({ type: TextElementConfigInputObject, required: true }),
+      textProps: t.field({ type: TextPropsInputObject, required: true }),
+      dataSource: t.field({ type: TextDataSourceInputObject, required: true }),
     }),
   });
 
@@ -277,8 +241,11 @@ export const TextElementUpdateInputObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       ...createBaseElementUpdateInputFields(t),
-      config: t.field({
-        type: TextElementConfigUpdateInputObject,
+      textProps: t.field({
+        type: TextPropsUpdateInputObject,
+      }),
+      dataSource: t.field({
+        type: TextDataSourceInputObject,
       }),
     }),
   });
@@ -305,7 +272,10 @@ export const TextElementObject = gqlSchemaBuilder.loadableObject<
     "type" in item &&
     item.type === Types.ElementType.TEXT,
   fields: t => ({
-    // Only element-specific field (config)
-    config: t.expose("config", { type: TextElementConfigObject }),
+    textProps: t.expose("textProps", { type: TextPropsObject, nullable: true }),
+    dataSource: t.expose("dataSource", {
+      type: TextDataSourceUnion,
+      nullable: true,
+    }),
   }),
 });

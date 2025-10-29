@@ -28,7 +28,7 @@ export namespace TextPropsUtils {
     return {
       fontRef,
       fontSize: entity.fontSize,
-      color: entity.color ?? undefined,
+      color: entity.color,
       overflow: entity.overflow as ElementOverflow,
     };
   };

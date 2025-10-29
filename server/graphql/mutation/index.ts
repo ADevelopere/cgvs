@@ -1,5 +1,5 @@
 import "./auth.mutation";
-import "./element/element.mutation";
+import "./element.mutation";
 import "./font.mutation";
 import "./recipient.mutation";
 import "./recipientGroup.mutation";

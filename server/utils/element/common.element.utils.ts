@@ -27,11 +27,8 @@ export namespace CommonElementUtils {
    * Map GraphQL FontReference input (isOneOf) to repository FontReference input (discriminated union)
    */
   export const mapFontReferenceGraphqlToInput = (
-    input?: FontReferenceInputGraphql | null
-  ): FontReference | null | undefined => {
-    if (!input) {
-      return input;
-    }
+    input: FontReferenceInputGraphql
+  ): FontReference => {
     if (input?.google) {
       return {
         type: FontSource.GOOGLE,
