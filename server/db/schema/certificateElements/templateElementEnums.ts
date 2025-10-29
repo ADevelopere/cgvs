@@ -75,3 +75,9 @@ export const qrCodeErrorCorrectionEnum = createPgEnumFromEnum(
   "qr_code_error_correction",
   ElementTypes.QRCodeErrorCorrection
 );
+
+// Font Configuration
+export const fontSourceEnum = createPgEnumFromEnum(
+  "font_source",
+  ElementTypes.FontSource
+);
