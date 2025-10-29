@@ -1,23 +1,27 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
-import { certificateElement } from "@/server/db/schema";
+import { certificateElement } from "@/server/db/schema/certificateElements/certificateElement";
+import { countryElement } from "@/server/db/schema/certificateElements/countryElement";
+import { elementTextProps } from "@/server/db/schema/certificateElements/elementTextProps";
 import {
-  CertificateElementEntity,
   CountryElementCreateInput,
   CountryElementUpdateInput,
+  CountryElementOutput,
   ElementType,
-  CountryElementConfig,
-  CountryElementPothosDefinition,
+  CountryElementEntity,
+  ElementTextPropsEntity,
+  CertificateElementEntityInput,
+  CountryRepresentation,
 } from "@/server/types/element";
-import { ElementRepository } from "./element.repository";
-import { ElementUtils, CountryElementUtils } from "@/server/utils";
+import { TextPropsRepository } from "./textProps.element.repository";
+import { CountryElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
-import { merge } from "lodash";
-import { BaseElementUtils } from "@/server/utils/element";
+import { TextPropsUtils } from "@/server/utils/element/textProps.utils";
+import { ElementRepository } from ".";
 
 /**
  * Repository for COUNTRY element operations
- * Handles create, update, and validation with automatic FK synchronization
+ * Handles table-per-type architecture: certificate_element + country_element + element_text_props
  */
 export namespace CountryElementRepository {
   // ============================================================================
@@ -26,36 +30,56 @@ export namespace CountryElementRepository {
 
   /**
    * Create a new COUNTRY element
-   * Validates input, extracts FKs from config, and inserts element
+   * Pattern:
+   * 1. Validate input
+   * 2. Create TextProps → get textPropsId
+   * 3. Insert into certificate_element → get elementId
+   * 4. Insert into country_element
+   * 5. Return full output
    */
   export const create = async (
     input: CountryElementCreateInput
-  ): Promise<CertificateElementEntity> => {
+  ): Promise<CountryElementOutput> => {
     // 1. Validate input
     await CountryElementUtils.validateCreateInput(input);
 
-    // 2. Extract FKs from config (only fontId for COUNTRY elements)
-    const fontId = ElementUtils.extractFontIdFromConfigTextProps(input.config);
-    const storageFileId = ElementUtils.extractStorageFileIdFromConfigTextProps(
-      input.config
-    );
+    // 2. Create TextProps
+    const newTextProps = await TextPropsRepository.create(input.textProps);
 
-    // 3. Insert element
-    const [element] = await db
+    const baseInput: CertificateElementEntityInput = {
+      ...input,
+      type: ElementType.COUNTRY,
+    };
+
+    // 3. Insert into certificate_element (base table)
+    const [baseElement] = await db
       .insert(certificateElement)
+      .values(baseInput)
+      .returning();
+
+    // 4. Insert into country_element (type-specific table)
+    const [newCountryElement] = await db
+      .insert(countryElement)
       .values({
-        ...input,
-        type: ElementType.COUNTRY,
-        fontId,
-        storageFileId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        elementId: baseElement.id,
+        textPropsId: newTextProps.id,
+        representation: input.representation,
       })
       .returning();
 
-    // 4. Log and return
-    logger.info(`COUNTRY element created: ${element.name} (ID: ${element.id})`);
-    return element;
+    logger.info(
+      `COUNTRY element created: ${baseElement.name} (ID: ${baseElement.id})`
+    );
+
+    // 5. Return full output
+    return {
+      ...baseElement,
+      elementId: newCountryElement.elementId,
+      textPropsId: newCountryElement.textPropsId,
+      textPropsEntity: newTextProps,
+      textProps: TextPropsUtils.entityToTextProps(newTextProps),
+      representation: newCountryElement.representation as CountryRepresentation,
+    };
   };
 
   // ============================================================================
@@ -64,88 +88,191 @@ export namespace CountryElementRepository {
 
   /**
    * Update an existing COUNTRY element
-   * Supports partial updates with config merging and FK re-extraction
+   * Pattern:
+   * 1. Load existing element
+   * 2. Validate type and input
+   * 3. Update certificate_element (base table)
+   * 4. Update element_text_props (if textProps provided)
+   * 5. Update country_element (type-specific table)
+   * 6. Return updated element
    */
   export const update = async (
     input: CountryElementUpdateInput
-  ): Promise<CertificateElementEntity> => {
-    // 1. Get existing element
-    const existing = await ElementRepository.findByIdOrThrow(input.id);
+  ): Promise<CountryElementOutput> => {
+    // 1. Load existing element
+    const existing = await loadByIdOrThrow(input.id);
 
-    // 2. Validate it's a COUNTRY element
+    // 2. Validate type
     if (existing.type !== ElementType.COUNTRY) {
       throw new Error(
-        `Element ${input.id} is ${existing.type}, not COUNTRY. Use correct type.`
+        `Element ${input.id} is ${existing.type}, not COUNTRY. Use correct repository.`
       );
     }
 
-    // 3. Validate update input (pass existing to avoid redundant DB query)
+    // 3. Validate update input
     await CountryElementUtils.validateUpdateInput(input, existing);
 
-    // 4. Build update object (exclude config as it needs special handling)
-    const { config: _, ...baseUpdates } = input;
-    const updates = BaseElementUtils.baseUpdates(baseUpdates, existing);
+    // 4. Update certificate_element (base table)
+    const updatedBaseElement = await ElementRepository.updateBaseElement(
+      input.id,
+      input,
+      existing
+    );
 
-    // 5. If config is being updated, deep merge and re-extract FKs
-    if (input.config) {
-      // Deep merge partial config with existing to preserve nested properties
-      const mergedConfig = merge(
-        {},
-        existing.config as CountryElementConfig,
-        input.config
-      );
-
-      // Validate merged config
-      // await CountryElementUtils.validateConfigCreateInput(mergedConfig);
-
-      // Apply merged config and extract FKs
-      updates.fontId = ElementUtils.extractFontIdFromConfigTextProps(
-        input.config
-      );
-      updates.storageFileId =
-        ElementUtils.extractStorageFileIdFromConfigTextProps(input.config);
-        updates.config = mergedConfig;
+    // 5. Update element_text_props (if textProps provided)
+    const existingCountryElement: CountryElementEntity = existing;
+    let updatedTextProps: ElementTextPropsEntity = existing.textPropsEntity;
+    if (input.textProps !== undefined) {
+      if (input.textProps === null) {
+        throw new Error("textProps cannot be null for COUNTRY element");
       }
+      updatedTextProps = await TextPropsRepository.update(
+        existing.textPropsId,
+        input.textProps
+      );
+    }
 
-    // 6. Update
-    const [updated] = await db
-      .update(certificateElement)
-      .set(updates)
-      .where(eq(certificateElement.id, input.id))
-      .returning();
+    // 6. Update country_element (type-specific table)
+    const updatedCountryElement = await updateCountryElementSpecific(
+      input.id,
+      input,
+      existingCountryElement
+    );
 
-    logger.info(`COUNTRY element updated: ${updated.name} (ID: ${updated.id})`);
-    return updated;
+    logger.info(
+      `COUNTRY element updated: ${updatedBaseElement.name} (ID: ${input.id})`
+    );
+
+    // 7. Return updated element
+    return {
+      ...updatedBaseElement,
+      elementId: updatedCountryElement.elementId,
+      textPropsId: updatedCountryElement.textPropsId,
+      textPropsEntity: updatedTextProps,
+      textProps: TextPropsUtils.entityToTextProps(updatedTextProps),
+      representation: updatedCountryElement.representation as CountryRepresentation,
+    };
   };
 
   // ============================================================================
-  // Load Operations (for Pothos)
+  // Load Operations
   // ============================================================================
 
   /**
-   * Load COUNTRY elements by IDs for Pothos GraphQL layer
-   * Returns Error for missing/invalid elements
+   * Load COUNTRY element by ID with all joined data
+   * Joins: certificate_element + country_element + element_text_props
+   */
+  export const loadById = async (
+    id: number
+  ): Promise<CountryElementOutput | null> => {
+    // Join all three tables
+    const result = await db
+      .select()
+      .from(certificateElement)
+      .innerJoin(
+        countryElement,
+        eq(countryElement.elementId, certificateElement.id)
+      )
+      .innerJoin(
+        elementTextProps,
+        eq(elementTextProps.id, countryElement.textPropsId)
+      )
+      .where(eq(certificateElement.id, id))
+      .limit(1);
+
+    if (result.length === 0) return null;
+
+    const row = result[0];
+
+    // Reconstruct output
+    return {
+      // Base element fields
+      ...row.certificate_element,
+      // Country-specific fields
+      ...row.country_element,
+      textPropsEntity: row.element_text_props,
+      textProps: TextPropsUtils.entityToTextProps(row.element_text_props),
+      representation: row.country_element.representation as CountryRepresentation,
+    };
+  };
+
+  /**
+   * Load COUNTRY element by ID or throw error
+   */
+  export const loadByIdOrThrow = async (
+    id: number
+  ): Promise<CountryElementOutput> => {
+    const element = await loadById(id);
+    if (!element) {
+      throw new Error(`COUNTRY element with ID ${id} does not exist.`);
+    }
+    return element;
+  };
+
+  /**
+   * Load COUNTRY elements by IDs for Pothos dataloader
+   * Returns array with CountryElementOutput or Error per ID
    */
   export const loadByIds = async (
     ids: number[]
-  ): Promise<(CountryElementPothosDefinition | Error)[]> => {
+  ): Promise<(CountryElementOutput | Error)[]> => {
     if (ids.length === 0) return [];
 
-    const elements = await ElementRepository.loadByIds(ids);
+    // Load all elements
+    const results = await Promise.all(ids.map(id => loadById(id)));
 
-    return elements.map(element => {
-      if (element instanceof Error) return element;
+    // Map to maintain order and handle missing elements
+    return results.map((element, index) => {
+      if (!element) {
+        return new Error(
+          `COUNTRY element with ID ${ids[index]} does not exist.`
+        );
+      }
 
+      // Validate element type
       if (element.type !== ElementType.COUNTRY) {
         return new Error(
           `Element ${element.id} is ${element.type}, not COUNTRY`
         );
       }
 
-      return {
-        ...element,
-        config: element.config as CountryElementConfig,
-      };
+      return element;
     });
+  };
+
+  // ============================================================================
+  // Update Helper Functions
+  // ============================================================================
+
+  /**
+   * Update country_element (type-specific table)
+   * Returns updated entity or existing if no changes
+   */
+  const updateCountryElementSpecific = async (
+    elementId: number,
+    input: CountryElementUpdateInput,
+    existingCountryElement: CountryElementEntity
+  ): Promise<CountryElementEntity> => {
+    const countryUpdates: Partial<typeof countryElement.$inferInsert> = {};
+
+    // Handle representation update
+    if (input.representation !== undefined) {
+      if (input.representation === null) {
+        throw new Error("representation cannot be null for COUNTRY element");
+      }
+      countryUpdates.representation = input.representation;
+    }
+
+    if (Object.keys(countryUpdates).length === 0) {
+      return existingCountryElement;
+    }
+
+    const [updated] = await db
+      .update(countryElement)
+      .set(countryUpdates)
+      .where(eq(countryElement.elementId, elementId))
+      .returning();
+
+    return updated;
   };
 }

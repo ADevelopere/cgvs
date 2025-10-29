@@ -1,23 +1,26 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
 import { certificateElement } from "@/server/db/schema/certificateElements/certificateElement";
+import { genderElement } from "@/server/db/schema/certificateElements/genderElement";
+import { elementTextProps } from "@/server/db/schema/certificateElements/elementTextProps";
 import {
-  CertificateElementEntity,
   GenderElementCreateInput,
   GenderElementUpdateInput,
+  GenderElementOutput,
   ElementType,
-  GenderElementConfig,
-  GenderElementPothosDefinition,
+  GenderElementEntity,
+  ElementTextPropsEntity,
+  CertificateElementEntityInput,
 } from "@/server/types/element";
-import { ElementRepository } from "./element.repository";
-import { ElementUtils, GenderElementUtils } from "@/server/utils";
+import { TextPropsRepository } from "./textProps.element.repository";
+import { GenderElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
-import { merge } from "lodash";
-import { BaseElementUtils } from "@/server/utils/element";
+import { TextPropsUtils } from "@/server/utils/element/textProps.utils";
+import { ElementRepository } from ".";
 
 /**
  * Repository for GENDER element operations
- * Handles create, update, and validation with automatic FK synchronization
+ * Handles table-per-type architecture: certificate_element + gender_element + element_text_props
  */
 export namespace GenderElementRepository {
   // ============================================================================
@@ -26,32 +29,54 @@ export namespace GenderElementRepository {
 
   /**
    * Create a new GENDER element
-   * Validates input, extracts FKs from config, and inserts element
+   * Pattern:
+   * 1. Validate input
+   * 2. Create TextProps → get textPropsId
+   * 3. Insert into certificate_element → get elementId
+   * 4. Insert into gender_element
+   * 5. Return full output
    */
   export const create = async (
     input: GenderElementCreateInput
-  ): Promise<CertificateElementEntity> => {
+  ): Promise<GenderElementOutput> => {
     // 1. Validate input
     await GenderElementUtils.validateCreateInput(input);
 
-    // 2. Extract FKs from config (GENDER only has fontId)
-    const fontId = ElementUtils.extractFontIdFromConfigTextProps(input.config);
+    // 2. Create TextProps
+    const newTextProps = await TextPropsRepository.create(input.textProps);
 
-    // 3. Insert element
-    const [element] = await db
+    const baseInput: CertificateElementEntityInput = {
+      ...input,
+      type: ElementType.GENDER,
+    };
+
+    // 3. Insert into certificate_element (base table)
+    const [baseElement] = await db
       .insert(certificateElement)
+      .values(baseInput)
+      .returning();
+
+    // 4. Insert into gender_element (type-specific table)
+    const [newGenderElement] = await db
+      .insert(genderElement)
       .values({
-        ...input,
-        type: ElementType.GENDER,
-        fontId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        elementId: baseElement.id,
+        textPropsId: newTextProps.id,
       })
       .returning();
 
-    // 4. Log and return
-    logger.info(`GENDER element created: ${element.name} (ID: ${element.id})`);
-    return element;
+    logger.info(
+      `GENDER element created: ${baseElement.name} (ID: ${baseElement.id})`
+    );
+
+    // 5. Return full output
+    return {
+      ...baseElement,
+      elementId: newGenderElement.elementId,
+      textPropsId: newGenderElement.textPropsId,
+      textPropsEntity: newTextProps,
+      textProps: TextPropsUtils.entityToTextProps(newTextProps),
+    };
   };
 
   // ============================================================================
@@ -60,82 +85,145 @@ export namespace GenderElementRepository {
 
   /**
    * Update an existing GENDER element
-   * Supports partial updates with config merging and FK re-extraction
+   * Pattern:
+   * 1. Load existing element
+   * 2. Validate type and input
+   * 3. Update certificate_element (base table)
+   * 4. Update element_text_props (if textProps provided)
+   * 5. Return updated element (no gender_element specific fields to update)
    */
   export const update = async (
     input: GenderElementUpdateInput
-  ): Promise<CertificateElementEntity> => {
-    // 1. Get existing element
-    const existing = await ElementRepository.findByIdOrThrow(input.id);
+  ): Promise<GenderElementOutput> => {
+    // 1. Load existing element
+    const existing = await loadByIdOrThrow(input.id);
 
-    // 2. Validate it's a GENDER element
+    // 2. Validate type
     if (existing.type !== ElementType.GENDER) {
       throw new Error(
         `Element ${input.id} is ${existing.type}, not GENDER. Use correct repository.`
       );
     }
 
-    // 3. Validate update input (pass existing to avoid redundant DB query)
+    // 3. Validate update input
     await GenderElementUtils.validateUpdateInput(input, existing);
 
-    // 4. Build update object (exclude config as it needs special handling)
-    const { config: _, ...baseUpdates } = input;
-    const updates = BaseElementUtils.baseUpdates(baseUpdates, existing);
+    // 4. Update certificate_element (base table)
+    const updatedBaseElement = await ElementRepository.updateBaseElement(
+      input.id,
+      input,
+      existing
+    );
 
-    // 5. If config is being updated, deep merge and re-extract FKs
-    if (input.config) {
-      // Deep merge partial config with existing to preserve nested properties
-      const mergedConfig = merge({}, existing.config, input.config);
-
-      // Validate merged config
-      // await GenderElementUtils.validateConfig(input.config);
-
-      // Apply merged config and extract FKs (GENDER only has fontId)
-      updates.fontId = ElementUtils.extractFontIdFromConfigTextProps(
-        input.config
+    // 5. Update element_text_props (if textProps provided)
+    const existingGenderElement: GenderElementEntity = existing;
+    let updatedTextProps: ElementTextPropsEntity = existing.textPropsEntity;
+    if (input.textProps !== undefined) {
+      if (input.textProps === null) {
+        throw new Error("textProps cannot be null for GENDER element");
+      }
+      updatedTextProps = await TextPropsRepository.update(
+        existing.textPropsId,
+        input.textProps
       );
-      updates.config = mergedConfig;
     }
 
-    // 6. Update
-    const [updated] = await db
-      .update(certificateElement)
-      .set(updates)
-      .where(eq(certificateElement.id, input.id))
-      .returning();
+    logger.info(
+      `GENDER element updated: ${updatedBaseElement.name} (ID: ${input.id})`
+    );
 
-    logger.info(`GENDER element updated: ${updated.name} (ID: ${updated.id})`);
-    return updated;
+    // 6. Return updated element (gender_element has no updateable fields beyond FKs)
+    return {
+      ...updatedBaseElement,
+      elementId: existingGenderElement.elementId,
+      textPropsId: existingGenderElement.textPropsId,
+      textPropsEntity: updatedTextProps,
+      textProps: TextPropsUtils.entityToTextProps(updatedTextProps),
+    };
   };
 
   // ============================================================================
-  // Load Operation (for Pothos DataLoader)
+  // Load Operations
   // ============================================================================
 
   /**
-   * Load GENDER elements by IDs (for GraphQL DataLoader)
-   * Returns elements in same order as input IDs, with Error for missing/wrong type
+   * Load GENDER element by ID with all joined data
+   * Joins: certificate_element + gender_element + element_text_props
+   */
+  export const loadById = async (
+    id: number
+  ): Promise<GenderElementOutput | null> => {
+    // Join all three tables
+    const result = await db
+      .select()
+      .from(certificateElement)
+      .innerJoin(
+        genderElement,
+        eq(genderElement.elementId, certificateElement.id)
+      )
+      .innerJoin(
+        elementTextProps,
+        eq(elementTextProps.id, genderElement.textPropsId)
+      )
+      .where(eq(certificateElement.id, id))
+      .limit(1);
+
+    if (result.length === 0) return null;
+
+    const row = result[0];
+
+    // Reconstruct output
+    return {
+      // Base element fields
+      ...row.certificate_element,
+      // Gender-specific fields
+      ...row.gender_element,
+      textPropsEntity: row.element_text_props,
+      textProps: TextPropsUtils.entityToTextProps(row.element_text_props),
+    };
+  };
+
+  /**
+   * Load GENDER element by ID or throw error
+   */
+  export const loadByIdOrThrow = async (
+    id: number
+  ): Promise<GenderElementOutput> => {
+    const element = await loadById(id);
+    if (!element) {
+      throw new Error(`GENDER element with ID ${id} does not exist.`);
+    }
+    return element;
+  };
+
+  /**
+   * Load GENDER elements by IDs for Pothos dataloader
+   * Returns array with GenderElementOutput or Error per ID
    */
   export const loadByIds = async (
     ids: number[]
-  ): Promise<(GenderElementPothosDefinition | Error)[]> => {
+  ): Promise<(GenderElementOutput | Error)[]> => {
     if (ids.length === 0) return [];
 
-    const elements = await ElementRepository.loadByIds(ids);
+    // Load all elements
+    const results = await Promise.all(ids.map(id => loadById(id)));
 
-    return elements.map(element => {
-      if (element instanceof Error) return element;
+    // Map to maintain order and handle missing elements
+    return results.map((element, index) => {
+      if (!element) {
+        return new Error(
+          `GENDER element with ID ${ids[index]} does not exist.`
+        );
+      }
 
+      // Validate element type
       if (element.type !== ElementType.GENDER) {
         return new Error(
           `Element ${element.id} is ${element.type}, not GENDER`
         );
       }
 
-      return {
-        ...element,
-        config: element.config as GenderElementConfig,
-      };
+      return element;
     });
   };
 }

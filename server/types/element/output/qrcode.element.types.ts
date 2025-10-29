@@ -36,11 +36,9 @@ export type QRCodeElementEntity = typeof qrCodeElement.$inferSelect;
 // Output Type (mirrors database - base + qr_code_element joined)
 // ============================================================================
 
-export type QRCodeElementOutput = CertificateElementEntity & {
-  // No textProps, no dataSource
+export type QRCodeElementOutput = CertificateElementEntity & QRCodeElementEntity & {
+  // Type overrides to use enums instead of strings
   errorCorrection: QRCodeErrorCorrection;
-  foregroundColor: string;
-  backgroundColor: string;
 };
 
 // ============================================================================
