@@ -1,7 +1,6 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
-import { certificateElement } from "@/server/db/schema/certificateElements/certificateElement";
-import { imageElement } from "@/server/db/schema/certificateElements/imageElement";
+import { certificateElement, imageElement } from "@/server/db/schema";
 import {
   ImageElementCreateInput,
   ImageElementUpdateInput,
@@ -62,7 +61,7 @@ export namespace ImageElementRepository {
       .values({
         elementId: baseElement.id,
         fit: input.fit,
-        dataSource: newDataSource,
+        imageDataSource: newDataSource,
         storageFileId,
       })
       .returning();
@@ -76,7 +75,7 @@ export namespace ImageElementRepository {
       ...baseElement,
       elementId: newImageElement.elementId,
       fit: newImageElement.fit as ElementImageFit,
-      dataSource: newDataSource,
+      imageDataSource: newDataSource,
       storageFileId,
     };
   };
@@ -134,7 +133,7 @@ export namespace ImageElementRepository {
       ...updatedBaseElement,
       elementId: updatedImageElement.elementId,
       fit: updatedImageElement.fit as ElementImageFit,
-      dataSource: updatedImageElement.dataSource,
+      imageDataSource: updatedImageElement.imageDataSource,
       storageFileId: updatedImageElement.storageFileId,
     };
   };
@@ -154,7 +153,10 @@ export namespace ImageElementRepository {
     const result = await db
       .select()
       .from(certificateElement)
-      .innerJoin(imageElement, eq(imageElement.elementId, certificateElement.id))
+      .innerJoin(
+        imageElement,
+        eq(imageElement.elementId, certificateElement.id)
+      )
       .where(eq(certificateElement.id, id))
       .limit(1);
 
@@ -169,7 +171,7 @@ export namespace ImageElementRepository {
       // Image-specific fields
       ...row.image_element,
       fit: row.image_element.fit as ElementImageFit,
-      dataSource: row.image_element.dataSource,
+      imageDataSource: row.image_element.imageDataSource,
       storageFileId: row.image_element.storageFileId,
     };
   };
@@ -243,8 +245,9 @@ export namespace ImageElementRepository {
         throw new Error("dataSource cannot be null for IMAGE element");
       }
       const dataSource = convertInputDataSourceToOutput(input.dataSource);
-      imageUpdates.dataSource = dataSource;
-      imageUpdates.storageFileId = extractStorageFileIdFromDataSource(dataSource);
+      imageUpdates.imageDataSource = dataSource;
+      imageUpdates.storageFileId =
+        extractStorageFileIdFromDataSource(dataSource);
     }
 
     if (Object.keys(imageUpdates).length === 0) {

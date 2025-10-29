@@ -1,8 +1,6 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
-import { certificateElement } from "@/server/db/schema/certificateElements/certificateElement";
-import { numberElement } from "@/server/db/schema/certificateElements/numberElement";
-import { elementTextProps } from "@/server/db/schema/certificateElements/elementTextProps";
+import { certificateElement, numberElement, elementTextProps } from "@/server/db/schema";
 import {
   NumberElementCreateInput,
   NumberElementUpdateInput,
@@ -70,7 +68,7 @@ export namespace NumberElementRepository {
         elementId: baseElement.id,
         textPropsId: newTextProps.id,
         mapping: input.mapping,
-        dataSource: newDataSource,
+        numberDataSource: newDataSource,
         variableId,
       })
       .returning();
@@ -87,7 +85,7 @@ export namespace NumberElementRepository {
       textPropsEntity: newTextProps,
       textProps: TextPropsUtils.entityToTextProps(newTextProps),
       mapping: newNumberElement.mapping,
-      dataSource: newDataSource,
+      numberDataSource: newDataSource,
       variableId,
     };
   };
@@ -161,7 +159,7 @@ export namespace NumberElementRepository {
       textPropsEntity: updatedTextProps,
       textProps: TextPropsUtils.entityToTextProps(updatedTextProps),
       mapping: updatedNumberElement.mapping,
-      dataSource: updatedNumberElement.dataSource,
+      numberDataSource: updatedNumberElement.numberDataSource,
       variableId: updatedNumberElement.variableId,
     };
   };
@@ -205,7 +203,7 @@ export namespace NumberElementRepository {
       textPropsEntity: row.element_text_props,
       textProps: TextPropsUtils.entityToTextProps(row.element_text_props),
       mapping: row.number_element.mapping,
-      dataSource: row.number_element.dataSource,
+      numberDataSource: row.number_element.numberDataSource,
       variableId: row.number_element.variableId,
     };
   };
@@ -283,7 +281,7 @@ export namespace NumberElementRepository {
         throw new Error("dataSource cannot be null for NUMBER element");
       }
       const dataSource = convertInputDataSourceToOutput(input.dataSource);
-      numberUpdates.dataSource = dataSource;
+      numberUpdates.numberDataSource = dataSource;
       numberUpdates.variableId = extractVariableIdFromDataSource(dataSource);
     }
 

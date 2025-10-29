@@ -1,8 +1,6 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
-import { certificateElement } from "@/server/db/schema/certificateElements/certificateElement";
-import { dateElement } from "@/server/db/schema/certificateElements/dateElement";
-import { elementTextProps } from "@/server/db/schema/certificateElements/elementTextProps";
+import { certificateElement, dateElement, elementTextProps } from "@/server/db/schema";
 import {
   DateElementCreateInput,
   DateElementUpdateInput,
@@ -18,9 +16,8 @@ import {
   DateTransformationType,
 } from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
-import { DateElementUtils } from "@/server/utils";
+import { DateElementUtils, TextPropsUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
-import { TextPropsUtils } from "@/server/utils/element/textProps.utils";
 import { ElementRepository } from ".";
 
 /**
@@ -76,7 +73,7 @@ export namespace DateElementRepository {
         offsetDays: input.offsetDays,
         format: input.format,
         transformation: input.transformation ?? null,
-        dataSource: newDataSource,
+        dateDataSource: newDataSource,
         variableId,
       })
       .returning();
@@ -95,8 +92,9 @@ export namespace DateElementRepository {
       calendarType: newDateElement.calendarType as CalendarType,
       offsetDays: newDateElement.offsetDays,
       format: newDateElement.format,
-      transformation: newDateElement.transformation as DateTransformationType | null,
-      dataSource: newDataSource,
+      transformation:
+        newDateElement.transformation as DateTransformationType | null,
+      dateDataSource: newDataSource,
       variableId,
     };
   };
@@ -172,8 +170,9 @@ export namespace DateElementRepository {
       calendarType: updatedDateElement.calendarType as CalendarType,
       offsetDays: updatedDateElement.offsetDays,
       format: updatedDateElement.format,
-      transformation: updatedDateElement.transformation as DateTransformationType | null,
-      dataSource: updatedDateElement.dataSource,
+      transformation:
+        updatedDateElement.transformation as DateTransformationType | null,
+      dateDataSource: updatedDateElement.dateDataSource,
       variableId: updatedDateElement.variableId,
     };
   };
@@ -214,8 +213,9 @@ export namespace DateElementRepository {
       textPropsEntity: row.element_text_props,
       textProps: TextPropsUtils.entityToTextProps(row.element_text_props),
       calendarType: row.date_element.calendarType as CalendarType,
-      transformation: row.date_element.transformation as DateTransformationType | null,
-      dataSource: row.date_element.dataSource,
+      transformation: row.date_element
+        .transformation as DateTransformationType | null,
+      dateDataSource: row.date_element.dateDataSource,
       variableId: row.date_element.variableId,
     };
   };
@@ -310,7 +310,7 @@ export namespace DateElementRepository {
         throw new Error("dataSource cannot be null for DATE element");
       }
       const dataSource = convertInputDataSourceToOutput(input.dataSource);
-      dateUpdates.dataSource = dataSource;
+      dateUpdates.dateDataSource = dataSource;
       dateUpdates.variableId = extractVariableIdFromDataSource(dataSource);
     }
 

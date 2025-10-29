@@ -1,6 +1,6 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
-import { elementTextProps } from "@/server/db/schema/certificateElements/elementTextProps";
+import { elementTextProps } from "@/server/db/schema";
 import {
   TextPropsCreateInput,
   TextPropsUpdateInput,

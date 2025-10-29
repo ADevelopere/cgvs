@@ -8,3 +8,4 @@ export { CountryElementUtils } from "./country.element.utils";
 export { GenderElementUtils } from "./gender.element.utils";
 export { ImageElementUtils } from "./image.element.utils";
 export { QRCodeElementUtils } from "./qrcode.element.utils";
+export { TextPropsUtils } from "./textProps.utils";
