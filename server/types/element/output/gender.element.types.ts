@@ -23,7 +23,7 @@ export type GenderDataSource = {
 
 export interface GenderElementConfig {
   textProps: TextProps;
-  dataSource: GenderDataSource;
+  // dataSource: GenderDataSource;
   // The application uses TemplateConfig.locale for mapping gender to text
 }
 

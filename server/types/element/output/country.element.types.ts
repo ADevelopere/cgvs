@@ -29,7 +29,7 @@ export type CountryDataSource = {
 export interface CountryElementConfig {
   textProps: TextProps;
   representation: CountryRepresentation;
-  dataSource: CountryDataSource;
+  // dataSource: CountryDataSource;
   // The application uses TemplateConfig.locale to map country code to country name
 }
 

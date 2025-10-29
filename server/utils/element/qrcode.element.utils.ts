@@ -52,7 +52,7 @@ export namespace QRCodeElementUtils {
   ): QRCodeElementConfigCreateInput => {
     return {
       ...input,
-      dataSource: mapQRCodeDataSourceGraphqlToInput(input.dataSource)!,
+      // dataSource: mapQRCodeDataSourceGraphqlToInput(input.dataSource)!,
     };
   };
 
@@ -68,7 +68,7 @@ export namespace QRCodeElementUtils {
 
     return {
       ...input,
-      dataSource: mapQRCodeDataSourceGraphqlToInput(input.dataSource)!,
+      // dataSource: mapQRCodeDataSourceGraphqlToInput(input.dataSource)!,
     };
   };
 
@@ -125,15 +125,15 @@ export namespace QRCodeElementUtils {
   /**
    * Validate QR code data source
    */
-  const validateDataSource = (config: QRCodeElementConfigCreateInput): void => {
-    const dataSource = config.dataSource;
-    const validTypes = Object.values(QRCodeDataSourceType);
+  const validateDataSource = (_config: QRCodeElementConfigCreateInput): void => {
+    // const dataSource = config.dataSource;
+    // const validTypes = Object.values(QRCodeDataSourceType);
 
-    if (!validTypes.includes(dataSource.type)) {
-      throw new Error(
-        `Invalid QR code data source type: ${dataSource.type}. Must be one of: ${validTypes.join(", ")}`
-      );
-    }
+    // if (!validTypes.includes(dataSource.type)) {
+    //   throw new Error(
+    //     `Invalid QR code data source type: ${dataSource.type}. Must be one of: ${validTypes.join(", ")}`
+    //   );
+    // }
   };
 
   /**
@@ -188,9 +188,9 @@ export namespace QRCodeElementUtils {
     if (input.config) {
       // For partial updates, merge with existing config for validation
       const mergedConfig: QRCodeElementConfigCreateInput = {
-        dataSource:
-          input.config.dataSource ||
-          (existing.config as QRCodeElementConfigCreateInput).dataSource,
+        // dataSource:
+        //   input.config.dataSource ||
+        //   (existing.config as QRCodeElementConfigCreateInput).dataSource,
         errorCorrection:
           input.config.errorCorrection ??
           (existing.config as QRCodeElementConfigCreateInput).errorCorrection,

@@ -27,14 +27,14 @@ export type QRCodeDataSourceInput =
 
 // Repository input type (matches Config structure)
 export type QRCodeElementConfigCreateInput = {
-  dataSource: QRCodeDataSourceInput;
+  // dataSource: QRCodeDataSourceInput;
   errorCorrection: QRCodeErrorCorrection;
   foregroundColor: string;
   backgroundColor: string;
 };
 
 export type QRCodeElementConfigUpdateInput = {
-  dataSource?: QRCodeDataSourceInput | null;
+  // dataSource?: QRCodeDataSourceInput | null;
   errorCorrection?: QRCodeErrorCorrection | null;
   foregroundColor?: string | null;
   backgroundColor?: string | null;

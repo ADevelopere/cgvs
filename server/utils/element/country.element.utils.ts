@@ -55,7 +55,7 @@ export namespace CountryElementUtils {
       textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
         input.textProps
       )!,
-      dataSource: mapCountryDataSourceGraphqlToInput(input.dataSource)!,
+      // dataSource: mapCountryDataSourceGraphqlToInput(input.dataSource)!,
     };
   };
 
@@ -74,7 +74,7 @@ export namespace CountryElementUtils {
       textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
         input.textProps
       ),
-      dataSource: mapCountryDataSourceGraphqlToInput(input.dataSource),
+      // dataSource: mapCountryDataSourceGraphqlToInput(input.dataSource),
     };
   };
 
@@ -149,14 +149,14 @@ export namespace CountryElementUtils {
    * COUNTRY elements only support STUDENT_NATIONALITY
    */
   const validateDataSource = (
-    config: CountryElementConfigCreateInput
+    _config: CountryElementConfigCreateInput
   ): void => {
-    const dataSource = config.dataSource;
-    if (dataSource.type !== CountryDataSourceType.STUDENT_NATIONALITY) {
-      throw new Error(
-        `Invalid country data source type. Must be STUDENT_NATIONALITY`
-      );
-    }
+    // const dataSource = config.dataSource;
+    // if (dataSource.type !== CountryDataSourceType.STUDENT_NATIONALITY) {
+    //   throw new Error(
+    //     `Invalid country data source type. Must be STUDENT_NATIONALITY`
+    //   );
+    // }
   };
 
   // ============================================================================

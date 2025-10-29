@@ -30,14 +30,14 @@ export type CountryDataSourceInputGraphql = {
 export type CountryElementConfigCreateInputGraphql = {
   textProps: TextPropsCreateInputGraphql;
   representation: CountryRepresentation;
-  dataSource: CountryDataSourceInputGraphql;
+  // dataSource: CountryDataSourceInputGraphql;
 };
 
 // GraphQL update input type (deep partial)
 export type CountryElementConfigUpdateInputGraphql = {
   textProps?: TextPropsUpdateInputGraphql | null;
   representation?: CountryRepresentation | null;
-  dataSource?: CountryDataSourceInputGraphql | null;
+  // dataSource?: CountryDataSourceInputGraphql | null;
 };
 
 // ============================================================================
