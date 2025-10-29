@@ -89,9 +89,30 @@ add_plugin_to_zshrc() {
         echo "  ✔️ Plugin '$plugin_name' already configured in .zshrc"
     else
         echo "  📝 Adding '$plugin_name' to .zshrc plugins array..."
+        
+        # Check if the plugins=() pattern exists and is in the expected format
+        if ! grep -q "^plugins=(" "$zshrc_file"; then
+            echo "  ❌ ERROR: Could not find 'plugins=()' line in .zshrc"
+            echo "  💡 Expected format: plugins=(git ...)"
+            return 1
+        fi
+        
+        # Create a backup before modification
+        cp "$zshrc_file" "${zshrc_file}.backup"
+        
         # Use a more robust sed command to add the plugin
         sed -i "s/plugins=(\([^)]*\))/plugins=(\1 ${plugin_name})/" "$zshrc_file"
-        echo "  ✅ Added '$plugin_name' to plugins configuration"
+        
+        # Verify the change was applied
+        if grep -q "plugins=.*${plugin_name}" "$zshrc_file"; then
+            echo "  ✅ Added '$plugin_name' to plugins configuration"
+            rm -f "${zshrc_file}.backup"
+        else
+            echo "  ❌ ERROR: Failed to add '$plugin_name' to plugins"
+            echo "  🔄 Restoring backup..."
+            mv "${zshrc_file}.backup" "$zshrc_file"
+            return 1
+        fi
     fi
 }
 
@@ -103,22 +124,51 @@ install_plugin "zsh-autocomplete" "https://github.com/marlonrichert/zsh-autocomp
 
 # --- Step 6: Configure .zshrc ---
 echo "📝 Step 6/7: Configuring .zshrc to enable theme and plugins..."
-# Set ZSH_THEME to Powerlevel10k (works with any existing theme)
+
+# Check if ZSH_THEME line exists in the expected format
+if ! grep -q '^ZSH_THEME="' ~/.zshrc; then
+    echo "  ❌ ERROR: Could not find ZSH_THEME line in .zshrc"
+    echo "  💡 Expected format: ZSH_THEME=\"theme-name\""
+    echo "  📄 Please manually set ZSH_THEME=\"powerlevel10k/powerlevel10k\" in ~/.zshrc"
+    exit 1
+fi
+
+# Create a backup before modification
+cp ~/.zshrc ~/.zshrc.backup
+
+# Set ZSH_THEME to Powerlevel10k
 sed -i 's/^ZSH_THEME="[^"]*"/ZSH_THEME="powerlevel10k\/powerlevel10k"/' ~/.zshrc
 
 # Verify the theme was changed successfully
 if grep -q 'ZSH_THEME="powerlevel10k/powerlevel10k"' ~/.zshrc; then
     echo "  ✅ Theme successfully changed to Powerlevel10k"
+    rm -f ~/.zshrc.backup
 else
-    echo "  ⚠️  Warning: Theme change may have failed. Please check your .zshrc file."
+    echo "  ❌ ERROR: Theme change failed!"
+    echo "  🔄 Restoring backup..."
+    mv ~/.zshrc.backup ~/.zshrc
+    echo "  💡 Please manually set ZSH_THEME=\"powerlevel10k/powerlevel10k\" in ~/.zshrc"
+    exit 1
 fi
 
 # Add all installed plugins to .zshrc configuration
 echo "🔧 Configuring plugins in .zshrc..."
-add_plugin_to_zshrc "zsh-autosuggestions"
-add_plugin_to_zshrc "zsh-syntax-highlighting"
-add_plugin_to_zshrc "fast-syntax-highlighting"
-add_plugin_to_zshrc "zsh-autocomplete"
+PLUGIN_ERRORS=0
+
+add_plugin_to_zshrc "zsh-autosuggestions" || PLUGIN_ERRORS=$((PLUGIN_ERRORS + 1))
+add_plugin_to_zshrc "zsh-syntax-highlighting" || PLUGIN_ERRORS=$((PLUGIN_ERRORS + 1))
+add_plugin_to_zshrc "fast-syntax-highlighting" || PLUGIN_ERRORS=$((PLUGIN_ERRORS + 1))
+add_plugin_to_zshrc "zsh-autocomplete" || PLUGIN_ERRORS=$((PLUGIN_ERRORS + 1))
+
+# Check if any plugin additions failed
+if [ $PLUGIN_ERRORS -gt 0 ]; then
+    echo ""
+    echo "  ⚠️  WARNING: $PLUGIN_ERRORS plugin(s) failed to be added to .zshrc"
+    echo "  💡 You can manually add them by editing ~/.zshrc"
+    echo "  📝 Change the plugins line to:"
+    echo "     plugins=(git zsh-autosuggestions zsh-syntax-highlighting fast-syntax-highlighting zsh-autocomplete)"
+    echo ""
+fi
 
 # Install Powerlevel10k configuration
 echo "⚙️  Applying Powerlevel10k configuration..."

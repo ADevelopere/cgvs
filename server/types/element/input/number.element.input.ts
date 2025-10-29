@@ -1,9 +1,9 @@
-import { TextPropsCreateInput } from "./config.element.input";
+import { TextPropsCreateInput, TextPropsUpdateInput } from "./config.element.input";
 import {
   CertificateElementBaseCreateInput,
   CertificateElementBaseUpdateInput,
 } from "./base.element.input";
-import { ElementType, NumberDataSourceType } from "../output";
+import { NumberDataSourceType } from "../output";
 
 // ============================================================================
 // Data Source Types
@@ -19,11 +19,16 @@ export type NumberDataSourceInput = {
 // ============================================================================
 
 // Repository input type (matches Config structure)
-export type NumberElementConfigInput = {
-  type: ElementType.NUMBER;
+export type NumberElementConfigCreateInput = {
   textProps: TextPropsCreateInput;
   dataSource: NumberDataSourceInput;
   mapping: Record<string, string>;
+};
+
+export type NumberElementConfigUpdateInput = {
+  textProps?: TextPropsUpdateInput | null;
+  dataSource?: NumberDataSourceInput | null;
+  mapping?: Record<string, string> | null;
 };
 
 // ============================================================================
@@ -32,9 +37,9 @@ export type NumberElementConfigInput = {
 
 // Repository input types
 export type NumberElementCreateInput = CertificateElementBaseCreateInput & {
-  config: NumberElementConfigInput;
+  config: NumberElementConfigCreateInput;
 };
 
 export type NumberElementUpdateInput = CertificateElementBaseUpdateInput & {
-  config?: Partial<NumberElementConfigInput>;
+  config?: NumberElementConfigUpdateInput | null;
 };

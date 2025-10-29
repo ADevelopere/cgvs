@@ -2,8 +2,6 @@ import type { TemplatePothosDefintion } from "../template.types";
 
 import * as Output from "./output";
 
-import * as Input from "./input";
-
 // ============================================================================
 // Config Unions
 // ============================================================================
@@ -16,15 +14,6 @@ export type ElementConfigUnion =
   | Output.GenderElementConfig
   | Output.ImageElementConfig
   | Output.QRCodeElementConfig;
-
-export type ElementConfigInput =
-  | Input.TextElementConfigCreateInput
-  | Input.DateElementConfigInput
-  | Input.NumberElementConfigInput
-  | Input.CountryElementConfigCreateInput
-  | Input.GenderElementConfigInput
-  | Input.ImageElementConfigInput
-  | Input.QRCodeElementConfigInput;
 
 // ============================================================================
 // Base Pothos Definition (extended by all element Pothos types)

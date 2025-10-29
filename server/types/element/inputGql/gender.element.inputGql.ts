@@ -30,8 +30,8 @@ export type GenderElementConfigInputGraphql = {
 
 // GraphQL update input type (deep partial)
 export type GenderElementConfigUpdateInputGraphql = {
-  textProps?: TextPropsUpdateInputGraphql;
-  dataSource?: GenderDataSourceInputGraphql;
+  textProps?: TextPropsUpdateInputGraphql | null;
+  dataSource?: GenderDataSourceInputGraphql | null;
 };
 
 // ============================================================================
@@ -47,5 +47,5 @@ export type GenderElementCreateInputGraphql =
 // GraphQL update input type (deep partial support)
 export type GenderElementUpdateInputGraphql =
   CertificateElementBaseUpdateInput & {
-    config?: GenderElementConfigUpdateInputGraphql;
+    config?: GenderElementConfigUpdateInputGraphql | null;
   };

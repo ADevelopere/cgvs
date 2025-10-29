@@ -1,10 +1,7 @@
 import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
-import * as Types from "@/server/types/element/output";
+import * as Types from "@/server/types/element";
 import { GenderElementRepository } from "@/server/db/repo/element";
-import { TemplateRepository } from "@/server/db/repo";
-import { TemplatePothosObject } from "@/server/graphql/pothos/template.pothos";
 import {
-  ElementTypePothosEnum,
   TextPropsObject,
   TextPropsInputObject,
   TextPropsUpdateInputObject,
@@ -73,7 +70,6 @@ export const GenderElementConfigObject = gqlSchemaBuilder
   .objectRef<Types.GenderElementConfig>("GenderElementConfig")
   .implement({
     fields: t => ({
-      type: t.expose("type", { type: ElementTypePothosEnum }),
       textProps: t.expose("textProps", { type: TextPropsObject }),
       dataSource: t.expose("dataSource", {
         type: GenderDataSourceStudentGenderObject,
@@ -164,12 +160,3 @@ export const GenderElementObject = gqlSchemaBuilder.loadableObject<
     config: t.expose("config", { type: GenderElementConfigObject }),
   }),
 });
-
-gqlSchemaBuilder.objectFields(GenderElementObject, t => ({
-  template: t.loadable({
-    type: TemplatePothosObject,
-    load: (ids: number[]) => TemplateRepository.loadByIds(ids),
-    resolve: element => element.templateId,
-  }),
-}));
-

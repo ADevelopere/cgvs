@@ -1,4 +1,3 @@
-import { ElementType } from "./enum.element.types";
 import { TextProps } from "./config.element.types";
 import type { CertificateElementPothosDefinition } from "../union.element.types";
 
@@ -28,7 +27,6 @@ export type CountryDataSource = {
 // ============================================================================
 
 export interface CountryElementConfig {
-  type: ElementType.COUNTRY;
   textProps: TextProps;
   representation: CountryRepresentation;
   dataSource: CountryDataSource;

@@ -1,3 +1,4 @@
+export { BaseElementUtils } from "./base.element.utils";
 export { ElementUtils } from "./element.utils";
 export { CommonElementUtils } from "./common.element.utils";
 export { TextElementUtils } from "./text.element.utils";
@@ -7,4 +8,3 @@ export { CountryElementUtils } from "./country.element.utils";
 export { GenderElementUtils } from "./gender.element.utils";
 export { ImageElementUtils } from "./image.element.utils";
 export { QRCodeElementUtils } from "./qrcode.element.utils";
-export { deepMerge } from "./deepMerge.utils";

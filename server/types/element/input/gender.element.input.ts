@@ -1,9 +1,10 @@
-import { TextPropsCreateInput } from "./config.element.input";
+import { TextPropsCreateInput, TextPropsUpdateInput } from "./config.element.input";
 import {
   CertificateElementBaseCreateInput,
   CertificateElementBaseUpdateInput,
 } from "./base.element.input";
-import { ElementType, GenderDataSourceType } from "../output";
+import { GenderDataSourceType } from "../output";
+
 // ============================================================================
 // Data Source Types
 // ============================================================================
@@ -17,10 +18,14 @@ export type GenderDataSourceInput = {
 // ============================================================================
 
 // Repository input type (matches Config structure)
-export type GenderElementConfigInput = {
-  type: ElementType.GENDER;
+export type GenderElementConfigCreateInput = {
   textProps: TextPropsCreateInput;
   dataSource: GenderDataSourceInput;
+};
+
+export type GenderElementConfigUpdateInput = {
+  textProps?: TextPropsUpdateInput | null;
+  dataSource?: GenderDataSourceInput | null;
 };
 
 // ============================================================================
@@ -28,9 +33,9 @@ export type GenderElementConfigInput = {
 // ============================================================================
 
 export type GenderElementCreateInput = CertificateElementBaseCreateInput & {
-  config: GenderElementConfigInput;
+  config: GenderElementConfigCreateInput;
 };
 
 export type GenderElementUpdateInput = CertificateElementBaseUpdateInput & {
-  config?: Partial<GenderElementConfigInput>;
+  config?: GenderElementConfigUpdateInput | null;
 };

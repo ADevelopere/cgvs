@@ -1,4 +1,4 @@
-import { ElementImageFit, ElementType, ImageDataSourceType } from "../output";
+import { ElementImageFit, ImageDataSourceType } from "../output";
 import {
   CertificateElementBaseCreateInput,
   CertificateElementBaseUpdateInput,
@@ -17,10 +17,14 @@ export type ImageDataSourceInput = {
 // ============================================================================
 
 // Repository input type (matches Config structure)
-export type ImageElementConfigInput = {
-  type: ElementType.IMAGE;
+export type ImageElementConfigCreateInput = {
   dataSource: ImageDataSourceInput;
   fit: ElementImageFit;
+};
+
+export type ImageElementConfigUpdateInput = {
+  dataSource?: ImageDataSourceInput | null;
+  fit?: ElementImageFit | null;
 };
 
 // ============================================================================
@@ -29,9 +33,9 @@ export type ImageElementConfigInput = {
 
 // Repository mutation inputs (keep existing)
 export type ImageElementCreateInput = CertificateElementBaseCreateInput & {
-  config: ImageElementConfigInput;
+  config: ImageElementConfigCreateInput;
 };
 
 export type ImageElementUpdateInput = CertificateElementBaseUpdateInput & {
-  config?: Partial<ImageElementConfigInput>;
+  config?: ImageElementConfigUpdateInput | null;
 };

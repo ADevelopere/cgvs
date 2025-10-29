@@ -12,8 +12,8 @@ import {
   TextElementConfigUpdateInputGraphql,
   TextElementCreateInputGraphql,
   TextElementUpdateInputGraphql,
-  ElementType,
-} from "@/server/types/element/output";
+  TextElementConfigUpdateInput,
+} from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { CommonElementUtils } from "./common.element.utils";
 
@@ -30,8 +30,12 @@ export namespace TextElementUtils {
    * Map GraphQL TextDataSource input (isOneOf) to repository TextDataSource input (discriminated union)
    */
   export const mapTextDataSourceGraphqlToInput = (
-    input: TextDataSourceInputGraphql
-  ): TextDataSourceInput => {
+    input?: TextDataSourceInputGraphql | null
+  ): TextDataSourceInput | null | undefined => {
+    if (!input) {
+      return input;
+    }
+
     if (input.static) {
       return {
         type: TextDataSourceType.STATIC,
@@ -70,11 +74,10 @@ export namespace TextElementUtils {
     input: TextElementConfigInputGraphql
   ): TextElementConfigCreateInput => {
     return {
-      type: ElementType.TEXT,
       textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
         input.textProps
       )!,
-      dataSource: mapTextDataSourceGraphqlToInput(input.dataSource),
+      dataSource: mapTextDataSourceGraphqlToInput(input.dataSource)!,
     };
   };
 
@@ -82,22 +85,19 @@ export namespace TextElementUtils {
    * Map GraphQL TextElementConfig update input (partial) to repository TextElementConfig input (partial)
    */
   export const mapTextElementConfigUpdateGraphqlToInput = (
-    input: TextElementConfigUpdateInputGraphql
-  ): Partial<TextElementConfigCreateInput> => {
-    const result: Partial<TextElementConfigCreateInput> = {};
-
-    if (input.textProps !== undefined) {
-      const textPropsUpdate =
-        CommonElementUtils.mapTextPropsUpdateGraphqlToInput(input.textProps);
-      if (Object.keys(textPropsUpdate).length > 0) {
-        result.textProps = textPropsUpdate as Types.TextPropsInput;
-      }
-    }
-    if (input.dataSource !== undefined) {
-      result.dataSource = mapTextDataSourceGraphqlToInput(input.dataSource);
+    input?: TextElementConfigUpdateInputGraphql | null
+  ): TextElementConfigUpdateInput | null | undefined => {
+    if (!input) {
+      return input;
     }
 
-    return result;
+    return {
+      ...input,
+      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
+        input.textProps
+      ),
+      dataSource: mapTextDataSourceGraphqlToInput(input.dataSource),
+    };
   };
 
   /**
@@ -120,10 +120,7 @@ export namespace TextElementUtils {
   ): TextElementUpdateInput => {
     return {
       ...input,
-      config:
-        input.config !== undefined
-          ? mapTextElementConfigUpdateGraphqlToInput(input.config)
-          : undefined,
+      config: mapTextElementConfigUpdateGraphqlToInput(input.config),
     };
   };
   // ============================================================================

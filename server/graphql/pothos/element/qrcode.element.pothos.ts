@@ -1,10 +1,7 @@
 import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
-import * as Types from "@/server/types/element/output";
+import * as Types from "@/server/types/element";
 import { QRCodeElementRepository } from "@/server/db/repo/element";
-import { TemplateRepository } from "@/server/db/repo";
-import { TemplatePothosObject } from "@/server/graphql/pothos/template.pothos";
 import {
-  ElementTypePothosEnum,
   CertificateElementPothosInterface,
   createBaseElementInputFields,
   createBaseElementUpdateInputFields,
@@ -129,7 +126,6 @@ export const QRCodeElementConfigObject = gqlSchemaBuilder
   .objectRef<Types.QRCodeElementConfig>("QRCodeElementConfig")
   .implement({
     fields: t => ({
-      type: t.expose("type", { type: ElementTypePothosEnum }),
       dataSource: t.expose("dataSource", { type: QRCodeDataSourceUnion }),
       errorCorrection: t.expose("errorCorrection", {
         type: QRCodeErrorCorrectionPothosEnum,
@@ -228,11 +224,3 @@ export const QRCodeElementObject = gqlSchemaBuilder.loadableObject<
     config: t.expose("config", { type: QRCodeElementConfigObject }),
   }),
 });
-
-gqlSchemaBuilder.objectFields(QRCodeElementObject, t => ({
-  template: t.loadable({
-    type: TemplatePothosObject,
-    load: (ids: number[]) => TemplateRepository.loadByIds(ids),
-    resolve: element => element.templateId,
-  }),
-}));

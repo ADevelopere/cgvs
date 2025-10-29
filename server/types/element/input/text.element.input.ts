@@ -1,11 +1,10 @@
-import { TextPropsCreateInput } from "./config.element.input";
+import { TextPropsCreateInput, TextPropsUpdateInput } from "./config.element.input";
 import {
   CertificateElementBaseCreateInput,
   CertificateElementBaseUpdateInput,
 } from "./base.element.input";
 import {
   CertificateTextField,
-  ElementType,
   StudentTextField,
   TextDataSourceType,
 } from "../output";
@@ -23,7 +22,7 @@ export type TextDataSourceStudentFieldInput = {
   type: TextDataSourceType.STUDENT_TEXT_FIELD;
   field: StudentTextField;
 };
-
+  
 export type TextDataSourceCertificateFieldInput = {
   type: TextDataSourceType.CERTIFICATE_TEXT_FIELD;
   field: CertificateTextField;
@@ -51,9 +50,13 @@ export type TextDataSourceInput =
 // ============================================================================
 
 export type TextElementConfigCreateInput = {
-  type: ElementType.TEXT;
   textProps: TextPropsCreateInput;
   dataSource: TextDataSourceInput;
+};
+
+export type TextElementConfigUpdateInput = {
+  textProps?: TextPropsUpdateInput | null;
+  dataSource?: TextDataSourceInput | null;
 };
 
 // ============================================================================
@@ -65,5 +68,5 @@ export type TextElementCreateInput = CertificateElementBaseCreateInput & {
 };
 
 export type TextElementUpdateInput = CertificateElementBaseUpdateInput & {
-  config?: Partial<TextElementConfigCreateInput>;
+  config?: TextElementConfigUpdateInput | null;
 };

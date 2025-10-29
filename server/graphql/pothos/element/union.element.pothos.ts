@@ -1,5 +1,5 @@
 import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
-import * as Types from "@/server/types/element/output";
+import * as Types from "@/server/types/element";
 import { TextElementObject } from "./text.element.pothos";
 import { DateElementObject } from "./date.element.pothos";
 import { NumberElementObject } from "./number.element.pothos";
@@ -13,7 +13,7 @@ import { QRCodeElementObject } from "./qrcode.element.pothos";
  * Used for queries that return elements without knowing their specific type
  */
 export const CertificateElementUnion = gqlSchemaBuilder.unionType(
-  "CertificateElement",
+  "CertificateElementUnion",
   {
     types: [
       TextElementObject,
@@ -41,7 +41,7 @@ export const CertificateElementUnion = gqlSchemaBuilder.unionType(
         case Types.ElementType.QR_CODE:
           return "QRCodeElement";
         default:
-          throw new Error(`Unknown element type: ${(element as any).type}`);
+          throw new Error(`Unknown element type: ${element.type}`);
       }
     },
   }

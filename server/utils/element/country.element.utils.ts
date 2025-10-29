@@ -11,9 +11,8 @@ import {
   CountryElementConfigUpdateInputGraphql,
   CountryElementCreateInputGraphql,
   CountryElementUpdateInputGraphql,
-  ElementType,
   CountryElementConfigUpdateInput,
-} from "@/server/types/element/output";
+} from "@/server/types/element";
 import { CommonElementUtils } from "./common.element.utils";
 
 /**
@@ -53,7 +52,6 @@ export namespace CountryElementUtils {
   ): CountryElementConfigCreateInput => {
     return {
       ...input,
-      type: ElementType.COUNTRY,
       textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
         input.textProps
       )!,
@@ -73,7 +71,6 @@ export namespace CountryElementUtils {
 
     return {
       ...input,
-      type: ElementType.COUNTRY,
       textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
         input.textProps
       ),
@@ -97,12 +94,8 @@ export namespace CountryElementUtils {
    * Map GraphQL CountryElement update input to repository CountryElement update input
    */
   export const mapCountryElementUpdateGraphqlToInput = (
-    input?: CountryElementUpdateInputGraphql | null
-  ): CountryElementUpdateInput | null | undefined => {
-    if (!input) {
-      return input;
-    }
-
+    input: CountryElementUpdateInputGraphql
+  ): CountryElementUpdateInput => {
     return {
       ...input,
       config: mapCountryElementConfigUpdateGraphqlToInput(input.config),
@@ -116,7 +109,7 @@ export namespace CountryElementUtils {
    * Validate complete COUNTRY element config
    * Validates font reference, representation, and data source
    */
-  export const validateConfig = async (
+  export const validateConfigCreateInput = async (
     config: CountryElementConfigCreateInput
   ): Promise<void> => {
     // Validate textProps
@@ -180,7 +173,7 @@ export namespace CountryElementUtils {
     await CommonElementUtils.validateBaseCreateInput(input);
 
     // Config validation
-    await validateConfig(input.config);
+    await validateConfigCreateInput(input.config);
   };
 
   // ============================================================================
@@ -199,5 +192,26 @@ export namespace CountryElementUtils {
     await CommonElementUtils.validateBaseUpdateInput(input, existing);
 
     // Config validation (if provided) - handled separately with deep merge
+  };
+
+  export const extractStorageFileIdFromConfigTextProps = (
+    config?:
+      | CountryElementConfigCreateInput
+      | CountryElementConfigUpdateInput
+      | null
+  ): number | null | undefined => {
+    if (!config) return config;
+
+    const { textProps } = config;
+    if (!textProps) return textProps;
+
+    const fontRef = config.textProps?.fontRef;
+
+    if (fontRef) {
+      if (fontRef.type === "SELF_HOSTED") {
+        return fontRef.fontId;
+      }
+    }
+    return null;
   };
 }

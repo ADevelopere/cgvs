@@ -1,4 +1,3 @@
-import { ElementType } from "./enum.element.types";
 import { TextProps } from "./config.element.types";
 import type { CertificateElementPothosDefinition } from "../union.element.types";
 
@@ -23,7 +22,6 @@ export type GenderDataSource = {
 // ============================================================================
 
 export interface GenderElementConfig {
-  type: ElementType.GENDER;
   textProps: TextProps;
   dataSource: GenderDataSource;
   // The application uses TemplateConfig.locale for mapping gender to text

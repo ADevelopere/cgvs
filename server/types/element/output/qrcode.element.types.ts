@@ -1,4 +1,3 @@
-import { ElementType } from "./enum.element.types";
 import type { CertificateElementPothosDefinition } from "../union.element.types";
 
 // ============================================================================
@@ -30,7 +29,6 @@ export type QRCodeDataSource =
 // ============================================================================
 
 export interface QRCodeElementConfig {
-  type: ElementType.QR_CODE;
   dataSource: QRCodeDataSource;
   errorCorrection: QRCodeErrorCorrection;
   foregroundColor: string; // e.g., "#000000"

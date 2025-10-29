@@ -8,11 +8,11 @@ import {
   ElementType,
   QRCodeElementConfig,
   QRCodeElementPothosDefinition,
-} from "@/server/types/element/output";
+} from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
-import { ElementUtils, QRCodeElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
 import { merge } from "lodash";
+import { BaseElementUtils, QRCodeElementUtils } from "@/server/utils/element";
 
 /**
  * Repository for QR_CODE element operations
@@ -33,22 +33,12 @@ export namespace QRCodeElementRepository {
     // 1. Validate input
     await QRCodeElementUtils.validateCreateInput(input);
 
-    // 2. Extract FKs from config (none for QR_CODE)
-    const fontId = ElementUtils.extractFontId(input.config);
-    const templateVariableId = ElementUtils.extractTemplateVariableId(
-      input.config
-    );
-    const storageFileId = ElementUtils.extractStorageFileId(input.config);
-
     // 3. Insert element
     const [element] = await db
       .insert(certificateElement)
       .values({
         ...input,
         type: ElementType.QR_CODE,
-        fontId,
-        templateVariableId,
-        storageFileId,
         createdAt: new Date(),
         updatedAt: new Date(),
       })
@@ -85,26 +75,14 @@ export namespace QRCodeElementRepository {
 
     // 4. Build update object (exclude config as it needs special handling)
     const { config: _, ...baseUpdates } = input;
-    const updates: Partial<CertificateElementEntity> = {
-      ...baseUpdates,
-      updatedAt: new Date(),
-    };
+    const updates = BaseElementUtils.baseUpdates(baseUpdates, existing);
 
     // 5. If config is being updated, deep merge and re-extract FKs
     if (input.config) {
       // Deep merge partial config with existing to preserve nested properties
-      const mergedConfig: QRCodeElementConfig = merge(
-        {},
-        existing.config,
-        input.config
-      );
-      updates.config = mergedConfig;
+      const mergedConfig = merge({}, existing.config, input.config);
 
-      // Re-extract FKs from merged config
-      updates.fontId = ElementUtils.extractFontId(mergedConfig);
-      updates.templateVariableId =
-        ElementUtils.extractTemplateVariableId(mergedConfig);
-      updates.storageFileId = ElementUtils.extractStorageFileId(mergedConfig);
+      updates.config = mergedConfig;
     }
 
     // 6. Update element
@@ -154,4 +132,3 @@ export namespace QRCodeElementRepository {
     });
   };
 }
-

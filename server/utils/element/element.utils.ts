@@ -1,4 +1,20 @@
-import { ElementConfigUnion, ElementType, FontSource } from "../../types";
+import { FontSource } from "../../types";
+
+type FontRefConfig = {
+  textProps?: {
+    fontRef?: {
+      type: FontSource;
+      fontId?: number | null;
+    } | null;
+  } | null;
+};
+
+type VariableDataSource = {
+  dataSource?: {
+    type: unknown;
+    variableId?: number | null;
+  } | null;
+};
 
 /**
  * Element utility functions for validation and business logic
@@ -89,14 +105,22 @@ export namespace ElementUtils {
    * Returns fontId if element has textProps and uses SELF_HOSTED font
    * Applies to: TEXT, DATE, NUMBER, COUNTRY, GENDER
    */
-  export const extractFontId = (config: ElementConfigUnion): number | null => {
-    // Only TEXT, DATE, NUMBER, COUNTRY, GENDER have textProps
-    if (!("textProps" in config)) return null;
+  export const extractFontIdFromConfigTextProps = (
+    config?: FontRefConfig | null
+  ): number | null | undefined => {
+    if (!config) return config;
 
     const { textProps } = config;
-    if (textProps.fontRef.type === FontSource.SELF_HOSTED) {
-      return textProps.fontRef.fontId;
+
+    if (!textProps) return textProps;
+
+    const fontRef = textProps.fontRef;
+    if (!fontRef) return fontRef;
+
+    if (fontRef.type === FontSource.SELF_HOSTED) {
+      return fontRef.fontId;
     }
+
     return null;
   };
 
@@ -108,31 +132,39 @@ export namespace ElementUtils {
    * - DATE: when using TEMPLATE_DATE_VARIABLE
    * - NUMBER: ALWAYS (always uses TEMPLATE_NUMBER_VARIABLE)
    */
-  export const extractTemplateVariableId = (
-    config: ElementConfigUnion
-  ): number | null => {
-    if (!("dataSource" in config)) return null;
+  export const extractTemplateVariableIdFromConfigDataSource = (
+    config?: VariableDataSource | null
+  ): number | null | undefined => {
+    if (!config) return config;
 
     const { dataSource } = config;
+    if (!dataSource) return dataSource;
 
-    // Check if dataSource has variableId property
     if ("variableId" in dataSource) {
       return dataSource.variableId;
     }
+
     return null;
   };
 
-  /**
-   * Extract storageFileId from config
-   * Returns storageFileId for IMAGE elements only
-   * Applies to: IMAGE only
-   */
-  export const extractStorageFileId = (
-    config: ElementConfigUnion
-  ): number | null => {
-    // Only IMAGE elements have storageFileId
-    if (config.type !== ElementType.IMAGE) return null;
+  // to support partial updates, we return undefined when value is not present, so it will not be overwritten
+  export const extractStorageFileIdFromConfigTextProps = (
+    config?: FontRefConfig | null
+  ): number | null | undefined => {
+    if (!config) return config;
 
-    return config.dataSource.storageFileId;
+    const { textProps } = config;
+    if (!textProps) return textProps;
+
+    const fontRef = textProps.fontRef;
+    if (!fontRef) return fontRef;
+
+    if (fontRef.type === "SELF_HOSTED") {
+      if (!fontRef.fontId) {
+        throw new Error("Font ID is required for SELF_HOSTED fonts");
+      }
+      return fontRef.fontId;
+    }
+    return null;
   };
 }

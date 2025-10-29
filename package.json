@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare": "husky",
     "dev": "next dev --turbopack",
-    "dev:inspect": "NODE_OPTIONS='--inspect' next dev --turbopack",
     "debug": "next dev --turbopack",
+    "dev:inspect": "NODE_OPTIONS='--inspect' next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -13,12 +14,10 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "tsc": "tsc --noEmit",
-    "test": "bun test --timeout=60000",
-    "test:md5": "bun test client/views/storage/hooks/__tests__/storage.util.test.ts",
     "generate:gqlSchema": "bun run server/graphql/generateGqlSchema.ts",
-    "prepare": "husky",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "test": "bun test --timeout=60000"
   },
   "dependencies": {
     "@apollo/client": "^4.0.7",

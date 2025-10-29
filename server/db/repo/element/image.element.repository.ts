@@ -8,11 +8,12 @@ import {
   ImageElementPothosDefinition,
   ElementType,
   ImageElementConfig,
-} from "@/server/types/element/output";
+} from "@/server/types/element";
 import { ElementRepository } from "./element.repository";
-import { ElementUtils, ImageElementUtils } from "@/server/utils";
+import { ImageElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
 import { merge } from "lodash";
+import { BaseElementUtils } from "@/server/utils/element";
 
 /**
  * Repository for IMAGE element operations
@@ -34,9 +35,7 @@ export namespace ImageElementRepository {
     await ImageElementUtils.validateCreateInput(input);
 
     // 2. Extract FKs from config
-    const storageFileId = ElementUtils.extractStorageFileId(input.config);
-    const fontId = null; // IMAGE elements don't have textProps
-    const templateVariableId = null; // IMAGE elements don't use variables
+    const storageFileId = ImageElementUtils.extractStorageFileId(input.config);
 
     // 3. Insert element
     const [element] = await db
@@ -44,8 +43,6 @@ export namespace ImageElementRepository {
       .values({
         ...input,
         type: ElementType.IMAGE,
-        fontId,
-        templateVariableId,
         storageFileId,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -83,27 +80,21 @@ export namespace ImageElementRepository {
 
     // 4. Build update object (exclude config as it needs special handling)
     const { config: _, ...baseUpdates } = input;
-    const updates: Partial<CertificateElementEntity> = {
-      ...baseUpdates,
-      updatedAt: new Date(),
-    };
+    const updates = BaseElementUtils.baseUpdates(baseUpdates, existing);
 
     // 5. If config is being updated, deep merge and re-extract FKs
     if (input.config) {
       // Deep merge partial config with existing to preserve nested properties
-      const mergedConfig: ImageElementConfig = merge(
-        {},
-        existing.config,
-        input.config
-      );
+      const mergedConfig = merge({}, existing.config, input.config);
 
       // Validate merged config
-      await ImageElementUtils.validateConfig(mergedConfig);
+      // await ImageElementUtils.validateConfig(input.config);
 
       // Apply merged config and extract FKs
+      updates.storageFileId = ImageElementUtils.extractStorageFileId(
+        input.config
+      );
       updates.config = mergedConfig;
-      updates.storageFileId = ElementUtils.extractStorageFileId(mergedConfig);
-      // IMAGE elements don't have fontId or templateVariableId
     }
 
     // 6. Update

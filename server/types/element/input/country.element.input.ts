@@ -9,7 +9,6 @@ import {
 import {
   CountryDataSourceType,
   CountryRepresentation,
-  ElementType,
 } from "../output";
 
 // ============================================================================
@@ -26,14 +25,12 @@ export type CountryDataSourceInput = {
 
 // Repository input type (matches Config structure)
 export type CountryElementConfigCreateInput = {
-  type: ElementType.COUNTRY;
   textProps: TextPropsCreateInput;
   representation: CountryRepresentation;
   dataSource: CountryDataSourceInput;
 };
 
 export type CountryElementConfigUpdateInput = {
-  type: ElementType.COUNTRY;
   textProps?: TextPropsUpdateInput | null;
   representation?: CountryRepresentation | null;
   dataSource?: CountryDataSourceInput | null;

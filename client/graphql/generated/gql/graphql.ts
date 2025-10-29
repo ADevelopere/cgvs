@@ -24,6 +24,8 @@ export type Scalars = {
   JSON: { input: any; output: any; }
   /** A type representing a validated phone number */
   PhoneNumber: { input: any; output: any; }
+  /** A map of string keys to string values (Record<string, string>) */
+  StringMap: { input: any; output: any; }
 };
 
 export type BulkOperationFailure = {
@@ -41,6 +43,35 @@ export type BulkOperationResult = {
   successCount?: Maybe<Scalars['Int']['output']>;
   successfulItems?: Maybe<Array<StorageObject>>;
 };
+
+export type CalendarType =
+  | 'GREGORIAN'
+  | 'HIJRI';
+
+export type CertificateDateField =
+  | 'RELEASE_DATE';
+
+export type CertificateElement = {
+  alignment?: Maybe<ElementAlignment>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  height?: Maybe<Scalars['Int']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  positionX?: Maybe<Scalars['Int']['output']>;
+  positionY?: Maybe<Scalars['Int']['output']>;
+  renderOrder?: Maybe<Scalars['Int']['output']>;
+  template?: Maybe<Template>;
+  templateId?: Maybe<Scalars['Int']['output']>;
+  type?: Maybe<ElementType>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  width?: Maybe<Scalars['Int']['output']>;
+};
+
+export type CertificateElementUnion = CountryElement | DateElement | GenderElement | ImageElement | NumberElement | QrCodeElement | TextElement;
+
+export type CertificateTextField =
+  | 'VERIFICATION_CODE';
 
 export type CountryCode =
   | 'AD'
@@ -290,6 +321,219 @@ export type CountryCode =
   | 'ZM'
   | 'ZW';
 
+export type CountryDataSource = CountryDataSourceStudentNationality;
+
+export type CountryDataSourceInput =
+  { studentNationality: CountryDataSourceStudentNationalityInput; };
+
+export type CountryDataSourceStudentNationality = {
+  __typename?: 'CountryDataSourceStudentNationality';
+  type?: Maybe<CountryDataSourceType>;
+};
+
+export type CountryDataSourceStudentNationalityInput = {};
+
+export type CountryDataSourceType =
+  | 'STUDENT_NATIONALITY';
+
+export type CountryElement = CertificateElement & {
+  __typename?: 'CountryElement';
+  alignment?: Maybe<ElementAlignment>;
+  config?: Maybe<CountryElementConfig>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  height?: Maybe<Scalars['Int']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  positionX?: Maybe<Scalars['Int']['output']>;
+  positionY?: Maybe<Scalars['Int']['output']>;
+  renderOrder?: Maybe<Scalars['Int']['output']>;
+  template?: Maybe<Template>;
+  templateId?: Maybe<Scalars['Int']['output']>;
+  type?: Maybe<ElementType>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  width?: Maybe<Scalars['Int']['output']>;
+};
+
+export type CountryElementConfig = {
+  __typename?: 'CountryElementConfig';
+  dataSource?: Maybe<CountryDataSource>;
+  representation?: Maybe<CountryRepresentation>;
+  textProps?: Maybe<TextProps>;
+};
+
+export type CountryElementConfigInput = {
+  dataSource: CountryDataSourceInput;
+  representation: CountryRepresentation;
+  textProps: TextPropsInput;
+};
+
+export type CountryElementConfigUpdateInput = {
+  dataSource?: InputMaybe<CountryDataSourceInput>;
+  representation?: InputMaybe<CountryRepresentation>;
+  textProps?: InputMaybe<TextPropsUpdateInput>;
+};
+
+export type CountryElementCreateInput = {
+  alignment: ElementAlignment;
+  config: CountryElementConfigInput;
+  description: Scalars['String']['input'];
+  height: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  positionX: Scalars['Int']['input'];
+  positionY: Scalars['Int']['input'];
+  renderOrder: Scalars['Int']['input'];
+  templateId: Scalars['Int']['input'];
+  width: Scalars['Int']['input'];
+};
+
+export type CountryElementUpdateInput = {
+  alignment?: InputMaybe<ElementAlignment>;
+  config?: InputMaybe<CountryElementConfigUpdateInput>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  height?: InputMaybe<Scalars['Int']['input']>;
+  id: Scalars['Int']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  positionX?: InputMaybe<Scalars['Int']['input']>;
+  positionY?: InputMaybe<Scalars['Int']['input']>;
+  renderOrder?: InputMaybe<Scalars['Int']['input']>;
+  width?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type CountryRepresentation =
+  | 'COUNTRY_NAME'
+  | 'NATIONALITY';
+
+export type DateDataSource = DateDataSourceCertificateField | DateDataSourceStatic | DateDataSourceStudentField | DateDataSourceTemplateVariable;
+
+export type DateDataSourceCertificateField = {
+  __typename?: 'DateDataSourceCertificateField';
+  field?: Maybe<CertificateDateField>;
+  type?: Maybe<DateDataSourceType>;
+};
+
+export type DateDataSourceCertificateFieldInput = {
+  field: CertificateDateField;
+};
+
+export type DateDataSourceInput =
+  { certificateField: DateDataSourceCertificateFieldInput; static?: never; studentField?: never; templateVariable?: never; }
+  |  { certificateField?: never; static: DateDataSourceStaticInput; studentField?: never; templateVariable?: never; }
+  |  { certificateField?: never; static?: never; studentField: DateDataSourceStudentFieldInput; templateVariable?: never; }
+  |  { certificateField?: never; static?: never; studentField?: never; templateVariable: DateDataSourceTemplateVariableInput; };
+
+export type DateDataSourceStatic = {
+  __typename?: 'DateDataSourceStatic';
+  type?: Maybe<DateDataSourceType>;
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type DateDataSourceStaticInput = {
+  value: Scalars['String']['input'];
+};
+
+export type DateDataSourceStudentField = {
+  __typename?: 'DateDataSourceStudentField';
+  field?: Maybe<StudentDateField>;
+  type?: Maybe<DateDataSourceType>;
+};
+
+export type DateDataSourceStudentFieldInput = {
+  field: StudentDateField;
+};
+
+export type DateDataSourceTemplateVariable = {
+  __typename?: 'DateDataSourceTemplateVariable';
+  type?: Maybe<DateDataSourceType>;
+  variableId?: Maybe<Scalars['Int']['output']>;
+};
+
+export type DateDataSourceTemplateVariableInput = {
+  variableId: Scalars['Int']['input'];
+};
+
+export type DateDataSourceType =
+  | 'CERTIFICATE_DATE_FIELD'
+  | 'STATIC'
+  | 'STUDENT_DATE_FIELD'
+  | 'TEMPLATE_DATE_VARIABLE';
+
+export type DateElement = CertificateElement & {
+  __typename?: 'DateElement';
+  alignment?: Maybe<ElementAlignment>;
+  config?: Maybe<DateElementConfig>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  height?: Maybe<Scalars['Int']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  positionX?: Maybe<Scalars['Int']['output']>;
+  positionY?: Maybe<Scalars['Int']['output']>;
+  renderOrder?: Maybe<Scalars['Int']['output']>;
+  template?: Maybe<Template>;
+  templateId?: Maybe<Scalars['Int']['output']>;
+  type?: Maybe<ElementType>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  width?: Maybe<Scalars['Int']['output']>;
+};
+
+export type DateElementConfig = {
+  __typename?: 'DateElementConfig';
+  calendarType?: Maybe<CalendarType>;
+  dataSource?: Maybe<DateDataSource>;
+  format?: Maybe<Scalars['String']['output']>;
+  offsetDays?: Maybe<Scalars['Int']['output']>;
+  textProps?: Maybe<TextProps>;
+  transformation?: Maybe<DateTransformationType>;
+};
+
+export type DateElementConfigInput = {
+  calendarType: CalendarType;
+  dataSource: DateDataSourceInput;
+  format: Scalars['String']['input'];
+  offsetDays: Scalars['Int']['input'];
+  textProps: TextPropsInput;
+  transformation?: InputMaybe<DateTransformationType>;
+};
+
+export type DateElementConfigUpdateInput = {
+  calendarType?: InputMaybe<CalendarType>;
+  dataSource?: InputMaybe<DateDataSourceInput>;
+  format?: InputMaybe<Scalars['String']['input']>;
+  offsetDays?: InputMaybe<Scalars['Int']['input']>;
+  textProps?: InputMaybe<TextPropsUpdateInput>;
+  transformation?: InputMaybe<DateTransformationType>;
+};
+
+export type DateElementCreateInput = {
+  alignment: ElementAlignment;
+  config: DateElementConfigInput;
+  description: Scalars['String']['input'];
+  height: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  positionX: Scalars['Int']['input'];
+  positionY: Scalars['Int']['input'];
+  renderOrder: Scalars['Int']['input'];
+  templateId: Scalars['Int']['input'];
+  width: Scalars['Int']['input'];
+};
+
+export type DateElementUpdateInput = {
+  alignment?: InputMaybe<ElementAlignment>;
+  config?: InputMaybe<DateElementConfigUpdateInput>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  height?: InputMaybe<Scalars['Int']['input']>;
+  id: Scalars['Int']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  positionX?: InputMaybe<Scalars['Int']['input']>;
+  positionY?: InputMaybe<Scalars['Int']['input']>;
+  renderOrder?: InputMaybe<Scalars['Int']['input']>;
+  width?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type DateTransformationType =
+  | 'AGE_CALCULATION';
+
 export type DirectoryInfo = StorageObject & {
   __typename?: 'DirectoryInfo';
   createdAt?: Maybe<Scalars['DateTime']['output']>;
@@ -328,6 +572,39 @@ export type DirectoryPermissionsUpdateInput = {
   path: Scalars['String']['input'];
   permissions: DirectoryPermissionsInput;
 };
+
+export type ElementAlignment =
+  | 'BASELINE'
+  | 'BOTTOM'
+  | 'CENTER'
+  | 'END'
+  | 'START'
+  | 'TOP';
+
+export type ElementImageFit =
+  | 'CONTAIN'
+  | 'COVER'
+  | 'FILL';
+
+export type ElementOrderUpdateInput = {
+  id: Scalars['Int']['input'];
+  renderOrder: Scalars['Int']['input'];
+};
+
+export type ElementOverflow =
+  | 'ELLIPSE'
+  | 'RESIZE_DOWN'
+  | 'TRUNCATE'
+  | 'WRAP';
+
+export type ElementType =
+  | 'COUNTRY'
+  | 'DATE'
+  | 'GENDER'
+  | 'IMAGE'
+  | 'NUMBER'
+  | 'QR_CODE'
+  | 'TEXT';
 
 export type FileInfo = StorageObject & {
   __typename?: 'FileInfo';
@@ -463,6 +740,36 @@ export type FontFilterArgs = {
   updatedAtTo?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+export type FontReference = FontReferenceGoogle | FontReferenceSelfHosted;
+
+export type FontReferenceGoogle = {
+  __typename?: 'FontReferenceGoogle';
+  identifier?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<FontSource>;
+};
+
+export type FontReferenceGoogleInput = {
+  identifier: Scalars['String']['input'];
+};
+
+export type FontReferenceInput =
+  { google: FontReferenceGoogleInput; selfHosted?: never; }
+  |  { google?: never; selfHosted: FontReferenceSelfHostedInput; };
+
+export type FontReferenceSelfHosted = {
+  __typename?: 'FontReferenceSelfHosted';
+  fontId?: Maybe<Scalars['Int']['output']>;
+  type?: Maybe<FontSource>;
+};
+
+export type FontReferenceSelfHostedInput = {
+  fontId: Scalars['Int']['input'];
+};
+
+export type FontSource =
+  | 'GOOGLE'
+  | 'SELF_HOSTED';
+
 export type FontUpdateInput = {
   id: Scalars['Int']['input'];
   locale: Array<Scalars['String']['input']>;
@@ -508,6 +815,159 @@ export type Gender =
   | 'FEMALE'
   | 'MALE';
 
+export type GenderDataSourceInput =
+  { studentGender: GenderDataSourceStudentGenderInput; };
+
+export type GenderDataSourceStudentGender = {
+  __typename?: 'GenderDataSourceStudentGender';
+  type?: Maybe<GenderDataSourceType>;
+};
+
+export type GenderDataSourceStudentGenderInput = {};
+
+export type GenderDataSourceType =
+  | 'STUDENT_GENDER';
+
+export type GenderElement = CertificateElement & {
+  __typename?: 'GenderElement';
+  alignment?: Maybe<ElementAlignment>;
+  config?: Maybe<GenderElementConfig>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  height?: Maybe<Scalars['Int']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  positionX?: Maybe<Scalars['Int']['output']>;
+  positionY?: Maybe<Scalars['Int']['output']>;
+  renderOrder?: Maybe<Scalars['Int']['output']>;
+  template?: Maybe<Template>;
+  templateId?: Maybe<Scalars['Int']['output']>;
+  type?: Maybe<ElementType>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  width?: Maybe<Scalars['Int']['output']>;
+};
+
+export type GenderElementConfig = {
+  __typename?: 'GenderElementConfig';
+  dataSource?: Maybe<GenderDataSourceStudentGender>;
+  textProps?: Maybe<TextProps>;
+};
+
+export type GenderElementConfigInput = {
+  dataSource: GenderDataSourceInput;
+  textProps: TextPropsInput;
+};
+
+export type GenderElementConfigUpdateInput = {
+  dataSource?: InputMaybe<GenderDataSourceInput>;
+  textProps?: InputMaybe<TextPropsUpdateInput>;
+};
+
+export type GenderElementCreateInput = {
+  alignment: ElementAlignment;
+  config: GenderElementConfigInput;
+  description: Scalars['String']['input'];
+  height: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  positionX: Scalars['Int']['input'];
+  positionY: Scalars['Int']['input'];
+  renderOrder: Scalars['Int']['input'];
+  templateId: Scalars['Int']['input'];
+  width: Scalars['Int']['input'];
+};
+
+export type GenderElementUpdateInput = {
+  alignment?: InputMaybe<ElementAlignment>;
+  config?: InputMaybe<GenderElementConfigUpdateInput>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  height?: InputMaybe<Scalars['Int']['input']>;
+  id: Scalars['Int']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  positionX?: InputMaybe<Scalars['Int']['input']>;
+  positionY?: InputMaybe<Scalars['Int']['input']>;
+  renderOrder?: InputMaybe<Scalars['Int']['input']>;
+  width?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ImageDataSource = ImageDataSourceStorageFile;
+
+export type ImageDataSourceInput =
+  { storageFile: ImageDataSourceStorageFileInput; };
+
+export type ImageDataSourceStorageFile = {
+  __typename?: 'ImageDataSourceStorageFile';
+  storageFileId?: Maybe<Scalars['Int']['output']>;
+  type?: Maybe<ImageDataSourceType>;
+};
+
+export type ImageDataSourceStorageFileInput = {
+  storageFileId: Scalars['Int']['input'];
+};
+
+export type ImageDataSourceType =
+  | 'STORAGE_FILE';
+
+export type ImageElement = CertificateElement & {
+  __typename?: 'ImageElement';
+  alignment?: Maybe<ElementAlignment>;
+  config?: Maybe<ImageElementConfig>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  height?: Maybe<Scalars['Int']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  positionX?: Maybe<Scalars['Int']['output']>;
+  positionY?: Maybe<Scalars['Int']['output']>;
+  renderOrder?: Maybe<Scalars['Int']['output']>;
+  template?: Maybe<Template>;
+  templateId?: Maybe<Scalars['Int']['output']>;
+  type?: Maybe<ElementType>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  width?: Maybe<Scalars['Int']['output']>;
+};
+
+export type ImageElementConfig = {
+  __typename?: 'ImageElementConfig';
+  dataSource?: Maybe<ImageDataSource>;
+  fit?: Maybe<ElementImageFit>;
+};
+
+export type ImageElementConfigInput = {
+  dataSource: ImageDataSourceInput;
+  fit: ElementImageFit;
+};
+
+export type ImageElementConfigUpdateInput = {
+  dataSource?: InputMaybe<ImageDataSourceInput>;
+  fit?: InputMaybe<ElementImageFit>;
+};
+
+export type ImageElementCreateInput = {
+  alignment: ElementAlignment;
+  config: ImageElementConfigInput;
+  description: Scalars['String']['input'];
+  height: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  positionX: Scalars['Int']['input'];
+  positionY: Scalars['Int']['input'];
+  renderOrder: Scalars['Int']['input'];
+  templateId: Scalars['Int']['input'];
+  width: Scalars['Int']['input'];
+};
+
+export type ImageElementUpdateInput = {
+  alignment?: InputMaybe<ElementAlignment>;
+  config?: InputMaybe<ImageElementConfigUpdateInput>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  height?: InputMaybe<Scalars['Int']['input']>;
+  id: Scalars['Int']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  positionX?: InputMaybe<Scalars['Int']['input']>;
+  positionY?: InputMaybe<Scalars['Int']['input']>;
+  renderOrder?: InputMaybe<Scalars['Int']['input']>;
+  width?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type LoginInput = {
   email: Scalars['Email']['input'];
   password: Scalars['String']['input'];
@@ -522,8 +982,14 @@ export type LoginResponse = {
 export type Mutation = {
   __typename?: 'Mutation';
   copyStorageItems?: Maybe<BulkOperationResult>;
+  createCountryElement?: Maybe<CountryElement>;
+  createDateElement?: Maybe<DateElement>;
   createFolder?: Maybe<FileOperationResult>;
   createFont: Font;
+  createGenderElement?: Maybe<GenderElement>;
+  createImageElement?: Maybe<ImageElement>;
+  createNumberElement?: Maybe<NumberElement>;
+  createQRCodeElement?: Maybe<QrCodeElement>;
   createRecipient: TemplateRecipient;
   createRecipients: Array<TemplateRecipient>;
   createStudent?: Maybe<Student>;
@@ -534,6 +1000,9 @@ export type Mutation = {
   createTemplateRecipientGroup?: Maybe<TemplateRecipientGroup>;
   createTemplateSelectVariable?: Maybe<TemplateSelectVariable>;
   createTemplateTextVariable?: Maybe<TemplateTextVariable>;
+  createTextElement?: Maybe<TextElement>;
+  deleteElement?: Maybe<Scalars['Boolean']['output']>;
+  deleteElements?: Maybe<Scalars['Boolean']['output']>;
   deleteFile?: Maybe<FileOperationResult>;
   deleteFont: Font;
   deleteRecipient: TemplateRecipient;
@@ -555,9 +1024,17 @@ export type Mutation = {
   setRecipientVariableValues?: Maybe<RecipientWithVariableValues>;
   setStorageItemProtection?: Maybe<FileOperationResult>;
   suspendTemplate?: Maybe<Template>;
+  testFontReferenceInput?: Maybe<Scalars['String']['output']>;
   unsuspendTemplate?: Maybe<Template>;
+  updateCountryElement?: Maybe<CountryElement>;
+  updateDateElement?: Maybe<DateElement>;
   updateDirectoryPermissions?: Maybe<FileOperationResult>;
+  updateElementsRenderOrder?: Maybe<Scalars['Boolean']['output']>;
   updateFont: Font;
+  updateGenderElement?: Maybe<GenderElement>;
+  updateImageElement?: Maybe<ImageElement>;
+  updateNumberElement?: Maybe<NumberElement>;
+  updateQRCodeElement?: Maybe<QrCodeElement>;
   updateTemplate?: Maybe<Template>;
   updateTemplateCategory: TemplateCategory;
   updateTemplateDateVariable?: Maybe<TemplateDateVariable>;
@@ -565,11 +1042,22 @@ export type Mutation = {
   updateTemplateRecipientGroup?: Maybe<TemplateRecipientGroup>;
   updateTemplateSelectVariable?: Maybe<TemplateSelectVariable>;
   updateTemplateTextVariable?: Maybe<TemplateTextVariable>;
+  updateTextElement?: Maybe<TextElement>;
 };
 
 
 export type MutationCopyStorageItemsArgs = {
   input: StorageItemsCopyInput;
+};
+
+
+export type MutationCreateCountryElementArgs = {
+  input: CountryElementCreateInput;
+};
+
+
+export type MutationCreateDateElementArgs = {
+  input: DateElementCreateInput;
 };
 
 
@@ -580,6 +1068,26 @@ export type MutationCreateFolderArgs = {
 
 export type MutationCreateFontArgs = {
   input: FontCreateInput;
+};
+
+
+export type MutationCreateGenderElementArgs = {
+  input: GenderElementCreateInput;
+};
+
+
+export type MutationCreateImageElementArgs = {
+  input: ImageElementCreateInput;
+};
+
+
+export type MutationCreateNumberElementArgs = {
+  input: NumberElementCreateInput;
+};
+
+
+export type MutationCreateQrCodeElementArgs = {
+  input: QrCodeElementCreateInput;
 };
 
 
@@ -630,6 +1138,21 @@ export type MutationCreateTemplateSelectVariableArgs = {
 
 export type MutationCreateTemplateTextVariableArgs = {
   input: TemplateTextVariableCreateInput;
+};
+
+
+export type MutationCreateTextElementArgs = {
+  input: TextElementCreateInput;
+};
+
+
+export type MutationDeleteElementArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationDeleteElementsArgs = {
+  ids: Array<Scalars['Int']['input']>;
 };
 
 
@@ -724,8 +1247,23 @@ export type MutationSuspendTemplateArgs = {
 };
 
 
+export type MutationTestFontReferenceInputArgs = {
+  fontRef: FontReferenceInput;
+};
+
+
 export type MutationUnsuspendTemplateArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type MutationUpdateCountryElementArgs = {
+  input: CountryElementUpdateInput;
+};
+
+
+export type MutationUpdateDateElementArgs = {
+  input: DateElementUpdateInput;
 };
 
 
@@ -734,8 +1272,33 @@ export type MutationUpdateDirectoryPermissionsArgs = {
 };
 
 
+export type MutationUpdateElementsRenderOrderArgs = {
+  updates: Array<ElementOrderUpdateInput>;
+};
+
+
 export type MutationUpdateFontArgs = {
   input: FontUpdateInput;
+};
+
+
+export type MutationUpdateGenderElementArgs = {
+  input: GenderElementUpdateInput;
+};
+
+
+export type MutationUpdateImageElementArgs = {
+  input: ImageElementUpdateInput;
+};
+
+
+export type MutationUpdateNumberElementArgs = {
+  input: NumberElementUpdateInput;
+};
+
+
+export type MutationUpdateQrCodeElementArgs = {
+  input: QrCodeElementUpdateInput;
 };
 
 
@@ -771,6 +1334,88 @@ export type MutationUpdateTemplateSelectVariableArgs = {
 
 export type MutationUpdateTemplateTextVariableArgs = {
   input: TemplateTextVariableUpdateInput;
+};
+
+
+export type MutationUpdateTextElementArgs = {
+  input: TextElementUpdateInput;
+};
+
+export type NumberDataSource = {
+  __typename?: 'NumberDataSource';
+  type?: Maybe<NumberDataSourceType>;
+  variableId?: Maybe<Scalars['Int']['output']>;
+};
+
+export type NumberDataSourceInput = {
+  variableId: Scalars['Int']['input'];
+};
+
+export type NumberDataSourceType =
+  | 'TEMPLATE_NUMBER_VARIABLE';
+
+export type NumberElement = CertificateElement & {
+  __typename?: 'NumberElement';
+  alignment?: Maybe<ElementAlignment>;
+  config?: Maybe<NumberElementConfig>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  height?: Maybe<Scalars['Int']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  positionX?: Maybe<Scalars['Int']['output']>;
+  positionY?: Maybe<Scalars['Int']['output']>;
+  renderOrder?: Maybe<Scalars['Int']['output']>;
+  template?: Maybe<Template>;
+  templateId?: Maybe<Scalars['Int']['output']>;
+  type?: Maybe<ElementType>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  width?: Maybe<Scalars['Int']['output']>;
+};
+
+export type NumberElementConfig = {
+  __typename?: 'NumberElementConfig';
+  dataSource?: Maybe<NumberDataSource>;
+  mapping?: Maybe<Scalars['StringMap']['output']>;
+  textProps?: Maybe<TextProps>;
+};
+
+export type NumberElementConfigInput = {
+  dataSource: NumberDataSourceInput;
+  mapping: Scalars['StringMap']['input'];
+  textProps: TextPropsInput;
+};
+
+export type NumberElementConfigUpdateInput = {
+  dataSource?: InputMaybe<NumberDataSourceInput>;
+  mapping?: InputMaybe<Scalars['StringMap']['input']>;
+  textProps?: InputMaybe<TextPropsUpdateInput>;
+};
+
+export type NumberElementCreateInput = {
+  alignment: ElementAlignment;
+  config: NumberElementConfigInput;
+  description: Scalars['String']['input'];
+  height: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  positionX: Scalars['Int']['input'];
+  positionY: Scalars['Int']['input'];
+  renderOrder: Scalars['Int']['input'];
+  templateId: Scalars['Int']['input'];
+  width: Scalars['Int']['input'];
+};
+
+export type NumberElementUpdateInput = {
+  alignment?: InputMaybe<ElementAlignment>;
+  config?: InputMaybe<NumberElementConfigUpdateInput>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  height?: InputMaybe<Scalars['Int']['input']>;
+  id: Scalars['Int']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  positionX?: InputMaybe<Scalars['Int']['input']>;
+  positionY?: InputMaybe<Scalars['Int']['input']>;
+  renderOrder?: InputMaybe<Scalars['Int']['input']>;
+  width?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type OrderSortDirection =
@@ -813,11 +1458,109 @@ export type PartialStudentUpdateInput = {
   phoneNumber?: InputMaybe<Scalars['PhoneNumber']['input']>;
 };
 
+export type QrCodeDataSource = QrCodeDataSourceVerificationCode | QrCodeDataSourceVerificationUrl;
+
+export type QrCodeDataSourceInput =
+  { verificationCode: QrCodeDataSourceVerificationCodeInput; verificationUrl?: never; }
+  |  { verificationCode?: never; verificationUrl: QrCodeDataSourceVerificationUrlInput; };
+
+export type QrCodeDataSourceType =
+  | 'VERIFICATION_CODE'
+  | 'VERIFICATION_URL';
+
+export type QrCodeDataSourceVerificationCode = {
+  __typename?: 'QRCodeDataSourceVerificationCode';
+  type?: Maybe<QrCodeDataSourceType>;
+};
+
+export type QrCodeDataSourceVerificationCodeInput = {};
+
+export type QrCodeDataSourceVerificationUrl = {
+  __typename?: 'QRCodeDataSourceVerificationUrl';
+  type?: Maybe<QrCodeDataSourceType>;
+};
+
+export type QrCodeDataSourceVerificationUrlInput = {};
+
+export type QrCodeElement = CertificateElement & {
+  __typename?: 'QRCodeElement';
+  alignment?: Maybe<ElementAlignment>;
+  config?: Maybe<QrCodeElementConfig>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  height?: Maybe<Scalars['Int']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  positionX?: Maybe<Scalars['Int']['output']>;
+  positionY?: Maybe<Scalars['Int']['output']>;
+  renderOrder?: Maybe<Scalars['Int']['output']>;
+  template?: Maybe<Template>;
+  templateId?: Maybe<Scalars['Int']['output']>;
+  type?: Maybe<ElementType>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  width?: Maybe<Scalars['Int']['output']>;
+};
+
+export type QrCodeElementConfig = {
+  __typename?: 'QRCodeElementConfig';
+  backgroundColor?: Maybe<Scalars['String']['output']>;
+  dataSource?: Maybe<QrCodeDataSource>;
+  errorCorrection?: Maybe<QrCodeErrorCorrection>;
+  foregroundColor?: Maybe<Scalars['String']['output']>;
+};
+
+export type QrCodeElementConfigInput = {
+  backgroundColor: Scalars['String']['input'];
+  dataSource: QrCodeDataSourceInput;
+  errorCorrection: QrCodeErrorCorrection;
+  foregroundColor: Scalars['String']['input'];
+};
+
+export type QrCodeElementConfigUpdateInput = {
+  backgroundColor?: InputMaybe<Scalars['String']['input']>;
+  dataSource?: InputMaybe<QrCodeDataSourceInput>;
+  errorCorrection?: InputMaybe<QrCodeErrorCorrection>;
+  foregroundColor?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type QrCodeElementCreateInput = {
+  alignment: ElementAlignment;
+  config: QrCodeElementConfigInput;
+  description: Scalars['String']['input'];
+  height: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  positionX: Scalars['Int']['input'];
+  positionY: Scalars['Int']['input'];
+  renderOrder: Scalars['Int']['input'];
+  templateId: Scalars['Int']['input'];
+  width: Scalars['Int']['input'];
+};
+
+export type QrCodeElementUpdateInput = {
+  alignment?: InputMaybe<ElementAlignment>;
+  config?: InputMaybe<QrCodeElementConfigUpdateInput>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  height?: InputMaybe<Scalars['Int']['input']>;
+  id: Scalars['Int']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  positionX?: InputMaybe<Scalars['Int']['input']>;
+  positionY?: InputMaybe<Scalars['Int']['input']>;
+  renderOrder?: InputMaybe<Scalars['Int']['input']>;
+  width?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type QrCodeErrorCorrection =
+  | 'H'
+  | 'L'
+  | 'M'
+  | 'Q';
+
 export type Query = {
   __typename?: 'Query';
   categoryChildren: Array<TemplateCategory>;
   checkFontUsage: FontUsageCheckResult;
   directoryChildren?: Maybe<Array<DirectoryInfo>>;
+  elementsByTemplateId?: Maybe<Array<CertificateElementUnion>>;
   fileInfo?: Maybe<FileInfo>;
   fileUsage?: Maybe<FileUsageResult>;
   folderInfo?: Maybe<DirectoryInfo>;
@@ -870,6 +1613,11 @@ export type QueryCheckFontUsageArgs = {
 
 export type QueryDirectoryChildrenArgs = {
   path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryElementsByTemplateIdArgs = {
+  templateId: Scalars['Int']['input'];
 };
 
 
@@ -1129,6 +1877,9 @@ export type StudentCreateInput = {
   phoneNumber?: InputMaybe<Scalars['PhoneNumber']['input']>;
 };
 
+export type StudentDateField =
+  | 'DATE_OF_BIRTH';
+
 export type StudentFilterArgs = {
   birthDate?: InputMaybe<Scalars['DateTime']['input']>;
   birthDateAfter?: InputMaybe<Scalars['DateTime']['input']>;
@@ -1170,6 +1921,10 @@ export type StudentFilterArgs = {
   nationality?: InputMaybe<CountryCode>;
   phoneNumber?: InputMaybe<Scalars['PhoneNumber']['input']>;
 };
+
+export type StudentTextField =
+  | 'STUDENT_EMAIL'
+  | 'STUDENT_NAME';
 
 export type StudentsOrderByClause = {
   column: StudentsOrderByColumn;
@@ -1514,6 +2269,155 @@ export type TemplatesWithFiltersResponse = {
   __typename?: 'TemplatesWithFiltersResponse';
   data: Array<Template>;
   pageInfo: PageInfo;
+};
+
+export type TextDataSource = TextDataSourceCertificateField | TextDataSourceStatic | TextDataSourceStudentField | TextDataSourceTemplateSelectVariable | TextDataSourceTemplateTextVariable;
+
+export type TextDataSourceCertificateField = {
+  __typename?: 'TextDataSourceCertificateField';
+  field?: Maybe<CertificateTextField>;
+  type?: Maybe<TextDataSourceType>;
+};
+
+export type TextDataSourceCertificateFieldInput = {
+  field: CertificateTextField;
+};
+
+export type TextDataSourceInput =
+  { certificateField: TextDataSourceCertificateFieldInput; static?: never; studentField?: never; templateSelectVariable?: never; templateTextVariable?: never; }
+  |  { certificateField?: never; static: TextDataSourceStaticInput; studentField?: never; templateSelectVariable?: never; templateTextVariable?: never; }
+  |  { certificateField?: never; static?: never; studentField: TextDataSourceStudentFieldInput; templateSelectVariable?: never; templateTextVariable?: never; }
+  |  { certificateField?: never; static?: never; studentField?: never; templateSelectVariable: TextDataSourceTemplateSelectVariableInput; templateTextVariable?: never; }
+  |  { certificateField?: never; static?: never; studentField?: never; templateSelectVariable?: never; templateTextVariable: TextDataSourceTemplateTextVariableInput; };
+
+export type TextDataSourceStatic = {
+  __typename?: 'TextDataSourceStatic';
+  type?: Maybe<TextDataSourceType>;
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type TextDataSourceStaticInput = {
+  value: Scalars['String']['input'];
+};
+
+export type TextDataSourceStudentField = {
+  __typename?: 'TextDataSourceStudentField';
+  field?: Maybe<StudentTextField>;
+  type?: Maybe<TextDataSourceType>;
+};
+
+export type TextDataSourceStudentFieldInput = {
+  field: StudentTextField;
+};
+
+export type TextDataSourceTemplateSelectVariable = {
+  __typename?: 'TextDataSourceTemplateSelectVariable';
+  type?: Maybe<TextDataSourceType>;
+  variableId?: Maybe<Scalars['Int']['output']>;
+};
+
+export type TextDataSourceTemplateSelectVariableInput = {
+  variableId: Scalars['Int']['input'];
+};
+
+export type TextDataSourceTemplateTextVariable = {
+  __typename?: 'TextDataSourceTemplateTextVariable';
+  type?: Maybe<TextDataSourceType>;
+  variableId?: Maybe<Scalars['Int']['output']>;
+};
+
+export type TextDataSourceTemplateTextVariableInput = {
+  variableId: Scalars['Int']['input'];
+};
+
+export type TextDataSourceType =
+  | 'CERTIFICATE_TEXT_FIELD'
+  | 'STATIC'
+  | 'STUDENT_TEXT_FIELD'
+  | 'TEMPLATE_SELECT_VARIABLE'
+  | 'TEMPLATE_TEXT_VARIABLE';
+
+export type TextElement = CertificateElement & {
+  __typename?: 'TextElement';
+  alignment?: Maybe<ElementAlignment>;
+  config?: Maybe<TextElementConfig>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  height?: Maybe<Scalars['Int']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  positionX?: Maybe<Scalars['Int']['output']>;
+  positionY?: Maybe<Scalars['Int']['output']>;
+  renderOrder?: Maybe<Scalars['Int']['output']>;
+  template?: Maybe<Template>;
+  templateId?: Maybe<Scalars['Int']['output']>;
+  type?: Maybe<ElementType>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  width?: Maybe<Scalars['Int']['output']>;
+};
+
+export type TextElementConfig = {
+  __typename?: 'TextElementConfig';
+  dataSource?: Maybe<TextDataSource>;
+  textProps?: Maybe<TextProps>;
+};
+
+export type TextElementConfigInput = {
+  dataSource: TextDataSourceInput;
+  textProps: TextPropsInput;
+};
+
+export type TextElementConfigUpdateInput = {
+  dataSource?: InputMaybe<TextDataSourceInput>;
+  textProps?: InputMaybe<TextPropsUpdateInput>;
+};
+
+export type TextElementCreateInput = {
+  alignment: ElementAlignment;
+  config: TextElementConfigInput;
+  description: Scalars['String']['input'];
+  height: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  positionX: Scalars['Int']['input'];
+  positionY: Scalars['Int']['input'];
+  renderOrder: Scalars['Int']['input'];
+  templateId: Scalars['Int']['input'];
+  width: Scalars['Int']['input'];
+};
+
+export type TextElementUpdateInput = {
+  alignment?: InputMaybe<ElementAlignment>;
+  config?: InputMaybe<TextElementConfigUpdateInput>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  height?: InputMaybe<Scalars['Int']['input']>;
+  id: Scalars['Int']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  positionX?: InputMaybe<Scalars['Int']['input']>;
+  positionY?: InputMaybe<Scalars['Int']['input']>;
+  renderOrder?: InputMaybe<Scalars['Int']['input']>;
+  width?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type TextProps = {
+  __typename?: 'TextProps';
+  color?: Maybe<Scalars['String']['output']>;
+  fontRef?: Maybe<FontReference>;
+  fontSize?: Maybe<Scalars['Int']['output']>;
+  overflow?: Maybe<ElementOverflow>;
+};
+
+export type TextPropsInput = {
+  color: Scalars['String']['input'];
+  fontRef: FontReferenceInput;
+  fontSize: Scalars['Int']['input'];
+  overflow: ElementOverflow;
+};
+
+export type TextPropsUpdateInput = {
+  color?: InputMaybe<Scalars['String']['input']>;
+  fontRef?: InputMaybe<FontReferenceInput>;
+  fontSize?: InputMaybe<Scalars['Int']['input']>;
+  overflow?: InputMaybe<ElementOverflow>;
 };
 
 export type UploadSignedUrlGenerateInput = {
