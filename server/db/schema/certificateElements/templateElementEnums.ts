@@ -1,6 +1,18 @@
 import * as ElementTypes from "@/server/types/element";
 import { createPgEnumFromEnum } from "@/server/utils/db.utils";
 
+/**
+ * IMPORTANT: All certificate element enums must be defined in this file.
+ * 
+ * This centralized location prevents circular dependency issues during module initialization.
+ * When Drizzle ORM processes the schema, it needs all enums to be initialized before
+ * any table definitions that reference them. Defining enums in individual table files
+ * (like dateElement.ts, countryElement.ts, etc.) can cause "Cannot access X before initialization"
+ * errors due to the barrel export chain in index.ts.
+ * 
+ * Pattern: Always define enums here, then import them in the table definition files.
+ */
+
 // Element Types
 export const elementTypeEnum = createPgEnumFromEnum(
   "element_type",
@@ -59,6 +71,11 @@ export const certificateDateFieldEnum = createPgEnumFromEnum(
 export const calendarTypeEnum = createPgEnumFromEnum(
   "calendar_type",
   ElementTypes.CalendarType
+);
+
+export const dateTransformationTypeEnum = createPgEnumFromEnum(
+  "date_transformation_type",
+  ElementTypes.DateTransformationType
 );
 
 export const countryRepresentationEnum = createPgEnumFromEnum(
