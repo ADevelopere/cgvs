@@ -244,7 +244,7 @@ export namespace CountryElementUtils {
     }
 
     // Render order validation (if provided)
-    if (input.renderOrder !== undefined) {
+    if (input.renderOrder !== undefined && input.renderOrder !== null) {
       const orderError = await ElementUtils.validateRenderOrder(
         input.renderOrder
       );
