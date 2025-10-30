@@ -19,6 +19,12 @@ export type BaseElementFormErrors = FormErrors<
 // SPECIFIC UPDATE FUNCTION TYPES
 // ============================================================================
 
+export type UpdateBaseElementCreateFn =
+  UpdateStateFn<CertificateElementBaseCreateInput>;
+
+export type UpdateBaseElementUpdateFn =
+  UpdateStateFn<CertificateElementBaseUpdateInput>;
+
 export type UpdateBaseElementFn = UpdateStateFn<
   CertificateElementBaseCreateInput | CertificateElementBaseUpdateInput
 >;

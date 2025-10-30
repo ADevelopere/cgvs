@@ -2,25 +2,27 @@ import React, { type FC } from "react";
 import { Box, Grid, Paper } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import type {
-  TextElementFormState,
+  TextElementFormUpdateState,
   TextElementFormErrors,
-  UpdateBaseElementFn,
-  UpdateTextPropsFn,
   UpdateDataSourceFn,
-  TemplateTextVariable,
-  TemplateSelectVariable,
-  Font,
 } from "./types";
 import { DataSourceForm } from "./TextDataSourceForm";
 import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../../ActionButtons";
+import { UpdateBaseElementUpdateFn } from "../base";
+import { UpdateTextPropsUpdateFn } from "../textProps";
+import {
+  Font,
+  TemplateSelectVariable,
+  TemplateTextVariable,
+} from "@/client/graphql/generated/gql/graphql";
 
 interface TextElementUpdateFormProps {
-  state: TextElementFormState;
+  state: TextElementFormUpdateState;
   errors: TextElementFormErrors;
-  updateBaseElement: UpdateBaseElementFn;
-  updateTextProps: UpdateTextPropsFn;
+  updateBaseElement: UpdateBaseElementUpdateFn;
+  updateTextProps: UpdateTextPropsUpdateFn;
   updateDataSource: UpdateDataSourceFn;
   templateId: number;
   locale: string;
@@ -83,7 +85,7 @@ export const TextElementUpdateForm: FC<TextElementUpdateFormProps> = ({
           <Grid size={{ xs: 12, md: 6 }}>
             <Paper sx={{ p: 3, height: "100%" }}>
               <BaseCertificateElementForm
-                baseProps={state}
+                baseProps={state.base}
                 onFieldChange={updateBaseElement}
                 errors={errors.base}
                 disabled={isSubmitting}
@@ -103,4 +105,3 @@ export const TextElementUpdateForm: FC<TextElementUpdateFormProps> = ({
     </Box>
   );
 };
-

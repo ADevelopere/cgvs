@@ -1,7 +1,10 @@
 import type {
+  CertificateElementBaseCreateInput,
+  CertificateElementBaseUpdateInput,
   TextDataSource,
   TextDataSourceInput,
-  TextDataSourceType,
+  TextPropsCreateInput,
+  TextPropsUpdateInput,
 } from "@/client/graphql/generated/gql/graphql";
 import { FormErrors } from "../types";
 import { TextPropsFormErrors, TextPropsState } from "../textProps";
@@ -18,6 +21,18 @@ import {
 export type TextElementFormState = {
   base: BaseCertificateElementFormState;
   textProps: TextPropsState;
+  dataSource: TextDataSourceInput;
+};
+
+export type TextElementFormCreateState = {
+  base: CertificateElementBaseCreateInput;
+  textProps: TextPropsCreateInput;
+  dataSource: TextDataSourceInput;
+};
+
+export type TextElementFormUpdateState = {
+  base: CertificateElementBaseUpdateInput;
+  textProps: TextPropsUpdateInput;
   dataSource: TextDataSourceInput;
 };
 
@@ -59,9 +74,13 @@ export const textDataSourceToGraphQL = (
     case "TextDataSourceCertificateField":
       return { certificateField: { field: state.certificateField! } };
     case "TextDataSourceTemplateTextVariable":
-      return { templateTextVariable: { variableId: state.textVariableId ?? 0 } };
+      return {
+        templateTextVariable: { variableId: state.textVariableId ?? 0 },
+      };
     case "TextDataSourceTemplateSelectVariable":
-      return { templateSelectVariable: { variableId: state.selectVariableId ?? 0 } };
+      return {
+        templateSelectVariable: { variableId: state.selectVariableId ?? 0 },
+      };
     default:
       throw new Error(`Unknown TextDataSource type: ${state.__typename}`);
   }
