@@ -45,20 +45,28 @@ export type DateDataSourceInput =
 // Mutation Inputs
 // ============================================================================
 
-export type DateElementCreateInput = CertificateElementBaseCreateInput & {
-  textProps: TextPropsCreateInput;
+export type DatePropsCreateInput = {
   calendarType: CalendarType;
   offsetDays: number;
   format: string;
   transformation?: DateTransformationType | null;
-  dataSource: DateDataSourceInput;
 };
 
-export type DateElementUpdateInput = CertificateElementBaseUpdateInput & {
-  textProps?: TextPropsUpdateInput | null;
+export type DatePropsUpdateInput = {
   calendarType?: CalendarType | null;
   offsetDays?: number | null;
   format?: string | null;
   transformation?: DateTransformationType | null;
+};
+
+export type DateElementCreateInput = CertificateElementBaseCreateInput & {
+  textProps: TextPropsCreateInput;
+  dataSource: DateDataSourceInput;
+  dateProps: DatePropsCreateInput;
+};
+
+export type DateElementUpdateInput = CertificateElementBaseUpdateInput & {
+  textProps?: TextPropsUpdateInput | null;
   dataSource?: DateDataSourceInput | null;
+  dateProps?: DatePropsUpdateInput | null;
 };

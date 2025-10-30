@@ -204,19 +204,40 @@ export const DateDataSourceInputObject = gqlSchemaBuilder.inputType(
 // Mutation Inputs
 // ============================================================================
 
-export const DateElementCreateInputObject = gqlSchemaBuilder
-  .inputRef<Types.DateElementCreateInputGraphql>("DateElementCreateInput")
+export const DatePropsCreateInputObject = gqlSchemaBuilder
+  .inputRef<Types.DatePropsCreateInput>("DatePropsCreateInput")
   .implement({
     fields: t => ({
-      ...createBaseElementInputFields(t),
-      textProps: t.field({ type: TextPropsCreateInputObject, required: true }),
       calendarType: t.field({ type: CalendarTypePothosEnum, required: true }),
       offsetDays: t.int({ required: true }),
       format: t.string({ required: true }),
       transformation: t.field({
         type: DateTransformationTypePothosEnum,
       }),
+    }),
+  });
+
+export const DateElementCreateInputObject = gqlSchemaBuilder
+  .inputRef<Types.DateElementCreateInputGraphql>("DateElementCreateInput")
+  .implement({
+    fields: t => ({
+      ...createBaseElementInputFields(t),
+      textProps: t.field({ type: TextPropsCreateInputObject, required: true }),
       dataSource: t.field({ type: DateDataSourceInputObject, required: true }),
+      dateProps: t.field({ type: DatePropsCreateInputObject, required: true }),
+    }),
+  });
+
+export const DatePropsUpdateInputObject = gqlSchemaBuilder
+  .inputRef<Types.DatePropsUpdateInput>("DatePropsUpdateInput")
+  .implement({
+    fields: t => ({
+      calendarType: t.field({ type: CalendarTypePothosEnum }),
+      offsetDays: t.int(),
+      format: t.string(),
+      transformation: t.field({
+        type: DateTransformationTypePothosEnum,
+      }),
     }),
   });
 
@@ -228,21 +249,30 @@ export const DateElementUpdateInputObject = gqlSchemaBuilder
       textProps: t.field({
         type: TextPropsUpdateInputObject,
       }),
-      calendarType: t.field({ type: CalendarTypePothosEnum }),
-      offsetDays: t.int(),
-      format: t.string(),
-      transformation: t.field({
-        type: DateTransformationTypePothosEnum,
-      }),
       dataSource: t.field({
         type: DateDataSourceInputObject,
       }),
+      dateProps: t.field({ type: DatePropsUpdateInputObject }),
     }),
   });
 
 // ============================================================================
 // Loadable Element Object
 // ============================================================================
+
+export const DatePropsObject = gqlSchemaBuilder
+  .objectRef<Types.DateProps>("DateProps")
+  .implement({
+    fields: t => ({
+      calendarType: t.expose("calendarType", { type: CalendarTypePothosEnum }),
+      offsetDays: t.exposeInt("offsetDays"),
+      format: t.exposeString("format"),
+      transformation: t.expose("transformation", {
+        type: DateTransformationTypePothosEnum,
+        nullable: true,
+      }),
+    }),
+  });
 
 const DateElementObjectRef =
   gqlSchemaBuilder.objectRef<Types.DateElementPothosDefinition>("DateElement");
@@ -263,13 +293,7 @@ export const DateElementObject = gqlSchemaBuilder.loadableObject<
     item.type === Types.ElementType.DATE,
   fields: t => ({
     textProps: t.expose("textProps", { type: TextPropsObject }),
-    calendarType: t.expose("calendarType", { type: CalendarTypePothosEnum }),
-    offsetDays: t.exposeInt("offsetDays"),
-    format: t.exposeString("format"),
-    transformation: t.expose("transformation", {
-      type: DateTransformationTypePothosEnum,
-      nullable: true,
-    }),
+    dateProps: t.expose("dateProps", { type: DatePropsObject }),
     dateDataSource: t.expose("dateDataSource", { type: DateDataSourceUnion }),
   }),
 });

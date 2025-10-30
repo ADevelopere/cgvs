@@ -1,6 +1,6 @@
 import React, { useMemo, type FC } from "react";
 import { Box, Stack } from "@mui/material";
-import type { DataSourceFormErrors, UpdateDataSourceFn } from "./types";
+import type { TextDataSourceFormErrors, UpdateTextDataSourceFn } from "./types";
 import { DataSourceSelector } from "./TextDataSourceSelector";
 import { TextStaticSourceInput } from "./TextStaticSourceInput";
 import { StudentFieldSelector } from "./StudentTextFieldSelector";
@@ -20,8 +20,8 @@ interface DataSourceFormProps {
   dataSource: TextDataSourceInput;
   textVariables: TemplateTextVariable[];
   selectVariables: TemplateSelectVariable[];
-  onDataSourceChange: UpdateDataSourceFn;
-  errors: DataSourceFormErrors;
+  onDataSourceChange: UpdateTextDataSourceFn;
+  errors: TextDataSourceFormErrors;
   disabled?: boolean;
   showSelector: boolean;
 }

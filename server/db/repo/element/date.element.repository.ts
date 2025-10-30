@@ -1,6 +1,10 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
-import { certificateElement, dateElement, elementTextProps } from "@/server/db/schema";
+import {
+  certificateElement,
+  dateElement,
+  elementTextProps,
+} from "@/server/db/schema";
 import {
   DateElementCreateInput,
   DateElementUpdateInput,
@@ -69,10 +73,10 @@ export namespace DateElementRepository {
       .values({
         elementId: baseElement.id,
         textPropsId: newTextProps.id,
-        calendarType: input.calendarType,
-        offsetDays: input.offsetDays,
-        format: input.format,
-        transformation: input.transformation ?? null,
+        calendarType: input.dateProps.calendarType,
+        offsetDays: input.dateProps.offsetDays,
+        format: input.dateProps.format,
+        transformation: input.dateProps.transformation ?? null,
         dateDataSource: newDataSource,
         variableId,
       })
@@ -89,11 +93,13 @@ export namespace DateElementRepository {
       textPropsId: newDateElement.textPropsId,
       textPropsEntity: newTextProps,
       textProps: TextPropsUtils.entityToTextProps(newTextProps),
-      calendarType: newDateElement.calendarType as CalendarType,
-      offsetDays: newDateElement.offsetDays,
-      format: newDateElement.format,
-      transformation:
-        newDateElement.transformation as DateTransformationType | null,
+      dateProps: {
+        calendarType: newDateElement.calendarType as CalendarType,
+        offsetDays: newDateElement.offsetDays,
+        format: newDateElement.format,
+        transformation:
+          newDateElement.transformation as DateTransformationType | null,
+      },
       dateDataSource: newDataSource,
       variableId,
     };
@@ -137,7 +143,10 @@ export namespace DateElementRepository {
     );
 
     // 5. Update element_text_props (if textProps provided)
-    const existingDateElement: DateElementEntity = existing;
+    const existingDateElement: DateElementEntity = {
+      ...existing,
+      ...existing.dateProps,
+    };
     let updatedTextProps: ElementTextPropsEntity = existing.textPropsEntity;
     if (input.textProps !== undefined) {
       if (input.textProps === null) {
@@ -167,11 +176,13 @@ export namespace DateElementRepository {
       textPropsId: updatedDateElement.textPropsId,
       textPropsEntity: updatedTextProps,
       textProps: TextPropsUtils.entityToTextProps(updatedTextProps),
-      calendarType: updatedDateElement.calendarType as CalendarType,
-      offsetDays: updatedDateElement.offsetDays,
-      format: updatedDateElement.format,
-      transformation:
-        updatedDateElement.transformation as DateTransformationType | null,
+      dateProps: {
+        calendarType: updatedDateElement.calendarType as CalendarType,
+        offsetDays: updatedDateElement.offsetDays,
+        format: updatedDateElement.format,
+        transformation:
+          updatedDateElement.transformation as DateTransformationType | null,
+      },
       dateDataSource: updatedDateElement.dateDataSource,
       variableId: updatedDateElement.variableId,
     };
@@ -212,9 +223,13 @@ export namespace DateElementRepository {
       ...row.date_element,
       textPropsEntity: row.element_text_props,
       textProps: TextPropsUtils.entityToTextProps(row.element_text_props),
-      calendarType: row.date_element.calendarType as CalendarType,
-      transformation: row.date_element
-        .transformation as DateTransformationType | null,
+      dateProps: {
+        calendarType: row.date_element.calendarType as CalendarType,
+        offsetDays: row.date_element.offsetDays,
+        format: row.date_element.format,
+        transformation: row.date_element
+          .transformation as DateTransformationType | null,
+      },
       dateDataSource: row.date_element.dateDataSource,
       variableId: row.date_element.variableId,
     };
@@ -276,32 +291,32 @@ export namespace DateElementRepository {
     const dateUpdates: Partial<typeof dateElement.$inferInsert> = {};
 
     // Handle calendarType update
-    if (input.calendarType !== undefined) {
-      if (input.calendarType === null) {
+    if (input.dateProps?.calendarType !== undefined) {
+      if (input.dateProps?.calendarType === null) {
         throw new Error("calendarType cannot be null for DATE element");
       }
-      dateUpdates.calendarType = input.calendarType;
+      dateUpdates.calendarType = input.dateProps.calendarType;
     }
 
     // Handle offsetDays update
-    if (input.offsetDays !== undefined) {
-      if (input.offsetDays === null) {
+    if (input.dateProps?.offsetDays !== undefined) {
+      if (input.dateProps?.offsetDays === null) {
         throw new Error("offsetDays cannot be null for DATE element");
       }
-      dateUpdates.offsetDays = input.offsetDays;
+      dateUpdates.offsetDays = input.dateProps.offsetDays;
     }
 
     // Handle format update
-    if (input.format !== undefined) {
-      if (input.format === null) {
+    if (input.dateProps?.format !== undefined) {
+      if (input.dateProps?.format === null) {
         throw new Error("format cannot be null for DATE element");
       }
-      dateUpdates.format = input.format;
+      dateUpdates.format = input.dateProps.format;
     }
 
     // Handle transformation update
-    if (input.transformation !== undefined) {
-      dateUpdates.transformation = input.transformation;
+    if (input.dateProps?.transformation !== undefined) {
+      dateUpdates.transformation = input.dateProps.transformation;
     }
 
     // Handle dataSource update

@@ -2,11 +2,13 @@ import React, { type FC } from "react";
 import { Box, Grid, Paper } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import type {
-  TextElementFormErrors,
-  UpdateTextDataSourceFn,
-  TextElementFormCreateState,
+  DateElementFormErrors,
+  UpdateDateDataSourceFn,
+  DateElementFormCreateState,
+  UpdateDatePropsFn,
 } from "./types";
-import { DataSourceForm } from "./TextDataSourceForm";
+import { DateDataSourceForm } from "./DateDataSourceForm";
+import { DatePropsForm } from "./DatePropsForm";
 import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../component/ActionButtons";
@@ -14,35 +16,34 @@ import { UpdateBaseElementCreateFn } from "../base";
 import { UpdateTextPropsCreateFn } from "../textProps";
 import {
   Font,
-  TemplateSelectVariable,
-  TemplateTextVariable,
+  TemplateDateVariable,
 } from "@/client/graphql/generated/gql/graphql";
 
-interface TextElementCreateFormProps {
-  state: TextElementFormCreateState;
-  errors: TextElementFormErrors;
+interface DateElementCreateFormProps {
+  state: DateElementFormCreateState;
+  errors: DateElementFormErrors;
   updateBaseElement: UpdateBaseElementCreateFn;
   updateTextProps: UpdateTextPropsCreateFn;
-  updateDataSource: UpdateTextDataSourceFn;
+  updateDateProps: UpdateDatePropsFn;
+  updateDataSource: UpdateDateDataSourceFn;
   templateId: number;
   locale: string;
-  textVariables: TemplateTextVariable[];
-  selectVariables: TemplateSelectVariable[];
+  dateVariables: TemplateDateVariable[];
   selfHostedFonts: Font[];
   onSubmit: () => void;
   onCancel: () => void;
   isSubmitting: boolean;
 }
 
-export const TextElementCreateForm: FC<TextElementCreateFormProps> = ({
+export const DateElementCreateForm: FC<DateElementCreateFormProps> = ({
   state,
   errors,
   updateBaseElement,
   updateTextProps,
+  updateDateProps,
   updateDataSource,
   locale,
-  textVariables,
-  selectVariables,
+  dateVariables,
   selfHostedFonts,
   onSubmit,
   onCancel,
@@ -56,10 +57,9 @@ export const TextElementCreateForm: FC<TextElementCreateFormProps> = ({
       <Box sx={{ flexGrow: 1, overflow: "auto", pb: 2 }}>
         {/* Row 1: Data Source */}
         <Paper sx={{ p: 3, mb: 2 }}>
-          <DataSourceForm
+          <DateDataSourceForm
             dataSource={state.dataSource}
-            textVariables={textVariables}
-            selectVariables={selectVariables}
+            dateVariables={dateVariables}
             onDataSourceChange={updateDataSource}
             errors={errors.dataSource}
             disabled={isSubmitting}
@@ -67,10 +67,19 @@ export const TextElementCreateForm: FC<TextElementCreateFormProps> = ({
           />
         </Paper>
 
-        {/* Row 2: Text Props and Base Element */}
+        {/* Row 2: Date Props, Text Props, and Base Element */}
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Paper sx={{ p: 3, height: "100%" }}>
+            <Paper sx={{ p: 3, mb: 2 }}>
+              <DatePropsForm
+                dateProps={state.dateProps}
+                onUpdate={updateDateProps}
+                errors={errors.dateProps}
+                disabled={isSubmitting}
+              />
+            </Paper>
+
+            <Paper sx={{ p: 3 }}>
               <TextPropsForm
                 textProps={state.textProps}
                 locale={locale}
@@ -105,3 +114,4 @@ export const TextElementCreateForm: FC<TextElementCreateFormProps> = ({
     </Box>
   );
 };
+

@@ -44,19 +44,19 @@ export type TextElementFormUpdateState = {
 // MODULAR ERROR TYPES
 // ============================================================================
 
-export type DataSourceFormErrors = FormErrors<TextDataSourceInput>;
+export type TextDataSourceFormErrors = FormErrors<TextDataSourceInput>;
 
 export type TextElementFormErrors = {
   base: BaseElementFormErrors;
   textProps: TextPropsFormErrors;
-  dataSource: DataSourceFormErrors;
+  dataSource: TextDataSourceFormErrors;
 };
 
 // ============================================================================
 // SPECIFIC UPDATE FUNCTION TYPES
 // ============================================================================
 
-export type UpdateDataSourceFn = (dataSource: TextDataSourceInput) => void;
+export type UpdateTextDataSourceFn = (dataSource: TextDataSourceInput) => void;
 
 // ============================================================================
 // CONVERSION UTILITIES
