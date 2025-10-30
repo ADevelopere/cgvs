@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import {logger} from "@/client/lib/logger";
 import { FontReferenceSelector } from "./FontReferenceSelector";
-import { mockSelfHostedFonts } from "./story.util";
+import { mockSelfHostedFonts } from "../story.util";
 
 const meta: Meta<typeof FontReferenceSelector> = {
   title: "Template/Editor/Form/Element/FontReferenceSelector",
@@ -14,7 +14,7 @@ type Story = StoryObj<typeof FontReferenceSelector>;
 
 export const GoogleFont: Story = {
   args: {
-    fontRef: { type: "GOOGLE", identifier: "Roboto" },
+    fontRef: { google: { identifier: "Roboto" } },
     locale: "en",
     selfHostedFonts: mockSelfHostedFonts,
     onFontRefChange: (fontRef) => logger.log("Font changed:", fontRef),
@@ -24,7 +24,7 @@ export const GoogleFont: Story = {
 
 export const SelfHostedFont: Story = {
   args: {
-    fontRef: { type: "SELF_HOSTED", fontId: 1 },
+    fontRef: { selfHosted: { fontId: 1 } },
     locale: "ar",
     selfHostedFonts: mockSelfHostedFonts,
     onFontRefChange: (fontRef) => logger.log("Font changed:", fontRef),
@@ -34,7 +34,7 @@ export const SelfHostedFont: Story = {
 
 export const WithError: Story = {
   args: {
-    fontRef: { type: "GOOGLE", identifier: "" },
+    fontRef: { google: { identifier: "" } },
     locale: "en",
     selfHostedFonts: mockSelfHostedFonts,
     onFontRefChange: (fontRef) => logger.log("Font changed:", fontRef),
@@ -45,7 +45,7 @@ export const WithError: Story = {
 
 export const Disabled: Story = {
   args: {
-    fontRef: { type: "GOOGLE", identifier: "Roboto" },
+    fontRef: { google: { identifier: "Roboto" } },
     locale: "en",
     selfHostedFonts: mockSelfHostedFonts,
     onFontRefChange: (fontRef) => logger.log("Font changed:", fontRef),

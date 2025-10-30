@@ -1,15 +1,15 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from  "@/client/lib/logger";
-import { StaticSourceInput } from "./TextStaticSourceInput";
+import { TextStaticSourceInput } from "./TextStaticSourceInput";
 
-const meta: Meta<typeof StaticSourceInput> = {
+const meta: Meta<typeof TextStaticSourceInput> = {
   title: "Template/Editor/Form/Element/Text/TextStaticSourceInput",
-  component: StaticSourceInput,
+  component: TextStaticSourceInput,
   tags: ["autodocs"],
 };
 
 export default meta;
-type Story = StoryObj<typeof StaticSourceInput>;
+type Story = StoryObj<typeof TextStaticSourceInput>;
 
 export const Default: Story = {
   args: {

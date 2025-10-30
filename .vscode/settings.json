@@ -19,5 +19,11 @@
     // Jest extension settings
     "jest.jestCommandLine": "~/.bun/bin/bun test",
     "jest.autoRun": "off",
-    "jest.showCoverageOnLoad": "off"
+    "jest.showCoverageOnLoad": "off",
+    "testing.automaticallyOpenTestResults": "neverOpen",
+    "jest.outputConfig": {
+        "revealOn": "run",
+        "revealWithFocus": "none",
+        "clearOnRun": "none"
+    }
 }

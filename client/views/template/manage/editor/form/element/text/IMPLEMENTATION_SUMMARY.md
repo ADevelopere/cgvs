@@ -115,7 +115,7 @@ type TextElementFormErrors = {
 ```
 
 ### Update Form
-Same as Create Form, but Row 1 shows only the data source input (no selector)
+Same as Create Form - data source type CAN be changed during updates (backend supports it)
 
 ## Usage Example
 
@@ -183,6 +183,19 @@ const TextElementCreateContainer = () => {
   );
 };
 ```
+
+## Design Decisions
+
+### Data Source Changes During Updates
+✅ **ALLOWED** - Both Create and Update forms include the data source selector.
+- Backend fully supports changing data source type during updates
+- Users can switch between STATIC, STUDENT_FIELD, CERTIFICATE_FIELD, TEMPLATE_TEXT_VARIABLE, and TEMPLATE_SELECT_VARIABLE
+- This provides maximum flexibility for certificate template editing
+
+### Data Source Conversion
+- Working state uses **discriminated unions** (type-safe, matches backend structure)
+- GraphQL input uses **OneOf pattern** (Pothos requirement)
+- Conversion happens at submission time via utility functions
 
 ## Future Enhancements
 

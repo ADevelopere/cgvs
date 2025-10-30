@@ -1,7 +1,7 @@
 import React, { type FC } from "react";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
-import type { TextDataSourceType } from "./types";
+import { TextDataSourceType } from "@/client/graphql/generated/gql/graphql";
 
 interface DataSourceSelectorProps {
   selectedType: TextDataSourceType;
@@ -22,7 +22,7 @@ export const DataSourceSelector: FC<DataSourceSelectorProps> = ({
       <Select
         value={selectedType}
         label={strings.textElement.dataSourceLabel}
-        onChange={(e) => onTypeChange(e.target.value as TextDataSourceType)}
+        onChange={e => onTypeChange(e.target.value)}
       >
         <MenuItem value="STATIC">
           {strings.textElement.dataSourceStatic}
@@ -43,4 +43,3 @@ export const DataSourceSelector: FC<DataSourceSelectorProps> = ({
     </FormControl>
   );
 };
-

@@ -9,7 +9,7 @@ interface StaticSourceInputProps {
   disabled?: boolean;
 }
 
-export const StaticSourceInput: FC<StaticSourceInputProps> = ({
+export const TextStaticSourceInput: FC<StaticSourceInputProps> = ({
   value,
   onChange,
   error,

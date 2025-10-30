@@ -67,6 +67,30 @@ export type CertificateElement = {
   width?: Maybe<Scalars['Int']['output']>;
 };
 
+export type CertificateElementBaseCreateInput = {
+  alignment: ElementAlignment;
+  description: Scalars['String']['input'];
+  height: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  positionX: Scalars['Int']['input'];
+  positionY: Scalars['Int']['input'];
+  renderOrder: Scalars['Int']['input'];
+  templateId: Scalars['Int']['input'];
+  width: Scalars['Int']['input'];
+};
+
+export type CertificateElementBaseUpdateInput = {
+  alignment?: InputMaybe<ElementAlignment>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  height?: InputMaybe<Scalars['Int']['input']>;
+  id: Scalars['Int']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  positionX?: InputMaybe<Scalars['Int']['input']>;
+  positionY?: InputMaybe<Scalars['Int']['input']>;
+  renderOrder?: InputMaybe<Scalars['Int']['input']>;
+  width?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type CertificateElementUnion = CountryElement | DateElement | GenderElement | ImageElement | NumberElement | QrCodeElement | TextElement;
 
 export type CertificateTextField =
@@ -349,7 +373,7 @@ export type CountryElementCreateInput = {
   renderOrder: Scalars['Int']['input'];
   representation: CountryRepresentation;
   templateId: Scalars['Int']['input'];
-  textProps: TextPropsInput;
+  textProps: TextPropsCreateInput;
   width: Scalars['Int']['input'];
 };
 
@@ -461,7 +485,7 @@ export type DateElementCreateInput = {
   positionY: Scalars['Int']['input'];
   renderOrder: Scalars['Int']['input'];
   templateId: Scalars['Int']['input'];
-  textProps: TextPropsInput;
+  textProps: TextPropsCreateInput;
   transformation?: InputMaybe<DateTransformationType>;
   width: Scalars['Int']['input'];
 };
@@ -795,7 +819,7 @@ export type GenderElementCreateInput = {
   positionY: Scalars['Int']['input'];
   renderOrder: Scalars['Int']['input'];
   templateId: Scalars['Int']['input'];
-  textProps: TextPropsInput;
+  textProps: TextPropsCreateInput;
   width: Scalars['Int']['input'];
 };
 
@@ -1294,7 +1318,7 @@ export type NumberElementCreateInput = {
   positionY: Scalars['Int']['input'];
   renderOrder: Scalars['Int']['input'];
   templateId: Scalars['Int']['input'];
-  textProps: TextPropsInput;
+  textProps: TextPropsCreateInput;
   width: Scalars['Int']['input'];
 };
 
@@ -2220,7 +2244,7 @@ export type TextElementCreateInput = {
   positionY: Scalars['Int']['input'];
   renderOrder: Scalars['Int']['input'];
   templateId: Scalars['Int']['input'];
-  textProps: TextPropsInput;
+  textProps: TextPropsCreateInput;
   width: Scalars['Int']['input'];
 };
 
@@ -2246,7 +2270,7 @@ export type TextProps = {
   overflow?: Maybe<ElementOverflow>;
 };
 
-export type TextPropsInput = {
+export type TextPropsCreateInput = {
   color: Scalars['String']['input'];
   fontRef: FontReferenceInput;
   fontSize: Scalars['Int']['input'];

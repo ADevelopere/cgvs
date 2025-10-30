@@ -1,22 +1,23 @@
-import React, { type FC } from "react";
+import React, { useMemo, type FC } from "react";
 import { Box, Stack } from "@mui/material";
-import type {
-  TextDataSourceState,
-  TextDataSourceType,
-  TemplateTextVariable,
-  TemplateSelectVariable,
-  DataSourceFormErrors,
-  UpdateDataSourceFn,
-} from "./types";
+import type { DataSourceFormErrors, UpdateDataSourceFn } from "./types";
 import { DataSourceSelector } from "./TextDataSourceSelector";
-import { StaticSourceInput } from "./TextStaticSourceInput";
+import { TextStaticSourceInput } from "./TextStaticSourceInput";
 import { StudentFieldSelector } from "./StudentTextFieldSelector";
 import { CertificateFieldSelector } from "./CertificateTextFieldSelector";
-import { TemplateTextVariableSelector } from "../TemplateTextVariableSelector";
-import { TemplateSelectVariableSelector } from "../TemplateSelectVariableSelector";
+import {
+  TemplateTextVariableSelector,
+  TemplateSelectVariableSelector,
+} from "../variableSelector";
+import {
+  TemplateSelectVariable,
+  TemplateTextVariable,
+  TextDataSourceInput,
+  TextDataSourceType,
+} from "@/client/graphql/generated/gql/graphql";
 
 interface DataSourceFormProps {
-  dataSource: TextDataSourceState;
+  dataSource: TextDataSourceInput;
   textVariables: TemplateTextVariable[];
   selectVariables: TemplateSelectVariable[];
   onDataSourceChange: UpdateDataSourceFn;
@@ -34,49 +35,54 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
   disabled,
   showSelector,
 }) => {
+  const selectedType: TextDataSourceType = useMemo(() => {
+    if (dataSource.certificateField?.field) return "CERTIFICATE_TEXT_FIELD";
+    if (dataSource.static?.value) return "STATIC";
+    if (dataSource.studentField?.field) return "STUDENT_TEXT_FIELD";
+    if (dataSource.templateTextVariable?.variableId)
+      return "TEMPLATE_TEXT_VARIABLE";
+    if (dataSource.templateSelectVariable?.variableId)
+      return "TEMPLATE_SELECT_VARIABLE";
+    throw new Error("Invalid data source type");
+  }, [dataSource]);
+
   const handleTypeChange = (type: TextDataSourceType) => {
     // Create new data source with default values based on type
     switch (type) {
       case "STATIC":
-        onDataSourceChange({ type: "STATIC", value: "" });
+        onDataSourceChange({ static: { value: "" } });
         break;
       case "STUDENT_TEXT_FIELD":
         onDataSourceChange({
-          type: "STUDENT_TEXT_FIELD",
-          field: "STUDENT_NAME",
+          studentField: { field: "STUDENT_NAME" },
         });
         break;
       case "CERTIFICATE_TEXT_FIELD":
         onDataSourceChange({
-          type: "CERTIFICATE_TEXT_FIELD",
-          field: "VERIFICATION_CODE",
+          certificateField: { field: "VERIFICATION_CODE" },
         });
         break;
       case "TEMPLATE_TEXT_VARIABLE":
         onDataSourceChange({
-          type: "TEMPLATE_TEXT_VARIABLE",
-          variableId: textVariables[0]?.id || 0,
+          templateTextVariable: { variableId: textVariables[0]?.id || 0 },
         });
         break;
       case "TEMPLATE_SELECT_VARIABLE":
         onDataSourceChange({
-          type: "TEMPLATE_SELECT_VARIABLE",
-          variableId: selectVariables[0]?.id || 0,
+          templateSelectVariable: { variableId: selectVariables[0]?.id || 0 },
         });
         break;
     }
   };
 
   const renderDataSourceInput = () => {
-    switch (dataSource.type) {
+    switch (selectedType) {
       case "STATIC":
         return (
-          <StaticSourceInput
-            value={dataSource.value}
-            onChange={(value) =>
-              onDataSourceChange({ type: "STATIC", value })
-            }
-            error={errors.value}
+          <TextStaticSourceInput
+            value={dataSource.static?.value || ""}
+            onChange={value => onDataSourceChange({ static: { value } })}
+            error={errors.static}
             disabled={disabled}
           />
         );
@@ -84,11 +90,9 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
       case "STUDENT_TEXT_FIELD":
         return (
           <StudentFieldSelector
-            value={dataSource.field}
-            onChange={(field) =>
-              onDataSourceChange({ type: "STUDENT_TEXT_FIELD", field })
-            }
-            error={errors.field}
+            value={dataSource.studentField?.field || "STUDENT_NAME"}
+            onChange={field => onDataSourceChange({ studentField: { field } })}
+            error={errors.studentField}
             disabled={disabled}
           />
         );
@@ -96,11 +100,11 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
       case "CERTIFICATE_TEXT_FIELD":
         return (
           <CertificateFieldSelector
-            value={dataSource.field}
-            onChange={(field) =>
-              onDataSourceChange({ type: "CERTIFICATE_TEXT_FIELD", field })
+            value={dataSource.certificateField?.field || "VERIFICATION_CODE"}
+            onChange={field =>
+              onDataSourceChange({ certificateField: { field } })
             }
-            error={errors.field}
+            error={errors.certificateField}
             disabled={disabled}
           />
         );
@@ -108,12 +112,12 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
       case "TEMPLATE_TEXT_VARIABLE":
         return (
           <TemplateTextVariableSelector
-            value={dataSource.variableId}
+            value={dataSource.templateTextVariable?.variableId}
             variables={textVariables}
-            onChange={(variableId) =>
-              onDataSourceChange({ type: "TEMPLATE_TEXT_VARIABLE", variableId })
+            onChange={variableId =>
+              onDataSourceChange({ templateTextVariable: { variableId } })
             }
-            error={errors.variableId}
+            error={errors.templateTextVariable}
             disabled={disabled}
           />
         );
@@ -121,15 +125,14 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
       case "TEMPLATE_SELECT_VARIABLE":
         return (
           <TemplateSelectVariableSelector
-            value={dataSource.variableId}
+            value={dataSource.templateSelectVariable?.variableId}
             variables={selectVariables}
-            onChange={(variableId) =>
+            onChange={variableId =>
               onDataSourceChange({
-                type: "TEMPLATE_SELECT_VARIABLE",
-                variableId,
+                templateSelectVariable: { variableId },
               })
             }
-            error={errors.variableId}
+            error={errors.templateSelectVariable}
             disabled={disabled}
           />
         );
@@ -140,7 +143,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
     <Stack spacing={2}>
       {showSelector && (
         <DataSourceSelector
-          selectedType={dataSource.type}
+          selectedType={selectedType}
           onTypeChange={handleTypeChange}
           disabled={disabled}
         />
@@ -149,4 +152,3 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
     </Stack>
   );
 };
-
