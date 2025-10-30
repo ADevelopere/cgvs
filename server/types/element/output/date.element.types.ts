@@ -62,7 +62,7 @@ export type DateElementEntity = typeof dateElement.$inferSelect;
 
 export type DateElementSpecProps = Omit<
   DateElementEntity,
-  "calendarType" | "transformation"
+  "calendarType" | "transformation" | "dateDataSource"
 > & {
   calendarType: CalendarType;
   transformation: DateTransformationType | null;
@@ -70,7 +70,7 @@ export type DateElementSpecProps = Omit<
 
 export type DateElementOutput = {
   base: CertificateElementEntity;
-  // From element_text_props (joined)
   textPropsEntity: ElementTextPropsEntity;
   dateProps: DateElementSpecProps;
+  dateDataSource: DateDataSource;
 };

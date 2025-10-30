@@ -2,13 +2,14 @@ import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
 import * as Types from "@/server/types/element";
 import { DateElementRepository } from "@/server/db/repo/element";
 import {
-  TextPropsObject,
-  TextPropsInputObject,
-  TextPropsUpdateInputObject,
+  CertificateElementBaseInputObject,
   CertificateElementPothosInterface,
-  createBaseElementInputFields,
-  createBaseElementUpdateInputFields,
 } from "./base.element.pothos";
+import { InputFieldBuilder, SchemaTypes } from "@pothos/core";
+import {
+  createTextPropsFieldFromEntity,
+  TextPropsInputObject,
+} from "./textProps.pothos";
 
 // ============================================================================
 // Enums
@@ -204,40 +205,45 @@ export const DateDataSourceInputObject = gqlSchemaBuilder.inputType(
 // Mutation Inputs
 // ============================================================================
 
-export const DatePropsCreateInputObject = gqlSchemaBuilder
-  .inputRef<Types.DatePropsCreateInput>("DatePropsCreateInput")
+const createDateElementSpecPropsInputFields = <Types extends SchemaTypes>(
+  t: InputFieldBuilder<Types, "InputObject">
+) => ({
+  calendarType: t.field({ type: CalendarTypePothosEnum, required: true }),
+  offsetDays: t.int({ required: true }),
+  format: t.string({ required: true }),
+  transformation: t.field({
+    type: DateTransformationTypePothosEnum,
+  }),
+});
+
+export const DateElementSpecPropsInputObject = gqlSchemaBuilder
+  .inputRef<Types.DateElementSpecPropsInput>("DateElementSpecPropsInput")
   .implement({
     fields: t => ({
-      calendarType: t.field({ type: CalendarTypePothosEnum, required: true }),
-      offsetDays: t.int({ required: true }),
-      format: t.string({ required: true }),
-      transformation: t.field({
-        type: DateTransformationTypePothosEnum,
-      }),
+      ...createDateElementSpecPropsInputFields(t),
     }),
   });
 
-export const DateElementCreateInputObject = gqlSchemaBuilder
-  .inputRef<Types.DateElementCreateInputGraphql>("DateElementCreateInput")
-  .implement({
-    fields: t => ({
-      ...createBaseElementInputFields(t),
-      textProps: t.field({ type: TextPropsInputObject, required: true }),
-      dataSource: t.field({ type: DateDataSourceInputObject, required: true }),
-      dateProps: t.field({ type: DatePropsCreateInputObject, required: true }),
-    }),
-  });
+const createDateElementInputFields = <Types extends SchemaTypes>(
+  t: InputFieldBuilder<Types, "InputObject">
+) => ({
+  base: t.field({
+    type: CertificateElementBaseInputObject,
+    required: true,
+  }),
+  textProps: t.field({ type: TextPropsInputObject, required: true }),
+  dataSource: t.field({ type: DateDataSourceInputObject, required: true }),
+  dateProps: t.field({
+    type: DateElementSpecPropsInputObject,
+    required: true,
+  }),
+});
 
-export const DatePropsUpdateInputObject = gqlSchemaBuilder
-  .inputRef<Types.DatePropsUpdateInput>("DatePropsUpdateInput")
+export const DateElementInputObject = gqlSchemaBuilder
+  .inputRef<Types.DateElementInputGraphql>("DateElementInput")
   .implement({
     fields: t => ({
-      calendarType: t.field({ type: CalendarTypePothosEnum }),
-      offsetDays: t.int(),
-      format: t.string(),
-      transformation: t.field({
-        type: DateTransformationTypePothosEnum,
-      }),
+      ...createDateElementInputFields(t),
     }),
   });
 
@@ -245,14 +251,8 @@ export const DateElementUpdateInputObject = gqlSchemaBuilder
   .inputRef<Types.DateElementUpdateInputGraphql>("DateElementUpdateInput")
   .implement({
     fields: t => ({
-      ...createBaseElementUpdateInputFields(t),
-      textProps: t.field({
-        type: TextPropsUpdateInputObject,
-      }),
-      dataSource: t.field({
-        type: DateDataSourceInputObject,
-      }),
-      dateProps: t.field({ type: DatePropsUpdateInputObject }),
+      id: t.int({ required: true }),
+      ...createDateElementInputFields(t),
     }),
   });
 
@@ -275,16 +275,16 @@ export const DatePropsObject = gqlSchemaBuilder
   });
 
 const DateElementObjectRef =
-  gqlSchemaBuilder.objectRef<Types.DateElementPothosDefinition>("DateElement");
+  gqlSchemaBuilder.objectRef<Types.DateElementOutput>("DateElement");
 
 export const DateElementObject = gqlSchemaBuilder.loadableObject<
-  Types.DateElementPothosDefinition | Error,
+  Types.DateElementOutput | Error,
   number,
   [typeof CertificateElementPothosInterface],
   typeof DateElementObjectRef
 >(DateElementObjectRef, {
   load: async ids => await DateElementRepository.loadByIds(ids),
-  sort: e => e.id,
+  sort: e => e.base.id,
   interfaces: [CertificateElementPothosInterface],
   isTypeOf: item =>
     typeof item === "object" &&
@@ -292,7 +292,7 @@ export const DateElementObject = gqlSchemaBuilder.loadableObject<
     "type" in item &&
     item.type === Types.ElementType.DATE,
   fields: t => ({
-    textProps: t.expose("textProps", { type: TextPropsObject }),
+    textProps: createTextPropsFieldFromEntity(t),
     dateProps: t.expose("dateProps", { type: DatePropsObject }),
     dateDataSource: t.expose("dateDataSource", { type: DateDataSourceUnion }),
   }),
