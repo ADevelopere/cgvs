@@ -1,0 +1,79 @@
+import { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { TextPropsForm } from "./TextPropsForm";
+import type { TextPropsState, TextPropsFormErrors } from "./text/types";
+import { logger } from "@/client/lib/logger";
+import { mockSelfHostedFonts } from "./story.util";
+
+const meta: Meta<typeof TextPropsForm> = {
+  title: "Template/Editor/Form/Element/TextPropsForm",
+  component: TextPropsForm,
+  tags: ["autodocs"],
+};
+
+export default meta;
+type Story = StoryObj<typeof TextPropsForm>;
+
+const defaultTextProps: TextPropsState = {
+  fontRef: { type: "GOOGLE", identifier: "Roboto" },
+  fontSize: 16,
+  color: "#000000",
+  overflow: "WRAP",
+};
+
+const defaultErrors: TextPropsFormErrors = {};
+
+export const Default: Story = {
+  args: {
+    textProps: defaultTextProps,
+    locale: "en",
+    selfHostedFonts: mockSelfHostedFonts,
+    onTextPropsChange: (key, value) =>
+      logger.info("Text prop changed:", key, value),
+    errors: defaultErrors,
+    disabled: false,
+  },
+};
+
+export const ArabicLocale: Story = {
+  args: {
+    textProps: {
+      fontRef: { type: "SELF_HOSTED", fontId: 1 },
+      fontSize: 18,
+      color: "#333333",
+      overflow: "RESIZE_DOWN",
+    },
+    locale: "ar",
+    selfHostedFonts: mockSelfHostedFonts,
+    onTextPropsChange: (key, value) =>
+      logger.info("Text prop changed:", key, value),
+    errors: defaultErrors,
+    disabled: false,
+  },
+};
+
+export const WithErrors: Story = {
+  args: {
+    textProps: { ...defaultTextProps, fontSize: 0, color: "invalid" },
+    locale: "en",
+    selfHostedFonts: mockSelfHostedFonts,
+    onTextPropsChange: (key, value) =>
+      logger.info("Text prop changed:", key, value),
+    errors: {
+      fontSize: "Font size must be positive",
+      color: "Invalid color format",
+    },
+    disabled: false,
+  },
+};
+
+export const Disabled: Story = {
+  args: {
+    textProps: defaultTextProps,
+    locale: "en",
+    selfHostedFonts: mockSelfHostedFonts,
+    onTextPropsChange: (key, value) =>
+      logger.info("Text prop changed:", key, value),
+    errors: defaultErrors,
+    disabled: true,
+  },
+};
