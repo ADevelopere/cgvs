@@ -2,7 +2,7 @@ import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
 import { elementTextProps } from "@/server/db/schema";
 import {
-  TextPropsCreateInput,
+  TextPropsInput,
   TextPropsUpdateInput,
   ElementTextPropsEntity,
   ElementTextPropsInsert,
@@ -26,7 +26,7 @@ export namespace TextPropsRepository {
    * Always creates new row (no deduplication)
    */
   export const create = async (
-    textProps: TextPropsCreateInput
+    textProps: TextPropsInput
   ): Promise<ElementTextPropsEntity> => {
     // Extract fontId from fontRef
     const fontId =

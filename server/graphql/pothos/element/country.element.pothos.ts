@@ -3,7 +3,7 @@ import * as Types from "@/server/types/element";
 import { CountryElementRepository } from "@/server/db/repo/element";
 import {
   TextPropsObject,
-  TextPropsCreateInputObject,
+  TextPropsInputObject,
   TextPropsUpdateInputObject,
   CertificateElementPothosInterface,
   createBaseElementInputFields,
@@ -28,7 +28,7 @@ export const CountryElementCreateInputObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       ...createBaseElementInputFields(t),
-      textProps: t.field({ type: TextPropsCreateInputObject, required: true }),
+      textProps: t.field({ type: TextPropsInputObject, required: true }),
       representation: t.field({
         type: CountryRepresentationPothosEnum,
         required: true,

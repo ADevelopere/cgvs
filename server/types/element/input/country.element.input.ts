@@ -1,12 +1,12 @@
 import {
-  CertificateElementBaseCreateInput,
+  CertificateElementBaseInput,
   CertificateElementBaseUpdateInput,
 } from "./base.element.input";
 import {
   CountryDataSourceType,
   CountryRepresentation,
 } from "../output";
-import { TextPropsCreateInput, TextPropsUpdateInput } from "./textProps.input";
+import { TextPropsInput, TextPropsUpdateInput } from "./textProps.input";
 
 // ============================================================================
 // Data Source Types
@@ -20,8 +20,8 @@ export type CountryDataSourceInput = {
 // Mutation Inputs (no config field)
 // ============================================================================
 
-export type CountryElementCreateInput = CertificateElementBaseCreateInput & {
-  textProps: TextPropsCreateInput;
+export type CountryElementCreateInput = CertificateElementBaseInput & {
+  textProps: TextPropsInput;
   representation: CountryRepresentation;
 };
 

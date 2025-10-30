@@ -1,6 +1,6 @@
-import { TextPropsCreateInput, TextPropsUpdateInput } from "./textProps.input";
+import { TextPropsInput, TextPropsUpdateInput } from "./textProps.input";
 import {
-  CertificateElementBaseCreateInput,
+  CertificateElementBaseInput,
   CertificateElementBaseUpdateInput,
 } from "./base.element.input";
 import { GenderDataSourceType } from "../output";
@@ -17,8 +17,8 @@ export type GenderDataSourceInput = {
 // Mutation Inputs (no config field)
 // ============================================================================
 
-export type GenderElementCreateInput = CertificateElementBaseCreateInput & {
-  textProps: TextPropsCreateInput;
+export type GenderElementCreateInput = CertificateElementBaseInput & {
+  textProps: TextPropsInput;
 };
 
 export type GenderElementUpdateInput = CertificateElementBaseUpdateInput & {

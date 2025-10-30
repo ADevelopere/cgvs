@@ -2,7 +2,7 @@
 // Data Source Types
 // ============================================================================
 
-import { CertificateElementBaseCreateInput, CertificateElementBaseUpdateInput } from "../input";
+import { CertificateElementBaseInput, CertificateElementBaseUpdateInput } from "../input";
 import { QRCodeErrorCorrection } from "../output";
 
 // GraphQL input types (used in Pothos isOneOf definitions)
@@ -29,7 +29,7 @@ export type QRCodeDataSourceInputGraphql =
 
 // GraphQL create input type
 export type QRCodeElementCreateInputGraphql =
-  CertificateElementBaseCreateInput & {
+  CertificateElementBaseInput & {
     errorCorrection: QRCodeErrorCorrection;
     foregroundColor: string;
     backgroundColor: string;

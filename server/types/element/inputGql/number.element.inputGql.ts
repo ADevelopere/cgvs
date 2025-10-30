@@ -1,7 +1,7 @@
-import { CertificateElementBaseCreateInput, CertificateElementBaseUpdateInput } from "../input";
+import { CertificateElementBaseInput, CertificateElementBaseUpdateInput } from "../input";
 import {
 
-  TextPropsCreateInputGraphql,
+  TextPropsInputGraphql,
   TextPropsUpdateInputGraphql,
 } from "./config.element.inputGql";
 
@@ -22,8 +22,8 @@ export type NumberDataSourceInputGraphql = {
 
 // GraphQL create input type
 export type NumberElementCreateInputGraphql =
-  CertificateElementBaseCreateInput & {
-    textProps: TextPropsCreateInputGraphql;
+  CertificateElementBaseInput & {
+    textProps: TextPropsInputGraphql;
     mapping: Record<string, string>; // StringMap scalar type
     dataSource: NumberDataSourceInputGraphql;
   };

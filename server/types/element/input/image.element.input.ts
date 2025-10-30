@@ -1,6 +1,6 @@
 import { ElementImageFit, ImageDataSourceType } from "../output";
 import {
-  CertificateElementBaseCreateInput,
+  CertificateElementBaseInput,
   CertificateElementBaseUpdateInput,
 } from "./base.element.input";
 
@@ -16,7 +16,7 @@ export type ImageDataSourceInput = {
 // Mutation Inputs
 // ============================================================================
 
-export type ImageElementCreateInput = CertificateElementBaseCreateInput & {
+export type ImageElementCreateInput = CertificateElementBaseInput & {
   fit: ElementImageFit;
   dataSource: ImageDataSourceInput;
 };

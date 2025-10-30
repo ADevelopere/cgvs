@@ -3,11 +3,11 @@ import {
   ElementOverflow,
   FontReferenceInputGraphql,
   FontReference,
-  TextPropsCreateInputGraphql,
-  TextPropsCreateInput,
+  TextPropsInputGraphql,
+  TextPropsInput,
   TextPropsUpdateInputGraphql,
   TextPropsUpdateInput,
-  CertificateElementBaseCreateInput,
+  CertificateElementBaseInput,
   CertificateElementBaseUpdateInput,
   CertificateElementEntity,
 } from "@/server/types/element";
@@ -49,8 +49,8 @@ export namespace CommonElementUtils {
    * Map GraphQL TextProps input to repository TextProps input
    */
   export const mapTextPropsGraphqlCreateToInput = (
-    input?: TextPropsCreateInputGraphql | null
-  ): TextPropsCreateInput | null | undefined => {
+    input?: TextPropsInputGraphql | null
+  ): TextPropsInput | null | undefined => {
     if (!input) {
       return input;
     }
@@ -83,7 +83,7 @@ export namespace CommonElementUtils {
    * Used by TEXT, DATE, NUMBER, COUNTRY, GENDER elements
    */
   export const validateTextProps = async (
-    textProps: TextPropsCreateInput | TextPropsUpdateInput
+    textProps: TextPropsInput | TextPropsUpdateInput
   ): Promise<void> => {
     // Validate font reference
     if (textProps.fontRef) {
@@ -208,7 +208,7 @@ export namespace CommonElementUtils {
    * Note: description doesn't need validation
    */
   export const validateBaseCreateInput = async (
-    input: CertificateElementBaseCreateInput
+    input: CertificateElementBaseInput
   ): Promise<void> => {
     // Template exists
     await ElementRepository.validateTemplateId(input.templateId);

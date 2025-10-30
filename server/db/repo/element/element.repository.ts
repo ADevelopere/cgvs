@@ -10,6 +10,7 @@ import {
   CertificateElementEntity,
   ElementOrderUpdateInput,
   CertificateElementBaseUpdateInput,
+  CertificateElementInterface,
 } from "@/server/types/element";
 import logger from "@/server/lib/logger";
 import { TemplateRepository } from "../template.repository";
@@ -105,7 +106,7 @@ export namespace ElementRepository {
    */
   export const loadByIds = async (
     ids: number[]
-  ): Promise<(CertificateElementEntity | Error)[]> => {
+  ): Promise<(CertificateElementInterface | Error)[]> => {
     if (ids.length === 0) return [];
 
     const elements = await db
@@ -116,7 +117,10 @@ export namespace ElementRepository {
     // Map to maintain order, return Error for missing
     return ids.map(id => {
       const found = elements.find(e => e.id === id);
-      return found || new Error(`Element with ID ${id} not found`);
+      if (!found) {
+        return new Error(`Element with ID ${id} not found`);
+      }
+      return { base: found };
     });
   };
 

@@ -3,7 +3,7 @@
 // Data Source Types
 // ============================================================================
 
-import { CertificateElementBaseCreateInput, CertificateElementBaseUpdateInput } from "../input";
+import { CertificateElementBaseInput, CertificateElementBaseUpdateInput } from "../input";
 import { ElementImageFit } from "../output";
 
 // GraphQL input types (used in Pothos isOneOf definitions)
@@ -21,7 +21,7 @@ export type ImageDataSourceInputGraphql = {
 
 // GraphQL create input type
 export type ImageElementCreateInputGraphql =
-  CertificateElementBaseCreateInput & {
+  CertificateElementBaseInput & {
     fit: ElementImageFit;
     dataSource: ImageDataSourceInputGraphql;
   };
