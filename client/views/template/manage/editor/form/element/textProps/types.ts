@@ -12,6 +12,13 @@ export type TextPropsFormErrors = FormErrors<
 export type TextPropsState =
   | Graphql.TextPropsCreateInput
   | Graphql.TextPropsUpdateInput;
+
+export type UpdateTextPropsCreateFn =
+  UpdateStateFn<Graphql.TextPropsCreateInput>;
+
+export type UpdateTextPropsUpdateFn =
+  UpdateStateFn<Graphql.TextPropsUpdateInput>;
+
 export type UpdateTextPropsFn = UpdateStateFn<
   Graphql.TextPropsCreateInput | Graphql.TextPropsUpdateInput
 >;
