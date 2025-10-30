@@ -3,7 +3,7 @@ import {
   StudentDateField,
   CertificateDateField,
   CalendarType,
-  DateElementCreateInput,
+  DateElementInput,
   DateElementUpdateInput,
   CertificateElementEntity,
   DateTransformationType,
@@ -64,7 +64,7 @@ export namespace DateElementUtils {
    */
   export const mapDateElementCreateGraphqlToInput = (
     input: DateElementCreateInputGraphql
-  ): DateElementCreateInput => {
+  ): DateElementInput => {
     return {
       ...input,
       textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
@@ -259,10 +259,10 @@ export namespace DateElementUtils {
    * Validate all fields for DATE element creation
    */
   export const validateCreateInput = async (
-    input: DateElementCreateInput
+    input: DateElementInput
   ): Promise<void> => {
     // Validate base element properties
-    await CommonElementUtils.validateBaseCreateInput(input);
+    await CommonElementUtils.validateBaseInput(input);
 
     // Validate textProps
     await CommonElementUtils.validateTextProps(input.textProps);

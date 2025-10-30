@@ -87,7 +87,7 @@ export namespace QRCodeElementUtils {
     input: QRCodeElementCreateInput
   ): Promise<void> => {
     // Validate base element properties
-    await CommonElementUtils.validateBaseCreateInput(input);
+    await CommonElementUtils.validateBaseInput(input);
 
     // Validate error correction level
     validateErrorCorrection(input.errorCorrection);
