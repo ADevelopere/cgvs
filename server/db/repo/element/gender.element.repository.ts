@@ -2,18 +2,17 @@ import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
 import { certificateElement, genderElement, elementTextProps } from "@/server/db/schema";
 import {
-  GenderElementCreateInput,
+  GenderElementInput,
   GenderElementUpdateInput,
   GenderElementOutput,
   ElementType,
-  GenderElementEntity,
   ElementTextPropsEntity,
   CertificateElementEntityInput,
+  GenderDataSourceType,
 } from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
 import { GenderElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
-import { TextPropsUtils } from "@/server/utils/element/textProps.utils";
 import { ElementRepository } from ".";
 
 /**
@@ -35,16 +34,16 @@ export namespace GenderElementRepository {
    * 5. Return full output
    */
   export const create = async (
-    input: GenderElementCreateInput
+    input: GenderElementInput
   ): Promise<GenderElementOutput> => {
     // 1. Validate input
-    await GenderElementUtils.validateCreateInput(input);
+    await GenderElementUtils.validateInput(input);
 
     // 2. Create TextProps
     const newTextProps = await TextPropsRepository.create(input.textProps);
 
     const baseInput: CertificateElementEntityInput = {
-      ...input,
+      ...input.base,
       type: ElementType.GENDER,
     };
 
@@ -55,7 +54,7 @@ export namespace GenderElementRepository {
       .returning();
 
     // 4. Insert into gender_element (type-specific table)
-    const [newGenderElement] = await db
+    const [_] = await db
       .insert(genderElement)
       .values({
         elementId: baseElement.id,
@@ -69,11 +68,11 @@ export namespace GenderElementRepository {
 
     // 5. Return full output
     return {
-      ...baseElement,
-      elementId: newGenderElement.elementId,
-      textPropsId: newGenderElement.textPropsId,
+      base: baseElement,
       textPropsEntity: newTextProps,
-      textProps: TextPropsUtils.entityToTextProps(newTextProps),
+      genderDataSource: {
+        type: GenderDataSourceType.STUDENT_GENDER,
+      },
     };
   };
 
@@ -87,7 +86,7 @@ export namespace GenderElementRepository {
    * 1. Load existing element
    * 2. Validate type and input
    * 3. Update certificate_element (base table)
-   * 4. Update element_text_props (if textProps provided)
+   * 4. Update element_text_props
    * 5. Return updated element (no gender_element specific fields to update)
    */
   export const update = async (
@@ -97,34 +96,28 @@ export namespace GenderElementRepository {
     const existing = await loadByIdOrThrow(input.id);
 
     // 2. Validate type
-    if (existing.type !== ElementType.GENDER) {
+    if (existing.base.type !== ElementType.GENDER) {
       throw new Error(
-        `Element ${input.id} is ${existing.type}, not GENDER. Use correct repository.`
+        `Element ${input.id} is ${existing.base.type}, not GENDER. Use correct repository.`
       );
     }
 
     // 3. Validate update input
-    await GenderElementUtils.validateUpdateInput(input, existing);
+    await GenderElementUtils.validateInput(input);
 
     // 4. Update certificate_element (base table)
     const updatedBaseElement = await ElementRepository.updateBaseElement(
       input.id,
-      input,
-      existing
+      { ...input.base, id: input.id },
+      existing.base
     );
 
-    // 5. Update element_text_props (if textProps provided)
-    const existingGenderElement: GenderElementEntity = existing;
-    let updatedTextProps: ElementTextPropsEntity = existing.textPropsEntity;
-    if (input.textProps !== undefined) {
-      if (input.textProps === null) {
-        throw new Error("textProps cannot be null for GENDER element");
-      }
-      updatedTextProps = await TextPropsRepository.update(
-        existing.textPropsId,
-        input.textProps
-      );
-    }
+    // 5. Update element_text_props (full replace required)
+    const updatedTextProps: ElementTextPropsEntity =
+      await TextPropsRepository.update(existing.textPropsEntity.id, {
+        ...input.textProps,
+        id: existing.textPropsEntity.id,
+      });
 
     logger.info(
       `GENDER element updated: ${updatedBaseElement.name} (ID: ${input.id})`
@@ -132,11 +125,9 @@ export namespace GenderElementRepository {
 
     // 6. Return updated element (gender_element has no updateable fields beyond FKs)
     return {
-      ...updatedBaseElement,
-      elementId: existingGenderElement.elementId,
-      textPropsId: existingGenderElement.textPropsId,
+      base: updatedBaseElement,
       textPropsEntity: updatedTextProps,
-      textProps: TextPropsUtils.entityToTextProps(updatedTextProps),
+      genderDataSource: existing.genderDataSource,
     };
   };
 
@@ -172,12 +163,11 @@ export namespace GenderElementRepository {
 
     // Reconstruct output
     return {
-      // Base element fields
-      ...row.certificate_element,
-      // Gender-specific fields
-      ...row.gender_element,
+      base: row.certificate_element,
       textPropsEntity: row.element_text_props,
-      textProps: TextPropsUtils.entityToTextProps(row.element_text_props),
+      genderDataSource: {
+        type: GenderDataSourceType.STUDENT_GENDER,
+      },
     };
   };
 
@@ -215,9 +205,9 @@ export namespace GenderElementRepository {
       }
 
       // Validate element type
-      if (element.type !== ElementType.GENDER) {
+      if (element.base.type !== ElementType.GENDER) {
         return new Error(
-          `Element ${element.id} is ${element.type}, not GENDER`
+          `Element ${element.base.id} is ${element.base.type}, not GENDER`
         );
       }
 
