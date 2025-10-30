@@ -4,7 +4,7 @@ import { useAppTranslation } from "@/client/locale";
 import type {
   TextElementFormUpdateState,
   TextElementFormErrors,
-  UpdateDataSourceFn,
+  UpdateTextDataSourceFn,
 } from "./types";
 import { DataSourceForm } from "./TextDataSourceForm";
 import { TextPropsForm } from "../textProps/TextPropsForm";
@@ -23,7 +23,7 @@ interface TextElementUpdateFormProps {
   errors: TextElementFormErrors;
   updateBaseElement: UpdateBaseElementUpdateFn;
   updateTextProps: UpdateTextPropsUpdateFn;
-  updateDataSource: UpdateDataSourceFn;
+  updateDataSource: UpdateTextDataSourceFn;
   templateId: number;
   locale: string;
   textVariables: TemplateTextVariable[];

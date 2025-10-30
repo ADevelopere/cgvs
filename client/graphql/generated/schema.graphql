@@ -426,21 +426,18 @@ enum DateDataSourceType {
 
 type DateElement implements CertificateElement {
   alignment: ElementAlignment
-  calendarType: CalendarType
   createdAt: DateTime
   dateDataSource: DateDataSource
+  dateProps: DateProps
   description: String
-  format: String
   height: Int
   id: Int
   name: String
-  offsetDays: Int
   positionX: Int
   positionY: Int
   renderOrder: Int
   template: Template
   textProps: TextProps
-  transformation: DateTransformationType
   type: ElementType
   updatedAt: DateTime
   width: Int
@@ -448,38 +445,53 @@ type DateElement implements CertificateElement {
 
 input DateElementCreateInput {
   alignment: ElementAlignment!
-  calendarType: CalendarType!
   dataSource: DateDataSourceInput!
+  dateProps: DatePropsCreateInput!
   description: String!
-  format: String!
   height: Int!
   name: String!
-  offsetDays: Int!
   positionX: Int!
   positionY: Int!
   renderOrder: Int!
   templateId: Int!
   textProps: TextPropsCreateInput!
-  transformation: DateTransformationType
   width: Int!
 }
 
 input DateElementUpdateInput {
   alignment: ElementAlignment
-  calendarType: CalendarType
   dataSource: DateDataSourceInput
+  dateProps: DatePropsUpdateInput
   description: String
-  format: String
   height: Int
   id: Int!
   name: String
-  offsetDays: Int
   positionX: Int
   positionY: Int
   renderOrder: Int
   textProps: TextPropsUpdateInput
-  transformation: DateTransformationType
   width: Int
+}
+
+type DateProps {
+  calendarType: CalendarType
+  format: String
+  offsetDays: Int
+  transformation: DateTransformationType
+}
+
+input DatePropsCreateInput {
+  calendarType: CalendarType!
+  format: String!
+  offsetDays: Int!
+  transformation: DateTransformationType
+}
+
+input DatePropsUpdateInput {
+  calendarType: CalendarType
+  format: String
+  offsetDays: Int
+  transformation: DateTransformationType
 }
 
 """

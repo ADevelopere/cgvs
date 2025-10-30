@@ -1,10 +1,10 @@
 import type { TextDataSourceInput } from "@/client/graphql/generated/gql/graphql";
-import type { DataSourceFormErrors } from "./types";
+import type { TextDataSourceFormErrors } from "./types";
 
 export const validateTextDataSource = (
   dataSource: TextDataSourceInput
-): DataSourceFormErrors => {
-  const errors: DataSourceFormErrors = {};
+): TextDataSourceFormErrors => {
+  const errors: TextDataSourceFormErrors = {};
 
   if (dataSource.static) {
     if (!dataSource.static.value || dataSource.static.value.trim().length === 0) {

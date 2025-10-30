@@ -46,7 +46,6 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
     }
     
     ... on DateElement {
-      calendarType
       dateDataSource {
         ... on DateDataSourceCertificateField {
           certificateField
@@ -65,8 +64,12 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
           type
         }
       }
-      format
-      offsetDays
+      dateProps {
+        calendarType
+        offsetDays
+        format
+        transformation
+      }
       textProps {
         color
         fontRef {
@@ -82,7 +85,6 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
         fontSize
         overflow
       }
-      transformation
     }
     
     ... on GenderElement {
