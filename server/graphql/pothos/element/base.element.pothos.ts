@@ -116,8 +116,8 @@ export const TextPropsObject = gqlSchemaBuilder
     }),
   });
 
-export const TextPropsInputObject = gqlSchemaBuilder
-  .inputRef<Types.TextPropsCreateInputGraphql>("TextPropsInput")
+export const TextPropsCreateInputObject = gqlSchemaBuilder
+  .inputRef<Types.TextPropsCreateInputGraphql>("TextPropsCreateInput")
   .implement({
     fields: t => ({
       fontRef: t.field({ type: FontReferenceInputObject, required: true }),
@@ -154,7 +154,6 @@ export const ElementOrderUpdateInputObject = gqlSchemaBuilder
 // ============================================================================
 // Input Field Helpers (to reduce duplication across element types)
 // ============================================================================
-
 /**
  * Helper to create shared base element input fields for create operations
  * All fields are required
@@ -190,6 +189,26 @@ export const createBaseElementUpdateInputFields = <Types extends SchemaTypes>(
   alignment: t.field({ type: ElementAlignmentPothosEnum, required: false }),
   renderOrder: t.int(),
 });
+
+export const CertificateElementBaseCreateInputInputObject = gqlSchemaBuilder
+  .inputRef<Types.CertificateElementBaseCreateInput>(
+    "CertificateElementBaseCreateInput"
+  )
+  .implement({
+    fields: t => ({
+      ...createBaseElementInputFields(t),
+    }),
+  });
+
+export const CertificateElementBaseUpdateInputInputObject = gqlSchemaBuilder
+  .inputRef<Types.CertificateElementBaseUpdateInput>(
+    "CertificateElementBaseUpdateInput"
+  )
+  .implement({
+    fields: t => ({
+      ...createBaseElementUpdateInputFields(t),
+    }),
+  });
 
 // ============================================================================
 // CertificateElement Interface (shared fields for all element types)

@@ -3,7 +3,7 @@ import * as Types from "@/server/types/element";
 import { GenderElementRepository } from "@/server/db/repo/element";
 import {
   TextPropsObject,
-  TextPropsInputObject,
+  TextPropsCreateInputObject,
   TextPropsUpdateInputObject,
   CertificateElementPothosInterface,
   createBaseElementInputFields,
@@ -19,7 +19,7 @@ export const GenderElementCreateInputObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       ...createBaseElementInputFields(t),
-      textProps: t.field({ type: TextPropsInputObject, required: true }),
+      textProps: t.field({ type: TextPropsCreateInputObject, required: true }),
     }),
   });
 

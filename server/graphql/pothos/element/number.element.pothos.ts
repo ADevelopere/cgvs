@@ -3,7 +3,7 @@ import * as Types from "@/server/types/element";
 import { NumberElementRepository } from "@/server/db/repo/element";
 import {
   TextPropsObject,
-  TextPropsInputObject,
+  TextPropsCreateInputObject,
   TextPropsUpdateInputObject,
   CertificateElementPothosInterface,
   createBaseElementInputFields,
@@ -53,7 +53,7 @@ export const NumberElementCreateInputObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       ...createBaseElementInputFields(t),
-      textProps: t.field({ type: TextPropsInputObject, required: true }),
+      textProps: t.field({ type: TextPropsCreateInputObject, required: true }),
       dataSource: t.field({
         type: NumberDataSourceInputObject,
         required: true,
