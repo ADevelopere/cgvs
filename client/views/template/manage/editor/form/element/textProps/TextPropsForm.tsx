@@ -11,14 +11,13 @@ import {
   Typography,
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
-import type {
-  TextPropsState,
+import { FontReferenceSelector } from "./FontReferenceSelector";
+import { ElementOverflow, Font } from "@/client/graphql/generated/gql/graphql";
+import {
   TextPropsFormErrors,
   UpdateTextPropsFn,
-  Font,
-  ElementOverflow,
-} from "./text/types";
-import { FontReferenceSelector } from "./FontReferenceSelector";
+  TextPropsState,
+} from "./types";
 
 interface TextPropsFormProps {
   textProps: TextPropsState;
@@ -52,9 +51,7 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
             fontRef={textProps.fontRef}
             locale={locale}
             selfHostedFonts={selfHostedFonts}
-            onFontRefChange={(fontRef) =>
-              onTextPropsChange("fontRef", fontRef)
-            }
+            onFontRefChange={fontRef => onTextPropsChange("fontRef", fontRef)}
             error={errors.fontRef}
             disabled={disabled}
           />
@@ -67,7 +64,7 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
             type="color"
             label={strings.textProps.colorLabel}
             value={textProps.color}
-            onChange={(e) => onTextPropsChange("color", e.target.value)}
+            onChange={e => onTextPropsChange("color", e.target.value)}
             error={!!errors.color}
             helperText={errors.color}
             disabled={disabled}
@@ -82,13 +79,13 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
             label={strings.textProps.fontSizeLabel}
             placeholder={strings.textProps.fontSizePlaceholder}
             value={textProps.fontSize}
-            onChange={(e) =>
+            onChange={e =>
               onTextPropsChange("fontSize", parseInt(e.target.value, 10) || 0)
             }
             error={!!errors.fontSize}
             helperText={errors.fontSize}
             disabled={disabled}
-            inputProps={{ min: 1, max: 1000 }}
+            slotProps={{ htmlInput: { min: 1, max: 1000 } }}
           />
         </Grid>
 
@@ -99,7 +96,7 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
             <Select
               value={textProps.overflow}
               label={strings.textProps.overflowLabel}
-              onChange={(e) =>
+              onChange={e =>
                 onTextPropsChange("overflow", e.target.value as ElementOverflow)
               }
             >
@@ -123,4 +120,3 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
     </Box>
   );
 };
-

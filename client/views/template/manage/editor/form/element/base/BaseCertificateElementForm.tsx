@@ -11,15 +11,15 @@ import {
   Typography,
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
-import type {
-  BaseElementState,
+import { ElementAlignment } from "@/client/graphql/generated/gql/graphql";
+import {
+  BaseCertificateElementFormState,
   BaseElementFormErrors,
   UpdateBaseElementFn,
-  ElementAlignment,
-} from "./text/types";
+} from "./types";
 
 interface BaseCertificateElementFormProps {
-  baseProps: BaseElementState;
+  baseProps: BaseCertificateElementFormState;
   onFieldChange: UpdateBaseElementFn;
   errors: BaseElementFormErrors;
   disabled?: boolean;
@@ -44,7 +44,7 @@ export const BaseCertificateElementForm: FC<
             label={strings.baseElement.nameLabel}
             placeholder={strings.baseElement.namePlaceholder}
             value={baseProps.name}
-            onChange={(e) => onFieldChange("name", e.target.value)}
+            onChange={e => onFieldChange("name", e.target.value)}
             error={!!errors.name}
             helperText={errors.name}
             disabled={disabled}
@@ -61,7 +61,7 @@ export const BaseCertificateElementForm: FC<
             label={strings.baseElement.descriptionLabel}
             placeholder={strings.baseElement.descriptionPlaceholder}
             value={baseProps.description}
-            onChange={(e) => onFieldChange("description", e.target.value)}
+            onChange={e => onFieldChange("description", e.target.value)}
             error={!!errors.description}
             helperText={errors.description}
             disabled={disabled}
@@ -75,14 +75,14 @@ export const BaseCertificateElementForm: FC<
             type="number"
             label={strings.baseElement.positionXLabel}
             value={baseProps.positionX}
-            onChange={(e) =>
+            onChange={e =>
               onFieldChange("positionX", parseInt(e.target.value, 10) || 0)
             }
             error={!!errors.positionX}
             helperText={errors.positionX}
             disabled={disabled}
             required
-            inputProps={{ min: 0 }}
+            slotProps={{ htmlInput: { min: 0 } }}
           />
         </Grid>
 
@@ -93,14 +93,14 @@ export const BaseCertificateElementForm: FC<
             type="number"
             label={strings.baseElement.positionYLabel}
             value={baseProps.positionY}
-            onChange={(e) =>
+            onChange={e =>
               onFieldChange("positionY", parseInt(e.target.value, 10) || 0)
             }
             error={!!errors.positionY}
             helperText={errors.positionY}
             disabled={disabled}
             required
-            inputProps={{ min: 0 }}
+            slotProps={{ htmlInput: { min: 0 } }}
           />
         </Grid>
 
@@ -111,14 +111,14 @@ export const BaseCertificateElementForm: FC<
             type="number"
             label={strings.baseElement.widthLabel}
             value={baseProps.width}
-            onChange={(e) =>
+            onChange={e =>
               onFieldChange("width", parseInt(e.target.value, 10) || 0)
             }
             error={!!errors.width}
             helperText={errors.width}
             disabled={disabled}
             required
-            inputProps={{ min: 1 }}
+            slotProps={{ htmlInput: { min: 1 } }}
           />
         </Grid>
 
@@ -129,14 +129,14 @@ export const BaseCertificateElementForm: FC<
             type="number"
             label={strings.baseElement.heightLabel}
             value={baseProps.height}
-            onChange={(e) =>
+            onChange={e =>
               onFieldChange("height", parseInt(e.target.value, 10) || 0)
             }
             error={!!errors.height}
             helperText={errors.height}
             disabled={disabled}
             required
-            inputProps={{ min: 1 }}
+            slotProps={{ htmlInput: { min: 1 } }}
           />
         </Grid>
 
@@ -147,15 +147,19 @@ export const BaseCertificateElementForm: FC<
             <Select
               value={baseProps.alignment}
               label={strings.baseElement.alignmentLabel}
-              onChange={(e) =>
+              onChange={e =>
                 onFieldChange("alignment", e.target.value as ElementAlignment)
               }
             >
               <MenuItem value="START">
                 {strings.baseElement.alignmentStart}
               </MenuItem>
-              <MenuItem value="END">{strings.baseElement.alignmentEnd}</MenuItem>
-              <MenuItem value="TOP">{strings.baseElement.alignmentTop}</MenuItem>
+              <MenuItem value="END">
+                {strings.baseElement.alignmentEnd}
+              </MenuItem>
+              <MenuItem value="TOP">
+                {strings.baseElement.alignmentTop}
+              </MenuItem>
               <MenuItem value="BOTTOM">
                 {strings.baseElement.alignmentBottom}
               </MenuItem>
@@ -180,18 +184,17 @@ export const BaseCertificateElementForm: FC<
             label={strings.baseElement.renderOrderLabel}
             placeholder={strings.baseElement.renderOrderPlaceholder}
             value={baseProps.renderOrder}
-            onChange={(e) =>
+            onChange={e =>
               onFieldChange("renderOrder", parseInt(e.target.value, 10) || 0)
             }
             error={!!errors.renderOrder}
             helperText={errors.renderOrder}
             disabled={disabled}
             required
-            inputProps={{ min: 0 }}
+            slotProps={{ htmlInput: { min: 0 } }}
           />
         </Grid>
       </Grid>
     </Box>
   );
 };
-

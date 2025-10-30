@@ -7,7 +7,7 @@ import {
   Select,
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
-import type { StudentTextField } from "./types";
+import { StudentTextField } from "@/client/graphql/generated/gql/graphql";
 
 interface StudentFieldSelectorProps {
   value: StudentTextField;
@@ -30,7 +30,7 @@ export const StudentFieldSelector: FC<StudentFieldSelectorProps> = ({
       <Select
         value={value}
         label={strings.textElement.studentFieldLabel}
-        onChange={(e) => onChange(e.target.value as StudentTextField)}
+        onChange={e => onChange(e.target.value as StudentTextField)}
       >
         <MenuItem value="STUDENT_NAME">
           {strings.textElement.studentFieldName}
@@ -43,4 +43,3 @@ export const StudentFieldSelector: FC<StudentFieldSelectorProps> = ({
     </FormControl>
   );
 };
-

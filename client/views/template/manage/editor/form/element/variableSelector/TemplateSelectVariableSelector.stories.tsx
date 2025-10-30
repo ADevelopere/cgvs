@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { TemplateSelectVariableSelector } from "./TemplateSelectVariableSelector";
-import type { TemplateSelectVariable } from "./text/types";
+import type { TemplateSelectVariable } from "../text/types";
 
 const meta: Meta<typeof TemplateSelectVariableSelector> = {
   title: "Template/Editor/Form/Element/TemplateSelectVariableSelector",

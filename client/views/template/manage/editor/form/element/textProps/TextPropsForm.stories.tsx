@@ -1,8 +1,9 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { TextPropsForm } from "./TextPropsForm";
-import type { TextPropsState, TextPropsFormErrors } from "./text/types";
+import type { TextPropsFormErrors } from "./types";
+import type { TextPropsCreateInput } from "@/client/graphql/generated/gql/graphql";
 import { logger } from "@/client/lib/logger";
-import { mockSelfHostedFonts } from "./story.util";
+import { mockSelfHostedFonts } from "../story.util";
 
 const meta: Meta<typeof TextPropsForm> = {
   title: "Template/Editor/Form/Element/TextPropsForm",
@@ -13,8 +14,8 @@ const meta: Meta<typeof TextPropsForm> = {
 export default meta;
 type Story = StoryObj<typeof TextPropsForm>;
 
-const defaultTextProps: TextPropsState = {
-  fontRef: { type: "GOOGLE", identifier: "Roboto" },
+const defaultTextProps: TextPropsCreateInput = {
+  fontRef: { google: { identifier: "Roboto" } },
   fontSize: 16,
   color: "#000000",
   overflow: "WRAP",
@@ -37,7 +38,7 @@ export const Default: Story = {
 export const ArabicLocale: Story = {
   args: {
     textProps: {
-      fontRef: { type: "SELF_HOSTED", fontId: 1 },
+      fontRef: { selfHosted: { fontId: 1 } },
       fontSize: 18,
       color: "#333333",
       overflow: "RESIZE_DOWN",

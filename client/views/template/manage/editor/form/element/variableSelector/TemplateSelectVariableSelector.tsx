@@ -1,7 +1,7 @@
 import React, { type FC } from "react";
 import { Autocomplete, TextField } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
-import type { TemplateSelectVariable } from "./text/types";
+import { TemplateSelectVariable } from "@/client/graphql/generated/gql/graphql";
 
 interface TemplateSelectVariableSelectorProps {
   value: number | undefined;

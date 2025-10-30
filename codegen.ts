@@ -19,7 +19,7 @@ const config: CodegenConfig = {
         withRefetchFn: true,
         inlineFragmentTypes: false,
         preResolveTypes: true,
-        extractAllFieldsToTypes: false,
+        extractAllFieldsToTypes: true,
         skipTypeNameForRoot: false,
       },
     },

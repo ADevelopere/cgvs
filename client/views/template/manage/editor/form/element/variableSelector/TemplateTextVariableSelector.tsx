@@ -1,7 +1,7 @@
 import React, { type FC } from "react";
 import { Autocomplete, TextField } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
-import type { TemplateTextVariable } from "./text/types";
+import { TemplateTextVariable } from "@/client/graphql/generated/gql/graphql";
 
 interface TemplateTextVariableSelectorProps {
   value: number | undefined;
@@ -16,14 +16,13 @@ export const TemplateTextVariableSelector: FC<
 > = ({ value, variables, onChange, error, disabled }) => {
   const strings = useAppTranslation("certificateElementsTranslations");
 
-  const selectedVariable =
-    variables.find((v) => v.id === value) || null;
+  const selectedVariable = variables.find(v => v.id === value) || null;
 
   return (
     <Autocomplete
       value={selectedVariable}
       options={variables}
-      getOptionLabel={(option) => option.name || ""}
+      getOptionLabel={option => option.name || ""}
       onChange={(_event, newValue) => {
         if (newValue?.id) {
           onChange(newValue.id);
@@ -31,7 +30,7 @@ export const TemplateTextVariableSelector: FC<
       }}
       disabled={disabled}
       noOptionsText={strings.textElement.noVariablesAvailable}
-      renderInput={(params) => (
+      renderInput={params => (
         <TextField
           {...params}
           label={strings.textElement.templateTextVariableLabel}
@@ -43,4 +42,3 @@ export const TemplateTextVariableSelector: FC<
     />
   );
 };
-

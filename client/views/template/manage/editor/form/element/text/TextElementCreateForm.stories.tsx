@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { TextElementCreateForm } from "./TextElementCreateForm";
 import type {
-  TextElementState,
+  TextElementFormState,
   TextElementFormErrors,
   TemplateTextVariable,
   TemplateSelectVariable,
@@ -55,7 +55,7 @@ const mockSelfHostedFonts: Font[] = [
   },
 ];
 
-const defaultState: TextElementState = {
+const defaultState: TextElementFormState = {
   templateId: 1,
   name: "Text Element",
   description: "Sample text element",

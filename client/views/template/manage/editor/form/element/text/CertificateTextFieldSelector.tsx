@@ -7,7 +7,7 @@ import {
   Select,
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
-import type { CertificateTextField } from "./types";
+import { CertificateTextField } from "@/client/graphql/generated/gql/graphql";
 
 interface CertificateFieldSelectorProps {
   value: CertificateTextField;

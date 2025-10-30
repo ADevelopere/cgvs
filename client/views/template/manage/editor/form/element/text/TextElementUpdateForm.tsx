@@ -2,7 +2,7 @@ import React, { type FC } from "react";
 import { Box, Grid, Paper } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import type {
-  TextElementState,
+  TextElementFormState,
   TextElementFormErrors,
   UpdateBaseElementFn,
   UpdateTextPropsFn,
@@ -12,12 +12,12 @@ import type {
   Font,
 } from "./types";
 import { DataSourceForm } from "./TextDataSourceForm";
-import { TextPropsForm } from "../TextPropsForm";
-import { BaseCertificateElementForm } from "../BaseCertificateElementForm";
-import { ActionButtons } from "../ActionButtons";
+import { TextPropsForm } from "../textProps/TextPropsForm";
+import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
+import { ActionButtons } from "../../ActionButtons";
 
 interface TextElementUpdateFormProps {
-  state: TextElementState;
+  state: TextElementFormState;
   errors: TextElementFormErrors;
   updateBaseElement: UpdateBaseElementFn;
   updateTextProps: UpdateTextPropsFn;
@@ -52,7 +52,7 @@ export const TextElementUpdateForm: FC<TextElementUpdateFormProps> = ({
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {/* Scrollable Content */}
       <Box sx={{ flexGrow: 1, overflow: "auto", pb: 2 }}>
-        {/* Row 1: Data Source (NO selector) */}
+        {/* Row 1: Data Source (with selector) */}
         <Paper sx={{ p: 3, mb: 2 }}>
           <DataSourceForm
             dataSource={state.dataSource}
@@ -61,7 +61,7 @@ export const TextElementUpdateForm: FC<TextElementUpdateFormProps> = ({
             onDataSourceChange={updateDataSource}
             errors={errors.dataSource}
             disabled={isSubmitting}
-            showSelector={false}
+            showSelector={true}
           />
         </Paper>
 
