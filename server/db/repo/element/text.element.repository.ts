@@ -1,22 +1,22 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
-import { certificateElement , textElement, elementTextProps} from "@/server/db/schema";
 import {
-  TextElementCreateInput,
+  certificateElement,
+  textElement,
+  elementTextProps,
+} from "@/server/db/schema";
+import {
+  TextElementInput,
   TextElementUpdateInput,
   TextElementOutput,
   ElementType,
-  TextDataSourceType,
-  TextDataSource,
-  TextDataSourceInput,
-  CertificateElementEntityInput,
   TextElementEntity,
   ElementTextPropsEntity,
+  CertificateElementEntityInput,
 } from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
 import { TextElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
-import { TextPropsUtils } from "@/server/utils/element/textProps.utils";
 import { ElementRepository } from ".";
 
 /**
@@ -36,23 +36,27 @@ export namespace TextElementRepository {
    * 3. Extract variableId from dataSource
    * 4. Insert into certificate_element → get elementId
    * 5. Insert into text_element
-   * 6. Load and return full output
+   * 6. Return full output
    */
   export const create = async (
-    input: TextElementCreateInput
+    input: TextElementInput
   ): Promise<TextElementOutput> => {
     // 1. Validate input
-    await TextElementUtils.validateCreateInput(input);
+    await TextElementUtils.validateInput(input);
 
     // 2. Create TextProps
     const newTextProps = await TextPropsRepository.create(input.textProps);
 
     // 3. Convert input dataSource to output format and extract variableId
-    const newDataSource = convertInputDataSourceToOutput(input.dataSource);
-    const variableId = extractVariableIdFromDataSource(newDataSource);
+    const newDataSource = TextElementUtils.convertInputDataSourceToOutput(
+      input.dataSource
+    );
+    const variableId = TextElementUtils.extractVariableIdFromDataSource(
+      input.dataSource
+    );
 
     const baseInput: CertificateElementEntityInput = {
-      ...input,
+      ...input.base,
       type: ElementType.TEXT,
     };
 
@@ -77,15 +81,16 @@ export namespace TextElementRepository {
       `TEXT element created: ${baseElement.name} (ID: ${baseElement.id})`
     );
 
-    // 6. Load and return full output
+    // 6. Return full output
     return {
-      ...baseElement,
-      elementId: newTextElement.elementId,
-      textPropsId: newTextElement.textPropsId,
+      base: baseElement,
       textPropsEntity: newTextProps,
-      textElementSpecProps: TextPropsUtils.entityToTextProps(newTextProps),
+      textElementSpecProps: {
+        elementId: newTextElement.elementId,
+        textPropsId: newTextElement.textPropsId,
+        variableId: newTextElement.variableId,
+      },
       textDataSource: newDataSource,
-      variableId,
     };
   };
 
@@ -99,7 +104,7 @@ export namespace TextElementRepository {
    * 1. Load existing element
    * 2. Validate type and input
    * 3. Update certificate_element (base table)
-   * 4. Update element_text_props (if textProps provided)
+   * 4. Update element_text_props
    * 5. Update text_element (type-specific table)
    * 6. Return updated element
    */
@@ -110,42 +115,31 @@ export namespace TextElementRepository {
     const existing = await loadByIdOrThrow(input.id);
 
     // 2. Validate type
-    if (existing.type !== ElementType.TEXT) {
+    if (existing.base.type !== ElementType.TEXT) {
       throw new Error(
-        `Element ${input.id} is ${existing.type}, not TEXT. Use correct repository.`
+        `Element ${input.id} is ${existing.base.type}, not TEXT. Use correct repository.`
       );
     }
 
     // 3. Validate update input
-    await TextElementUtils.validateUpdateInput(input, existing);
+    await TextElementUtils.validateInput(input);
 
     // 4. Update certificate_element (base table)
     const updatedBaseElement = await ElementRepository.updateBaseElement(
       input.id,
-      input,
-      existing
+      { ...input.base, id: input.id },
+      existing.base
     );
 
-
-    // 5. Update element_text_props (if textProps provided)
-    const existingTextElement: TextElementEntity = existing;
-    let updatedTextProps: ElementTextPropsEntity = existing.textPropsEntity;
-    if (input.textProps !== undefined) {
-      if (input.textProps === null) {
-        throw new Error("textProps cannot be null for TEXT element");
-      }
-      updatedTextProps = await TextPropsRepository.update(
-        existing.textPropsId,
-        input.textProps
-      );
-    }
+    // 5. Update element_text_props (full replace required)
+    const updatedTextProps: ElementTextPropsEntity =
+      await TextPropsRepository.update(existing.textPropsEntity.id, {
+        ...input.textProps,
+        id: existing.textPropsEntity.id,
+      });
 
     // 6. Update text_element (type-specific table)
-    const updatedTextElement = await updateTextElementSpecific(
-      input.id,
-      input,
-      existingTextElement
-    );
+    const updatedTextElement = await updateTextElementSpecific(input);
 
     logger.info(
       `TEXT element updated: ${updatedBaseElement.name} (ID: ${input.id})`
@@ -153,13 +147,14 @@ export namespace TextElementRepository {
 
     // 7. Return updated element
     return {
-      ...updatedBaseElement,
-      elementId: updatedTextElement.elementId,
-      textPropsId: updatedTextElement.textPropsId,
+      base: updatedBaseElement,
       textPropsEntity: updatedTextProps,
-      textElementSpecProps: TextPropsUtils.entityToTextProps(updatedTextProps),
+      textElementSpecProps: {
+        elementId: updatedTextElement.elementId,
+        textPropsId: updatedTextElement.textPropsId,
+        variableId: updatedTextElement.variableId,
+      },
       textDataSource: updatedTextElement.textDataSource,
-      variableId: updatedTextElement.variableId,
     };
   };
 
@@ -192,14 +187,14 @@ export namespace TextElementRepository {
 
     // Reconstruct output
     return {
-      // Base element fields
-      ...row.certificate_element,
-      // Text-specific fields
-      ...row.text_element,
+      base: row.certificate_element,
       textPropsEntity: row.element_text_props,
-      textElementSpecProps: TextPropsUtils.entityToTextProps(row.element_text_props),
+      textElementSpecProps: {
+        elementId: row.text_element.elementId,
+        textPropsId: row.text_element.textPropsId,
+        variableId: row.text_element.variableId,
+      },
       textDataSource: row.text_element.textDataSource,
-      variableId: row.text_element.variableId,
     };
   };
 
@@ -235,8 +230,10 @@ export namespace TextElementRepository {
       }
 
       // Validate element type
-      if (element.type !== ElementType.TEXT) {
-        return new Error(`Element ${element.id} is ${element.type}, not TEXT`);
+      if (element.base.type !== ElementType.TEXT) {
+        return new Error(
+          `Element ${element.base.id} is ${element.base.type}, not TEXT`
+        );
       }
 
       return element;
@@ -249,84 +246,29 @@ export namespace TextElementRepository {
 
   /**
    * Update text_element (type-specific table)
-   * Returns updated entity or existing if no changes
+   * Returns updated entity
    */
   const updateTextElementSpecific = async (
-    elementId: number,
-    input: TextElementUpdateInput,
-    existingTextElement: TextElementEntity
+    input: TextElementUpdateInput
   ): Promise<TextElementEntity> => {
-    const textUpdates: Partial<typeof textElement.$inferInsert> = {};
+    const newDataSource = TextElementUtils.convertInputDataSourceToOutput(
+      input.dataSource
+    );
+    const variableId = TextElementUtils.extractVariableIdFromDataSource(
+      input.dataSource
+    );
 
-    // Handle dataSource update
-    if (input.dataSource !== undefined) {
-      if (input.dataSource === null) {
-        throw new Error("dataSource cannot be null for TEXT element");
-      }
-      const dataSource = convertInputDataSourceToOutput(input.dataSource);
-      textUpdates.textDataSource = dataSource;
-      textUpdates.variableId = extractVariableIdFromDataSource(dataSource);
-    }
-
-    if (Object.keys(textUpdates).length === 0) {
-      return existingTextElement;
-    }
+    const textUpdates: Partial<typeof textElement.$inferInsert> = {
+      textDataSource: newDataSource,
+      variableId,
+    };
 
     const [updated] = await db
       .update(textElement)
       .set(textUpdates)
-      .where(eq(textElement.elementId, elementId))
+      .where(eq(textElement.elementId, input.id))
       .returning();
 
     return updated;
-  };
-
-  // ============================================================================
-  // Helper Functions
-  // ============================================================================
-
-  /**
-   * Convert input data source format to output format
-   * Input uses 'field' property, output uses 'studentField'/'certificateField'
-   */
-  const convertInputDataSourceToOutput = (
-    input: TextDataSourceInput
-  ): TextDataSource => {
-    switch (input.type) {
-      case TextDataSourceType.STATIC:
-        return { type: input.type, value: input.value };
-
-      case TextDataSourceType.STUDENT_TEXT_FIELD:
-        return { type: input.type, studentField: input.field };
-
-      case TextDataSourceType.CERTIFICATE_TEXT_FIELD:
-        return { type: input.type, certificateField: input.field };
-
-      case TextDataSourceType.TEMPLATE_TEXT_VARIABLE:
-        return { type: input.type, textVariableId: input.variableId };
-
-      case TextDataSourceType.TEMPLATE_SELECT_VARIABLE:
-        return { type: input.type, selectVariableId: input.variableId };
-
-      default:
-        throw new Error(`Invalid text data source type`);
-    }
-  };
-
-  /**
-   * Extract variableId from text data source (inline in repository)
-   * Maps to correct TypeScript field name based on type
-   */
-  const extractVariableIdFromDataSource = (
-    dataSource: TextDataSource
-  ): number | null => {
-    switch (dataSource.type) {
-      case TextDataSourceType.TEMPLATE_TEXT_VARIABLE:
-        return dataSource.textVariableId;
-      case TextDataSourceType.TEMPLATE_SELECT_VARIABLE:
-        return dataSource.selectVariableId;
-      default:
-        return null;
-    }
   };
 }

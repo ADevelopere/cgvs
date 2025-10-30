@@ -2,14 +2,12 @@ import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
 import { certificateElement, imageElement } from "@/server/db/schema";
 import {
-  ImageElementCreateInput,
+  ImageElementInput,
   ImageElementUpdateInput,
   ImageElementOutput,
   ElementType,
-  ImageDataSource,
-  ImageDataSourceInput,
-  CertificateElementEntityInput,
   ImageElementEntity,
+  CertificateElementEntityInput,
   ElementImageFit,
 } from "@/server/types/element";
 import { ImageElementUtils } from "@/server/utils";
@@ -32,20 +30,21 @@ export namespace ImageElementRepository {
    * 2. Extract storageFileId from dataSource
    * 3. Insert into certificate_element → get elementId
    * 4. Insert into image_element
-   * 5. Load and return full output
+   * 5. Return full output
    */
   export const create = async (
-    input: ImageElementCreateInput
+    input: ImageElementInput
   ): Promise<ImageElementOutput> => {
     // 1. Validate input
-    await ImageElementUtils.validateCreateInput(input);
+    await ImageElementUtils.validateInput(input);
 
     // 2. Convert input dataSource to output format and extract storageFileId
-    const newDataSource = convertInputDataSourceToOutput(input.dataSource);
-    const storageFileId = extractStorageFileIdFromDataSource(newDataSource);
+    const newDataSource = ImageElementUtils.convertInputDataSourceToOutput(
+      input.dataSource
+    );
 
     const baseInput: CertificateElementEntityInput = {
-      ...input,
+      ...input.base,
       type: ElementType.IMAGE,
     };
 
@@ -60,9 +59,9 @@ export namespace ImageElementRepository {
       .insert(imageElement)
       .values({
         elementId: baseElement.id,
-        fit: input.fit,
+        fit: input.imageProps.fit,
         imageDataSource: newDataSource,
-        storageFileId,
+        storageFileId: newDataSource.storageFileId,
       })
       .returning();
 
@@ -70,13 +69,15 @@ export namespace ImageElementRepository {
       `IMAGE element created: ${baseElement.name} (ID: ${baseElement.id})`
     );
 
-    // 5. Load and return full output
+    // 5. Return full output
     return {
-      ...baseElement,
-      elementId: newImageElement.elementId,
-      fit: newImageElement.fit as ElementImageFit,
+      base: baseElement,
+      imageProps: {
+        elementId: newImageElement.elementId,
+        storageFileId: newImageElement.storageFileId,
+        fit: newImageElement.fit as ElementImageFit,
+      },
       imageDataSource: newDataSource,
-      storageFileId,
     };
   };
 
@@ -100,29 +101,24 @@ export namespace ImageElementRepository {
     const existing = await loadByIdOrThrow(input.id);
 
     // 2. Validate type
-    if (existing.type !== ElementType.IMAGE) {
+    if (existing.base.type !== ElementType.IMAGE) {
       throw new Error(
-        `Element ${input.id} is ${existing.type}, not IMAGE. Use correct repository.`
+        `Element ${input.id} is ${existing.base.type}, not IMAGE. Use correct repository.`
       );
     }
 
     // 3. Validate update input
-    await ImageElementUtils.validateUpdateInput(input, existing);
+    await ImageElementUtils.validateInput(input);
 
     // 4. Update certificate_element (base table)
     const updatedBaseElement = await ElementRepository.updateBaseElement(
       input.id,
-      input,
-      existing
+      { ...input.base, id: input.id },
+      existing.base
     );
 
     // 5. Update image_element (type-specific table)
-    const existingImageElement: ImageElementEntity = existing;
-    const updatedImageElement = await updateImageElementSpecific(
-      input.id,
-      input,
-      existingImageElement
-    );
+    const updatedImageElement = await updateImageElementSpecific(input);
 
     logger.info(
       `IMAGE element updated: ${updatedBaseElement.name} (ID: ${input.id})`
@@ -130,11 +126,13 @@ export namespace ImageElementRepository {
 
     // 6. Return updated element
     return {
-      ...updatedBaseElement,
-      elementId: updatedImageElement.elementId,
-      fit: updatedImageElement.fit as ElementImageFit,
+      base: updatedBaseElement,
+      imageProps: {
+        elementId: updatedImageElement.elementId,
+        storageFileId: updatedImageElement.storageFileId,
+        fit: updatedImageElement.fit as ElementImageFit,
+      },
       imageDataSource: updatedImageElement.imageDataSource,
-      storageFileId: updatedImageElement.storageFileId,
     };
   };
 
@@ -166,13 +164,13 @@ export namespace ImageElementRepository {
 
     // Reconstruct output
     return {
-      // Base element fields
-      ...row.certificate_element,
-      // Image-specific fields
-      ...row.image_element,
-      fit: row.image_element.fit as ElementImageFit,
+      base: row.certificate_element,
+      imageProps: {
+        elementId: row.image_element.elementId,
+        storageFileId: row.image_element.storageFileId,
+        fit: row.image_element.fit as ElementImageFit,
+      },
       imageDataSource: row.image_element.imageDataSource,
-      storageFileId: row.image_element.storageFileId,
     };
   };
 
@@ -208,8 +206,10 @@ export namespace ImageElementRepository {
       }
 
       // Validate element type
-      if (element.type !== ElementType.IMAGE) {
-        return new Error(`Element ${element.id} is ${element.type}, not IMAGE`);
+      if (element.base.type !== ElementType.IMAGE) {
+        return new Error(
+          `Element ${element.base.id} is ${element.base.type}, not IMAGE`
+        );
       }
 
       return element;
@@ -222,68 +222,27 @@ export namespace ImageElementRepository {
 
   /**
    * Update image_element (type-specific table)
-   * Returns updated entity or existing if no changes
+   * Returns updated entity
    */
   const updateImageElementSpecific = async (
-    elementId: number,
-    input: ImageElementUpdateInput,
-    existingImageElement: ImageElementEntity
+    input: ImageElementUpdateInput
   ): Promise<ImageElementEntity> => {
-    const imageUpdates: Partial<typeof imageElement.$inferInsert> = {};
+    const newDataSource = ImageElementUtils.convertInputDataSourceToOutput(
+      input.dataSource
+    );
 
-    // Handle fit update
-    if (input.fit !== undefined) {
-      if (input.fit === null) {
-        throw new Error("fit cannot be null for IMAGE element");
-      }
-      imageUpdates.fit = input.fit;
-    }
-
-    // Handle dataSource update
-    if (input.dataSource !== undefined) {
-      if (input.dataSource === null) {
-        throw new Error("dataSource cannot be null for IMAGE element");
-      }
-      const dataSource = convertInputDataSourceToOutput(input.dataSource);
-      imageUpdates.imageDataSource = dataSource;
-      imageUpdates.storageFileId =
-        extractStorageFileIdFromDataSource(dataSource);
-    }
-
-    if (Object.keys(imageUpdates).length === 0) {
-      return existingImageElement;
-    }
+    const imageUpdates: Partial<typeof imageElement.$inferInsert> = {
+      fit: input.imageProps.fit,
+      imageDataSource: newDataSource,
+      storageFileId: newDataSource.storageFileId,
+    };
 
     const [updated] = await db
       .update(imageElement)
       .set(imageUpdates)
-      .where(eq(imageElement.elementId, elementId))
+      .where(eq(imageElement.elementId, input.id))
       .returning();
 
     return updated;
-  };
-
-  // ============================================================================
-  // Helper Functions
-  // ============================================================================
-
-  /**
-   * Convert input data source format to output format
-   * For IMAGE, input and output are identical
-   */
-  const convertInputDataSourceToOutput = (
-    input: ImageDataSourceInput
-  ): ImageDataSource => {
-    // IMAGE data source is simple and identical in both formats
-    return input;
-  };
-
-  /**
-   * Extract storageFileId from image data source
-   */
-  const extractStorageFileIdFromDataSource = (
-    dataSource: ImageDataSource
-  ): number => {
-    return dataSource.storageFileId;
   };
 }

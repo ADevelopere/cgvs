@@ -1,21 +1,22 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
-import { certificateElement, numberElement, elementTextProps } from "@/server/db/schema";
 import {
-  NumberElementCreateInput,
+  certificateElement,
+  numberElement,
+  elementTextProps,
+} from "@/server/db/schema";
+import {
+  NumberElementInput,
   NumberElementUpdateInput,
   NumberElementOutput,
   ElementType,
-  NumberDataSource,
-  NumberDataSourceInput,
-  CertificateElementEntityInput,
   NumberElementEntity,
   ElementTextPropsEntity,
+  CertificateElementEntityInput,
 } from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
 import { NumberElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
-import { TextPropsUtils } from "@/server/utils/element/textProps.utils";
 import { ElementRepository } from ".";
 
 /**
@@ -35,23 +36,33 @@ export namespace NumberElementRepository {
    * 3. Extract variableId from dataSource
    * 4. Insert into certificate_element → get elementId
    * 5. Insert into number_element
-   * 6. Load and return full output
+   * 6. Return full output
    */
   export const create = async (
-    input: NumberElementCreateInput
+    input: NumberElementInput
   ): Promise<NumberElementOutput> => {
     // 1. Validate input
-    await NumberElementUtils.validateCreateInput(input);
+    await NumberElementUtils.validateInput(input);
 
     // 2. Create TextProps
     const newTextProps = await TextPropsRepository.create(input.textProps);
 
     // 3. Convert input dataSource to output format and extract variableId
-    const newDataSource = convertInputDataSourceToOutput(input.dataSource);
-    const variableId = extractVariableIdFromDataSource(newDataSource);
+    const newDataSource = NumberElementUtils.convertInputDataSourceToOutput(
+      input.dataSource
+    );
+    const variableId = NumberElementUtils.extractVariableIdFromDataSource(
+      input.dataSource
+    );
+
+    if (variableId === null) {
+      throw new Error(
+        "NUMBER element data source must include a variableId (TEMPLATE_NUMBER_VARIABLE)"
+      );
+    }
 
     const baseInput: CertificateElementEntityInput = {
-      ...input,
+      ...input.base,
       type: ElementType.NUMBER,
     };
 
@@ -67,7 +78,7 @@ export namespace NumberElementRepository {
       .values({
         elementId: baseElement.id,
         textPropsId: newTextProps.id,
-        mapping: input.mapping,
+        mapping: input.numberProps.mapping,
         numberDataSource: newDataSource,
         variableId,
       })
@@ -77,16 +88,17 @@ export namespace NumberElementRepository {
       `NUMBER element created: ${baseElement.name} (ID: ${baseElement.id})`
     );
 
-    // 6. Load and return full output
+    // 6. Return full output
     return {
-      ...baseElement,
-      elementId: newNumberElement.elementId,
-      textPropsId: newNumberElement.textPropsId,
+      base: baseElement,
       textPropsEntity: newTextProps,
-      textProps: TextPropsUtils.entityToTextProps(newTextProps),
-      mapping: newNumberElement.mapping,
+      numberProps: {
+        elementId: newNumberElement.elementId,
+        textPropsId: newNumberElement.textPropsId,
+        mapping: newNumberElement.mapping,
+        variableId: newNumberElement.variableId,
+      },
       numberDataSource: newDataSource,
-      variableId,
     };
   };
 
@@ -100,7 +112,7 @@ export namespace NumberElementRepository {
    * 1. Load existing element
    * 2. Validate type and input
    * 3. Update certificate_element (base table)
-   * 4. Update element_text_props (if textProps provided)
+   * 4. Update element_text_props
    * 5. Update number_element (type-specific table)
    * 6. Return updated element
    */
@@ -111,41 +123,31 @@ export namespace NumberElementRepository {
     const existing = await loadByIdOrThrow(input.id);
 
     // 2. Validate type
-    if (existing.type !== ElementType.NUMBER) {
+    if (existing.base.type !== ElementType.NUMBER) {
       throw new Error(
-        `Element ${input.id} is ${existing.type}, not NUMBER. Use correct repository.`
+        `Element ${input.id} is ${existing.base.type}, not NUMBER. Use correct repository.`
       );
     }
 
     // 3. Validate update input
-    await NumberElementUtils.validateUpdateInput(input, existing);
+    await NumberElementUtils.validateInput(input);
 
     // 4. Update certificate_element (base table)
     const updatedBaseElement = await ElementRepository.updateBaseElement(
       input.id,
-      input,
-      existing
+      { ...input.base, id: input.id },
+      existing.base
     );
 
-    // 5. Update element_text_props (if textProps provided)
-    const existingNumberElement: NumberElementEntity = existing;
-    let updatedTextProps: ElementTextPropsEntity = existing.textPropsEntity;
-    if (input.textProps !== undefined) {
-      if (input.textProps === null) {
-        throw new Error("textProps cannot be null for NUMBER element");
-      }
-      updatedTextProps = await TextPropsRepository.update(
-        existing.textPropsId,
-        input.textProps
-      );
-    }
+    // 5. Update element_text_props (full replace required)
+    const updatedTextProps: ElementTextPropsEntity =
+      await TextPropsRepository.update(existing.textPropsEntity.id, {
+        ...input.textProps,
+        id: existing.textPropsEntity.id,
+      });
 
     // 6. Update number_element (type-specific table)
-    const updatedNumberElement = await updateNumberElementSpecific(
-      input.id,
-      input,
-      existingNumberElement
-    );
+    const updatedNumberElement = await updateNumberElementSpecific(input);
 
     logger.info(
       `NUMBER element updated: ${updatedBaseElement.name} (ID: ${input.id})`
@@ -153,14 +155,15 @@ export namespace NumberElementRepository {
 
     // 7. Return updated element
     return {
-      ...updatedBaseElement,
-      elementId: updatedNumberElement.elementId,
-      textPropsId: updatedNumberElement.textPropsId,
+      base: updatedBaseElement,
       textPropsEntity: updatedTextProps,
-      textProps: TextPropsUtils.entityToTextProps(updatedTextProps),
-      mapping: updatedNumberElement.mapping,
+      numberProps: {
+        elementId: updatedNumberElement.elementId,
+        textPropsId: updatedNumberElement.textPropsId,
+        mapping: updatedNumberElement.mapping,
+        variableId: updatedNumberElement.variableId,
+      },
       numberDataSource: updatedNumberElement.numberDataSource,
-      variableId: updatedNumberElement.variableId,
     };
   };
 
@@ -196,15 +199,15 @@ export namespace NumberElementRepository {
 
     // Reconstruct output
     return {
-      // Base element fields
-      ...row.certificate_element,
-      // Number-specific fields
-      ...row.number_element,
+      base: row.certificate_element,
       textPropsEntity: row.element_text_props,
-      textProps: TextPropsUtils.entityToTextProps(row.element_text_props),
-      mapping: row.number_element.mapping,
+      numberProps: {
+        elementId: row.number_element.elementId,
+        textPropsId: row.number_element.textPropsId,
+        mapping: row.number_element.mapping,
+        variableId: row.number_element.variableId,
+      },
       numberDataSource: row.number_element.numberDataSource,
-      variableId: row.number_element.variableId,
     };
   };
 
@@ -242,9 +245,9 @@ export namespace NumberElementRepository {
       }
 
       // Validate element type
-      if (element.type !== ElementType.NUMBER) {
+      if (element.base.type !== ElementType.NUMBER) {
         return new Error(
-          `Element ${element.id} is ${element.type}, not NUMBER`
+          `Element ${element.base.id} is ${element.base.type}, not NUMBER`
         );
       }
 
@@ -258,69 +261,36 @@ export namespace NumberElementRepository {
 
   /**
    * Update number_element (type-specific table)
-   * Returns updated entity or existing if no changes
+   * Returns updated entity
    */
   const updateNumberElementSpecific = async (
-    elementId: number,
-    input: NumberElementUpdateInput,
-    existingNumberElement: NumberElementEntity
+    input: NumberElementUpdateInput
   ): Promise<NumberElementEntity> => {
-    const numberUpdates: Partial<typeof numberElement.$inferInsert> = {};
+    const newDataSource = NumberElementUtils.convertInputDataSourceToOutput(
+      input.dataSource
+    );
+    const variableId = NumberElementUtils.extractVariableIdFromDataSource(
+      input.dataSource
+    );
 
-    // Handle mapping update
-    if (input.mapping !== undefined) {
-      if (input.mapping === null) {
-        throw new Error("mapping cannot be null for NUMBER element");
-      }
-      numberUpdates.mapping = input.mapping;
+    if (variableId === null) {
+      throw new Error(
+        "NUMBER element data source must include a variableId (TEMPLATE_NUMBER_VARIABLE)"
+      );
     }
 
-    // Handle dataSource update
-    if (input.dataSource !== undefined) {
-      if (input.dataSource === null) {
-        throw new Error("dataSource cannot be null for NUMBER element");
-      }
-      const dataSource = convertInputDataSourceToOutput(input.dataSource);
-      numberUpdates.numberDataSource = dataSource;
-      numberUpdates.variableId = extractVariableIdFromDataSource(dataSource);
-    }
-
-    if (Object.keys(numberUpdates).length === 0) {
-      return existingNumberElement;
-    }
+    const numberUpdates: Partial<typeof numberElement.$inferInsert> = {
+      mapping: input.numberProps.mapping,
+      numberDataSource: newDataSource,
+      variableId,
+    };
 
     const [updated] = await db
       .update(numberElement)
       .set(numberUpdates)
-      .where(eq(numberElement.elementId, elementId))
+      .where(eq(numberElement.elementId, input.id))
       .returning();
 
     return updated;
-  };
-
-  // ============================================================================
-  // Helper Functions
-  // ============================================================================
-
-  /**
-   * Convert input data source format to output format
-   * Input uses 'variableId' property, output uses 'numberVariableId'
-   */
-  const convertInputDataSourceToOutput = (
-    input: NumberDataSourceInput
-  ): NumberDataSource => {
-    return {
-      type: input.type,
-      numberVariableId: input.variableId,
-    };
-  };
-
-  /**
-   * Extract variableId from number data source (inline in repository)
-   */
-  const extractVariableIdFromDataSource = (
-    dataSource: NumberDataSource
-  ): number => {
-    return dataSource.numberVariableId;
   };
 }
