@@ -4,7 +4,7 @@ import { FontReferenceSelector } from "./FontReferenceSelector";
 import { mockSelfHostedFonts } from "../story.util";
 
 const meta: Meta<typeof FontReferenceSelector> = {
-  title: "Template/Editor/Form/Element/FontReferenceSelector",
+  title: "Template/Editor/Form/Element/TextProps/FontReferenceSelector",
   component: FontReferenceSelector,
   tags: ["autodocs"],
 };

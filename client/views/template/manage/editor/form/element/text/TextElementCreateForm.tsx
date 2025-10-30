@@ -9,7 +9,7 @@ import type {
 import { DataSourceForm } from "./TextDataSourceForm";
 import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
-import { ActionButtons } from "../../ActionButtons";
+import { ActionButtons } from "../component/ActionButtons";
 import { UpdateBaseElementCreateFn } from "../base";
 import { UpdateTextPropsCreateFn } from "../textProps";
 import {

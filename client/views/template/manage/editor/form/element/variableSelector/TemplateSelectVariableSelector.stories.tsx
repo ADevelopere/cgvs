@@ -4,7 +4,7 @@ import { TemplateSelectVariableSelector } from "./TemplateSelectVariableSelector
 import type { TemplateSelectVariable } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof TemplateSelectVariableSelector> = {
-  title: "Template/Editor/Form/Element/TemplateSelectVariableSelector",
+  title: "Template/Editor/Form/Element/Variable/TemplateSelectVariableSelector",
   component: TemplateSelectVariableSelector,
   tags: ["autodocs"],
 };

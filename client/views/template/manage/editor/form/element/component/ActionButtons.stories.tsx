@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { ActionButtons } from "./ActionButtons";
 
 const meta: Meta<typeof ActionButtons> = {
-  title: "Template/Editor/Form/Element/ActionButtons",
+  title: "Template/Editor/Form/Element/Component/ActionButtons",
   component: ActionButtons,
   tags: ["autodocs"],
 };

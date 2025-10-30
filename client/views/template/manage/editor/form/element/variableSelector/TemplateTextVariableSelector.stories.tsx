@@ -4,7 +4,7 @@ import { TemplateTextVariableSelector } from "./TemplateTextVariableSelector";
 import type { TemplateTextVariable } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof TemplateTextVariableSelector> = {
-  title: "Template/Editor/Form/Element/TemplateTextVariableSelector",
+  title: "Template/Editor/Form/Element/Variable/TemplateTextVariableSelector",
   component: TemplateTextVariableSelector,
   tags: ["autodocs"],
 };
