@@ -1,5 +1,6 @@
 export * from "./enAuth";
 export * from "./enCalendar";
+export * from "./enCertificateElements";
 export * from "./enConnectivity";
 export * from "./enCountry";
 export * from "./enDashboardLayout";

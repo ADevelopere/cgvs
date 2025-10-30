@@ -1,0 +1,88 @@
+{
+  // These tasks will run in order when initializing your CodeSandbox project.
+  "setupTasks": [
+    {
+      "command": "bun install",
+      "name": "Installing Dependencies"
+    }
+  ],
+
+  // These tasks can be run from CodeSandbox. Running one will open a log in the app.
+  "tasks": {
+    "prepare": {
+      "name": "prepare",
+      "command": "bun prepare",
+      "runAtStart": false
+    },
+    "dev": {
+      "name": "dev",
+      "command": "bun dev",
+      "runAtStart": true
+    },
+    "debug": {
+      "name": "debug",
+      "command": "bun debug",
+      "runAtStart": false
+    },
+    "dev:inspect": {
+      "name": "dev:inspect",
+      "command": "bun dev:inspect",
+      "runAtStart": false
+    },
+    "build": {
+      "name": "build",
+      "command": "bun build",
+      "runAtStart": false
+    },
+    "start": {
+      "name": "start",
+      "command": "bun start",
+      "runAtStart": false
+    },
+    "lint": {
+      "name": "lint",
+      "command": "bun lint",
+      "runAtStart": false
+    },
+    "lint:fix": {
+      "name": "lint:fix",
+      "command": "bun lint:fix",
+      "runAtStart": false
+    },
+    "format": {
+      "name": "format",
+      "command": "bun format",
+      "runAtStart": false
+    },
+    "format:check": {
+      "name": "format:check",
+      "command": "bun format:check",
+      "runAtStart": false
+    },
+    "tsc": {
+      "name": "tsc",
+      "command": "bun tsc",
+      "runAtStart": false
+    },
+    "generate:gqlSchema": {
+      "name": "generate:gqlSchema",
+      "command": "bun generate:gqlSchema",
+      "runAtStart": false
+    },
+    "storybook": {
+      "name": "storybook",
+      "command": "bun storybook",
+      "runAtStart": false
+    },
+    "build-storybook": {
+      "name": "build-storybook",
+      "command": "bun build-storybook",
+      "runAtStart": false
+    },
+    "test": {
+      "name": "test",
+      "command": "bun test",
+      "runAtStart": false
+    }
+  }
+}
