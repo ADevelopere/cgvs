@@ -20,7 +20,7 @@ import {
   DateTransformationType,
 } from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
-import { DateElementUtils, TextPropsUtils } from "@/server/utils";
+import { DateElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
 import { ElementRepository } from ".";
 
@@ -62,7 +62,7 @@ export namespace DateElementRepository {
     };
 
     // 4. Insert into certificate_element (base table)
-    const [baseElement] = await db
+    const [newBaseElement] = await db
       .insert(certificateElement)
       .values(baseInput)
       .returning();
@@ -71,7 +71,7 @@ export namespace DateElementRepository {
     const [newDateElement] = await db
       .insert(dateElement)
       .values({
-        elementId: baseElement.id,
+        elementId: newBaseElement.id,
         textPropsId: newTextProps.id,
         calendarType: input.dateProps.calendarType,
         offsetDays: input.dateProps.offsetDays,
@@ -83,25 +83,19 @@ export namespace DateElementRepository {
       .returning();
 
     logger.info(
-      `DATE element created: ${baseElement.name} (ID: ${baseElement.id})`
+      `DATE element created: ${newBaseElement.name} (ID: ${newBaseElement.id})`
     );
 
     // 6. Load and return full output
     return {
-      ...baseElement,
-      elementId: newDateElement.elementId,
-      textPropsId: newDateElement.textPropsId,
+      base: newBaseElement,
       textPropsEntity: newTextProps,
-      textProps: TextPropsUtils.entityToTextProps(newTextProps),
       dateProps: {
+        ...newDateElement,
         calendarType: newDateElement.calendarType as CalendarType,
-        offsetDays: newDateElement.offsetDays,
-        format: newDateElement.format,
         transformation:
           newDateElement.transformation as DateTransformationType | null,
       },
-      dateDataSource: newDataSource,
-      variableId,
     };
   };
 
@@ -126,20 +120,20 @@ export namespace DateElementRepository {
     const existing = await loadByIdOrThrow(input.id);
 
     // 2. Validate type
-    if (existing.type !== ElementType.DATE) {
+    if (existing.base.type !== ElementType.DATE) {
       throw new Error(
-        `Element ${input.id} is ${existing.type}, not DATE. Use correct repository.`
+        `Element ${input.id} is ${existing.base.type}, not DATE. Use correct repository.`
       );
     }
 
     // 3. Validate update input
-    await DateElementUtils.validateUpdateInput(input, existing);
+    await DateElementUtils.validateUpdateInput(input, existing.base);
 
     // 4. Update certificate_element (base table)
     const updatedBaseElement = await ElementRepository.updateBaseElement(
       input.id,
       input,
-      existing
+      existing.base
     );
 
     // 5. Update element_text_props (if textProps provided)
@@ -153,7 +147,7 @@ export namespace DateElementRepository {
         throw new Error("textProps cannot be null for DATE element");
       }
       updatedTextProps = await TextPropsRepository.update(
-        existing.textPropsId,
+        existing.textPropsEntity.id,
         input.textProps
       );
     }
@@ -171,20 +165,14 @@ export namespace DateElementRepository {
 
     // 7. Return updated element
     return {
-      ...updatedBaseElement,
-      elementId: updatedDateElement.elementId,
-      textPropsId: updatedDateElement.textPropsId,
+      base: updatedBaseElement,
       textPropsEntity: updatedTextProps,
-      textProps: TextPropsUtils.entityToTextProps(updatedTextProps),
       dateProps: {
+        ...updatedDateElement,
         calendarType: updatedDateElement.calendarType as CalendarType,
-        offsetDays: updatedDateElement.offsetDays,
-        format: updatedDateElement.format,
         transformation:
           updatedDateElement.transformation as DateTransformationType | null,
       },
-      dateDataSource: updatedDateElement.dateDataSource,
-      variableId: updatedDateElement.variableId,
     };
   };
 
@@ -217,21 +205,18 @@ export namespace DateElementRepository {
 
     // Reconstruct output
     return {
-      // Base element fields
-      ...row.certificate_element,
+      base: {
+        ...row.certificate_element,
+      },
       // Date-specific fields
       ...row.date_element,
       textPropsEntity: row.element_text_props,
-      textProps: TextPropsUtils.entityToTextProps(row.element_text_props),
       dateProps: {
+        ...row.date_element,
         calendarType: row.date_element.calendarType as CalendarType,
-        offsetDays: row.date_element.offsetDays,
-        format: row.date_element.format,
         transformation: row.date_element
           .transformation as DateTransformationType | null,
       },
-      dateDataSource: row.date_element.dateDataSource,
-      variableId: row.date_element.variableId,
     };
   };
 
@@ -267,8 +252,10 @@ export namespace DateElementRepository {
       }
 
       // Validate element type
-      if (element.type !== ElementType.DATE) {
-        return new Error(`Element ${element.id} is ${element.type}, not DATE`);
+      if (element.base.type !== ElementType.DATE) {
+        return new Error(
+          `Element ${element.base.id} is ${element.base.type}, not DATE`
+        );
       }
 
       return element;

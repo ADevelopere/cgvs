@@ -62,17 +62,17 @@ export type DateDataSourceInputGraphql =
 // ============================================================================
 
 // GraphQL create input type
-export type DateElementCreateInputGraphql =
-  CertificateElementBaseCreateInput & {
-    textProps: TextPropsCreateInputGraphql;
-    dataSource: DateDataSourceInputGraphql;
-    dateProps: DatePropsCreateInput;
-  };
+export type DateElementCreateInputGraphql = {
+  base: CertificateElementBaseCreateInput;
+  textProps: TextPropsCreateInputGraphql;
+  dataSource: DateDataSourceInputGraphql;
+  dateProps: DatePropsCreateInput;
+};
 
 // GraphQL update input type (deep partial support)
-export type DateElementUpdateInputGraphql =
-  CertificateElementBaseUpdateInput & {
-    textProps?: TextPropsUpdateInputGraphql | null;
-    dataSource?: DateDataSourceInputGraphql | null;
-    dateProps?: DatePropsUpdateInput | null;
-  };
+export type DateElementUpdateInputGraphql = {
+  base?: CertificateElementBaseUpdateInput | null;
+  textProps?: TextPropsUpdateInputGraphql | null;
+  dataSource?: DateDataSourceInputGraphql | null;
+  dateProps?: DatePropsUpdateInput | null;
+};
