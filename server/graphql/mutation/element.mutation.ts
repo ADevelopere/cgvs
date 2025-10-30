@@ -71,8 +71,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       const input = DateElementUtils.mapDateElementCreateGraphqlToInput(
         args.input
       );
-      const element = await DateElementRepository.create(input);
-      return element as Types.DateElementPothosDefinition;
+      return await DateElementRepository.create(input);
     },
   }),
 
@@ -107,8 +106,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       const input = NumberElementUtils.mapNumberElementCreateGraphqlToInput(
         args.input
       );
-      const element = await NumberElementRepository.create(input);
-      return element as Types.NumberElementPothosDefinition;
+      return await NumberElementRepository.create(input);
     },
   }),
 
@@ -124,8 +122,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       const input = NumberElementUtils.mapNumberElementUpdateGraphqlToInput(
         args.input
       );
-      const element = await NumberElementRepository.update(input);
-      return element as Types.NumberElementPothosDefinition;
+      return await NumberElementRepository.update(input);
     },
   }),
 
@@ -144,8 +141,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       const input = CountryElementUtils.mapCountryElementCreateGraphqlToInput(
         args.input
       );
-      const element = await CountryElementRepository.create(input);
-      return element as Types.CountryElementPothosDefinition;
+      return await CountryElementRepository.create(input);
     },
   }),
 
@@ -161,8 +157,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       const input = CountryElementUtils.mapCountryElementUpdateGraphqlToInput(
         args.input
       );
-      const element = await CountryElementRepository.update(input);
-      return element as Types.CountryElementPothosDefinition;
+      return await CountryElementRepository.update(input);
     },
   }),
 
@@ -181,8 +176,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       const input = GenderElementUtils.mapGenderElementCreateGraphqlToInput(
         args.input
       );
-      const element = await GenderElementRepository.create(input);
-      return element as Types.GenderElementPothosDefinition;
+      return await GenderElementRepository.create(input);
     },
   }),
 
@@ -198,8 +192,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       const input = GenderElementUtils.mapGenderElementUpdateGraphqlToInput(
         args.input
       );
-      const element = await GenderElementRepository.update(input);
-      return element as Types.GenderElementPothosDefinition;
+      return await GenderElementRepository.update(input);
     },
   }),
 
@@ -218,8 +211,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       const input = ImageElementUtils.mapImageElementCreateGraphqlToInput(
         args.input
       );
-      const element = await ImageElementRepository.create(input);
-      return element as Types.ImageElementPothosDefinition;
+      return await ImageElementRepository.create(input);
     },
   }),
 
@@ -235,8 +227,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       const input = ImageElementUtils.mapImageElementUpdateGraphqlToInput(
         args.input
       );
-      const element = await ImageElementRepository.update(input);
-      return element as Types.ImageElementPothosDefinition;
+      return await ImageElementRepository.update(input);
     },
   }),
 
@@ -255,8 +246,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       const input = QRCodeElementUtils.mapQRCodeElementCreateGraphqlToInput(
         args.input
       );
-      const element = await QRCodeElementRepository.create(input);
-      return element as Types.QRCodeElementPothosDefinition;
+      return await QRCodeElementRepository.create(input);
     },
   }),
 
@@ -272,8 +262,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       const input = QRCodeElementUtils.mapQRCodeElementUpdateGraphqlToInput(
         args.input
       );
-      const element = await QRCodeElementRepository.update(input);
-      return element as Types.QRCodeElementPothosDefinition;
+      return await QRCodeElementRepository.update(input); 
     },
   }),
 
