@@ -1,12 +1,7 @@
-import {
-  CertificateElementBaseInput,
-  CertificateElementBaseUpdateInput,
-} from "./base.element.input";
-import {
-  CountryDataSourceType,
-  CountryRepresentation,
-} from "../output";
-import { TextPropsInput, TextPropsUpdateInput } from "./textProps.input";
+import { CertificateElementBaseInput } from "./base.element.input";
+import { CountryDataSourceType, CountryRepresentation } from "../output";
+import { TextPropsInput } from "./textProps.input";
+import { countryElement } from "@/server/db/schema";
 
 // ============================================================================
 // Data Source Types
@@ -20,12 +15,20 @@ export type CountryDataSourceInput = {
 // Mutation Inputs (no config field)
 // ============================================================================
 
-export type CountryElementCreateInput = CertificateElementBaseInput & {
-  textProps: TextPropsInput;
+export type CountryElementEntityInput = typeof countryElement.$inferInsert;
+export type CountryElementCountryPropsInput = Omit<
+  CountryElementEntityInput,
+  "elementId" | "textPropsId" | "representation"
+> & {
   representation: CountryRepresentation;
 };
 
-export type CountryElementUpdateInput = CertificateElementBaseUpdateInput & {
-  textProps?: TextPropsUpdateInput | null;
-  representation?: CountryRepresentation | null;
+export type CountryElementInput = {
+  base: CertificateElementBaseInput;
+  textProps: TextPropsInput;
+  countryProps: CountryElementCountryPropsInput;
+};
+
+export type CountryElementUpdateInput = CountryElementInput & {
+  id: number;
 };

@@ -1,12 +1,8 @@
 import {
   CertificateElementBaseInput,
-  CertificateElementBaseUpdateInput,
+  CountryElementCountryPropsInput,
 } from "../input";
-import { CountryRepresentation } from "../output";
-import {
-  TextPropsInputGraphql,
-  TextPropsUpdateInputGraphql,
-} from "./config.element.inputGql";
+import { TextPropsInputGraphql } from "./textProps.inputGql";
 
 // ============================================================================
 // Data Source Types
@@ -26,14 +22,13 @@ export type CountryDataSourceInputGraphql = {
 // Mutation Inputs
 // ============================================================================
 
-export type CountryElementCreateInputGraphql =
-  CertificateElementBaseInput & {
-    textProps: TextPropsInputGraphql;
-    representation: CountryRepresentation;
-  };
+export type CountryElementInputGraphql = {
+  base: CertificateElementBaseInput;
+  textProps: TextPropsInputGraphql;
+  countryProps: CountryElementCountryPropsInput;
+};
 
 export type CountryElementUpdateInputGraphql =
-  CertificateElementBaseUpdateInput & {
-    textProps?: TextPropsUpdateInputGraphql | null;
-    representation?: CountryRepresentation | null;
+  CountryElementInputGraphql & {
+    id: number;
   };

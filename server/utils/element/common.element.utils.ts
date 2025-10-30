@@ -8,8 +8,6 @@ import {
   TextPropsUpdateInputGraphql,
   TextPropsUpdateInput,
   CertificateElementBaseInput,
-  CertificateElementBaseUpdateInput,
-  CertificateElementEntity,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { ElementUtils } from "./element.utils";
@@ -207,7 +205,7 @@ export namespace CommonElementUtils {
    * Validates: templateId, name, dimensions, position, renderOrder
    * Note: description doesn't need validation
    */
-  export const validateBaseCreateInput = async (
+  export const validateBaseInput = async (
     input: CertificateElementBaseInput
   ): Promise<void> => {
     // Template exists
@@ -236,48 +234,5 @@ export namespace CommonElementUtils {
       input.renderOrder
     );
     if (orderError) throw new Error(orderError);
-  };
-
-  /**
-   * Validate base element properties for update (partial)
-   * Validates partial updates with fallback to existing element values
-   * Note: description doesn't need validation
-   */
-  export const validateBaseUpdateInput = async (
-    input: CertificateElementBaseUpdateInput,
-    existing: CertificateElementEntity
-  ): Promise<void> => {
-    // Name validation (if provided)
-    if (input.name !== undefined && input.name !== null) {
-      const nameError = await ElementUtils.validateName(input.name);
-      if (nameError) throw new Error(nameError);
-    }
-
-    // Dimensions validation (if provided)
-    if (
-      (input.width !== undefined && input.width !== null) ||
-      (input.height !== undefined && input.height !== null)
-    ) {
-      const width = input.width ?? existing.width;
-      const height = input.height ?? existing.height;
-      const dimError = await ElementUtils.validateDimensions(width, height);
-      if (dimError) throw new Error(dimError);
-    }
-
-    // Position validation (if provided)
-    if (input.positionX !== undefined || input.positionY !== undefined) {
-      const x = input.positionX ?? existing.positionX;
-      const y = input.positionY ?? existing.positionY;
-      const posError = await ElementUtils.validatePosition(x, y);
-      if (posError) throw new Error(posError);
-    }
-
-    // Render order validation (if provided)
-    if (input.renderOrder !== undefined && input.renderOrder !== null) {
-      const orderError = await ElementUtils.validateRenderOrder(
-        input.renderOrder
-      );
-      if (orderError) throw new Error(orderError);
-    }
   };
 }

@@ -6,7 +6,7 @@ import {
   elementTextProps,
 } from "@/server/db/schema";
 import {
-  CountryElementCreateInput,
+  CountryElementInput,
   CountryElementUpdateInput,
   CountryElementOutput,
   ElementType,
@@ -16,7 +16,7 @@ import {
   CountryRepresentation,
 } from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
-import { CountryElementUtils, TextPropsUtils } from "@/server/utils";
+import { CountryElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
 import { ElementRepository } from ".";
 
@@ -39,16 +39,16 @@ export namespace CountryElementRepository {
    * 5. Return full output
    */
   export const create = async (
-    input: CountryElementCreateInput
+    input: CountryElementInput
   ): Promise<CountryElementOutput> => {
     // 1. Validate input
-    await CountryElementUtils.validateCreateInput(input);
+    await CountryElementUtils.validateInput(input);
 
     // 2. Create TextProps
     const newTextProps = await TextPropsRepository.create(input.textProps);
 
     const baseInput: CertificateElementEntityInput = {
-      ...input,
+      ...input.base,
       type: ElementType.COUNTRY,
     };
 
@@ -64,7 +64,7 @@ export namespace CountryElementRepository {
       .values({
         elementId: baseElement.id,
         textPropsId: newTextProps.id,
-        representation: input.representation,
+        representation: input.countryProps.representation,
       })
       .returning();
 
@@ -74,12 +74,13 @@ export namespace CountryElementRepository {
 
     // 5. Return full output
     return {
-      ...baseElement,
-      elementId: newCountryElement.elementId,
-      textPropsId: newCountryElement.textPropsId,
+      base: baseElement,
       textPropsEntity: newTextProps,
-      textProps: TextPropsUtils.entityToTextProps(newTextProps),
-      representation: newCountryElement.representation as CountryRepresentation,
+      countryProps: {
+        ...newCountryElement,
+        representation:
+          newCountryElement.representation as CountryRepresentation,
+      },
     };
   };
 
@@ -104,36 +105,31 @@ export namespace CountryElementRepository {
     const existing = await loadByIdOrThrow(input.id);
 
     // 2. Validate type
-    if (existing.type !== ElementType.COUNTRY) {
+    if (existing.base.type !== ElementType.COUNTRY) {
       throw new Error(
-        `Element ${input.id} is ${existing.type}, not COUNTRY. Use correct repository.`
+        `Element ${input.id} is ${existing.base.type}, not COUNTRY. Use correct repository.`
       );
     }
 
     // 3. Validate update input
-    await CountryElementUtils.validateUpdateInput(input, existing);
+    await CountryElementUtils.validateInput(input);
 
     // 4. Update certificate_element (base table)
     const updatedBaseElement = await ElementRepository.updateBaseElement(
       input.id,
-      input,
-      existing
+      { ...input.base, id: input.id },
+      existing.base
     );
 
-    // 5. Update element_text_props (if textProps provided)
-    const existingCountryElement: CountryElementEntity = existing;
-    let updatedTextProps: ElementTextPropsEntity = existing.textPropsEntity;
-    if (input.textProps !== undefined) {
-      if (input.textProps === null) {
-        throw new Error("textProps cannot be null for COUNTRY element");
-      }
-      updatedTextProps = await TextPropsRepository.update(
-        existing.textPropsId,
-        input.textProps
-      );
-    }
+    // 5. Update element_text_props (full replace required)
+    const updatedTextProps: ElementTextPropsEntity =
+      await TextPropsRepository.update(existing.textPropsEntity.id, {
+        ...input.textProps,
+        id: existing.textPropsEntity.id,
+      });
 
     // 6. Update country_element (type-specific table)
+    const existingCountryElement: CountryElementEntity = existing.countryProps;
     const updatedCountryElement = await updateCountryElementSpecific(
       input.id,
       input,
@@ -146,13 +142,13 @@ export namespace CountryElementRepository {
 
     // 7. Return updated element
     return {
-      ...updatedBaseElement,
-      elementId: updatedCountryElement.elementId,
-      textPropsId: updatedCountryElement.textPropsId,
+      base: updatedBaseElement,
       textPropsEntity: updatedTextProps,
-      textProps: TextPropsUtils.entityToTextProps(updatedTextProps),
-      representation:
-        updatedCountryElement.representation as CountryRepresentation,
+      countryProps: {
+        ...updatedCountryElement,
+        representation:
+          updatedCountryElement.representation as CountryRepresentation,
+      },
     };
   };
 
@@ -188,14 +184,13 @@ export namespace CountryElementRepository {
 
     // Reconstruct output
     return {
-      // Base element fields
-      ...row.certificate_element,
-      // Country-specific fields
-      ...row.country_element,
+      base: row.certificate_element,
       textPropsEntity: row.element_text_props,
-      textProps: TextPropsUtils.entityToTextProps(row.element_text_props),
-      representation: row.country_element
-        .representation as CountryRepresentation,
+      countryProps: {
+        ...row.country_element,
+        representation: row.country_element
+          .representation as CountryRepresentation,
+      },
     };
   };
 
@@ -233,9 +228,9 @@ export namespace CountryElementRepository {
       }
 
       // Validate element type
-      if (element.type !== ElementType.COUNTRY) {
+      if (element.base.type !== ElementType.COUNTRY) {
         return new Error(
-          `Element ${element.id} is ${element.type}, not COUNTRY`
+          `Element ${element.base.id} is ${element.base.type}, not COUNTRY`
         );
       }
 
@@ -258,13 +253,8 @@ export namespace CountryElementRepository {
   ): Promise<CountryElementEntity> => {
     const countryUpdates: Partial<typeof countryElement.$inferInsert> = {};
 
-    // Handle representation update
-    if (input.representation !== undefined) {
-      if (input.representation === null) {
-        throw new Error("representation cannot be null for COUNTRY element");
-      }
-      countryUpdates.representation = input.representation;
-    }
+    // Full replace: representation is required
+    countryUpdates.representation = input.countryProps.representation;
 
     if (Object.keys(countryUpdates).length === 0) {
       return existingCountryElement;

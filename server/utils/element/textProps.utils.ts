@@ -16,7 +16,9 @@ export namespace TextPropsUtils {
    * Convert DB entity to TextProps output type
    * Reconstructs FontReference from fontSource + fontId/googleFontIdentifier
    */
-  export const entityToTextProps = (entity: ElementTextPropsEntity): TextProps => {
+  export const entityToTextProps = (
+    entity: ElementTextPropsEntity
+  ): TextProps => {
     const fontRef: FontReference =
       entity.fontSource === FontSource.SELF_HOSTED
         ? { type: FontSource.SELF_HOSTED as const, fontId: entity.fontId! }
@@ -26,9 +28,8 @@ export namespace TextPropsUtils {
           };
 
     return {
-      fontRef,
-      fontSize: entity.fontSize,
-      color: entity.color,
+      ...entity,
+      fontRef: fontRef,
       overflow: entity.overflow as ElementOverflow,
     };
   };

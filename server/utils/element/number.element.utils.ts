@@ -235,7 +235,7 @@ export namespace NumberElementUtils {
     input: NumberElementCreateInput
   ): Promise<void> => {
     // Validate base element properties
-    await CommonElementUtils.validateBaseCreateInput(input);
+    await CommonElementUtils.validateBaseInput(input);
 
     // Validate textProps
     await CommonElementUtils.validateTextProps(input.textProps);

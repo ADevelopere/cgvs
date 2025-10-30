@@ -261,7 +261,7 @@ export const DateElementUpdateInputObject = gqlSchemaBuilder
 // ============================================================================
 
 export const DatePropsObject = gqlSchemaBuilder
-  .objectRef<Types.DateProps>("DateProps")
+  .objectRef<Types.DateElementSpecProps>("DateProps")
   .implement({
     fields: t => ({
       calendarType: t.expose("calendarType", { type: CalendarTypePothosEnum }),

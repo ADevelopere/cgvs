@@ -163,7 +163,7 @@ gqlSchemaBuilder.mutationFields(t => ({
     type: ElementPothos.CountryElementObject,
     args: {
       input: t.arg({
-        type: ElementPothos.CountryElementCreateInputObject,
+        type: ElementPothos.CountryElementInputObject,
         required: true,
       }),
     },

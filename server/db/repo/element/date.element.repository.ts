@@ -6,7 +6,7 @@ import {
   elementTextProps,
 } from "@/server/db/schema";
 import {
-  DateElementCreateInput,
+  DateElementInput,
   DateElementUpdateInput,
   DateElementOutput,
   ElementType,
@@ -44,7 +44,7 @@ export namespace DateElementRepository {
    * 6. Load and return full output
    */
   export const create = async (
-    input: DateElementCreateInput
+    input: DateElementInput
   ): Promise<DateElementOutput> => {
     // 1. Validate input
     await DateElementUtils.validateCreateInput(input);

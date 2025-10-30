@@ -1,8 +1,5 @@
-import { TextPropsInput, TextPropsUpdateInput } from "./textProps.input";
-import {
-  CertificateElementBaseInput,
-  CertificateElementBaseUpdateInput,
-} from "./base.element.input";
+import { TextPropsInput } from "./textProps.input";
+import { CertificateElementBaseInput } from "./base.element.input";
 import {
   CalendarType,
   CertificateDateField,
@@ -10,6 +7,7 @@ import {
   DateTransformationType,
   StudentDateField,
 } from "../output";
+import { dateElement } from "@/server/db/schema";
 
 // ============================================================================
 // Data Source Types
@@ -44,29 +42,22 @@ export type DateDataSourceInput =
 // ============================================================================
 // Mutation Inputs
 // ============================================================================
-
-export type DatePropsCreateInput = {
+export type DateElementEntityInput = typeof dateElement.$inferInsert;
+export type DateElementSpecPropsInput = Omit<
+  DateElementEntityInput,
+  "elementId" | "textPropsId" | "calendarType" | "transformation"
+> & {
   calendarType: CalendarType;
-  offsetDays: number;
-  format: string;
-  transformation?: DateTransformationType | null;
+  transformation: DateTransformationType | null;
 };
 
-export type DatePropsUpdateInput = {
-  calendarType?: CalendarType | null;
-  offsetDays?: number | null;
-  format?: string | null;
-  transformation?: DateTransformationType | null;
-};
-
-export type DateElementCreateInput = CertificateElementBaseInput & {
+export type DateElementInput = {
+  base: CertificateElementBaseInput;
   textProps: TextPropsInput;
   dataSource: DateDataSourceInput;
-  dateProps: DatePropsCreateInput;
+  dateProps: DateElementSpecPropsInput;
 };
 
-export type DateElementUpdateInput = CertificateElementBaseUpdateInput & {
-  textProps?: TextPropsUpdateInput | null;
-  dataSource?: DateDataSourceInput | null;
-  dateProps?: DatePropsUpdateInput | null;
+export type DateElementUpdateInput = DateElementInput & {
+  id: number;
 };
