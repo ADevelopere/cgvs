@@ -2,7 +2,6 @@ import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { ImageDataSourceForm } from "./ImageDataSourceForm";
 import { ImageDataSourceInput } from "@/client/graphql/generated/gql/graphql";
-import { DataSourceFormErrors } from "./types";
 
 const meta: Meta<typeof ImageDataSourceForm> = {
   title: "Template/Editor/Form/Element/Image/ImageDataSourceForm",

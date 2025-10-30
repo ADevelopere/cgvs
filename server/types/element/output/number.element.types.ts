@@ -1,5 +1,5 @@
 import type { CertificateElementEntity } from "./base.element.types";
-import type { TextProps, ElementTextPropsEntity } from "./config.element.types";
+import type { ElementTextPropsEntity } from "./config.element.types";
 import type { numberElement } from "@/server/db/schema";
 
 // ============================================================================
@@ -24,23 +24,20 @@ export type NumberDataSource = {
 // ============================================================================
 
 export type NumberElementEntity = typeof numberElement.$inferSelect;
-// { elementId, textPropsId, mapping, dataSource, variableId }
+// { elementId, textPropsId, mapping, numberDataSource, variableId }
 
 // ============================================================================
 // Output Type (mirrors database - base + number_element + element_text_props joined)
 // ============================================================================
 
-export type NumberElementOutput = CertificateElementEntity & NumberElementEntity & {
-  // From element_text_props (joined)
+export type NumberElementSpecProps = Omit<
+  NumberElementEntity,
+  "numberDataSource"
+>;
+
+export type NumberElementOutput = {
+  base: CertificateElementEntity;
   textPropsEntity: ElementTextPropsEntity;
-  textProps: TextProps;
-  
-  // Type overrides to use proper types
-  mapping: Record<string, string>;
+  numberProps: NumberElementSpecProps;
+  numberDataSource: NumberDataSource;
 };
-
-// ============================================================================
-// Pothos Definition
-// ============================================================================
-
-export type NumberElementPothosDefinition = NumberElementOutput;

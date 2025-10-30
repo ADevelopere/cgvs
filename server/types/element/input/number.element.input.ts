@@ -1,9 +1,7 @@
-import { TextPropsInput, TextPropsUpdateInput } from "./textProps.input";
-import {
-  CertificateElementBaseInput,
-  CertificateElementBaseUpdateInput,
-} from "./base.element.input";
+import { TextPropsInput } from "./textProps.input";
+import { CertificateElementBaseInput } from "./base.element.input";
 import { NumberDataSourceType } from "../output";
+import { numberElement } from "@/server/db/schema";
 
 // ============================================================================
 // Data Source Types
@@ -18,14 +16,19 @@ export type NumberDataSourceInput = {
 // Mutation Inputs (no config field)
 // ============================================================================
 
-export type NumberElementCreateInput = CertificateElementBaseInput & {
+export type NumberElementEntityInput = typeof numberElement.$inferInsert;
+export type NumberElementSpecPropsInput = Omit<
+  NumberElementEntityInput,
+  "elementId" | "textPropsId" | "variableId" | "numberDataSource"
+>;
+
+export type NumberElementInput = {
+  base: CertificateElementBaseInput;
   textProps: TextPropsInput;
-  mapping: Record<string, string>;
+  numberProps: NumberElementSpecPropsInput;
   dataSource: NumberDataSourceInput;
 };
 
-export type NumberElementUpdateInput = CertificateElementBaseUpdateInput & {
-  textProps?: TextPropsUpdateInput | null;
-  mapping?: Record<string, string> | null;
-  dataSource?: NumberDataSourceInput | null;
+export type NumberElementUpdateInput = NumberElementInput & {
+  id: number;
 };

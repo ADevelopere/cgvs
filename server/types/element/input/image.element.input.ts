@@ -1,8 +1,6 @@
 import { ElementImageFit, ImageDataSourceType } from "../output";
-import {
-  CertificateElementBaseInput,
-  CertificateElementBaseUpdateInput,
-} from "./base.element.input";
+import { CertificateElementBaseInput } from "./base.element.input";
+import { imageElement } from "@/server/db/schema";
 
 // ============================================================================
 // Data Source Types
@@ -16,12 +14,20 @@ export type ImageDataSourceInput = {
 // Mutation Inputs
 // ============================================================================
 
-export type ImageElementCreateInput = CertificateElementBaseInput & {
+export type ImageElementEntityInput = typeof imageElement.$inferInsert;
+export type ImageElementSpecPropsInput = Omit<
+  ImageElementEntityInput,
+  "elementId" | "imageDataSource" | "storageFileId" | "fit"
+> & {
   fit: ElementImageFit;
+};
+
+export type ImageElementInput = {
+  base: CertificateElementBaseInput;
+  imageProps: ImageElementSpecPropsInput;
   dataSource: ImageDataSourceInput;
 };
 
-export type ImageElementUpdateInput = CertificateElementBaseUpdateInput & {
-  fit?: ElementImageFit | null;
-  dataSource?: ImageDataSourceInput | null;
+export type ImageElementUpdateInput = ImageElementInput & {
+  id: number;
 };

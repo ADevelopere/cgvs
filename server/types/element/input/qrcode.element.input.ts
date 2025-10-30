@@ -1,9 +1,6 @@
 import { QRCodeDataSourceType, QRCodeErrorCorrection } from "../output";
-import {
-  CertificateElementBaseInput,
-  CertificateElementBaseUpdateInput,
-} from "./base.element.input";
-
+import { CertificateElementBaseInput } from "./base.element.input";
+import { qrCodeElement } from "@/server/db/schema";
 
 // ============================================================================
 // Data Source Types
@@ -25,14 +22,20 @@ export type QRCodeDataSourceInput =
 // Mutation Inputs
 // ============================================================================
 
-export type QRCodeElementCreateInput = CertificateElementBaseInput & {
+export type QRCodeElementEntityInput = typeof qrCodeElement.$inferInsert;
+export type QRCodeElementSpecPropsInput = Omit<
+  QRCodeElementEntityInput,
+  "elementId" | "errorCorrection"
+> & {
   errorCorrection: QRCodeErrorCorrection;
-  foregroundColor: string;
-  backgroundColor: string;
 };
 
-export type QRCodeElementUpdateInput = CertificateElementBaseUpdateInput & {
-  errorCorrection?: QRCodeErrorCorrection | null;
-  foregroundColor?: string | null;
-  backgroundColor?: string | null;
+export type QRCodeElementInput = {
+  base: CertificateElementBaseInput;
+  qrCodeProps: QRCodeElementSpecPropsInput;
+  dataSource: QRCodeDataSourceInput;
+};
+
+export type QRCodeElementUpdateInput = QRCodeElementInput & {
+  id: number;
 };

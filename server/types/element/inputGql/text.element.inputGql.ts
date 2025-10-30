@@ -1,14 +1,12 @@
-import { CertificateElementBaseInput, CertificateElementBaseUpdateInput } from "../input";
-import { CertificateTextField, StudentTextField } from "../output";
 import {
-  TextPropsInputGraphql,
-  TextPropsUpdateInputGraphql,
-} from "./config.element.inputGql";
+  CertificateElementBaseInput,
+} from "../input";
+import { CertificateTextField, StudentTextField } from "../output";
+import { TextPropsInputGraphql } from "./config.element.inputGql";
 
 // ============================================================================
 // Data Source Types
 // ============================================================================
-
 
 // GraphQL input types (used in Pothos isOneOf definitions)
 export type TextDataSourceStaticInputGraphql = {
@@ -73,15 +71,13 @@ export type TextDataSourceInputGraphql =
 // ============================================================================
 
 // GraphQL create input type
-export type TextElementCreateInputGraphql =
-  CertificateElementBaseInput & {
-    textProps: TextPropsInputGraphql;
-    dataSource: TextDataSourceInputGraphql;
-  };
+export type TextElementInputGraphql = {
+  base: CertificateElementBaseInput;
+  textProps: TextPropsInputGraphql;
+  dataSource: TextDataSourceInputGraphql;
+};
 
-// GraphQL update input type (deep partial support)
-export type TextElementUpdateInputGraphql =
-  CertificateElementBaseUpdateInput & {
-    textProps?: TextPropsUpdateInputGraphql | null;
-    dataSource?: TextDataSourceInputGraphql | null;
-  };
+// GraphQL update input type
+export type TextElementUpdateInputGraphql = TextElementInputGraphql & {
+  id: number;
+};

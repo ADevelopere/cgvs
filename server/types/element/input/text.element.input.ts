@@ -1,13 +1,11 @@
-import { TextPropsInput, TextPropsUpdateInput } from "./textProps.input";
-import {
-  CertificateElementBaseInput,
-  CertificateElementBaseUpdateInput,
-} from "./base.element.input";
+import { TextPropsInput } from "./textProps.input";
+import { CertificateElementBaseInput } from "./base.element.input";
 import {
   CertificateTextField,
   StudentTextField,
   TextDataSourceType,
 } from "../output";
+import { textElement } from "@/server/db/schema";
 
 // ============================================================================
 // Data Source Types
@@ -46,17 +44,21 @@ export type TextDataSourceInput =
   | TextDataSourceTemplateSelectVariableInput;
 
 // ============================================================================
-// Mutation Inputs
+// Mutation Inputs (no config field)
 // ============================================================================
 
-export type TextElementCreateInput = {
+export type TextElementEntityInput = typeof textElement.$inferInsert;
+export type TextElementTextPropsInput = Omit<
+  TextElementEntityInput,
+  "elementId" | "textPropsId" | "variableId" | "textDataSource"
+>;
+
+export type TextElementInput = {
   base: CertificateElementBaseInput;
   textProps: TextPropsInput;
   dataSource: TextDataSourceInput;
 };
 
-export type TextElementUpdateInput = {
-  base?: CertificateElementBaseUpdateInput | null;
-  textProps?: TextPropsUpdateInput | null;
-  dataSource?: TextDataSourceInput | null;
+export type TextElementUpdateInput = TextElementInput & {
+  id: number;
 };

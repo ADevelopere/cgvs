@@ -1,9 +1,11 @@
+import {
+  CertificateElementBaseInput,
+  QRCodeElementSpecPropsInput,
+} from "../input";
+
 // ============================================================================
 // Data Source Types
 // ============================================================================
-
-import { CertificateElementBaseInput, CertificateElementBaseUpdateInput } from "../input";
-import { QRCodeErrorCorrection } from "../output";
 
 // GraphQL input types (used in Pothos isOneOf definitions)
 export type QRCodeDataSourceVerificationUrlInputGraphql = Record<string, never>;
@@ -28,17 +30,13 @@ export type QRCodeDataSourceInputGraphql =
 // ============================================================================
 
 // GraphQL create input type
-export type QRCodeElementCreateInputGraphql =
-  CertificateElementBaseInput & {
-    errorCorrection: QRCodeErrorCorrection;
-    foregroundColor: string;
-    backgroundColor: string;
-  };
+export type QRCodeElementInputGraphql = {
+  base: CertificateElementBaseInput;
+  qrCodeProps: QRCodeElementSpecPropsInput;
+  dataSource: QRCodeDataSourceInputGraphql;
+};
 
-// GraphQL update input type (deep partial support)
-export type QRCodeElementUpdateInputGraphql =
-  CertificateElementBaseUpdateInput & {
-    errorCorrection?: QRCodeErrorCorrection | null;
-    foregroundColor?: string | null;
-    backgroundColor?: string | null;
-  };
+// GraphQL update input type
+export type QRCodeElementUpdateInputGraphql = QRCodeElementInputGraphql & {
+  id: number;
+};

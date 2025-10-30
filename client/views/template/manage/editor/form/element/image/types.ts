@@ -1,6 +1,4 @@
 import {
-  ImageElementCreateInput,
-  ImageElementUpdateInput,
   ImageDataSourceInput as GQLImageDataSourceInput,
   ImageDataSource,
   ImageElement,
