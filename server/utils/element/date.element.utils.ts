@@ -10,9 +10,11 @@ import {
   DateDataSourceInputGraphql,
   DateElementInputGraphql,
   DateElementUpdateInputGraphql,
+  DateDataSource,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { CommonElementUtils } from "./common.element.utils";
+import { TemplateVariableType } from "@/server/types";
 
 /**
  * Validation utilities for DATE elements
@@ -27,10 +29,12 @@ export namespace DateElementUtils {
    * Map GraphQL DateDataSource input (isOneOf) to repository DateDataSource input (discriminated union)
    */
   export const mapDateDataSourceGraphqlToInput = (
-    input?: DateDataSourceInputGraphql | null
-  ): DateDataSourceInput | null | undefined => {
+    input: DateDataSourceInputGraphql
+  ): DateDataSourceInput => {
     if (!input) {
-      return input;
+      throw new Error(
+        "DateDataSourceInputGraphql must not be null or undefined"
+      );
     }
     if (input.static) {
       return {
@@ -64,12 +68,24 @@ export namespace DateElementUtils {
   export const mapDateElementCreateGraphqlToInput = (
     input: DateElementInputGraphql
   ): DateElementInput => {
+    if (
+      !input ||
+      !input.base ||
+      !input.textProps ||
+      !input.dataSource ||
+      !input.dateProps
+    ) {
+      throw new Error(
+        "DateElementInputGraphql must include base, textProps, dataSource, and dateProps"
+      );
+    }
     return {
-      ...input,
+      base: input.base,
       textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
         input.textProps
       )!,
-      dataSource: mapDateDataSourceGraphqlToInput(input.dataSource)!,
+      dataSource: mapDateDataSourceGraphqlToInput(input.dataSource),
+      dateProps: input.dateProps,
     };
   };
 
@@ -79,12 +95,25 @@ export namespace DateElementUtils {
   export const mapDateElementUpdateGraphqlToInput = (
     input: DateElementUpdateInputGraphql
   ): DateElementUpdateInput => {
+    if (
+      !input ||
+      !input.base ||
+      !input.textProps ||
+      !input.dataSource ||
+      !input.dateProps
+    ) {
+      throw new Error(
+        "DateElementUpdateInputGraphql must include base, textProps, dataSource, and dateProps"
+      );
+    }
     return {
-      ...input,
-      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
+      id: input.id,
+      base: input.base,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
         input.textProps
-      ),
+      )!,
       dataSource: mapDateDataSourceGraphqlToInput(input.dataSource),
+      dateProps: input.dateProps,
     };
   };
   // ============================================================================
@@ -192,7 +221,10 @@ export namespace DateElementUtils {
         break;
 
       case DateDataSourceType.TEMPLATE_DATE_VARIABLE:
-        await validateTemplateVariable(dataSource.variableId);
+        await validateTemplateVariable(
+          dataSource.variableId,
+          TemplateVariableType.DATE
+        );
         break;
 
       default:
@@ -245,42 +277,100 @@ export namespace DateElementUtils {
    * Validate template variable exists
    */
   const validateTemplateVariable = async (
-    variableId: number
+    variableId: number,
+    type: TemplateVariableType
   ): Promise<void> => {
-    await ElementRepository.validateTemplateVariableId(variableId);
+    await ElementRepository.validateTemplateVariableId(variableId, type);
   };
 
   // ============================================================================
-  // Create Input Validation
+  // Input Validation
   // ============================================================================
 
   /**
-   * Validate all fields for DATE element creation
+   * Validate all fields for DATE element (create/update)
    */
   export const validateInput = async (
     input: DateElementInput
   ): Promise<void> => {
+    if (
+      !input.base ||
+      !input.textProps ||
+      !input.dataSource ||
+      !input.dateProps
+    ) {
+      throw new Error(
+        "DateElementInput must include base, textProps, dataSource, and dateProps"
+      );
+    }
+
     // Validate base element properties
-    await CommonElementUtils.validateBaseInput(input);
+    await CommonElementUtils.validateBaseInput(input.base);
 
     // Validate textProps
     await CommonElementUtils.validateTextProps(input.textProps);
 
     // Validate calendar type
-    validateCalendarType(input.calendarType);
+    validateCalendarType(input.dateProps.calendarType);
 
     // Validate offset days
-    validateOffsetDays(input.offsetDays);
+    if (input.dateProps.offsetDays === undefined) {
+      throw new Error("offsetDays is required for DATE element");
+    }
+    validateOffsetDays(input.dateProps.offsetDays);
 
     // Validate date format
-    validateDateFormat(input.format);
+    validateDateFormat(input.dateProps.format);
 
     // Validate transformation (if provided)
-    if (input.transformation !== undefined && input.transformation !== null) {
-      validateTransformation(input.transformation);
+    if (
+      input.dateProps.transformation !== undefined &&
+      input.dateProps.transformation !== null
+    ) {
+      validateTransformation(input.dateProps.transformation);
     }
 
     // Validate data source
     await validateDataSource(input.dataSource);
+  };
+
+  /**
+   * Convert input data source format to output format
+   * Input uses 'field' property, output uses 'studentField'/'certificateField'
+   */
+  export const convertInputDataSourceToOutput = (
+    input: DateDataSourceInput
+  ): DateDataSource => {
+    switch (input.type) {
+      case DateDataSourceType.STATIC:
+        return { type: input.type, value: input.value };
+
+      case DateDataSourceType.STUDENT_DATE_FIELD:
+        return { type: input.type, studentField: input.field };
+
+      case DateDataSourceType.CERTIFICATE_DATE_FIELD:
+        return { type: input.type, certificateField: input.field };
+
+      case DateDataSourceType.TEMPLATE_DATE_VARIABLE:
+        return { type: input.type, dateVariableId: input.variableId };
+
+      default:
+        throw new Error(`Invalid date data source type`);
+    }
+  };
+
+  /**
+   * Extract variableId from date data source (inline in repository)
+   * Maps to correct TypeScript field name based on type
+   */
+  export const extractVariableIdFromDataSource = (
+    dataSource: DateDataSourceInput
+  ): number | null => {
+    switch (dataSource.type) {
+      case DateDataSourceType.TEMPLATE_DATE_VARIABLE:
+        return dataSource.variableId;
+      default:
+        return null;
+    }
   };
 }
