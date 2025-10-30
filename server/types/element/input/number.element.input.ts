@@ -1,6 +1,6 @@
-import { TextPropsCreateInput, TextPropsUpdateInput } from "./textProps.input";
+import { TextPropsInput, TextPropsUpdateInput } from "./textProps.input";
 import {
-  CertificateElementBaseCreateInput,
+  CertificateElementBaseInput,
   CertificateElementBaseUpdateInput,
 } from "./base.element.input";
 import { NumberDataSourceType } from "../output";
@@ -18,8 +18,8 @@ export type NumberDataSourceInput = {
 // Mutation Inputs (no config field)
 // ============================================================================
 
-export type NumberElementCreateInput = CertificateElementBaseCreateInput & {
-  textProps: TextPropsCreateInput;
+export type NumberElementCreateInput = CertificateElementBaseInput & {
+  textProps: TextPropsInput;
   mapping: Record<string, string>;
   dataSource: NumberDataSourceInput;
 };

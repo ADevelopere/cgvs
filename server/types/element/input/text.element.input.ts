@@ -1,6 +1,6 @@
-import { TextPropsCreateInput, TextPropsUpdateInput } from "./textProps.input";
+import { TextPropsInput, TextPropsUpdateInput } from "./textProps.input";
 import {
-  CertificateElementBaseCreateInput,
+  CertificateElementBaseInput,
   CertificateElementBaseUpdateInput,
 } from "./base.element.input";
 import {
@@ -50,8 +50,8 @@ export type TextDataSourceInput =
 // ============================================================================
 
 export type TextElementCreateInput = {
-  base: CertificateElementBaseCreateInput;
-  textProps: TextPropsCreateInput;
+  base: CertificateElementBaseInput;
+  textProps: TextPropsInput;
   dataSource: TextDataSourceInput;
 };
 

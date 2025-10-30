@@ -1,12 +1,12 @@
 import {
-  CertificateElementBaseCreateInput,
+  CertificateElementBaseInput,
   CertificateElementBaseUpdateInput,
   DatePropsCreateInput,
   DatePropsUpdateInput,
 } from "../input";
 import { CertificateDateField, StudentDateField } from "../output";
 import {
-  TextPropsCreateInputGraphql,
+  TextPropsInputGraphql,
   TextPropsUpdateInputGraphql,
 } from "./config.element.inputGql";
 
@@ -63,8 +63,8 @@ export type DateDataSourceInputGraphql =
 
 // GraphQL create input type
 export type DateElementCreateInputGraphql = {
-  base: CertificateElementBaseCreateInput;
-  textProps: TextPropsCreateInputGraphql;
+  base: CertificateElementBaseInput;
+  textProps: TextPropsInputGraphql;
   dataSource: DateDataSourceInputGraphql;
   dateProps: DatePropsCreateInput;
 };

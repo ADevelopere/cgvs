@@ -1,6 +1,6 @@
 import { QRCodeDataSourceType, QRCodeErrorCorrection } from "../output";
 import {
-  CertificateElementBaseCreateInput,
+  CertificateElementBaseInput,
   CertificateElementBaseUpdateInput,
 } from "./base.element.input";
 
@@ -25,7 +25,7 @@ export type QRCodeDataSourceInput =
 // Mutation Inputs
 // ============================================================================
 
-export type QRCodeElementCreateInput = CertificateElementBaseCreateInput & {
+export type QRCodeElementCreateInput = CertificateElementBaseInput & {
   errorCorrection: QRCodeErrorCorrection;
   foregroundColor: string;
   backgroundColor: string;

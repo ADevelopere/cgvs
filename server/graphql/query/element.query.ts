@@ -1,7 +1,6 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import { ElementRepository } from "@/server/db/repo/element";
 import * as ElementPothos from "../pothos/element";
-import { CertificateElementPothosUnion } from "@/server/types";
 
 gqlSchemaBuilder.queryFields(t => ({
   /**
@@ -13,12 +12,7 @@ gqlSchemaBuilder.queryFields(t => ({
     args: {
       templateId: t.arg.int({ required: true }),
     },
-    load: async (ids: number[]) => {
-      const results = await ElementRepository.loadByTemplateIds(ids);
-      return results.map(elements => 
-        elements instanceof Error ? elements : elements as CertificateElementPothosUnion[]
-      );
-    },
+    load: async (ids: number[]) => await ElementRepository.loadByTemplateIds(ids),
     resolve: (_parent, args) => args.templateId,
   }),
 }));

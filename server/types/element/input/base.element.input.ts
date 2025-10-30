@@ -1,30 +1,24 @@
+import { certificateElement } from "@/server/db/schema";
 import { ElementAlignment } from "../output";
 
-export type CertificateElementBaseCreateInput = {
-  templateId: number;
-  name: string;
-  description: string;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
+export type CertificateElementEntityInput =
+  typeof certificateElement.$inferInsert;
+
+export type CertificateElementBaseInput = Omit<
+  CertificateElementEntityInput,
+  "id" | "type"
+> & {
   alignment: ElementAlignment;
-  renderOrder: number;
 };
 // ============================================================================
 // Base Update Input (extended by all element update inputs)
 // ============================================================================
 
-export type CertificateElementBaseUpdateInput = {
+export type CertificateElementBaseUpdateInput = Omit<
+  CertificateElementBaseInput,
+  "templateId"
+> & {
   id: number;
-  name?: string | null;
-  description?: string | null;
-  positionX?: number | null;
-  positionY?: number | null;
-  width?: number | null;
-  height?: number | null;
-  alignment?: ElementAlignment | null;
-  renderOrder?: number | null;
 };
 
 // ============================================================================

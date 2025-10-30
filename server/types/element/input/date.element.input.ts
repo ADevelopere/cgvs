@@ -1,6 +1,6 @@
-import { TextPropsCreateInput, TextPropsUpdateInput } from "./textProps.input";
+import { TextPropsInput, TextPropsUpdateInput } from "./textProps.input";
 import {
-  CertificateElementBaseCreateInput,
+  CertificateElementBaseInput,
   CertificateElementBaseUpdateInput,
 } from "./base.element.input";
 import {
@@ -59,8 +59,8 @@ export type DatePropsUpdateInput = {
   transformation?: DateTransformationType | null;
 };
 
-export type DateElementCreateInput = CertificateElementBaseCreateInput & {
-  textProps: TextPropsCreateInput;
+export type DateElementCreateInput = CertificateElementBaseInput & {
+  textProps: TextPropsInput;
   dataSource: DateDataSourceInput;
   dateProps: DatePropsCreateInput;
 };

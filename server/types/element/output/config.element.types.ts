@@ -17,22 +17,22 @@ export type FontReference =
   | { type: FontSource.SELF_HOSTED; fontId: number };
 
 // ============================================================================
-// Text Props (shared by TEXT, DATE, NUMBER, COUNTRY, GENDER elements)
-// ============================================================================
-
-// Logical structure - NO database fields
-export type TextProps = {
-  fontRef: FontReference;
-  fontSize: number;
-  color: string; // e.g., "#000000" or "rgba(0,0,0,1)"
-  overflow: ElementOverflow;
-};
-
-// ============================================================================
 // Element Text Props Entity (Raw DB - for repository internal use)
 // ============================================================================
 
 export type ElementTextPropsEntity = typeof elementTextProps.$inferSelect;
 // { id, fontSource, fontId, googleFontIdentifier, fontSize, color, overflow }
 
-export type ElementTextPropsInsert = typeof elementTextProps.$inferInsert;
+// ============================================================================
+// Text Props (shared by TEXT, DATE, NUMBER, COUNTRY, GENDER elements)
+// ============================================================================
+
+
+// Logical structure - NO database fields
+export type TextProps = Omit<
+  ElementTextPropsEntity,
+  "fontSource" | "fontId" | "googleFontIdentifier"
+> & {
+  fontRef: FontReference;
+  overflow: ElementOverflow;
+};

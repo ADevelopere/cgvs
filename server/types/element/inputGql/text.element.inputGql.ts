@@ -1,7 +1,7 @@
-import { CertificateElementBaseCreateInput, CertificateElementBaseUpdateInput } from "../input";
+import { CertificateElementBaseInput, CertificateElementBaseUpdateInput } from "../input";
 import { CertificateTextField, StudentTextField } from "../output";
 import {
-  TextPropsCreateInputGraphql,
+  TextPropsInputGraphql,
   TextPropsUpdateInputGraphql,
 } from "./config.element.inputGql";
 
@@ -74,8 +74,8 @@ export type TextDataSourceInputGraphql =
 
 // GraphQL create input type
 export type TextElementCreateInputGraphql =
-  CertificateElementBaseCreateInput & {
-    textProps: TextPropsCreateInputGraphql;
+  CertificateElementBaseInput & {
+    textProps: TextPropsInputGraphql;
     dataSource: TextDataSourceInputGraphql;
   };
 

@@ -1,9 +1,8 @@
-
 // ============================================================================
 // Font Reference (GraphQL isOneOf pattern)
 // ============================================================================
 
-import { TextPropsCreateInput, TextPropsUpdateInput } from "../input";
+import { TextPropsInput } from "../input";
 
 export type FontReferenceGoogleInputGraphql = {
   identifier: string;
@@ -22,16 +21,10 @@ export type FontReferenceInputGraphql =
 // ============================================================================
 
 // Re-export TextProps types with GraphQL naming and font reference pattern
-export type TextPropsCreateInputGraphql = Omit<
-  TextPropsCreateInput,
-  "fontRef"
-> & {
+export type TextPropsInputGraphql = Omit<TextPropsInput, "fontRef"> & {
   fontRef: FontReferenceInputGraphql;
 };
 
-export type TextPropsUpdateInputGraphql = Omit<
-TextPropsUpdateInput,
-  "fontRef"
-> & {
-  fontRef: FontReferenceInputGraphql;
+export type TextPropsUpdateInputGraphql = TextPropsInputGraphql & {
+  id: number;
 };

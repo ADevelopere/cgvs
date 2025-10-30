@@ -109,6 +109,7 @@ export const TextPropsObject = gqlSchemaBuilder
   .objectRef<Types.TextProps>("TextProps")
   .implement({
     fields: t => ({
+      id: t.exposeInt("id"),
       fontRef: t.expose("fontRef", { type: FontReferenceUnion }),
       fontSize: t.exposeInt("fontSize"),
       color: t.exposeString("color"),
@@ -116,14 +117,20 @@ export const TextPropsObject = gqlSchemaBuilder
     }),
   });
 
-export const TextPropsCreateInputObject = gqlSchemaBuilder
-  .inputRef<Types.TextPropsCreateInputGraphql>("TextPropsCreateInput")
+const createTextPropsInputFields = <Types extends SchemaTypes>(
+  t: InputFieldBuilder<Types, "InputObject">
+) => ({
+  fontRef: t.field({ type: FontReferenceInputObject, required: true }),
+  fontSize: t.int({ required: true }),
+  color: t.string({ required: true }),
+  overflow: t.field({ type: ElementOverflowPothosEnum, required: true }),
+});
+
+export const TextPropsInputObject = gqlSchemaBuilder
+  .inputRef<Types.TextPropsInputGraphql>("TextPropsInput")
   .implement({
     fields: t => ({
-      fontRef: t.field({ type: FontReferenceInputObject, required: true }),
-      fontSize: t.int({ required: true }),
-      color: t.string({ required: true }),
-      overflow: t.field({ type: ElementOverflowPothosEnum, required: true }),
+      ...createTextPropsInputFields(t),
     }),
   });
 
@@ -131,10 +138,8 @@ export const TextPropsUpdateInputObject = gqlSchemaBuilder
   .inputRef<Types.TextPropsUpdateInputGraphql>("TextPropsUpdateInput")
   .implement({
     fields: t => ({
-      fontRef: t.field({ type: FontReferenceInputObject, required: true }),
-      fontSize: t.int({ required: true }),
-      color: t.string({ required: true }),
-      overflow: t.field({ type: ElementOverflowPothosEnum, required: true }),
+      id: t.int({ required: true }),
+      ...createTextPropsInputFields(t),
     }),
   });
 
@@ -161,7 +166,6 @@ export const ElementOrderUpdateInputObject = gqlSchemaBuilder
 export const createBaseElementInputFields = <Types extends SchemaTypes>(
   t: InputFieldBuilder<Types, "InputObject">
 ) => ({
-  templateId: t.int({ required: true }),
   name: t.string({ required: true }),
   description: t.string({ required: true }),
   positionX: t.int({ required: true }),
@@ -172,41 +176,23 @@ export const createBaseElementInputFields = <Types extends SchemaTypes>(
   renderOrder: t.int({ required: true }),
 });
 
-/**
- * Helper to create shared base element input fields for update operations
- * All fields are optional (except id which should be added separately)
- */
-export const createBaseElementUpdateInputFields = <Types extends SchemaTypes>(
-  t: InputFieldBuilder<Types, "InputObject">
-) => ({
-  id: t.int({ required: true }),
-  name: t.string(),
-  description: t.string(),
-  positionX: t.int(),
-  positionY: t.int(),
-  width: t.int(),
-  height: t.int(),
-  alignment: t.field({ type: ElementAlignmentPothosEnum, required: false }),
-  renderOrder: t.int(),
-});
-
-export const CertificateElementBaseCreateInputInputObject = gqlSchemaBuilder
-  .inputRef<Types.CertificateElementBaseCreateInput>(
-    "CertificateElementBaseCreateInput"
-  )
+export const CertificateElementBaseInputObject = gqlSchemaBuilder
+  .inputRef<Types.CertificateElementBaseInput>("CertificateElementBaseInput")
   .implement({
     fields: t => ({
+      templateId: t.int({ required: true }),
       ...createBaseElementInputFields(t),
     }),
   });
 
-export const CertificateElementBaseUpdateInputInputObject = gqlSchemaBuilder
+export const CertificateElementBaseUpdateInputObject = gqlSchemaBuilder
   .inputRef<Types.CertificateElementBaseUpdateInput>(
     "CertificateElementBaseUpdateInput"
   )
   .implement({
     fields: t => ({
-      ...createBaseElementUpdateInputFields(t),
+      id: t.int({ required: true }),
+      ...createBaseElementInputFields(t),
     }),
   });
 
@@ -214,14 +200,8 @@ export const CertificateElementBaseUpdateInputInputObject = gqlSchemaBuilder
 // CertificateElement Interface (shared fields for all element types)
 // ============================================================================
 
-export const CertificateElementPothosInterface = gqlSchemaBuilder
-  .loadableInterfaceRef<Types.CertificateElementPothosBase, number>(
-    "CertificateElement",
-    {
-      load: async ids => await ElementRepository.loadByIds(ids),
-      sort: e => e.id,
-    }
-  )
+export const CertificateElementBaseObject = gqlSchemaBuilder
+  .objectRef<Types.CertificateElementEntity>("CertificateElementBase")
   .implement({
     fields: t => ({
       id: t.exposeInt("id"),
@@ -245,11 +225,25 @@ export const CertificateElementPothosInterface = gqlSchemaBuilder
     }),
   });
 
+export const CertificateElementPothosInterface = gqlSchemaBuilder
+  .loadableInterfaceRef<Types.CertificateElementInterface, number>(
+    "CertificateElement",
+    {
+      load: async ids => await ElementRepository.loadByIds(ids),
+      sort: e => e.base.id,
+    }
+  )
+  .implement({
+    fields: t => ({
+      base: t.expose("base", { type: CertificateElementBaseObject }),
+    }),
+  });
+
 // Add template field using interfaceFields (separate from interface definition)
 gqlSchemaBuilder.interfaceFields(CertificateElementPothosInterface, t => ({
   template: t.loadable({
     type: TemplatePothosObject,
     load: (ids: number[]) => TemplateRepository.loadByIds(ids),
-    resolve: element => element.templateId,
+    resolve: element => element.base.templateId,
   }),
 }));

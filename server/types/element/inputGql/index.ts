@@ -1,5 +1,5 @@
 // Export all element type definitions
-export * from "./config.element.inputGql";
+export * from "./textProps.inputGql";
 export * from "./text.element.inputGql";
 export * from "./date.element.inputGql";
 export * from "./number.element.inputGql";

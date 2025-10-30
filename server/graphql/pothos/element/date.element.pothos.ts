@@ -3,7 +3,7 @@ import * as Types from "@/server/types/element";
 import { DateElementRepository } from "@/server/db/repo/element";
 import {
   TextPropsObject,
-  TextPropsCreateInputObject,
+  TextPropsInputObject,
   TextPropsUpdateInputObject,
   CertificateElementPothosInterface,
   createBaseElementInputFields,
@@ -222,7 +222,7 @@ export const DateElementCreateInputObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       ...createBaseElementInputFields(t),
-      textProps: t.field({ type: TextPropsCreateInputObject, required: true }),
+      textProps: t.field({ type: TextPropsInputObject, required: true }),
       dataSource: t.field({ type: DateDataSourceInputObject, required: true }),
       dateProps: t.field({ type: DatePropsCreateInputObject, required: true }),
     }),

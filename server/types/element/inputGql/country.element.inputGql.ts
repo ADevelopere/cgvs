@@ -1,10 +1,10 @@
 import {
-  CertificateElementBaseCreateInput,
+  CertificateElementBaseInput,
   CertificateElementBaseUpdateInput,
 } from "../input";
 import { CountryRepresentation } from "../output";
 import {
-  TextPropsCreateInputGraphql,
+  TextPropsInputGraphql,
   TextPropsUpdateInputGraphql,
 } from "./config.element.inputGql";
 
@@ -27,8 +27,8 @@ export type CountryDataSourceInputGraphql = {
 // ============================================================================
 
 export type CountryElementCreateInputGraphql =
-  CertificateElementBaseCreateInput & {
-    textProps: TextPropsCreateInputGraphql;
+  CertificateElementBaseInput & {
+    textProps: TextPropsInputGraphql;
     representation: CountryRepresentation;
   };
 
