@@ -1,11 +1,10 @@
 import {
   GenderDataSourceType,
-  GenderElementCreateInput,
+  GenderElementInput,
   GenderElementUpdateInput,
-  CertificateElementEntity,
   GenderDataSourceInput,
   GenderDataSourceInputGraphql,
-  GenderElementCreateInputGraphql,
+  GenderElementInputGraphql,
   GenderElementUpdateInputGraphql,
 } from "@/server/types/element";
 import { CommonElementUtils } from "./common.element.utils";
@@ -24,30 +23,35 @@ export namespace GenderElementUtils {
    * Note: GENDER has only one data source variant (studentGender)
    */
   export const mapGenderDataSourceGraphqlToInput = (
-    input?: GenderDataSourceInputGraphql | null
-  ): GenderDataSourceInput | null | undefined => {
-    if (!input) {
-      return input;
+    input: GenderDataSourceInputGraphql
+  ): GenderDataSourceInput => {
+    if (!input || input.studentGender === undefined) {
+      throw new Error(
+        "Invalid GenderDataSource input: must specify studentGender"
+      );
     }
-    if (input.studentGender !== undefined) {
-      return {
-        type: GenderDataSourceType.STUDENT_GENDER,
-      };
-    }
-    throw new Error(
-      "Invalid GenderDataSource input: must specify studentGender"
-    );
+    return {
+      type: GenderDataSourceType.STUDENT_GENDER,
+    };
   };
 
   /**
    * Map GraphQL GenderElement create input to repository GenderElement create input
    */
   export const mapGenderElementCreateGraphqlToInput = (
-    input: GenderElementCreateInputGraphql
-  ): GenderElementCreateInput => {
+    input: GenderElementInputGraphql
+  ): GenderElementInput => {
+    if (!input || !input.base || !input.textProps || !input.dataSource) {
+      throw new Error(
+        "GenderElementInputGraphql must include base, textProps, and dataSource"
+      );
+    }
     return {
-      ...input,
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps)!,
+      base: input.base,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
+        input.textProps
+      )!,
+      dataSource: mapGenderDataSourceGraphqlToInput(input.dataSource),
     };
   };
 
@@ -57,48 +61,42 @@ export namespace GenderElementUtils {
   export const mapGenderElementUpdateGraphqlToInput = (
     input: GenderElementUpdateInputGraphql
   ): GenderElementUpdateInput => {
+    if (!input || !input.base || !input.textProps || !input.dataSource) {
+      throw new Error(
+        "GenderElementUpdateInputGraphql must include base, textProps, and dataSource"
+      );
+    }
     return {
-      ...input,
-      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(input.textProps),
+      id: input.id,
+      base: input.base,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
+        input.textProps
+      )!,
+      dataSource: mapGenderDataSourceGraphqlToInput(input.dataSource),
     };
   };
   // ============================================================================
-  // Create Input Validation
+  // Input Validation
   // ============================================================================
 
   /**
-   * Validate all fields for GENDER element creation
+   * Validate all fields for GENDER element (create/update)
    */
-  export const validateCreateInput = async (
-    input: GenderElementCreateInput
+  export const validateInput = async (
+    input: GenderElementInput
   ): Promise<void> => {
+    if (!input.base || !input.textProps || !input.dataSource) {
+      throw new Error(
+        "GenderElementInput must include base, textProps, and dataSource"
+      );
+    }
+
     // Validate base element properties
-    await CommonElementUtils.validateBaseInput(input);
+    await CommonElementUtils.validateBaseInput(input.base);
 
     // Validate textProps
     await CommonElementUtils.validateTextProps(input.textProps);
 
     // GENDER has fixed data source (STUDENT_GENDER), no validation needed
-  };
-
-  // ============================================================================
-  // Update Input Validation
-  // ============================================================================
-
-  /**
-   * Validate all fields for GENDER element update (partial)
-   * Caches existing element to avoid multiple DB queries
-   */
-  export const validateUpdateInput = async (
-    input: GenderElementUpdateInput,
-    existing: CertificateElementEntity
-  ): Promise<void> => {
-    // Validate base element properties
-    await CommonElementUtils.validateBaseUpdateInput(input, existing);
-
-    // Validate textProps (if provided)
-    if (input.textProps) {
-      await CommonElementUtils.validateTextProps(input.textProps);
-    }
   };
 }

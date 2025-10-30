@@ -2,16 +2,17 @@ import {
   TextDataSourceType,
   StudentTextField,
   CertificateTextField,
-  TextElementCreateInput,
+  TextElementInput,
   TextElementUpdateInput,
-  CertificateElementEntity,
   TextDataSourceInput,
   TextDataSourceInputGraphql,
-  TextElementCreateInputGraphql,
+  TextElementInputGraphql,
   TextElementUpdateInputGraphql,
+  TextDataSource,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { CommonElementUtils } from "./common.element.utils";
+import { TemplateVariableType } from "@/server/types";
 
 /**
  * Validation utilities for TEXT elements
@@ -26,10 +27,12 @@ export namespace TextElementUtils {
    * Map GraphQL TextDataSource input (isOneOf) to repository TextDataSource input (discriminated union)
    */
   export const mapTextDataSourceGraphqlToInput = (
-    input?: TextDataSourceInputGraphql | null
-  ): TextDataSourceInput | null | undefined => {
+    input: TextDataSourceInputGraphql
+  ): TextDataSourceInput => {
     if (!input) {
-      return input;
+      throw new Error(
+        "TextDataSourceInputGraphql must not be null or undefined"
+      );
     }
 
     if (input.static) {
@@ -66,15 +69,20 @@ export namespace TextElementUtils {
   /**
    * Map GraphQL TextElement create input to repository TextElement create input
    */
-  export const mapTextElementCreateGraphqlToInput = (
-    input: TextElementCreateInputGraphql
-  ): TextElementCreateInput => {
+  export const mapTextElementGraphqlToInput = (
+    input: TextElementInputGraphql
+  ): TextElementInput => {
+    if (!input || !input.base || !input.textProps || !input.dataSource) {
+      throw new Error(
+        "TextElementInputGraphql must include base, textProps, and dataSource"
+      );
+    }
     return {
-      ...input,
+      base: input.base,
       textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
         input.textProps
       )!,
-      dataSource: mapTextDataSourceGraphqlToInput(input.dataSource)!,
+      dataSource: mapTextDataSourceGraphqlToInput(input.dataSource),
     };
   };
 
@@ -84,11 +92,17 @@ export namespace TextElementUtils {
   export const mapTextElementUpdateGraphqlToInput = (
     input: TextElementUpdateInputGraphql
   ): TextElementUpdateInput => {
+    if (!input || !input.base || !input.textProps || !input.dataSource) {
+      throw new Error(
+        "TextElementUpdateInputGraphql must include base, textProps, and dataSource"
+      );
+    }
     return {
-      ...input,
-      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
+      id: input.id,
+      base: input.base,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
         input.textProps
-      ),
+      )!,
       dataSource: mapTextDataSourceGraphqlToInput(input.dataSource),
     };
   };
@@ -164,21 +178,30 @@ export namespace TextElementUtils {
   const validateTemplateVariable = async (
     variableId: number
   ): Promise<void> => {
-    await ElementRepository.validateTemplateVariableId(variableId);
+    await ElementRepository.validateTemplateVariableId(
+      variableId,
+      TemplateVariableType.TEXT
+    );
   };
 
   // ============================================================================
-  // Create Input Validation
+  // Input Validation
   // ============================================================================
 
   /**
-   * Validate all fields for TEXT element creation
+   * Validate all fields for TEXT element (create/update)
    */
-  export const validateCreateInput = async (
-    input: TextElementCreateInput
+  export const validateInput = async (
+    input: TextElementInput
   ): Promise<void> => {
+    if (!input.base || !input.textProps || !input.dataSource) {
+      throw new Error(
+        "TextElementInput must include base, textProps, and dataSource"
+      );
+    }
+
     // Validate base element properties
-    await CommonElementUtils.validateBaseInput(input);
+    await CommonElementUtils.validateBaseInput(input.base);
 
     // Validate textProps
     await CommonElementUtils.validateTextProps(input.textProps);
@@ -188,29 +211,50 @@ export namespace TextElementUtils {
   };
 
   // ============================================================================
-  // Update Input Validation
+  // Data Source Conversion
   // ============================================================================
 
   /**
-   * Validate all fields for TEXT element update (partial)
-   * Caches existing element to avoid multiple DB queries
+   * Convert input data source format to output format
+   * Input uses 'field' property, output uses 'studentField'/'certificateField'
    */
-  export const validateUpdateInput = async (
-    input: TextElementUpdateInput,
-    existing: CertificateElementEntity
-  ): Promise<void> => {
-    // Validate base element properties
-    await CommonElementUtils.validateBaseUpdateInput(input, existing);
+  export const convertInputDataSourceToOutput = (
+    input: TextDataSourceInput
+  ): TextDataSource => {
+    switch (input.type) {
+      case TextDataSourceType.STATIC:
+        return { type: input.type, value: input.value };
 
-    // Validate textProps (if provided)
-    if (input.textProps) {
-      await CommonElementUtils.validateTextProps(input.textProps);
+      case TextDataSourceType.STUDENT_TEXT_FIELD:
+        return { type: input.type, studentField: input.field };
+
+      case TextDataSourceType.CERTIFICATE_TEXT_FIELD:
+        return { type: input.type, certificateField: input.field };
+
+      case TextDataSourceType.TEMPLATE_TEXT_VARIABLE:
+        return { type: input.type, textVariableId: input.variableId };
+
+      case TextDataSourceType.TEMPLATE_SELECT_VARIABLE:
+        return { type: input.type, selectVariableId: input.variableId };
+
+      default:
+        throw new Error(`Invalid text data source type`);
     }
+  };
 
-    // Validate data source (if provided)
-    if (input.dataSource) {
-      await validateDataSource(input.dataSource);
+  /**
+   * Extract variableId from text data source (inline in repository)
+   * Maps to correct TypeScript field name based on type
+   */
+  export const extractVariableIdFromDataSource = (
+    dataSource: TextDataSourceInput
+  ): number | null => {
+    switch (dataSource.type) {
+      case TextDataSourceType.TEMPLATE_TEXT_VARIABLE:
+      case TextDataSourceType.TEMPLATE_SELECT_VARIABLE:
+        return dataSource.variableId;
+      default:
+        return null;
     }
   };
 }
-
