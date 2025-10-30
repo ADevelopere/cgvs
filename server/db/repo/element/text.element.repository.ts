@@ -83,7 +83,7 @@ export namespace TextElementRepository {
       elementId: newTextElement.elementId,
       textPropsId: newTextElement.textPropsId,
       textPropsEntity: newTextProps,
-      textProps: TextPropsUtils.entityToTextProps(newTextProps),
+      textElementSpecProps: TextPropsUtils.entityToTextProps(newTextProps),
       textDataSource: newDataSource,
       variableId,
     };
@@ -157,7 +157,7 @@ export namespace TextElementRepository {
       elementId: updatedTextElement.elementId,
       textPropsId: updatedTextElement.textPropsId,
       textPropsEntity: updatedTextProps,
-      textProps: TextPropsUtils.entityToTextProps(updatedTextProps),
+      textElementSpecProps: TextPropsUtils.entityToTextProps(updatedTextProps),
       textDataSource: updatedTextElement.textDataSource,
       variableId: updatedTextElement.variableId,
     };
@@ -197,7 +197,7 @@ export namespace TextElementRepository {
       // Text-specific fields
       ...row.text_element,
       textPropsEntity: row.element_text_props,
-      textProps: TextPropsUtils.entityToTextProps(row.element_text_props),
+      textElementSpecProps: TextPropsUtils.entityToTextProps(row.element_text_props),
       textDataSource: row.text_element.textDataSource,
       variableId: row.text_element.variableId,
     };

@@ -1,9 +1,7 @@
-import { TextPropsInput, TextPropsUpdateInput } from "./textProps.input";
-import {
-  CertificateElementBaseInput,
-  CertificateElementBaseUpdateInput,
-} from "./base.element.input";
+import { TextPropsInput } from "./textProps.input";
+import { CertificateElementBaseInput } from "./base.element.input";
 import { GenderDataSourceType } from "../output";
+import { genderElement } from "@/server/db/schema";
 
 // ============================================================================
 // Data Source Types
@@ -17,10 +15,19 @@ export type GenderDataSourceInput = {
 // Mutation Inputs (no config field)
 // ============================================================================
 
-export type GenderElementCreateInput = CertificateElementBaseInput & {
+export type GenderElementEntityInput = typeof genderElement.$inferInsert;
+export type GenderElementSpecPropsInput = Omit<
+  GenderElementEntityInput,
+  "elementId" | "textPropsId"
+>;
+
+export type GenderElementInput = {
+  base: CertificateElementBaseInput;
   textProps: TextPropsInput;
+  dataSource: GenderDataSourceInput;
+  // genderProps: GenderElementSpecPropsInput;
 };
 
-export type GenderElementUpdateInput = CertificateElementBaseUpdateInput & {
-  textProps?: TextPropsUpdateInput | null;
+export type GenderElementUpdateInput = GenderElementInput & {
+  id: number;
 };

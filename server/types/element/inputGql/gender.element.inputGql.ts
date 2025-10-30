@@ -1,11 +1,5 @@
-import {
-  CertificateElementBaseInput,
-  CertificateElementBaseUpdateInput,
-} from "../input";
-import {
-  TextPropsInputGraphql,
-  TextPropsUpdateInputGraphql,
-} from "./config.element.inputGql";
+import { CertificateElementBaseInput } from "../input";
+import { TextPropsInputGraphql } from "./config.element.inputGql";
 
 // ============================================================================
 // Data Source Types
@@ -23,13 +17,14 @@ export type GenderDataSourceInputGraphql = {
 // ============================================================================
 
 // GraphQL create input type
-export type GenderElementCreateInputGraphql =
-  CertificateElementBaseInput & {
-    textProps: TextPropsInputGraphql;
-  };
+export type GenderElementInputGraphql = {
+  base: CertificateElementBaseInput;
+  textProps: TextPropsInputGraphql;
+  dataSource: GenderDataSourceInputGraphql;
+  // genderProps: GenderElementSpecPropsInput;
+};
 
-// GraphQL update input type (deep partial support)
-export type GenderElementUpdateInputGraphql =
-  CertificateElementBaseUpdateInput & {
-    textProps?: TextPropsUpdateInputGraphql | null;
-  };
+// GraphQL update input type
+export type GenderElementUpdateInputGraphql = GenderElementInputGraphql & {
+  id: number;
+};

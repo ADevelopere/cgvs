@@ -36,13 +36,15 @@ export type QRCodeElementEntity = typeof qrCodeElement.$inferSelect;
 // Output Type (mirrors database - base + qr_code_element joined)
 // ============================================================================
 
-export type QRCodeElementOutput = CertificateElementEntity & QRCodeElementEntity & {
-  // Type overrides to use enums instead of strings
+export type QRCodeElementSpecProps = Omit<
+  QRCodeElementEntity,
+  "errorCorrection"
+> & {
   errorCorrection: QRCodeErrorCorrection;
 };
 
-// ============================================================================
-// Pothos Definition
-// ============================================================================
-
-export type QRCodeElementPothosDefinition = QRCodeElementOutput;
+export type QRCodeElementOutput = {
+  base: CertificateElementEntity;
+  qrCodeProps: QRCodeElementSpecProps;
+  qrCodeDataSource: QRCodeDataSource;
+};

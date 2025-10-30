@@ -29,19 +29,21 @@ export type ImageDataSource = {
 // ============================================================================
 
 export type ImageElementEntity = typeof imageElement.$inferSelect;
-// { elementId, fit, dataSource, storageFileId }
+// { elementId, fit, imageDataSource, storageFileId }
 
 // ============================================================================
 // Output Type (mirrors database - base + image_element joined)
 // ============================================================================
 
-export type ImageElementOutput = CertificateElementEntity & ImageElementEntity & {
-  // Type overrides to use enums instead of strings
+export type ImageElementSpecProps = Omit<
+  ImageElementEntity,
+  "imageDataSource" | "fit"
+> & {
   fit: ElementImageFit;
 };
 
-// ============================================================================
-// Pothos Definition
-// ============================================================================
-
-export type ImageElementPothosDefinition = ImageElementOutput;
+export type ImageElementOutput = {
+  base: CertificateElementEntity;
+  imageProps: ImageElementSpecProps;
+  imageDataSource: ImageDataSource;
+};
