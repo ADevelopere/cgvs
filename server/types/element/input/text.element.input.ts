@@ -22,7 +22,7 @@ export type TextDataSourceStudentFieldInput = {
   type: TextDataSourceType.STUDENT_TEXT_FIELD;
   field: StudentTextField;
 };
-  
+
 export type TextDataSourceCertificateFieldInput = {
   type: TextDataSourceType.CERTIFICATE_TEXT_FIELD;
   field: CertificateTextField;
@@ -49,13 +49,14 @@ export type TextDataSourceInput =
 // Mutation Inputs
 // ============================================================================
 
-export type TextElementCreateInput = CertificateElementBaseCreateInput & {
+export type TextElementCreateInput = {
+  base: CertificateElementBaseCreateInput;
   textProps: TextPropsCreateInput;
   dataSource: TextDataSourceInput;
-  // variableId is NOT in input - extracted from dataSource
 };
 
-export type TextElementUpdateInput = CertificateElementBaseUpdateInput & {
+export type TextElementUpdateInput = {
+  base?: CertificateElementBaseUpdateInput | null;
   textProps?: TextPropsUpdateInput | null;
   dataSource?: TextDataSourceInput | null;
 };
