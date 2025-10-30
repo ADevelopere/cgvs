@@ -1,33 +1,31 @@
-export const validateDataSource = (
-  dataSource: TextDataSourceState
+import type { TextDataSourceInput } from "@/client/graphql/generated/gql/graphql";
+import type { DataSourceFormErrors } from "./types";
+
+export const validateTextDataSource = (
+  dataSource: TextDataSourceInput
 ): DataSourceFormErrors => {
   const errors: DataSourceFormErrors = {};
 
-  switch (dataSource.type) {
-    case "STATIC":
-      if (!dataSource.value || dataSource.value.trim().length === 0) {
-        errors.value = "Static value is required";
-      }
-      break;
-
-    case "STUDENT_TEXT_FIELD":
-      if (!dataSource.field) {
-        errors.field = "Student field is required";
-      }
-      break;
-
-    case "CERTIFICATE_TEXT_FIELD":
-      if (!dataSource.field) {
-        errors.field = "Certificate field is required";
-      }
-      break;
-
-    case "TEMPLATE_TEXT_VARIABLE":
-    case "TEMPLATE_SELECT_VARIABLE":
-      if (!dataSource.variableId || dataSource.variableId <= 0) {
-        errors.variableId = "Variable selection is required";
-      }
-      break;
+  if (dataSource.static) {
+    if (!dataSource.static.value || dataSource.static.value.trim().length === 0) {
+      errors.static = "Static value is required";
+    }
+  } else if (dataSource.studentField) {
+    if (!dataSource.studentField.field) {
+      errors.studentField = "Student field is required";
+    }
+  } else if (dataSource.certificateField) {
+    if (!dataSource.certificateField.field) {
+      errors.certificateField = "Certificate field is required";
+    }
+  } else if (dataSource.templateTextVariable) {
+    if (!dataSource.templateTextVariable.variableId || dataSource.templateTextVariable.variableId <= 0) {
+      errors.templateTextVariable = "Template text variable is required";
+    }
+  } else if (dataSource.templateSelectVariable) {
+    if (!dataSource.templateSelectVariable.variableId || dataSource.templateSelectVariable.variableId <= 0) {
+      errors.templateSelectVariable = "Template select variable is required";
+    }
   }
 
   return errors;
