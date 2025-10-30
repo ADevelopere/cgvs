@@ -6,7 +6,7 @@ import { logger } from "@/client/lib/logger";
 import { mockSelfHostedFonts } from "../story.util";
 
 const meta: Meta<typeof TextPropsForm> = {
-  title: "Template/Editor/Form/Element/TextPropsForm",
+  title: "Template/Editor/Form/Element/TextProps/TextPropsForm",
   component: TextPropsForm,
   tags: ["autodocs"],
 };

@@ -5,7 +5,7 @@ import { CertificateElementBaseUpdateInput } from "@/client/graphql/generated/gq
 import { BaseElementFormErrors } from "./types";
 
 const meta: Meta<typeof BaseCertificateElementForm> = {
-  title: "Template/Editor/Form/Element/BaseCertificateElementForm",
+  title: "Template/Editor/Form/Element/Base/BaseCertificateElementForm",
   component: BaseCertificateElementForm,
   tags: ["autodocs"],
 };

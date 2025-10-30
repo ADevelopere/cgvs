@@ -177,7 +177,7 @@ export const BaseCertificateElementForm: FC<
         </Grid>
 
         {/* Render Order */}
-        <Grid size={{ xs: 12, sm: 6 }}>
+        {/* <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             fullWidth
             type="number"
@@ -193,7 +193,7 @@ export const BaseCertificateElementForm: FC<
             required
             slotProps={{ htmlInput: { min: 0 } }}
           />
-        </Grid>
+        </Grid> */}
       </Grid>
     </Box>
   );
