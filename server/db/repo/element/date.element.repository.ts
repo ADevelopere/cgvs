@@ -10,14 +10,12 @@ import {
   DateElementUpdateInput,
   DateElementOutput,
   ElementType,
-  DateDataSourceType,
-  DateDataSource,
-  DateDataSourceInput,
   CertificateElementEntityInput,
   DateElementEntity,
   ElementTextPropsEntity,
   CalendarType,
   DateTransformationType,
+  DateElementEntityInput,
 } from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
 import { DateElementUtils } from "@/server/utils";
@@ -52,12 +50,12 @@ export namespace DateElementRepository {
     // 2. Create TextProps
     const newTextProps = await TextPropsRepository.create(input.textProps);
 
-    // 3. Convert input dataSource to output format and extract variableId
-    const newDataSource = convertInputDataSourceToOutput(input.dataSource);
-    const variableId = extractVariableIdFromDataSource(newDataSource);
+    const variableId = DateElementUtils.extractVariableIdFromDataSource(
+      input.dataSource
+    );
 
     const baseInput: CertificateElementEntityInput = {
-      ...input,
+      ...input.base,
       type: ElementType.DATE,
     };
 
@@ -77,7 +75,9 @@ export namespace DateElementRepository {
         offsetDays: input.dateProps.offsetDays,
         format: input.dateProps.format,
         transformation: input.dateProps.transformation ?? null,
-        dateDataSource: newDataSource,
+        dateDataSource: DateElementUtils.convertInputDataSourceToOutput(
+          input.dataSource
+        ),
         variableId,
       })
       .returning();
@@ -92,10 +92,12 @@ export namespace DateElementRepository {
       textPropsEntity: newTextProps,
       dateProps: {
         ...newDateElement,
+        elementId: newDateElement.elementId,
         calendarType: newDateElement.calendarType as CalendarType,
         transformation:
           newDateElement.transformation as DateTransformationType | null,
       },
+      dateDataSource: newDateElement.dateDataSource,
     };
   };
 
@@ -132,38 +134,24 @@ export namespace DateElementRepository {
     // 4. Update certificate_element (base table)
     const updatedBaseElement = await ElementRepository.updateBaseElement(
       input.id,
-      input,
+      { ...input.base, id: input.id },
       existing.base
     );
 
-    // 5. Update element_text_props (if textProps provided)
-    const existingDateElement: DateElementEntity = {
-      ...existing,
-      ...existing.dateProps,
-    };
-    let updatedTextProps: ElementTextPropsEntity = existing.textPropsEntity;
-    if (input.textProps !== undefined) {
-      if (input.textProps === null) {
-        throw new Error("textProps cannot be null for DATE element");
-      }
-      updatedTextProps = await TextPropsRepository.update(
-        existing.textPropsEntity.id,
-        input.textProps
-      );
-    }
+    // 5. Update element_text_props (full replace required)
+    const updatedTextProps: ElementTextPropsEntity =
+      await TextPropsRepository.update(existing.textPropsEntity.id, {
+        ...input.textProps,
+        id: existing.textPropsEntity.id,
+      });
 
-    // 6. Update date_element (type-specific table)
-    const updatedDateElement = await updateDateElementSpecific(
-      input.id,
-      input,
-      existingDateElement
-    );
+    const updatedDateElement = await updateDateElementSpecific(input);
 
     logger.info(
       `DATE element updated: ${updatedBaseElement.name} (ID: ${input.id})`
     );
 
-    // 7. Return updated element
+    // 8. Return updated element
     return {
       base: updatedBaseElement,
       textPropsEntity: updatedTextProps,
@@ -173,6 +161,7 @@ export namespace DateElementRepository {
         transformation:
           updatedDateElement.transformation as DateTransformationType | null,
       },
+      dateDataSource: updatedDateElement.dateDataSource,
     };
   };
 
@@ -205,11 +194,7 @@ export namespace DateElementRepository {
 
     // Reconstruct output
     return {
-      base: {
-        ...row.certificate_element,
-      },
-      // Date-specific fields
-      ...row.date_element,
+      base: row.certificate_element,
       textPropsEntity: row.element_text_props,
       dateProps: {
         ...row.date_element,
@@ -217,6 +202,7 @@ export namespace DateElementRepository {
         transformation: row.date_element
           .transformation as DateTransformationType | null,
       },
+      dateDataSource: row.date_element.dateDataSource,
     };
   };
 
@@ -271,105 +257,27 @@ export namespace DateElementRepository {
    * Returns updated entity or existing if no changes
    */
   const updateDateElementSpecific = async (
-    elementId: number,
-    input: DateElementUpdateInput,
-    existingDateElement: DateElementEntity
+    input: DateElementUpdateInput
   ): Promise<DateElementEntity> => {
-    const dateUpdates: Partial<typeof dateElement.$inferInsert> = {};
-
-    // Handle calendarType update
-    if (input.dateProps?.calendarType !== undefined) {
-      if (input.dateProps?.calendarType === null) {
-        throw new Error("calendarType cannot be null for DATE element");
-      }
-      dateUpdates.calendarType = input.dateProps.calendarType;
-    }
-
-    // Handle offsetDays update
-    if (input.dateProps?.offsetDays !== undefined) {
-      if (input.dateProps?.offsetDays === null) {
-        throw new Error("offsetDays cannot be null for DATE element");
-      }
-      dateUpdates.offsetDays = input.dateProps.offsetDays;
-    }
-
-    // Handle format update
-    if (input.dateProps?.format !== undefined) {
-      if (input.dateProps?.format === null) {
-        throw new Error("format cannot be null for DATE element");
-      }
-      dateUpdates.format = input.dateProps.format;
-    }
-
-    // Handle transformation update
-    if (input.dateProps?.transformation !== undefined) {
-      dateUpdates.transformation = input.dateProps.transformation;
-    }
-
-    // Handle dataSource update
-    if (input.dataSource !== undefined) {
-      if (input.dataSource === null) {
-        throw new Error("dataSource cannot be null for DATE element");
-      }
-      const dataSource = convertInputDataSourceToOutput(input.dataSource);
-      dateUpdates.dateDataSource = dataSource;
-      dateUpdates.variableId = extractVariableIdFromDataSource(dataSource);
-    }
-
-    if (Object.keys(dateUpdates).length === 0) {
-      return existingDateElement;
-    }
+    const dateUpdates: Partial<DateElementEntityInput> = {
+      calendarType: input.dateProps.calendarType,
+      offsetDays: input.dateProps.offsetDays,
+      format: input.dateProps.format,
+      transformation: input.dateProps.transformation ?? null,
+      dateDataSource: DateElementUtils.convertInputDataSourceToOutput(
+        input.dataSource
+      ),
+      variableId: DateElementUtils.extractVariableIdFromDataSource(
+        input.dataSource
+      ),
+    };
 
     const [updated] = await db
       .update(dateElement)
       .set(dateUpdates)
-      .where(eq(dateElement.elementId, elementId))
+      .where(eq(dateElement.elementId, input.id))
       .returning();
 
     return updated;
-  };
-
-  // ============================================================================
-  // Helper Functions
-  // ============================================================================
-
-  /**
-   * Convert input data source format to output format
-   * Input uses 'field' property, output uses 'studentField'/'certificateField'
-   */
-  const convertInputDataSourceToOutput = (
-    input: DateDataSourceInput
-  ): DateDataSource => {
-    switch (input.type) {
-      case DateDataSourceType.STATIC:
-        return { type: input.type, value: input.value };
-
-      case DateDataSourceType.STUDENT_DATE_FIELD:
-        return { type: input.type, studentField: input.field };
-
-      case DateDataSourceType.CERTIFICATE_DATE_FIELD:
-        return { type: input.type, certificateField: input.field };
-
-      case DateDataSourceType.TEMPLATE_DATE_VARIABLE:
-        return { type: input.type, dateVariableId: input.variableId };
-
-      default:
-        throw new Error(`Invalid date data source type`);
-    }
-  };
-
-  /**
-   * Extract variableId from date data source (inline in repository)
-   * Maps to correct TypeScript field name based on type
-   */
-  const extractVariableIdFromDataSource = (
-    dataSource: DateDataSource
-  ): number | null => {
-    switch (dataSource.type) {
-      case DateDataSourceType.TEMPLATE_DATE_VARIABLE:
-        return dataSource.dateVariableId;
-      default:
-        return null;
-    }
   };
 }

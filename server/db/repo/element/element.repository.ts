@@ -15,6 +15,7 @@ import {
 import logger from "@/server/lib/logger";
 import { TemplateRepository } from "../template.repository";
 import { BaseElementUtils } from "@/server/utils";
+import { TemplateVariableType } from "@/server/types";
 
 /**
  * Master repository for certificate elements
@@ -203,17 +204,27 @@ export namespace ElementRepository {
    * @throws Error if variable doesn't exist
    */
   export const validateTemplateVariableId = async (
-    variableId: number
+    variableId: number,
+    type: TemplateVariableType
   ): Promise<void> => {
-    const result = await db
-      .select({ id: templateVariableBases.id })
+    const variable = await db
+      .select({
+        id: templateVariableBases.id,
+        type: templateVariableBases.type,
+      })
       .from(templateVariableBases)
       .where(eq(templateVariableBases.id, variableId))
       .limit(1);
 
-    if (result.length === 0) {
+    if (variable.length === 0) {
       throw new Error(
         `Template variable with ID ${variableId} does not exist.`
+      );
+    }
+
+    if (variable[0].type !== type) {
+      throw new Error(
+        `Template variable with ID ${variableId} is not of type ${type}.`
       );
     }
   };
