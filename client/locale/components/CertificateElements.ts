@@ -2,6 +2,11 @@ export type CertificateElementsTranslations = {
   [key: string]: string | object;
 
   textElement: TextElementTranslations;
+  dateElement: DateElementTranslations;
+  numberElement: NumberElementTranslations;
+  countryElement: CountryElementTranslations;
+  genderElement: GenderElementTranslations;
+  imageElement: ImageElementTranslations;
   baseElement: BaseElementTranslations;
   textProps: TextPropsTranslations;
   common: CommonTranslations;
@@ -45,6 +50,64 @@ export type TextElementTranslations = {
   variableRequired: string;
 };
 
+export type DateElementTranslations = {
+  [key: string]: string;
+
+  // Section title
+  dateElementTitle: string;
+
+  // Data source types
+  dataSourceLabel: string;
+  dataSourceStatic: string;
+  dataSourceStudentField: string;
+  dataSourceCertificateField: string;
+  dataSourceTemplateVariable: string;
+
+  // Static source
+  staticValueLabel: string;
+  staticValuePlaceholder: string;
+  staticValueRequired: string;
+
+  // Student field options
+  studentFieldLabel: string;
+  studentFieldDateOfBirth: string;
+  studentFieldRequired: string;
+
+  // Certificate field options
+  certificateFieldLabel: string;
+  certificateFieldReleaseDate: string;
+  certificateFieldRequired: string;
+
+  // Template variables
+  templateDateVariableLabel: string;
+  selectVariable: string;
+  noVariablesAvailable: string;
+  variableRequired: string;
+
+  // Date properties
+  formatLabel: string;
+  formatPlaceholder: string;
+  formatHelper: string;
+  formatRequired: string;
+  calendarTypeLabel: string;
+  calendarTypeRequired: string;
+  calendarTypeGregorian: string;
+  calendarTypeHijri: string;
+  offsetDaysLabel: string;
+  offsetDaysPlaceholder: string;
+  offsetDaysHelper: string;
+  offsetDaysRequired: string;
+  offsetDaysInvalid: string;
+  
+  // Transformation
+  transformationLabel: string;
+  transformationPlaceholder: string;
+  transformationAgeCalculation: string;
+  transformationNone: string;
+  clearTransformation: string;
+  closeTransformation: string;
+};
+
 export type BaseElementTranslations = {
   [key: string]: string;
 
@@ -85,6 +148,29 @@ export type BaseElementTranslations = {
   renderOrderLabel: string;
   renderOrderPlaceholder: string;
   renderOrderRequired: string;
+};
+
+export type NumberElementTranslations = {
+  [key: string]: string;
+
+  // Section title
+  numberElementTitle: string;
+
+  // Data source
+  dataSourceLabel: string;
+  variableLabel: string;
+  variableRequired: string;
+  noVariablesAvailable: string;
+
+  // Mapping
+  mappingLabel: string;
+  mappingDescription: string;
+  localeLabel: string;
+  decimalPlacesLabel: string;
+  addLocaleButton: string;
+  removeLocaleButton: string;
+  decimalPlacesRequired: string;
+  decimalPlacesInvalid: string;
 };
 
 export type TextPropsTranslations = {
@@ -131,6 +217,63 @@ export type TextPropsTranslations = {
   overflowTruncate: string;
   overflowEllipse: string;
   overflowWrap: string;
+};
+
+export type CountryElementTranslations = {
+  [key: string]: string;
+
+  // Section title
+  countryElementTitle: string;
+
+  // Representation
+  representationLabel: string;
+  representationRequired: string;
+  representationInvalid: string;
+  representationCountryName: string;
+  representationNationality: string;
+  representationCountryNameHelp: string;
+  representationNationalityHelp: string;
+
+  // Info message
+  dataSourceInfo: string;
+};
+
+export type GenderElementTranslations = {
+  [key: string]: string;
+
+  // Section title
+  genderElementTitle: string;
+
+  // Info message
+  dataSourceInfo: string;
+};
+
+export type ImageElementTranslations = {
+  [key: string]: string;
+
+  // Section title
+  imageElementTitle: string;
+
+  // Data Source
+  dataSourceLabel: string;
+  selectImageFile: string;
+  selectedFile: string;
+  noFileSelected: string;
+  changeFile: string;
+  clearSelection: string;
+
+  // Image Props
+  fitLabel: string;
+  fitContain: string;
+  fitContainDesc: string;
+  fitCover: string;
+  fitCoverDesc: string;
+  fitFill: string;
+  fitFillDesc: string;
+
+  // Form titles
+  createTitle: string;
+  updateTitle: string;
 };
 
 export type CommonTranslations = {

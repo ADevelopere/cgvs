@@ -36,6 +36,132 @@ export const certificateElements: CertificateElementsTranslations = {
     variableRequired: "المتغير مطلوب",
   },
 
+  dateElement: {
+    dateElementTitle: "عنصر التاريخ",
+
+    // Data source types
+    dataSourceLabel: "مصدر البيانات",
+    dataSourceStatic: "تاريخ ثابت",
+    dataSourceStudentField: "حقل تاريخ الطالب",
+    dataSourceCertificateField: "حقل تاريخ الشهادة",
+    dataSourceTemplateVariable: "متغير التاريخ",
+
+    // Static source
+    staticValueLabel: "التاريخ الثابت",
+    staticValuePlaceholder: "اختر التاريخ",
+    staticValueRequired: "التاريخ الثابت مطلوب",
+
+    // Student field options
+    studentFieldLabel: "حقل تاريخ الطالب",
+    studentFieldDateOfBirth: "تاريخ الميلاد",
+    studentFieldRequired: "حقل تاريخ الطالب مطلوب",
+
+    // Certificate field options
+    certificateFieldLabel: "حقل تاريخ الشهادة",
+    certificateFieldReleaseDate: "تاريخ الإصدار",
+    certificateFieldRequired: "حقل تاريخ الشهادة مطلوب",
+
+    // Template variables
+    templateDateVariableLabel: "متغير التاريخ",
+    selectVariable: "اختر متغير",
+    noVariablesAvailable: "لا توجد متغيرات تاريخ متاحة",
+    variableRequired: "متغير التاريخ مطلوب",
+
+    // Date properties
+    formatLabel: "تنسيق التاريخ",
+    formatPlaceholder: "مثال: YYYY-MM-DD أو DD/MM/YYYY",
+    formatHelper: "أمثلة: YYYY-MM-DD، DD/MM/YYYY، MMMM DD, YYYY",
+    formatRequired: "تنسيق التاريخ مطلوب",
+    calendarTypeLabel: "نوع التقويم",
+    calendarTypeRequired: "نوع التقويم مطلوب",
+    calendarTypeGregorian: "ميلادي",
+    calendarTypeHijri: "هجري",
+    offsetDaysLabel: "إزاحة الأيام",
+    offsetDaysPlaceholder: "0",
+    offsetDaysHelper: "عدد الأيام لإضافتها أو طرحها من التاريخ (استخدم أرقاماً سالبة للطرح)",
+    offsetDaysRequired: "إزاحة الأيام مطلوبة",
+    offsetDaysInvalid: "يجب أن تكون إزاحة الأيام رقماً صحيحاً",
+    
+    // Transformation
+    transformationLabel: "التحويل",
+    transformationPlaceholder: "اختر نوع التحويل",
+    transformationAgeCalculation: "حساب العمر",
+    transformationNone: "بدون",
+    clearTransformation: "مسح",
+    closeTransformation: "إغلاق",
+  },
+
+  numberElement: {
+    numberElementTitle: "عنصر الرقم",
+
+    // Data source
+    dataSourceLabel: "مصدر البيانات",
+    variableLabel: "متغير رقمي",
+    variableRequired: "المتغير الرقمي مطلوب",
+    noVariablesAvailable: "لا توجد متغيرات رقمية متاحة",
+
+    // Mapping
+    mappingLabel: "تنسيق المنازل العشرية",
+    mappingDescription: "حدد عدد المنازل العشرية لكل لغة",
+    localeLabel: "اللغة",
+    decimalPlacesLabel: "عدد المنازل العشرية",
+    addLocaleButton: "إضافة لغة",
+    removeLocaleButton: "إزالة اللغة",
+    decimalPlacesRequired: "عدد المنازل العشرية مطلوب",
+    decimalPlacesInvalid: "يجب أن تكون المنازل العشرية رقماً موجباً",
+  },
+
+  countryElement: {
+    // Section title
+    countryElementTitle: "عنصر الدولة",
+
+    // Representation
+    representationLabel: "طريقة العرض",
+    representationRequired: "طريقة العرض مطلوبة",
+    representationInvalid: "طريقة عرض غير صالحة",
+    representationCountryName: "اسم الدولة",
+    representationNationality: "الجنسية",
+    representationCountryNameHelp: "يعرض اسم الدولة (مثال: مصر)",
+    representationNationalityHelp: "يعرض الجنسية (مثال: مصري)",
+
+    // Info message
+    dataSourceInfo: "مصدر البيانات دائمًا جنسية الطالب",
+  },
+
+  genderElement: {
+    // Section title
+    genderElementTitle: "عنصر الجنس",
+
+    // Info message
+    dataSourceInfo: "مصدر البيانات دائمًا جنس الطالب",
+  },
+
+  imageElement: {
+    // Section title
+    imageElementTitle: "عنصر الصورة",
+
+    // Data Source
+    dataSourceLabel: "مصدر الصورة",
+    selectImageFile: "اختر ملف صورة",
+    selectedFile: "الملف المحدد",
+    noFileSelected: "لم يتم اختيار ملف",
+    changeFile: "تغيير الملف",
+    clearSelection: "إلغاء الاختيار",
+
+    // Image Props
+    fitLabel: "ملائمة الصورة",
+    fitContain: "احتواء",
+    fitContainDesc: "الحفاظ على النسب، الصورة بالكامل مرئية",
+    fitCover: "تغطية",
+    fitCoverDesc: "الحفاظ على النسب، ملء المساحة بالكامل",
+    fitFill: "تمديد",
+    fitFillDesc: "تمديد الصورة لملء المساحة بالكامل",
+
+    // Form titles
+    createTitle: "إنشاء عنصر صورة",
+    updateTitle: "تحديث عنصر صورة",
+  },
+
   baseElement: {
     basePropertiesTitle: "الخصائص الأساسية",
 
