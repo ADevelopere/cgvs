@@ -29,6 +29,6 @@
     "cweijan.vscode-mysql-client2",
     // Testing
     // "jestrunner.jestrunner",
-    "orta.vscode-jest"
+    // "orta.vscode-jest"
   ]
 }
