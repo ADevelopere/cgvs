@@ -119,10 +119,12 @@ export const TextPropsUpdateInputObject = gqlSchemaBuilder
     }),
   });
 
-export const createTextPropsFieldFromEntity = (
+export const createTextPropsFieldFromEntity = <
+  TElement extends { textPropsEntity: Types.ElementTextPropsEntity }
+>(
   t: PothosSchemaTypes.ObjectFieldBuilder<
     PothosSchemaTypes.ExtendDefaultTypes<PothosTypes>,
-    Types.CountryElementOutput
+    TElement
   >
 ) =>
   t.field({

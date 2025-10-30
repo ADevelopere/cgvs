@@ -45,7 +45,7 @@ export type DateDataSourceInput =
 export type DateElementEntityInput = typeof dateElement.$inferInsert;
 export type DateElementSpecPropsInput = Omit<
   DateElementEntityInput,
-  "elementId" | "textPropsId" | "calendarType" | "transformation"
+  "elementId" | "textPropsId" | "calendarType" | "transformation" | "dateDataSource"
 > & {
   calendarType: CalendarType;
   transformation: DateTransformationType | null;

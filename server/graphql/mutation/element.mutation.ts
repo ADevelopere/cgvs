@@ -22,28 +22,6 @@ import {
 } from "@/server/utils";
 
 gqlSchemaBuilder.mutationFields(t => ({
-  // =========================================================================
-  // TEST: FontReference Mutations (for schema testing)
-  // =========================================================================
-  testFontReferenceInput: t.field({
-    type: "String",
-    args: {
-      fontRef: t.arg({
-        type: ElementPothos.FontReferenceInputObject,
-        required: true,
-      }),
-    },
-    resolve: async (_, args) => {
-      // This is a fake mutation to test the schema
-      // Check if it's Google or SelfHosted
-      if (args.fontRef.google) {
-        return `Google Font: ${args.fontRef.google.identifier}`;
-      } else if (args.fontRef.selfHosted) {
-        return `Self-Hosted Font ID: ${args.fontRef.selfHosted.fontId}`;
-      }
-      return "Invalid font reference";
-    },
-  }),
 
   // =========================================================================
   // TEXT Element Mutations
@@ -89,7 +67,7 @@ gqlSchemaBuilder.mutationFields(t => ({
     type: ElementPothos.DateElementObject,
     args: {
       input: t.arg({
-        type: ElementPothos.DateElementCreateInputObject,
+        type: ElementPothos.DateElementInputObject,
         required: true,
       }),
     },
@@ -114,8 +92,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       const input = DateElementUtils.mapDateElementUpdateGraphqlToInput(
         args.input
       );
-      const element = await DateElementRepository.update(input);
-      return element as Types.DateElementPothosDefinition;
+      return await DateElementRepository.update(input);
     },
   }),
 

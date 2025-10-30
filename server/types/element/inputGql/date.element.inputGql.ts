@@ -1,14 +1,9 @@
 import {
   CertificateElementBaseInput,
-  CertificateElementBaseUpdateInput,
-  DatePropsCreateInput,
-  DatePropsUpdateInput,
+  DateElementSpecPropsInput,
 } from "../input";
 import { CertificateDateField, StudentDateField } from "../output";
-import {
-  TextPropsInputGraphql,
-  TextPropsUpdateInputGraphql,
-} from "./config.element.inputGql";
+import { TextPropsInputGraphql } from "./config.element.inputGql";
 
 // ============================================================================
 // Data Source Types
@@ -62,17 +57,14 @@ export type DateDataSourceInputGraphql =
 // ============================================================================
 
 // GraphQL create input type
-export type DateElementCreateInputGraphql = {
+export type DateElementInputGraphql = {
   base: CertificateElementBaseInput;
   textProps: TextPropsInputGraphql;
   dataSource: DateDataSourceInputGraphql;
-  dateProps: DatePropsCreateInput;
+  dateProps: DateElementSpecPropsInput;
 };
 
 // GraphQL update input type (deep partial support)
-export type DateElementUpdateInputGraphql = {
-  base?: CertificateElementBaseUpdateInput | null;
-  textProps?: TextPropsUpdateInputGraphql | null;
-  dataSource?: DateDataSourceInputGraphql | null;
-  dateProps?: DatePropsUpdateInput | null;
+export type DateElementUpdateInputGraphql = DateElementInputGraphql & {
+  id: number;
 };

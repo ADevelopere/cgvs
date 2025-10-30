@@ -47,7 +47,7 @@ export namespace DateElementRepository {
     input: DateElementInput
   ): Promise<DateElementOutput> => {
     // 1. Validate input
-    await DateElementUtils.validateCreateInput(input);
+    await DateElementUtils.validateInput(input);
 
     // 2. Create TextProps
     const newTextProps = await TextPropsRepository.create(input.textProps);
@@ -127,7 +127,7 @@ export namespace DateElementRepository {
     }
 
     // 3. Validate update input
-    await DateElementUtils.validateUpdateInput(input, existing.base);
+    await DateElementUtils.validateInput(input);
 
     // 4. Update certificate_element (base table)
     const updatedBaseElement = await ElementRepository.updateBaseElement(

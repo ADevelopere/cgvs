@@ -5,11 +5,10 @@ import {
   CalendarType,
   DateElementInput,
   DateElementUpdateInput,
-  CertificateElementEntity,
   DateTransformationType,
   DateDataSourceInput,
   DateDataSourceInputGraphql,
-  DateElementCreateInputGraphql,
+  DateElementInputGraphql,
   DateElementUpdateInputGraphql,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
@@ -63,7 +62,7 @@ export namespace DateElementUtils {
    * Map GraphQL DateElement create input to repository DateElement create input
    */
   export const mapDateElementCreateGraphqlToInput = (
-    input: DateElementCreateInputGraphql
+    input: DateElementInputGraphql
   ): DateElementInput => {
     return {
       ...input,
@@ -258,7 +257,7 @@ export namespace DateElementUtils {
   /**
    * Validate all fields for DATE element creation
    */
-  export const validateCreateInput = async (
+  export const validateInput = async (
     input: DateElementInput
   ): Promise<void> => {
     // Validate base element properties
@@ -283,53 +282,5 @@ export namespace DateElementUtils {
 
     // Validate data source
     await validateDataSource(input.dataSource);
-  };
-
-  // ============================================================================
-  // Update Input Validation
-  // ============================================================================
-
-  /**
-   * Validate all fields for DATE element update (partial)
-   * Caches existing element to avoid multiple DB queries
-   */
-  export const validateUpdateInput = async (
-    input: DateElementUpdateInput,
-    existing: CertificateElementEntity
-  ): Promise<void> => {
-    // Validate base element properties
-    await CommonElementUtils.validateBaseUpdateInput(input, existing);
-
-    // Validate textProps (if provided)
-    if (input.textProps) {
-      await CommonElementUtils.validateTextProps(input.textProps);
-    }
-
-    // Validate calendar type (if provided)
-    if (input.calendarType !== undefined && input.calendarType !== null) {
-      validateCalendarType(input.calendarType);
-    }
-
-    // Validate offset days (if provided)
-    if (input.offsetDays !== undefined && input.offsetDays !== null) {
-      validateOffsetDays(input.offsetDays);
-    }
-
-    // Validate date format (if provided)
-    if (input.format !== undefined && input.format !== null) {
-      validateDateFormat(input.format);
-    }
-
-    // Validate transformation (if provided)
-    if (input.transformation !== undefined) {
-      if (input.transformation !== null) {
-        validateTransformation(input.transformation);
-      }
-    }
-
-    // Validate data source (if provided)
-    if (input.dataSource) {
-      await validateDataSource(input.dataSource);
-    }
   };
 }
