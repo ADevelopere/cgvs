@@ -1,14 +1,15 @@
 import {
   NumberDataSourceType,
-  NumberElementCreateInput,
+  NumberElementInput,
   NumberElementUpdateInput,
-  CertificateElementEntity,
   NumberDataSourceInput,
   NumberDataSourceInputGraphql,
-  NumberElementCreateInputGraphql,
+  NumberElementInputGraphql,
   NumberElementUpdateInputGraphql,
+  NumberDataSource,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
+import { TemplateVariableType } from "@/server/types";
 import { CommonElementUtils } from "./common.element.utils";
 
 /**
@@ -25,10 +26,12 @@ export namespace NumberElementUtils {
    * Note: NUMBER has only one data source variant, so no isOneOf pattern needed
    */
   export const mapNumberDataSourceGraphqlToInput = (
-    input?: NumberDataSourceInputGraphql | null
-  ): NumberDataSourceInput | null | undefined => {
+    input: NumberDataSourceInputGraphql
+  ): NumberDataSourceInput => {
     if (!input) {
-      return input;
+      throw new Error(
+        "NumberDataSourceInputGraphql must not be null or undefined"
+      );
     }
 
     return {
@@ -41,14 +44,26 @@ export namespace NumberElementUtils {
    * Map GraphQL NumberElement create input to repository NumberElement create input
    */
   export const mapNumberElementCreateGraphqlToInput = (
-    input: NumberElementCreateInputGraphql
-  ): NumberElementCreateInput => {
+    input: NumberElementInputGraphql
+  ): NumberElementInput => {
+    if (
+      !input ||
+      !input.base ||
+      !input.textProps ||
+      !input.numberProps ||
+      !input.dataSource
+    ) {
+      throw new Error(
+        "NumberElementInputGraphql must include base, textProps, numberProps, and dataSource"
+      );
+    }
     return {
-      ...input,
+      base: input.base,
       textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
         input.textProps
       )!,
-      dataSource: mapNumberDataSourceGraphqlToInput(input.dataSource)!,
+      numberProps: input.numberProps,
+      dataSource: mapNumberDataSourceGraphqlToInput(input.dataSource),
     };
   };
 
@@ -58,11 +73,24 @@ export namespace NumberElementUtils {
   export const mapNumberElementUpdateGraphqlToInput = (
     input: NumberElementUpdateInputGraphql
   ): NumberElementUpdateInput => {
+    if (
+      !input ||
+      !input.base ||
+      !input.textProps ||
+      !input.numberProps ||
+      !input.dataSource
+    ) {
+      throw new Error(
+        "NumberElementUpdateInputGraphql must include base, textProps, numberProps, and dataSource"
+      );
+    }
     return {
-      ...input,
-      textProps: CommonElementUtils.mapTextPropsUpdateGraphqlToInput(
+      id: input.id,
+      base: input.base,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
         input.textProps
-      ),
+      )!,
+      numberProps: input.numberProps,
       dataSource: mapNumberDataSourceGraphqlToInput(input.dataSource),
     };
   };
@@ -84,7 +112,10 @@ export namespace NumberElementUtils {
     }
 
     // Validate template variable exists
-    await ElementRepository.validateTemplateVariableId(dataSource.variableId);
+    await ElementRepository.validateTemplateVariableId(
+      dataSource.variableId,
+      TemplateVariableType.NUMBER
+    );
   };
 
   // ============================================================================
@@ -225,17 +256,28 @@ export namespace NumberElementUtils {
   };
 
   // ============================================================================
-  // Create Input Validation
+  // Input Validation
   // ============================================================================
 
   /**
-   * Validate all fields for NUMBER element creation
+   * Validate all fields for NUMBER element (create/update)
    */
-  export const validateCreateInput = async (
-    input: NumberElementCreateInput
+  export const validateInput = async (
+    input: NumberElementInput
   ): Promise<void> => {
+    if (
+      !input.base ||
+      !input.textProps ||
+      !input.numberProps ||
+      !input.dataSource
+    ) {
+      throw new Error(
+        "NumberElementInput must include base, textProps, numberProps, and dataSource"
+      );
+    }
+
     // Validate base element properties
-    await CommonElementUtils.validateBaseInput(input);
+    await CommonElementUtils.validateBaseInput(input.base);
 
     // Validate textProps
     await CommonElementUtils.validateTextProps(input.textProps);
@@ -244,37 +286,36 @@ export namespace NumberElementUtils {
     await validateDataSource(input.dataSource);
 
     // Validate mapping
-    validateMapping(input.mapping);
+    validateMapping(input.numberProps.mapping);
   };
 
   // ============================================================================
-  // Update Input Validation
+  // Data Source Conversion
   // ============================================================================
 
   /**
-   * Validate all fields for NUMBER element update (partial)
-   * Caches existing element to avoid multiple DB queries
+   * Convert input data source format to output format
    */
-  export const validateUpdateInput = async (
-    input: NumberElementUpdateInput,
-    existing: CertificateElementEntity
-  ): Promise<void> => {
-    // Validate base element properties
-    await CommonElementUtils.validateBaseUpdateInput(input, existing);
+  export const convertInputDataSourceToOutput = (
+    input: NumberDataSourceInput
+  ): NumberDataSource => {
+    return {
+      type: input.type,
+      numberVariableId: input.variableId,
+    };
+  };
 
-    // Validate textProps (if provided)
-    if (input.textProps) {
-      await CommonElementUtils.validateTextProps(input.textProps);
-    }
-
-    // Validate data source (if provided)
-    if (input.dataSource) {
-      await validateDataSource(input.dataSource);
-    }
-
-    // Validate mapping (if provided)
-    if (input.mapping !== undefined && input.mapping !== null) {
-      validateMapping(input.mapping);
+  /**
+   * Extract variableId from number data source (inline in repository)
+   */
+  export const extractVariableIdFromDataSource = (
+    dataSource: NumberDataSourceInput
+  ): number | null => {
+    switch (dataSource.type) {
+      case NumberDataSourceType.TEMPLATE_NUMBER_VARIABLE:
+        return dataSource.variableId;
+      default:
+        return null;
     }
   };
 }

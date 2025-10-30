@@ -2,13 +2,12 @@ import {
   QRCodeDataSourceType,
   QRCodeDataSourceInput,
   QRCodeDataSourceInputGraphql,
-  QRCodeElementCreateInput,
-  QRCodeElementCreateInputGraphql,
+  QRCodeElementInput,
+  QRCodeElementInputGraphql,
   QRCodeElementUpdateInput,
   QRCodeElementUpdateInputGraphql,
-  ElementType,
-  CertificateElementEntity,
   QRCodeErrorCorrection,
+  QRCodeDataSource,
 } from "@/server/types/element";
 import { CommonElementUtils } from "./common.element.utils";
 
@@ -25,10 +24,12 @@ export namespace QRCodeElementUtils {
    * Map GraphQL QRCodeDataSource input (isOneOf) to repository QRCodeDataSource input (discriminated union)
    */
   export const mapQRCodeDataSourceGraphqlToInput = (
-    input?: QRCodeDataSourceInputGraphql | null
-  ): QRCodeDataSourceInput | null | undefined => {
+    input: QRCodeDataSourceInputGraphql
+  ): QRCodeDataSourceInput => {
     if (!input) {
-      return input;
+      throw new Error(
+        "QRCodeDataSourceInputGraphql must not be null or undefined"
+      );
     }
     if (input.verificationUrl !== undefined) {
       return { type: QRCodeDataSourceType.VERIFICATION_URL };
@@ -44,10 +45,17 @@ export namespace QRCodeElementUtils {
    * Map GraphQL QRCodeElement create input to repository QRCodeElement create input
    */
   export const mapQRCodeElementCreateGraphqlToInput = (
-    input: QRCodeElementCreateInputGraphql
-  ): QRCodeElementCreateInput => {
+    input: QRCodeElementInputGraphql
+  ): QRCodeElementInput => {
+    if (!input || !input.base || !input.qrCodeProps || !input.dataSource) {
+      throw new Error(
+        "QRCodeElementInputGraphql must include base, qrCodeProps, and dataSource"
+      );
+    }
     return {
-      ...input,
+      base: input.base,
+      qrCodeProps: input.qrCodeProps,
+      dataSource: mapQRCodeDataSourceGraphqlToInput(input.dataSource),
     };
   };
 
@@ -57,8 +65,16 @@ export namespace QRCodeElementUtils {
   export const mapQRCodeElementUpdateGraphqlToInput = (
     input: QRCodeElementUpdateInputGraphql
   ): QRCodeElementUpdateInput => {
+    if (!input || !input.base || !input.qrCodeProps || !input.dataSource) {
+      throw new Error(
+        "QRCodeElementUpdateInputGraphql must include base, qrCodeProps, and dataSource"
+      );
+    }
     return {
-      ...input,
+      id: input.id,
+      base: input.base,
+      qrCodeProps: input.qrCodeProps,
+      dataSource: mapQRCodeDataSourceGraphqlToInput(input.dataSource),
     };
   };
 
@@ -77,56 +93,49 @@ export namespace QRCodeElementUtils {
   };
 
   // ============================================================================
-  // Element Validation (Create/Update)
+  // Input Validation
   // ============================================================================
 
   /**
-   * Validate QR_CODE element creation input
+   * Validate all fields for QR_CODE element (create/update)
    */
-  export const validateCreateInput = async (
-    input: QRCodeElementCreateInput
+  export const validateInput = async (
+    input: QRCodeElementInput
   ): Promise<void> => {
-    // Validate base element properties
-    await CommonElementUtils.validateBaseInput(input);
-
-    // Validate error correction level
-    validateErrorCorrection(input.errorCorrection);
-
-    // Validate colors
-    CommonElementUtils.validateColor(input.foregroundColor);
-    CommonElementUtils.validateColor(input.backgroundColor);
-  };
-
-  /**
-   * Validate QR_CODE element update input
-   */
-  export const validateUpdateInput = async (
-    input: QRCodeElementUpdateInput,
-    existing: CertificateElementEntity
-  ): Promise<void> => {
-    // Validate element type
-    if (existing.type !== ElementType.QR_CODE) {
+    if (!input.base || !input.qrCodeProps || !input.dataSource) {
       throw new Error(
-        `Element ${input.id} is ${existing.type}, not QR_CODE. Use correct repository.`
+        "QRCodeElementInput must include base, qrCodeProps, and dataSource"
       );
     }
 
     // Validate base element properties
-    await CommonElementUtils.validateBaseUpdateInput(input, existing);
+    await CommonElementUtils.validateBaseInput(input.base);
 
-    // Validate error correction (if provided)
-    if (input.errorCorrection !== undefined && input.errorCorrection !== null) {
-      validateErrorCorrection(input.errorCorrection);
-    }
+    // Validate error correction level
+    validateErrorCorrection(input.qrCodeProps.errorCorrection);
 
-    // Validate foreground color (if provided)
-    if (input.foregroundColor !== undefined && input.foregroundColor !== null) {
-      CommonElementUtils.validateColor(input.foregroundColor);
-    }
+    // Validate colors
+    CommonElementUtils.validateColor(input.qrCodeProps.foregroundColor);
+    CommonElementUtils.validateColor(input.qrCodeProps.backgroundColor);
+  };
 
-    // Validate background color (if provided)
-    if (input.backgroundColor !== undefined && input.backgroundColor !== null) {
-      CommonElementUtils.validateColor(input.backgroundColor);
+  // ============================================================================
+  // Data Source Conversion
+  // ============================================================================
+
+  /**
+   * Convert input data source format to output format
+   */
+  export const convertInputDataSourceToOutput = (
+    input: QRCodeDataSourceInput
+  ): QRCodeDataSource => {
+    switch (input.type) {
+      case QRCodeDataSourceType.VERIFICATION_URL:
+        return { type: input.type };
+      case QRCodeDataSourceType.VERIFICATION_CODE:
+        return { type: input.type };
+      default:
+        throw new Error(`Invalid QR code data source type`);
     }
   };
 }

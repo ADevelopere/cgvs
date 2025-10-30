@@ -22,7 +22,6 @@ import {
 } from "@/server/utils";
 
 gqlSchemaBuilder.mutationFields(t => ({
-
   // =========================================================================
   // TEXT Element Mutations
   // =========================================================================
@@ -35,11 +34,9 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = TextElementUtils.mapTextElementCreateGraphqlToInput(
-        args.input
-      );
+      const input = TextElementUtils.mapTextElementGraphqlToInput(args.input);
       const element = await TextElementRepository.create(input);
-      return element as Types.TextElementPothosDefinition;
+      return element as Types.TextElementOutput;
     },
   }),
 
@@ -55,8 +52,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       const input = TextElementUtils.mapTextElementUpdateGraphqlToInput(
         args.input
       );
-      const element = await TextElementRepository.update(input);
-      return element as Types.TextElementPothosDefinition;
+      return await TextElementRepository.update(input);
     },
   }),
 
