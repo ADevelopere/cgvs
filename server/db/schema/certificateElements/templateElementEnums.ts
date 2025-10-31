@@ -83,11 +83,6 @@ export const countryRepresentationEnum = createPgEnumFromEnum(
   ElementTypes.CountryRepresentation
 );
 
-export const qrCodeDataSourceTypeEnum = createPgEnumFromEnum(
-  "qr_code_data_source_type",
-  ElementTypes.QRCodeDataSourceType
-);
-
 export const qrCodeErrorCorrectionEnum = createPgEnumFromEnum(
   "qr_code_error_correction",
   ElementTypes.QRCodeErrorCorrection

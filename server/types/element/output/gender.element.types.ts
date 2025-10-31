@@ -3,22 +3,6 @@ import type { ElementTextPropsEntity } from "./config.element.types";
 import type { genderElement } from "@/server/db/schema";
 
 // ============================================================================
-// GENDER-specific Enum
-// ============================================================================
-
-export enum GenderDataSourceType {
-  STUDENT_GENDER = "STUDENT_GENDER",
-}
-
-// ============================================================================
-// Data Source Types
-// ============================================================================
-
-export type GenderDataSource = {
-  type: GenderDataSourceType.STUDENT_GENDER;
-};
-
-// ============================================================================
 // Raw Entity (from Drizzle schema)
 // ============================================================================
 
@@ -37,6 +21,4 @@ export type GenderElementSpecProps = Omit<
 export type GenderElementOutput = {
   base: CertificateElementEntity;
   textPropsEntity: ElementTextPropsEntity;
-  genderDataSource: GenderDataSource;
-  // genderProps: GenderElementSpecProps;
 };

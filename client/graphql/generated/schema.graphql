@@ -22,6 +22,11 @@ enum CertificateDateField {
 }
 
 interface CertificateElement {
+  base: CertificateElementBase
+  template: Template
+}
+
+type CertificateElementBase {
   alignment: ElementAlignment
   createdAt: DateTime
   description: String
@@ -31,13 +36,12 @@ interface CertificateElement {
   positionX: Int
   positionY: Int
   renderOrder: Int
-  template: Template
   type: ElementType
   updatedAt: DateTime
   width: Int
 }
 
-input CertificateElementBaseCreateInput {
+input CertificateElementBaseInput {
   alignment: ElementAlignment!
   description: String!
   height: Int!
@@ -50,15 +54,15 @@ input CertificateElementBaseCreateInput {
 }
 
 input CertificateElementBaseUpdateInput {
-  alignment: ElementAlignment
-  description: String
-  height: Int
+  alignment: ElementAlignment!
+  description: String!
+  height: Int!
   id: Int!
-  name: String
-  positionX: Int
-  positionY: Int
-  renderOrder: Int
-  width: Int
+  name: String!
+  positionX: Int!
+  positionY: Int!
+  renderOrder: Int!
+  width: Int!
 }
 
 union CertificateElementUnion = CountryElement | DateElement | GenderElement | ImageElement | NumberElement | QRCodeElement | TextElement
@@ -317,49 +321,31 @@ enum CountryCode {
 }
 
 type CountryElement implements CertificateElement {
-  alignment: ElementAlignment
-  createdAt: DateTime
-  description: String
-  height: Int
-  id: Int
-  name: String
-  positionX: Int
-  positionY: Int
-  renderOrder: Int
-  representation: CountryRepresentation
+  base: CertificateElementBase
+  countryProps: CountryElementCountryProps
   template: Template
   textProps: TextProps
-  type: ElementType
-  updatedAt: DateTime
-  width: Int
 }
 
-input CountryElementCreateInput {
-  alignment: ElementAlignment!
-  description: String!
-  height: Int!
-  name: String!
-  positionX: Int!
-  positionY: Int!
-  renderOrder: Int!
+type CountryElementCountryProps {
+  representation: CountryRepresentation
+}
+
+input CountryElementCountryPropsInput {
   representation: CountryRepresentation!
-  templateId: Int!
-  textProps: TextPropsCreateInput!
-  width: Int!
+}
+
+input CountryElementInput {
+  base: CertificateElementBaseInput!
+  countryProps: CountryElementCountryPropsInput!
+  textProps: TextPropsInput!
 }
 
 input CountryElementUpdateInput {
-  alignment: ElementAlignment
-  description: String
-  height: Int
+  base: CertificateElementBaseInput!
+  countryProps: CountryElementCountryPropsInput!
   id: Int!
-  name: String
-  positionX: Int
-  positionY: Int
-  renderOrder: Int
-  representation: CountryRepresentation
-  textProps: TextPropsUpdateInput
-  width: Int
+  textProps: TextPropsInput!
 }
 
 enum CountryRepresentation {
@@ -425,69 +411,36 @@ enum DateDataSourceType {
 }
 
 type DateElement implements CertificateElement {
-  alignment: ElementAlignment
-  createdAt: DateTime
+  base: CertificateElementBase
   dateDataSource: DateDataSource
   dateProps: DateProps
-  description: String
-  height: Int
-  id: Int
-  name: String
-  positionX: Int
-  positionY: Int
-  renderOrder: Int
   template: Template
   textProps: TextProps
-  type: ElementType
-  updatedAt: DateTime
-  width: Int
 }
 
-input DateElementCreateInput {
-  alignment: ElementAlignment!
+input DateElementInput {
+  base: CertificateElementBaseInput!
   dataSource: DateDataSourceInput!
-  dateProps: DatePropsCreateInput!
-  description: String!
-  height: Int!
-  name: String!
-  positionX: Int!
-  positionY: Int!
-  renderOrder: Int!
-  templateId: Int!
-  textProps: TextPropsCreateInput!
-  width: Int!
+  dateProps: DateElementSpecPropsInput!
+  textProps: TextPropsInput!
 }
 
-input DateElementUpdateInput {
-  alignment: ElementAlignment
-  dataSource: DateDataSourceInput
-  dateProps: DatePropsUpdateInput
-  description: String
-  height: Int
-  id: Int!
-  name: String
-  positionX: Int
-  positionY: Int
-  renderOrder: Int
-  textProps: TextPropsUpdateInput
-  width: Int
-}
-
-type DateProps {
-  calendarType: CalendarType
-  format: String
+input DateElementSpecPropsInput {
+  calendarType: CalendarType!
+  format: String!
   offsetDays: Int
   transformation: DateTransformationType
 }
 
-input DatePropsCreateInput {
-  calendarType: CalendarType!
-  format: String!
-  offsetDays: Int!
-  transformation: DateTransformationType
+input DateElementUpdateInput {
+  base: CertificateElementBaseInput!
+  dataSource: DateDataSourceInput!
+  dateProps: DateElementSpecPropsInput!
+  id: Int!
+  textProps: TextPropsInput!
 }
 
-input DatePropsUpdateInput {
+type DateProps {
   calendarType: CalendarType
   format: String
   offsetDays: Int
@@ -785,46 +738,20 @@ enum Gender {
 }
 
 type GenderElement implements CertificateElement {
-  alignment: ElementAlignment
-  createdAt: DateTime
-  description: String
-  height: Int
-  id: Int
-  name: String
-  positionX: Int
-  positionY: Int
-  renderOrder: Int
+  base: CertificateElementBase
   template: Template
   textProps: TextProps
-  type: ElementType
-  updatedAt: DateTime
-  width: Int
 }
 
-input GenderElementCreateInput {
-  alignment: ElementAlignment!
-  description: String!
-  height: Int!
-  name: String!
-  positionX: Int!
-  positionY: Int!
-  renderOrder: Int!
-  templateId: Int!
-  textProps: TextPropsCreateInput!
-  width: Int!
+input GenderElementInput {
+  base: CertificateElementBaseInput!
+  textProps: TextPropsInput!
 }
 
 input GenderElementUpdateInput {
-  alignment: ElementAlignment
-  description: String
-  height: Int
+  base: CertificateElementBaseInput!
   id: Int!
-  name: String
-  positionX: Int
-  positionY: Int
-  renderOrder: Int
-  textProps: TextPropsUpdateInput
-  width: Int
+  textProps: TextPropsInput!
 }
 
 union ImageDataSource = ImageDataSourceStorageFile
@@ -847,49 +774,33 @@ enum ImageDataSourceType {
 }
 
 type ImageElement implements CertificateElement {
-  alignment: ElementAlignment
-  createdAt: DateTime
-  description: String
-  fit: ElementImageFit
-  height: Int
-  id: Int
+  base: CertificateElementBase
   imageDataSource: ImageDataSource
-  name: String
-  positionX: Int
-  positionY: Int
-  renderOrder: Int
+  imageProps: ImageElementSpecProps
   template: Template
-  type: ElementType
-  updatedAt: DateTime
-  width: Int
 }
 
-input ImageElementCreateInput {
-  alignment: ElementAlignment!
+input ImageElementInput {
+  base: CertificateElementBaseInput!
   dataSource: ImageDataSourceInput!
-  description: String!
+  imageProps: ImageElementSpecPropsInput!
+}
+
+type ImageElementSpecProps {
+  elementId: Int
+  fit: ElementImageFit
+  storageFileId: Int
+}
+
+input ImageElementSpecPropsInput {
   fit: ElementImageFit!
-  height: Int!
-  name: String!
-  positionX: Int!
-  positionY: Int!
-  renderOrder: Int!
-  templateId: Int!
-  width: Int!
 }
 
 input ImageElementUpdateInput {
-  alignment: ElementAlignment
-  dataSource: ImageDataSourceInput
-  description: String
-  fit: ElementImageFit
-  height: Int
+  base: CertificateElementBaseInput!
+  dataSource: ImageDataSourceInput!
   id: Int!
-  name: String
-  positionX: Int
-  positionY: Int
-  renderOrder: Int
-  width: Int
+  imageProps: ImageElementSpecPropsInput!
 }
 
 """A type representing arbitrary JSON values"""
@@ -907,14 +818,14 @@ type LoginResponse {
 
 type Mutation {
   copyStorageItems(input: StorageItemsCopyInput!): BulkOperationResult
-  createCountryElement(input: CountryElementCreateInput!): CountryElement
-  createDateElement(input: DateElementCreateInput!): DateElement
+  createCountryElement(input: CountryElementInput!): CountryElement
+  createDateElement(input: DateElementInput!): DateElement
   createFolder(input: FolderCreateInput!): FileOperationResult
   createFont(input: FontCreateInput!): Font!
-  createGenderElement(input: GenderElementCreateInput!): GenderElement
-  createImageElement(input: ImageElementCreateInput!): ImageElement
-  createNumberElement(input: NumberElementCreateInput!): NumberElement
-  createQRCodeElement(input: QRCodeElementCreateInput!): QRCodeElement
+  createGenderElement(input: GenderElementInput!): GenderElement
+  createImageElement(input: ImageElementInput!): ImageElement
+  createNumberElement(input: NumberElementInput!): NumberElement
+  createQRCodeElement(input: QRCodeElementInput!): QRCodeElement
   createRecipient(input: TemplateRecipientCreateInput!): TemplateRecipient!
   createRecipients(input: TemplateRecipientCreateListInput!): [TemplateRecipient!]!
   createStudent(input: StudentCreateInput!): Student
@@ -925,7 +836,7 @@ type Mutation {
   createTemplateRecipientGroup(input: TemplateRecipientGroupCreateInput!): TemplateRecipientGroup
   createTemplateSelectVariable(input: TemplateSelectVariableCreateInput!): TemplateSelectVariable
   createTemplateTextVariable(input: TemplateTextVariableCreateInput!): TemplateTextVariable
-  createTextElement(input: TextElementCreateInput!): TextElement
+  createTextElement(input: TextElementInput!): TextElement
   deleteElement(id: Int!): Boolean
   deleteElements(ids: [Int!]!): Boolean
   deleteFile(path: String!): FileOperationResult
@@ -950,7 +861,6 @@ type Mutation {
   setRecipientVariableValues(recipientGroupItemId: Int!, values: [VariableValueInput!]!): RecipientWithVariableValues
   setStorageItemProtection(input: StorageItemProtectionUpdateInput!): FileOperationResult
   suspendTemplate(id: Int!): Template
-  testFontReferenceInput(fontRef: FontReferenceInput!): String
   unsuspendTemplate(id: Int!): Template
   updateCountryElement(input: CountryElementUpdateInput!): CountryElement
   updateDateElement(input: DateElementUpdateInput!): DateElement
@@ -985,52 +895,37 @@ enum NumberDataSourceType {
 }
 
 type NumberElement implements CertificateElement {
-  alignment: ElementAlignment
-  createdAt: DateTime
-  description: String
-  height: Int
-  id: Int
-  mapping: StringMap
-  name: String
+  base: CertificateElementBase
   numberDataSource: NumberDataSource
-  positionX: Int
-  positionY: Int
-  renderOrder: Int
+  numberProps: NumberProps
   template: Template
   textProps: TextProps
-  type: ElementType
-  updatedAt: DateTime
-  width: Int
 }
 
-input NumberElementCreateInput {
-  alignment: ElementAlignment!
+input NumberElementInput {
+  base: CertificateElementBaseInput!
   dataSource: NumberDataSourceInput!
-  description: String!
-  height: Int!
+  numberProps: NumberElementSpecPropsInput!
+  textProps: TextPropsInput!
+}
+
+input NumberElementSpecPropsInput {
   mapping: StringMap!
-  name: String!
-  positionX: Int!
-  positionY: Int!
-  renderOrder: Int!
-  templateId: Int!
-  textProps: TextPropsCreateInput!
-  width: Int!
 }
 
 input NumberElementUpdateInput {
-  alignment: ElementAlignment
-  dataSource: NumberDataSourceInput
-  description: String
-  height: Int
+  base: CertificateElementBaseInput!
+  dataSource: NumberDataSourceInput!
   id: Int!
+  numberProps: NumberElementSpecPropsInput!
+  textProps: TextPropsInput!
+}
+
+type NumberProps {
+  elementId: Int
   mapping: StringMap
-  name: String
-  positionX: Int
-  positionY: Int
-  renderOrder: Int
-  textProps: TextPropsUpdateInput
-  width: Int
+  textPropsId: Int
+  variableId: Int
 }
 
 enum OrderSortDirection {
@@ -1076,52 +971,33 @@ input PartialStudentUpdateInput {
 scalar PhoneNumber
 
 type QRCodeElement implements CertificateElement {
-  alignment: ElementAlignment
-  backgroundColor: String
-  createdAt: DateTime
-  description: String
-  errorCorrection: QRCodeErrorCorrection
-  foregroundColor: String
-  height: Int
-  id: Int
-  name: String
-  positionX: Int
-  positionY: Int
-  renderOrder: Int
+  base: CertificateElementBase
+  qrCodeProps: QRCodeElementSpecProps
   template: Template
-  type: ElementType
-  updatedAt: DateTime
-  width: Int
 }
 
-input QRCodeElementCreateInput {
-  alignment: ElementAlignment!
+input QRCodeElementInput {
+  base: CertificateElementBaseInput!
+  qrCodeProps: QRCodeElementSpecPropsInput!
+}
+
+type QRCodeElementSpecProps {
+  backgroundColor: String
+  elementId: Int
+  errorCorrection: QRCodeErrorCorrection
+  foregroundColor: String
+}
+
+input QRCodeElementSpecPropsInput {
   backgroundColor: String!
-  description: String!
   errorCorrection: QRCodeErrorCorrection!
   foregroundColor: String!
-  height: Int!
-  name: String!
-  positionX: Int!
-  positionY: Int!
-  renderOrder: Int!
-  templateId: Int!
-  width: Int!
 }
 
 input QRCodeElementUpdateInput {
-  alignment: ElementAlignment
-  backgroundColor: String
-  description: String
-  errorCorrection: QRCodeErrorCorrection
-  foregroundColor: String
-  height: Int
+  base: CertificateElementBaseInput!
   id: Int!
-  name: String
-  positionX: Int
-  positionY: Int
-  renderOrder: Int
-  width: Int
+  qrCodeProps: QRCodeElementSpecPropsInput!
 }
 
 enum QRCodeErrorCorrection {
@@ -1745,59 +1621,41 @@ enum TextDataSourceType {
 }
 
 type TextElement implements CertificateElement {
-  alignment: ElementAlignment
-  createdAt: DateTime
-  description: String
-  height: Int
-  id: Int
-  name: String
-  positionX: Int
-  positionY: Int
-  renderOrder: Int
+  base: CertificateElementBase
   template: Template
   textDataSource: TextDataSource
+  textElementSpecProps: TextElementSpecProps
   textProps: TextProps
-  type: ElementType
-  updatedAt: DateTime
-  width: Int
 }
 
-input TextElementCreateInput {
-  alignment: ElementAlignment!
+input TextElementInput {
+  base: CertificateElementBaseInput!
   dataSource: TextDataSourceInput!
-  description: String!
-  height: Int!
-  name: String!
-  positionX: Int!
-  positionY: Int!
-  renderOrder: Int!
-  templateId: Int!
-  textProps: TextPropsCreateInput!
-  width: Int!
+  textProps: TextPropsInput!
+}
+
+type TextElementSpecProps {
+  elementId: Int
+  textPropsId: Int
+  variableId: Int
 }
 
 input TextElementUpdateInput {
-  alignment: ElementAlignment
-  dataSource: TextDataSourceInput
-  description: String
-  height: Int
+  base: CertificateElementBaseInput!
+  dataSource: TextDataSourceInput!
   id: Int!
-  name: String
-  positionX: Int
-  positionY: Int
-  renderOrder: Int
-  textProps: TextPropsUpdateInput
-  width: Int
+  textProps: TextPropsInput!
 }
 
 type TextProps {
   color: String
   fontRef: FontReference
   fontSize: Int
+  id: Int
   overflow: ElementOverflow
 }
 
-input TextPropsCreateInput {
+input TextPropsInput {
   color: String!
   fontRef: FontReferenceInput!
   fontSize: Int!
@@ -1808,6 +1666,7 @@ input TextPropsUpdateInput {
   color: String!
   fontRef: FontReferenceInput!
   fontSize: Int!
+  id: Int!
   overflow: ElementOverflow!
 }
 

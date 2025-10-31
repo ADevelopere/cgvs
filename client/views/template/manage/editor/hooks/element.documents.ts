@@ -5,185 +5,201 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
   Graphql.ElementsByTemplateIdQuery,
   Graphql.ElementsByTemplateIdQueryVariables
 > = gql`
-  query elementsByTemplateId($templateId: Int!) {
-  elementsByTemplateId(templateId: $templateId) {
-    # Base fields from CertificateElementPothosInterface
-    id
-    name
-    description
-    type
-    positionX
-    positionY
-    width
-    height
-    alignment
-    renderOrder
-    createdAt
-    updatedAt
-    template {
-      id
-      name
-    }
-    
-    # Type-specific fields
-    ... on CountryElement {
-      representation
-      textProps {
-        color
-        fontRef {
-          ... on FontReferenceGoogle {
-            identifier
-            type
-          }
-          ... on FontReferenceSelfHosted {
-            fontId
-            type
-          }
-        }
-        fontSize
-        overflow
-      }
-    }
-    
-    ... on DateElement {
-      dateDataSource {
-        ... on DateDataSourceCertificateField {
-          certificateField
-          type
-        }
-        ... on DateDataSourceStatic {
-          type
-          value
-        }
-        ... on DateDataSourceStudentField {
-          studentField
-          type
-        }
-        ... on DateDataSourceTemplateVariable {
-          dateVariableId
-          type
-        }
-      }
-      dateProps {
-        calendarType
-        offsetDays
-        format
-        transformation
-      }
-      textProps {
-        color
-        fontRef {
-          ... on FontReferenceGoogle {
-            identifier
-            type
-          }
-          ... on FontReferenceSelfHosted {
-            fontId
-            type
-          }
-        }
-        fontSize
-        overflow
-      }
-    }
-    
-    ... on GenderElement {
-      textProps {
-        color
-        fontRef {
-          ... on FontReferenceGoogle {
-            identifier
-            type
-          }
-          ... on FontReferenceSelfHosted {
-            fontId
-            type
-          }
-        }
-        fontSize
-        overflow
-      }
-    }
-    
-    ... on ImageElement {
-      imageDataSource {
-        ... on ImageDataSourceStorageFile {
-          storageFileId
-          type
-        }
-      }
-      fit
-    }
-    
-    ... on NumberElement {
-      mapping
-      numberDataSource {
-          numberVariableId
+  query ElementsByTemplateId($templateId: Int!) {
+    elementsByTemplateId(templateId: $templateId) {
+      base {
+        alignment
+        createdAt
+        description
+        height
+        id
+        name
+        positionX
+        positionY
+        renderOrder
         type
-      } 
-      textProps {
-        color
-        fontRef {
-          ... on FontReferenceGoogle {
-            identifier
-            type
-          }
-          ... on FontReferenceSelfHosted {
-            fontId
-            type
-          }
-        }
-        fontSize
-        overflow
+        updatedAt
+        width
       }
-    }
-    
-    ... on QRCodeElement {
-      backgroundColor
-      errorCorrection
-      foregroundColor
-    }
-    
-    ... on TextElement {
-      textDataSource {
-        ... on TextDataSourceCertificateField {
-          certificateField
-          type
+      template {
+        id
+        name
+      }
+      ... on CountryElement {
+        countryProps {
+          representation
         }
-        ... on TextDataSourceStatic {
-          type
-          value
-        }
-        ... on TextDataSourceStudentField {
-          studentField
-          type
-        }
-        ... on TextDataSourceTemplateSelectVariable {
-          selectVariableId
-          type
-        }
-        ... on TextDataSourceTemplateTextVariable {
-          textVariableId
-          type
+        textProps {
+          color
+          fontRef {
+            ... on FontReferenceGoogle {
+              identifier
+              type
+            }
+            ... on FontReferenceSelfHosted {
+              fontId
+              type
+            }
+          }
+          fontSize
+          id
+          overflow
         }
       }
-      textProps {
-        color
-        fontRef {
-          ... on FontReferenceGoogle {
-            identifier
+      ... on DateElement {
+        dateDataSource {
+          ... on DateDataSourceCertificateField {
+            certificateField
             type
           }
-          ... on FontReferenceSelfHosted {
-            fontId
+          ... on DateDataSourceStatic {
+            type
+            value
+          }
+          ... on DateDataSourceStudentField {
+            studentField
+            type
+          }
+          ... on DateDataSourceTemplateVariable {
+            dateVariableId
             type
           }
         }
-        fontSize
-        overflow
+        dateProps {
+          calendarType
+          format
+          offsetDays
+          transformation
+        }
+        textProps {
+          color
+          fontRef {
+            ... on FontReferenceGoogle {
+              identifier
+              type
+            }
+            ... on FontReferenceSelfHosted {
+              fontId
+              type
+            }
+          }
+          fontSize
+          id
+          overflow
+        }
+      }
+      ... on GenderElement {
+        textProps {
+          color
+          fontRef {
+            ... on FontReferenceGoogle {
+              identifier
+              type
+            }
+            ... on FontReferenceSelfHosted {
+              fontId
+              type
+            }
+          }
+          fontSize
+          id
+          overflow
+        }
+      }
+      ... on ImageElement {
+        imageDataSource {
+          ... on ImageDataSourceStorageFile {
+            storageFileId
+            type
+          }
+        }
+        imageProps {
+          elementId
+          fit
+          storageFileId
+        }
+      }
+      ... on NumberElement {
+        numberDataSource {
+          numberVariableId
+          type
+        }
+        numberProps {
+          elementId
+          mapping
+          textPropsId
+          variableId
+        }
+        textProps {
+          color
+          fontSize
+          id
+          overflow
+          fontRef {
+            ... on FontReferenceGoogle {
+              identifier
+              type
+            }
+            ... on FontReferenceSelfHosted {
+              fontId
+              type
+            }
+          }
+        }
+      }
+      ... on QRCodeElement {
+        qrCodeProps {
+          backgroundColor
+          elementId
+          errorCorrection
+          foregroundColor
+        }
+      }
+      ... on TextElement {
+        textDataSource {
+          ... on TextDataSourceCertificateField {
+            certificateField
+            type
+          }
+          ... on TextDataSourceStatic {
+            type
+            value
+          }
+          ... on TextDataSourceStudentField {
+            studentField
+            type
+          }
+          ... on TextDataSourceTemplateSelectVariable {
+            selectVariableId
+            type
+          }
+          ... on TextDataSourceTemplateTextVariable {
+            textVariableId
+            type
+          }
+        }
+        textElementSpecProps {
+          elementId
+          textPropsId
+          variableId
+        }
+        textProps {
+          color
+          fontRef {
+            ... on FontReferenceGoogle {
+              identifier
+              type
+            }
+            ... on FontReferenceSelfHosted {
+              fontId
+              type
+            }
+          }
+          fontSize
+          id
+          overflow
+        }
       }
     }
   }
-}
-
 `;

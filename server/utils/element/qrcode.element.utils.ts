@@ -1,13 +1,9 @@
 import {
-  QRCodeDataSourceType,
-  QRCodeDataSourceInput,
-  QRCodeDataSourceInputGraphql,
   QRCodeElementInput,
   QRCodeElementInputGraphql,
   QRCodeElementUpdateInput,
   QRCodeElementUpdateInputGraphql,
   QRCodeErrorCorrection,
-  QRCodeDataSource,
 } from "@/server/types/element";
 import { CommonElementUtils } from "./common.element.utils";
 
@@ -20,26 +16,6 @@ export namespace QRCodeElementUtils {
   // GraphQL Input Mappers
   // ============================================================================
 
-  /**
-   * Map GraphQL QRCodeDataSource input (isOneOf) to repository QRCodeDataSource input (discriminated union)
-   */
-  export const mapQRCodeDataSourceGraphqlToInput = (
-    input: QRCodeDataSourceInputGraphql
-  ): QRCodeDataSourceInput => {
-    if (!input) {
-      throw new Error(
-        "QRCodeDataSourceInputGraphql must not be null or undefined"
-      );
-    }
-    if (input.verificationUrl !== undefined) {
-      return { type: QRCodeDataSourceType.VERIFICATION_URL };
-    } else if (input.verificationCode !== undefined) {
-      return { type: QRCodeDataSourceType.VERIFICATION_CODE };
-    }
-    throw new Error(
-      "Invalid QRCodeDataSource input: must specify either verificationUrl or verificationCode"
-    );
-  };
 
   /**
    * Map GraphQL QRCodeElement create input to repository QRCodeElement create input
@@ -47,7 +23,7 @@ export namespace QRCodeElementUtils {
   export const mapQRCodeElementCreateGraphqlToInput = (
     input: QRCodeElementInputGraphql
   ): QRCodeElementInput => {
-    if (!input || !input.base || !input.qrCodeProps || !input.dataSource) {
+    if (!input || !input.base || !input.qrCodeProps) {
       throw new Error(
         "QRCodeElementInputGraphql must include base, qrCodeProps, and dataSource"
       );
@@ -55,7 +31,6 @@ export namespace QRCodeElementUtils {
     return {
       base: input.base,
       qrCodeProps: input.qrCodeProps,
-      dataSource: mapQRCodeDataSourceGraphqlToInput(input.dataSource),
     };
   };
 
@@ -65,16 +40,15 @@ export namespace QRCodeElementUtils {
   export const mapQRCodeElementUpdateGraphqlToInput = (
     input: QRCodeElementUpdateInputGraphql
   ): QRCodeElementUpdateInput => {
-    if (!input || !input.base || !input.qrCodeProps || !input.dataSource) {
+    if (!input || !input.base || !input.qrCodeProps) {
       throw new Error(
-        "QRCodeElementUpdateInputGraphql must include base, qrCodeProps, and dataSource"
+        "QRCodeElementUpdateInputGraphql must include base, qrCodeProps"
       );
     }
     return {
       id: input.id,
       base: input.base,
       qrCodeProps: input.qrCodeProps,
-      dataSource: mapQRCodeDataSourceGraphqlToInput(input.dataSource),
     };
   };
 
@@ -102,9 +76,9 @@ export namespace QRCodeElementUtils {
   export const validateInput = async (
     input: QRCodeElementInput
   ): Promise<void> => {
-    if (!input.base || !input.qrCodeProps || !input.dataSource) {
+    if (!input.base || !input.qrCodeProps) {
       throw new Error(
-        "QRCodeElementInput must include base, qrCodeProps, and dataSource"
+        "QRCodeElementInput must include base, qrCodeProps"
       );
     }
 
@@ -117,25 +91,5 @@ export namespace QRCodeElementUtils {
     // Validate colors
     CommonElementUtils.validateColor(input.qrCodeProps.foregroundColor);
     CommonElementUtils.validateColor(input.qrCodeProps.backgroundColor);
-  };
-
-  // ============================================================================
-  // Data Source Conversion
-  // ============================================================================
-
-  /**
-   * Convert input data source format to output format
-   */
-  export const convertInputDataSourceToOutput = (
-    input: QRCodeDataSourceInput
-  ): QRCodeDataSource => {
-    switch (input.type) {
-      case QRCodeDataSourceType.VERIFICATION_URL:
-        return { type: input.type };
-      case QRCodeDataSourceType.VERIFICATION_CODE:
-        return { type: input.type };
-      default:
-        throw new Error(`Invalid QR code data source type`);
-    }
   };
 }
