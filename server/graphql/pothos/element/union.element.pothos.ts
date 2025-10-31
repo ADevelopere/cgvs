@@ -49,4 +49,3 @@ export const CertificateElementUnion = gqlSchemaBuilder.unionType(
     },
   }
 );
-

@@ -6,11 +6,14 @@ import {
   storageFiles,
   templateVariableBases,
 } from "@/server/db/schema";
+import { TextElementRepository } from "@/server/db/repo";
 import {
   CertificateElementEntity,
   ElementOrderUpdateInput,
   CertificateElementBaseUpdateInput,
   CertificateElementInterface,
+  CertificateElementUnion,
+  ElementType,
 } from "@/server/types/element";
 import logger from "@/server/lib/logger";
 import { TemplateRepository } from "../template.repository";
@@ -107,7 +110,7 @@ export namespace ElementRepository {
    */
   export const loadByIds = async (
     ids: number[]
-  ): Promise<(CertificateElementInterface | Error)[]> => {
+  ): Promise<CertificateElementInterface[]> => {
     if (ids.length === 0) return [];
 
     const elements = await db
@@ -119,7 +122,8 @@ export namespace ElementRepository {
     return ids.map(id => {
       const found = elements.find(e => e.id === id);
       if (!found) {
-        return new Error(`Element with ID ${id} not found`);
+        throw new Error(`Element with ID ${id} not found`);
+        // return new Error(`Element with ID ${id} not found`)
       }
       return { base: found };
     });
@@ -131,25 +135,59 @@ export namespace ElementRepository {
    */
   export const loadByTemplateIds = async (
     templateIds: number[]
-  ): Promise<(CertificateElementInterface[] | Error)[]> => {
+    // The context argument is often passed by Pothos, even if unused
+    // context: BaseContext
+  ): Promise<(CertificateElementUnion[] | Error)[]> => {
+    // <-- Return type changed
     if (templateIds.length === 0) return [];
 
-    const elements = await db
+    const baseElements = await db
       .select()
       .from(certificateElement)
       .where(inArray(certificateElement.templateId, templateIds))
       .orderBy(asc(certificateElement.renderOrder));
 
-    // Group by templateId, maintaining order, return Error if no elements found could indicate invalid template
-    return templateIds.map(templateId => {
-      const templateElements = elements.filter(
-        element => element.templateId === templateId
-      );
-      // Return the elements array (empty array is valid for templates with no elements)
-      return templateElements.map(element => ({
-        base: element,
-      }));
-    });
+    const elementsByTemplateId = new Map<number, CertificateElementEntity[]>();
+    for (const base of baseElements) {
+      if (!elementsByTemplateId.has(base.templateId)) {
+        elementsByTemplateId.set(base.templateId, []);
+      }
+      elementsByTemplateId.get(base.templateId)!.push(base);
+    }
+
+    // Map over the original templateIds to preserve order
+    const allGroupPromises = templateIds.map(
+      async (id): Promise<CertificateElementUnion[] | Error> => {
+        // <-- Inner promise type changed
+        const groupBaseElements = elementsByTemplateId.get(id) || [];
+
+        try {
+          // This will now try to resolve all elements.
+          // If *any* promise rejects, the .catch() block will handle it.
+          const groupResultPromises = groupBaseElements.map(
+            async (base): Promise<CertificateElementUnion> => {
+              // <-- No | Error here
+              if (base.type === ElementType.TEXT) {
+                return await TextElementRepository.loadByBase(base);
+              }
+              // Throw an error instead of returning it
+              // This will cause the Promise.all() to reject
+              throw new Error(`Element type ${base.type} not implemented yet`);
+            }
+          );
+
+          // Wait for all elements in *this* group to be processed
+          return await Promise.all(groupResultPromises);
+        } catch (error) {
+          // If any element fails (e.g., "not implemented"),
+          // catch it and return a single Error for this entire group.
+          return error instanceof Error ? error : new Error(String(error));
+        }
+      }
+    );
+
+    // Wait for all the *group* promises to resolve
+    return await Promise.all(allGroupPromises);
   };
 
   // ============================================================================
