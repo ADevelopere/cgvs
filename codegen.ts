@@ -15,7 +15,7 @@ const config: CodegenConfig = {
         withHooks: true,
         dedupeFragments: true,
         onlyOperationTypes: false,
-        enumsAsTypes: true,
+        enumsAsTypes: false,
         withRefetchFn: true,
         inlineFragmentTypes: false,
         preResolveTypes: true,
