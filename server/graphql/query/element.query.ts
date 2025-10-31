@@ -11,12 +11,13 @@ gqlSchemaBuilder.queryFields(t => ({
    * Returns elements ordered by renderOrder
    */
   elementsByTemplateId: t.loadableList({
-    type: ElementPothos.CertificateElementPothosInterface,
+    type: ElementPothos.CertificateElementUnion,
     args: {
       templateId: t.arg.int({ required: true }),
     },
-    load: async (ids: number[]) =>
-      await ElementRepository.loadByTemplateIds(ids),
+    load: async (ids: number[]) => {
+      return await ElementRepository.loadByTemplateIds(ids);
+    },
     resolve: (_parent, args) => args.templateId,
   }),
 

@@ -1,6 +1,10 @@
 import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
 import * as Types from "@/server/types/element";
-import { TemplateRepository, TextElementRepository, ElementRepository } from "@/server/db/repo";
+import {
+  TemplateRepository,
+  TextElementRepository,
+  ElementRepository,
+} from "@/server/db/repo";
 import { TemplatePothosObject } from "@/server/graphql/pothos/template.pothos";
 import type { InputFieldBuilder, SchemaTypes } from "@pothos/core";
 import {
@@ -93,31 +97,23 @@ export const CertificateElementBaseObject = gqlSchemaBuilder
     }),
   });
 
-export const CertificateElementPothosInterface = gqlSchemaBuilder
-  .loadableInterfaceRef<Types.CertificateElementInterface, number>(
-    "CertificateElement",
-    {
-      load: async ids => {
-        const elements = await ElementRepository.loadByIds(ids);
-        const results = await Promise.all(
-          elements.map(async element => {
-            if (element instanceof Error) {
-              return element;
-            }
-            if (element.base.type === Types.ElementType.TEXT) {
-              return TextElementRepository.loadByBase(element.base);
-            }
-            return element;
-          })
-        );
-        logger.info(`Loaded ${results.length} element(s) for Pothos interface`);
-        logger.debug(`Loaded elements: ${JSON.stringify(results)}`);
-        return results;
-      },
-      sort: e => e.base.id,
-    }
-  )
-  .implement({
+export const CertificateElementInterfaceObjectRef =
+  gqlSchemaBuilder.loadableInterfaceRef<
+    Types.CertificateElementInterface,
+    number
+  >("CertificateElement", {
+    load: async ids => await ElementRepository.loadByIds(ids),
+  });
+
+export const CertificateElementPothosInterface =
+  gqlSchemaBuilder.loadableInterface<
+    Types.CertificateElementInterface,
+    number,
+    [],
+    typeof CertificateElementInterfaceObjectRef
+  >(CertificateElementInterfaceObjectRef, {
+    load: async ids => await ElementRepository.loadByIds(ids),
+    sort: e => e.base.id,
     fields: t => ({
       base: t.expose("base", {
         type: CertificateElementBaseObject,
