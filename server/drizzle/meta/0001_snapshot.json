@@ -1,5 +1,5 @@
 {
-  "id": "090f936c-b7b4-4761-b5c4-3ec1df7e2dc8",
+  "id": "fc902977-ac4b-404e-af11-6309e81bf2c3",
   "prevId": "a03697e8-0c3c-4c86-8680-1a949f474bf6",
   "version": "7",
   "dialect": "postgresql",
@@ -2648,14 +2648,6 @@
       "values": [
         "GOOGLE",
         "SELF_HOSTED"
-      ]
-    },
-    "public.qr_code_data_source_type": {
-      "name": "qr_code_data_source_type",
-      "schema": "public",
-      "values": [
-        "VERIFICATION_URL",
-        "VERIFICATION_CODE"
       ]
     },
     "public.qr_code_error_correction": {

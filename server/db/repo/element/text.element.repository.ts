@@ -12,6 +12,7 @@ import {
   ElementType,
   TextElementEntity,
   ElementTextPropsEntity,
+  CertificateElementEntity,
   CertificateElementEntityInput,
 } from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
@@ -209,6 +210,36 @@ export namespace TextElementRepository {
       throw new Error(`TEXT element with ID ${id} does not exist.`);
     }
     return element;
+  };
+
+  export const loadByBase = async (
+    base: CertificateElementEntity
+  ): Promise<TextElementOutput | Error> => {
+    const result = await db
+      .select()
+      .from(textElement)
+      .innerJoin(
+        elementTextProps,
+        eq(elementTextProps.id, base.id)
+      )
+      .where(eq(textElement.elementId, base.id))
+      .limit(1);
+
+    if (result.length === 0) return new Error(`No TEXT element found for base ID ${base.id}`);
+
+    const row = result[0];
+
+    // Reconstruct output
+    return {
+      base: base,
+      textPropsEntity: row.element_text_props,
+      textElementSpecProps: {
+        elementId: row.text_element.elementId,
+        textPropsId: row.text_element.textPropsId,
+        variableId: row.text_element.variableId,
+      },
+      textDataSource: row.text_element.textDataSource,
+    };
   };
 
   /**

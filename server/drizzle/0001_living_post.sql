@@ -11,7 +11,6 @@ CREATE TYPE "public"."element_image_fit" AS ENUM('COVER', 'CONTAIN', 'FILL');-->
 CREATE TYPE "public"."element_overflow" AS ENUM('RESIZE_DOWN', 'TRUNCATE', 'ELLIPSE', 'WRAP');--> statement-breakpoint
 CREATE TYPE "public"."element_type" AS ENUM('TEXT', 'NUMBER', 'DATE', 'IMAGE', 'GENDER', 'COUNTRY', 'QR_CODE');--> statement-breakpoint
 CREATE TYPE "public"."font_source" AS ENUM('GOOGLE', 'SELF_HOSTED');--> statement-breakpoint
-CREATE TYPE "public"."qr_code_data_source_type" AS ENUM('VERIFICATION_URL', 'VERIFICATION_CODE');--> statement-breakpoint
 CREATE TYPE "public"."qr_code_error_correction" AS ENUM('L', 'M', 'Q', 'H');--> statement-breakpoint
 CREATE TYPE "public"."student_date_field" AS ENUM('DATE_OF_BIRTH');--> statement-breakpoint
 CREATE TYPE "public"."student_text_field" AS ENUM('STUDENT_NAME', 'STUDENT_EMAIL');--> statement-breakpoint
