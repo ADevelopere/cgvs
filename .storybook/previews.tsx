@@ -56,7 +56,7 @@ const preview: Preview = {
   globalTypes: {
     themeMode: {
       description: "Theme mode",
-      defaultValue: ThemeMode.System,
+      defaultValue: ThemeMode.Dark,
       toolbar: {
         title: "Theme",
         icon: "paintbrush",

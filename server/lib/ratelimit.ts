@@ -193,15 +193,21 @@ export async function checkRateLimit(
   remaining: number;
   reset: number;
 }> {
+  const isDev = process.env.NODE_ENV === "development";
   try {
-    const { success, limit, remaining, reset } =
-      await limiter.limitSimple(identifier);
-
-    if (!success) {
-      logger.warn(`Rate limit exceeded for identifier: ${identifier}`);
+    const { success, limit, remaining, reset } = await limiter.limitSimple(identifier);
+    if (isDev) {
+      if (!success) {
+        logger.warn(`Rate limit would have been exceeded for identifier: ${identifier} (development mode, not enforced)`);
+      }
+      // Always allow in development
+      return { success: true, limit, remaining, reset };
+    } else {
+      if (!success) {
+        logger.warn(`Rate limit exceeded for identifier: ${identifier}`);
+      }
+      return { success, limit, remaining, reset };
     }
-
-    return { success, limit, remaining, reset };
   } catch (error) {
     // If rate limiting fails (e.g., cache is down), allow the request
     // but log the error for monitoring
