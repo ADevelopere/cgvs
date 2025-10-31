@@ -1,14 +1,4 @@
-import type {
-  CertificateElementBaseCreateInput,
-  CertificateElementBaseUpdateInput,
-  DateDataSource,
-  DateDataSourceInput,
-  DateProps,
-  DatePropsCreateInput,
-  DatePropsUpdateInput,
-  TextPropsCreateInput,
-  TextPropsUpdateInput,
-} from "@/client/graphql/generated/gql/graphql";
+import type * as GQL from "@/client/graphql/generated/gql/graphql";
 import { FormErrors, UpdateStateFn } from "../types";
 import { TextPropsFormErrors, TextPropsState } from "../textProps";
 import {
@@ -20,36 +10,21 @@ import {
 // WORKING STATE TYPES
 // ============================================================================
 
-export type DatePropsState = DatePropsCreateInput | DatePropsUpdateInput;
-
+export type DatePropsState = GQL.DateElementSpecPropsInput;
 // Complete date element working state
 export type DateElementFormState = {
   base: BaseCertificateElementFormState;
   textProps: TextPropsState;
-  dataSource: DateDataSourceInput;
-  dateProps: DatePropsState;
-};
-
-export type DateElementFormCreateState = {
-  base: CertificateElementBaseCreateInput;
-  textProps: TextPropsCreateInput;
-  dataSource: DateDataSourceInput;
-  dateProps: DatePropsCreateInput;
-};
-
-export type DateElementFormUpdateState = {
-  base: CertificateElementBaseUpdateInput;
-  textProps: TextPropsUpdateInput;
-  dateProps: DatePropsUpdateInput;
-  dataSource: DateDataSourceInput;
+  dataSource: GQL.DateDataSourceInput;
+  dateProps: GQL.DateElementSpecPropsInput;
 };
 
 // ============================================================================
 // MODULAR ERROR TYPES
 // ============================================================================
 
-export type DateDataSourceFormErrors = FormErrors<DateDataSourceInput>;
-export type DatePropsFormErrors = FormErrors<DateProps>;
+export type DateDataSourceFormErrors = FormErrors<GQL.DateDataSourceInput>;
+export type DatePropsFormErrors = FormErrors<GQL.DateElementSpecPropsInput>;
 
 export type DateElementFormErrors = {
   base: BaseElementFormErrors;
@@ -62,15 +37,11 @@ export type DateElementFormErrors = {
 // SPECIFIC UPDATE FUNCTION TYPES
 // ============================================================================
 
-export type UpdateDateDataSourceFn = (dataSource: DateDataSourceInput) => void;
+export type UpdateDateDataSourceFn = (
+  dataSource: GQL.DateDataSourceInput
+) => void;
 
-export type UpdateDatePropsCreateFn = UpdateStateFn<DatePropsCreateInput>;
-
-export type UpdateDatePropsUpdateFn = UpdateStateFn<DatePropsUpdateInput>;
-
-export type UpdateDatePropsFn = UpdateStateFn<
-  DatePropsCreateInput | DatePropsUpdateInput
->;
+export type UpdateDatePropsFn = UpdateStateFn<GQL.DateElementSpecPropsInput>;
 
 // ============================================================================
 // CONVERSION UTILITIES
@@ -78,8 +49,8 @@ export type UpdateDatePropsFn = UpdateStateFn<
 
 // Convert Output type (with __typename) to Input type (OneOf)
 export const dateDataSourceToGraphQL = (
-  state: DateDataSource
-): DateDataSourceInput => {
+  state: GQL.DateDataSource
+): GQL.DateDataSourceInput => {
   switch (state.__typename) {
     case "DateDataSourceStatic":
       return { static: { value: state.value ?? "" } };

@@ -1,8 +1,8 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
-import { DateElementUpdateForm } from "./DateElementUpdateForm";
+import { DateElementForm } from "./DateElementForm";
 import { mockSelfHostedFonts } from "../story.util";
-import type { DateElementFormUpdateState, DateElementFormErrors } from "./types";
+import type { DateElementFormErrors, DateElementFormState } from "./types";
 import { TemplateDateVariable } from "@/client/graphql/generated/gql/graphql";
 
 const mockDateVariables: TemplateDateVariable[] = [
@@ -22,18 +22,17 @@ const mockDateVariables: TemplateDateVariable[] = [
   },
 ];
 
-const meta: Meta<typeof DateElementUpdateForm> = {
-  title: "Template/Editor/Form/Element/Date/DateElementUpdateForm",
-  component: DateElementUpdateForm,
+const meta: Meta<typeof DateElementForm> = {
+  title: "Template/Editor/Form/Element/Date/DateElementForm",
+  component: DateElementForm,
   tags: ["autodocs"],
 };
 
 export default meta;
-type Story = StoryObj<typeof DateElementUpdateForm>;
+type Story = StoryObj<typeof DateElementForm>;
 
-const defaultState: DateElementFormUpdateState = {
+const defaultState: DateElementFormState = {
   base: {
-    id: 1,
     name: "Date Element",
     description: "A date element",
     positionX: 100,
@@ -42,6 +41,7 @@ const defaultState: DateElementFormUpdateState = {
     height: 50,
     alignment: "CENTER",
     renderOrder: 1,
+    templateId: 1,
   },
   textProps: {
     fontRef: { google: { identifier: "Roboto" } },
@@ -90,6 +90,31 @@ export const WithStudentField: Story = {
       ...defaultState,
       dataSource: {
         studentField: { field: "DATE_OF_BIRTH" },
+      },
+    },
+    errors: defaultErrors,
+    updateBaseElement: (field, value) => logger.info("Base element updated:", { field, value }),
+    updateTextProps: (field, value) => logger.info("Text props updated:", { field, value }),
+    updateDateProps: (field, value) => logger.info("Date props updated:", { field, value }),
+    updateDataSource: (dataSource) => logger.info("Data source updated:", { dataSource }),
+    templateId: 1,
+    locale: "en",
+    dateVariables: mockDateVariables,
+    selfHostedFonts: mockSelfHostedFonts,
+    onSubmit: () => logger.info("Form submitted"),
+    onCancel: () => logger.info("Form cancelled"),
+    isSubmitting: false,
+  },
+};
+
+export const HijriCalendar: Story = {
+  args: {
+    state: {
+      ...defaultState,
+      dateProps: {
+        format: "DD/MM/YYYY",
+        calendarType: "HIJRI",
+        offsetDays: 0,
       },
     },
     errors: defaultErrors,
