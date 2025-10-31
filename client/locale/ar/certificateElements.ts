@@ -162,6 +162,33 @@ export const certificateElements: CertificateElementsTranslations = {
     updateTitle: "تحديث عنصر صورة",
   },
 
+  qrCodeElement: {
+    // Section title
+    qrCodeElementTitle: "عنصر رمز الاستجابة السريعة",
+
+    // QR Code Props
+    foregroundColorLabel: "لون الرمز",
+    foregroundColorHelper: "لون نقاط رمز الاستجابة السريعة",
+    foregroundColorRequired: "لون الرمز مطلوب",
+    backgroundColorLabel: "لون الخلفية",
+    backgroundColorHelper: "لون خلفية رمز الاستجابة السريعة",
+    backgroundColorRequired: "لون الخلفية مطلوب",
+    errorCorrectionLabel: "مستوى تصحيح الخطأ",
+    errorCorrectionHelper: "مستوى أعلى = مزيد من البيانات الزائدة ولكن أكثر موثوقية",
+    errorCorrectionRequired: "مستوى تصحيح الخطأ مطلوب",
+    errorCorrectionL: "منخفض (7%)",
+    errorCorrectionM: "متوسط (15%)",
+    errorCorrectionQ: "جيد (25%)",
+    errorCorrectionH: "عالي (30%)",
+    errorCorrectionLDesc: "يمكن استرداد ~7% من البيانات",
+    errorCorrectionMDesc: "يمكن استرداد ~15% من البيانات",
+    errorCorrectionQDesc: "يمكن استرداد ~25% من البيانات",
+    errorCorrectionHDesc: "يمكن استرداد ~30% من البيانات",
+
+    // Info message
+    dataSourceInfo: "مصدر البيانات دائمًا رابط التحقق من الشهادة",
+  },
+
   baseElement: {
     basePropertiesTitle: "الخصائص الأساسية",
 

@@ -162,6 +162,33 @@ export const enCertificateElements: CertificateElementsTranslations = {
     updateTitle: "Update Image Element",
   },
 
+  qrCodeElement: {
+    // Section title
+    qrCodeElementTitle: "QR Code Element",
+
+    // QR Code Props
+    foregroundColorLabel: "Foreground Color",
+    foregroundColorHelper: "Color of the QR code dots",
+    foregroundColorRequired: "Foreground color is required",
+    backgroundColorLabel: "Background Color",
+    backgroundColorHelper: "Background color of the QR code",
+    backgroundColorRequired: "Background color is required",
+    errorCorrectionLabel: "Error Correction Level",
+    errorCorrectionHelper: "Higher level = more redundancy but more reliable",
+    errorCorrectionRequired: "Error correction level is required",
+    errorCorrectionL: "Low (7%)",
+    errorCorrectionM: "Medium (15%)",
+    errorCorrectionQ: "Quartile (25%)",
+    errorCorrectionH: "High (30%)",
+    errorCorrectionLDesc: "Can recover ~7% of data",
+    errorCorrectionMDesc: "Can recover ~15% of data",
+    errorCorrectionQDesc: "Can recover ~25% of data",
+    errorCorrectionHDesc: "Can recover ~30% of data",
+
+    // Info message
+    dataSourceInfo: "Data source is always the certificate verification link",
+  },
+
   baseElement: {
     basePropertiesTitle: "Base Properties",
 
