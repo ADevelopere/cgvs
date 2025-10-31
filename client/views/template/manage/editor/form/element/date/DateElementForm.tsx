@@ -12,17 +12,17 @@ import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../component/ActionButtons";
 import { UpdateBaseElementFn } from "../base";
-import { UpdateTextPropsCreateFn } from "../textProps";
 import {
   Font,
   TemplateDateVariable,
 } from "@/client/graphql/generated/gql/graphql";
+import { UpdateTextPropsFn } from "../textProps";
 
 interface DateElementFormProps {
   state: DateElementFormState;
   errors: DateElementFormErrors;
   updateBaseElement: UpdateBaseElementFn;
-  updateTextProps: UpdateTextPropsCreateFn;
+  updateTextProps: UpdateTextPropsFn;
   updateDateProps: UpdateDatePropsFn;
   updateDataSource: UpdateDateDataSourceFn;
   templateId: number;

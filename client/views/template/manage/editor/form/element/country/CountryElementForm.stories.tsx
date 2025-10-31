@@ -34,7 +34,9 @@ const defaultState: CountryElementFormState = {
     color: "#000000",
     overflow: "WRAP",
   },
-  representation: "COUNTRY_NAME",
+  countryProps: {
+    representation: "COUNTRY_NAME",
+  },
 };
 
 const defaultErrors: CountryElementFormErrors = {
@@ -64,7 +66,6 @@ export const WithNationality: Story = {
   args: {
     state: {
       ...defaultState,
-      representation: "NATIONALITY",
     },
     errors: defaultErrors,
     updateBaseElement: (field, value) =>
@@ -100,7 +101,9 @@ export const WithErrors: Story = {
         color: "",
         overflow: "WRAP",
       },
-      representation: "COUNTRY_NAME",
+      countryProps: {
+        representation: "COUNTRY_NAME",
+      },
     },
     errors: {
       base: {

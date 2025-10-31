@@ -1,24 +1,21 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { mockSelfHostedFonts } from "../story.util";
-import { GenderElementUpdateForm } from "./GenderElementUpdateForm";
-import type {
-  GenderElementFormUpdateState,
-  GenderElementFormErrors,
-} from "./types";
+import { GenderElementForm } from "./GenderElementForm";
+import type { GenderElementFormErrors, GenderElementFormState } from "./types";
 
-const meta: Meta<typeof GenderElementUpdateForm> = {
-  title: "Template/Editor/Form/Element/Gender/GenderElementUpdateForm",
-  component: GenderElementUpdateForm,
+const meta: Meta<typeof GenderElementForm> = {
+  title: "Template/Editor/Form/Element/Gender/GenderElementForm",
+  component: GenderElementForm,
   tags: ["autodocs"],
 };
 
 export default meta;
-type Story = StoryObj<typeof GenderElementUpdateForm>;
+type Story = StoryObj<typeof GenderElementForm>;
 
-const mockState: GenderElementFormUpdateState = {
-  id: 1,
+const mockState: GenderElementFormState = {
   base: {
+    templateId: 1,
     name: "Student Gender",
     description: "Displays student's gender",
     positionX: 100,
@@ -56,52 +53,38 @@ export const Default: Story = {
   },
 };
 
-export const WithPartialUpdate: Story = {
-  args: {
-    state: {
-      id: 1,
-      base: {
-        name: "Updated Gender",
-        width: 250,
-      },
-      textProps: {
-        color: "#FF5722",
-        fontSize: 16,
-      },
-    },
-    errors: mockErrors,
-    selfHostedFonts: mockSelfHostedFonts,
-    locale: "en",
-    updateBase: (key, value) => logger.info("updateBase", { key, value }),
-    updateTextProps: (key, value) =>
-      logger.info("updateTextProps", { key, value }),
-    onSubmit: () => logger.info("Submit"),
-    onCancel: () => logger.info("Cancel"),
-    isSubmitting: false,
-  },
-};
-
 export const WithErrors: Story = {
   args: {
     state: {
-      id: 1,
       base: {
+        templateId: 1,
         name: "",
+        description: "",
+        positionX: -10,
+        positionY: 0,
         width: 0,
         height: 0,
+        alignment: "START",
+        renderOrder: 0,
       },
       textProps: {
+        fontRef: { google: { identifier: "" } },
+        color: "",
         fontSize: 0,
+        overflow: "TRUNCATE",
       },
     },
     errors: {
       base: {
         name: "Name is required",
+        positionX: "Position X must be non-negative",
         width: "Width must be greater than 0",
         height: "Height must be greater than 0",
       },
       textProps: {
+        color: "Color is required",
         fontSize: "Font size must be at least 1",
+        fontRef: "Font is required",
       },
     },
     selfHostedFonts: mockSelfHostedFonts,
@@ -145,4 +128,3 @@ export const Disabled: Story = {
     disabled: true,
   },
 };
-

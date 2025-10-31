@@ -1,14 +1,10 @@
 import {
   ImageDataSourceInput as GQLImageDataSourceInput,
   ImageDataSource,
-  ImageElement,
   ElementImageFit,
+  ImageElementInput,
 } from "@/client/graphql/generated/gql/graphql";
-import {
-  BaseElementFormErrors,
-  CertificateElementBaseCreateInput,
-  CertificateElementBaseUpdateInput,
-} from "../base/types";
+import { BaseElementFormErrors } from "../base/types";
 import { FormErrors } from "../types";
 
 // Re-export GraphQL types for use in components
@@ -26,17 +22,7 @@ export type ImagePropsState = {
 // Form State Types
 // ============================================================================
 
-export type ImageElementFormCreateState = {
-  base: CertificateElementBaseCreateInput;
-  imageProps: ImagePropsState;
-  dataSource: ImageDataSourceInput;
-};
-
-export type ImageElementFormUpdateState = {
-  base: CertificateElementBaseUpdateInput;
-  imageProps: ImagePropsState;
-  dataSource: ImageDataSourceInput;
-};
+export type ImageElementFormState = ImageElementInput;
 
 // ============================================================================
 // Error Types
@@ -72,32 +58,3 @@ export const imageDataSourceToGraphQL = (
     },
   };
 };
-
-/**
- * Convert ImageElement (Output) to ImageElementFormUpdateState (Input)
- * Used when loading existing element for editing
- */
-export const imageElementToFormState = (
-  element: ImageElement
-): ImageElementFormUpdateState => {
-  return {
-    base: {
-      id: element.id!,
-      name: element.name ?? "",
-      description: element.description ?? "",
-      positionX: element.positionX ?? 0,
-      positionY: element.positionY ?? 0,
-      width: element.width ?? 100,
-      height: element.height ?? 100,
-      alignment: element.alignment ?? "TOP",
-      renderOrder: element.renderOrder ?? 0,
-    },
-    imageProps: {
-      fit: element.fit ?? "CONTAIN",
-    },
-    dataSource: element.imageDataSource
-      ? imageDataSourceToGraphQL(element.imageDataSource)
-      : { storageFile: { storageFileId: -1 } },
-  };
-};
-

@@ -1,40 +1,18 @@
 import type {
-  CertificateElementBaseCreateInput,
-  CertificateElementBaseUpdateInput,
   TextDataSource,
   TextDataSourceInput,
-  TextPropsCreateInput,
-  TextPropsUpdateInput,
+  TextElementInput,
 } from "@/client/graphql/generated/gql/graphql";
 import { FormErrors } from "../types";
-import { TextPropsFormErrors, TextPropsState } from "../textProps";
-import {
-  BaseCertificateElementFormState,
-  BaseElementFormErrors,
-} from "../base";
+import { TextPropsFormErrors } from "../textProps";
+import { BaseElementFormErrors } from "../base";
 
 // ============================================================================
 // WORKING STATE TYPES (Discriminated Unions - match backend structure)
 // ============================================================================
 
 // Complete text element working state
-export type TextElementFormState = {
-  base: BaseCertificateElementFormState;
-  textProps: TextPropsState;
-  dataSource: TextDataSourceInput;
-};
-
-export type TextElementFormCreateState = {
-  base: CertificateElementBaseCreateInput;
-  textProps: TextPropsCreateInput;
-  dataSource: TextDataSourceInput;
-};
-
-export type TextElementFormUpdateState = {
-  base: CertificateElementBaseUpdateInput;
-  textProps: TextPropsUpdateInput;
-  dataSource: TextDataSourceInput;
-};
+export type TextElementFormState = TextElementInput;
 
 // ============================================================================
 // TYPE-SAFE UPDATE FUNCTIONS

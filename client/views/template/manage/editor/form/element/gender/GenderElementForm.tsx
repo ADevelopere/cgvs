@@ -1,19 +1,14 @@
 import React, { type FC } from "react";
 import { Box, Grid } from "@mui/material";
-import { BaseCertificateElementForm } from "../base";
-import { TextPropsForm } from "../textProps";
+import { BaseCertificateElementForm, UpdateBaseElementFn } from "../base";
+import { TextPropsForm, UpdateTextPropsFn } from "../textProps";
 import { ActionButtons } from "../component/ActionButtons";
-import { useAppTranslation } from "@/client/locale";
-import type {
-  GenderElementFormCreateState,
-  GenderElementFormErrors,
-} from "./types";
+import type { GenderElementFormState, GenderElementFormErrors } from "./types";
 import type { Font } from "@/client/graphql/generated/gql/graphql";
-import type { UpdateStateFn } from "../types";
 
-export interface GenderElementCreateFormProps {
+export interface GenderElementFormProps {
   // State
-  state: GenderElementFormCreateState;
+  state: GenderElementFormState;
   errors: GenderElementFormErrors;
 
   // Available fonts
@@ -23,17 +18,18 @@ export interface GenderElementCreateFormProps {
   locale: string;
 
   // Update functions
-  updateBase: UpdateStateFn<GenderElementFormCreateState["base"]>;
-  updateTextProps: UpdateStateFn<GenderElementFormCreateState["textProps"]>;
+  updateBase: UpdateBaseElementFn;
+  updateTextProps: UpdateTextPropsFn;
 
   // Actions
   onSubmit: () => void;
   onCancel: () => void;
   isSubmitting: boolean;
   disabled?: boolean;
+  submitLabel: string;
 }
 
-export const GenderElementCreateForm: FC<GenderElementCreateFormProps> = ({
+export const GenderElementForm: FC<GenderElementFormProps> = ({
   state,
   errors,
   selfHostedFonts,
@@ -44,9 +40,8 @@ export const GenderElementCreateForm: FC<GenderElementCreateFormProps> = ({
   onCancel,
   isSubmitting,
   disabled,
+  submitLabel,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
-
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       {/* Row 2: Scrollable Properties */}
@@ -81,10 +76,9 @@ export const GenderElementCreateForm: FC<GenderElementCreateFormProps> = ({
         onSubmit={onSubmit}
         onCancel={onCancel}
         isSubmitting={isSubmitting}
-        submitLabel={strings.common.create}
+        submitLabel={submitLabel}
         disabled={disabled}
       />
     </Box>
   );
 };
-
