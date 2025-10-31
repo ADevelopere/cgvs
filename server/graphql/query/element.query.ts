@@ -10,13 +10,14 @@ gqlSchemaBuilder.queryFields(t => ({
    * Get all elements for a template by templateId
    * Returns elements ordered by renderOrder
    */
-  elementsByTemplateId: t.loadableList({
+  elementsByTemplateId: t.loadable({
     type: ElementPothos.CertificateElementPothosInterface,
     args: {
       templateId: t.arg.int({ required: true }),
     },
-    load: async (ids: number[]) =>
-      await ElementRepository.loadByTemplateIds(ids),
+    load: async (ids: number[]) => {
+      return await ElementRepository.loadByTemplateIds(ids);
+    },
     resolve: (_parent, args) => args.templateId,
   }),
 

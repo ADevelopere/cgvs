@@ -6,11 +6,14 @@ import {
   storageFiles,
   templateVariableBases,
 } from "@/server/db/schema";
+import { TextElementRepository } from "@/server/db/repo";
 import {
   CertificateElementEntity,
   ElementOrderUpdateInput,
   CertificateElementBaseUpdateInput,
   CertificateElementInterface,
+  CertificateElementUnion,
+  ElementType,
 } from "@/server/types/element";
 import logger from "@/server/lib/logger";
 import { TemplateRepository } from "../template.repository";
@@ -107,7 +110,7 @@ export namespace ElementRepository {
    */
   export const loadByIds = async (
     ids: number[]
-  ): Promise<(CertificateElementInterface | Error)[]> => {
+  ): Promise<CertificateElementInterface[]> => {
     if (ids.length === 0) return [];
 
     const elements = await db
@@ -119,7 +122,8 @@ export namespace ElementRepository {
     return ids.map(id => {
       const found = elements.find(e => e.id === id);
       if (!found) {
-        return new Error(`Element with ID ${id} not found`);
+        throw new Error(`Element with ID ${id} not found`);
+        // return new Error(`Element with ID ${id} not found`)
       }
       return { base: found };
     });
@@ -131,25 +135,25 @@ export namespace ElementRepository {
    */
   export const loadByTemplateIds = async (
     templateIds: number[]
-  ): Promise<(CertificateElementInterface[] | Error)[]> => {
+  ): Promise<(CertificateElementUnion | Error)[]> => {
     if (templateIds.length === 0) return [];
 
-    const elements = await db
+    const baseElements = await db
       .select()
       .from(certificateElement)
       .where(inArray(certificateElement.templateId, templateIds))
       .orderBy(asc(certificateElement.renderOrder));
 
-    // Group by templateId, maintaining order, return Error if no elements found could indicate invalid template
-    return templateIds.map(templateId => {
-      const templateElements = elements.filter(
-        element => element.templateId === templateId
-      );
-      // Return the elements array (empty array is valid for templates with no elements)
-      return templateElements.map(element => ({
-        base: element,
-      }));
-    });
+    const result: CertificateElementUnion[] = await Promise.all(
+      baseElements.map(async base => {
+        if (base.type === ElementType.TEXT) {
+          // This 'await' is now valid inside the 'async' map callback.
+          return await TextElementRepository.loadByBase(base);
+        }
+        throw new Error("not implemented yet");
+      })
+    );
+    return result;
   };
 
   // ============================================================================
