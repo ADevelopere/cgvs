@@ -20,8 +20,6 @@ export type GenderDataSourceInputGraphql = {
 export type GenderElementInputGraphql = {
   base: CertificateElementBaseInput;
   textProps: TextPropsInputGraphql;
-  dataSource: GenderDataSourceInputGraphql;
-  // genderProps: GenderElementSpecPropsInput;
 };
 
 // GraphQL update input type

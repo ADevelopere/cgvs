@@ -9,8 +9,6 @@ import {
   QRCodeElementEntity,
   CertificateElementEntityInput,
   QRCodeErrorCorrection,
-  QRCodeDataSource,
-  QRCodeDataSourceType,
 } from "@/server/types/element";
 import { QRCodeElementUtils } from "@/server/utils/element";
 import logger from "@/server/lib/logger";
@@ -65,11 +63,6 @@ export namespace QRCodeElementRepository {
       `QR_CODE element created: ${baseElement.name} (ID: ${baseElement.id})`
     );
 
-    // 4. Return full output
-    const newDataSource = QRCodeElementUtils.convertInputDataSourceToOutput(
-      input.dataSource
-    );
-
     return {
       base: baseElement,
       qrCodeProps: {
@@ -78,7 +71,6 @@ export namespace QRCodeElementRepository {
         foregroundColor: newQRCodeElement.foregroundColor,
         backgroundColor: newQRCodeElement.backgroundColor,
       },
-      qrCodeDataSource: newDataSource,
     };
   };
 
@@ -125,11 +117,6 @@ export namespace QRCodeElementRepository {
       `QR_CODE element updated: ${updatedBaseElement.name} (ID: ${input.id})`
     );
 
-    // 6. Return updated element
-    const newDataSource = QRCodeElementUtils.convertInputDataSourceToOutput(
-      input.dataSource
-    );
-
     return {
       base: updatedBaseElement,
       qrCodeProps: {
@@ -138,7 +125,6 @@ export namespace QRCodeElementRepository {
         foregroundColor: updatedQRCodeElement.foregroundColor,
         backgroundColor: updatedQRCodeElement.backgroundColor,
       },
-      qrCodeDataSource: newDataSource,
     };
   };
 
@@ -168,14 +154,6 @@ export namespace QRCodeElementRepository {
 
     const row = result[0];
 
-    // Reconstruct output
-    // Note: qrCodeDataSource is stored in base element config JSONB, not in qr_code_element table
-    // For now, derive it from config or use a default (this will be fixed when config is properly extracted)
-    // TODO: Extract qrCodeDataSource from base element config JSONB
-    const qrCodeDataSource: QRCodeDataSource = {
-      type: QRCodeDataSourceType.VERIFICATION_URL,
-    };
-
     return {
       base: row.certificate_element,
       qrCodeProps: {
@@ -184,7 +162,6 @@ export namespace QRCodeElementRepository {
         foregroundColor: row.qr_code_element.foregroundColor,
         backgroundColor: row.qr_code_element.backgroundColor,
       },
-      qrCodeDataSource,
     };
   };
 

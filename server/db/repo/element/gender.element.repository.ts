@@ -1,6 +1,10 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
-import { certificateElement, genderElement, elementTextProps } from "@/server/db/schema";
+import {
+  certificateElement,
+  genderElement,
+  elementTextProps,
+} from "@/server/db/schema";
 import {
   GenderElementInput,
   GenderElementUpdateInput,
@@ -8,7 +12,6 @@ import {
   ElementType,
   ElementTextPropsEntity,
   CertificateElementEntityInput,
-  GenderDataSourceType,
 } from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
 import { GenderElementUtils } from "@/server/utils";
@@ -70,9 +73,6 @@ export namespace GenderElementRepository {
     return {
       base: baseElement,
       textPropsEntity: newTextProps,
-      genderDataSource: {
-        type: GenderDataSourceType.STUDENT_GENDER,
-      },
     };
   };
 
@@ -127,7 +127,6 @@ export namespace GenderElementRepository {
     return {
       base: updatedBaseElement,
       textPropsEntity: updatedTextProps,
-      genderDataSource: existing.genderDataSource,
     };
   };
 
@@ -165,9 +164,6 @@ export namespace GenderElementRepository {
     return {
       base: row.certificate_element,
       textPropsEntity: row.element_text_props,
-      genderDataSource: {
-        type: GenderDataSourceType.STUDENT_GENDER,
-      },
     };
   };
 

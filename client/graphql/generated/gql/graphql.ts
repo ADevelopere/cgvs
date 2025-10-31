@@ -52,6 +52,12 @@ export type CertificateDateField =
   | 'RELEASE_DATE';
 
 export type CertificateElement = {
+  base?: Maybe<CertificateElementBase>;
+  template?: Maybe<Template>;
+};
+
+export type CertificateElementBase = {
+  __typename?: 'CertificateElementBase';
   alignment?: Maybe<ElementAlignment>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
@@ -61,13 +67,12 @@ export type CertificateElement = {
   positionX?: Maybe<Scalars['Int']['output']>;
   positionY?: Maybe<Scalars['Int']['output']>;
   renderOrder?: Maybe<Scalars['Int']['output']>;
-  template?: Maybe<Template>;
   type?: Maybe<ElementType>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   width?: Maybe<Scalars['Int']['output']>;
 };
 
-export type CertificateElementBaseCreateInput = {
+export type CertificateElementBaseInput = {
   alignment: ElementAlignment;
   description: Scalars['String']['input'];
   height: Scalars['Int']['input'];
@@ -80,15 +85,15 @@ export type CertificateElementBaseCreateInput = {
 };
 
 export type CertificateElementBaseUpdateInput = {
-  alignment?: InputMaybe<ElementAlignment>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  height?: InputMaybe<Scalars['Int']['input']>;
+  alignment: ElementAlignment;
+  description: Scalars['String']['input'];
+  height: Scalars['Int']['input'];
   id: Scalars['Int']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  positionX?: InputMaybe<Scalars['Int']['input']>;
-  positionY?: InputMaybe<Scalars['Int']['input']>;
-  renderOrder?: InputMaybe<Scalars['Int']['input']>;
-  width?: InputMaybe<Scalars['Int']['input']>;
+  name: Scalars['String']['input'];
+  positionX: Scalars['Int']['input'];
+  positionY: Scalars['Int']['input'];
+  renderOrder: Scalars['Int']['input'];
+  width: Scalars['Int']['input'];
 };
 
 export type CertificateElementUnion = CountryElement | DateElement | GenderElement | ImageElement | NumberElement | QrCodeElement | TextElement;
@@ -346,49 +351,32 @@ export type CountryCode =
 
 export type CountryElement = CertificateElement & {
   __typename?: 'CountryElement';
-  alignment?: Maybe<ElementAlignment>;
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  height?: Maybe<Scalars['Int']['output']>;
-  id?: Maybe<Scalars['Int']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  positionX?: Maybe<Scalars['Int']['output']>;
-  positionY?: Maybe<Scalars['Int']['output']>;
-  renderOrder?: Maybe<Scalars['Int']['output']>;
-  representation?: Maybe<CountryRepresentation>;
+  base?: Maybe<CertificateElementBase>;
+  countryProps?: Maybe<CountryElementCountryProps>;
   template?: Maybe<Template>;
   textProps?: Maybe<TextProps>;
-  type?: Maybe<ElementType>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  width?: Maybe<Scalars['Int']['output']>;
 };
 
-export type CountryElementCreateInput = {
-  alignment: ElementAlignment;
-  description: Scalars['String']['input'];
-  height: Scalars['Int']['input'];
-  name: Scalars['String']['input'];
-  positionX: Scalars['Int']['input'];
-  positionY: Scalars['Int']['input'];
-  renderOrder: Scalars['Int']['input'];
+export type CountryElementCountryProps = {
+  __typename?: 'CountryElementCountryProps';
+  representation?: Maybe<CountryRepresentation>;
+};
+
+export type CountryElementCountryPropsInput = {
   representation: CountryRepresentation;
-  templateId: Scalars['Int']['input'];
-  textProps: TextPropsCreateInput;
-  width: Scalars['Int']['input'];
+};
+
+export type CountryElementInput = {
+  base: CertificateElementBaseInput;
+  countryProps: CountryElementCountryPropsInput;
+  textProps: TextPropsInput;
 };
 
 export type CountryElementUpdateInput = {
-  alignment?: InputMaybe<ElementAlignment>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  height?: InputMaybe<Scalars['Int']['input']>;
+  base: CertificateElementBaseInput;
+  countryProps: CountryElementCountryPropsInput;
   id: Scalars['Int']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  positionX?: InputMaybe<Scalars['Int']['input']>;
-  positionY?: InputMaybe<Scalars['Int']['input']>;
-  renderOrder?: InputMaybe<Scalars['Int']['input']>;
-  representation?: InputMaybe<CountryRepresentation>;
-  textProps?: InputMaybe<TextPropsUpdateInput>;
-  width?: InputMaybe<Scalars['Int']['input']>;
+  textProps: TextPropsInput;
 };
 
 export type CountryRepresentation =
@@ -451,52 +439,33 @@ export type DateDataSourceType =
 
 export type DateElement = CertificateElement & {
   __typename?: 'DateElement';
-  alignment?: Maybe<ElementAlignment>;
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  base?: Maybe<CertificateElementBase>;
   dateDataSource?: Maybe<DateDataSource>;
   dateProps?: Maybe<DateProps>;
-  description?: Maybe<Scalars['String']['output']>;
-  height?: Maybe<Scalars['Int']['output']>;
-  id?: Maybe<Scalars['Int']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  positionX?: Maybe<Scalars['Int']['output']>;
-  positionY?: Maybe<Scalars['Int']['output']>;
-  renderOrder?: Maybe<Scalars['Int']['output']>;
   template?: Maybe<Template>;
   textProps?: Maybe<TextProps>;
-  type?: Maybe<ElementType>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  width?: Maybe<Scalars['Int']['output']>;
 };
 
-export type DateElementCreateInput = {
-  alignment: ElementAlignment;
+export type DateElementInput = {
+  base: CertificateElementBaseInput;
   dataSource: DateDataSourceInput;
-  dateProps: DatePropsCreateInput;
-  description: Scalars['String']['input'];
-  height: Scalars['Int']['input'];
-  name: Scalars['String']['input'];
-  positionX: Scalars['Int']['input'];
-  positionY: Scalars['Int']['input'];
-  renderOrder: Scalars['Int']['input'];
-  templateId: Scalars['Int']['input'];
-  textProps: TextPropsCreateInput;
-  width: Scalars['Int']['input'];
+  dateProps: DateElementSpecPropsInput;
+  textProps: TextPropsInput;
+};
+
+export type DateElementSpecPropsInput = {
+  calendarType: CalendarType;
+  format: Scalars['String']['input'];
+  offsetDays?: InputMaybe<Scalars['Int']['input']>;
+  transformation?: InputMaybe<DateTransformationType>;
 };
 
 export type DateElementUpdateInput = {
-  alignment?: InputMaybe<ElementAlignment>;
-  dataSource?: InputMaybe<DateDataSourceInput>;
-  dateProps?: InputMaybe<DatePropsUpdateInput>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  height?: InputMaybe<Scalars['Int']['input']>;
+  base: CertificateElementBaseInput;
+  dataSource: DateDataSourceInput;
+  dateProps: DateElementSpecPropsInput;
   id: Scalars['Int']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  positionX?: InputMaybe<Scalars['Int']['input']>;
-  positionY?: InputMaybe<Scalars['Int']['input']>;
-  renderOrder?: InputMaybe<Scalars['Int']['input']>;
-  textProps?: InputMaybe<TextPropsUpdateInput>;
-  width?: InputMaybe<Scalars['Int']['input']>;
+  textProps: TextPropsInput;
 };
 
 export type DateProps = {
@@ -505,20 +474,6 @@ export type DateProps = {
   format?: Maybe<Scalars['String']['output']>;
   offsetDays?: Maybe<Scalars['Int']['output']>;
   transformation?: Maybe<DateTransformationType>;
-};
-
-export type DatePropsCreateInput = {
-  calendarType: CalendarType;
-  format: Scalars['String']['input'];
-  offsetDays: Scalars['Int']['input'];
-  transformation?: InputMaybe<DateTransformationType>;
-};
-
-export type DatePropsUpdateInput = {
-  calendarType?: InputMaybe<CalendarType>;
-  format?: InputMaybe<Scalars['String']['input']>;
-  offsetDays?: InputMaybe<Scalars['Int']['input']>;
-  transformation?: InputMaybe<DateTransformationType>;
 };
 
 export type DateTransformationType =
@@ -807,46 +762,20 @@ export type Gender =
 
 export type GenderElement = CertificateElement & {
   __typename?: 'GenderElement';
-  alignment?: Maybe<ElementAlignment>;
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  height?: Maybe<Scalars['Int']['output']>;
-  id?: Maybe<Scalars['Int']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  positionX?: Maybe<Scalars['Int']['output']>;
-  positionY?: Maybe<Scalars['Int']['output']>;
-  renderOrder?: Maybe<Scalars['Int']['output']>;
+  base?: Maybe<CertificateElementBase>;
   template?: Maybe<Template>;
   textProps?: Maybe<TextProps>;
-  type?: Maybe<ElementType>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  width?: Maybe<Scalars['Int']['output']>;
 };
 
-export type GenderElementCreateInput = {
-  alignment: ElementAlignment;
-  description: Scalars['String']['input'];
-  height: Scalars['Int']['input'];
-  name: Scalars['String']['input'];
-  positionX: Scalars['Int']['input'];
-  positionY: Scalars['Int']['input'];
-  renderOrder: Scalars['Int']['input'];
-  templateId: Scalars['Int']['input'];
-  textProps: TextPropsCreateInput;
-  width: Scalars['Int']['input'];
+export type GenderElementInput = {
+  base: CertificateElementBaseInput;
+  textProps: TextPropsInput;
 };
 
 export type GenderElementUpdateInput = {
-  alignment?: InputMaybe<ElementAlignment>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  height?: InputMaybe<Scalars['Int']['input']>;
+  base: CertificateElementBaseInput;
   id: Scalars['Int']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  positionX?: InputMaybe<Scalars['Int']['input']>;
-  positionY?: InputMaybe<Scalars['Int']['input']>;
-  renderOrder?: InputMaybe<Scalars['Int']['input']>;
-  textProps?: InputMaybe<TextPropsUpdateInput>;
-  width?: InputMaybe<Scalars['Int']['input']>;
+  textProps: TextPropsInput;
 };
 
 export type ImageDataSource = ImageDataSourceStorageFile;
@@ -869,49 +798,34 @@ export type ImageDataSourceType =
 
 export type ImageElement = CertificateElement & {
   __typename?: 'ImageElement';
-  alignment?: Maybe<ElementAlignment>;
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  fit?: Maybe<ElementImageFit>;
-  height?: Maybe<Scalars['Int']['output']>;
-  id?: Maybe<Scalars['Int']['output']>;
+  base?: Maybe<CertificateElementBase>;
   imageDataSource?: Maybe<ImageDataSource>;
-  name?: Maybe<Scalars['String']['output']>;
-  positionX?: Maybe<Scalars['Int']['output']>;
-  positionY?: Maybe<Scalars['Int']['output']>;
-  renderOrder?: Maybe<Scalars['Int']['output']>;
+  imageProps?: Maybe<ImageElementSpecProps>;
   template?: Maybe<Template>;
-  type?: Maybe<ElementType>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  width?: Maybe<Scalars['Int']['output']>;
 };
 
-export type ImageElementCreateInput = {
-  alignment: ElementAlignment;
+export type ImageElementInput = {
+  base: CertificateElementBaseInput;
   dataSource: ImageDataSourceInput;
-  description: Scalars['String']['input'];
+  imageProps: ImageElementSpecPropsInput;
+};
+
+export type ImageElementSpecProps = {
+  __typename?: 'ImageElementSpecProps';
+  elementId?: Maybe<Scalars['Int']['output']>;
+  fit?: Maybe<ElementImageFit>;
+  storageFileId?: Maybe<Scalars['Int']['output']>;
+};
+
+export type ImageElementSpecPropsInput = {
   fit: ElementImageFit;
-  height: Scalars['Int']['input'];
-  name: Scalars['String']['input'];
-  positionX: Scalars['Int']['input'];
-  positionY: Scalars['Int']['input'];
-  renderOrder: Scalars['Int']['input'];
-  templateId: Scalars['Int']['input'];
-  width: Scalars['Int']['input'];
 };
 
 export type ImageElementUpdateInput = {
-  alignment?: InputMaybe<ElementAlignment>;
-  dataSource?: InputMaybe<ImageDataSourceInput>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  fit?: InputMaybe<ElementImageFit>;
-  height?: InputMaybe<Scalars['Int']['input']>;
+  base: CertificateElementBaseInput;
+  dataSource: ImageDataSourceInput;
   id: Scalars['Int']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  positionX?: InputMaybe<Scalars['Int']['input']>;
-  positionY?: InputMaybe<Scalars['Int']['input']>;
-  renderOrder?: InputMaybe<Scalars['Int']['input']>;
-  width?: InputMaybe<Scalars['Int']['input']>;
+  imageProps: ImageElementSpecPropsInput;
 };
 
 export type LoginInput = {
@@ -970,7 +884,6 @@ export type Mutation = {
   setRecipientVariableValues?: Maybe<RecipientWithVariableValues>;
   setStorageItemProtection?: Maybe<FileOperationResult>;
   suspendTemplate?: Maybe<Template>;
-  testFontReferenceInput?: Maybe<Scalars['String']['output']>;
   unsuspendTemplate?: Maybe<Template>;
   updateCountryElement?: Maybe<CountryElement>;
   updateDateElement?: Maybe<DateElement>;
@@ -998,12 +911,12 @@ export type MutationCopyStorageItemsArgs = {
 
 
 export type MutationCreateCountryElementArgs = {
-  input: CountryElementCreateInput;
+  input: CountryElementInput;
 };
 
 
 export type MutationCreateDateElementArgs = {
-  input: DateElementCreateInput;
+  input: DateElementInput;
 };
 
 
@@ -1018,22 +931,22 @@ export type MutationCreateFontArgs = {
 
 
 export type MutationCreateGenderElementArgs = {
-  input: GenderElementCreateInput;
+  input: GenderElementInput;
 };
 
 
 export type MutationCreateImageElementArgs = {
-  input: ImageElementCreateInput;
+  input: ImageElementInput;
 };
 
 
 export type MutationCreateNumberElementArgs = {
-  input: NumberElementCreateInput;
+  input: NumberElementInput;
 };
 
 
 export type MutationCreateQrCodeElementArgs = {
-  input: QrCodeElementCreateInput;
+  input: QrCodeElementInput;
 };
 
 
@@ -1088,7 +1001,7 @@ export type MutationCreateTemplateTextVariableArgs = {
 
 
 export type MutationCreateTextElementArgs = {
-  input: TextElementCreateInput;
+  input: TextElementInput;
 };
 
 
@@ -1190,11 +1103,6 @@ export type MutationSetStorageItemProtectionArgs = {
 
 export type MutationSuspendTemplateArgs = {
   id: Scalars['Int']['input'];
-};
-
-
-export type MutationTestFontReferenceInputArgs = {
-  fontRef: FontReferenceInput;
 };
 
 
@@ -1302,52 +1210,38 @@ export type NumberDataSourceType =
 
 export type NumberElement = CertificateElement & {
   __typename?: 'NumberElement';
-  alignment?: Maybe<ElementAlignment>;
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  height?: Maybe<Scalars['Int']['output']>;
-  id?: Maybe<Scalars['Int']['output']>;
-  mapping?: Maybe<Scalars['StringMap']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
+  base?: Maybe<CertificateElementBase>;
   numberDataSource?: Maybe<NumberDataSource>;
-  positionX?: Maybe<Scalars['Int']['output']>;
-  positionY?: Maybe<Scalars['Int']['output']>;
-  renderOrder?: Maybe<Scalars['Int']['output']>;
+  numberProps?: Maybe<NumberProps>;
   template?: Maybe<Template>;
   textProps?: Maybe<TextProps>;
-  type?: Maybe<ElementType>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  width?: Maybe<Scalars['Int']['output']>;
 };
 
-export type NumberElementCreateInput = {
-  alignment: ElementAlignment;
+export type NumberElementInput = {
+  base: CertificateElementBaseInput;
   dataSource: NumberDataSourceInput;
-  description: Scalars['String']['input'];
-  height: Scalars['Int']['input'];
+  numberProps: NumberElementSpecPropsInput;
+  textProps: TextPropsInput;
+};
+
+export type NumberElementSpecPropsInput = {
   mapping: Scalars['StringMap']['input'];
-  name: Scalars['String']['input'];
-  positionX: Scalars['Int']['input'];
-  positionY: Scalars['Int']['input'];
-  renderOrder: Scalars['Int']['input'];
-  templateId: Scalars['Int']['input'];
-  textProps: TextPropsCreateInput;
-  width: Scalars['Int']['input'];
 };
 
 export type NumberElementUpdateInput = {
-  alignment?: InputMaybe<ElementAlignment>;
-  dataSource?: InputMaybe<NumberDataSourceInput>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  height?: InputMaybe<Scalars['Int']['input']>;
+  base: CertificateElementBaseInput;
+  dataSource: NumberDataSourceInput;
   id: Scalars['Int']['input'];
-  mapping?: InputMaybe<Scalars['StringMap']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  positionX?: InputMaybe<Scalars['Int']['input']>;
-  positionY?: InputMaybe<Scalars['Int']['input']>;
-  renderOrder?: InputMaybe<Scalars['Int']['input']>;
-  textProps?: InputMaybe<TextPropsUpdateInput>;
-  width?: InputMaybe<Scalars['Int']['input']>;
+  numberProps: NumberElementSpecPropsInput;
+  textProps: TextPropsInput;
+};
+
+export type NumberProps = {
+  __typename?: 'NumberProps';
+  elementId?: Maybe<Scalars['Int']['output']>;
+  mapping?: Maybe<Scalars['StringMap']['output']>;
+  textPropsId?: Maybe<Scalars['Int']['output']>;
+  variableId?: Maybe<Scalars['Int']['output']>;
 };
 
 export type OrderSortDirection =
@@ -1392,52 +1286,34 @@ export type PartialStudentUpdateInput = {
 
 export type QrCodeElement = CertificateElement & {
   __typename?: 'QRCodeElement';
-  alignment?: Maybe<ElementAlignment>;
-  backgroundColor?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  errorCorrection?: Maybe<QrCodeErrorCorrection>;
-  foregroundColor?: Maybe<Scalars['String']['output']>;
-  height?: Maybe<Scalars['Int']['output']>;
-  id?: Maybe<Scalars['Int']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  positionX?: Maybe<Scalars['Int']['output']>;
-  positionY?: Maybe<Scalars['Int']['output']>;
-  renderOrder?: Maybe<Scalars['Int']['output']>;
+  base?: Maybe<CertificateElementBase>;
+  qrCodeProps?: Maybe<QrCodeElementSpecProps>;
   template?: Maybe<Template>;
-  type?: Maybe<ElementType>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  width?: Maybe<Scalars['Int']['output']>;
 };
 
-export type QrCodeElementCreateInput = {
-  alignment: ElementAlignment;
+export type QrCodeElementInput = {
+  base: CertificateElementBaseInput;
+  qrCodeProps: QrCodeElementSpecPropsInput;
+};
+
+export type QrCodeElementSpecProps = {
+  __typename?: 'QRCodeElementSpecProps';
+  backgroundColor?: Maybe<Scalars['String']['output']>;
+  elementId?: Maybe<Scalars['Int']['output']>;
+  errorCorrection?: Maybe<QrCodeErrorCorrection>;
+  foregroundColor?: Maybe<Scalars['String']['output']>;
+};
+
+export type QrCodeElementSpecPropsInput = {
   backgroundColor: Scalars['String']['input'];
-  description: Scalars['String']['input'];
   errorCorrection: QrCodeErrorCorrection;
   foregroundColor: Scalars['String']['input'];
-  height: Scalars['Int']['input'];
-  name: Scalars['String']['input'];
-  positionX: Scalars['Int']['input'];
-  positionY: Scalars['Int']['input'];
-  renderOrder: Scalars['Int']['input'];
-  templateId: Scalars['Int']['input'];
-  width: Scalars['Int']['input'];
 };
 
 export type QrCodeElementUpdateInput = {
-  alignment?: InputMaybe<ElementAlignment>;
-  backgroundColor?: InputMaybe<Scalars['String']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  errorCorrection?: InputMaybe<QrCodeErrorCorrection>;
-  foregroundColor?: InputMaybe<Scalars['String']['input']>;
-  height?: InputMaybe<Scalars['Int']['input']>;
+  base: CertificateElementBaseInput;
   id: Scalars['Int']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  positionX?: InputMaybe<Scalars['Int']['input']>;
-  positionY?: InputMaybe<Scalars['Int']['input']>;
-  renderOrder?: InputMaybe<Scalars['Int']['input']>;
-  width?: InputMaybe<Scalars['Int']['input']>;
+  qrCodeProps: QrCodeElementSpecPropsInput;
 };
 
 export type QrCodeErrorCorrection =
@@ -2230,49 +2106,31 @@ export type TextDataSourceType =
 
 export type TextElement = CertificateElement & {
   __typename?: 'TextElement';
-  alignment?: Maybe<ElementAlignment>;
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  height?: Maybe<Scalars['Int']['output']>;
-  id?: Maybe<Scalars['Int']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  positionX?: Maybe<Scalars['Int']['output']>;
-  positionY?: Maybe<Scalars['Int']['output']>;
-  renderOrder?: Maybe<Scalars['Int']['output']>;
+  base?: Maybe<CertificateElementBase>;
   template?: Maybe<Template>;
   textDataSource?: Maybe<TextDataSource>;
+  textElementSpecProps?: Maybe<TextElementSpecProps>;
   textProps?: Maybe<TextProps>;
-  type?: Maybe<ElementType>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  width?: Maybe<Scalars['Int']['output']>;
 };
 
-export type TextElementCreateInput = {
-  alignment: ElementAlignment;
+export type TextElementInput = {
+  base: CertificateElementBaseInput;
   dataSource: TextDataSourceInput;
-  description: Scalars['String']['input'];
-  height: Scalars['Int']['input'];
-  name: Scalars['String']['input'];
-  positionX: Scalars['Int']['input'];
-  positionY: Scalars['Int']['input'];
-  renderOrder: Scalars['Int']['input'];
-  templateId: Scalars['Int']['input'];
-  textProps: TextPropsCreateInput;
-  width: Scalars['Int']['input'];
+  textProps: TextPropsInput;
+};
+
+export type TextElementSpecProps = {
+  __typename?: 'TextElementSpecProps';
+  elementId?: Maybe<Scalars['Int']['output']>;
+  textPropsId?: Maybe<Scalars['Int']['output']>;
+  variableId?: Maybe<Scalars['Int']['output']>;
 };
 
 export type TextElementUpdateInput = {
-  alignment?: InputMaybe<ElementAlignment>;
-  dataSource?: InputMaybe<TextDataSourceInput>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  height?: InputMaybe<Scalars['Int']['input']>;
+  base: CertificateElementBaseInput;
+  dataSource: TextDataSourceInput;
   id: Scalars['Int']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  positionX?: InputMaybe<Scalars['Int']['input']>;
-  positionY?: InputMaybe<Scalars['Int']['input']>;
-  renderOrder?: InputMaybe<Scalars['Int']['input']>;
-  textProps?: InputMaybe<TextPropsUpdateInput>;
-  width?: InputMaybe<Scalars['Int']['input']>;
+  textProps: TextPropsInput;
 };
 
 export type TextProps = {
@@ -2280,10 +2138,11 @@ export type TextProps = {
   color?: Maybe<Scalars['String']['output']>;
   fontRef?: Maybe<FontReference>;
   fontSize?: Maybe<Scalars['Int']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
   overflow?: Maybe<ElementOverflow>;
 };
 
-export type TextPropsCreateInput = {
+export type TextPropsInput = {
   color: Scalars['String']['input'];
   fontRef: FontReferenceInput;
   fontSize: Scalars['Int']['input'];
@@ -2294,6 +2153,7 @@ export type TextPropsUpdateInput = {
   color: Scalars['String']['input'];
   fontRef: FontReferenceInput;
   fontSize: Scalars['Int']['input'];
+  id: Scalars['Int']['input'];
   overflow: ElementOverflow;
 };
 
@@ -2729,39 +2589,39 @@ export type ElementsByTemplateIdQueryVariables = Exact<{
 
 
 export type ElementsByTemplateIdQuery = { __typename?: 'Query', elementsByTemplateId?: Array<
-    | { __typename?: 'CountryElement', representation?: CountryRepresentation | null, id?: number | null, name?: string | null, description?: string | null, type?: ElementType | null, positionX?: number | null, positionY?: number | null, width?: number | null, height?: number | null, alignment?: ElementAlignment | null, renderOrder?: number | null, createdAt?: any | null, updatedAt?: any | null, textProps?: { __typename?: 'TextProps', color?: string | null, fontSize?: number | null, overflow?: ElementOverflow | null, fontRef?:
+    | { __typename?: 'CountryElement', countryProps?: { __typename?: 'CountryElementCountryProps', representation?: CountryRepresentation | null } | null, textProps?: { __typename?: 'TextProps', color?: string | null, fontSize?: number | null, id?: number | null, overflow?: ElementOverflow | null, fontRef?:
           | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
           | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
-         | null } | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
-    | { __typename?: 'DateElement', id?: number | null, name?: string | null, description?: string | null, type?: ElementType | null, positionX?: number | null, positionY?: number | null, width?: number | null, height?: number | null, alignment?: ElementAlignment | null, renderOrder?: number | null, createdAt?: any | null, updatedAt?: any | null, dateDataSource?:
+         | null } | null, base?: { __typename?: 'CertificateElementBase', alignment?: ElementAlignment | null, createdAt?: any | null, description?: string | null, height?: number | null, id?: number | null, name?: string | null, positionX?: number | null, positionY?: number | null, renderOrder?: number | null, type?: ElementType | null, updatedAt?: any | null, width?: number | null } | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
+    | { __typename?: 'DateElement', dateDataSource?:
         | { __typename?: 'DateDataSourceCertificateField', certificateField?: CertificateDateField | null, type?: DateDataSourceType | null }
         | { __typename?: 'DateDataSourceStatic', type?: DateDataSourceType | null, value?: string | null }
         | { __typename?: 'DateDataSourceStudentField', studentField?: StudentDateField | null, type?: DateDataSourceType | null }
         | { __typename?: 'DateDataSourceTemplateVariable', dateVariableId?: number | null, type?: DateDataSourceType | null }
-       | null, dateProps?: { __typename?: 'DateProps', calendarType?: CalendarType | null, offsetDays?: number | null, format?: string | null, transformation?: DateTransformationType | null } | null, textProps?: { __typename?: 'TextProps', color?: string | null, fontSize?: number | null, overflow?: ElementOverflow | null, fontRef?:
+       | null, dateProps?: { __typename?: 'DateProps', calendarType?: CalendarType | null, format?: string | null, offsetDays?: number | null, transformation?: DateTransformationType | null } | null, textProps?: { __typename?: 'TextProps', color?: string | null, fontSize?: number | null, id?: number | null, overflow?: ElementOverflow | null, fontRef?:
           | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
           | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
-         | null } | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
-    | { __typename?: 'GenderElement', id?: number | null, name?: string | null, description?: string | null, type?: ElementType | null, positionX?: number | null, positionY?: number | null, width?: number | null, height?: number | null, alignment?: ElementAlignment | null, renderOrder?: number | null, createdAt?: any | null, updatedAt?: any | null, textProps?: { __typename?: 'TextProps', color?: string | null, fontSize?: number | null, overflow?: ElementOverflow | null, fontRef?:
+         | null } | null, base?: { __typename?: 'CertificateElementBase', alignment?: ElementAlignment | null, createdAt?: any | null, description?: string | null, height?: number | null, id?: number | null, name?: string | null, positionX?: number | null, positionY?: number | null, renderOrder?: number | null, type?: ElementType | null, updatedAt?: any | null, width?: number | null } | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
+    | { __typename?: 'GenderElement', textProps?: { __typename?: 'TextProps', color?: string | null, fontSize?: number | null, id?: number | null, overflow?: ElementOverflow | null, fontRef?:
           | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
           | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
-         | null } | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
-    | { __typename?: 'ImageElement', fit?: ElementImageFit | null, id?: number | null, name?: string | null, description?: string | null, type?: ElementType | null, positionX?: number | null, positionY?: number | null, width?: number | null, height?: number | null, alignment?: ElementAlignment | null, renderOrder?: number | null, createdAt?: any | null, updatedAt?: any | null, imageDataSource?: { __typename?: 'ImageDataSourceStorageFile', storageFileId?: number | null, type?: ImageDataSourceType | null } | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
-    | { __typename?: 'NumberElement', mapping?: any | null, id?: number | null, name?: string | null, description?: string | null, type?: ElementType | null, positionX?: number | null, positionY?: number | null, width?: number | null, height?: number | null, alignment?: ElementAlignment | null, renderOrder?: number | null, createdAt?: any | null, updatedAt?: any | null, numberDataSource?: { __typename?: 'NumberDataSource', numberVariableId?: number | null, type?: NumberDataSourceType | null } | null, textProps?: { __typename?: 'TextProps', color?: string | null, fontSize?: number | null, overflow?: ElementOverflow | null, fontRef?:
+         | null } | null, base?: { __typename?: 'CertificateElementBase', alignment?: ElementAlignment | null, createdAt?: any | null, description?: string | null, height?: number | null, id?: number | null, name?: string | null, positionX?: number | null, positionY?: number | null, renderOrder?: number | null, type?: ElementType | null, updatedAt?: any | null, width?: number | null } | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
+    | { __typename?: 'ImageElement', imageDataSource?: { __typename?: 'ImageDataSourceStorageFile', storageFileId?: number | null, type?: ImageDataSourceType | null } | null, imageProps?: { __typename?: 'ImageElementSpecProps', elementId?: number | null, fit?: ElementImageFit | null, storageFileId?: number | null } | null, base?: { __typename?: 'CertificateElementBase', alignment?: ElementAlignment | null, createdAt?: any | null, description?: string | null, height?: number | null, id?: number | null, name?: string | null, positionX?: number | null, positionY?: number | null, renderOrder?: number | null, type?: ElementType | null, updatedAt?: any | null, width?: number | null } | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
+    | { __typename?: 'NumberElement', numberDataSource?: { __typename?: 'NumberDataSource', numberVariableId?: number | null, type?: NumberDataSourceType | null } | null, numberProps?: { __typename?: 'NumberProps', elementId?: number | null, mapping?: any | null, textPropsId?: number | null, variableId?: number | null } | null, textProps?: { __typename?: 'TextProps', color?: string | null, fontSize?: number | null, id?: number | null, overflow?: ElementOverflow | null, fontRef?:
           | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
           | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
-         | null } | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
-    | { __typename?: 'QRCodeElement', backgroundColor?: string | null, errorCorrection?: QrCodeErrorCorrection | null, foregroundColor?: string | null, id?: number | null, name?: string | null, description?: string | null, type?: ElementType | null, positionX?: number | null, positionY?: number | null, width?: number | null, height?: number | null, alignment?: ElementAlignment | null, renderOrder?: number | null, createdAt?: any | null, updatedAt?: any | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
-    | { __typename?: 'TextElement', id?: number | null, name?: string | null, description?: string | null, type?: ElementType | null, positionX?: number | null, positionY?: number | null, width?: number | null, height?: number | null, alignment?: ElementAlignment | null, renderOrder?: number | null, createdAt?: any | null, updatedAt?: any | null, textDataSource?:
+         | null } | null, base?: { __typename?: 'CertificateElementBase', alignment?: ElementAlignment | null, createdAt?: any | null, description?: string | null, height?: number | null, id?: number | null, name?: string | null, positionX?: number | null, positionY?: number | null, renderOrder?: number | null, type?: ElementType | null, updatedAt?: any | null, width?: number | null } | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
+    | { __typename?: 'QRCodeElement', qrCodeProps?: { __typename?: 'QRCodeElementSpecProps', backgroundColor?: string | null, elementId?: number | null, errorCorrection?: QrCodeErrorCorrection | null, foregroundColor?: string | null } | null, base?: { __typename?: 'CertificateElementBase', alignment?: ElementAlignment | null, createdAt?: any | null, description?: string | null, height?: number | null, id?: number | null, name?: string | null, positionX?: number | null, positionY?: number | null, renderOrder?: number | null, type?: ElementType | null, updatedAt?: any | null, width?: number | null } | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
+    | { __typename?: 'TextElement', textDataSource?:
         | { __typename?: 'TextDataSourceCertificateField', certificateField?: CertificateTextField | null, type?: TextDataSourceType | null }
         | { __typename?: 'TextDataSourceStatic', type?: TextDataSourceType | null, value?: string | null }
         | { __typename?: 'TextDataSourceStudentField', studentField?: StudentTextField | null, type?: TextDataSourceType | null }
         | { __typename?: 'TextDataSourceTemplateSelectVariable', selectVariableId?: number | null, type?: TextDataSourceType | null }
         | { __typename?: 'TextDataSourceTemplateTextVariable', textVariableId?: number | null, type?: TextDataSourceType | null }
-       | null, textProps?: { __typename?: 'TextProps', color?: string | null, fontSize?: number | null, overflow?: ElementOverflow | null, fontRef?:
+       | null, textElementSpecProps?: { __typename?: 'TextElementSpecProps', elementId?: number | null, textPropsId?: number | null, variableId?: number | null } | null, textProps?: { __typename?: 'TextProps', color?: string | null, fontSize?: number | null, id?: number | null, overflow?: ElementOverflow | null, fontRef?:
           | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
           | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
-         | null } | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
+         | null } | null, base?: { __typename?: 'CertificateElementBase', alignment?: ElementAlignment | null, createdAt?: any | null, description?: string | null, height?: number | null, id?: number | null, name?: string | null, positionX?: number | null, positionY?: number | null, renderOrder?: number | null, type?: ElementType | null, updatedAt?: any | null, width?: number | null } | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
   > | null };
 
 export type RecipientQueryVariables = Exact<{
@@ -2991,7 +2851,7 @@ export const DeleteTemplateCategoryDocument = {"kind":"Document","definitions":[
 export const UpdateTemplateCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateTemplateCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TemplateCategoryUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTemplateCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"specialType"}},{"kind":"Field","name":{"kind":"Name","value":"parentCategory"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateTemplateCategoryMutation, UpdateTemplateCategoryMutationVariables>;
 export const RecipientVariableValuesByGroupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"recipientVariableValuesByGroup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"recipientGroupId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recipientVariableValuesByGroup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"recipientGroupId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"recipientGroupId"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recipientGroupItemId"}},{"kind":"Field","name":{"kind":"Name","value":"studentId"}},{"kind":"Field","name":{"kind":"Name","value":"studentName"}},{"kind":"Field","name":{"kind":"Name","value":"variableValues"}}]}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]} as unknown as DocumentNode<RecipientVariableValuesByGroupQuery, RecipientVariableValuesByGroupQueryVariables>;
 export const SetRecipientVariableValuesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"setRecipientVariableValues"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"recipientGroupItemId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"values"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"VariableValueInput"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setRecipientVariableValues"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"recipientGroupItemId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"recipientGroupItemId"}}},{"kind":"Argument","name":{"kind":"Name","value":"values"},"value":{"kind":"Variable","name":{"kind":"Name","value":"values"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recipientGroupItemId"}},{"kind":"Field","name":{"kind":"Name","value":"studentId"}},{"kind":"Field","name":{"kind":"Name","value":"studentName"}},{"kind":"Field","name":{"kind":"Name","value":"variableValues"}}]}}]}}]} as unknown as DocumentNode<SetRecipientVariableValuesMutation, SetRecipientVariableValuesMutationVariables>;
-export const ElementsByTemplateIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"elementsByTemplateId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"templateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementsByTemplateId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"templateId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"templateId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"renderOrder"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"template"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"CountryElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"representation"}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dateDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceTemplateVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dateVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"dateProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarType"}},{"kind":"Field","name":{"kind":"Name","value":"offsetDays"}},{"kind":"Field","name":{"kind":"Name","value":"format"}},{"kind":"Field","name":{"kind":"Name","value":"transformation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GenderElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageDataSourceStorageFile"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"storageFileId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fit"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NumberElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mapping"}},{"kind":"Field","name":{"kind":"Name","value":"numberDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"numberVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"QRCodeElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"backgroundColor"}},{"kind":"Field","name":{"kind":"Name","value":"errorCorrection"}},{"kind":"Field","name":{"kind":"Name","value":"foregroundColor"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateSelectVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"selectVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateTextVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ElementsByTemplateIdQuery, ElementsByTemplateIdQueryVariables>;
+export const ElementsByTemplateIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ElementsByTemplateId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"templateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementsByTemplateId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"templateId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"templateId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"renderOrder"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}}]}},{"kind":"Field","name":{"kind":"Name","value":"template"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"CountryElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"countryProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"representation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dateDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceTemplateVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dateVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"dateProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarType"}},{"kind":"Field","name":{"kind":"Name","value":"format"}},{"kind":"Field","name":{"kind":"Name","value":"offsetDays"}},{"kind":"Field","name":{"kind":"Name","value":"transformation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GenderElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageDataSourceStorageFile"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"storageFileId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"imageProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"fit"}},{"kind":"Field","name":{"kind":"Name","value":"storageFileId"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NumberElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"numberDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"numberVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"numberProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"mapping"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"QRCodeElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"qrCodeProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"backgroundColor"}},{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"errorCorrection"}},{"kind":"Field","name":{"kind":"Name","value":"foregroundColor"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateSelectVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"selectVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateTextVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"textElementSpecProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ElementsByTemplateIdQuery, ElementsByTemplateIdQueryVariables>;
 export const RecipientDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"recipient"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recipient"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"studentId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"dateOfBirth"}},{"kind":"Field","name":{"kind":"Name","value":"nationality"}},{"kind":"Field","name":{"kind":"Name","value":"gender"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"recipientGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<RecipientQuery, RecipientQueryVariables>;
 export const RecipientsByGroupIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"recipientsByGroupId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"recipientGroupId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recipientsByGroupId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"recipientGroupId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"recipientGroupId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"studentId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"dateOfBirth"}},{"kind":"Field","name":{"kind":"Name","value":"nationality"}},{"kind":"Field","name":{"kind":"Name","value":"gender"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<RecipientsByGroupIdQuery, RecipientsByGroupIdQueryVariables>;
 export const RecipientsByStudentIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"recipientsByStudentId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"studentId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recipientsByStudentId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"studentId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"studentId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"studentId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"recipientGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"template"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]} as unknown as DocumentNode<RecipientsByStudentIdQuery, RecipientsByStudentIdQueryVariables>;

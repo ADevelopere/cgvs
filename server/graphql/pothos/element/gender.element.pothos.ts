@@ -13,51 +13,6 @@ import {
 } from "./textProps.pothos";
 
 // ============================================================================
-// Enums
-// ============================================================================
-
-export const GenderDataSourceTypePothosEnum = gqlSchemaBuilder.enumType(
-  "GenderDataSourceType",
-  { values: Object.values(Types.GenderDataSourceType) }
-);
-
-// ============================================================================
-// Data Source Objects (Output)
-// ============================================================================
-
-export const GenderDataSourceObject = gqlSchemaBuilder
-  .objectRef<Types.GenderDataSource>("GenderDataSource")
-  .implement({
-    fields: t => ({
-      type: t.expose("type", { type: GenderDataSourceTypePothosEnum }),
-    }),
-  });
-
-// ============================================================================
-// Data Source Input Objects (isOneOf Pattern)
-// ============================================================================
-
-export const GenderDataSourceStudentGenderInputObject = gqlSchemaBuilder
-  .inputRef<Types.GenderDataSourceStudentGenderInputGraphql>(
-    "GenderDataSourceStudentGenderInput"
-  )
-  .implement({
-    fields: _t => ({}), // No fields - STUDENT_GENDER has no parameters
-  });
-
-export const GenderDataSourceInputObject = gqlSchemaBuilder.inputType(
-  "GenderDataSourceInput",
-  {
-    isOneOf: true,
-    fields: t => ({
-      studentGender: t.field({
-        type: GenderDataSourceStudentGenderInputObject,
-      }),
-    }),
-  }
-);
-
-// ============================================================================
 // Mutation Inputs
 // ============================================================================
 
@@ -69,10 +24,6 @@ const createGenderElementInputFields = <Types extends SchemaTypes>(
     required: true,
   }),
   textProps: t.field({ type: TextPropsInputObject, required: true }),
-  dataSource: t.field({
-    type: GenderDataSourceInputObject,
-    required: true,
-  }),
 });
 
 export const GenderElementInputObject = gqlSchemaBuilder
@@ -111,8 +62,5 @@ export const GenderElementObject = gqlSchemaBuilder.loadableObject<
   isTypeOf: item => isOfElement(item, Types.ElementType.GENDER),
   fields: t => ({
     textProps: createTextPropsFieldFromEntity(t),
-    genderDataSource: t.expose("genderDataSource", {
-      type: GenderDataSourceObject,
-    }),
   }),
 });

@@ -1,9 +1,6 @@
 import {
-  GenderDataSourceType,
   GenderElementInput,
   GenderElementUpdateInput,
-  GenderDataSourceInput,
-  GenderDataSourceInputGraphql,
   GenderElementInputGraphql,
   GenderElementUpdateInputGraphql,
 } from "@/server/types/element";
@@ -19,39 +16,19 @@ export namespace GenderElementUtils {
   // ============================================================================
 
   /**
-   * Map GraphQL GenderDataSource input to repository GenderDataSource input
-   * Note: GENDER has only one data source variant (studentGender)
-   */
-  export const mapGenderDataSourceGraphqlToInput = (
-    input: GenderDataSourceInputGraphql
-  ): GenderDataSourceInput => {
-    if (!input || input.studentGender === undefined) {
-      throw new Error(
-        "Invalid GenderDataSource input: must specify studentGender"
-      );
-    }
-    return {
-      type: GenderDataSourceType.STUDENT_GENDER,
-    };
-  };
-
-  /**
    * Map GraphQL GenderElement create input to repository GenderElement create input
    */
   export const mapGenderElementCreateGraphqlToInput = (
     input: GenderElementInputGraphql
   ): GenderElementInput => {
-    if (!input || !input.base || !input.textProps || !input.dataSource) {
-      throw new Error(
-        "GenderElementInputGraphql must include base, textProps, and dataSource"
-      );
+    if (!input || !input.base || !input.textProps) {
+      throw new Error("GenderElementInputGraphql must include base, textProps");
     }
     return {
       base: input.base,
       textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
         input.textProps
       )!,
-      dataSource: mapGenderDataSourceGraphqlToInput(input.dataSource),
     };
   };
 
@@ -61,9 +38,9 @@ export namespace GenderElementUtils {
   export const mapGenderElementUpdateGraphqlToInput = (
     input: GenderElementUpdateInputGraphql
   ): GenderElementUpdateInput => {
-    if (!input || !input.base || !input.textProps || !input.dataSource) {
+    if (!input || !input.base || !input.textProps) {
       throw new Error(
-        "GenderElementUpdateInputGraphql must include base, textProps, and dataSource"
+        "GenderElementUpdateInputGraphql must include base, textProps"
       );
     }
     return {
@@ -72,7 +49,6 @@ export namespace GenderElementUtils {
       textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
         input.textProps
       )!,
-      dataSource: mapGenderDataSourceGraphqlToInput(input.dataSource),
     };
   };
   // ============================================================================
@@ -85,10 +61,8 @@ export namespace GenderElementUtils {
   export const validateInput = async (
     input: GenderElementInput
   ): Promise<void> => {
-    if (!input.base || !input.textProps || !input.dataSource) {
-      throw new Error(
-        "GenderElementInput must include base, textProps, and dataSource"
-      );
+    if (!input.base || !input.textProps) {
+      throw new Error("GenderElementInput must include base, textProps");
     }
 
     // Validate base element properties
@@ -96,7 +70,5 @@ export namespace GenderElementUtils {
 
     // Validate textProps
     await CommonElementUtils.validateTextProps(input.textProps);
-
-    // GENDER has fixed data source (STUDENT_GENDER), no validation needed
   };
 }
