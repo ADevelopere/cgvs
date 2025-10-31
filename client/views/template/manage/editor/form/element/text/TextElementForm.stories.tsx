@@ -3,6 +3,7 @@ import { logger } from "@/client/lib/logger";
 import { TextElementForm } from "./TextElementForm";
 import { mockSelfHostedFonts, mockTextVariables, mockSelectVariables } from "../story.util";
 import type { TextElementFormErrors, TextElementFormState } from "./types";
+import { ElementAlignment, ElementOverflow, StudentTextField } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof TextElementForm> = {
   title: "Template/Editor/Form/Element/Text/TextElementForm",
@@ -21,7 +22,7 @@ const defaultState: TextElementFormState = {
     positionY: 100,
     width: 200,
     height: 50,
-    alignment: "CENTER",
+    alignment: ElementAlignment.Baseline,
     renderOrder: 1,
     templateId: 1,
   },
@@ -29,7 +30,7 @@ const defaultState: TextElementFormState = {
     fontRef: { google: { identifier: "Roboto" } },
     fontSize: 16,
     color: "#000000",
-    overflow: "WRAP",
+    overflow: ElementOverflow.Wrap,
   },
   dataSource: {
     static: { value: "Certificate of Completion" },
@@ -66,7 +67,7 @@ export const WithStudentField: Story = {
     state: {
       ...defaultState,
       dataSource: {
-        studentField: { field: "STUDENT_NAME" },
+        studentField: { field: StudentTextField.StudentName },
       },
     },
     errors: defaultErrors,
