@@ -9,11 +9,11 @@ BUN_INSTALL="$HOME/.bun"
 
 # 3. Define shell configuration files and their respective bun configurations
 declare -A SHELL_CONFIGS=(
-  ["$HOME/.zshrc"]="\n# bun\nexport BUN_INSTALL=\"\$HOME/.bun\"\nexport PATH=\"\$BUN_INSTALL/bin:\$PATH\"\n"
-  ["$HOME/.bashrc"]="\n# bun\nexport BUN_INSTALL=\"\$HOME/.bun\"\nexport PATH=\"\$BUN_INSTALL/bin:\$PATH\"\n"
-  ["$HOME/.bash_profile"]="\n# bun\nexport BUN_INSTALL=\"\$HOME/.bun\"\nexport PATH=\"\$BUN_INSTALL/bin:\$PATH\"\n"
-  ["$HOME/.profile"]="\n# bun\nexport BUN_INSTALL=\"\$HOME/.bun\"\nexport PATH=\"\$BUN_INSTALL/bin:\$PATH\"\n"
-  ["$HOME/.config/fish/config.fish"]="\n# bun\nset -gx BUN_INSTALL \"\$HOME/.bun\"\nset -gx PATH \"\$BUN_INSTALL/bin\" \$PATH\n"
+  ["$HOME/.zshrc"]="\n# bun\nexport BUN_INSTALL=\"$HOME/.bun\"\nexport PATH=\"$BUN_INSTALL/bin:$PATH\"\n[ -s \"$HOME/.bun/_bun\" ] && source \"$HOME/.bun/_bun\"\n"
+  ["$HOME/.bashrc"]="\n# bun\nexport BUN_INSTALL=\"$HOME/.bun\"\nexport PATH=\"$BUN_INSTALL/bin:$PATH\"\n[ -s \"$HOME/.bun/_bun\" ] && source \"$HOME/.bun/_bun\"\n"
+  ["$HOME/.bash_profile"]="\n# bun\nexport BUN_INSTALL=\"$HOME/.bun\"\nexport PATH=\"$BUN_INSTALL/bin:$PATH\"\n[ -s \"$HOME/.bun/_bun\" ] && source \"$HOME/.bun/_bun\"\n"
+  ["$HOME/.profile"]="\n# bun\nexport BUN_INSTALL=\"$HOME/.bun\"\nexport PATH=\"$BUN_INSTALL/bin:$PATH\"\n[ -s \"$HOME/.bun/_bun\" ] && source \"$HOME/.bun/_bun\"\n"
+  ["$HOME/.config/fish/config.fish"]="\n# bun\nset -gx BUN_INSTALL \"$HOME/.bun\"\nset -gx PATH \"$BUN_INSTALL/bin\" $PATH\n# Bun shell completion (not supported in fish)\n"
 )
 
 # 4. Add bun configuration to all existing shell config files

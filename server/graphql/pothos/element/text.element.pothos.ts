@@ -297,9 +297,11 @@ export const TextElementObject = gqlSchemaBuilder.loadableObject<
     textProps: createTextPropsFieldFromEntity(t),
     textElementSpecProps: t.expose("textElementSpecProps", {
       type: TextElementSpecPropsObject,
+       nullable: false
     }),
     textDataSource: t.expose("textDataSource", {
       type: TextDataSourceUnion,
+      nullable: false
     }),
   }),
 });
