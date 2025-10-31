@@ -44,12 +44,14 @@ export type BulkOperationResult = {
   successfulItems?: Maybe<Array<StorageObject>>;
 };
 
-export type CalendarType =
-  | 'GREGORIAN'
-  | 'HIJRI';
+export enum CalendarType {
+  Gregorian = 'GREGORIAN',
+  Hijri = 'HIJRI'
+}
 
-export type CertificateDateField =
-  | 'RELEASE_DATE';
+export enum CertificateDateField {
+  ReleaseDate = 'RELEASE_DATE'
+}
 
 export type CertificateElement = {
   base?: Maybe<CertificateElementBase>;
@@ -98,256 +100,258 @@ export type CertificateElementBaseUpdateInput = {
 
 export type CertificateElementUnion = CountryElement | DateElement | GenderElement | ImageElement | NumberElement | QrCodeElement | TextElement;
 
-export type CertificateTextField =
-  | 'VERIFICATION_CODE';
+export enum CertificateTextField {
+  VerificationCode = 'VERIFICATION_CODE'
+}
 
-export type CountryCode =
-  | 'AD'
-  | 'AE'
-  | 'AF'
-  | 'AG'
-  | 'AI'
-  | 'AL'
-  | 'AM'
-  | 'AO'
-  | 'AQ'
-  | 'AR'
-  | 'AS'
-  | 'AT'
-  | 'AU'
-  | 'AW'
-  | 'AX'
-  | 'AZ'
-  | 'BA'
-  | 'BB'
-  | 'BD'
-  | 'BE'
-  | 'BF'
-  | 'BG'
-  | 'BH'
-  | 'BI'
-  | 'BJ'
-  | 'BL'
-  | 'BM'
-  | 'BN'
-  | 'BO'
-  | 'BR'
-  | 'BS'
-  | 'BT'
-  | 'BV'
-  | 'BW'
-  | 'BY'
-  | 'BZ'
-  | 'CA'
-  | 'CC'
-  | 'CD'
-  | 'CF'
-  | 'CG'
-  | 'CH'
-  | 'CI'
-  | 'CK'
-  | 'CL'
-  | 'CM'
-  | 'CN'
-  | 'CO'
-  | 'CR'
-  | 'CU'
-  | 'CV'
-  | 'CW'
-  | 'CX'
-  | 'CY'
-  | 'CZ'
-  | 'DE'
-  | 'DJ'
-  | 'DK'
-  | 'DM'
-  | 'DO'
-  | 'DZ'
-  | 'EC'
-  | 'EE'
-  | 'EG'
-  | 'EH'
-  | 'ER'
-  | 'ES'
-  | 'ET'
-  | 'FI'
-  | 'FJ'
-  | 'FK'
-  | 'FM'
-  | 'FO'
-  | 'FR'
-  | 'GA'
-  | 'GB'
-  | 'GD'
-  | 'GE'
-  | 'GF'
-  | 'GG'
-  | 'GH'
-  | 'GI'
-  | 'GL'
-  | 'GM'
-  | 'GN'
-  | 'GP'
-  | 'GQ'
-  | 'GR'
-  | 'GS'
-  | 'GT'
-  | 'GU'
-  | 'GW'
-  | 'GY'
-  | 'HK'
-  | 'HM'
-  | 'HN'
-  | 'HR'
-  | 'HT'
-  | 'HU'
-  | 'ID'
-  | 'IE'
-  | 'IM'
-  | 'IN'
-  | 'IO'
-  | 'IQ'
-  | 'IR'
-  | 'IS'
-  | 'IT'
-  | 'JE'
-  | 'JM'
-  | 'JO'
-  | 'JP'
-  | 'KE'
-  | 'KG'
-  | 'KH'
-  | 'KI'
-  | 'KM'
-  | 'KN'
-  | 'KP'
-  | 'KR'
-  | 'KW'
-  | 'KY'
-  | 'KZ'
-  | 'LA'
-  | 'LB'
-  | 'LC'
-  | 'LI'
-  | 'LK'
-  | 'LR'
-  | 'LS'
-  | 'LT'
-  | 'LU'
-  | 'LV'
-  | 'LY'
-  | 'MA'
-  | 'MC'
-  | 'MD'
-  | 'ME'
-  | 'MF'
-  | 'MG'
-  | 'MH'
-  | 'MK'
-  | 'ML'
-  | 'MM'
-  | 'MN'
-  | 'MO'
-  | 'MP'
-  | 'MQ'
-  | 'MR'
-  | 'MS'
-  | 'MT'
-  | 'MU'
-  | 'MV'
-  | 'MW'
-  | 'MX'
-  | 'MY'
-  | 'MZ'
-  | 'NA'
-  | 'NC'
-  | 'NE'
-  | 'NF'
-  | 'NG'
-  | 'NI'
-  | 'NL'
-  | 'NO'
-  | 'NP'
-  | 'NR'
-  | 'NU'
-  | 'NZ'
-  | 'OM'
-  | 'PA'
-  | 'PE'
-  | 'PF'
-  | 'PG'
-  | 'PH'
-  | 'PK'
-  | 'PL'
-  | 'PM'
-  | 'PN'
-  | 'PR'
-  | 'PS'
-  | 'PT'
-  | 'PW'
-  | 'PY'
-  | 'QA'
-  | 'RE'
-  | 'RO'
-  | 'RS'
-  | 'RU'
-  | 'RW'
-  | 'SA'
-  | 'SB'
-  | 'SC'
-  | 'SD'
-  | 'SE'
-  | 'SG'
-  | 'SH'
-  | 'SI'
-  | 'SJ'
-  | 'SK'
-  | 'SL'
-  | 'SM'
-  | 'SN'
-  | 'SO'
-  | 'SR'
-  | 'SS'
-  | 'ST'
-  | 'SV'
-  | 'SX'
-  | 'SY'
-  | 'SZ'
-  | 'TC'
-  | 'TD'
-  | 'TF'
-  | 'TG'
-  | 'TH'
-  | 'TJ'
-  | 'TK'
-  | 'TL'
-  | 'TM'
-  | 'TN'
-  | 'TO'
-  | 'TR'
-  | 'TV'
-  | 'TW'
-  | 'TZ'
-  | 'UA'
-  | 'UG'
-  | 'US'
-  | 'UY'
-  | 'UZ'
-  | 'VA'
-  | 'VC'
-  | 'VE'
-  | 'VG'
-  | 'VI'
-  | 'VN'
-  | 'VU'
-  | 'WF'
-  | 'WS'
-  | 'XK'
-  | 'YE'
-  | 'YT'
-  | 'ZA'
-  | 'ZM'
-  | 'ZW';
+export enum CountryCode {
+  Ad = 'AD',
+  Ae = 'AE',
+  Af = 'AF',
+  Ag = 'AG',
+  Ai = 'AI',
+  Al = 'AL',
+  Am = 'AM',
+  Ao = 'AO',
+  Aq = 'AQ',
+  Ar = 'AR',
+  As = 'AS',
+  At = 'AT',
+  Au = 'AU',
+  Aw = 'AW',
+  Ax = 'AX',
+  Az = 'AZ',
+  Ba = 'BA',
+  Bb = 'BB',
+  Bd = 'BD',
+  Be = 'BE',
+  Bf = 'BF',
+  Bg = 'BG',
+  Bh = 'BH',
+  Bi = 'BI',
+  Bj = 'BJ',
+  Bl = 'BL',
+  Bm = 'BM',
+  Bn = 'BN',
+  Bo = 'BO',
+  Br = 'BR',
+  Bs = 'BS',
+  Bt = 'BT',
+  Bv = 'BV',
+  Bw = 'BW',
+  By = 'BY',
+  Bz = 'BZ',
+  Ca = 'CA',
+  Cc = 'CC',
+  Cd = 'CD',
+  Cf = 'CF',
+  Cg = 'CG',
+  Ch = 'CH',
+  Ci = 'CI',
+  Ck = 'CK',
+  Cl = 'CL',
+  Cm = 'CM',
+  Cn = 'CN',
+  Co = 'CO',
+  Cr = 'CR',
+  Cu = 'CU',
+  Cv = 'CV',
+  Cw = 'CW',
+  Cx = 'CX',
+  Cy = 'CY',
+  Cz = 'CZ',
+  De = 'DE',
+  Dj = 'DJ',
+  Dk = 'DK',
+  Dm = 'DM',
+  Do = 'DO',
+  Dz = 'DZ',
+  Ec = 'EC',
+  Ee = 'EE',
+  Eg = 'EG',
+  Eh = 'EH',
+  Er = 'ER',
+  Es = 'ES',
+  Et = 'ET',
+  Fi = 'FI',
+  Fj = 'FJ',
+  Fk = 'FK',
+  Fm = 'FM',
+  Fo = 'FO',
+  Fr = 'FR',
+  Ga = 'GA',
+  Gb = 'GB',
+  Gd = 'GD',
+  Ge = 'GE',
+  Gf = 'GF',
+  Gg = 'GG',
+  Gh = 'GH',
+  Gi = 'GI',
+  Gl = 'GL',
+  Gm = 'GM',
+  Gn = 'GN',
+  Gp = 'GP',
+  Gq = 'GQ',
+  Gr = 'GR',
+  Gs = 'GS',
+  Gt = 'GT',
+  Gu = 'GU',
+  Gw = 'GW',
+  Gy = 'GY',
+  Hk = 'HK',
+  Hm = 'HM',
+  Hn = 'HN',
+  Hr = 'HR',
+  Ht = 'HT',
+  Hu = 'HU',
+  Id = 'ID',
+  Ie = 'IE',
+  Im = 'IM',
+  In = 'IN',
+  Io = 'IO',
+  Iq = 'IQ',
+  Ir = 'IR',
+  Is = 'IS',
+  It = 'IT',
+  Je = 'JE',
+  Jm = 'JM',
+  Jo = 'JO',
+  Jp = 'JP',
+  Ke = 'KE',
+  Kg = 'KG',
+  Kh = 'KH',
+  Ki = 'KI',
+  Km = 'KM',
+  Kn = 'KN',
+  Kp = 'KP',
+  Kr = 'KR',
+  Kw = 'KW',
+  Ky = 'KY',
+  Kz = 'KZ',
+  La = 'LA',
+  Lb = 'LB',
+  Lc = 'LC',
+  Li = 'LI',
+  Lk = 'LK',
+  Lr = 'LR',
+  Ls = 'LS',
+  Lt = 'LT',
+  Lu = 'LU',
+  Lv = 'LV',
+  Ly = 'LY',
+  Ma = 'MA',
+  Mc = 'MC',
+  Md = 'MD',
+  Me = 'ME',
+  Mf = 'MF',
+  Mg = 'MG',
+  Mh = 'MH',
+  Mk = 'MK',
+  Ml = 'ML',
+  Mm = 'MM',
+  Mn = 'MN',
+  Mo = 'MO',
+  Mp = 'MP',
+  Mq = 'MQ',
+  Mr = 'MR',
+  Ms = 'MS',
+  Mt = 'MT',
+  Mu = 'MU',
+  Mv = 'MV',
+  Mw = 'MW',
+  Mx = 'MX',
+  My = 'MY',
+  Mz = 'MZ',
+  Na = 'NA',
+  Nc = 'NC',
+  Ne = 'NE',
+  Nf = 'NF',
+  Ng = 'NG',
+  Ni = 'NI',
+  Nl = 'NL',
+  No = 'NO',
+  Np = 'NP',
+  Nr = 'NR',
+  Nu = 'NU',
+  Nz = 'NZ',
+  Om = 'OM',
+  Pa = 'PA',
+  Pe = 'PE',
+  Pf = 'PF',
+  Pg = 'PG',
+  Ph = 'PH',
+  Pk = 'PK',
+  Pl = 'PL',
+  Pm = 'PM',
+  Pn = 'PN',
+  Pr = 'PR',
+  Ps = 'PS',
+  Pt = 'PT',
+  Pw = 'PW',
+  Py = 'PY',
+  Qa = 'QA',
+  Re = 'RE',
+  Ro = 'RO',
+  Rs = 'RS',
+  Ru = 'RU',
+  Rw = 'RW',
+  Sa = 'SA',
+  Sb = 'SB',
+  Sc = 'SC',
+  Sd = 'SD',
+  Se = 'SE',
+  Sg = 'SG',
+  Sh = 'SH',
+  Si = 'SI',
+  Sj = 'SJ',
+  Sk = 'SK',
+  Sl = 'SL',
+  Sm = 'SM',
+  Sn = 'SN',
+  So = 'SO',
+  Sr = 'SR',
+  Ss = 'SS',
+  St = 'ST',
+  Sv = 'SV',
+  Sx = 'SX',
+  Sy = 'SY',
+  Sz = 'SZ',
+  Tc = 'TC',
+  Td = 'TD',
+  Tf = 'TF',
+  Tg = 'TG',
+  Th = 'TH',
+  Tj = 'TJ',
+  Tk = 'TK',
+  Tl = 'TL',
+  Tm = 'TM',
+  Tn = 'TN',
+  To = 'TO',
+  Tr = 'TR',
+  Tv = 'TV',
+  Tw = 'TW',
+  Tz = 'TZ',
+  Ua = 'UA',
+  Ug = 'UG',
+  Us = 'US',
+  Uy = 'UY',
+  Uz = 'UZ',
+  Va = 'VA',
+  Vc = 'VC',
+  Ve = 'VE',
+  Vg = 'VG',
+  Vi = 'VI',
+  Vn = 'VN',
+  Vu = 'VU',
+  Wf = 'WF',
+  Ws = 'WS',
+  Xk = 'XK',
+  Ye = 'YE',
+  Yt = 'YT',
+  Za = 'ZA',
+  Zm = 'ZM',
+  Zw = 'ZW'
+}
 
 export type CountryElement = CertificateElement & {
   __typename?: 'CountryElement';
@@ -379,9 +383,10 @@ export type CountryElementUpdateInput = {
   textProps: TextPropsInput;
 };
 
-export type CountryRepresentation =
-  | 'COUNTRY_NAME'
-  | 'NATIONALITY';
+export enum CountryRepresentation {
+  CountryName = 'COUNTRY_NAME',
+  Nationality = 'NATIONALITY'
+}
 
 export type DateDataSource = DateDataSourceCertificateField | DateDataSourceStatic | DateDataSourceStudentField | DateDataSourceTemplateVariable;
 
@@ -431,11 +436,12 @@ export type DateDataSourceTemplateVariableInput = {
   variableId: Scalars['Int']['input'];
 };
 
-export type DateDataSourceType =
-  | 'CERTIFICATE_DATE_FIELD'
-  | 'STATIC'
-  | 'STUDENT_DATE_FIELD'
-  | 'TEMPLATE_DATE_VARIABLE';
+export enum DateDataSourceType {
+  CertificateDateField = 'CERTIFICATE_DATE_FIELD',
+  Static = 'STATIC',
+  StudentDateField = 'STUDENT_DATE_FIELD',
+  TemplateDateVariable = 'TEMPLATE_DATE_VARIABLE'
+}
 
 export type DateElement = CertificateElement & {
   __typename?: 'DateElement';
@@ -476,8 +482,9 @@ export type DateProps = {
   transformation?: Maybe<DateTransformationType>;
 };
 
-export type DateTransformationType =
-  | 'AGE_CALCULATION';
+export enum DateTransformationType {
+  AgeCalculation = 'AGE_CALCULATION'
+}
 
 export type DirectoryInfo = StorageObject & {
   __typename?: 'DirectoryInfo';
@@ -518,38 +525,42 @@ export type DirectoryPermissionsUpdateInput = {
   permissions: DirectoryPermissionsInput;
 };
 
-export type ElementAlignment =
-  | 'BASELINE'
-  | 'BOTTOM'
-  | 'CENTER'
-  | 'END'
-  | 'START'
-  | 'TOP';
+export enum ElementAlignment {
+  Baseline = 'BASELINE',
+  Bottom = 'BOTTOM',
+  Center = 'CENTER',
+  End = 'END',
+  Start = 'START',
+  Top = 'TOP'
+}
 
-export type ElementImageFit =
-  | 'CONTAIN'
-  | 'COVER'
-  | 'FILL';
+export enum ElementImageFit {
+  Contain = 'CONTAIN',
+  Cover = 'COVER',
+  Fill = 'FILL'
+}
 
 export type ElementOrderUpdateInput = {
   id: Scalars['Int']['input'];
   renderOrder: Scalars['Int']['input'];
 };
 
-export type ElementOverflow =
-  | 'ELLIPSE'
-  | 'RESIZE_DOWN'
-  | 'TRUNCATE'
-  | 'WRAP';
+export enum ElementOverflow {
+  Ellipse = 'ELLIPSE',
+  ResizeDown = 'RESIZE_DOWN',
+  Truncate = 'TRUNCATE',
+  Wrap = 'WRAP'
+}
 
-export type ElementType =
-  | 'COUNTRY'
-  | 'DATE'
-  | 'GENDER'
-  | 'IMAGE'
-  | 'NUMBER'
-  | 'QR_CODE'
-  | 'TEXT';
+export enum ElementType {
+  Country = 'COUNTRY',
+  Date = 'DATE',
+  Gender = 'GENDER',
+  Image = 'IMAGE',
+  Number = 'NUMBER',
+  QrCode = 'QR_CODE',
+  Text = 'TEXT'
+}
 
 export type FileInfo = StorageObject & {
   __typename?: 'FileInfo';
@@ -583,21 +594,23 @@ export type FileRenameInput = {
   newName: Scalars['String']['input'];
 };
 
-export type FileSortField =
-  | 'CREATED'
-  | 'MODIFIED'
-  | 'NAME'
-  | 'SIZE'
-  | 'TYPE';
+export enum FileSortField {
+  Created = 'CREATED',
+  Modified = 'MODIFIED',
+  Name = 'NAME',
+  Size = 'SIZE',
+  Type = 'TYPE'
+}
 
-export type FileType =
-  | 'ARCHIVE'
-  | 'AUDIO'
-  | 'DOCUMENT'
-  | 'FONT'
-  | 'IMAGE'
-  | 'OTHER'
-  | 'VIDEO';
+export enum FileType {
+  Archive = 'ARCHIVE',
+  Audio = 'AUDIO',
+  Document = 'DOCUMENT',
+  Font = 'FONT',
+  Image = 'IMAGE',
+  Other = 'OTHER',
+  Video = 'VIDEO'
+}
 
 export type FileTypeBreakdown = {
   __typename?: 'FileTypeBreakdown';
@@ -711,9 +724,10 @@ export type FontReferenceSelfHostedInput = {
   fontId: Scalars['Int']['input'];
 };
 
-export type FontSource =
-  | 'GOOGLE'
-  | 'SELF_HOSTED';
+export enum FontSource {
+  Google = 'GOOGLE',
+  SelfHosted = 'SELF_HOSTED'
+}
 
 export type FontUpdateInput = {
   id: Scalars['Int']['input'];
@@ -744,11 +758,12 @@ export type FontsOrderByClause = {
   order?: InputMaybe<OrderSortDirection>;
 };
 
-export type FontsOrderByColumn =
-  | 'CREATED_AT'
-  | 'ID'
-  | 'NAME'
-  | 'UPDATED_AT';
+export enum FontsOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  Id = 'ID',
+  Name = 'NAME',
+  UpdatedAt = 'UPDATED_AT'
+}
 
 export type FontsWithFiltersResponse = {
   __typename?: 'FontsWithFiltersResponse';
@@ -756,9 +771,10 @@ export type FontsWithFiltersResponse = {
   pageInfo: PageInfo;
 };
 
-export type Gender =
-  | 'FEMALE'
-  | 'MALE';
+export enum Gender {
+  Female = 'FEMALE',
+  Male = 'MALE'
+}
 
 export type GenderElement = CertificateElement & {
   __typename?: 'GenderElement';
@@ -793,8 +809,9 @@ export type ImageDataSourceStorageFileInput = {
   storageFileId: Scalars['Int']['input'];
 };
 
-export type ImageDataSourceType =
-  | 'STORAGE_FILE';
+export enum ImageDataSourceType {
+  StorageFile = 'STORAGE_FILE'
+}
 
 export type ImageElement = CertificateElement & {
   __typename?: 'ImageElement';
@@ -1205,8 +1222,9 @@ export type NumberDataSourceInput = {
   variableId: Scalars['Int']['input'];
 };
 
-export type NumberDataSourceType =
-  | 'TEMPLATE_NUMBER_VARIABLE';
+export enum NumberDataSourceType {
+  TemplateNumberVariable = 'TEMPLATE_NUMBER_VARIABLE'
+}
 
 export type NumberElement = CertificateElement & {
   __typename?: 'NumberElement';
@@ -1244,9 +1262,10 @@ export type NumberProps = {
   variableId?: Maybe<Scalars['Int']['output']>;
 };
 
-export type OrderSortDirection =
-  | 'ASC'
-  | 'DESC';
+export enum OrderSortDirection {
+  Asc = 'ASC',
+  Desc = 'DESC'
+}
 
 export type PageInfo = {
   __typename?: 'PageInfo';
@@ -1316,11 +1335,12 @@ export type QrCodeElementUpdateInput = {
   qrCodeProps: QrCodeElementSpecPropsInput;
 };
 
-export type QrCodeErrorCorrection =
-  | 'H'
-  | 'L'
-  | 'M'
-  | 'Q';
+export enum QrCodeErrorCorrection {
+  H = 'H',
+  L = 'L',
+  M = 'M',
+  Q = 'Q'
+}
 
 export type Query = {
   __typename?: 'Query';
@@ -1644,8 +1664,9 @@ export type StudentCreateInput = {
   phoneNumber?: InputMaybe<Scalars['PhoneNumber']['input']>;
 };
 
-export type StudentDateField =
-  | 'DATE_OF_BIRTH';
+export enum StudentDateField {
+  DateOfBirth = 'DATE_OF_BIRTH'
+}
 
 export type StudentFilterArgs = {
   birthDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -1689,23 +1710,25 @@ export type StudentFilterArgs = {
   phoneNumber?: InputMaybe<Scalars['PhoneNumber']['input']>;
 };
 
-export type StudentTextField =
-  | 'STUDENT_EMAIL'
-  | 'STUDENT_NAME';
+export enum StudentTextField {
+  StudentEmail = 'STUDENT_EMAIL',
+  StudentName = 'STUDENT_NAME'
+}
 
 export type StudentsOrderByClause = {
   column: StudentsOrderByColumn;
   order?: InputMaybe<OrderSortDirection>;
 };
 
-export type StudentsOrderByColumn =
-  | 'CREATED_AT'
-  | 'DATE_OF_BIRTH'
-  | 'EMAIL'
-  | 'GENDER'
-  | 'ID'
-  | 'NAME'
-  | 'UPDATED_AT';
+export enum StudentsOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  DateOfBirth = 'DATE_OF_BIRTH',
+  Email = 'EMAIL',
+  Gender = 'GENDER',
+  Id = 'ID',
+  Name = 'NAME',
+  UpdatedAt = 'UPDATED_AT'
+}
 
 export type StudentsWithFiltersResponse = {
   __typename?: 'StudentsWithFiltersResponse';
@@ -2000,11 +2023,12 @@ export type TemplateVariable = {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
-export type TemplateVariableType =
-  | 'DATE'
-  | 'NUMBER'
-  | 'SELECT'
-  | 'TEXT';
+export enum TemplateVariableType {
+  Date = 'DATE',
+  Number = 'NUMBER',
+  Select = 'SELECT',
+  Text = 'TEXT'
+}
 
 export type TemplatesConfig = {
   __typename?: 'TemplatesConfig';
@@ -2017,20 +2041,22 @@ export type TemplatesConfigs = {
   configs?: Maybe<Array<TemplatesConfig>>;
 };
 
-export type TemplatesConfigsKey =
-  | 'ALLOWED_FILE_TYPES'
-  | 'MAX_BACKGROUND_SIZE';
+export enum TemplatesConfigsKey {
+  AllowedFileTypes = 'ALLOWED_FILE_TYPES',
+  MaxBackgroundSize = 'MAX_BACKGROUND_SIZE'
+}
 
 export type TemplatesOrderByClause = {
   column: TemplatesOrderByColumn;
   order?: InputMaybe<OrderSortDirection>;
 };
 
-export type TemplatesOrderByColumn =
-  | 'CREATED_AT'
-  | 'NAME'
-  | 'ORDER'
-  | 'UPDATED_AT';
+export enum TemplatesOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  Name = 'NAME',
+  Order = 'ORDER',
+  UpdatedAt = 'UPDATED_AT'
+}
 
 export type TemplatesWithFiltersResponse = {
   __typename?: 'TemplatesWithFiltersResponse';
@@ -2097,12 +2123,13 @@ export type TextDataSourceTemplateTextVariableInput = {
   variableId: Scalars['Int']['input'];
 };
 
-export type TextDataSourceType =
-  | 'CERTIFICATE_TEXT_FIELD'
-  | 'STATIC'
-  | 'STUDENT_TEXT_FIELD'
-  | 'TEMPLATE_SELECT_VARIABLE'
-  | 'TEMPLATE_TEXT_VARIABLE';
+export enum TextDataSourceType {
+  CertificateTextField = 'CERTIFICATE_TEXT_FIELD',
+  Static = 'STATIC',
+  StudentTextField = 'STUDENT_TEXT_FIELD',
+  TemplateSelectVariable = 'TEMPLATE_SELECT_VARIABLE',
+  TemplateTextVariable = 'TEMPLATE_TEXT_VARIABLE'
+}
 
 export type TextElement = CertificateElement & {
   __typename?: 'TextElement';
@@ -2674,6 +2701,30 @@ export type ElementsByTemplateIdQuery = { __typename?: 'Query', elementsByTempla
          | null } | null, base?: { __typename?: 'CertificateElementBase', alignment?: ElementAlignment | null, createdAt?: any | null, description?: string | null, height?: number | null, id?: number | null, name?: string | null, positionX?: number | null, positionY?: number | null, renderOrder?: number | null, type?: ElementType | null, updatedAt?: any | null, width?: number | null } | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
   > | null };
 
+type CertificateElement_CountryElement_Fragment = { __typename: 'CountryElement' } & { ' $fragmentName'?: 'CertificateElement_CountryElement_Fragment' };
+
+type CertificateElement_DateElement_Fragment = { __typename: 'DateElement' } & { ' $fragmentName'?: 'CertificateElement_DateElement_Fragment' };
+
+type CertificateElement_GenderElement_Fragment = { __typename: 'GenderElement' } & { ' $fragmentName'?: 'CertificateElement_GenderElement_Fragment' };
+
+type CertificateElement_ImageElement_Fragment = { __typename: 'ImageElement', base?: { __typename?: 'CertificateElementBase', id?: number | null } | null } & { ' $fragmentName'?: 'CertificateElement_ImageElement_Fragment' };
+
+type CertificateElement_NumberElement_Fragment = { __typename: 'NumberElement' } & { ' $fragmentName'?: 'CertificateElement_NumberElement_Fragment' };
+
+type CertificateElement_QrCodeElement_Fragment = { __typename: 'QRCodeElement' } & { ' $fragmentName'?: 'CertificateElement_QrCodeElement_Fragment' };
+
+type CertificateElement_TextElement_Fragment = { __typename: 'TextElement', base?: { __typename?: 'CertificateElementBase', id?: number | null } | null } & { ' $fragmentName'?: 'CertificateElement_TextElement_Fragment' };
+
+export type CertificateElementFragment =
+  | CertificateElement_CountryElement_Fragment
+  | CertificateElement_DateElement_Fragment
+  | CertificateElement_GenderElement_Fragment
+  | CertificateElement_ImageElement_Fragment
+  | CertificateElement_NumberElement_Fragment
+  | CertificateElement_QrCodeElement_Fragment
+  | CertificateElement_TextElement_Fragment
+;
+
 export type UpdateElementsRenderOrderMutationVariables = Exact<{
   updates: Array<ElementOrderUpdateInput> | ElementOrderUpdateInput;
 }>;
@@ -2969,7 +3020,7 @@ export type DeleteTemplateVariableMutation = { __typename?: 'Mutation', deleteTe
     | { __typename?: 'TemplateTextVariable', id?: number | null, name?: string | null, template?: { __typename?: 'Template', id: number, name?: string | null } | null }
    | null };
 
-
+export const CertificateElementFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CertificateElement"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"CertificateElementUnion"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<CertificateElementFragment, unknown>;
 export const MeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"emailVerifiedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<MeQuery, MeQueryVariables>;
 export const UserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"user"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"emailVerifiedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UserQuery, UserQueryVariables>;
 export const UsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"emailVerifiedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UsersQuery, UsersQueryVariables>;

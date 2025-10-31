@@ -8,3 +8,4 @@ export {
 } from "./base.element.pothos";
 
 export { CertificateElementUnion } from "./union.element.pothos";
+export * from "./elementEnum.pothos";

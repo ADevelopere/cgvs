@@ -204,6 +204,47 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
   }
 `;
 
+export const certificateElementFragment: TypedDocumentNode<Graphql.CertificateElementFragment> = gql`
+  fragment CertificateElement on CertificateElementUnion {
+    __typename
+    ... on TextElement {
+      base {
+        id
+      }
+    }
+    ... on ImageElement {
+      base {
+        id
+      }
+    }
+    ... on DateElement {
+      base {
+        id
+      }
+    }
+    ... on CountryElement {
+      base {
+        id
+      }
+    }
+    ... on GenderElement {
+      base {
+        id
+      }
+    }
+    ... on NumberElement {
+      base {
+        id
+      }
+    }
+    ... on QRCodeElement {
+      base {
+        id
+      }
+    }
+  }
+`;
+
 export const updateElementsRenderOrderMutationDocument: TypedDocumentNode<
   Graphql.UpdateElementsRenderOrderMutation,
   Graphql.UpdateElementsRenderOrderMutationVariables
