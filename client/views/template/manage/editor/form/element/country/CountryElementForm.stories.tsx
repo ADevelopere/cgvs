@@ -1,21 +1,23 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
-import { CountryElementUpdateForm } from "./CountryElementUpdateForm";
+import { CountryElementForm } from "./CountryElementForm";
 import { mockSelfHostedFonts } from "../story.util";
-import type { CountryElementFormUpdateState, CountryElementFormErrors } from "./types";
+import type {
+  CountryElementFormState,
+  CountryElementFormErrors,
+} from "./types";
 
-const meta: Meta<typeof CountryElementUpdateForm> = {
-  title: "Template/Editor/Form/Element/Country/CountryElementUpdateForm",
-  component: CountryElementUpdateForm,
+const meta: Meta<typeof CountryElementForm> = {
+  title: "Template/Editor/Form/Element/Country/CountryElementForm",
+  component: CountryElementForm,
   tags: ["autodocs"],
 };
 
 export default meta;
-type Story = StoryObj<typeof CountryElementUpdateForm>;
+type Story = StoryObj<typeof CountryElementForm>;
 
-const defaultState: CountryElementFormUpdateState = {
+const defaultState: CountryElementFormState = {
   base: {
-    id: 1,
     name: "Country Element",
     description: "Student's nationality",
     positionX: 100,
@@ -24,6 +26,7 @@ const defaultState: CountryElementFormUpdateState = {
     height: 50,
     alignment: "CENTER",
     renderOrder: 1,
+    templateId: 1,
   },
   textProps: {
     fontRef: { google: { identifier: "Roboto" } },
@@ -44,9 +47,11 @@ export const Default: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: (field, value) => logger.log("Base element updated:", field, value),
-    updateTextProps: (field, value) => logger.log("Text props updated:", field, value),
-    updateRepresentation: (value) => logger.log("Representation updated:", value),
+    updateBaseElement: (field, value) =>
+      logger.log("Base element updated:", field, value),
+    updateTextProps: (field, value) =>
+      logger.log("Text props updated:", field, value),
+    updateRepresentation: value => logger.log("Representation updated:", value),
     locale: "en",
     selfHostedFonts: mockSelfHostedFonts,
     onSubmit: () => logger.log("Form submitted"),
@@ -62,9 +67,11 @@ export const WithNationality: Story = {
       representation: "NATIONALITY",
     },
     errors: defaultErrors,
-    updateBaseElement: (field, value) => logger.log("Base element updated:", field, value),
-    updateTextProps: (field, value) => logger.log("Text props updated:", field, value),
-    updateRepresentation: (value) => logger.log("Representation updated:", value),
+    updateBaseElement: (field, value) =>
+      logger.log("Base element updated:", field, value),
+    updateTextProps: (field, value) =>
+      logger.log("Text props updated:", field, value),
+    updateRepresentation: value => logger.log("Representation updated:", value),
     locale: "en",
     selfHostedFonts: mockSelfHostedFonts,
     onSubmit: () => logger.log("Form submitted"),
@@ -77,10 +84,15 @@ export const WithErrors: Story = {
   args: {
     state: {
       base: {
-        id: 1,
         name: "",
+        description: "",
+        positionX: 0,
+        positionY: 0,
         width: 0,
         height: 0,
+        alignment: "CENTER",
+        renderOrder: 0,
+        templateId: 1,
       },
       textProps: {
         fontRef: { google: { identifier: "" } },
@@ -93,6 +105,7 @@ export const WithErrors: Story = {
     errors: {
       base: {
         name: "Name is required",
+        description: "Description is required",
         width: "Width must be positive",
         height: "Height must be positive",
       },
@@ -100,16 +113,19 @@ export const WithErrors: Story = {
         color: "Color is required",
         fontSize: "Font size must be positive",
       },
-      representation: undefined,
+      representation: "Representation is required",
     },
-    updateBaseElement: (field, value) => logger.log("Base element updated:", field, value),
-    updateTextProps: (field, value) => logger.log("Text props updated:", field, value),
-    updateRepresentation: (value) => logger.log("Representation updated:", value),
+    updateBaseElement: (field, value) =>
+      logger.log("Base element updated:", field, value),
+    updateTextProps: (field, value) =>
+      logger.log("Text props updated:", field, value),
+    updateRepresentation: value => logger.log("Representation updated:", value),
     locale: "en",
     selfHostedFonts: mockSelfHostedFonts,
     onSubmit: () => logger.log("Form submitted"),
     onCancel: () => logger.log("Form cancelled"),
     isSubmitting: false,
+    submitLabel: "Save",
   },
 };
 
@@ -117,9 +133,11 @@ export const Submitting: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: (field, value) => logger.log("Base element updated:", field, value),
-    updateTextProps: (field, value) => logger.log("Text props updated:", field, value),
-    updateRepresentation: (value) => logger.log("Representation updated:", value),
+    updateBaseElement: (field, value) =>
+      logger.log("Base element updated:", field, value),
+    updateTextProps: (field, value) =>
+      logger.log("Text props updated:", field, value),
+    updateRepresentation: value => logger.log("Representation updated:", value),
     locale: "en",
     selfHostedFonts: mockSelfHostedFonts,
     onSubmit: () => logger.log("Form submitted"),
@@ -127,4 +145,3 @@ export const Submitting: Story = {
     isSubmitting: true,
   },
 };
-

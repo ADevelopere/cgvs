@@ -1,10 +1,9 @@
 import React, { type FC } from "react";
 import { Box, Grid, Paper } from "@mui/material";
-import { useAppTranslation } from "@/client/locale";
 import type {
   DateElementFormErrors,
   UpdateDateDataSourceFn,
-  DateElementFormCreateState,
+  DateElementFormState,
   UpdateDatePropsFn,
 } from "./types";
 import { DateDataSourceForm } from "./DateDataSourceForm";
@@ -12,17 +11,17 @@ import { DatePropsForm } from "./DatePropsForm";
 import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../component/ActionButtons";
-import { UpdateBaseElementCreateFn } from "../base";
+import { UpdateBaseElementFn } from "../base";
 import { UpdateTextPropsCreateFn } from "../textProps";
 import {
   Font,
   TemplateDateVariable,
 } from "@/client/graphql/generated/gql/graphql";
 
-interface DateElementCreateFormProps {
-  state: DateElementFormCreateState;
+interface DateElementFormProps {
+  state: DateElementFormState;
   errors: DateElementFormErrors;
-  updateBaseElement: UpdateBaseElementCreateFn;
+  updateBaseElement: UpdateBaseElementFn;
   updateTextProps: UpdateTextPropsCreateFn;
   updateDateProps: UpdateDatePropsFn;
   updateDataSource: UpdateDateDataSourceFn;
@@ -33,9 +32,10 @@ interface DateElementCreateFormProps {
   onSubmit: () => void;
   onCancel: () => void;
   isSubmitting: boolean;
+  submitLabel: string;
 }
 
-export const DateElementCreateForm: FC<DateElementCreateFormProps> = ({
+export const DateElementForm: FC<DateElementFormProps> = ({
   state,
   errors,
   updateBaseElement,
@@ -48,9 +48,8 @@ export const DateElementCreateForm: FC<DateElementCreateFormProps> = ({
   onSubmit,
   onCancel,
   isSubmitting,
+  submitLabel,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
-
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {/* Scrollable Content */}
@@ -109,9 +108,8 @@ export const DateElementCreateForm: FC<DateElementCreateFormProps> = ({
         onSubmit={onSubmit}
         onCancel={onCancel}
         isSubmitting={isSubmitting}
-        submitLabel={strings.common.create}
+        submitLabel={submitLabel}
       />
     </Box>
   );
 };
-

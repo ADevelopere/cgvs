@@ -7,6 +7,5 @@ export * from "../variableSelector/TemplateDateVariableSelector";
 export * from "./DateDataSourceSelector";
 export * from "./DateDataSourceForm";
 export * from "./DatePropsForm";
-export * from "./DateElementCreateForm";
-export * from "./DateElementUpdateForm";
+export * from "./DateElementForm";
 

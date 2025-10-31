@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { BaseCertificateElementForm } from "./BaseCertificateElementForm";
 import { logger } from "@/client/lib/logger";
-import { CertificateElementBaseUpdateInput } from "@/client/graphql/generated/gql/graphql";
+import { CertificateElementBaseInput } from "@/client/graphql/generated/gql/graphql";
 import { BaseElementFormErrors } from "./types";
 
 const meta: Meta<typeof BaseCertificateElementForm> = {
@@ -13,8 +13,8 @@ const meta: Meta<typeof BaseCertificateElementForm> = {
 export default meta;
 type Story = StoryObj<typeof BaseCertificateElementForm>;
 
-const defaultBaseProps: CertificateElementBaseUpdateInput = {
-  id: 1,
+const defaultBaseProps: CertificateElementBaseInput = {
+  templateId: 1,
   name: "Sample Element",
   description: "This is a sample element description",
   positionX: 100,
@@ -56,4 +56,3 @@ export const Disabled: Story = {
     disabled: true,
   },
 };
-
