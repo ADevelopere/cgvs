@@ -7,24 +7,6 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
 > = gql`
   query ElementsByTemplateId($templateId: Int!) {
     elementsByTemplateId(templateId: $templateId) {
-      base {
-        alignment
-        createdAt
-        description
-        height
-        id
-        name
-        positionX
-        positionY
-        renderOrder
-        type
-        updatedAt
-        width
-      }
-      template {
-        id
-        name
-      }
       ... on CountryElement {
         countryProps {
           representation

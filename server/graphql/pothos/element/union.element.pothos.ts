@@ -17,12 +17,12 @@ export const CertificateElementUnion = gqlSchemaBuilder.unionType(
   {
     types: [
       TextElementObject,
-      // DateElementObject,
-      // NumberElementObject,
-      // CountryElementObject,
-      // GenderElementObject,
-      // ImageElementObject,
-      // QRCodeElementObject,
+      DateElementObject,
+      NumberElementObject,
+      CountryElementObject,
+      GenderElementObject,
+      ImageElementObject,
+      QRCodeElementObject,
     ],
     resolveType: element => {
       if (!element || element instanceof Error || !("base" in element)) {

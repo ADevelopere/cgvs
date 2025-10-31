@@ -154,19 +154,20 @@ export default function TestElementsPage() {
         </Button>
       </Box>
       <Box>
-        {elements.map((el: GQL.CertificateElementUnion, idx: number) => (
-          <Box
-            key={el.base?.id ?? idx}
-            sx={{ mb: 2, p: 2, border: "1px solid #ccc", borderRadius: 2 }}
-          >
-            <Typography variant="subtitle1">
-              Element ID: {el.base?.id}
-            </Typography>
-            <Button variant="outlined" onClick={() => handleShowElement(el)}>
-              Show Element JSON
-            </Button>
-          </Box>
-        ))}
+        {elements &&
+          elements.map((el: GQL.CertificateElementUnion, idx: number) => (
+            <Box
+              key={el.base?.id ?? idx}
+              sx={{ mb: 2, p: 2, border: "1px solid #ccc", borderRadius: 2 }}
+            >
+              <Typography variant="subtitle1">
+                Element ID: {el.base?.id}
+              </Typography>
+              <Button variant="outlined" onClick={() => handleShowElement(el)}>
+                Show Element JSON
+              </Button>
+            </Box>
+          ))}
       </Box>
       <Dialog
         open={openDialog}
