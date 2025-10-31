@@ -214,18 +214,16 @@ export namespace TextElementRepository {
 
   export const loadByBase = async (
     base: CertificateElementEntity
-  ): Promise<TextElementOutput | Error> => {
+  ): Promise<TextElementOutput> => {
     const result = await db
       .select()
       .from(textElement)
-      .innerJoin(
-        elementTextProps,
-        eq(elementTextProps.id, base.id)
-      )
+      .innerJoin(elementTextProps, eq(elementTextProps.id, base.id))
       .where(eq(textElement.elementId, base.id))
       .limit(1);
 
-    if (result.length === 0) return new Error(`No TEXT element found for base ID ${base.id}`);
+    if (result.length === 0)
+      throw new Error(`No TEXT element found for base ID ${base.id}`);
 
     const row = result[0];
 

@@ -46,13 +46,18 @@ export default function TestElementsPage() {
     variables: { templateId: TEST_TEMPLATE_ID },
   });
 
-  const { data: varsData, loading: varsLoading, error: varsError } = useQuery(
-    templateVariablesByTemplateIdQueryDocument,
-    {
-      variables: { templateId: TEST_TEMPLATE_ID },
-      fetchPolicy: "cache-first",
-    }
-  );
+  const elements: GQL.CertificateElementUnion[] = useMemo(() => {
+    return elData?.elementsByTemplateId || [];
+  }, [elData]);
+
+  const {
+    data: varsData,
+    loading: varsLoading,
+    error: varsError,
+  } = useQuery(templateVariablesByTemplateIdQueryDocument, {
+    variables: { templateId: TEST_TEMPLATE_ID },
+    fetchPolicy: "cache-first",
+  });
 
   const textVariables: GQL.TemplateTextVariable[] = useMemo(
     () =>
@@ -131,9 +136,13 @@ export default function TestElementsPage() {
       <Typography variant="h4" gutterBottom>
         Test Elements By Template
       </Typography>
-      {(elLoading || fontsLoading || varsLoading) && <Typography>Loading...</Typography>}
+      {(elLoading || fontsLoading || varsLoading) && (
+        <Typography>Loading...</Typography>
+      )}
       {(elError || fontsError || varsError) && (
-        <Typography color="error">Error: {elError?.message || fontsError?.message || varsError?.message}</Typography>
+        <Typography color="error">
+          Error: {elError?.message || fontsError?.message || varsError?.message}
+        </Typography>
       )}
       <Box sx={{ mb: 2 }}>
         <Button
@@ -145,7 +154,7 @@ export default function TestElementsPage() {
         </Button>
       </Box>
       <Box>
-        {elData?.elementsByTemplateId?.map((el: GQL.CertificateElementUnion, idx: number) => (
+        {elements.map((el: GQL.CertificateElementUnion, idx: number) => (
           <Box
             key={el.base?.id ?? idx}
             sx={{ mb: 2, p: 2, border: "1px solid #ccc", borderRadius: 2 }}
