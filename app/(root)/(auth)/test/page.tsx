@@ -18,7 +18,10 @@ import {
   Paper,
 } from "@mui/material";
 import { elementsByTemplateIdQueryDocument } from "@/client/views/template/manage/editor/hooks/element/documents/element.documents";
-import { useCertificateElementMutation } from "@/client/views/template/manage/editor/hooks/element/useCertificateElementMutation";
+import {
+  useCertificateElementMutation,
+  useOptimisticTextElementUpdate,
+} from "@/client/views/template/manage/editor/hooks/element/useCertificateElementMutation";
 import { TextElementForm } from "@/client/views/template/manage/editor/form/element/text/TextElementForm";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import {
@@ -133,14 +136,8 @@ export default function TestElementsPage() {
     try {
       // Remove forbidden fields from base
       const { base, textProps, dataSource } = formState;
-      const sanitizedBase = { ...base };
-      delete sanitizedBase.__typename;
-      delete sanitizedBase.createdAt;
-      delete sanitizedBase.id;
-      delete sanitizedBase.type;
-      delete sanitizedBase.updatedAt;
       const input = {
-        base: sanitizedBase,
+        base: base,
         textProps,
         dataSource,
       };
@@ -153,6 +150,10 @@ export default function TestElementsPage() {
       setIsSubmitting(false);
     }
   };
+
+  const { updateTextElementMutation } = useOptimisticTextElementUpdate(
+    elementToUpdate as GQL.TextElement
+  );
 
   // Handler for Update button
   const handleUpdateElementClick = (element: GQL.CertificateElementUnion) => {
@@ -176,12 +177,21 @@ export default function TestElementsPage() {
         fontRefInput = { google: { identifier: "Roboto" } };
       }
 
+
+      const base: GQL.CertificateElementBaseInput = {
+        name: element.base.name,
+        description: element.base?.description,
+        alignment: element.base.alignment,
+        renderOrder: element.base.renderOrder,
+        positionX: element.base.positionX,
+        positionY: element.base.positionY,
+        width: element.base.width,
+        height: element.base.height,
+        templateId: TEST_TEMPLATE_ID,
+      };
+
       setFormState({
-        base: {
-          ...element.base,
-          templateId: TEST_TEMPLATE_ID,
-          description: element.base?.description ?? "", // Ensure string
-        },
+        base: base,
         textProps: {
           color: element.textProps.color,
           fontRef: fontRefInput,
@@ -197,23 +207,14 @@ export default function TestElementsPage() {
     }
   };
 
-  // Dummy update mutation (replace with actual update mutation as needed)
-  const { createTextElementMutation: updateTextElementMutation } =
-    useCertificateElementMutation(TEST_TEMPLATE_ID);
-
   const handleUpdateTextElement = async () => {
     setIsSubmitting(true);
     try {
       // Remove forbidden fields from base
       const { base, textProps, dataSource } = formState;
-      const sanitizedBase = { ...base };
-      delete sanitizedBase.__typename;
-      delete sanitizedBase.createdAt;
-      delete sanitizedBase.id;
-      delete sanitizedBase.type;
-      delete sanitizedBase.updatedAt;
+      // Omit forbidden fields using destructuring
       const updateInput: GQL.TextElementUpdateInput = {
-        base: sanitizedBase,
+        base: base,
         textProps,
         dataSource,
         id: elementToUpdate?.base.id ?? 0,
