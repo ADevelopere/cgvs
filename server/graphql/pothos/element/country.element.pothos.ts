@@ -4,6 +4,7 @@ import { CountryElementRepository } from "@/server/db/repo/element";
 import {
   CertificateElementPothosInterface,
   CertificateElementBaseInputObject,
+  isOfElement,
 } from "./base.element.pothos";
 import { InputFieldBuilder, SchemaTypes } from "@pothos/core";
 import {
@@ -92,11 +93,7 @@ export const CountryElementObject = gqlSchemaBuilder.loadableObject<
   load: async ids => await CountryElementRepository.loadByIds(ids),
   sort: e => e.base.id,
   interfaces: [CertificateElementPothosInterface],
-  isTypeOf: item =>
-    typeof item === "object" &&
-    item !== null &&
-    "type" in item &&
-    item.type === Types.ElementType.COUNTRY,
+  isTypeOf: item => isOfElement(item, Types.ElementType.COUNTRY),
   fields: t => ({
     textProps: createTextPropsFieldFromEntity(t),
     countryProps: t.expose("countryProps", {

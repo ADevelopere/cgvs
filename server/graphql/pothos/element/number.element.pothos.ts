@@ -2,13 +2,15 @@ import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
 import * as Types from "@/server/types/element";
 import { NumberElementRepository } from "@/server/db/repo/element";
 import {
-  TextPropsObject,
-  TextPropsInputObject,
-  TextPropsUpdateInputObject,
+  CertificateElementBaseInputObject,
   CertificateElementPothosInterface,
-  createBaseElementInputFields,
-  createBaseElementUpdateInputFields,
+  isOfElement,
 } from "./base.element.pothos";
+import { InputFieldBuilder, SchemaTypes } from "@pothos/core";
+import {
+  createTextPropsFieldFromEntity,
+  TextPropsInputObject,
+} from "./textProps.pothos";
 
 // ============================================================================
 // Enums
@@ -48,17 +50,37 @@ export const NumberDataSourceInputObject = gqlSchemaBuilder
 // Mutation Inputs
 // ============================================================================
 
-export const NumberElementCreateInputObject = gqlSchemaBuilder
-  .inputRef<Types.NumberElementCreateInputGraphql>("NumberElementCreateInput")
+export const NumberElementSpecPropsInputObject = gqlSchemaBuilder
+  .inputRef<Types.NumberElementSpecPropsInput>("NumberElementSpecPropsInput")
   .implement({
     fields: t => ({
-      ...createBaseElementInputFields(t),
-      textProps: t.field({ type: TextPropsInputObject, required: true }),
-      dataSource: t.field({
-        type: NumberDataSourceInputObject,
-        required: true,
-      }),
       mapping: t.field({ type: "StringMap", required: true }),
+    }),
+  });
+
+const createNumberElementInputFields = <Types extends SchemaTypes>(
+  t: InputFieldBuilder<Types, "InputObject">
+) => ({
+  base: t.field({
+    type: CertificateElementBaseInputObject,
+    required: true,
+  }),
+  textProps: t.field({ type: TextPropsInputObject, required: true }),
+  numberProps: t.field({
+    type: NumberElementSpecPropsInputObject,
+    required: true,
+  }),
+  dataSource: t.field({
+    type: NumberDataSourceInputObject,
+    required: true,
+  }),
+});
+
+export const NumberElementInputObject = gqlSchemaBuilder
+  .inputRef<Types.NumberElementInputGraphql>("NumberElementInput")
+  .implement({
+    fields: t => ({
+      ...createNumberElementInputFields(t),
     }),
   });
 
@@ -66,10 +88,8 @@ export const NumberElementUpdateInputObject = gqlSchemaBuilder
   .inputRef<Types.NumberElementUpdateInputGraphql>("NumberElementUpdateInput")
   .implement({
     fields: t => ({
-      ...createBaseElementUpdateInputFields(t),
-      textProps: t.field({ type: TextPropsUpdateInputObject }),
-      dataSource: t.field({ type: NumberDataSourceInputObject }),
-      mapping: t.field({ type: "StringMap" }),
+      id: t.int({ required: true }),
+      ...createNumberElementInputFields(t),
     }),
   });
 
@@ -77,31 +97,38 @@ export const NumberElementUpdateInputObject = gqlSchemaBuilder
 // Loadable Element Object
 // ============================================================================
 
+export const NumberPropsObject = gqlSchemaBuilder
+  .objectRef<Types.NumberElementSpecProps>("NumberProps")
+  .implement({
+    fields: t => ({
+      elementId: t.exposeInt("elementId"),
+      textPropsId: t.exposeInt("textPropsId"),
+      variableId: t.exposeInt("variableId"),
+      mapping: t.field({
+        type: "StringMap",
+        resolve: props => props.mapping,
+      }),
+    }),
+  });
+
 const NumberElementObjectRef =
-  gqlSchemaBuilder.objectRef<Types.NumberElementPothosDefinition>(
-    "NumberElement"
-  );
+  gqlSchemaBuilder.objectRef<Types.NumberElementOutput>("NumberElement");
 
 export const NumberElementObject = gqlSchemaBuilder.loadableObject<
-  Types.NumberElementPothosDefinition | Error,
+  Types.NumberElementOutput | Error,
   number,
   [typeof CertificateElementPothosInterface],
   typeof NumberElementObjectRef
 >(NumberElementObjectRef, {
   load: async ids => await NumberElementRepository.loadByIds(ids),
-  sort: e => e.id,
+  sort: e => e.base.id,
   interfaces: [CertificateElementPothosInterface],
-  isTypeOf: item =>
-    typeof item === "object" &&
-    item !== null &&
-    "type" in item &&
-    item.type === Types.ElementType.NUMBER,
+  isTypeOf: item => isOfElement(item, Types.ElementType.NUMBER),
   fields: t => ({
-    textProps: t.expose("textProps", { type: TextPropsObject }),
-    numberDataSource: t.expose("numberDataSource", { type: NumberDataSourceObject }),
-    mapping: t.field({
-      type: "StringMap",
-      resolve: element => element.mapping,
+    textProps: createTextPropsFieldFromEntity(t),
+    numberProps: t.expose("numberProps", { type: NumberPropsObject }),
+    numberDataSource: t.expose("numberDataSource", {
+      type: NumberDataSourceObject,
     }),
   }),
 });

@@ -2,24 +2,84 @@ import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
 import * as Types from "@/server/types/element";
 import { GenderElementRepository } from "@/server/db/repo/element";
 import {
-  TextPropsObject,
-  TextPropsInputObject,
-  TextPropsUpdateInputObject,
+  CertificateElementBaseInputObject,
   CertificateElementPothosInterface,
-  createBaseElementInputFields,
-  createBaseElementUpdateInputFields,
+  isOfElement,
 } from "./base.element.pothos";
+import { InputFieldBuilder, SchemaTypes } from "@pothos/core";
+import {
+  createTextPropsFieldFromEntity,
+  TextPropsInputObject,
+} from "./textProps.pothos";
+
+// ============================================================================
+// Enums
+// ============================================================================
+
+export const GenderDataSourceTypePothosEnum = gqlSchemaBuilder.enumType(
+  "GenderDataSourceType",
+  { values: Object.values(Types.GenderDataSourceType) }
+);
+
+// ============================================================================
+// Data Source Objects (Output)
+// ============================================================================
+
+export const GenderDataSourceObject = gqlSchemaBuilder
+  .objectRef<Types.GenderDataSource>("GenderDataSource")
+  .implement({
+    fields: t => ({
+      type: t.expose("type", { type: GenderDataSourceTypePothosEnum }),
+    }),
+  });
+
+// ============================================================================
+// Data Source Input Objects (isOneOf Pattern)
+// ============================================================================
+
+export const GenderDataSourceStudentGenderInputObject = gqlSchemaBuilder
+  .inputRef<Types.GenderDataSourceStudentGenderInputGraphql>(
+    "GenderDataSourceStudentGenderInput"
+  )
+  .implement({
+    fields: _t => ({}), // No fields - STUDENT_GENDER has no parameters
+  });
+
+export const GenderDataSourceInputObject = gqlSchemaBuilder.inputType(
+  "GenderDataSourceInput",
+  {
+    isOneOf: true,
+    fields: t => ({
+      studentGender: t.field({
+        type: GenderDataSourceStudentGenderInputObject,
+      }),
+    }),
+  }
+);
 
 // ============================================================================
 // Mutation Inputs
 // ============================================================================
 
-export const GenderElementCreateInputObject = gqlSchemaBuilder
-  .inputRef<Types.GenderElementCreateInputGraphql>("GenderElementCreateInput")
+const createGenderElementInputFields = <Types extends SchemaTypes>(
+  t: InputFieldBuilder<Types, "InputObject">
+) => ({
+  base: t.field({
+    type: CertificateElementBaseInputObject,
+    required: true,
+  }),
+  textProps: t.field({ type: TextPropsInputObject, required: true }),
+  dataSource: t.field({
+    type: GenderDataSourceInputObject,
+    required: true,
+  }),
+});
+
+export const GenderElementInputObject = gqlSchemaBuilder
+  .inputRef<Types.GenderElementInputGraphql>("GenderElementInput")
   .implement({
     fields: t => ({
-      ...createBaseElementInputFields(t),
-      textProps: t.field({ type: TextPropsInputObject, required: true }),
+      ...createGenderElementInputFields(t),
     }),
   });
 
@@ -27,8 +87,8 @@ export const GenderElementUpdateInputObject = gqlSchemaBuilder
   .inputRef<Types.GenderElementUpdateInputGraphql>("GenderElementUpdateInput")
   .implement({
     fields: t => ({
-      ...createBaseElementUpdateInputFields(t),
-      textProps: t.field({ type: TextPropsUpdateInputObject }),
+      id: t.int({ required: true }),
+      ...createGenderElementInputFields(t),
     }),
   });
 
@@ -37,25 +97,22 @@ export const GenderElementUpdateInputObject = gqlSchemaBuilder
 // ============================================================================
 
 const GenderElementObjectRef =
-  gqlSchemaBuilder.objectRef<Types.GenderElementPothosDefinition>(
-    "GenderElement"
-  );
+  gqlSchemaBuilder.objectRef<Types.GenderElementOutput>("GenderElement");
 
 export const GenderElementObject = gqlSchemaBuilder.loadableObject<
-  Types.GenderElementPothosDefinition | Error,
+  Types.GenderElementOutput | Error,
   number,
   [typeof CertificateElementPothosInterface],
   typeof GenderElementObjectRef
 >(GenderElementObjectRef, {
   load: async ids => await GenderElementRepository.loadByIds(ids),
-  sort: e => e.id,
+  sort: e => e.base.id,
   interfaces: [CertificateElementPothosInterface],
-  isTypeOf: item =>
-    typeof item === "object" &&
-    item !== null &&
-    "type" in item &&
-    item.type === Types.ElementType.GENDER,
+  isTypeOf: item => isOfElement(item, Types.ElementType.GENDER),
   fields: t => ({
-    textProps: t.expose("textProps", { type: TextPropsObject }),
+    textProps: createTextPropsFieldFromEntity(t),
+    genderDataSource: t.expose("genderDataSource", {
+      type: GenderDataSourceObject,
+    }),
   }),
 });

@@ -6,7 +6,7 @@ export type CertificateElementEntityInput =
 
 export type CertificateElementBaseInput = Omit<
   CertificateElementEntityInput,
-  "id" | "type"
+  "id" | "type" | "createdAt" | "updatedAt"
 > & {
   alignment: ElementAlignment;
 };
