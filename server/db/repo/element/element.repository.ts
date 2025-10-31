@@ -135,7 +135,10 @@ export namespace ElementRepository {
    */
   export const loadByTemplateIds = async (
     templateIds: number[]
-  ): Promise<(CertificateElementUnion | Error)[]> => {
+    // The context argument is often passed by Pothos, even if unused
+    // context: BaseContext
+  ): Promise<(CertificateElementUnion[] | Error)[]> => {
+    // <-- Return type changed
     if (templateIds.length === 0) return [];
 
     const baseElements = await db
@@ -144,16 +147,47 @@ export namespace ElementRepository {
       .where(inArray(certificateElement.templateId, templateIds))
       .orderBy(asc(certificateElement.renderOrder));
 
-    const result: CertificateElementUnion[] = await Promise.all(
-      baseElements.map(async base => {
-        if (base.type === ElementType.TEXT) {
-          // This 'await' is now valid inside the 'async' map callback.
-          return await TextElementRepository.loadByBase(base);
+    const elementsByTemplateId = new Map<number, CertificateElementEntity[]>();
+    for (const base of baseElements) {
+      if (!elementsByTemplateId.has(base.templateId)) {
+        elementsByTemplateId.set(base.templateId, []);
+      }
+      elementsByTemplateId.get(base.templateId)!.push(base);
+    }
+
+    // Map over the original templateIds to preserve order
+    const allGroupPromises = templateIds.map(
+      async (id): Promise<CertificateElementUnion[] | Error> => {
+        // <-- Inner promise type changed
+        const groupBaseElements = elementsByTemplateId.get(id) || [];
+
+        try {
+          // This will now try to resolve all elements.
+          // If *any* promise rejects, the .catch() block will handle it.
+          const groupResultPromises = groupBaseElements.map(
+            async (base): Promise<CertificateElementUnion> => {
+              // <-- No | Error here
+              if (base.type === ElementType.TEXT) {
+                return await TextElementRepository.loadByBase(base);
+              }
+              // Throw an error instead of returning it
+              // This will cause the Promise.all() to reject
+              throw new Error(`Element type ${base.type} not implemented yet`);
+            }
+          );
+
+          // Wait for all elements in *this* group to be processed
+          return await Promise.all(groupResultPromises);
+        } catch (error) {
+          // If any element fails (e.g., "not implemented"),
+          // catch it and return a single Error for this entire group.
+          return error instanceof Error ? error : new Error(String(error));
         }
-        throw new Error("not implemented yet");
-      })
+      }
     );
-    return result;
+
+    // Wait for all the *group* promises to resolve
+    return await Promise.all(allGroupPromises);
   };
 
   // ============================================================================
