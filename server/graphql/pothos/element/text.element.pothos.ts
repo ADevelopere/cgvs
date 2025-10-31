@@ -11,6 +11,7 @@ import {
   createTextPropsFieldFromEntity,
   TextPropsInputObject,
 } from "./textProps.pothos";
+import logger from "@/server/lib/logger";
 
 // ============================================================================
 // Enums
@@ -283,7 +284,12 @@ export const TextElementObject = gqlSchemaBuilder.loadableObject<
   [typeof CertificateElementPothosInterface],
   typeof TextElementObjectRef
 >(TextElementObjectRef, {
-  load: async ids => await TextElementRepository.loadByIds(ids),
+  load: async ids => {
+    const results = await TextElementRepository.loadByIds(ids);
+    logger.info(`[TextElementObject] Loaded ${results.length} TEXT element(s) for Pothos object`);
+    logger.debug(`[TextElementObject] Loaded elements: ${JSON.stringify(results)}`);
+    return results;
+  },
   sort: e => e.base.id,
   interfaces: [CertificateElementPothosInterface],
   isTypeOf: item => isOfElement(item, Types.ElementType.TEXT),
@@ -291,11 +297,9 @@ export const TextElementObject = gqlSchemaBuilder.loadableObject<
     textProps: createTextPropsFieldFromEntity(t),
     textElementSpecProps: t.expose("textElementSpecProps", {
       type: TextElementSpecPropsObject,
-      nullable: false,
     }),
     textDataSource: t.expose("textDataSource", {
       type: TextDataSourceUnion,
-      nullable: false,
     }),
   }),
 });

@@ -1,13 +1,13 @@
 import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
 import * as Types from "@/server/types/element";
-import { TemplateRepository } from "@/server/db/repo";
-import { ElementRepository } from "@/server/db/repo/element";
+import { TemplateRepository, TextElementRepository, ElementRepository } from "@/server/db/repo";
 import { TemplatePothosObject } from "@/server/graphql/pothos/template.pothos";
 import type { InputFieldBuilder, SchemaTypes } from "@pothos/core";
 import {
   ElementAlignmentPothosEnum,
   ElementTypePothosEnum,
 } from "./elementEnum.pothos";
+import logger from "@/server/lib/logger";
 
 // ============================================================================
 // Element Order Update Input (for batch operations)
@@ -97,7 +97,23 @@ export const CertificateElementPothosInterface = gqlSchemaBuilder
   .loadableInterfaceRef<Types.CertificateElementInterface, number>(
     "CertificateElement",
     {
-      load: async ids => await ElementRepository.loadByIds(ids),
+      load: async ids => {
+        const elements = await ElementRepository.loadByIds(ids);
+        const results = await Promise.all(
+          elements.map(async element => {
+            if (element instanceof Error) {
+              return element;
+            }
+            if (element.base.type === Types.ElementType.TEXT) {
+              return TextElementRepository.loadByBase(element.base);
+            }
+            return element;
+          })
+        );
+        logger.info(`Loaded ${results.length} element(s) for Pothos interface`);
+        logger.debug(`Loaded elements: ${JSON.stringify(results)}`);
+        return results;
+      },
       sort: e => e.base.id,
     }
   )
