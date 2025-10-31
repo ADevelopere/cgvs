@@ -1014,7 +1014,7 @@ type Query {
     """Parent directory path (empty or null for root level)"""
     path: String
   ): [DirectoryInfo!]
-  elementsByTemplateId(templateId: Int!): CertificateElementUnion
+  elementsByTemplateId(templateId: Int!): [CertificateElement!]
   fileInfo(path: String!): FileInfo
   fileUsage(input: FileUsageCheckInput!): FileUsageResult
   folderInfo(path: String!): DirectoryInfo
@@ -1624,8 +1624,8 @@ enum TextDataSourceType {
 type TextElement implements CertificateElement {
   base: CertificateElementBase!
   template: Template
-  textDataSource: TextDataSource
-  textElementSpecProps: TextElementSpecProps
+  textDataSource: TextDataSource!
+  textElementSpecProps: TextElementSpecProps!
   textProps: TextProps!
 }
 

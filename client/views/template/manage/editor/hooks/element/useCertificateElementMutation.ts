@@ -119,6 +119,24 @@ export const useOptimisticTextElementUpdate = (
           },
         };
       },
+      update(cache, { data }) {
+        if (!data?.updateTextElement) return;
+        const updated = data.updateTextElement;
+        const templateId = updated.template?.id;
+        if (!templateId) return;
+
+        cache.updateQuery<GQL.ElementsByTemplateIdQuery>({
+          query: Documents.elementsByTemplateIdQueryDocument,
+          variables: { templateId },
+        }, existing => {
+          if (!existing?.elementsByTemplateId) return existing;
+          return {
+            elementsByTemplateId: existing.elementsByTemplateId.map(el =>
+              el.base?.id === updated.base?.id ? updated : el
+            ),
+          };
+        });
+      },
     }
   );
 
@@ -132,7 +150,7 @@ export const useOptimisticTextElementUpdate = (
  */
 export const useCertificateElementMutation = (templateId: number) => {
   // Helper function to update elements cache using cache.modify (Apollo recommended pattern)
-  const updateElementsCache = React.useCallback(
+  const _updateElementsCache = React.useCallback(
     (
       cache: ApolloCache,
       updater: (
@@ -188,14 +206,21 @@ export const useCertificateElementMutation = (templateId: number) => {
       update(cache, { data }) {
         if (!data?.createTextElement) return;
         const newElement = data.createTextElement;
+        const templateId = newElement.template?.id;
+        if (!templateId) return;
 
-        cache.writeQuery({
-          query: Documents.textElementByIdQueryDocument,
-          data: { textElementById: newElement },
-          variables: { id: newElement.base.id },
+        cache.updateQuery<GQL.ElementsByTemplateIdQuery>({
+          query: Documents.elementsByTemplateIdQueryDocument,
+          variables: { templateId },
+        }, existing => {
+          if (!existing?.elementsByTemplateId) return existing;
+          return {
+            elementsByTemplateId: [
+              ...existing.elementsByTemplateId,
+              newElement,
+            ],
+          };
         });
-
-        updateElementsCache(cache, existing => [...existing, newElement]);
       },
     }
   );

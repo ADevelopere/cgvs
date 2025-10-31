@@ -177,7 +177,7 @@ export default function TestElementsPage() {
       >
         <DialogTitle>Element Object</DialogTitle>
         <DialogContent>
-          <pre style={{ whiteSpace: "pre-wrap" }}>{dialogContent}</pre>
+          <pre style={{ whiteSpace: "pre-wrap", direction: "ltr" }}>{dialogContent}</pre>
         </DialogContent>
       </Dialog>
       <Dialog

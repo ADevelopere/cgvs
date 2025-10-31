@@ -11,7 +11,7 @@ gqlSchemaBuilder.queryFields(t => ({
    * Returns elements ordered by renderOrder
    */
   elementsByTemplateId: t.loadableList({
-    type: ElementPothos.CertificateElementUnion,
+    type: ElementPothos.CertificateElementPothosInterface,
     args: {
       templateId: t.arg.int({ required: true }),
     },
