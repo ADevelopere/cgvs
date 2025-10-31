@@ -118,7 +118,7 @@
     "eslint": "^9.38.0",
     "eslint-config-next": "15.5.4",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-storybook": "^9.1.15",
+    "eslint-plugin-storybook": "^10.0.2",
     "husky": "^9.1.7",
     "jest": "^30.2.0",
     "lint-staged": "^16.2.5",
