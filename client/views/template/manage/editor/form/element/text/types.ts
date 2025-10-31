@@ -41,7 +41,7 @@ export type UpdateTextDataSourceFn = (dataSource: TextDataSourceInput) => void;
 // ============================================================================
 
 // Convert working state to GraphQL input
-export const textDataSourceToGraphQL = (
+export const textDataSourceToInput = (
   state: TextDataSource
 ): TextDataSourceInput => {
   switch (state.__typename) {
