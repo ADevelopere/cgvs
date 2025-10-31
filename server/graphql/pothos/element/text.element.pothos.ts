@@ -268,8 +268,8 @@ export const TextElementSpecPropsObject = gqlSchemaBuilder
   .objectRef<Types.TextElementSpecProps>("TextElementSpecProps")
   .implement({
     fields: t => ({
-      elementId: t.exposeInt("elementId"),
-      textPropsId: t.exposeInt("textPropsId"),
+      elementId: t.exposeInt("elementId", { nullable: false }),
+      textPropsId: t.exposeInt("textPropsId", { nullable: false }),
       variableId: t.exposeInt("variableId", { nullable: true }),
     }),
   });
@@ -291,9 +291,11 @@ export const TextElementObject = gqlSchemaBuilder.loadableObject<
     textProps: createTextPropsFieldFromEntity(t),
     textElementSpecProps: t.expose("textElementSpecProps", {
       type: TextElementSpecPropsObject,
+      nullable: false,
     }),
     textDataSource: t.expose("textDataSource", {
       type: TextDataSourceUnion,
+      nullable: false,
     }),
   }),
 });
