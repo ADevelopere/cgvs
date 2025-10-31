@@ -9,12 +9,20 @@ import {
   DialogContent,
   DialogTitle,
   Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
 } from "@mui/material";
 import { elementsByTemplateIdQueryDocument } from "@/client/views/template/manage/editor/hooks/element/documents/element.documents";
 import { useCertificateElementMutation } from "@/client/views/template/manage/editor/hooks/element/useCertificateElementMutation";
 import { TextElementForm } from "@/client/views/template/manage/editor/form/element/text/TextElementForm";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import {
+  textDataSourceToInput,
   TextElementFormErrors,
   TextElementFormState,
 } from "@/client/views/template/manage/editor/form/element/text";
@@ -82,6 +90,9 @@ export default function TestElementsPage() {
   const [dialogContent, setDialogContent] = useState<string>("");
   const [openForm, setOpenForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [updateMode, setUpdateMode] = useState(false);
+  const [elementToUpdate, setElementToUpdate] =
+    useState<GQL.CertificateElementUnion | null>(null);
 
   // Dummy state for TextElementForm
   const [formState, setFormState] = useState<TextElementFormState>({
@@ -120,10 +131,98 @@ export default function TestElementsPage() {
   const handleCreateTextElement = async () => {
     setIsSubmitting(true);
     try {
-      await createTextElementMutation({ variables: { input: formState } });
+      // Remove forbidden fields from base
+      const { base, textProps, dataSource } = formState;
+      const sanitizedBase = { ...base };
+      delete sanitizedBase.__typename;
+      delete sanitizedBase.createdAt;
+      delete sanitizedBase.id;
+      delete sanitizedBase.type;
+      delete sanitizedBase.updatedAt;
+      const input = {
+        base: sanitizedBase,
+        textProps,
+        dataSource,
+      };
+      await createTextElementMutation({ variables: { input } });
       setOpenForm(false);
     } catch (err) {
-      // For testing, just log error
+      setDialogContent("Error: " + String(err));
+      setOpenDialog(true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handler for Update button
+  const handleUpdateElementClick = (element: GQL.CertificateElementUnion) => {
+    setUpdateMode(true);
+    setElementToUpdate(element);
+    // Only handle TextElement type for update form
+    if (element.__typename === "TextElement") {
+      // Convert fontRef to input type
+      let fontRefInput: GQL.FontReferenceInput;
+      if (element.textProps.fontRef.__typename === "FontReferenceGoogle") {
+        fontRefInput = {
+          google: { identifier: element.textProps.fontRef.identifier ?? "" },
+        };
+      } else if (
+        element.textProps.fontRef.__typename === "FontReferenceSelfHosted"
+      ) {
+        fontRefInput = {
+          selfHosted: { fontId: element.textProps.fontRef.fontId ?? 0 },
+        };
+      } else {
+        fontRefInput = { google: { identifier: "Roboto" } };
+      }
+
+      setFormState({
+        base: {
+          ...element.base,
+          templateId: TEST_TEMPLATE_ID,
+          description: element.base?.description ?? "", // Ensure string
+        },
+        textProps: {
+          color: element.textProps.color,
+          fontRef: fontRefInput,
+          fontSize: element.textProps.fontSize,
+          overflow: element.textProps.overflow,
+        },
+        dataSource: textDataSourceToInput(element.textDataSource),
+      });
+      setOpenForm(true);
+    } else {
+      setDialogContent("Update only supported for TextElement type.");
+      setOpenDialog(true);
+    }
+  };
+
+  // Dummy update mutation (replace with actual update mutation as needed)
+  const { createTextElementMutation: updateTextElementMutation } =
+    useCertificateElementMutation(TEST_TEMPLATE_ID);
+
+  const handleUpdateTextElement = async () => {
+    setIsSubmitting(true);
+    try {
+      // Remove forbidden fields from base
+      const { base, textProps, dataSource } = formState;
+      const sanitizedBase = { ...base };
+      delete sanitizedBase.__typename;
+      delete sanitizedBase.createdAt;
+      delete sanitizedBase.id;
+      delete sanitizedBase.type;
+      delete sanitizedBase.updatedAt;
+      const updateInput: GQL.TextElementUpdateInput = {
+        base: sanitizedBase,
+        textProps,
+        dataSource,
+        id: elementToUpdate?.base.id ?? 0,
+      };
+      await updateTextElementMutation({ variables: { input: updateInput } });
+      setOpenForm(false);
+      setUpdateMode(false);
+      setElementToUpdate(null);
+    } catch (err) {
       setDialogContent("Error: " + String(err));
       setOpenDialog(true);
     } finally {
@@ -154,21 +253,75 @@ export default function TestElementsPage() {
         </Button>
       </Box>
       <Box>
-        {elements &&
-          elements.map((el: GQL.CertificateElementUnion, idx: number) => (
-            <Box
-              key={el.base?.id ?? idx}
-              sx={{ mb: 2, p: 2, border: "1px solid #ccc", borderRadius: 2 }}
-            >
-              <Typography variant="subtitle1">
-                Element ID: {el.base?.id}
-              </Typography>
-              <Button variant="outlined" onClick={() => handleShowElement(el)}>
-                Show Element JSON
-              </Button>
-            </Box>
-          ))}
+        {elements && elements.length > 0 && (
+          <TableContainer component={Paper} sx={{ mt: 2 }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Description</TableCell>
+                  <TableCell>Type</TableCell>
+                  <TableCell>Alignment</TableCell>
+                  <TableCell>Position X</TableCell>
+                  <TableCell>Position Y</TableCell>
+                  <TableCell>Width</TableCell>
+                  <TableCell>Height</TableCell>
+                  <TableCell>Render Order</TableCell>
+                  <TableCell>Created At</TableCell>
+                  <TableCell>Updated At</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {elements.map(
+                  (el: GQL.CertificateElementUnion, idx: number) => (
+                    <TableRow
+                      key={el.base?.id ?? idx}
+                      sx={{
+                        backgroundColor: (el as GQL.TextElement).textProps
+                          .color,
+                      }}
+                    >
+                      <TableCell>{el.base?.id}</TableCell>
+                      <TableCell>{el.base?.name}</TableCell>
+                      <TableCell>{el.base?.description ?? ""}</TableCell>
+                      <TableCell>{el.base?.type}</TableCell>
+                      <TableCell>{el.base?.alignment}</TableCell>
+                      <TableCell>{el.base?.positionX}</TableCell>
+                      <TableCell>{el.base?.positionY}</TableCell>
+                      <TableCell>{el.base?.width}</TableCell>
+                      <TableCell>{el.base?.height}</TableCell>
+                      <TableCell>{el.base?.renderOrder}</TableCell>
+                      <TableCell>{el.base?.createdAt}</TableCell>
+                      <TableCell>{el.base?.updatedAt}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() => handleShowElement(el)}
+                        >
+                          Show JSON
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          size="small"
+                          sx={{ ml: 1 }}
+                          onClick={() => handleUpdateElementClick(el)}
+                        >
+                          Update
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  )
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </Box>
+      {/* Dialog for showing element JSON */}
       <Dialog
         open={openDialog}
         onClose={() => setOpenDialog(false)}
@@ -177,45 +330,61 @@ export default function TestElementsPage() {
       >
         <DialogTitle>Element Object</DialogTitle>
         <DialogContent>
-          <pre style={{ whiteSpace: "pre-wrap", direction: "ltr" }}>{dialogContent}</pre>
+          <pre style={{ whiteSpace: "pre-wrap", direction: "ltr" }}>
+            {dialogContent}
+          </pre>
         </DialogContent>
       </Dialog>
+      {/* Dialog for create/update form */}
       <Dialog
         open={openForm}
         onClose={() => setOpenForm(false)}
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Create Text Element</DialogTitle>
+        <DialogTitle>
+          {updateMode ? "Update Text Element" : "Create Text Element"}
+        </DialogTitle>
         <DialogContent>
-          <TextElementForm
-            state={formState}
-            errors={formErrors}
-            updateBaseElement={(field, value) =>
-              setFormState(prev => ({
-                ...prev,
-                base: { ...prev.base, [field]: value },
-              }))
-            }
-            updateTextProps={(field, value) =>
-              setFormState(prev => ({
-                ...prev,
-                textProps: { ...prev.textProps, [field]: value },
-              }))
-            }
-            updateDataSource={dataSource =>
-              setFormState(prev => ({ ...prev, dataSource }))
-            }
-            templateId={TEST_TEMPLATE_ID}
-            locale="en"
-            textVariables={textVariables}
-            selectVariables={selectVariables}
-            selfHostedFonts={fonts}
-            onSubmit={handleCreateTextElement}
-            onCancel={() => setOpenForm(false)}
-            isSubmitting={isSubmitting}
-            submitLabel="Create"
-          />
+          {/* Only show form for TextElement type */}
+          {(!updateMode ||
+            (elementToUpdate &&
+              elementToUpdate.__typename === "TextElement")) && (
+            <TextElementForm
+              state={formState}
+              errors={formErrors}
+              updateBaseElement={(field, value) =>
+                setFormState(prev => ({
+                  ...prev,
+                  base: { ...prev.base, [field]: value },
+                }))
+              }
+              updateTextProps={(field, value) =>
+                setFormState(prev => ({
+                  ...prev,
+                  textProps: { ...prev.textProps, [field]: value },
+                }))
+              }
+              updateDataSource={dataSource =>
+                setFormState(prev => ({ ...prev, dataSource }))
+              }
+              templateId={TEST_TEMPLATE_ID}
+              locale="en"
+              textVariables={textVariables}
+              selectVariables={selectVariables}
+              selfHostedFonts={fonts}
+              onSubmit={
+                updateMode ? handleUpdateTextElement : handleCreateTextElement
+              }
+              onCancel={() => {
+                setOpenForm(false);
+                setUpdateMode(false);
+                setElementToUpdate(null);
+              }}
+              isSubmitting={isSubmitting}
+              submitLabel={updateMode ? "Update" : "Create"}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </Box>

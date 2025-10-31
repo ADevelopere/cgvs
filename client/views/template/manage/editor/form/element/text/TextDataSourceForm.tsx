@@ -10,10 +10,13 @@ import {
   TemplateSelectVariableSelector,
 } from "../variableSelector";
 import {
+  CertificateTextField,
+  StudentTextField,
   TemplateSelectVariable,
   TemplateTextVariable,
   TextDataSourceInput,
   TextDataSourceType,
+  
 } from "@/client/graphql/generated/gql/graphql";
 
 interface DataSourceFormProps {
@@ -36,38 +39,38 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
   showSelector,
 }) => {
   const selectedType: TextDataSourceType = useMemo(() => {
-    if (dataSource.certificateField?.field) return "CERTIFICATE_TEXT_FIELD";
-    if (dataSource.static?.value) return "STATIC";
-    if (dataSource.studentField?.field) return "STUDENT_TEXT_FIELD";
+    if (dataSource.certificateField?.field) return TextDataSourceType.CertificateTextField;
+    if (dataSource.static?.value) return TextDataSourceType.Static;
+    if (dataSource.studentField?.field) return TextDataSourceType.StudentTextField;
     if (dataSource.templateTextVariable?.variableId)
-      return "TEMPLATE_TEXT_VARIABLE";
+      return TextDataSourceType.TemplateTextVariable;
     if (dataSource.templateSelectVariable?.variableId)
-      return "TEMPLATE_SELECT_VARIABLE";
+      return TextDataSourceType.TemplateSelectVariable;
     throw new Error("Invalid data source type");
   }, [dataSource]);
 
   const handleTypeChange = (type: TextDataSourceType) => {
     // Create new data source with default values based on type
     switch (type) {
-      case "STATIC":
+      case TextDataSourceType.Static:
         onDataSourceChange({ static: { value: "" } });
         break;
-      case "STUDENT_TEXT_FIELD":
+      case TextDataSourceType.StudentTextField:
         onDataSourceChange({
-          studentField: { field: "STUDENT_NAME" },
+          studentField: { field: StudentTextField.StudentName },
         });
         break;
-      case "CERTIFICATE_TEXT_FIELD":
+      case TextDataSourceType.CertificateTextField:
         onDataSourceChange({
-          certificateField: { field: "VERIFICATION_CODE" },
+          certificateField: { field: CertificateTextField.VerificationCode },
         });
         break;
-      case "TEMPLATE_TEXT_VARIABLE":
+      case TextDataSourceType.TemplateTextVariable:
         onDataSourceChange({
           templateTextVariable: { variableId: textVariables[0]?.id || 0 },
         });
         break;
-      case "TEMPLATE_SELECT_VARIABLE":
+      case TextDataSourceType.TemplateSelectVariable:
         onDataSourceChange({
           templateSelectVariable: { variableId: selectVariables[0]?.id || 0 },
         });
@@ -77,7 +80,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
 
   const renderDataSourceInput = () => {
     switch (selectedType) {
-      case "STATIC":
+      case TextDataSourceType.Static:
         return (
           <TextStaticSourceInput
             value={dataSource.static?.value || ""}
@@ -87,20 +90,20 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
           />
         );
 
-      case "STUDENT_TEXT_FIELD":
+      case TextDataSourceType.StudentTextField:
         return (
           <StudentFieldSelector
-            value={dataSource.studentField?.field || "STUDENT_NAME"}
+            value={dataSource.studentField?.field ||  StudentTextField.StudentName}
             onChange={field => onDataSourceChange({ studentField: { field } })}
             error={errors.studentField}
             disabled={disabled}
           />
         );
 
-      case "CERTIFICATE_TEXT_FIELD":
+      case TextDataSourceType.CertificateTextField:
         return (
           <CertificateFieldSelector
-            value={dataSource.certificateField?.field || "VERIFICATION_CODE"}
+            value={dataSource.certificateField?.field || CertificateTextField.VerificationCode}
             onChange={field =>
               onDataSourceChange({ certificateField: { field } })
             }
@@ -109,7 +112,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
           />
         );
 
-      case "TEMPLATE_TEXT_VARIABLE":
+      case TextDataSourceType.TemplateTextVariable:
         return (
           <TemplateTextVariableSelector
             value={dataSource.templateTextVariable?.variableId}
@@ -122,7 +125,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
           />
         );
 
-      case "TEMPLATE_SELECT_VARIABLE":
+      case TextDataSourceType.TemplateSelectVariable:
         return (
           <TemplateSelectVariableSelector
             value={dataSource.templateSelectVariable?.variableId}
