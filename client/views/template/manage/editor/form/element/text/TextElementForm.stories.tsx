@@ -1,19 +1,19 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
-import { TextElementCreateForm } from "./TextElementCreateForm";
+import { TextElementForm } from "./TextElementForm";
 import { mockSelfHostedFonts, mockTextVariables, mockSelectVariables } from "../story.util";
-import type { TextElementFormCreateState, TextElementFormErrors } from "./types";
+import type { TextElementFormErrors, TextElementFormState } from "./types";
 
-const meta: Meta<typeof TextElementCreateForm> = {
-  title: "Template/Editor/Form/Element/Text/TextElementCreateForm",
-  component: TextElementCreateForm,
+const meta: Meta<typeof TextElementForm> = {
+  title: "Template/Editor/Form/Element/Text/TextElementForm",
+  component: TextElementForm,
   tags: ["autodocs"],
 };
 
 export default meta;
-type Story = StoryObj<typeof TextElementCreateForm>;
+type Story = StoryObj<typeof TextElementForm>;
 
-const defaultState: TextElementFormCreateState = {
+const defaultState: TextElementFormState = {
   base: {
     name: "Text Element",
     description: "A text element",
@@ -57,6 +57,7 @@ export const Default: Story = {
     onSubmit: () => logger.log("Form submitted"),
     onCancel: () => logger.log("Form cancelled"),
     isSubmitting: false,
+    submitLabel: "Submit",
   },
 };
 
@@ -80,6 +81,7 @@ export const WithStudentField: Story = {
     onSubmit: () => logger.log("Form submitted"),
     onCancel: () => logger.log("Form cancelled"),
     isSubmitting: false,
+    submitLabel: "Submit",
   },
 };
 

@@ -1,7 +1,6 @@
 import {
     FontReferenceInput,
-    TextPropsCreateInput,
-    TextPropsUpdateInput,
+    TextPropsInput,
   } from "@/client/graphql/generated/gql/graphql";
   import { ValidateFieldFn } from "../types";
   
@@ -9,7 +8,7 @@ import {
   // TEXT PROPS VALIDATORS
   // ============================================================================
   
-  export const validateTextPropsField: ValidateFieldFn<TextPropsCreateInput | TextPropsUpdateInput> = (
+  export const validateTextPropsField: ValidateFieldFn<TextPropsInput> = (
     key,
     value
   ) => {

@@ -4,6 +4,9 @@ import { DateElementForm } from "./DateElementForm";
 import { mockSelfHostedFonts } from "../story.util";
 import type { DateElementFormErrors, DateElementFormState } from "./types";
 import { TemplateDateVariable } from "@/client/graphql/generated/gql/graphql";
+import { UpdateBaseElementFn } from "../base";
+import type { UpdateDatePropsFn, UpdateDateDataSourceFn } from "./types";
+import { UpdateTextPropsFn } from "../textProps";
 
 const mockDateVariables: TemplateDateVariable[] = [
   {
@@ -70,10 +73,10 @@ export const Default: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: (field, value) => logger.info("Base element updated:", { field, value }),
-    updateTextProps: (field, value) => logger.info("Text props updated:", { field, value }),
-    updateDateProps: (field, value) => logger.info("Date props updated:", { field, value }),
-    updateDataSource: (dataSource) => logger.info("Data source updated:", { dataSource }),
+    updateBaseElement: ((field, value) => logger.info("Base element updated:", { field, value })) satisfies UpdateBaseElementFn,
+    updateTextProps: ((field, value) => logger.info("Text props updated:", { field, value })) satisfies UpdateTextPropsFn,
+    updateDateProps: ((field, value) => logger.info("Date props updated:", { field, value })) satisfies UpdateDatePropsFn,
+    updateDataSource: ((dataSource) => logger.info("Data source updated:", { dataSource })) satisfies UpdateDateDataSourceFn,
     templateId: 1,
     locale: "en",
     dateVariables: mockDateVariables,
@@ -81,6 +84,7 @@ export const Default: Story = {
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
+    submitLabel: "Submit",
   },
 };
 
@@ -93,10 +97,10 @@ export const WithStudentField: Story = {
       },
     },
     errors: defaultErrors,
-    updateBaseElement: (field, value) => logger.info("Base element updated:", { field, value }),
-    updateTextProps: (field, value) => logger.info("Text props updated:", { field, value }),
-    updateDateProps: (field, value) => logger.info("Date props updated:", { field, value }),
-    updateDataSource: (dataSource) => logger.info("Data source updated:", { dataSource }),
+    updateBaseElement: ((field, value) => logger.info("Base element updated:", { field, value })) satisfies UpdateBaseElementFn,
+    updateTextProps: ((field, value) => logger.info("Text props updated:", { field, value })) satisfies UpdateTextPropsFn,
+    updateDateProps: ((field, value) => logger.info("Date props updated:", { field, value })) satisfies UpdateDatePropsFn,
+    updateDataSource: ((dataSource) => logger.info("Data source updated:", { dataSource })) satisfies UpdateDateDataSourceFn,
     templateId: 1,
     locale: "en",
     dateVariables: mockDateVariables,
@@ -104,6 +108,7 @@ export const WithStudentField: Story = {
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
+    submitLabel: "Submit",
   },
 };
 
@@ -118,10 +123,10 @@ export const HijriCalendar: Story = {
       },
     },
     errors: defaultErrors,
-    updateBaseElement: (field, value) => logger.info("Base element updated:", { field, value }),
-    updateTextProps: (field, value) => logger.info("Text props updated:", { field, value }),
-    updateDateProps: (field, value) => logger.info("Date props updated:", { field, value }),
-    updateDataSource: (dataSource) => logger.info("Data source updated:", { dataSource }),
+    updateBaseElement: ((field, value) => logger.info("Base element updated:", { field, value })) satisfies UpdateBaseElementFn,
+    updateTextProps: ((field, value) => logger.info("Text props updated:", { field, value })) satisfies UpdateTextPropsFn,
+    updateDateProps: ((field, value) => logger.info("Date props updated:", { field, value })) satisfies UpdateDatePropsFn,
+    updateDataSource: ((dataSource) => logger.info("Data source updated:", { dataSource })) satisfies UpdateDateDataSourceFn,
     templateId: 1,
     locale: "en",
     dateVariables: mockDateVariables,
@@ -129,6 +134,7 @@ export const HijriCalendar: Story = {
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
+    submitLabel: "Submit",
   },
 };
 
@@ -136,10 +142,10 @@ export const Submitting: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: (field, value) => logger.info("Base element updated:", { field, value }),
-    updateTextProps: (field, value) => logger.info("Text props updated:", { field, value }),
-    updateDateProps: (field, value) => logger.info("Date props updated:", { field, value }),
-    updateDataSource: (dataSource) => logger.info("Data source updated:", { dataSource }),
+    updateBaseElement: ((field, value) => logger.info("Base element updated:", { field, value })) satisfies UpdateBaseElementFn,
+    updateTextProps: ((field, value) => logger.info("Text props updated:", { field, value })) satisfies UpdateTextPropsFn,
+    updateDateProps: ((field, value) => logger.info("Date props updated:", { field, value })) satisfies UpdateDatePropsFn,
+    updateDataSource: ((dataSource) => logger.info("Data source updated:", { dataSource })) satisfies UpdateDateDataSourceFn,
     templateId: 1,
     locale: "en",
     dateVariables: mockDateVariables,
@@ -147,6 +153,7 @@ export const Submitting: Story = {
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: true,
+    submitLabel: "Submit",
   },
 };
 

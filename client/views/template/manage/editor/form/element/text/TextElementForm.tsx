@@ -1,28 +1,27 @@
 import React, { type FC } from "react";
 import { Box, Grid, Paper } from "@mui/material";
-import { useAppTranslation } from "@/client/locale";
 import type {
   TextElementFormErrors,
+  TextElementFormState,
   UpdateTextDataSourceFn,
-  TextElementFormCreateState,
 } from "./types";
 import { DataSourceForm } from "./TextDataSourceForm";
 import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../component/ActionButtons";
-import { UpdateBaseElementCreateFn } from "../base";
-import { UpdateTextPropsCreateFn } from "../textProps";
 import {
   Font,
   TemplateSelectVariable,
   TemplateTextVariable,
 } from "@/client/graphql/generated/gql/graphql";
+import { UpdateBaseElementFn } from "../base";
+import { UpdateTextPropsFn } from "../textProps";
 
-interface TextElementCreateFormProps {
-  state: TextElementFormCreateState;
+interface TextElementFormProps {
+  state: TextElementFormState;
   errors: TextElementFormErrors;
-  updateBaseElement: UpdateBaseElementCreateFn;
-  updateTextProps: UpdateTextPropsCreateFn;
+  updateBaseElement: UpdateBaseElementFn;
+  updateTextProps: UpdateTextPropsFn;
   updateDataSource: UpdateTextDataSourceFn;
   templateId: number;
   locale: string;
@@ -32,9 +31,10 @@ interface TextElementCreateFormProps {
   onSubmit: () => void;
   onCancel: () => void;
   isSubmitting: boolean;
+  submitLabel: string;
 }
 
-export const TextElementCreateForm: FC<TextElementCreateFormProps> = ({
+export const TextElementForm: FC<TextElementFormProps> = ({
   state,
   errors,
   updateBaseElement,
@@ -47,9 +47,8 @@ export const TextElementCreateForm: FC<TextElementCreateFormProps> = ({
   onSubmit,
   onCancel,
   isSubmitting,
+  submitLabel,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
-
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       {/* Scrollable Content */}
@@ -100,7 +99,7 @@ export const TextElementCreateForm: FC<TextElementCreateFormProps> = ({
         onSubmit={onSubmit}
         onCancel={onCancel}
         isSubmitting={isSubmitting}
-        submitLabel={strings.common.create}
+        submitLabel={submitLabel}
       />
     </Box>
   );

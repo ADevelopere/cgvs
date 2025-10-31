@@ -1,8 +1,4 @@
-import type {
-  CertificateElementBaseInput,
-  CountryRepresentation,
-  TextPropsInput,
-} from "@/client/graphql/generated/gql/graphql";
+import { CountryElementInput } from "@/client/graphql/generated/gql/graphql";
 import { BaseElementFormErrors } from "../base/types";
 import { TextPropsFormErrors } from "../textProps/types";
 
@@ -10,11 +6,7 @@ import { TextPropsFormErrors } from "../textProps/types";
 // CREATE STATE
 // ============================================================================
 
-export type CountryElementFormState = {
-  base: CertificateElementBaseInput;
-  textProps: TextPropsInput;
-  representation: CountryRepresentation;
-};
+export type CountryElementFormState = CountryElementInput;
 
 // ============================================================================
 // ERROR TYPES

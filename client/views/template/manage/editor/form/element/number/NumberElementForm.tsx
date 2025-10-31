@@ -5,25 +5,25 @@ import type {
   NumberElementFormErrors,
   UpdateDataSourceFn,
   UpdateMappingFn,
-  NumberElementFormUpdateState,
+  NumberElementFormState,
 } from "./types";
 import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../component/ActionButtons";
-import { UpdateBaseElementUpdateFn } from "../base";
-import { UpdateTextPropsUpdateFn } from "../textProps";
 import {
   Font,
   TemplateNumberVariable,
 } from "@/client/graphql/generated/gql/graphql";
 import { TemplateNumberVariableSelector } from "../variableSelector";
 import { NumberMappingInput } from "./NumberMappingInput";
+import { UpdateBaseElementFn } from "../base";
+import { UpdateTextPropsFn } from "../textProps";
 
-interface NumberElementUpdateFormProps {
-  state: NumberElementFormUpdateState;
+interface NumberElementFormProps {
+  state: NumberElementFormState;
   errors: NumberElementFormErrors;
-  updateBaseElement: UpdateBaseElementUpdateFn;
-  updateTextProps: UpdateTextPropsUpdateFn;
+  updateBaseElement: UpdateBaseElementFn;
+  updateTextProps: UpdateTextPropsFn;
   updateDataSource: UpdateDataSourceFn;
   updateMapping: UpdateMappingFn;
   templateId: number;
@@ -33,9 +33,10 @@ interface NumberElementUpdateFormProps {
   onSubmit: () => void;
   onCancel: () => void;
   isSubmitting: boolean;
+  submitLabel: string;
 }
 
-export const NumberElementUpdateForm: FC<NumberElementUpdateFormProps> = ({
+export const NumberElementForm: FC<NumberElementFormProps> = ({
   state,
   errors,
   updateBaseElement,
@@ -48,6 +49,7 @@ export const NumberElementUpdateForm: FC<NumberElementUpdateFormProps> = ({
   onSubmit,
   onCancel,
   isSubmitting,
+  submitLabel,
 }) => {
   const strings = useAppTranslation("certificateElementsTranslations");
 
@@ -64,7 +66,7 @@ export const NumberElementUpdateForm: FC<NumberElementUpdateFormProps> = ({
             <Grid size={{ xs: 12, md: 6 }}>
               <TemplateNumberVariableSelector
                 value={state.dataSource.variableId}
-                onChange={(variableId) =>
+                onChange={variableId =>
                   updateDataSource({ variableId: variableId ?? 0 })
                 }
                 numberVariables={numberVariables}
@@ -74,7 +76,7 @@ export const NumberElementUpdateForm: FC<NumberElementUpdateFormProps> = ({
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
               <NumberMappingInput
-                value={state.mapping}
+                value={state.numberProps.mapping}
                 onChange={updateMapping}
                 errors={errors.mapping}
                 disabled={isSubmitting}
@@ -116,9 +118,8 @@ export const NumberElementUpdateForm: FC<NumberElementUpdateFormProps> = ({
         onSubmit={onSubmit}
         onCancel={onCancel}
         isSubmitting={isSubmitting}
-        submitLabel={strings.common.update}
+        submitLabel={submitLabel}
       />
     </Box>
   );
 };
-

@@ -2,39 +2,32 @@
 
 import React, { useState, useCallback } from "react";
 import * as MUI from "@mui/material";
-import { useAppTranslation } from "@/client/locale";
-import { ImageElementCreateInput } from "@/client/graphql/generated/gql/graphql";
+import { ImageElementInput } from "@/client/graphql/generated/gql/graphql";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { validateBaseElementField, UpdateBaseElementFn } from "../base/types";
 import { ActionButtons } from "../component/ActionButtons";
 import { ImageDataSourceForm } from "./ImageDataSourceForm";
 import { ImagePropsForm } from "./ImagePropsForm";
-import {
-  ImageElementFormCreateState,
-  ImageElementFormErrors,
-} from "./types";
-import {
-  validateImageDataSource,
-  validateImageProps,
-} from "./imageValidators";
+import { ImageElementFormState, ImageElementFormErrors } from "./types";
+import { validateImageDataSource, validateImageProps } from "./imageValidators";
 
-export interface ImageElementCreateFormProps {
+export interface ImageElementFormProps {
   templateId: number;
-  onSubmit: (input: ImageElementCreateInput) => void | Promise<void>;
+  onSubmit: (input: ImageElementInput) => void | Promise<void>;
   onCancel: () => void;
   loading?: boolean;
+  submitLabel: string;
 }
 
-export const ImageElementCreateForm: React.FC<ImageElementCreateFormProps> = ({
+export const ImageElementForm: React.FC<ImageElementFormProps> = ({
   templateId,
   onSubmit,
   onCancel,
   loading = false,
+  submitLabel,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
-
   // Form State
-  const [formState, setFormState] = useState<ImageElementFormCreateState>({
+  const [formState, setFormState] = useState<ImageElementFormState>({
     base: {
       templateId,
       name: "",
@@ -81,7 +74,7 @@ export const ImageElementCreateForm: React.FC<ImageElementCreateFormProps> = ({
         base: { ...prev.base, [key]: error },
       }));
     },
-    []
+    [formState]
   );
 
   // Update image props
@@ -101,7 +94,7 @@ export const ImageElementCreateForm: React.FC<ImageElementCreateFormProps> = ({
         imageProps: { ...prev.imageProps, [key]: undefined },
       }));
     },
-    []
+    [formState]
   );
 
   // Update data source
@@ -130,8 +123,14 @@ export const ImageElementCreateForm: React.FC<ImageElementCreateFormProps> = ({
         "description",
         formState.base.description
       ),
-      positionX: validateBaseElementField("positionX", formState.base.positionX),
-      positionY: validateBaseElementField("positionY", formState.base.positionY),
+      positionX: validateBaseElementField(
+        "positionX",
+        formState.base.positionX
+      ),
+      positionY: validateBaseElementField(
+        "positionY",
+        formState.base.positionY
+      ),
       width: validateBaseElementField("width", formState.base.width),
       height: validateBaseElementField("height", formState.base.height),
     };
@@ -162,7 +161,7 @@ export const ImageElementCreateForm: React.FC<ImageElementCreateFormProps> = ({
       return;
     }
 
-    const input: ImageElementCreateInput = {
+    const input: ImageElementInput = {
       ...formState.base,
       fit: formState.imageProps.fit,
       dataSource: formState.dataSource,
@@ -238,10 +237,9 @@ export const ImageElementCreateForm: React.FC<ImageElementCreateFormProps> = ({
           onSubmit={handleSubmit}
           onCancel={onCancel}
           isSubmitting={loading}
-          submitLabel={strings.common.create}
+          submitLabel={submitLabel}
         />
       </MUI.Box>
     </MUI.Box>
   );
 };
-

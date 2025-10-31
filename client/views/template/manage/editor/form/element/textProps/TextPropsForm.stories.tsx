@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { TextPropsForm } from "./TextPropsForm";
 import type { TextPropsFormErrors } from "./types";
-import type { TextPropsCreateInput } from "@/client/graphql/generated/gql/graphql";
+import type { TextPropsInput } from "@/client/graphql/generated/gql/graphql";
 import { logger } from "@/client/lib/logger";
 import { mockSelfHostedFonts } from "../story.util";
 
@@ -14,7 +14,7 @@ const meta: Meta<typeof TextPropsForm> = {
 export default meta;
 type Story = StoryObj<typeof TextPropsForm>;
 
-const defaultTextProps: TextPropsCreateInput = {
+const defaultTextProps: TextPropsInput = {
   fontRef: { google: { identifier: "Roboto" } },
   fontSize: 16,
   color: "#000000",

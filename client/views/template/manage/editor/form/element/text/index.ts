@@ -8,5 +8,4 @@ export { TextStaticSourceInput as StaticSourceInput } from "./TextStaticSourceIn
 export { StudentFieldSelector } from "./StudentTextFieldSelector";
 export { CertificateFieldSelector } from "./CertificateTextFieldSelector";
 export { DataSourceForm } from "./TextDataSourceForm";
-export { TextElementCreateForm } from "./TextElementCreateForm";
-export { TextElementUpdateForm } from "./TextElementUpdateForm";
+export { TextElementForm } from "./TextElementForm";
