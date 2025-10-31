@@ -131,7 +131,7 @@ export namespace ElementRepository {
    */
   export const loadByTemplateIds = async (
     templateIds: number[]
-  ): Promise<(CertificateElementEntity[] | Error)[]> => {
+  ): Promise<(CertificateElementInterface[] | Error)[]> => {
     if (templateIds.length === 0) return [];
 
     const elements = await db
@@ -146,7 +146,9 @@ export namespace ElementRepository {
         element => element.templateId === templateId
       );
       // Return the elements array (empty array is valid for templates with no elements)
-      return templateElements;
+      return templateElements.map(element => ({
+        base: element,
+      }));
     });
   };
 

@@ -11,5 +11,5 @@ export type { ImageDataSourceFormProps } from "./ImageDataSourceForm";
 export { ImagePropsForm } from "./ImagePropsForm";
 export type { ImagePropsFormProps } from "./ImagePropsForm";
 
-export { ImageElementCreateForm } from "./ImageElementCreateForm";
-export type { ImageElementFormProps as ImageElementCreateFormProps } from "./ImageElementCreateForm";
+export { ImageElementForm } from "./ImageElementForm";
+export type { ImageElementFormProps as ImageElementCreateFormProps } from "./ImageElementForm";

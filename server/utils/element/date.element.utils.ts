@@ -139,7 +139,8 @@ export namespace DateElementUtils {
   /**
    * Validate offset days is a finite number
    */
-  const validateOffsetDays = (offsetDays: number): void => {
+  const validateOffsetDays = (offsetDays?: number | null): void => {
+    if (offsetDays === undefined || offsetDays === null) return;
     if (!Number.isFinite(offsetDays)) {
       throw new Error("Offset days must be a finite number");
     }

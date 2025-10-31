@@ -72,7 +72,7 @@ export namespace DateElementRepository {
         elementId: newBaseElement.id,
         textPropsId: newTextProps.id,
         calendarType: input.dateProps.calendarType,
-        offsetDays: input.dateProps.offsetDays,
+        offsetDays: input.dateProps.offsetDays ?? undefined,
         format: input.dateProps.format,
         transformation: input.dateProps.transformation ?? null,
         dateDataSource: DateElementUtils.convertInputDataSourceToOutput(
@@ -261,7 +261,7 @@ export namespace DateElementRepository {
   ): Promise<DateElementEntity> => {
     const dateUpdates: Partial<DateElementEntityInput> = {
       calendarType: input.dateProps.calendarType,
-      offsetDays: input.dateProps.offsetDays,
+      offsetDays: input.dateProps.offsetDays ?? undefined,
       format: input.dateProps.format,
       transformation: input.dateProps.transformation ?? null,
       dateDataSource: DateElementUtils.convertInputDataSourceToOutput(
