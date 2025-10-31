@@ -141,7 +141,15 @@ export const useOptimisticTextElementUpdate = (
   );
 
   // Return the same tuple as useMutation
-  return [updateTextElementMutation, mutationResult];
+  return React.useMemo(
+    () => ({
+      /**
+ * Mutation to update an existing text element
+ */
+      updateTextElementMutation,
+    }),
+    [updateTextElementMutation]
+  );
 };
 
 /**
@@ -231,10 +239,6 @@ export const useCertificateElementMutation = (templateId: number) => {
        * Mutation to create a new text element
        */
       createTextElementMutation,
-      /**
-       * Mutation to update an existing text element
-       */
-      updateTextElementMutation: useOptimisticTextElementUpdate,
     }),
     [createTextElementMutation]
   );
