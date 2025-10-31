@@ -22,23 +22,23 @@ enum CertificateDateField {
 }
 
 interface CertificateElement {
-  base: CertificateElementBase
+  base: CertificateElementBase!
   template: Template
 }
 
 type CertificateElementBase {
-  alignment: ElementAlignment
-  createdAt: DateTime
+  alignment: ElementAlignment!
+  createdAt: DateTime!
   description: String
-  height: Int
-  id: Int
-  name: String
-  positionX: Int
-  positionY: Int
-  renderOrder: Int
-  type: ElementType
-  updatedAt: DateTime
-  width: Int
+  height: Int!
+  id: Int!
+  name: String!
+  positionX: Int!
+  positionY: Int!
+  renderOrder: Int!
+  type: ElementType!
+  updatedAt: DateTime!
+  width: Int!
 }
 
 input CertificateElementBaseInput {
@@ -321,10 +321,10 @@ enum CountryCode {
 }
 
 type CountryElement implements CertificateElement {
-  base: CertificateElementBase
+  base: CertificateElementBase!
   countryProps: CountryElementCountryProps
   template: Template
-  textProps: TextProps
+  textProps: TextProps!
 }
 
 type CountryElementCountryProps {
@@ -411,11 +411,11 @@ enum DateDataSourceType {
 }
 
 type DateElement implements CertificateElement {
-  base: CertificateElementBase
+  base: CertificateElementBase!
   dateDataSource: DateDataSource
   dateProps: DateProps
   template: Template
-  textProps: TextProps
+  textProps: TextProps!
 }
 
 input DateElementInput {
@@ -738,9 +738,9 @@ enum Gender {
 }
 
 type GenderElement implements CertificateElement {
-  base: CertificateElementBase
+  base: CertificateElementBase!
   template: Template
-  textProps: TextProps
+  textProps: TextProps!
 }
 
 input GenderElementInput {
@@ -774,7 +774,7 @@ enum ImageDataSourceType {
 }
 
 type ImageElement implements CertificateElement {
-  base: CertificateElementBase
+  base: CertificateElementBase!
   imageDataSource: ImageDataSource
   imageProps: ImageElementSpecProps
   template: Template
@@ -895,11 +895,11 @@ enum NumberDataSourceType {
 }
 
 type NumberElement implements CertificateElement {
-  base: CertificateElementBase
+  base: CertificateElementBase!
   numberDataSource: NumberDataSource
   numberProps: NumberProps
   template: Template
-  textProps: TextProps
+  textProps: TextProps!
 }
 
 input NumberElementInput {
@@ -971,7 +971,7 @@ input PartialStudentUpdateInput {
 scalar PhoneNumber
 
 type QRCodeElement implements CertificateElement {
-  base: CertificateElementBase
+  base: CertificateElementBase!
   qrCodeProps: QRCodeElementSpecProps
   template: Template
 }
@@ -1073,6 +1073,7 @@ type Query {
   templates(pagination: PaginationArgs): PaginatedTemplatesResponse
   templatesByCategoryId(categoryId: Int, filterArgs: TemplateFilterArgs, orderBy: [TemplatesOrderByClause!], paginationArgs: PaginationArgs): TemplatesWithFiltersResponse
   templatesConfigs: TemplatesConfigs
+  textElementById(id: Int!): TextElement
   user(id: Int!): User
   users: [User!]
 }
@@ -1621,11 +1622,11 @@ enum TextDataSourceType {
 }
 
 type TextElement implements CertificateElement {
-  base: CertificateElementBase
+  base: CertificateElementBase!
   template: Template
-  textDataSource: TextDataSource
-  textElementSpecProps: TextElementSpecProps
-  textProps: TextProps
+  textDataSource: TextDataSource!
+  textElementSpecProps: TextElementSpecProps!
+  textProps: TextProps!
 }
 
 input TextElementInput {
@@ -1635,8 +1636,8 @@ input TextElementInput {
 }
 
 type TextElementSpecProps {
-  elementId: Int
-  textPropsId: Int
+  elementId: Int!
+  textPropsId: Int!
   variableId: Int
 }
 
@@ -1648,11 +1649,11 @@ input TextElementUpdateInput {
 }
 
 type TextProps {
-  color: String
-  fontRef: FontReference
-  fontSize: Int
-  id: Int
-  overflow: ElementOverflow
+  color: String!
+  fontRef: FontReference!
+  fontSize: Int!
+  id: Int!
+  overflow: ElementOverflow!
 }
 
 input TextPropsInput {

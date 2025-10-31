@@ -1,5 +1,8 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
-import { ElementRepository } from "@/server/db/repo/element";
+import {
+  ElementRepository,
+  TextElementRepository,
+} from "@/server/db/repo/element";
 import * as ElementPothos from "../pothos/element";
 
 gqlSchemaBuilder.queryFields(t => ({
@@ -12,8 +15,17 @@ gqlSchemaBuilder.queryFields(t => ({
     args: {
       templateId: t.arg.int({ required: true }),
     },
-    load: async (ids: number[]) => await ElementRepository.loadByTemplateIds(ids),
+    load: async (ids: number[]) =>
+      await ElementRepository.loadByTemplateIds(ids),
     resolve: (_parent, args) => args.templateId,
   }),
-}));
 
+  textElementById: t.field({
+    type: ElementPothos.TextElementObject,
+    args: {
+      id: t.arg.int({ required: true }),
+    },
+    resolve: async (_parent, args) =>
+      await TextElementRepository.loadById(args.id),
+  }),
+}));

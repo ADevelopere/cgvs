@@ -22,8 +22,7 @@ export const ElementOrderUpdateInputObject = gqlSchemaBuilder
     }),
   });
 
-
-  // ============================================================================
+// ============================================================================
 // Input Field Helpers (to reduce duplication across element types)
 // ============================================================================
 /**
@@ -71,24 +70,26 @@ export const CertificateElementBaseObject = gqlSchemaBuilder
   .objectRef<Types.CertificateElementEntity>("CertificateElementBase")
   .implement({
     fields: t => ({
-      id: t.exposeInt("id"),
-      name: t.exposeString("name"),
+      id: t.exposeInt("id", { nullable: false }),
+      name: t.exposeString("name", { nullable: false }),
       description: t.exposeString("description"),
       type: t.field({
         type: ElementTypePothosEnum,
+        nullable: false,
         resolve: element => element.type as Types.ElementType,
       }),
-      positionX: t.exposeInt("positionX"),
-      positionY: t.exposeInt("positionY"),
-      width: t.exposeInt("width"),
-      height: t.exposeInt("height"),
+      positionX: t.exposeInt("positionX", { nullable: false }),
+      positionY: t.exposeInt("positionY", { nullable: false }),
+      width: t.exposeInt("width", { nullable: false }),
+      height: t.exposeInt("height", { nullable: false }),
       alignment: t.field({
         type: ElementAlignmentPothosEnum,
+        nullable: false,
         resolve: element => element.alignment as Types.ElementAlignment,
       }),
-      renderOrder: t.exposeInt("renderOrder"),
-      createdAt: t.expose("createdAt", { type: "DateTime" }),
-      updatedAt: t.expose("updatedAt", { type: "DateTime" }),
+      renderOrder: t.exposeInt("renderOrder", { nullable: false }),
+      createdAt: t.expose("createdAt", { type: "DateTime", nullable: false }),
+      updatedAt: t.expose("updatedAt", { type: "DateTime", nullable: false }),
     }),
   });
 
@@ -102,7 +103,10 @@ export const CertificateElementPothosInterface = gqlSchemaBuilder
   )
   .implement({
     fields: t => ({
-      base: t.expose("base", { type: CertificateElementBaseObject }),
+      base: t.expose("base", {
+        type: CertificateElementBaseObject,
+        nullable: false,
+      }),
     }),
   });
 

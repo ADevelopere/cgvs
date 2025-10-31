@@ -246,16 +246,16 @@ const Header: FC<FooterProps> = ({ onOpenModal, strings }) => {
 
       {/* popover menu */}
       <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
-        <MenuItem onClick={() => handleVariableTypeSelect("TEXT")}>
+        <MenuItem onClick={() => handleVariableTypeSelect(TemplateVariableType.Text)}>
           {strings.textVariable}
         </MenuItem>
-        <MenuItem onClick={() => handleVariableTypeSelect("NUMBER")}>
+        <MenuItem onClick={() => handleVariableTypeSelect(TemplateVariableType.Number)}>
           {strings.numberVariable}
         </MenuItem>
-        <MenuItem onClick={() => handleVariableTypeSelect("DATE")}>
+        <MenuItem onClick={() => handleVariableTypeSelect(TemplateVariableType.Date)}>
           {strings.dateVariable}
         </MenuItem>
-        <MenuItem onClick={() => handleVariableTypeSelect("SELECT")}>
+        <MenuItem onClick={() => handleVariableTypeSelect(TemplateVariableType.Select)}>
           {strings.selectVariable}
         </MenuItem>
       </Menu>
@@ -279,7 +279,7 @@ const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
     null
   );
   const [variableType, setVariableType] =
-    useState<TemplateVariableType>("TEXT");
+    useState<TemplateVariableType>(TemplateVariableType.Text);
 
   // Modal control functions
   const openCreateModal = useCallback((type: TemplateVariableType) => {
@@ -291,7 +291,7 @@ const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
   const openEditModal = useCallback((variable: TemplateVariable) => {
     setIsOpen(true);
     setEditingVariableId(variable.id || null);
-    setVariableType(variable.type || "TEXT");
+    setVariableType(variable.type || TemplateVariableType.Text);
   }, []);
 
   const closeModal = useCallback(() => {

@@ -11,6 +11,9 @@ const config: CodegenConfig = {
   generates: {
     "./client/graphql/generated/gql/": {
       preset: "client",
+      presetConfig: {
+        fragmentMasking: false
+      },
       config: {
         withHooks: true,
         dedupeFragments: true,
@@ -21,6 +24,7 @@ const config: CodegenConfig = {
         preResolveTypes: true,
         extractAllFieldsToTypes: true,
         skipTypeNameForRoot: false,
+        fragmentMasking: false
       },
     },
   },

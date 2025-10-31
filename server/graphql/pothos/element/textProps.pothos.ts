@@ -85,11 +85,17 @@ export const TextPropsObject = gqlSchemaBuilder
   .objectRef<Types.TextProps>("TextProps")
   .implement({
     fields: t => ({
-      id: t.exposeInt("id"),
-      fontRef: t.expose("fontRef", { type: FontReferenceUnion }),
-      fontSize: t.exposeInt("fontSize"),
-      color: t.exposeString("color"),
-      overflow: t.expose("overflow", { type: ElementOverflowPothosEnum }),
+      id: t.exposeInt("id", { nullable: false }),
+      fontRef: t.expose("fontRef", {
+        type: FontReferenceUnion,
+        nullable: false,
+      }),
+      fontSize: t.exposeInt("fontSize", { nullable: false }),
+      color: t.exposeString("color", { nullable: false }),
+      overflow: t.expose("overflow", {
+        type: ElementOverflowPothosEnum,
+        nullable: false,
+      }),
     }),
   });
 
@@ -120,7 +126,7 @@ export const TextPropsUpdateInputObject = gqlSchemaBuilder
   });
 
 export const createTextPropsFieldFromEntity = <
-  TElement extends { textPropsEntity: Types.ElementTextPropsEntity }
+  TElement extends { textPropsEntity: Types.ElementTextPropsEntity },
 >(
   t: PothosSchemaTypes.ObjectFieldBuilder<
     PothosSchemaTypes.ExtendDefaultTypes<PothosTypes>,
@@ -129,6 +135,7 @@ export const createTextPropsFieldFromEntity = <
 ) =>
   t.field({
     type: TextPropsObject,
+    nullable: false,
     resolve: element =>
       TextPropsUtils.entityToTextProps(element.textPropsEntity),
   });
