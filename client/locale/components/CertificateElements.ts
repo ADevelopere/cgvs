@@ -7,6 +7,7 @@ export type CertificateElementsTranslations = {
   countryElement: CountryElementTranslations;
   genderElement: GenderElementTranslations;
   imageElement: ImageElementTranslations;
+  qrCodeElement: QrCodeElementTranslations;
   baseElement: BaseElementTranslations;
   textProps: TextPropsTranslations;
   common: CommonTranslations;
@@ -274,6 +275,35 @@ export type ImageElementTranslations = {
   // Form titles
   createTitle: string;
   updateTitle: string;
+};
+
+export type QrCodeElementTranslations = {
+  [key: string]: string;
+
+  // Section title
+  qrCodeElementTitle: string;
+
+  // QR Code Props
+  foregroundColorLabel: string;
+  foregroundColorHelper: string;
+  foregroundColorRequired: string;
+  backgroundColorLabel: string;
+  backgroundColorHelper: string;
+  backgroundColorRequired: string;
+  errorCorrectionLabel: string;
+  errorCorrectionHelper: string;
+  errorCorrectionRequired: string;
+  errorCorrectionL: string;
+  errorCorrectionM: string;
+  errorCorrectionQ: string;
+  errorCorrectionH: string;
+  errorCorrectionLDesc: string;
+  errorCorrectionMDesc: string;
+  errorCorrectionQDesc: string;
+  errorCorrectionHDesc: string;
+
+  // Info message
+  dataSourceInfo: string;
 };
 
 export type CommonTranslations = {
