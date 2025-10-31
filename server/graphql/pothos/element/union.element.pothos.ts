@@ -25,7 +25,10 @@ export const CertificateElementUnion = gqlSchemaBuilder.unionType(
       QRCodeElementObject,
     ],
     resolveType: element => {
-      switch (element.type) {
+      if (!element || element instanceof Error || !("base" in element)) {
+        throw new Error("Invalid element in union");
+      }
+      switch (element.base.type) {
         case Types.ElementType.TEXT:
           return "TextElement";
         case Types.ElementType.DATE:
@@ -41,7 +44,7 @@ export const CertificateElementUnion = gqlSchemaBuilder.unionType(
         case Types.ElementType.QR_CODE:
           return "QRCodeElement";
         default:
-          throw new Error(`Unknown element type: ${element.type}`);
+          throw new Error(`Unknown element type: ${element.base.type}`);
       }
     },
   }

@@ -4,7 +4,10 @@ import { TemplateRepository } from "@/server/db/repo";
 import { ElementRepository } from "@/server/db/repo/element";
 import { TemplatePothosObject } from "@/server/graphql/pothos/template.pothos";
 import type { InputFieldBuilder, SchemaTypes } from "@pothos/core";
-import { ElementAlignmentPothosEnum, ElementTypePothosEnum } from "./elementEnum.pothos";
+import {
+  ElementAlignmentPothosEnum,
+  ElementTypePothosEnum,
+} from "./elementEnum.pothos";
 
 // ============================================================================
 // Element Order Update Input (for batch operations)
@@ -110,3 +113,18 @@ gqlSchemaBuilder.interfaceFields(CertificateElementPothosInterface, t => ({
     resolve: element => element.base.templateId,
   }),
 }));
+
+export const isOfElement = (
+  item: unknown,
+  type: Types.ElementType
+): item is Types.TextElementOutput => {
+  return (
+    typeof item === "object" &&
+    item !== null &&
+    "base" in item &&
+    item.base !== null &&
+    typeof item.base === "object" &&
+    "type" in item.base &&
+    item.base.type === type
+  );
+};

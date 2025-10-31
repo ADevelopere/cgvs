@@ -43,12 +43,11 @@ export type DateDataSourceInput =
 // Mutation Inputs
 // ============================================================================
 export type DateElementEntityInput = typeof dateElement.$inferInsert;
-export type DateElementSpecPropsInput = Omit<
-  DateElementEntityInput,
-  "elementId" | "textPropsId" | "variableId" | "calendarType" | "transformation" | "dateDataSource"
-> & {
+export type DateElementSpecPropsInput = {
+  format: string;
   calendarType: CalendarType;
-  transformation: DateTransformationType | null;
+  offsetDays?: number | null;
+  transformation?: DateTransformationType | null;
 };
 
 export type DateElementInput = {

@@ -29,7 +29,7 @@ gqlSchemaBuilder.mutationFields(t => ({
     type: ElementPothos.TextElementObject,
     args: {
       input: t.arg({
-        type: ElementPothos.TextElementCreateInputObject,
+        type: ElementPothos.TextElementInputObject,
         required: true,
       }),
     },
@@ -98,7 +98,7 @@ gqlSchemaBuilder.mutationFields(t => ({
     type: ElementPothos.NumberElementObject,
     args: {
       input: t.arg({
-        type: ElementPothos.NumberElementCreateInputObject,
+        type: ElementPothos.NumberElementInputObject,
         required: true,
       }),
     },
@@ -168,7 +168,7 @@ gqlSchemaBuilder.mutationFields(t => ({
     type: ElementPothos.GenderElementObject,
     args: {
       input: t.arg({
-        type: ElementPothos.GenderElementCreateInputObject,
+        type: ElementPothos.GenderElementInputObject,
         required: true,
       }),
     },
@@ -203,7 +203,7 @@ gqlSchemaBuilder.mutationFields(t => ({
     type: ElementPothos.ImageElementObject,
     args: {
       input: t.arg({
-        type: ElementPothos.ImageElementCreateInputObject,
+        type: ElementPothos.ImageElementInputObject,
         required: true,
       }),
     },
@@ -238,7 +238,7 @@ gqlSchemaBuilder.mutationFields(t => ({
     type: ElementPothos.QRCodeElementObject,
     args: {
       input: t.arg({
-        type: ElementPothos.QRCodeElementCreateInputObject,
+        type: ElementPothos.QRCodeElementInputObject,
         required: true,
       }),
     },

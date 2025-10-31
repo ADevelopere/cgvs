@@ -2,13 +2,15 @@ import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
 import * as Types from "@/server/types/element";
 import { TextElementRepository } from "@/server/db/repo/element";
 import {
-  TextPropsObject,
-  TextPropsInputObject,
-  TextPropsUpdateInputObject,
+  CertificateElementBaseInputObject,
   CertificateElementPothosInterface,
-  createBaseElementInputFields,
-  createBaseElementUpdateInputFields,
+  isOfElement,
 } from "./base.element.pothos";
+import { InputFieldBuilder, SchemaTypes } from "@pothos/core";
+import {
+  createTextPropsFieldFromEntity,
+  TextPropsInputObject,
+} from "./textProps.pothos";
 
 // ============================================================================
 // Enums
@@ -60,7 +62,9 @@ export const TextDataSourceStudentFieldObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: TextDataSourceTypePothosEnum }),
-      studentField: t.expose("studentField", { type: StudentTextFieldPothosEnum }),
+      studentField: t.expose("studentField", {
+        type: StudentTextFieldPothosEnum,
+      }),
     }),
   });
 
@@ -74,7 +78,9 @@ export const TextDataSourceCertificateFieldObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: TextDataSourceTypePothosEnum }),
-      certificateField: t.expose("certificateField", { type: CertificateTextFieldPothosEnum }),
+      certificateField: t.expose("certificateField", {
+        type: CertificateTextFieldPothosEnum,
+      }),
     }),
   });
 
@@ -226,13 +232,22 @@ export const TextDataSourceInputObject = gqlSchemaBuilder.inputType(
 // Mutation Inputs
 // ============================================================================
 
-export const TextElementCreateInputObject = gqlSchemaBuilder
-  .inputRef<Types.TextElementCreateInputGraphql>("TextElementCreateInput")
+const createTextElementInputFields = <Types extends SchemaTypes>(
+  t: InputFieldBuilder<Types, "InputObject">
+) => ({
+  base: t.field({
+    type: CertificateElementBaseInputObject,
+    required: true,
+  }),
+  textProps: t.field({ type: TextPropsInputObject, required: true }),
+  dataSource: t.field({ type: TextDataSourceInputObject, required: true }),
+});
+
+export const TextElementInputObject = gqlSchemaBuilder
+  .inputRef<Types.TextElementInputGraphql>("TextElementInput")
   .implement({
     fields: t => ({
-      ...createBaseElementInputFields(t),
-      textProps: t.field({ type: TextPropsInputObject, required: true }),
-      dataSource: t.field({ type: TextDataSourceInputObject, required: true }),
+      ...createTextElementInputFields(t),
     }),
   });
 
@@ -240,13 +255,8 @@ export const TextElementUpdateInputObject = gqlSchemaBuilder
   .inputRef<Types.TextElementUpdateInputGraphql>("TextElementUpdateInput")
   .implement({
     fields: t => ({
-      ...createBaseElementUpdateInputFields(t),
-      textProps: t.field({
-        type: TextPropsUpdateInputObject,
-      }),
-      dataSource: t.field({
-        type: TextDataSourceInputObject,
-      }),
+      id: t.int({ required: true }),
+      ...createTextElementInputFields(t),
     }),
   });
 
@@ -254,28 +264,36 @@ export const TextElementUpdateInputObject = gqlSchemaBuilder
 // Loadable Element Object
 // ============================================================================
 
+export const TextElementSpecPropsObject = gqlSchemaBuilder
+  .objectRef<Types.TextElementSpecProps>("TextElementSpecProps")
+  .implement({
+    fields: t => ({
+      elementId: t.exposeInt("elementId"),
+      textPropsId: t.exposeInt("textPropsId"),
+      variableId: t.exposeInt("variableId", { nullable: true }),
+    }),
+  });
+
 const TextElementObjectRef =
-  gqlSchemaBuilder.objectRef<Types.TextElementPothosDefinition>("TextElement");
+  gqlSchemaBuilder.objectRef<Types.TextElementOutput>("TextElement");
 
 export const TextElementObject = gqlSchemaBuilder.loadableObject<
-  Types.TextElementPothosDefinition | Error,
+  Types.TextElementOutput | Error,
   number,
   [typeof CertificateElementPothosInterface],
   typeof TextElementObjectRef
 >(TextElementObjectRef, {
   load: async ids => await TextElementRepository.loadByIds(ids),
-  sort: e => e.id,
+  sort: e => e.base.id,
   interfaces: [CertificateElementPothosInterface],
-  isTypeOf: item =>
-    typeof item === "object" &&
-    item !== null &&
-    "type" in item &&
-    item.type === Types.ElementType.TEXT,
+  isTypeOf: item => isOfElement(item, Types.ElementType.TEXT),
   fields: t => ({
-    textProps: t.expose("textProps", { type: TextPropsObject, nullable: true }),
+    textProps: createTextPropsFieldFromEntity(t),
+    textElementSpecProps: t.expose("textElementSpecProps", {
+      type: TextElementSpecPropsObject,
+    }),
     textDataSource: t.expose("textDataSource", {
       type: TextDataSourceUnion,
-      nullable: true,
     }),
   }),
 });

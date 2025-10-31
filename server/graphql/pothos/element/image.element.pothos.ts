@@ -2,10 +2,10 @@ import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
 import * as Types from "@/server/types/element";
 import { ImageElementRepository } from "@/server/db/repo/element";
 import {
+  CertificateElementBaseInputObject,
   CertificateElementPothosInterface,
-  createBaseElementInputFields,
-  createBaseElementUpdateInputFields,
 } from "./base.element.pothos";
+import { InputFieldBuilder, SchemaTypes } from "@pothos/core";
 
 // ============================================================================
 // Enums
@@ -89,13 +89,39 @@ export const ImageDataSourceInputObject = gqlSchemaBuilder.inputType(
 // Mutation Inputs
 // ============================================================================
 
-export const ImageElementCreateInputObject = gqlSchemaBuilder
-  .inputRef<Types.ImageElementCreateInputGraphql>("ImageElementCreateInput")
+const createImageElementSpecPropsInputFields = <Types extends SchemaTypes>(
+  t: InputFieldBuilder<Types, "InputObject">
+) => ({
+  fit: t.field({ type: ElementImageFitPothosEnum, required: true }),
+});
+
+export const ImageElementSpecPropsInputObject = gqlSchemaBuilder
+  .inputRef<Types.ImageElementSpecPropsInput>("ImageElementSpecPropsInput")
   .implement({
     fields: t => ({
-      ...createBaseElementInputFields(t),
-      fit: t.field({ type: ElementImageFitPothosEnum, required: true }),
-      dataSource: t.field({ type: ImageDataSourceInputObject, required: true }),
+      ...createImageElementSpecPropsInputFields(t),
+    }),
+  });
+
+const createImageElementInputFields = <Types extends SchemaTypes>(
+  t: InputFieldBuilder<Types, "InputObject">
+) => ({
+  base: t.field({
+    type: CertificateElementBaseInputObject,
+    required: true,
+  }),
+  imageProps: t.field({
+    type: ImageElementSpecPropsInputObject,
+    required: true,
+  }),
+  dataSource: t.field({ type: ImageDataSourceInputObject, required: true }),
+});
+
+export const ImageElementInputObject = gqlSchemaBuilder
+  .inputRef<Types.ImageElementInputGraphql>("ImageElementInput")
+  .implement({
+    fields: t => ({
+      ...createImageElementInputFields(t),
     }),
   });
 
@@ -103,9 +129,8 @@ export const ImageElementUpdateInputObject = gqlSchemaBuilder
   .inputRef<Types.ImageElementUpdateInputGraphql>("ImageElementUpdateInput")
   .implement({
     fields: t => ({
-      ...createBaseElementUpdateInputFields(t),
-      fit: t.field({ type: ElementImageFitPothosEnum }),
-      dataSource: t.field({ type: ImageDataSourceInputObject }),
+      id: t.int({ required: true }),
+      ...createImageElementInputFields(t),
     }),
   });
 
@@ -113,25 +138,43 @@ export const ImageElementUpdateInputObject = gqlSchemaBuilder
 // Loadable Element Object
 // ============================================================================
 
+export const ImageElementSpecPropsObject = gqlSchemaBuilder
+  .objectRef<Types.ImageElementSpecProps>("ImageElementSpecProps")
+  .implement({
+    fields: t => ({
+      elementId: t.exposeInt("elementId"),
+      storageFileId: t.exposeInt("storageFileId"),
+      fit: t.expose("fit", { type: ElementImageFitPothosEnum }),
+    }),
+  });
+
 const ImageElementObjectRef =
-  gqlSchemaBuilder.objectRef<Types.ImageElementPothosDefinition>("ImageElement");
+  gqlSchemaBuilder.objectRef<Types.ImageElementOutput>("ImageElement");
 
 export const ImageElementObject = gqlSchemaBuilder.loadableObject<
-  Types.ImageElementPothosDefinition | Error,
+  Types.ImageElementOutput | Error,
   number,
   [typeof CertificateElementPothosInterface],
   typeof ImageElementObjectRef
 >(ImageElementObjectRef, {
   load: async ids => await ImageElementRepository.loadByIds(ids),
-  sort: e => e.id,
+  sort: e => e.base.id,
   interfaces: [CertificateElementPothosInterface],
   isTypeOf: item =>
     typeof item === "object" &&
     item !== null &&
-    "type" in item &&
-    item.type === Types.ElementType.IMAGE,
+    !(item instanceof Error) &&
+    "base" in item &&
+    item.base !== null &&
+    typeof item.base === "object" &&
+    "type" in item.base &&
+    item.base.type === Types.ElementType.IMAGE,
   fields: t => ({
-    fit: t.expose("fit", { type: ElementImageFitPothosEnum }),
-    imageDataSource: t.expose("imageDataSource", { type: ImageDataSourceUnion }),
+    imageProps: t.expose("imageProps", {
+      type: ImageElementSpecPropsObject,
+    }),
+    imageDataSource: t.expose("imageDataSource", {
+      type: ImageDataSourceUnion,
+    }),
   }),
 });

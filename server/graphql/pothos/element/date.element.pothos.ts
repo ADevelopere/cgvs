@@ -4,6 +4,7 @@ import { DateElementRepository } from "@/server/db/repo/element";
 import {
   CertificateElementBaseInputObject,
   CertificateElementPothosInterface,
+  isOfElement,
 } from "./base.element.pothos";
 import { InputFieldBuilder, SchemaTypes } from "@pothos/core";
 import {
@@ -205,22 +206,16 @@ export const DateDataSourceInputObject = gqlSchemaBuilder.inputType(
 // Mutation Inputs
 // ============================================================================
 
-const createDateElementSpecPropsInputFields = <Types extends SchemaTypes>(
-  t: InputFieldBuilder<Types, "InputObject">
-) => ({
-  calendarType: t.field({ type: CalendarTypePothosEnum, required: true }),
-  offsetDays: t.int({ required: true }),
-  format: t.string({ required: true }),
-  transformation: t.field({
-    type: DateTransformationTypePothosEnum,
-  }),
-});
-
 export const DateElementSpecPropsInputObject = gqlSchemaBuilder
   .inputRef<Types.DateElementSpecPropsInput>("DateElementSpecPropsInput")
   .implement({
     fields: t => ({
-      ...createDateElementSpecPropsInputFields(t),
+      calendarType: t.field({ type: CalendarTypePothosEnum, required: true }),
+      format: t.string({ required: true }),
+      offsetDays: t.int(),
+      transformation: t.field({
+        type: DateTransformationTypePothosEnum,
+      }),
     }),
   });
 
@@ -286,11 +281,8 @@ export const DateElementObject = gqlSchemaBuilder.loadableObject<
   load: async ids => await DateElementRepository.loadByIds(ids),
   sort: e => e.base.id,
   interfaces: [CertificateElementPothosInterface],
-  isTypeOf: item =>
-    typeof item === "object" &&
-    item !== null &&
-    "type" in item &&
-    item.type === Types.ElementType.DATE,
+  isTypeOf: item => isOfElement(item, Types.ElementType.DATE),
+
   fields: t => ({
     textProps: createTextPropsFieldFromEntity(t),
     dateProps: t.expose("dateProps", { type: DatePropsObject }),
