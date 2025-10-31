@@ -203,3 +203,30 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
     }
   }
 `;
+
+export const updateElementsRenderOrderMutationDocument: TypedDocumentNode<
+  Graphql.UpdateElementsRenderOrderMutation,
+  Graphql.UpdateElementsRenderOrderMutationVariables
+> = gql`
+  mutation updateElementsRenderOrder($updates: [ElementOrderUpdateInput!]!) {
+    updateElementsRenderOrder(updates: $updates)
+  }
+`;
+
+export const deleteElementMutationDocument: TypedDocumentNode<
+  Graphql.DeleteElementMutation,
+  Graphql.DeleteElementMutationVariables
+> = gql`
+  mutation DeleteElement($deleteElementId: Int!) {
+    deleteElement(id: $deleteElementId)
+  }
+`;
+
+export const deleteElementsByIdsMutationDocument: TypedDocumentNode<
+  Graphql.DeleteElementsMutation,
+  Graphql.DeleteElementsMutationVariables
+> = gql`
+  mutation deleteElements($ids: [Int!]!) {
+    deleteElements(ids: $ids)
+  }
+`;
