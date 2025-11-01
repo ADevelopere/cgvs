@@ -9,6 +9,7 @@ import {
   QRCodeElementEntity,
   CertificateElementEntityInput,
   QRCodeErrorCorrection,
+  CertificateElementEntity,
 } from "@/server/types/element";
 import { QRCodeElementUtils } from "@/server/utils/element";
 import logger from "@/server/lib/logger";
@@ -66,10 +67,8 @@ export namespace QRCodeElementRepository {
     return {
       base: baseElement,
       qrCodeProps: {
-        elementId: newQRCodeElement.elementId,
+        ...newQRCodeElement,
         errorCorrection: newQRCodeElement.errorCorrection as QRCodeErrorCorrection,
-        foregroundColor: newQRCodeElement.foregroundColor,
-        backgroundColor: newQRCodeElement.backgroundColor,
       },
     };
   };
@@ -120,10 +119,8 @@ export namespace QRCodeElementRepository {
     return {
       base: updatedBaseElement,
       qrCodeProps: {
-        elementId: updatedQRCodeElement.elementId,
+        ...updatedQRCodeElement,
         errorCorrection: updatedQRCodeElement.errorCorrection as QRCodeErrorCorrection,
-        foregroundColor: updatedQRCodeElement.foregroundColor,
-        backgroundColor: updatedQRCodeElement.backgroundColor,
       },
     };
   };
@@ -157,10 +154,31 @@ export namespace QRCodeElementRepository {
     return {
       base: row.certificate_element,
       qrCodeProps: {
-        elementId: row.qr_code_element.elementId,
+        ...row.qr_code_element,
         errorCorrection: row.qr_code_element.errorCorrection as QRCodeErrorCorrection,
-        foregroundColor: row.qr_code_element.foregroundColor,
-        backgroundColor: row.qr_code_element.backgroundColor,
+      },
+    };
+  };
+
+  export const loadByBase = async (
+    base: CertificateElementEntity
+  ): Promise<QRCodeElementOutput> => {
+    // Join both tables
+    const result = await db
+      .select()
+      .from(qrCodeElement)
+      .where(eq(qrCodeElement.elementId, base.id))
+      .limit(1);
+
+    if (result.length === 0) throw new Error(`QR_CODE element with base ID ${base.id} does not exist.`);
+
+    const row = result[0];
+
+    return {
+      base: base,
+      qrCodeProps: {
+        ...row,
+        errorCorrection: row.errorCorrection as QRCodeErrorCorrection,
       },
     };
   };

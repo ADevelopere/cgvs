@@ -12,6 +12,7 @@ import {
   ElementType,
   ElementTextPropsEntity,
   CertificateElementEntityInput,
+  CertificateElementEntity,
 } from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
 import { GenderElementUtils } from "@/server/utils";
@@ -166,6 +167,32 @@ export namespace GenderElementRepository {
       textPropsEntity: row.element_text_props,
     };
   };
+
+  export const loadByBase = async (
+    base: CertificateElementEntity
+  ): Promise<GenderElementOutput> => {
+    // Join all three tables
+    const result = await db
+      .select()
+      .from(genderElement)
+      .innerJoin(
+        elementTextProps,
+        eq(elementTextProps.id, genderElement.textPropsId)
+      )
+      .where(eq(genderElement.elementId, base.id))
+      .limit(1);
+
+    if (result.length === 0) throw new Error(`GENDER element with base ID ${base.id} does not exist.`);
+
+    const row = result[0];
+
+    // Reconstruct output
+    return {
+      base: base,
+      textPropsEntity: row.element_text_props,
+    };
+  };
+
 
   /**
    * Load GENDER element by ID or throw error

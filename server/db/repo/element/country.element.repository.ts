@@ -14,6 +14,7 @@ import {
   ElementTextPropsEntity,
   CertificateElementEntityInput,
   CountryRepresentation,
+  CertificateElementEntity,
 } from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
 import { CountryElementUtils } from "@/server/utils";
@@ -205,6 +206,36 @@ export namespace CountryElementRepository {
       throw new Error(`COUNTRY element with ID ${id} does not exist.`);
     }
     return element;
+  };
+
+  export const loadByBase = async (
+      base: CertificateElementEntity
+  ): Promise<CountryElementOutput> => {
+    // Join all three tables
+    const result = await db
+      .select()
+      .from(countryElement)
+      .innerJoin(
+        elementTextProps,
+        eq(elementTextProps.id, countryElement.textPropsId)
+      )
+      .where(eq(countryElement.elementId, base.id))
+      .limit(1);
+
+    if (result.length === 0) throw new Error(`No COUNTRY element found for base ID ${base.id}`);
+
+    const row = result[0];
+
+    // Reconstruct output
+    return {
+      base: base,
+      textPropsEntity: row.element_text_props,
+      countryProps: {
+        ...row.country_element,
+        representation: row.country_element
+          .representation as CountryRepresentation,
+      },
+    };
   };
 
   /**

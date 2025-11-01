@@ -9,6 +9,7 @@ import {
   ImageElementEntity,
   CertificateElementEntityInput,
   ElementImageFit,
+  CertificateElementEntity,
 } from "@/server/types/element";
 import { ImageElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
@@ -171,6 +172,32 @@ export namespace ImageElementRepository {
         fit: row.image_element.fit as ElementImageFit,
       },
       imageDataSource: row.image_element.imageDataSource,
+    };
+  };
+
+  export const loadByBase = async (
+      base: CertificateElementEntity
+  ): Promise<ImageElementOutput > => {
+    // Join both tables
+    const result = await db
+      .select()
+      .from(imageElement)
+      .where(eq(imageElement.elementId, base.id))
+      .limit(1);
+
+    if (result.length === 0) throw new Error(`IMAGE element with base ID ${base.id} does not exist.`);
+
+    const row = result[0];
+
+    // Reconstruct output
+    return {
+      base: base,
+      imageProps: {
+        elementId: row.elementId,
+        storageFileId: row.storageFileId,
+        fit: row.fit as ElementImageFit,
+      },
+      imageDataSource: row.imageDataSource,
     };
   };
 
