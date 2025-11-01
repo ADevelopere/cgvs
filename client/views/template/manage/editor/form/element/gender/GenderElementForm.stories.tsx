@@ -3,8 +3,11 @@ import { logger } from "@/client/lib/logger";
 import { mockSelfHostedFonts } from "../story.util";
 import { GenderElementForm } from "./GenderElementForm";
 import type { GenderElementFormErrors, GenderElementFormState } from "./types";
-import { ElementAlignment, ElementOverflow } from "@/client/graphql/generated/gql/graphql";
-import AppLanguage from "@/client/locale/AppLanguage";
+import {
+  ElementAlignment,
+  ElementOverflow,
+} from "@/client/graphql/generated/gql/graphql";
+import { AppLanguage } from "@/lib/enum";
 
 const meta: Meta<typeof GenderElementForm> = {
   title: "Template/Editor/Form/Element/Gender/GenderElementForm",

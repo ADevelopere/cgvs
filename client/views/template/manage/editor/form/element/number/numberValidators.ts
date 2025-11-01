@@ -48,4 +48,3 @@ export const validateNumberElementForm = (
     mapping: validateMapping(mapping),
   };
 };
-

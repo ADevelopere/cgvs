@@ -22,7 +22,7 @@ interface GroupInfoDialogProps {
 }
 
 const GroupInfoDialog: React.FC<GroupInfoDialogProps> = ({ groups }) => {
-  const strings = useAppTranslation("recipientGroupTranslations");
+  const { recipientGroupTranslations: strings } = useAppTranslation();
   const { infoDialogOpen, closeInfoDialog, selectedGroupId } =
     useRecipientGroupDialogs();
 

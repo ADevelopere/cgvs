@@ -38,7 +38,7 @@ export const FontDetail: React.FC<FontDetailProps> = ({
   createFont,
   updateFont,
 }) => {
-  const strings = useAppTranslation("fontManagementTranslations");
+  const { fontManagementTranslations: strings } = useAppTranslation();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 

@@ -12,6 +12,38 @@ export type TemplateConfigAutoUpdateFormProps = {
   config: GQL.TemplateConfig;
 };
 
+export type TemplateConfigAutoUpdateFormInternalProps = {
+  updating: boolean;
+  state: GQL.TemplateConfigUpdateInput;
+  errors: TemplateConfigFormErrors;
+  updateError: string | null;
+  updater: TemplateConfigFormUpdateFn;
+};
+
+export const TemplateConfigAutoUpdateFormContent: React.FC<
+  TemplateConfigAutoUpdateFormInternalProps
+> = ({ updating, state, errors, updateError, updater }) => {
+  return (
+    <Stack direction={"column"} spacing={2} height="100%">
+      {/* title and current updating/saved icon */}
+      <Stack>
+        <Typography variant="h6">Template Configuration</Typography>
+        {updating && <CircularProgress size={16} />}
+      </Stack>
+      <div style={{ overflowY: "auto", paddingInlineEnd: 8 }}>
+        <TemplateConfigForm
+          state={state}
+          errors={errors}
+          updateFn={updater}
+          disabled={false}
+        />
+      </div>
+      {/* error message */}
+      {updateError && <Typography color="error">{updateError}</Typography>}
+    </Stack>
+  );
+};
+
 export const TemplateConfigAutoUpdateForm: React.FC<
   TemplateConfigAutoUpdateFormProps
 > = ({ config }) => {
@@ -93,22 +125,12 @@ export const TemplateConfigAutoUpdateForm: React.FC<
   }, [update]);
 
   return (
-    <Stack direction={"column"} spacing={2} height="100%">
-      {/* title and current updating/saved icon */}
-      <Stack>
-        <Typography variant="h6">Template Configuration</Typography>
-        {updating && <CircularProgress size={16} />}
-      </Stack>
-      <div style={{ flexGrow: 1, overflowY: "auto", paddingInlineEnd: 8 }}>
-        <TemplateConfigForm
-          state={state}
-          errors={errors}
-          updateFn={updater}
-          disabled={false}
-        />
-      </div>
-      {/* error message */}
-      {updateError && <Typography color="error">{updateError}</Typography>}
-    </Stack>
+    <TemplateConfigAutoUpdateFormContent
+      updating={updating}
+      state={state}
+      errors={errors}
+      updateError={updateError}
+      updater={updater}
+    />
   );
 };

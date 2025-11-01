@@ -82,7 +82,9 @@ export const UploadDropzoneOverlay: React.FC<UploadDropzoneOverlayProps> = ({
   zIndex = 1000,
 }) => {
   const theme = useTheme();
-  const { dropzone: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { dropzone: translations },
+  } = useAppTranslation();
   const { startUpload } = useStorageUploadOperations();
 
   const [isDragOver, setIsDragOver] = useState(false);

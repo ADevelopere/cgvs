@@ -14,7 +14,7 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
   fontName,
   fontUrl,
 }) => {
-  const strings = useAppTranslation("fontManagementTranslations");
+  const { fontManagementTranslations: strings } = useAppTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [fontFaceLoaded, setFontFaceLoaded] = useState(false);

@@ -16,7 +16,7 @@ import { useRecipientGroupDialogStore } from "../stores/useRecipientGroupDialogS
 export const useRecipientGroupOperations = () => {
   const recipientGroupApollo = useRecipientGroupApolloMutations();
   const notifications = useNotifications();
-  const strings = useAppTranslation("recipientGroupTranslations");
+  const { recipientGroupTranslations: strings } = useAppTranslation();
 
   // Get the dialog store setters
   const { closeCreateDialog, closeSettingsDialog, closeDeleteDialog } =

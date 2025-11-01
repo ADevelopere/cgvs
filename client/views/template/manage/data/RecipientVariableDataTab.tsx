@@ -25,7 +25,7 @@ const RecipientVariableDataTab: React.FC<RecipientVariableDataTabProps> = ({
 }) => {
   const operations = useRecipientVariableDataOperations();
   const store = useRecipientVariableDataStore();
-  const strings = useAppTranslation("recipientVariableDataTranslations");
+  const { recipientVariableDataTranslations: strings } = useAppTranslation();
 
   // Fetch recipient groups
   const {

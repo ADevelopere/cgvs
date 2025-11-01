@@ -26,7 +26,7 @@ export const ImageDataSourceForm: React.FC<ImageDataSourceFormProps> = ({
   updateDataSource,
   disabled = false,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<{
     id: number;
@@ -43,7 +43,7 @@ export const ImageDataSourceForm: React.FC<ImageDataSourceFormProps> = ({
     // TODO: Use file.dbId once GraphQL types are updated
     // For now, we'll use a placeholder approach
     const fileId = (file as unknown as { dbId?: number }).dbId || -1;
-    
+
     if (fileId === -1) {
       // File doesn't have a database ID - this shouldn't happen for stored files
       return;
@@ -75,7 +75,9 @@ export const ImageDataSourceForm: React.FC<ImageDataSourceFormProps> = ({
 
   return (
     <MUI.Box>
-      <MUI.FormLabel required>{strings.imageElement.dataSourceLabel}</MUI.FormLabel>
+      <MUI.FormLabel required>
+        {strings.imageElement.dataSourceLabel}
+      </MUI.FormLabel>
       <MUI.Box sx={{ mt: 1 }}>
         {hasFile && selectedFile ? (
           // Show selected file
@@ -167,4 +169,3 @@ export const ImageDataSourceForm: React.FC<ImageDataSourceFormProps> = ({
     </MUI.Box>
   );
 };
-

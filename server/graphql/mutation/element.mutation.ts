@@ -262,7 +262,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       const input = QRCodeElementUtils.mapQRCodeElementUpdateGraphqlToInput(
         args.input
       );
-      return await QRCodeElementRepository.update(input); 
+      return await QRCodeElementRepository.update(input);
     },
   }),
 

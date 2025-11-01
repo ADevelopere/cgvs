@@ -56,7 +56,9 @@ const FileMenu: React.FC<FileMenuProps> = ({
   onRefresh,
 }) => {
   const theme = useTheme();
-  const { ui: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { ui: translations },
+  } = useAppTranslation();
 
   // State for confirmation dialogs
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);

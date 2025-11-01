@@ -18,7 +18,7 @@ const RecipientGroupSelector: React.FC<RecipientGroupSelectorProps> = ({
   onGroupChange,
   loading = false,
 }) => {
-  const strings = useAppTranslation("recipientGroupTranslations");
+  const { recipientGroupTranslations: strings } = useAppTranslation();
 
   return (
     <Autocomplete

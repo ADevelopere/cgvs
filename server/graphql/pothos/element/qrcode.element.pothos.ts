@@ -19,7 +19,6 @@ export const QRCodeErrorCorrectionPothosEnum = gqlSchemaBuilder.enumType(
   }
 );
 
-
 // ============================================================================
 // Mutation Inputs
 // ============================================================================

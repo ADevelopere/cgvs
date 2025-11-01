@@ -64,8 +64,8 @@ export const useStudentTable = () => {
     filters,
     queryParams,
   } = useStudentOperations();
-  const strings = useAppTranslation("studentTranslations");
-  const genderStrings = useAppTranslation("genderTranslations");
+  const { studentTranslations: strings, genderTranslations: genderStrings } =
+    useAppTranslation();
 
   // Build gender options
   const genderOptions: {

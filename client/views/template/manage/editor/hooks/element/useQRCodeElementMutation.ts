@@ -8,7 +8,6 @@ import * as Documents from "../../glqDocuments/element";
 export const useQRCodeElementMutation = (
   existingElement: GQL.QrCodeElement
 ) => {
-
   const [createQRCodeElementMutation] = useMutation(
     Documents.createQRCodeElementMutationDocument,
     {
@@ -18,18 +17,21 @@ export const useQRCodeElementMutation = (
         const templateId = newElement.template?.id;
         if (!templateId) return;
 
-        cache.updateQuery<GQL.ElementsByTemplateIdQuery>({
-          query: Documents.elementsByTemplateIdQueryDocument,
-          variables: { templateId },
-        }, existing => {
-          if (!existing?.elementsByTemplateId) return existing;
-          return {
-            elementsByTemplateId: [
-              ...existing.elementsByTemplateId,
-              newElement,
-            ],
-          };
-        });
+        cache.updateQuery<GQL.ElementsByTemplateIdQuery>(
+          {
+            query: Documents.elementsByTemplateIdQueryDocument,
+            variables: { templateId },
+          },
+          existing => {
+            if (!existing?.elementsByTemplateId) return existing;
+            return {
+              elementsByTemplateId: [
+                ...existing.elementsByTemplateId,
+                newElement,
+              ],
+            };
+          }
+        );
       },
     }
   );
@@ -68,17 +70,20 @@ export const useQRCodeElementMutation = (
         const templateId = updated.template?.id;
         if (!templateId) return;
 
-        cache.updateQuery<GQL.ElementsByTemplateIdQuery>({
-          query: Documents.elementsByTemplateIdQueryDocument,
-          variables: { templateId },
-        }, existing => {
-          if (!existing?.elementsByTemplateId) return existing;
-          return {
-            elementsByTemplateId: existing.elementsByTemplateId.map(el =>
-              el.base?.id === updated.base?.id ? updated : el
-            ),
-          };
-        });
+        cache.updateQuery<GQL.ElementsByTemplateIdQuery>(
+          {
+            query: Documents.elementsByTemplateIdQueryDocument,
+            variables: { templateId },
+          },
+          existing => {
+            if (!existing?.elementsByTemplateId) return existing;
+            return {
+              elementsByTemplateId: existing.elementsByTemplateId.map(el =>
+                el.base?.id === updated.base?.id ? updated : el
+              ),
+            };
+          }
+        );
       },
     }
   );
@@ -87,12 +92,12 @@ export const useQRCodeElementMutation = (
   return React.useMemo(
     () => ({
       /**
-      * Mutation to create a new text element
-      */
+       * Mutation to create a new text element
+       */
       createQRCodeElementMutation,
       /**
- * Mutation to update an existing text element
- */
+       * Mutation to update an existing text element
+       */
       updateQRCodeElementMutation,
     }),
     [createQRCodeElementMutation, updateQRCodeElementMutation]

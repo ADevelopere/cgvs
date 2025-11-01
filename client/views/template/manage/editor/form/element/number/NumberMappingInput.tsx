@@ -1,4 +1,11 @@
-import { Box, Button, Grid, IconButton, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  IconButton,
+  TextField,
+  Typography,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import { useAppTranslation } from "@/client/locale";
@@ -17,7 +24,7 @@ export const NumberMappingInput = ({
   errors = {},
   disabled = false,
 }: NumberMappingInputProps) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
 
   const entries = Object.entries(value);
 
@@ -50,7 +57,12 @@ export const NumberMappingInput = ({
       <Typography variant="subtitle2" gutterBottom>
         {strings.numberElement.mappingLabel}
       </Typography>
-      <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        display="block"
+        sx={{ mb: 2 }}
+      >
         {strings.numberElement.mappingDescription}
       </Typography>
 
@@ -61,7 +73,7 @@ export const NumberMappingInput = ({
               fullWidth
               label={strings.numberElement.localeLabel}
               value={locale}
-              onChange={(e) => handleLocaleChange(locale, e.target.value)}
+              onChange={e => handleLocaleChange(locale, e.target.value)}
               disabled={disabled}
               size="small"
               placeholder="ar, en, fr..."
@@ -72,7 +84,7 @@ export const NumberMappingInput = ({
               fullWidth
               label={strings.numberElement.decimalPlacesLabel}
               value={decimalPlaces}
-              onChange={(e) => handleDecimalPlacesChange(locale, e.target.value)}
+              onChange={e => handleDecimalPlacesChange(locale, e.target.value)}
               disabled={disabled}
               size="small"
               type="number"
@@ -81,7 +93,10 @@ export const NumberMappingInput = ({
               inputProps={{ min: 0, step: 1 }}
             />
           </Grid>
-          <Grid size={{ xs: 12, sm: 2 }} sx={{ display: "flex", alignItems: "center" }}>
+          <Grid
+            size={{ xs: 12, sm: 2 }}
+            sx={{ display: "flex", alignItems: "center" }}
+          >
             <IconButton
               onClick={() => handleRemoveEntry(locale)}
               disabled={disabled}
@@ -106,4 +121,3 @@ export const NumberMappingInput = ({
     </Box>
   );
 };
-

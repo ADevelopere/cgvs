@@ -51,7 +51,7 @@ export const NumberElementForm: FC<NumberElementFormProps> = ({
   isSubmitting,
   submitLabel,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
 
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>

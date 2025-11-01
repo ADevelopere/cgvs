@@ -68,7 +68,8 @@ export namespace QRCodeElementRepository {
       base: baseElement,
       qrCodeProps: {
         ...newQRCodeElement,
-        errorCorrection: newQRCodeElement.errorCorrection as QRCodeErrorCorrection,
+        errorCorrection:
+          newQRCodeElement.errorCorrection as QRCodeErrorCorrection,
       },
     };
   };
@@ -120,7 +121,8 @@ export namespace QRCodeElementRepository {
       base: updatedBaseElement,
       qrCodeProps: {
         ...updatedQRCodeElement,
-        errorCorrection: updatedQRCodeElement.errorCorrection as QRCodeErrorCorrection,
+        errorCorrection:
+          updatedQRCodeElement.errorCorrection as QRCodeErrorCorrection,
       },
     };
   };
@@ -155,7 +157,8 @@ export namespace QRCodeElementRepository {
       base: row.certificate_element,
       qrCodeProps: {
         ...row.qr_code_element,
-        errorCorrection: row.qr_code_element.errorCorrection as QRCodeErrorCorrection,
+        errorCorrection: row.qr_code_element
+          .errorCorrection as QRCodeErrorCorrection,
       },
     };
   };
@@ -170,7 +173,10 @@ export namespace QRCodeElementRepository {
       .where(eq(qrCodeElement.elementId, base.id))
       .limit(1);
 
-    if (result.length === 0) throw new Error(`QR_CODE element with base ID ${base.id} does not exist.`);
+    if (result.length === 0)
+      throw new Error(
+        `QR_CODE element with base ID ${base.id} does not exist.`
+      );
 
     const row = result[0];
 
@@ -237,7 +243,7 @@ export namespace QRCodeElementRepository {
    * Note: qrCodeDataSource is stored in base element config, not in this table
    */
   const updateQRCodeElementSpecific = async (
-    input: QRCodeElementUpdateInput,
+    input: QRCodeElementUpdateInput
   ): Promise<QRCodeElementEntity> => {
     const qrCodeUpdates: Partial<typeof qrCodeElement.$inferInsert> = {
       errorCorrection: input.qrCodeProps.errorCorrection,

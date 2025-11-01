@@ -71,7 +71,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const strings: AuthTranslations = useAppTranslation("authTranslations");
+  const { authTranslations: strings } = useAppTranslation();
   const { updateAuthToken, clearAuthData } = useAuthToken();
   const [loginMutation] = useMutation(Document.loginMutationDocument);
   const [logoutMutation] = useMutation(Document.logoutMutationDocument);

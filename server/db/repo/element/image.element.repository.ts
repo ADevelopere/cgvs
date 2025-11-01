@@ -176,8 +176,8 @@ export namespace ImageElementRepository {
   };
 
   export const loadByBase = async (
-      base: CertificateElementEntity
-  ): Promise<ImageElementOutput > => {
+    base: CertificateElementEntity
+  ): Promise<ImageElementOutput> => {
     // Join both tables
     const result = await db
       .select()
@@ -185,7 +185,8 @@ export namespace ImageElementRepository {
       .where(eq(imageElement.elementId, base.id))
       .limit(1);
 
-    if (result.length === 0) throw new Error(`IMAGE element with base ID ${base.id} does not exist.`);
+    if (result.length === 0)
+      throw new Error(`IMAGE element with base ID ${base.id} does not exist.`);
 
     const row = result[0];
 

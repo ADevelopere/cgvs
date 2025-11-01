@@ -14,16 +14,15 @@ interface TemplateSelectVariableSelectorProps {
 export const TemplateSelectVariableSelector: FC<
   TemplateSelectVariableSelectorProps
 > = ({ value, variables, onChange, error, disabled }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
 
-  const selectedVariable =
-    variables.find((v) => v.id === value) || null;
+  const selectedVariable = variables.find(v => v.id === value) || null;
 
   return (
     <Autocomplete
       value={selectedVariable}
       options={variables}
-      getOptionLabel={(option) => option.name || ""}
+      getOptionLabel={option => option.name || ""}
       onChange={(_event, newValue) => {
         if (newValue?.id) {
           onChange(newValue.id);
@@ -31,7 +30,7 @@ export const TemplateSelectVariableSelector: FC<
       }}
       disabled={disabled}
       noOptionsText={strings.textElement.noVariablesAvailable}
-      renderInput={(params) => (
+      renderInput={params => (
         <TextField
           {...params}
           label={strings.textElement.templateSelectVariableLabel}
@@ -43,4 +42,3 @@ export const TemplateSelectVariableSelector: FC<
     />
   );
 };
-

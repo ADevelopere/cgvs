@@ -21,7 +21,9 @@ const UploadProgressHeader: React.FC<UploadProgressHeaderProps> = ({
   onClose,
 }) => {
   const theme = useTheme();
-  const { uploading: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { uploading: translations },
+  } = useAppTranslation();
 
   const getTitle = () => {
     if (totalCount === 0) return translations.noUploads;

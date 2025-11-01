@@ -30,7 +30,7 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({
   onChange,
   disabled = false,
 }) => {
-  const strings = useAppTranslation("fontManagementTranslations");
+  const { fontManagementTranslations: strings } = useAppTranslation();
   const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   const handleFileSelect = (file: GQL.FileInfo) => {

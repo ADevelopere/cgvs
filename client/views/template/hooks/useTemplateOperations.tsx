@@ -15,7 +15,7 @@ import { useTemplateMutations } from "./useTemplateMutations";
 export const useTemplateOperations = () => {
   const apollo = useTemplateMutations();
   const notifications = useNotifications();
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
   /**
    * Update an existing template.
    * Updates the store directly on success.

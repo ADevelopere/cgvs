@@ -2,6 +2,8 @@ import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { useQuery } from "@apollo/client/react";
 import React from "react";
 import { templateConfigsByTemplateIdQueryDocument } from "./glqDocuments";
+import { CircularProgress } from "@mui/material";
+import { TemplateConfigCreateForm } from "./form/config/TemplateConfigCreateForm";
 
 type EditorProps = {
   template: GQL.Template;
@@ -30,7 +32,22 @@ export const Editor: React.FC<EditorProps> = ({ template }) => {
   }
 
   if (configLoading) {
-    return <div>Loading template config...</div>;
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+        }}
+      >
+        <CircularProgress size={24} />
+      </div>
+    );
+  }
+
+  if (!configLoading && !config) {
+    return <TemplateConfigCreateForm template={template} />;
   }
 
   return <div>Editor Component</div>;

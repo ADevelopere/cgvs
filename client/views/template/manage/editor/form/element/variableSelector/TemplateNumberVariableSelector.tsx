@@ -19,9 +19,9 @@ export const TemplateNumberVariableSelector = ({
   disabled = false,
   label,
 }: TemplateNumberVariableSelectorProps) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
 
-  const selectedVariable = numberVariables.find((v) => v.id === value) ?? null;
+  const selectedVariable = numberVariables.find(v => v.id === value) ?? null;
 
   return (
     <Autocomplete
@@ -30,7 +30,7 @@ export const TemplateNumberVariableSelector = ({
         onChange(newValue?.id ?? null);
       }}
       options={numberVariables}
-      getOptionLabel={(option) => option.name ?? ""}
+      getOptionLabel={option => option.name ?? ""}
       renderOption={(props, option) => (
         <li {...props} key={option.id}>
           <div>
@@ -54,7 +54,7 @@ export const TemplateNumberVariableSelector = ({
         </li>
       )}
       disabled={disabled}
-      renderInput={(params) => (
+      renderInput={params => (
         <TextField
           {...params}
           label={label || strings.numberElement.variableLabel}
@@ -66,4 +66,3 @@ export const TemplateNumberVariableSelector = ({
     />
   );
 };
-

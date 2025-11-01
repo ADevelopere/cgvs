@@ -19,7 +19,7 @@ export const DeleteFontDialog: React.FC<DeleteFontDialogProps> = ({
   fontId,
   fontName,
 }) => {
-  const strings = useAppTranslation("fontManagementTranslations");
+  const { fontManagementTranslations: strings } = useAppTranslation();
   const { deleteFont } = useFontOperations();
   const [isDeleting, setIsDeleting] = useState(false);
 

@@ -20,7 +20,7 @@ export type TemplateCategoryManagementTabType = "all" | "deleted";
 const TAB_ORDER: TemplateCategoryManagementTabType[] = ["all", "deleted"];
 
 const This: React.FC = () => {
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
 
   const { theme, isRtl } = useAppTheme();
   const [firstPaneVisible, setFirstPaneVisible] = React.useState<boolean>(true);

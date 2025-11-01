@@ -14,7 +14,7 @@ export const DataSourceSelector: FC<DataSourceSelectorProps> = ({
   onTypeChange,
   disabled,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
 
   return (
     <FormControl fullWidth disabled={disabled}>

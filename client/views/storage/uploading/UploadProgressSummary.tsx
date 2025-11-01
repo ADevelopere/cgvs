@@ -16,7 +16,9 @@ const UploadProgressSummary: React.FC<UploadProgressSummaryProps> = ({
   onCancelAll,
 }) => {
   const theme = useTheme();
-  const { uploading: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { uploading: translations },
+  } = useAppTranslation();
 
   const formatTimeRemaining = (seconds: number | null): string => {
     if (!seconds || seconds <= 0) return "";

@@ -13,15 +13,21 @@ export default meta;
 type Story = StoryObj<typeof NumberMappingInput>;
 
 const NumberMappingInputWithState = (
-  props: Omit<React.ComponentProps<typeof NumberMappingInput>, "value" | "onChange">
+  props: Omit<
+    React.ComponentProps<typeof NumberMappingInput>,
+    "value" | "onChange"
+  >
 ) => {
-  const [value, setValue] = useState<Record<string, string>>({ ar: "2", en: "2" });
+  const [value, setValue] = useState<Record<string, string>>({
+    ar: "2",
+    en: "2",
+  });
 
   return (
     <NumberMappingInput
       {...props}
       value={value}
-      onChange={(newValue) => {
+      onChange={newValue => {
         logger.info("Mapping changed:", newValue);
         setValue(newValue);
       }}
@@ -36,14 +42,14 @@ export const Default: Story = {
 export const WithValue: Story = {
   args: {
     value: { ar: "2", en: "2", fr: "3" },
-    onChange: (mapping) => logger.info("Mapping:", mapping),
+    onChange: mapping => logger.info("Mapping:", mapping),
   },
 };
 
 export const WithErrors: Story = {
   args: {
     value: { ar: "2", en: "-1", fr: "abc" },
-    onChange: (mapping) => logger.info("Mapping:", mapping),
+    onChange: mapping => logger.info("Mapping:", mapping),
     errors: {
       en: "Decimal places must be a non-negative number",
       fr: "Decimal places must be a non-negative number",
@@ -54,15 +60,14 @@ export const WithErrors: Story = {
 export const Empty: Story = {
   args: {
     value: {},
-    onChange: (mapping) => logger.info("Mapping:", mapping),
+    onChange: mapping => logger.info("Mapping:", mapping),
   },
 };
 
 export const Disabled: Story = {
   args: {
     value: { ar: "2", en: "2" },
-    onChange: (mapping) => logger.info("Mapping:", mapping),
+    onChange: mapping => logger.info("Mapping:", mapping),
     disabled: true,
   },
 };
-

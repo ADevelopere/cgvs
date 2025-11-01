@@ -16,3 +16,4 @@ export * from "./storage";
 export * from "./student";
 export * from "./templateCategory";
 export * from "./templateVariable";
+export * from "./templateConfig";

@@ -2,7 +2,6 @@ import { QRCodeErrorCorrection } from "../output";
 import { CertificateElementBaseInput } from "./base.element.input";
 import { qrCodeElement } from "@/server/db/schema";
 
-
 // ============================================================================
 // Mutation Inputs
 // ============================================================================

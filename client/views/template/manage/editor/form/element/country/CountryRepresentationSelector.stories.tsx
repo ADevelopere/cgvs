@@ -23,7 +23,7 @@ export const CountryName: Story = {
 export const Nationality: Story = {
   args: {
     value: CountryRepresentation.Nationality,
-    onChange: (value) => logger.log("Representation changed:", value),
+    onChange: value => logger.log("Representation changed:", value),
     disabled: false,
   },
 };
@@ -31,7 +31,7 @@ export const Nationality: Story = {
 export const WithError: Story = {
   args: {
     value: CountryRepresentation.CountryName,
-    onChange: (value) => logger.log("Representation changed:", value),
+    onChange: value => logger.log("Representation changed:", value),
     error: "Representation is required",
     disabled: false,
   },
@@ -40,8 +40,7 @@ export const WithError: Story = {
 export const Disabled: Story = {
   args: {
     value: CountryRepresentation.CountryName,
-    onChange: (value) => logger.log("Representation changed:", value),
+    onChange: value => logger.log("Representation changed:", value),
     disabled: true,
   },
 };
-

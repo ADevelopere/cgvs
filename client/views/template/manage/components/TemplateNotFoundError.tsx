@@ -13,7 +13,7 @@ interface TemplateNotFoundErrorProps {
 export const TemplateNotFoundError: React.FC<TemplateNotFoundErrorProps> = ({
   onBack,
 }) => {
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
 
   return (
     <Box

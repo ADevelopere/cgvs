@@ -22,7 +22,7 @@ interface DeleteConfirmationDialogProps {
 const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
   groups,
 }) => {
-  const strings = useAppTranslation("recipientGroupTranslations");
+  const { recipientGroupTranslations: strings } = useAppTranslation();
   const { deleteDialogOpen, closeDeleteDialog, selectedGroupId } =
     useRecipientGroupDialogs();
   const { deleteGroup } = useRecipientGroupOperations();

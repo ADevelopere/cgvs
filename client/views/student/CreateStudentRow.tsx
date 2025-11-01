@@ -119,8 +119,10 @@ const initialStudentState: StudentCreateInput = {
 
 const CreateStudentRow = () => {
   const { createStudent, setSearchFilter } = useStudentOperations();
-  const strings = useAppTranslation("studentTranslations");
-  const genderStrings = useAppTranslation("genderTranslations");
+  const {
+    studentTranslations: studentStrings,
+    genderTranslations: genderStrings,
+  } = useAppTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
@@ -333,15 +335,19 @@ const CreateStudentRow = () => {
                 <MemoizedTextField
                   value={newStudent.name}
                   errorMessage={fieldValidity["name"]}
-                  label={strings[field.label as keyof typeof strings]}
+                  label={
+                    studentStrings[field.label as keyof typeof studentStrings]
+                  }
                   helperText={
                     newStudent?.name?.trim() === "" && isDirty
-                      ? strings.nameRequired
+                      ? studentStrings.nameRequired
                       : ""
                   }
                   placeholder={
                     field.placeholder
-                      ? strings[field.placeholder as keyof typeof strings]
+                      ? studentStrings[
+                          field.placeholder as keyof typeof studentStrings
+                        ]
                       : undefined
                   }
                   required={field.required}
@@ -354,10 +360,14 @@ const CreateStudentRow = () => {
                 <MemoizedTextField
                   value={newStudent.email}
                   errorMessage={fieldValidity["email"] ?? ""}
-                  label={strings[field.label as keyof typeof strings]}
+                  label={
+                    studentStrings[field.label as keyof typeof studentStrings]
+                  }
                   placeholder={
                     field.placeholder
-                      ? strings[field.placeholder as keyof typeof strings]
+                      ? studentStrings[
+                          field.placeholder as keyof typeof studentStrings
+                        ]
                       : undefined
                   }
                   type={field.textType || "text"}
@@ -372,7 +382,9 @@ const CreateStudentRow = () => {
                 <MemoizedDateField
                   value={newStudent.dateOfBirth}
                   errorMessage={fieldValidity[field.id] ?? ""}
-                  label={strings[field.label as keyof typeof strings]}
+                  label={
+                    studentStrings[field.label as keyof typeof studentStrings]
+                  }
                   width="100%"
                   onValueChange={fieldChangeHandlers[field.id]}
                   getIsValid={field.validator}
@@ -382,10 +394,14 @@ const CreateStudentRow = () => {
                 <MemoizedGenderField
                   value={newStudent.gender}
                   errorMessage={fieldValidity["gender"] ?? ""}
-                  label={strings[field.label as keyof typeof strings]}
+                  label={
+                    studentStrings[field.label as keyof typeof studentStrings]
+                  }
                   placeholder={
                     field.placeholder
-                      ? strings[field.placeholder as keyof typeof strings]
+                      ? studentStrings[
+                          field.placeholder as keyof typeof studentStrings
+                        ]
                       : undefined
                   }
                   options={genderOptions}
@@ -398,10 +414,14 @@ const CreateStudentRow = () => {
                 <MemoizedCountryField
                   value={newStudent.nationality ?? undefined}
                   errorMessage={fieldValidity[field.id] ?? ""}
-                  label={strings[field.label as keyof typeof strings]}
+                  label={
+                    studentStrings[field.label as keyof typeof studentStrings]
+                  }
                   placeholder={
                     field.placeholder
-                      ? strings[field.placeholder as keyof typeof strings]
+                      ? studentStrings[
+                          field.placeholder as keyof typeof studentStrings
+                        ]
                       : undefined
                   }
                   width="100%"
@@ -413,7 +433,9 @@ const CreateStudentRow = () => {
                 <MemoizedPhoneField
                   value={newStudent.phoneNumber}
                   errorMessage={fieldValidity[field.id] ?? ""}
-                  label={strings[field.label as keyof typeof strings]}
+                  label={
+                    studentStrings[field.label as keyof typeof studentStrings]
+                  }
                   width="100%"
                   onValueChange={fieldChangeHandlers[field.id]}
                   getIsValid={field.validator}
@@ -439,11 +461,11 @@ const CreateStudentRow = () => {
             isFormValid={isFormValid}
             title={
               !isFormValid
-                ? strings.fillRequiredFields
-                : strings.createStudentShortcut
+                ? studentStrings.fillRequiredFields
+                : studentStrings.createStudentShortcut
             }
           >
-            {isLoading ? strings.creating : strings.create}
+            {isLoading ? studentStrings.creating : studentStrings.create}
           </_CreateButton>
         </_ActionsContainer>
       </_StyledPaper>
@@ -461,7 +483,7 @@ const CreateStudentRow = () => {
           variant="filled"
           icon={<CheckCircleIcon />}
         >
-          {strings.studentCreatedSuccess}
+          {studentStrings.studentCreatedSuccess}
         </_StyledAlert>
       </Snackbar>
 
@@ -477,7 +499,7 @@ const CreateStudentRow = () => {
           variant="filled"
           icon={<ErrorIcon />}
         >
-          {errorMessage || strings.studentCreateError}
+          {errorMessage || studentStrings.studentCreateError}
         </_StyledAlert>
       </Snackbar>
     </>

@@ -17,7 +17,7 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
   submitLabel,
   disabled,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
 
   return (
     <Box
@@ -55,4 +55,3 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
     </Box>
   );
 };
-

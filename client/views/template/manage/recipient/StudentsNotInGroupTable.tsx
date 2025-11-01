@@ -24,7 +24,7 @@ const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
 }) => {
   const store = useRecipientStore();
   const operations = useRecipientOperations(templateId);
-  const strings = useAppTranslation("recipientGroupTranslations");
+  const { recipientTranslations: strings } = useAppTranslation();
 
   // Get query variables from store
   const { studentsNotInGroupQueryParams, selectedGroup } = store;

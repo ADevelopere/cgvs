@@ -50,7 +50,9 @@ const UploadProgressFileItem: React.FC<UploadProgressFileItemProps> = ({
   onCancel,
 }) => {
   const theme = useTheme();
-  const { uploading: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { uploading: translations },
+  } = useAppTranslation();
 
   const getFileIcon = () => {
     const iconProps = {

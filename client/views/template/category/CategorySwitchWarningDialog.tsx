@@ -11,7 +11,7 @@ import { useAppTranslation } from "@/client/locale";
 import { useTemplateCategoryStore } from "./hooks/useTemplateCategoryStore";
 
 export const CategorySwitchWarningDialog = () => {
-  const messages = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
 
   // Get all necessary state and actions directly from the store
   const { isSwitchWarningOpen, closeSwitchWarning, confirmSwitch } =
@@ -19,14 +19,12 @@ export const CategorySwitchWarningDialog = () => {
 
   return (
     <Dialog open={isSwitchWarningOpen} onClose={closeSwitchWarning}>
-      <DialogTitle>{messages.confirmSwitchCategory}</DialogTitle>
-      <DialogContent>
-        {messages.switchCategoryWhileAddingTemplate}
-      </DialogContent>
+      <DialogTitle>{strings.confirmSwitchCategory}</DialogTitle>
+      <DialogContent>{strings.switchCategoryWhileAddingTemplate}</DialogContent>
       <DialogActions>
-        <Button onClick={closeSwitchWarning}>{messages.cancel}</Button>
+        <Button onClick={closeSwitchWarning}>{strings.cancel}</Button>
         <Button onClick={confirmSwitch} color="primary">
-          {messages.confirm}
+          {strings.confirm}
         </Button>
       </DialogActions>
     </Dialog>

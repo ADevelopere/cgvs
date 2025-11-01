@@ -41,7 +41,7 @@ export const FontReferenceSelector: FC<FontReferenceSelectorProps> = ({
   error,
   disabled,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
   const [googleFonts, setGoogleFonts] = useState<GoogleFont[]>([]);
   const [loading, setLoading] = useState(false);
 

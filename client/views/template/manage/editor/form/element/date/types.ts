@@ -1,9 +1,7 @@
 import type * as GQL from "@/client/graphql/generated/gql/graphql";
 import { FormErrors, UpdateStateFn } from "../../types";
 import { TextPropsFormErrors } from "../textProps";
-import {
-  BaseElementFormErrors,
-} from "../base";
+import { BaseElementFormErrors } from "../base";
 
 // ============================================================================
 // WORKING STATE TYPES
@@ -11,7 +9,7 @@ import {
 
 export type DatePropsState = GQL.DateElementSpecPropsInput;
 // Complete date element working state
-export type DateElementFormState = GQL.DateElementInput
+export type DateElementFormState = GQL.DateElementInput;
 
 // ============================================================================
 // MODULAR ERROR TYPES

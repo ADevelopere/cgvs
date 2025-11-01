@@ -20,7 +20,7 @@ export const useTemplateCategoryOperations = () => {
   const templateApollo = useTemplateMutations();
   const templateOperations = useTemplateOperations();
   const notifications = useNotifications();
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
 
   // Get the state and setters from the store
   const {

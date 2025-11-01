@@ -79,18 +79,20 @@ export const Default: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: (({key, value}) =>
+    updateBaseElement: (({ key, value }) =>
       logger.info("Base element updated:", {
         key,
         value,
       })) satisfies UpdateBaseElementFn,
-    updateTextProps: (({key, value}) =>
+    updateTextProps: (({ key, value }) =>
       logger.info("Text props updated:", {
         key,
         value,
       })) satisfies UpdateTextPropsFn,
-    updateDateProps: ((action) =>
-      logger.info("Date props updated:", { ...action })) satisfies UpdateDatePropsFn,
+    updateDateProps: (action =>
+      logger.info("Date props updated:", {
+        ...action,
+      })) satisfies UpdateDatePropsFn,
     updateDataSource: (dataSource =>
       logger.info("Data source updated:", {
         dataSource,
@@ -115,18 +117,20 @@ export const WithStudentField: Story = {
       },
     },
     errors: defaultErrors,
-    updateBaseElement: (({key, value}) =>
+    updateBaseElement: (({ key, value }) =>
       logger.info("Base element updated:", {
         key,
         value,
       })) satisfies UpdateBaseElementFn,
-    updateTextProps: (({key, value}) =>
+    updateTextProps: (({ key, value }) =>
       logger.info("Text props updated:", {
         key,
         value,
       })) satisfies UpdateTextPropsFn,
-    updateDateProps: ((action) =>
-      logger.info("Date props updated:", { ...action })) satisfies UpdateDatePropsFn,
+    updateDateProps: (action =>
+      logger.info("Date props updated:", {
+        ...action,
+      })) satisfies UpdateDatePropsFn,
     updateDataSource: (dataSource =>
       logger.info("Data source updated:", {
         dataSource,
@@ -153,18 +157,20 @@ export const HijriCalendar: Story = {
       },
     },
     errors: defaultErrors,
-    updateBaseElement: (({key, value}) =>
+    updateBaseElement: (({ key, value }) =>
       logger.info("Base element updated:", {
         key,
         value,
       })) satisfies UpdateBaseElementFn,
-    updateTextProps: (({key, value}) =>
+    updateTextProps: (({ key, value }) =>
       logger.info("Text props updated:", {
         key,
         value,
       })) satisfies UpdateTextPropsFn,
-    updateDateProps: ((action) =>
-      logger.info("Date props updated:", { ...action })) satisfies UpdateDatePropsFn,
+    updateDateProps: (action =>
+      logger.info("Date props updated:", {
+        ...action,
+      })) satisfies UpdateDatePropsFn,
     updateDataSource: (dataSource =>
       logger.info("Data source updated:", {
         dataSource,

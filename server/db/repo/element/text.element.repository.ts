@@ -218,7 +218,10 @@ export namespace TextElementRepository {
     const result = await db
       .select()
       .from(textElement)
-      .innerJoin(elementTextProps, eq(elementTextProps.id, textElement.textPropsId))
+      .innerJoin(
+        elementTextProps,
+        eq(elementTextProps.id, textElement.textPropsId)
+      )
       .where(eq(textElement.elementId, base.id))
       .limit(1);
 

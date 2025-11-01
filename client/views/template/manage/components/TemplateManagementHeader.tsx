@@ -25,7 +25,7 @@ export const TemplateManagementHeader: React.FC<
 > = ({ templateName, isLoading, isError, onBackAction: onBack }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
 
   const getTitleText = () => {
     if (isError) return strings.templateNotFoundTitle;

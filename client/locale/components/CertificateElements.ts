@@ -99,7 +99,7 @@ export type DateElementTranslations = {
   offsetDaysHelper: string;
   offsetDaysRequired: string;
   offsetDaysInvalid: string;
-  
+
   // Transformation
   transformationLabel: string;
   transformationPlaceholder: string;
@@ -330,4 +330,3 @@ export type CommonTranslations = {
   updateSuccess: string;
   updateError: string;
 };
-

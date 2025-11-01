@@ -37,7 +37,7 @@ const DateFieldComponent: React.FC<DateFieldProps> = ({
     [theme.palette.info.main]
   );
 
-  const strings = useAppTranslation("studentTranslations");
+  const { studentTranslations: strings } = useAppTranslation();
 
   const dateValue = useMemo(() => {
     if (!value) return null;

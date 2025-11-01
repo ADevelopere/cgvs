@@ -25,7 +25,7 @@ export const ImagePropsForm: React.FC<ImagePropsFormProps> = ({
   updateImageProps,
   disabled = false,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
 
   const fitOptions: Array<{
     value: ElementImageFit;
@@ -61,7 +61,10 @@ export const ImagePropsForm: React.FC<ImagePropsFormProps> = ({
         <MUI.RadioGroup
           value={imageProps.fit}
           onChange={e =>
-            updateImageProps({ key: "fit", value: e.target.value as ElementImageFit })
+            updateImageProps({
+              key: "fit",
+              value: e.target.value as ElementImageFit,
+            })
           }
           sx={{ mt: 1 }}
         >
@@ -71,9 +74,7 @@ export const ImagePropsForm: React.FC<ImagePropsFormProps> = ({
               sx={{
                 border: 1,
                 borderColor:
-                  imageProps.fit === option.value
-                    ? "primary.main"
-                    : "divider",
+                  imageProps.fit === option.value ? "primary.main" : "divider",
                 borderRadius: 1,
                 p: 1.5,
                 mb: 1,
@@ -95,7 +96,9 @@ export const ImagePropsForm: React.FC<ImagePropsFormProps> = ({
                 value={option.value}
                 control={<MUI.Radio />}
                 label={
-                  <MUI.Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <MUI.Box
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                  >
                     <MUI.Box sx={{ color: "primary.main" }}>
                       {option.icon}
                     </MUI.Box>
@@ -119,4 +122,3 @@ export const ImagePropsForm: React.FC<ImagePropsFormProps> = ({
     </MUI.Box>
   );
 };
-

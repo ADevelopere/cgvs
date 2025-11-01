@@ -27,7 +27,6 @@ export type ElementTextPropsEntity = typeof elementTextProps.$inferSelect;
 // Text Props (shared by TEXT, DATE, NUMBER, COUNTRY, GENDER elements)
 // ============================================================================
 
-
 // Logical structure - NO database fields
 export type TextProps = Omit<
   ElementTextPropsEntity,

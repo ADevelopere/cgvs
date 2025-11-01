@@ -12,4 +12,3 @@ export const countryElement = pgTable("country_element", {
     .references(() => elementTextProps.id, { onDelete: "restrict" }),
   representation: countryRepresentationEnum("representation").notNull(), // COUNTRY_NAME | NATIONALITY
 });
-

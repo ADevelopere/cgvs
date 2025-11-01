@@ -14,7 +14,7 @@ export const LocaleSelector: React.FC<LocaleSelectorProps> = ({
   onChange,
   disabled = false,
 }) => {
-  const strings = useAppTranslation("fontManagementTranslations");
+  const { fontManagementTranslations: strings } = useAppTranslation();
 
   const selectedOptions = LOCALE_OPTIONS.filter(opt =>
     value.includes(opt.value)

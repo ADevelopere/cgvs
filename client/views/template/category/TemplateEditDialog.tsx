@@ -35,7 +35,7 @@ const TemplateEditDialog: React.FC<Props> = ({
   onSave,
   parentCategoryId,
 }) => {
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
   const [name, setName] = React.useState(template?.name ?? "");
   const [description, setDescription] = React.useState<
     string | undefined | null

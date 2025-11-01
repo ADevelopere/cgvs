@@ -47,8 +47,8 @@ export const useRecipientTable = ({
   clearFilter,
   updateSort,
 }: UseRecipientTableParams) => {
-  const strings = useAppTranslation("recipientTranslations");
-  const genderStrings = useAppTranslation("genderTranslations");
+  const { recipientTranslations: strings, genderTranslations: genderStrings } =
+    useAppTranslation();
 
   // Build gender options
   const genderOptions = useMemo(

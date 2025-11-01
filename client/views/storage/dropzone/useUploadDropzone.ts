@@ -113,7 +113,9 @@ export const useUploadDropzone = (
     onValidationError,
   } = options;
 
-  const { dropzone: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { dropzone: translations },
+  } = useAppTranslation();
   const { startUpload, uploadBatch } = useStorageUploadOperations();
 
   // Handle file upload

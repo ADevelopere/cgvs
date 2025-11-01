@@ -17,7 +17,7 @@ export const useRecipientVariableDataOperations = () => {
   const apollo = useRecipientVariableDataApolloMutations();
   const store = useRecipientVariableDataStore();
   const notifications = useNotifications();
-  const strings = useAppTranslation("recipientVariableDataTranslations");
+  const { recipientVariableDataTranslations: strings } = useAppTranslation();
 
   /**
    * Update a single recipient variable value

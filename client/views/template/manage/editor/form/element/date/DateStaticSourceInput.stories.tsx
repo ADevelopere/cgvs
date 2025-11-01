@@ -14,21 +14,21 @@ type Story = StoryObj<typeof DateStaticSourceInput>;
 export const Default: Story = {
   args: {
     value: "2024-01-15",
-    onChange: (value) => logger.info("Date changed", { value }),
+    onChange: value => logger.info("Date changed", { value }),
   },
 };
 
 export const Empty: Story = {
   args: {
     value: "",
-    onChange: (value) => logger.info("Date changed", { value }),
+    onChange: value => logger.info("Date changed", { value }),
   },
 };
 
 export const WithError: Story = {
   args: {
     value: "",
-    onChange: (value) => logger.info("Date changed", { value }),
+    onChange: value => logger.info("Date changed", { value }),
     error: "Date is required",
   },
 };
@@ -36,8 +36,7 @@ export const WithError: Story = {
 export const Disabled: Story = {
   args: {
     value: "2024-01-15",
-    onChange: (value) => logger.info("Date changed", { value }),
+    onChange: value => logger.info("Date changed", { value }),
     disabled: true,
   },
 };
-

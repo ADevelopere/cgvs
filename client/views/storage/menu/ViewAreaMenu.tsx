@@ -54,7 +54,9 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
   selectAll,
 }) => {
   const theme = useTheme();
-  const { ui: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { ui: translations },
+  } = useAppTranslation();
   const { startUpload } = useStorageUploadOperations();
 
   const [isPasting, setIsPasting] = useState(false);

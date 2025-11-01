@@ -45,7 +45,7 @@ const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
     );
   }, [editingVariableID, variables]);
 
-  const strings = useAppTranslation("templateVariableTranslations");
+  const { templateVariableTranslations: strings } = useAppTranslation();
 
   const [state, setState] = useState<TemplateNumberVariableCreateInput>(() => {
     if (editingVariable) {

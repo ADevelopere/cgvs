@@ -1,16 +1,26 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { TemplateConfigCreateForm } from "./TemplateConfigCreateForm";
-import { mockTemplate, withMockMutation } from "./templateConfigStoryMocks";
+import { TemplateConfigCreateFormContent } from "./TemplateConfigCreateForm";
+import { mockTemplate } from "./templateConfigStoryMocks";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
+import { TemplateConfigFormUpdateFn } from "./types";
+import logger from "@/client/lib/logger";
 
-const meta: Meta<typeof TemplateConfigCreateForm> = {
+const meta: Meta<typeof TemplateConfigCreateFormContent> = {
   title: "Template/Editor/Form/Config/TemplateConfigCreateForm",
-  component: TemplateConfigCreateForm,
+  component: TemplateConfigCreateFormContent,
   tags: ["autodocs"],
 };
 
 export default meta;
-type Story = StoryObj<typeof TemplateConfigCreateForm>;
+type Story = StoryObj<typeof TemplateConfigCreateFormContent>;
+
+const mockUpdater: TemplateConfigFormUpdateFn = action => {
+  logger.log("Update triggered:", action);
+};
+
+const mockHandleCreate = async () => {
+  logger.log("Create triggered");
+};
 
 // ============================================================================
 // BASIC STATES
@@ -18,29 +28,34 @@ type Story = StoryObj<typeof TemplateConfigCreateForm>;
 
 export const Default: Story = {
   args: {
-    template: mockTemplate,
+    state: {
+      width: 800,
+      height: 600,
+      language: GQL.AppLanguage.Ar,
+      templateId: mockTemplate.id,
+    },
+    errors: {},
+    creating: false,
+    createError: null,
+    updater: mockUpdater,
+    handleCreate: mockHandleCreate,
   },
-  decorators: [
-    withMockMutation({
-      createState: { delay: 1000 },
-    }),
-  ],
 };
 
 export const WithDifferentTemplate: Story = {
   args: {
-    template: {
-      ...mockTemplate,
-      id: 2,
-      name: "Certificate of Completion",
-      description: "Another template type",
+    state: {
+      width: 800,
+      height: 600,
+      language: GQL.AppLanguage.Ar,
+      templateId: 2,
     },
+    errors: {},
+    creating: false,
+    createError: null,
+    updater: mockUpdater,
+    handleCreate: mockHandleCreate,
   },
-  decorators: [
-    withMockMutation({
-      createState: { delay: 1000 },
-    }),
-  ],
 };
 
 // ============================================================================
@@ -49,21 +64,17 @@ export const WithDifferentTemplate: Story = {
 
 export const Creating: Story = {
   args: {
-    template: mockTemplate,
-  },
-  decorators: [
-    withMockMutation({
-      createState: { delay: 10000 }, // Long delay to simulate loading
-    }),
-  ],
-  play: async ({ canvasElement }) => {
-    // Click the create button to trigger loading state
-    const createButton = canvasElement.querySelector(
-      "button"
-    ) as HTMLButtonElement;
-    if (createButton && !createButton.disabled) {
-      createButton.click();
-    }
+    state: {
+      width: 800,
+      height: 600,
+      language: GQL.AppLanguage.Ar,
+      templateId: mockTemplate.id,
+    },
+    errors: {},
+    creating: true,
+    createError: null,
+    updater: mockUpdater,
+    handleCreate: mockHandleCreate,
   },
 };
 
@@ -73,138 +84,89 @@ export const Creating: Story = {
 
 export const CreateError: Story = {
   args: {
-    template: mockTemplate,
-  },
-  decorators: [
-    withMockMutation({
-      createState: {
-        error: new Error("Failed to create template configuration."),
-        delay: 500,
-      },
-    }),
-  ],
-  play: async ({ canvasElement }) => {
-    // Click create button to trigger error
-    const createButton = canvasElement.querySelector(
-      "button"
-    ) as HTMLButtonElement;
-    if (createButton) {
-      createButton.click();
-    }
+    state: {
+      width: 800,
+      height: 600,
+      language: GQL.AppLanguage.Ar,
+      templateId: mockTemplate.id,
+    },
+    errors: {},
+    creating: false,
+    createError: "Failed to create template configuration.",
+    updater: mockUpdater,
+    handleCreate: mockHandleCreate,
   },
 };
 
 export const ValidationErrorWidth: Story = {
   args: {
-    template: mockTemplate,
-  },
-  decorators: [
-    withMockMutation({
-      createState: { delay: 1000 },
-    }),
-  ],
-  play: async ({ canvasElement }) => {
-    // Set invalid width value
-    const widthInput = canvasElement.querySelectorAll(
-      'input[type="number"]'
-    )[0] as HTMLInputElement;
-    if (widthInput) {
-      widthInput.value = "0";
-      widthInput.dispatchEvent(new Event("change", { bubbles: true }));
-    }
+    state: {
+      width: 0,
+      height: 600,
+      language: GQL.AppLanguage.Ar,
+      templateId: mockTemplate.id,
+    },
+    errors: {
+      width: "Value must be greater than 0",
+    },
+    creating: false,
+    createError: null,
+    updater: mockUpdater,
+    handleCreate: mockHandleCreate,
   },
 };
 
 export const ValidationErrorHeight: Story = {
   args: {
-    template: mockTemplate,
-  },
-  decorators: [
-    withMockMutation({
-      createState: { delay: 1000 },
-    }),
-  ],
-  play: async ({ canvasElement }) => {
-    // Set invalid height value
-    const heightInput = canvasElement.querySelectorAll(
-      'input[type="number"]'
-    )[1] as HTMLInputElement;
-    if (heightInput) {
-      heightInput.value = "15000";
-      heightInput.dispatchEvent(new Event("change", { bubbles: true }));
-    }
+    state: {
+      width: 800,
+      height: 15000,
+      language: GQL.AppLanguage.Ar,
+      templateId: mockTemplate.id,
+    },
+    errors: {
+      height: "Value must be less than or equal to 10000",
+    },
+    creating: false,
+    createError: null,
+    updater: mockUpdater,
+    handleCreate: mockHandleCreate,
   },
 };
 
 // ============================================================================
-// LOCALE VARIATIONS
+// LANGUAGE VARIATIONS
 // ============================================================================
 
-export const USLocale: Story = {
+export const ArabicLanguage: Story = {
   args: {
-    template: mockTemplate,
-  },
-  decorators: [
-    withMockMutation({
-      createState: { delay: 1000 },
-    }),
-  ],
-};
-
-export const SaudiLocale: Story = {
-  args: {
-    template: mockTemplate,
-  },
-  decorators: [
-    withMockMutation({
-      createState: { delay: 1000 },
-    }),
-  ],
-  play: async ({ canvasElement }) => {
-    // Change locale to Saudi Arabia
-    const localeSelect = canvasElement.querySelector(
-      '[role="combobox"]'
-    ) as HTMLElement;
-    if (localeSelect) {
-      localeSelect.click();
-      // Wait for dropdown to open then select Saudi option
-      setTimeout(() => {
-        const saudiOption = document.querySelector(
-          `[data-value="${GQL.CountryCode.Sa}"]`
-        ) as HTMLElement;
-        if (saudiOption) {
-          saudiOption.click();
-        }
-      }, 100);
-    }
+    state: {
+      width: 800,
+      height: 600,
+      language: GQL.AppLanguage.Ar,
+      templateId: mockTemplate.id,
+    },
+    errors: {},
+    creating: false,
+    createError: null,
+    updater: mockUpdater,
+    handleCreate: mockHandleCreate,
   },
 };
 
-export const EgyptianLocale: Story = {
+export const EnglishLanguage: Story = {
   args: {
-    template: mockTemplate,
-  },
-  decorators: [
-    withMockMutation({
-      createState: { delay: 1000 },
-    }),
-  ],
-  play: async ({ canvasElement }) => {
-    // Change locale to Egypt
-    const localeSelect = canvasElement.querySelector(
-      '[role="combobox"]'
-    ) as HTMLElement;
-    if (localeSelect) {
-      localeSelect.click();
-      setTimeout(() => {
-        const egyptOption = document.querySelector(
-          `[data-value="${GQL.CountryCode.Eg}"]`
-        ) as HTMLElement;
-        if (egyptOption) {
-          egyptOption.click();
-        }
-      }, 100);
-    }
+    state: {
+      width: 800,
+      height: 600,
+      language: GQL.AppLanguage.En,
+      templateId: mockTemplate.id,
+    },
+    errors: {},
+    creating: false,
+    createError: null,
+    updater: mockUpdater,
+    handleCreate: mockHandleCreate,
   },
 };
 
@@ -214,79 +176,49 @@ export const EgyptianLocale: Story = {
 
 export const CustomDimensions: Story = {
   args: {
-    template: mockTemplate,
-  },
-  decorators: [
-    withMockMutation({
-      createState: { delay: 1000 },
-    }),
-  ],
-  play: async ({ canvasElement }) => {
-    // Set custom dimensions
-    const inputs = canvasElement.querySelectorAll('input[type="number"]');
-    const widthInput = inputs[0] as HTMLInputElement;
-    const heightInput = inputs[1] as HTMLInputElement;
-
-    if (widthInput) {
-      widthInput.value = "1280";
-      widthInput.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-    if (heightInput) {
-      heightInput.value = "720";
-      heightInput.dispatchEvent(new Event("change", { bubbles: true }));
-    }
+    state: {
+      width: 1280,
+      height: 720,
+      language: GQL.AppLanguage.Ar,
+      templateId: mockTemplate.id,
+    },
+    errors: {},
+    creating: false,
+    createError: null,
+    updater: mockUpdater,
+    handleCreate: mockHandleCreate,
   },
 };
 
 export const PortraitDimensions: Story = {
   args: {
-    template: mockTemplate,
-  },
-  decorators: [
-    withMockMutation({
-      createState: { delay: 1000 },
-    }),
-  ],
-  play: async ({ canvasElement }) => {
-    // Set portrait dimensions
-    const inputs = canvasElement.querySelectorAll('input[type="number"]');
-    const widthInput = inputs[0] as HTMLInputElement;
-    const heightInput = inputs[1] as HTMLInputElement;
-
-    if (widthInput) {
-      widthInput.value = "800";
-      widthInput.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-    if (heightInput) {
-      heightInput.value = "1200";
-      heightInput.dispatchEvent(new Event("change", { bubbles: true }));
-    }
+    state: {
+      width: 800,
+      height: 1200,
+      language: GQL.AppLanguage.Ar,
+      templateId: mockTemplate.id,
+    },
+    errors: {},
+    creating: false,
+    createError: null,
+    updater: mockUpdater,
+    handleCreate: mockHandleCreate,
   },
 };
 
 export const SquareDimensions: Story = {
   args: {
-    template: mockTemplate,
-  },
-  decorators: [
-    withMockMutation({
-      createState: { delay: 1000 },
-    }),
-  ],
-  play: async ({ canvasElement }) => {
-    // Set square dimensions
-    const inputs = canvasElement.querySelectorAll('input[type="number"]');
-    const widthInput = inputs[0] as HTMLInputElement;
-    const heightInput = inputs[1] as HTMLInputElement;
-
-    if (widthInput) {
-      widthInput.value = "1000";
-      widthInput.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-    if (heightInput) {
-      heightInput.value = "1000";
-      heightInput.dispatchEvent(new Event("change", { bubbles: true }));
-    }
+    state: {
+      width: 1000,
+      height: 1000,
+      language: GQL.AppLanguage.Ar,
+      templateId: mockTemplate.id,
+    },
+    errors: {},
+    creating: false,
+    createError: null,
+    updater: mockUpdater,
+    handleCreate: mockHandleCreate,
   },
 };
 
@@ -296,52 +228,32 @@ export const SquareDimensions: Story = {
 
 export const MinimumDimensions: Story = {
   args: {
-    template: mockTemplate,
-  },
-  decorators: [
-    withMockMutation({
-      createState: { delay: 1000 },
-    }),
-  ],
-  play: async ({ canvasElement }) => {
-    // Set minimum dimensions
-    const inputs = canvasElement.querySelectorAll('input[type="number"]');
-    const widthInput = inputs[0] as HTMLInputElement;
-    const heightInput = inputs[1] as HTMLInputElement;
-
-    if (widthInput) {
-      widthInput.value = "1";
-      widthInput.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-    if (heightInput) {
-      heightInput.value = "1";
-      heightInput.dispatchEvent(new Event("change", { bubbles: true }));
-    }
+    state: {
+      width: 1,
+      height: 1,
+      language: GQL.AppLanguage.Ar,
+      templateId: mockTemplate.id,
+    },
+    errors: {},
+    creating: false,
+    createError: null,
+    updater: mockUpdater,
+    handleCreate: mockHandleCreate,
   },
 };
 
 export const MaximumDimensions: Story = {
   args: {
-    template: mockTemplate,
-  },
-  decorators: [
-    withMockMutation({
-      createState: { delay: 1000 },
-    }),
-  ],
-  play: async ({ canvasElement }) => {
-    // Set maximum dimensions
-    const inputs = canvasElement.querySelectorAll('input[type="number"]');
-    const widthInput = inputs[0] as HTMLInputElement;
-    const heightInput = inputs[1] as HTMLInputElement;
-
-    if (widthInput) {
-      widthInput.value = "10000";
-      widthInput.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-    if (heightInput) {
-      heightInput.value = "10000";
-      heightInput.dispatchEvent(new Event("change", { bubbles: true }));
-    }
+    state: {
+      width: 10000,
+      height: 10000,
+      language: GQL.AppLanguage.Ar,
+      templateId: mockTemplate.id,
+    },
+    errors: {},
+    creating: false,
+    createError: null,
+    updater: mockUpdater,
+    handleCreate: mockHandleCreate,
   },
 };

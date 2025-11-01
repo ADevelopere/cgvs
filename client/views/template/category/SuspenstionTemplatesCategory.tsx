@@ -26,7 +26,7 @@ interface TemplateRow {
 }
 
 const SuspenstionTemplatesCategory: React.FC = () => {
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
   const { theme } = useAppTheme();
   const { unsuspendTemplate } = useTemplateCategoryOperations();
   const [sortModel, setSortModel] = useState<GridSortModel>([

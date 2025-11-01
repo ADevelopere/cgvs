@@ -30,7 +30,7 @@ const GridView: React.FC<GridViewProps> = ({
   failedImages,
   onImageError,
 }) => {
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
   const { isDark } = useAppTheme();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));

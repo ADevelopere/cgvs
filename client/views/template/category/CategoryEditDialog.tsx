@@ -33,7 +33,7 @@ const CategoryEditDialog: React.FC<Props> = ({
   onClose,
   onSave,
 }) => {
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
   const [name, setName] = useState(categoryToEdit?.name ?? "");
   const [description, setDescription] = useState(
     categoryToEdit?.description ?? ""

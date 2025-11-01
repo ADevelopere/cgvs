@@ -32,7 +32,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
   isDrawerMode,
   isFirstPaneVisible,
 }) => {
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
   const {
     templateQueryVariables,
     updateTemplateQueryVariables,

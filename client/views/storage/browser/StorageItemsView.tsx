@@ -64,7 +64,11 @@ const StorageToolbar: React.FC<{
 
   // Handle sort direction change
   const handleSortDirectionChange = React.useCallback(() => {
-    setSortDirection(sortDirection === GQL.OrderSortDirection.Asc ? GQL.OrderSortDirection.Desc : GQL.OrderSortDirection.Asc);
+    setSortDirection(
+      sortDirection === GQL.OrderSortDirection.Asc
+        ? GQL.OrderSortDirection.Desc
+        : GQL.OrderSortDirection.Asc
+    );
   }, [setSortDirection, sortDirection]);
 
   // Sort field options for grid view
@@ -246,7 +250,11 @@ const ListView: React.FC<{
     (field: string) => {
       if (sortBy === field) {
         // Same field, toggle direction
-        setSortDirection(sortDirection === GQL.OrderSortDirection.Asc ? GQL.OrderSortDirection.Desc : GQL.OrderSortDirection.Asc);
+        setSortDirection(
+          sortDirection === GQL.OrderSortDirection.Asc
+            ? GQL.OrderSortDirection.Desc
+            : GQL.OrderSortDirection.Asc
+        );
       } else {
         // New field, set ascending
         setSortBy(field);
@@ -612,7 +620,9 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
   setSortDirection,
   getSortedItems,
 }) => {
-  const { ui: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { ui: translations },
+  } = useAppTranslation();
   const theme = MUI.useTheme();
 
   // Context menu state

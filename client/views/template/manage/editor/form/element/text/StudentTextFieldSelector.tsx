@@ -22,7 +22,7 @@ export const StudentFieldSelector: FC<StudentFieldSelectorProps> = ({
   error,
   disabled,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
 
   return (
     <FormControl fullWidth error={!!error} disabled={disabled}>

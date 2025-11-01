@@ -118,9 +118,7 @@ export const AppApolloProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const notifications = useNotifications();
-  const strings: ConnectivityTranslations = useAppTranslation(
-    "connectivityTranslations"
-  );
+  const { connectivityTranslations: strings } = useAppTranslation();
 
   const [isConnected, setIsConnected] = useState(false); // Start conservative, wait for actual check
   const [isChecking, setIsChecking] = useState(false);

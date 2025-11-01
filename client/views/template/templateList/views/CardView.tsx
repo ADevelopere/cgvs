@@ -31,7 +31,7 @@ const CardView: React.FC<CardViewProps> = ({
   failedImages,
   onImageError,
 }) => {
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
   const { isDark } = useAppTheme();
 
   return (

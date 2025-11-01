@@ -286,8 +286,12 @@ export const TextElementObject = gqlSchemaBuilder.loadableObject<
 >(TextElementObjectRef, {
   load: async ids => {
     const results = await TextElementRepository.loadByIds(ids);
-    logger.info(`[TextElementObject] Loaded ${results.length} TEXT element(s) for Pothos object`);
-    logger.debug(`[TextElementObject] Loaded elements: ${JSON.stringify(results)}`);
+    logger.info(
+      `[TextElementObject] Loaded ${results.length} TEXT element(s) for Pothos object`
+    );
+    logger.debug(
+      `[TextElementObject] Loaded elements: ${JSON.stringify(results)}`
+    );
     return results;
   },
   sort: e => e.base.id,
@@ -297,11 +301,11 @@ export const TextElementObject = gqlSchemaBuilder.loadableObject<
     textProps: createTextPropsFieldFromEntity(t),
     textElementSpecProps: t.expose("textElementSpecProps", {
       type: TextElementSpecPropsObject,
-       nullable: false
+      nullable: false,
     }),
     textDataSource: t.expose("textDataSource", {
       type: TextDataSourceUnion,
-      nullable: false
+      nullable: false,
     }),
   }),
 });

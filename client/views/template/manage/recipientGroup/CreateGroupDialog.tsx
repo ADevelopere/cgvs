@@ -24,7 +24,7 @@ interface CreateGroupDialogProps {
 const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
   templateId,
 }) => {
-  const strings = useAppTranslation("recipientGroupTranslations");
+  const { recipientGroupTranslations: strings } = useAppTranslation();
   const { createDialogOpen, closeCreateDialog } = useRecipientGroupDialogs();
   const { createGroup } = useRecipientGroupOperations();
 

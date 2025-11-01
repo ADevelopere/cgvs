@@ -207,8 +207,8 @@ export namespace DateElementRepository {
     };
   };
 
-   export const loadByBase = async (
-      base: CertificateElementEntity
+  export const loadByBase = async (
+    base: CertificateElementEntity
   ): Promise<DateElementOutput> => {
     // Join all three tables
     const result = await db
@@ -221,7 +221,8 @@ export namespace DateElementRepository {
       .where(eq(dateElement.elementId, base.id))
       .limit(1);
 
-    if (result.length === 0) throw new Error(`DATE element with base ID ${base.id} does not exist.`);
+    if (result.length === 0)
+      throw new Error(`DATE element with base ID ${base.id} does not exist.`);
 
     const row = result[0];
 

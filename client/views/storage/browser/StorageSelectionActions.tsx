@@ -61,7 +61,9 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
   onMove,
   clearSelection,
 }) => {
-  const { ui: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { ui: translations },
+  } = useAppTranslation();
 
   // Dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);

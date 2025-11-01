@@ -30,7 +30,7 @@ export const useTemplateVariableOperations = () => {
     state => state.setOperationError
   );
   const notifications = useNotifications();
-  const strings = useAppTranslation("templateVariableTranslations");
+  const { templateVariableTranslations: strings } = useAppTranslation();
 
   // Create variable helper
   const createVariable = useCallback(

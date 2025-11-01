@@ -22,7 +22,7 @@ export const Default: Story = {
   args: {
     value: 1,
     variables: mockSelectVariables,
-    onChange: (variableId) => logger.log("Variable changed:", variableId),
+    onChange: variableId => logger.log("Variable changed:", variableId),
     disabled: false,
   },
 };
@@ -31,7 +31,7 @@ export const NoSelection: Story = {
   args: {
     value: undefined,
     variables: mockSelectVariables,
-    onChange: (variableId) => logger.log("Variable changed:", variableId),
+    onChange: variableId => logger.log("Variable changed:", variableId),
     disabled: false,
   },
 };
@@ -40,7 +40,7 @@ export const EmptyList: Story = {
   args: {
     value: undefined,
     variables: [],
-    onChange: (variableId) => logger.log("Variable changed:", variableId),
+    onChange: variableId => logger.log("Variable changed:", variableId),
     disabled: false,
   },
 };
@@ -49,7 +49,7 @@ export const WithError: Story = {
   args: {
     value: undefined,
     variables: mockSelectVariables,
-    onChange: (variableId) => logger.log("Variable changed:", variableId),
+    onChange: variableId => logger.log("Variable changed:", variableId),
     error: "Variable is required",
     disabled: false,
   },
@@ -59,8 +59,7 @@ export const Disabled: Story = {
   args: {
     value: 1,
     variables: mockSelectVariables,
-    onChange: (variableId) => logger.log("Variable changed:", variableId),
+    onChange: variableId => logger.log("Variable changed:", variableId),
     disabled: true,
   },
 };
-

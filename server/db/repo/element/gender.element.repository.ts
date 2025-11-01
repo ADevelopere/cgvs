@@ -182,7 +182,8 @@ export namespace GenderElementRepository {
       .where(eq(genderElement.elementId, base.id))
       .limit(1);
 
-    if (result.length === 0) throw new Error(`GENDER element with base ID ${base.id} does not exist.`);
+    if (result.length === 0)
+      throw new Error(`GENDER element with base ID ${base.id} does not exist.`);
 
     const row = result[0];
 
@@ -192,7 +193,6 @@ export namespace GenderElementRepository {
       textPropsEntity: row.element_text_props,
     };
   };
-
 
   /**
    * Load GENDER element by ID or throw error

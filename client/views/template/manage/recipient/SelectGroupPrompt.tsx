@@ -8,8 +8,7 @@ import { useAppTranslation } from "@/client/locale";
 const SelectGroupPrompt: React.FC<{
   invalidGroupId?: number | null;
 }> = ({ invalidGroupId }) => {
-  const strings = useAppTranslation("recipientGroupTranslations");
-
+  const { recipientGroupTranslations: strings } = useAppTranslation();
   return (
     <Box
       sx={{

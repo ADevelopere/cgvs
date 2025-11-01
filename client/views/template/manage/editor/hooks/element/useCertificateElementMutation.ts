@@ -84,4 +84,4 @@ export const useUpdateElementsCache = (templateId?: number | null) => {
     }),
     [updateElementsCache]
   );
-}
+};

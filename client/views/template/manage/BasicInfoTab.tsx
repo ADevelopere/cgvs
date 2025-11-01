@@ -31,8 +31,10 @@ interface BasicInfoTabProps {
 
 const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
   const { theme, isDark } = useAppTheme();
-  const strings = useAppTranslation("templateCategoryTranslations");
-  const storageStrings = useAppTranslation("storageTranslations");
+  const {
+    templateCategoryTranslations: strings,
+    storageTranslations: storageStrings,
+  } = useAppTranslation();
 
   const { unsavedChanges, setUnsavedChanges } = useTemplateUIStore();
   const templateOperations = useTemplateOperations();

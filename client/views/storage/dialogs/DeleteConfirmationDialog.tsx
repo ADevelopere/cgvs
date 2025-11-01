@@ -19,7 +19,9 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
   onDelete,
 }) => {
   const theme = MUI.useTheme();
-  const { ui: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { ui: translations },
+  } = useAppTranslation();
 
   // State
   const [isDeleting, setIsDeleting] = useState(false);

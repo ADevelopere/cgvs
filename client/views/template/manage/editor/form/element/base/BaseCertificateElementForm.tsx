@@ -28,8 +28,7 @@ interface BaseCertificateElementFormProps {
 export const BaseCertificateElementForm: FC<
   BaseCertificateElementFormProps
 > = ({ baseProps, onFieldChange, errors, disabled }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
-
+  const { certificateElementsTranslations: strings } = useAppTranslation();
   return (
     <Box>
       <Typography variant="h6" gutterBottom>

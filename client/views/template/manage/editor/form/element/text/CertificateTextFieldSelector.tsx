@@ -22,7 +22,7 @@ export const CertificateFieldSelector: FC<CertificateFieldSelectorProps> = ({
   error,
   disabled,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
 
   return (
     <FormControl fullWidth error={!!error} disabled={disabled}>
@@ -30,7 +30,7 @@ export const CertificateFieldSelector: FC<CertificateFieldSelectorProps> = ({
       <Select
         value={value}
         label={strings.textElement.certificateFieldLabel}
-        onChange={(e) => onChange(e.target.value as CertificateTextField)}
+        onChange={e => onChange(e.target.value as CertificateTextField)}
       >
         <MenuItem value={CertificateTextField.VerificationCode}>
           {strings.textElement.certificateFieldVerificationCode}
@@ -40,4 +40,3 @@ export const CertificateFieldSelector: FC<CertificateFieldSelectorProps> = ({
     </FormControl>
   );
 };
-

@@ -30,8 +30,7 @@ export const WithError: Story = {
 export const Disabled: Story = {
   args: {
     value: StudentDateField.DateOfBirth,
-    onChange: (field) => logger.info("Student field changed", { field }),
+    onChange: field => logger.info("Student field changed", { field }),
     disabled: true,
   },
 };
-

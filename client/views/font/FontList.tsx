@@ -27,7 +27,7 @@ export const FontList: React.FC<FontListProps> = ({
   startCreating,
   selectFont,
 }) => {
-  const strings = useAppTranslation("fontManagementTranslations");
+  const { fontManagementTranslations: strings } = useAppTranslation();
 
   // Local state for immediate input feedback
   const [localSearchTerm, setLocalSearchTerm] = useState("");

@@ -32,7 +32,7 @@ export const LanguageSelectorOld: React.FC<LanguageSelectorProps> = ({
   label,
   style,
 }: LanguageSelectorProps): React.ReactNode => {
-  const strings = useAppTranslation("languageTranslations");
+  const { languageTranslations: strings } = useAppTranslation();
 
   return (
     <Autocomplete

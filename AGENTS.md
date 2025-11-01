@@ -67,9 +67,9 @@
 ### Using Translations:
 
 - Import: `import { useAppTranslation } from "@/client/locale";`
-- Use hook: `const strings = useAppTranslation("myFeatureTranslations");`
+- Use hook: `const {myFeatureTranslations: strings} = useAppTranslation();`
 - Access: `{strings.title}`, `{strings.submitButton}` - NO fallbacks like `{strings.title || "Fallback"}`
 - NEVER use hardcoded strings for user-facing text
 - NEVER use fallback strings (e.g., `|| "Default"`, `?? "Fallback"`)
-- Can use multiple namespaces: `const errorStrings = useAppTranslation("errorTranslations");`
+- Can use multiple namespaces: `const {errorTranslations: errorStrings} = useAppTranslation();`
 - Naming: AR files are camelCase (e.g., `myFeature.ts`), EN files have `en` prefix (e.g., `enMyFeature.ts`)

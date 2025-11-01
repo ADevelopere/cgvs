@@ -7,11 +7,10 @@ import { Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "@/client/contexts/AuthContext";
 import isValidEmail from "@/client/utils/email";
 import { useAppTranslation } from "@/client/locale";
-import { AuthTranslations } from "@/client/locale/components";
 import { useSearchParams, useRouter } from "next/navigation";
 
 const LoginForm: React.FC = () => {
-  const strings: AuthTranslations = useAppTranslation("authTranslations");
+  const { authTranslations: strings } = useAppTranslation();
   const [showPassword, setShowPassword] = useState(false);
 
   const searchParams = useSearchParams();

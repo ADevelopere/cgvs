@@ -25,7 +25,7 @@ interface GroupSettingsDialogProps {
 const GroupSettingsDialog: React.FC<GroupSettingsDialogProps> = ({
   groups,
 }) => {
-  const strings = useAppTranslation("recipientGroupTranslations");
+  const { recipientGroupTranslations: strings } = useAppTranslation();
   const { settingsDialogOpen, closeSettingsDialog, selectedGroupId } =
     useRecipientGroupDialogs();
   const { updateGroup } = useRecipientGroupOperations();

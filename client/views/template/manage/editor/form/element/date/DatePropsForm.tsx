@@ -15,7 +15,11 @@ import {
   CalendarType,
   DateTransformationType,
 } from "@/client/graphql/generated/gql/graphql";
-import type { DatePropsFormErrors, DatePropsState, UpdateDatePropsFn } from "./types";
+import type {
+  DatePropsFormErrors,
+  DatePropsState,
+  UpdateDatePropsFn,
+} from "./types";
 
 interface DatePropsFormProps {
   dateProps: DatePropsState;
@@ -25,7 +29,10 @@ interface DatePropsFormProps {
 }
 
 const transformationOptions = [
-  { value: "AGE_CALCULATION" as DateTransformationType, label: "AGE_CALCULATION" },
+  {
+    value: "AGE_CALCULATION" as DateTransformationType,
+    label: "AGE_CALCULATION",
+  },
 ];
 
 export const DatePropsForm: FC<DatePropsFormProps> = ({
@@ -34,11 +41,11 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
   errors,
   disabled,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
 
-  const selectedTransformation = transformationOptions.find(
-    opt => opt.value === dateProps.transformation
-  ) || null;
+  const selectedTransformation =
+    transformationOptions.find(opt => opt.value === dateProps.transformation) ||
+    null;
 
   return (
     <Box>
@@ -49,7 +56,7 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
             label={strings.dateElement.formatLabel}
             placeholder={strings.dateElement.formatPlaceholder}
             value={dateProps.format || ""}
-            onChange={(e) => onUpdate({ key: "format", value: e.target.value })}
+            onChange={e => onUpdate({ key: "format", value: e.target.value })}
             error={!!errors.format}
             helperText={errors.format || strings.dateElement.formatHelper}
             disabled={disabled}
@@ -57,14 +64,23 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
         </Grid>
 
         <Grid size={{ xs: 12 }}>
-          <FormControl component="fieldset" disabled={disabled} error={!!errors.calendarType}>
+          <FormControl
+            component="fieldset"
+            disabled={disabled}
+            error={!!errors.calendarType}
+          >
             <FormLabel component="legend">
               {strings.dateElement.calendarTypeLabel}
             </FormLabel>
             <RadioGroup
               row
               value={dateProps.calendarType || CalendarType.Gregorian}
-              onChange={(e) => onUpdate({ key: "calendarType", value: e.target.value as CalendarType })}
+              onChange={e =>
+                onUpdate({
+                  key: "calendarType",
+                  value: e.target.value as CalendarType,
+                })
+              }
             >
               <FormControlLabel
                 value={CalendarType.Gregorian}
@@ -86,10 +102,19 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
             type="number"
             label={strings.dateElement.offsetDaysLabel}
             placeholder={strings.dateElement.offsetDaysPlaceholder}
-            value={dateProps.offsetDays !== undefined ? dateProps.offsetDays : ""}
-            onChange={(e) => onUpdate({ key: "offsetDays", value: parseInt(e.target.value, 10) })}
+            value={
+              dateProps.offsetDays !== undefined ? dateProps.offsetDays : ""
+            }
+            onChange={e =>
+              onUpdate({
+                key: "offsetDays",
+                value: parseInt(e.target.value, 10),
+              })
+            }
             error={!!errors.offsetDays}
-            helperText={errors.offsetDays || strings.dateElement.offsetDaysHelper}
+            helperText={
+              errors.offsetDays || strings.dateElement.offsetDaysHelper
+            }
             disabled={disabled}
           />
         </Grid>
@@ -98,19 +123,22 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
           <Autocomplete
             value={selectedTransformation}
             options={transformationOptions}
-            getOptionLabel={(option) => {
+            getOptionLabel={option => {
               if (option.value === "AGE_CALCULATION") {
                 return strings.dateElement.transformationAgeCalculation;
               }
               return option.label;
             }}
             onChange={(_event, newValue) => {
-              onUpdate({ key: "transformation", value: newValue?.value || null });
+              onUpdate({
+                key: "transformation",
+                value: newValue?.value || null,
+              });
             }}
             disabled={disabled}
             clearText={strings.dateElement.clearTransformation}
             closeText={strings.dateElement.closeTransformation}
-            renderInput={(params) => (
+            renderInput={params => (
               <TextField
                 {...params}
                 label={strings.dateElement.transformationLabel}
@@ -125,4 +153,3 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
     </Box>
   );
 };
-

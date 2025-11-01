@@ -5,7 +5,10 @@ import { mockSelfHostedFonts, mockNumberVariables } from "../story.util";
 import type { NumberElementFormState, NumberElementFormErrors } from "./types";
 import { UpdateBaseElementFn } from "../base";
 import { UpdateTextPropsFn } from "../textProps";
-import { ElementAlignment, ElementOverflow } from "@/client/graphql/generated/gql/graphql";
+import {
+  ElementAlignment,
+  ElementOverflow,
+} from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof NumberElementForm> = {
   title: "Template/Editor/Form/Element/Number/NumberElementForm",

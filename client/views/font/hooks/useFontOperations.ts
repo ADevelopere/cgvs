@@ -29,7 +29,7 @@ export const useFontOperations = (): FontOperations => {
   const storeRef = useRef(store);
   storeRef.current = store;
   const notifications = useNotifications();
-  const strings = useAppTranslation("fontManagementTranslations");
+  const { fontManagementTranslations: strings } = useAppTranslation();
   const { createFontMutation, updateFontMutation, deleteFontMutation } =
     useFontApolloMutations();
 

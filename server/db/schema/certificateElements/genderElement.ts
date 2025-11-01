@@ -10,4 +10,3 @@ export const genderElement = pgTable("gender_element", {
     .notNull()
     .references(() => elementTextProps.id, { onDelete: "restrict" }),
 });
-

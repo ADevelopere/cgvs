@@ -3,7 +3,10 @@ import { Tooltip, Box, IconButton } from "@mui/material";
 import { CheckCircle, Cancel } from "@mui/icons-material";
 import { isRecipientReady } from "@/client/views/template/manage/data/utils/validation";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { useAppTranslation } from "@/client/locale";
+import {
+  RecipientVariableDataTranslation,
+  useAppTranslation,
+} from "@/client/locale";
 
 interface ReadyStatusViewRendererProps {
   variableValues: Record<string, unknown>;
@@ -15,9 +18,7 @@ const getTooltipMessage = (
   isReady: boolean,
   variables: Graphql.TemplateVariable[],
   variableValues: Record<string, unknown>,
-  strings: ReturnType<
-    typeof useAppTranslation<"recipientVariableDataTranslations">
-  >
+  strings: RecipientVariableDataTranslation
 ): string => {
   if (isReady) {
     return strings.allRequiredFieldsComplete;
@@ -166,8 +167,7 @@ const getTooltipMessage = (
 export const ReadyStatusViewRenderer: React.FC<
   ReadyStatusViewRendererProps
 > = ({ variableValues, variables }) => {
-  const strings = useAppTranslation("recipientVariableDataTranslations");
-
+  const { recipientVariableDataTranslations: strings } = useAppTranslation();
   // Calculate ready status (memoized)
   const isReady = useMemo(
     () => isRecipientReady(variableValues, variables, strings),

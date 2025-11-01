@@ -4,15 +4,13 @@ import React from "react";
 import { IconButton, Tooltip, useTheme } from "@mui/material";
 import { Wifi, WifiOff, Sync } from "@mui/icons-material";
 import { useNetworkConnectivity } from "@/client/contexts";
-import { useAppTranslation, ConnectivityTranslations } from "@/client/locale";
+import { useAppTranslation } from "@/client/locale";
 
 export const ConnectivityStatus: React.FC = () => {
   const { isConnected, isChecking, checkConnectivity, lastChecked } =
     useNetworkConnectivity();
   const theme = useTheme();
-  const strings: ConnectivityTranslations = useAppTranslation(
-    "connectivityTranslations"
-  );
+  const { connectivityTranslations: strings } = useAppTranslation();
 
   const getColor = () => {
     if (isChecking) return theme.palette.warning.main;

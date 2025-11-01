@@ -19,7 +19,9 @@ const StorageDirectoryTree: React.FC<StorageDirectoryTreeProps> = ({
   params,
   onNavigate,
 }) => {
-  const { ui: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { ui: translations },
+  } = useAppTranslation();
 
   // Get tree store state and actions
   const {

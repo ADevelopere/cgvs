@@ -21,7 +21,7 @@ const CountryFieldComponent: React.FC<BaseFieldProps<CountryCode>> = ({
   getIsValid,
 }) => {
   const theme = useTheme();
-  const countryStrings = useAppTranslation("countryTranslations");
+  const { countryTranslations: countryStrings } = useAppTranslation();
 
   const StyledCountryField = useMemo(
     () => createStyledTextField(theme.palette.success.main),

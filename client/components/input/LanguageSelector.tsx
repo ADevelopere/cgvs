@@ -20,7 +20,7 @@ export const LanguageSelector: React.FC<LocaleSelectorProps> = ({
   onChange,
   disabled,
 }) => {
-  const strings = useAppTranslation("languageTranslations");
+  const { languageTranslations: strings } = useAppTranslation();
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     onChange(event.target.value as AppLanguage);

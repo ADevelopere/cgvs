@@ -29,8 +29,7 @@ export const useRecipientOperations = (templateId?: number) => {
   const apollo = useRecipientApolloMutations(templateId);
   const store = useRecipientStore();
   const notifications = useNotifications();
-  const strings = useAppTranslation("recipientTranslations");
-
+  const { recipientTranslations: strings } = useAppTranslation();
   const addSingleStudentToGroup = useCallback(
     async (input: Graphql.TemplateRecipientCreateInput): Promise<boolean> => {
       try {

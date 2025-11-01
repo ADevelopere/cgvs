@@ -94,7 +94,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
   } | null>(null);
   const listRef = React.useRef<HTMLUListElement>(null);
   const newTemplateRef = React.useRef<HTMLLIElement>(null);
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
 
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
   const [templateToEdit, setTemplateToEdit] = React.useState<Template | null>(

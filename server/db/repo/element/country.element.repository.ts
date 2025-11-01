@@ -209,7 +209,7 @@ export namespace CountryElementRepository {
   };
 
   export const loadByBase = async (
-      base: CertificateElementEntity
+    base: CertificateElementEntity
   ): Promise<CountryElementOutput> => {
     // Join all three tables
     const result = await db
@@ -222,7 +222,8 @@ export namespace CountryElementRepository {
       .where(eq(countryElement.elementId, base.id))
       .limit(1);
 
-    if (result.length === 0) throw new Error(`No COUNTRY element found for base ID ${base.id}`);
+    if (result.length === 0)
+      throw new Error(`No COUNTRY element found for base ID ${base.id}`);
 
     const row = result[0];
 

@@ -15,7 +15,7 @@ export const TextStaticSourceInput: FC<StaticSourceInputProps> = ({
   error,
   disabled,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
 
   return (
     <TextField
@@ -23,11 +23,10 @@ export const TextStaticSourceInput: FC<StaticSourceInputProps> = ({
       label={strings.textElement.staticValueLabel}
       placeholder={strings.textElement.staticValuePlaceholder}
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={e => onChange(e.target.value)}
       error={!!error}
       helperText={error}
       disabled={disabled}
     />
   );
 };
-

@@ -68,15 +68,13 @@ export const useStudentOperations = () => {
   const apollo = useStudentApolloMutations();
   const store = useStudentStore();
   const notifications = useNotifications();
-  const strings = useAppTranslation("studentTranslations");
+  const { studentTranslations: strings } = useAppTranslation();
 
   /**
    * Create a new student
    */
   const createStudent = useCallback(
-    async (
-      variables: GQL.CreateStudentMutationVariables
-    ): Promise<boolean> => {
+    async (variables: GQL.CreateStudentMutationVariables): Promise<boolean> => {
       try {
         const result = await apollo.createStudentMutation({ variables });
         if (result.data?.createStudent) {

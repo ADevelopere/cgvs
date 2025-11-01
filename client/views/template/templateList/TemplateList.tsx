@@ -8,7 +8,7 @@ import CategoryTreePane from "./CategoryTreePane";
 import TemplateListContent from "./TemplateListContent";
 
 const TemplateList: React.FC = () => {
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
 
   return (
     <ResponsiveSplitPaneViewController

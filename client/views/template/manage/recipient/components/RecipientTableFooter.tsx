@@ -33,7 +33,7 @@ export const RecipientTableFooterStart: React.FC<{
   isMobile: boolean;
   isLoading: boolean;
 }> = ({ tabType, isMobile, isLoading }) => {
-  const strings = useAppTranslation("recipientGroupTranslations");
+  const { recipientGroupTranslations: strings } = useAppTranslation();
   const store = useRecipientStore();
   const [openClearDialog, setOpenClearDialog] = useState(false);
 
@@ -168,7 +168,7 @@ export const RecipientTableFooterEnd: React.FC<
   isLoading,
   isMobile,
 }) => {
-  const strings = useAppTranslation("recipientGroupTranslations");
+  const { recipientGroupTranslations: strings } = useAppTranslation();
   const store = useRecipientStore();
   const [openActionDialog, setOpenActionDialog] = useState(false);
 
