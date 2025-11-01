@@ -13,7 +13,7 @@ gqlSchemaBuilder.queryFields(t => ({
       await TemplateConfigRepository.findById(args.id),
   }),
 
-  templateConfigsByTemplateId: t.field({
+  templateConfigByTemplateId: t.field({
     type: Pothos.TemplateConfigPothosObject,
     nullable: true,
     args: {

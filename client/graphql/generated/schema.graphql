@@ -1074,7 +1074,7 @@ type Query {
   templateCategories: [TemplateCategory!]!
   templateCategory(id: Int!): TemplateCategory
   templateConfig(id: Int!): TemplateConfig
-  templateConfigsByTemplateId(templateId: Int!): TemplateConfig
+  templateConfigByTemplateId(templateId: Int!): TemplateConfig
   templateRecipientGroupById(id: Int!): TemplateRecipientGroup
   templateRecipientGroupsByTemplateId(templateId: Int!): [TemplateRecipientGroup!]
   templateVariable(id: Int!): TemplateVariable

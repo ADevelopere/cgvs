@@ -18,12 +18,12 @@ export const templateConfigQueryDocument: TypedDocumentNode<
   }
 `;
 
-export const templateConfigsByTemplateIdQueryDocument: TypedDocumentNode<
-  Graphql.TemplateConfigsByTemplateIdQuery,
-  Graphql.TemplateConfigsByTemplateIdQueryVariables
+export const templateConfigByTemplateIdQueryDocument: TypedDocumentNode<
+  Graphql.TemplateConfigByTemplateIdQuery,
+  Graphql.TemplateConfigByTemplateIdQueryVariables
 > = gql`
-  query TemplateConfigsByTemplateId($templateId: Int!) {
-    templateConfigsByTemplateId(templateId: $templateId) {
+  query TemplateConfigByTemplateId($templateId: Int!) {
+    templateConfigByTemplateId(templateId: $templateId) {
       createdAt
       height
       id

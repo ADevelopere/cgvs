@@ -9,24 +9,41 @@ export const useTemplateConfigMutation = () => {
   const [createTemplateConfigMutation] = useMutation(
     Documents.createTemplateConfigMutationDocument,
     {
-      update(cache, { data }) {
-        if (!data?.createTemplateConfig) return;
-        const newConfig = data.createTemplateConfig;
-        const templateId = newConfig.templateId;
-        if (!templateId) return;
+      update(cache, { data: mutationResult }) {
+        const newTemplateConfig = mutationResult?.createTemplateConfig;
+        if (!newTemplateConfig?.templateId) {
+          return;
+        }
 
-        cache.updateQuery<GQL.TemplateConfigsByTemplateIdQuery>(
-          {
-            query: Documents.templateConfigsByTemplateIdQueryDocument,
-            variables: { templateId },
+        cache.writeQuery({
+          query: Documents.templateConfigByTemplateIdQueryDocument,
+
+          // Specify the variables for the query you're writing
+          variables: {
+            templateId: newTemplateConfig.templateId,
           },
-          existing => {
-            if (!existing?.templateConfigsByTemplateId) return existing;
-            return {
-              templateConfigsByTemplateId: newConfig,
-            };
-          }
-        );
+
+          // Provide the data in the *exact shape* of the query
+          data: {
+            templateConfigByTemplateId: newTemplateConfig,
+          },
+        });
+        // const newConfig = data.createTemplateConfig;
+        // const templateId = newConfig.templateId;
+        // if (!templateId) return;
+
+        // cache.updateQuery<GQL.TemplateConfigByTemplateIdQuery>(
+        //   {
+        //     query: Documents.templateConfigByTemplateIdQueryDocument,
+        //     variables: { templateId },
+        //   },
+        //   existing => {
+        //     if (!existing?.templateConfigByTemplateId) return existing;
+        //     return {
+        //       templateConfigByTemplateId: newConfig,
+        //     };
+        //   }
+        // );
       },
     }
   );
@@ -53,15 +70,15 @@ export const useTemplateConfigMutation = () => {
         const templateId = updated.templateId;
         if (!templateId) return;
 
-        cache.updateQuery<GQL.TemplateConfigsByTemplateIdQuery>(
+        cache.updateQuery<GQL.TemplateConfigByTemplateIdQuery>(
           {
-            query: Documents.templateConfigsByTemplateIdQueryDocument,
+            query: Documents.templateConfigByTemplateIdQueryDocument,
             variables: { templateId },
           },
           existing => {
-            if (!existing?.templateConfigsByTemplateId) return existing;
+            if (!existing?.templateConfigByTemplateId) return existing;
             return {
-              templateConfigsByTemplateId: updated,
+              templateConfigByTemplateId: updated,
             };
           }
         );

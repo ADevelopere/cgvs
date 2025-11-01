@@ -5,6 +5,7 @@ import { useTemplateConfigMutation } from "./useTemplateConfigMutation";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { TemplateConfigForm } from "./TemplateConfigForm";
 import { logger } from "@/client/lib/logger";
+import { useAppTranslation } from "@/client/locale/useAppTranslation";
 
 export type TemplateConfigCreateFormProps = {
   template: GQL.Template;
@@ -21,7 +22,16 @@ export type TemplateConfigCreateFormContentProps = {
 
 export const TemplateConfigCreateFormContent: React.FC<
   TemplateConfigCreateFormContentProps
-> = ({ state, errors, creating, createError, updater, handleCreate }) => {
+> = ({
+  state,
+  errors,
+  creating,
+  createError,
+  updater,
+  handleCreate,
+}) => {
+  const { templateConfigTranslations: strings } = useAppTranslation();
+
   return (
     <Stack
       direction={"column"}
@@ -34,7 +44,9 @@ export const TemplateConfigCreateFormContent: React.FC<
       sx={{ p: 2 }}
     >
       {/* title */}
-      <Typography variant="h6">Create Template Configuration</Typography>
+      <Typography variant="h6">
+        {strings.createTemplateConfiguration}
+      </Typography>
 
       {/* This Box constrains the form's width and is centered by the Stack */}
       <Box sx={{ width: "100%", maxWidth: "600px" }}>
@@ -59,7 +71,7 @@ export const TemplateConfigCreateFormContent: React.FC<
         // Apply same width constraints to the button
         sx={{ width: "100%", maxWidth: "600px" }}
       >
-        Create
+        {strings.create}
       </Button>
     </Stack>
   );
@@ -68,6 +80,7 @@ export const TemplateConfigCreateFormContent: React.FC<
 export const TemplateConfigCreateForm: React.FC<
   TemplateConfigCreateFormProps
 > = ({ template }) => {
+  const { templateConfigTranslations: strings } = useAppTranslation();
   const { createTemplateConfigMutation } = useTemplateConfigMutation();
   const [state, setState] = React.useState<GQL.TemplateConfigCreateInput>({
     width: 800,
@@ -86,12 +99,12 @@ export const TemplateConfigCreateForm: React.FC<
       if (value <= 0) {
         setErrors(prev => ({
           ...prev,
-          [key]: "Value must be greater than 0",
+          [key]: strings.valueMustBePositive,
         }));
       } else if (value > 10000) {
         setErrors(prev => ({
           ...prev,
-          [key]: "Value must be less than or equal to 10000",
+          [key]: strings.valueMustBeLessThan10000,
         }));
       }
     }
@@ -114,7 +127,7 @@ export const TemplateConfigCreateForm: React.FC<
         },
       });
     } catch (error) {
-      setCreateError("Failed to create template configuration.");
+      setCreateError(strings.failedToCreateTemplateConfiguration);
       logger.error(
         "TemplateConfigCreateForm: Failed to create template config",
         {
@@ -124,7 +137,11 @@ export const TemplateConfigCreateForm: React.FC<
     } finally {
       setCreating(false);
     }
-  }, [createTemplateConfigMutation, state]);
+  }, [
+    createTemplateConfigMutation,
+    state,
+    strings.failedToCreateTemplateConfiguration,
+  ]);
 
   return (
     <TemplateConfigCreateFormContent
