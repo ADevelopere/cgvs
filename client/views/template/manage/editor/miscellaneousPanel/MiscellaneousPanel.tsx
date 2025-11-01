@@ -1,4 +1,4 @@
 // it will be of 3 tabs:
 // current node
-// flow settings
+// cert settings
 // node settings
