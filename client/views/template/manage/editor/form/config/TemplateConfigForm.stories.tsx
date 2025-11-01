@@ -3,7 +3,7 @@ import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { TemplateConfigForm } from "./TemplateConfigForm";
 import {
-  CountryCode,
+  AppLanguage,
   TemplateConfigCreateInput,
 } from "@/client/graphql/generated/gql/graphql";
 
@@ -19,7 +19,7 @@ type Story = StoryObj<typeof TemplateConfigForm>;
 const defaultState: TemplateConfigCreateInput = {
   width: 1920,
   height: 1080,
-  locale: CountryCode.Us,
+  language: AppLanguage.En,
   templateId: 1,
 };
 
@@ -38,7 +38,7 @@ export const ArabicLocale: Story = {
     args: {
       state: {
         ...defaultState,
-        locale: CountryCode.Sa,
+        language: AppLanguage.Ar,
       },
       updateFn: ({ key, value }) =>
         logger.info("Template config updated:", {

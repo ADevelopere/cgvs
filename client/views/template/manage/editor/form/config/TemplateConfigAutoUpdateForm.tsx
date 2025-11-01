@@ -20,7 +20,7 @@ export const TemplateConfigAutoUpdateForm: React.FC<
     id: config.id,
     width: config.width,
     height: config.height,
-    locale: config.locale,
+    language: config.language,
   });
 
   const notifications = useNotifications();

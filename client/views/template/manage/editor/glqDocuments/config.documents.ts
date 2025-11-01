@@ -10,7 +10,7 @@ export const templateConfigQueryDocument: TypedDocumentNode<
       createdAt
       height
       id
-      locale
+      language
       updatedAt
       width
       templateId
@@ -27,7 +27,7 @@ export const templateConfigsByTemplateIdQueryDocument: TypedDocumentNode<
       createdAt
       height
       id
-      locale
+      language
       updatedAt
       width
       templateId
@@ -44,7 +44,7 @@ export const createTemplateConfigMutationDocument: TypedDocumentNode<
       createdAt
       height
       id
-      locale
+      language
       updatedAt
       width
       templateId
@@ -61,7 +61,7 @@ export const updateTemplateConfigMutationDocument: TypedDocumentNode<
       createdAt
       height
       id
-      locale
+      language
       updatedAt
       width
       templateId

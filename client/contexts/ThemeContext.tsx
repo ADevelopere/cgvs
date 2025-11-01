@@ -17,12 +17,12 @@ import ThemeMode from "@/client/theme/ThemeMode";
 import { jssPreset, StylesProvider } from "@mui/styles";
 import rtl from "jss-rtl";
 import { create } from "jss";
-import AppLanguage from "@/client/locale/AppLanguage";
 import { prefixer } from "stylis";
 import rtlPlugin from "stylis-plugin-rtl";
 import createCache from "@emotion/cache";
 import { CacheProvider } from "@emotion/react";
 import { loadFromLocalStorage } from "@/client/utils/localStorage";
+import { AppLanguage } from "@/lib/enum";
 
 // Create rtl cache
 const cacheRtl = createCache({

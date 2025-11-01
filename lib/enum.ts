@@ -1,3 +1,8 @@
+export enum AppLanguage {
+  default = "ar",
+  en = "en",
+}
+
 export enum Calendar {
   Gregorian,
   Hijri,

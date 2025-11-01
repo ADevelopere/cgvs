@@ -17,7 +17,7 @@ export const TemplateConfigCreateForm: React.FC<
   const [state, setState] = React.useState<GQL.TemplateConfigCreateInput>({
     width: 800,
     height: 600,
-    locale: GQL.CountryCode.Ar,
+    language: GQL.AppLanguage.Ar,
     templateId: template.id,
   });
 

@@ -1,7 +1,11 @@
 import React from "react";
 import { Stack, TextField } from "@mui/material";
-import { LocaleSelector } from "@/client/components";
-import { TemplateConfigFormErrors, TemplateConfigFormState, TemplateConfigFormUpdateFn } from "./types";
+import { LanguageSelector } from "@/client/components";
+import {
+  TemplateConfigFormErrors,
+  TemplateConfigFormState,
+  TemplateConfigFormUpdateFn,
+} from "./types";
 
 interface TemplateConfigFormProps {
   state: TemplateConfigFormState;
@@ -42,9 +46,9 @@ export const TemplateConfigForm: React.FC<TemplateConfigFormProps> = ({
         helperText={errors.height}
         disabled={disabled}
       />
-      <LocaleSelector
-        value={state.locale}
-        onChange={value => updateFn({ key: "locale", value })}
+      <LanguageSelector
+        value={state.language}
+        onChange={value => updateFn({ key: "language", value })}
         disabled={disabled}
       />
     </Stack>

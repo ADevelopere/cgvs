@@ -1,6 +1,5 @@
 import { eq } from "drizzle-orm";
-
-import { CountryCode } from "@/lib/enum";
+import { AppLanguage } from "@/lib/enum";
 import { ElementUtils } from "../../utils/element/element.utils";
 import { TemplateRepository } from "./template.repository";
 import {
@@ -29,8 +28,8 @@ export namespace TemplateConfigRepository {
     if (!result) {
       return null;
     }
-    // Cast locale to CountryCode as per user's type definition
-    return { ...result, locale: result.locale as CountryCode };
+    // Cast language to AppLanguage as per user's type definition
+    return { ...result, language: result.language as AppLanguage };
   }
 
   /**
@@ -55,7 +54,7 @@ export namespace TemplateConfigRepository {
     // Cast locale to CountryCode for each item
     return {
       ...result,
-      locale: result.locale as CountryCode,
+      language: result.language as AppLanguage,
     };
   }
 
@@ -85,7 +84,7 @@ export namespace TemplateConfigRepository {
       templateId: template.id,
       width: input.width,
       height: input.height,
-      locale: input.locale,
+      language: input.language,
     };
 
     // 3. Insert into DB
@@ -94,7 +93,7 @@ export namespace TemplateConfigRepository {
       .values(insertInput)
       .returning();
 
-    return { ...newConfig, locale: newConfig.locale as CountryCode };
+    return { ...newConfig, language: newConfig.language as AppLanguage };
   }
 
   /**
@@ -132,6 +131,6 @@ export namespace TemplateConfigRepository {
       throw new Error(`Failed to update template config with ID ${id}.`);
     }
 
-    return { ...updatedConfig, locale: updatedConfig.locale as CountryCode };
+    return { ...updatedConfig, language: updatedConfig.language as AppLanguage };
   }
 }
