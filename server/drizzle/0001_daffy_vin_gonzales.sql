@@ -241,7 +241,8 @@ CREATE TABLE "template_config" (
 	"height" integer NOT NULL,
 	"language" "app_language" NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "template_config_template_id_unique" UNIQUE("template_id")
 );
 --> statement-breakpoint
 CREATE TABLE "template_date_variable" (

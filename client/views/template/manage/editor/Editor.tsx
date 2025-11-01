@@ -1,7 +1,7 @@
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { useQuery } from "@apollo/client/react";
 import React from "react";
-import { templateConfigsByTemplateIdQueryDocument } from "./glqDocuments";
+import { templateConfigByTemplateIdQueryDocument } from "./glqDocuments";
 import { CircularProgress } from "@mui/material";
 import { TemplateConfigCreateForm } from "./form/config/TemplateConfigCreateForm";
 
@@ -14,7 +14,7 @@ export const Editor: React.FC<EditorProps> = ({ template }) => {
     data: configData,
     loading: configApolloLoading,
     error: configError,
-  } = useQuery(templateConfigsByTemplateIdQueryDocument, {
+  } = useQuery(templateConfigByTemplateIdQueryDocument, {
     variables: { templateId: template.id! },
     skip: !template.id,
   });
@@ -22,10 +22,10 @@ export const Editor: React.FC<EditorProps> = ({ template }) => {
   const [configLoading, setConfigLoading] = React.useState(true);
 
   const config: GQL.TemplateConfig | null | undefined = React.useMemo(() => {
-    const config = configData?.templateConfigsByTemplateId;
+    const config = configData?.templateConfigByTemplateId;
     setConfigLoading(configApolloLoading);
     return config;
-  }, [configApolloLoading, configData?.templateConfigsByTemplateId]);
+  }, [configApolloLoading, configData?.templateConfigByTemplateId]);
 
   if (configError) {
     return <div>Error loading template config: {configError.message}</div>;

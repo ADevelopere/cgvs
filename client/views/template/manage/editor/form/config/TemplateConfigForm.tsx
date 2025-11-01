@@ -6,6 +6,7 @@ import {
   TemplateConfigFormState,
   TemplateConfigFormUpdateFn,
 } from "./types";
+import { useAppTranslation } from "@/client/locale";
 
 interface TemplateConfigFormProps {
   state: TemplateConfigFormState;
@@ -20,13 +21,13 @@ export const TemplateConfigForm: React.FC<TemplateConfigFormProps> = ({
   errors,
   disabled,
 }) => {
+  const { templateConfigTranslations: strings } = useAppTranslation();
   return (
-    // Use Grid v2 container. It will take the width of its parent (the Box)
     <Grid container spacing={4}>
-      {/* Width field: Full-width on xs, half-width on sm and up */}
+      {/* width field */}
       <Grid size={{ xs: 12, sm: 6 }}>
         <TextField
-          label="Width"
+          label={strings.width}
           type="number"
           value={state.width}
           onChange={e =>
@@ -39,10 +40,10 @@ export const TemplateConfigForm: React.FC<TemplateConfigFormProps> = ({
         />
       </Grid>
 
-      {/* Height field: Full-width on xs, half-width on sm and up */}
+      {/* Height field */}
       <Grid size={{ xs: 12, sm: 6 }}>
         <TextField
-          label="Height"
+          label={strings.height}
           type="number"
           value={state.height}
           onChange={e =>
@@ -55,14 +56,12 @@ export const TemplateConfigForm: React.FC<TemplateConfigFormProps> = ({
         />
       </Grid>
 
-      {/* LanguageSelector: Full-width on all screen sizes */}
+      {/* Language field */}
       <Grid size={12}>
         <LanguageSelector
           value={state.language}
           onChange={value => updateFn({ key: "language", value })}
           disabled={disabled}
-          // If your LanguageSelector doesn't expand,
-          // you may need to wrap it in a <FormControl fullWidth>
         />
       </Grid>
     </Grid>

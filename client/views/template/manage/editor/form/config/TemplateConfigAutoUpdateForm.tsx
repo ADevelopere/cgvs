@@ -7,6 +7,7 @@ import { CircularProgress, Stack, Typography } from "@mui/material";
 import { TemplateConfigForm } from "./TemplateConfigForm";
 import { logger } from "@/client/lib/logger";
 import { useNotifications } from "@toolpad/core/useNotifications";
+import { useAppTranslation } from "@/client/locale";
 
 export type TemplateConfigAutoUpdateFormProps = {
   config: GQL.TemplateConfig;
@@ -23,11 +24,12 @@ export type TemplateConfigAutoUpdateFormInternalProps = {
 export const TemplateConfigAutoUpdateFormContent: React.FC<
   TemplateConfigAutoUpdateFormInternalProps
 > = ({ updating, state, errors, updateError, updater }) => {
+  const { templateConfigTranslations: strings } = useAppTranslation();
   return (
     <Stack direction={"column"} spacing={2} height="100%">
       {/* title and current updating/saved icon */}
       <Stack>
-        <Typography variant="h6">Template Configuration</Typography>
+        <Typography variant="h6">{strings.templateConfiguration}</Typography>
         {updating && <CircularProgress size={16} />}
       </Stack>
       <div style={{ overflowY: "auto", paddingInlineEnd: 8 }}>
@@ -47,6 +49,8 @@ export const TemplateConfigAutoUpdateFormContent: React.FC<
 export const TemplateConfigAutoUpdateForm: React.FC<
   TemplateConfigAutoUpdateFormProps
 > = ({ config }) => {
+  const { templateConfigTranslations: strings } = useAppTranslation();
+
   const { updateTemplateConfigMutation } = useTemplateConfigMutation();
   const [state, setState] = React.useState<GQL.TemplateConfigUpdateInput>({
     id: config.id,
@@ -67,12 +71,12 @@ export const TemplateConfigAutoUpdateForm: React.FC<
       if (value <= 0) {
         setErrors(prev => ({
           ...prev,
-          [key]: "Value must be greater than 0",
+          [key]: strings.valueMustBePositive,
         }));
       } else if (value > 10000) {
         setErrors(prev => ({
           ...prev,
-          [key]: "Value must be less than or equal to 10000",
+          [key]: strings.valueMustBeLessThan10000,
         }));
       }
     }
@@ -95,7 +99,7 @@ export const TemplateConfigAutoUpdateForm: React.FC<
         },
       });
     } catch (error) {
-      const errorMessage = "Failed to update template configuration.";
+      const errorMessage = strings.failedToUpdateTemplateConfiguration;
       setUpdateError(errorMessage);
       logger.error(
         "TemplateConfigCreateForm: Failed to update template config",
@@ -110,7 +114,12 @@ export const TemplateConfigAutoUpdateForm: React.FC<
     } finally {
       setUpdating(false);
     }
-  }, [updateTemplateConfigMutation, state, notifications]);
+  }, [
+    updateTemplateConfigMutation,
+    state,
+    strings.failedToUpdateTemplateConfiguration,
+    notifications,
+  ]);
 
   const debouncedUpdate = useDebouncedCallback(update, 3000);
 

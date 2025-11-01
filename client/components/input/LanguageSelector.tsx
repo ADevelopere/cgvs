@@ -45,12 +45,12 @@ export const LanguageSelector: React.FC<LocaleSelectorProps> = ({
 
   return (
     <FormControl fullWidth>
-      <InputLabel>Locale</InputLabel>
+      <InputLabel>{strings.language}</InputLabel>
       <Select
         value={value}
         onChange={handleChange}
         disabled={disabled}
-        label="Locale"
+        label={strings.language}
       >
         {languageOptions.map(option => (
           <MenuItem key={option.value} value={option.value}>

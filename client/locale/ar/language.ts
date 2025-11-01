@@ -1,6 +1,7 @@
 import { LanguageTranslations } from "../components";
 
 export const language: LanguageTranslations = {
+  language: "اللغة",
   languageSettings: "إعدادات اللغة",
   ar: "العربية",
   arShort: "عربي",

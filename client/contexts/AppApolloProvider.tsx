@@ -394,7 +394,7 @@ export const AppApolloProvider: React.FC<{
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       checkConnectivity();
-    }, 100); // Small delay to prevent immediate check on mount
+    }, 5000); // Small delay to prevent immediate check on mount
 
     return () => clearTimeout(timeoutId);
   }, [checkConnectivity]);

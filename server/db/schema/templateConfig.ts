@@ -6,7 +6,8 @@ export const templateConfig = pgTable("template_config", {
   id: serial("id").primaryKey(),
   templateId: integer("template_id")
     .notNull()
-    .references(() => templates.id),
+    .references(() => templates.id)
+    .unique(),
   width: integer("width").notNull(), // Canvas width in pixels
   height: integer("height").notNull(), // Canvas height in pixels
   language: appLanguageEnum("language").notNull(), // e.g., "en", "ar"
