@@ -5,6 +5,13 @@ export type TemplateConfigFormState =
   | GQL.TemplateConfigCreateInput
   | GQL.TemplateConfigUpdateInput;
 
-export type TemplateConfigFormErrors = FormErrors<TemplateConfigFormState>;
+type SanitizedTemplateConfigFormState = Omit<
+  TemplateConfigFormState,
+  "id" | "templateId"
+>;
 
-export type TemplateConfigFormUpdateFn = UpdateStateFn<TemplateConfigFormState>;
+export type TemplateConfigFormErrors =
+  FormErrors<SanitizedTemplateConfigFormState>;
+
+export type TemplateConfigFormUpdateFn =
+  UpdateStateFn<SanitizedTemplateConfigFormState>;

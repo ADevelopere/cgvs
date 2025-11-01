@@ -3,7 +3,7 @@
 import React from "react";
 import { useMutation } from "@apollo/client/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import * as Documents from "../glqDocuments/config.documents";
+import * as Documents from "../../glqDocuments/config.documents";
 
 export const useTemplateConfigMutation = () => {
   const [createTemplateConfigMutation] = useMutation(

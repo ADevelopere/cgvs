@@ -1,19 +1,20 @@
 import React from "react";
 import { Stack, TextField } from "@mui/material";
-import { TemplateConfigCreateInput } from "@/client/graphql/generated/gql/graphql";
-import { LocaleSelector } from "./LocaleSelector";
+import { LocaleSelector } from "@/client/components";
+import { TemplateConfigFormErrors, TemplateConfigFormState, TemplateConfigFormUpdateFn } from "./types";
 
 interface TemplateConfigFormProps {
-  state: TemplateConfigCreateInput;
-  updateFn: <K extends keyof TemplateConfigCreateInput>(
-    key: K,
-    value: TemplateConfigCreateInput[K]
-  ) => void;
+  state: TemplateConfigFormState;
+  updateFn: TemplateConfigFormUpdateFn;
+  errors: TemplateConfigFormErrors;
+  disabled: boolean;
 }
 
 export const TemplateConfigForm: React.FC<TemplateConfigFormProps> = ({
   state,
   updateFn,
+  errors,
+  disabled,
 }) => {
   return (
     <Stack spacing={2} direction="column">
@@ -21,19 +22,30 @@ export const TemplateConfigForm: React.FC<TemplateConfigFormProps> = ({
         label="Width"
         type="number"
         value={state.width}
-        onChange={(e) => updateFn("width", parseInt(e.target.value, 10))}
+        onChange={e =>
+          updateFn({ key: "width", value: parseInt(e.target.value, 10) })
+        }
         fullWidth
+        error={!!errors.width}
+        helperText={errors.width}
+        disabled={disabled}
       />
       <TextField
         label="Height"
         type="number"
         value={state.height}
-        onChange={(e) => updateFn("height", parseInt(e.target.value, 10))}
+        onChange={e =>
+          updateFn({ key: "height", value: parseInt(e.target.value, 10) })
+        }
         fullWidth
+        error={!!errors.height}
+        helperText={errors.height}
+        disabled={disabled}
       />
       <LocaleSelector
         value={state.locale}
-        onChange={(value) => updateFn("locale", value)}
+        onChange={value => updateFn({ key: "locale", value })}
+        disabled={disabled}
       />
     </Stack>
   );
