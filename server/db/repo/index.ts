@@ -17,3 +17,5 @@ export { CacheDbRepository } from "./cache.repository";
 export { FontRepository } from "./font.repository";
 
 export * from "./element";
+
+export { TemplateConfigRepository } from "./templateConfig.repository";

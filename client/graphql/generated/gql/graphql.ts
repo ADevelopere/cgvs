@@ -1797,6 +1797,31 @@ export type TemplateCategoryWithParentTree = {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
+export type TemplateConfig = {
+  __typename?: 'TemplateConfig';
+  createdAt: Scalars['DateTime']['output'];
+  height: Scalars['Int']['output'];
+  id: Scalars['Int']['output'];
+  locale: CountryCode;
+  templateId: Scalars['Int']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  width: Scalars['Int']['output'];
+};
+
+export type TemplateConfigCreateInput = {
+  height: Scalars['Int']['input'];
+  locale: CountryCode;
+  templateId: Scalars['Int']['input'];
+  width: Scalars['Int']['input'];
+};
+
+export type TemplateConfigUpdateInput = {
+  height: Scalars['Int']['input'];
+  id: Scalars['Int']['input'];
+  locale: CountryCode;
+  width: Scalars['Int']['input'];
+};
+
 export type TemplateCreateInput = {
   categoryId: Scalars['Int']['input'];
   description?: InputMaybe<Scalars['String']['input']>;

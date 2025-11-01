@@ -11,3 +11,4 @@ export * from "./student.pothos";
 export * from "./template.pothos";
 export * from "./templateCategory.pothos";
 export * from "./templateVariable.pothos";
+export * from "./templateConfig.pothos";

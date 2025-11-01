@@ -14,3 +14,4 @@ export * from "./templateCategory.types";
 export * from "./recipientVariableValue.types";
 export * from "./element";
 export * from "./font.types";
+export * from "./templateConfig.types";

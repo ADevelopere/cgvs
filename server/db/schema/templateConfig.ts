@@ -1,14 +1,17 @@
-import { integer, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
+import { integer, pgTable, timestamp, serial } from "drizzle-orm/pg-core";
+import { countryCodeEnum } from "./enums";
+import { templates } from "./templates";
 
 export const templateConfig = pgTable("template_config", {
-  templateId: integer("template_id").primaryKey(), // One-to-one with template
+  id: serial("id").primaryKey(),
+  templateId: integer("template_id").notNull().references(() => templates.id),
   width: integer("width").notNull(), // Canvas width in pixels
   height: integer("height").notNull(), // Canvas height in pixels
-  locale: varchar("locale", { length: 10 }).notNull(), // e.g., "en", "ar"
-  createdAt: timestamp("created_at", { withTimezone: true })
+  locale: countryCodeEnum("nationality").notNull(), // e.g., "en", "ar"
+  createdAt: timestamp("created_at",)
     .notNull()
     .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
+  updatedAt: timestamp("updated_at", )
     .notNull()
     .defaultNow()
     .$onUpdate(() => new Date()),
