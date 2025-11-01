@@ -1,18 +1,18 @@
-import { CountryCode } from "@/lib/enum";
+import { AppLanguage } from "@/lib/enum";
 import { templateConfig } from "../db";
 
 export type TemplateConfigEntity = typeof templateConfig.$inferSelect;
 export type TemplateConfigInsert = typeof templateConfig.$inferInsert;
 
-export type TemplateConfig = Omit<TemplateConfigEntity, "locale"> & {
-  locale: CountryCode;
+export type TemplateConfig = Omit<TemplateConfigEntity, "language"> & {
+  language: AppLanguage;
 };
 
 export type TemplateConfigInput = Omit<
   TemplateConfigInsert,
-  "id" | "locale" | "createdAt" | "updatedAt"
+  "id" | "language" | "createdAt" | "updatedAt"
 > & {
-  locale: CountryCode;
+  language: AppLanguage;
 };
 
 export type TemplateConfigUpdateInput = Omit<

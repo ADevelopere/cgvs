@@ -9,9 +9,9 @@ import {
 import { ApolloProvider } from "@apollo/client/react";
 import { AppThemeProvider } from "../client/contexts/ThemeContext";
 import ThemeMode from "../client/theme/ThemeMode";
-import AppLanguage from "../client/locale/AppLanguage";
 import { Box } from "@mui/material";
 import { themes } from "@storybook/theming";
+import { AppLanguage } from "@/lib/enum";
 
 // Create a lightweight mock Apollo Client for Storybook
 const mockLink = new ApolloLink(() => {

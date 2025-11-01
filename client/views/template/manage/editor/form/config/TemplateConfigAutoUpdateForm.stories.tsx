@@ -170,14 +170,14 @@ export const ValidationErrorHeight: Story = {
 };
 
 // ============================================================================
-// LOCALE VARIATIONS
+// Language VARIATIONS
 // ============================================================================
 
-export const EgyptianLocale: Story = {
+export const ArabicLanguage: Story = {
   args: {
     config: {
       ...mockTemplateConfig,
-      locale: GQL.CountryCode.Eg,
+      language: GQL.AppLanguage.Ar,
     },
   },
   decorators: [
@@ -187,11 +187,11 @@ export const EgyptianLocale: Story = {
   ],
 };
 
-export const UAELocale: Story = {
+export const EnglishLanguage: Story = {
   args: {
     config: {
       ...mockTemplateConfig,
-      locale: GQL.CountryCode.Ae,
+      language: GQL.AppLanguage.En,
     },
   },
   decorators: [

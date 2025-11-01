@@ -27,7 +27,7 @@ export const mockTemplateConfig: GQL.TemplateConfig = {
   id: 1,
   width: 1920,
   height: 1080,
-  locale: GQL.CountryCode.Us,
+  language: GQL.AppLanguage.Ar,
   templateId: 1,
   template: null,
   createdAt: new Date().toISOString(),
@@ -37,7 +37,7 @@ export const mockTemplateConfig: GQL.TemplateConfig = {
 export const mockTemplateConfigArabic: GQL.TemplateConfig = {
   ...mockTemplateConfig,
   id: 2,
-  locale: GQL.CountryCode.Sa,
+  language: GQL.AppLanguage.Ar,
 };
 
 // ============================================================================

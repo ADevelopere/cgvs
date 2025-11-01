@@ -1,6 +1,6 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import * as Types from "@/server/types";
-import { CountryCodePothosObject, TemplatePothosObject } from "../pothos";
+import { AppLanguagePothosObject, TemplatePothosObject } from "../pothos";
 import { TemplateRepository } from "@/server/db/repo";
 
 export const TemplateConfigCreateInputPothosObject = gqlSchemaBuilder
@@ -10,8 +10,8 @@ export const TemplateConfigCreateInputPothosObject = gqlSchemaBuilder
       templateId: t.int({ required: true }),
       width: t.int({ required: true }),
       height: t.int({ required: true }),
-      locale: t.field({
-        type: CountryCodePothosObject,
+      language: t.field({
+        type: AppLanguagePothosObject,
         required: true,
       }),
     }),
@@ -24,8 +24,8 @@ export const TemplateConfigUpdateInputPothosObject = gqlSchemaBuilder
       id: t.int({ required: true }),
       width: t.int({ required: true }),
       height: t.int({ required: true }),
-      locale: t.field({
-        type: CountryCodePothosObject,
+      language: t.field({
+        type: AppLanguagePothosObject,
         required: true,
       }),
     }),
@@ -39,10 +39,10 @@ export const TemplateConfigPothosObject = gqlSchemaBuilder
       templateId: t.exposeInt("templateId"),
       width: t.exposeInt("width", { nullable: false }),
       height: t.exposeInt("height", { nullable: false }),
-      locale: t.field({
-        type: CountryCodePothosObject,
+      language: t.field({
+        type: AppLanguagePothosObject,
         nullable: false,
-        resolve: tc => tc.locale,
+        resolve: tc => tc.language,
       }),
       createdAt: t.expose("createdAt", {
         type: "DateTime",
