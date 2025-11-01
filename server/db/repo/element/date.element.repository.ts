@@ -16,6 +16,7 @@ import {
   CalendarType,
   DateTransformationType,
   DateElementEntityInput,
+  CertificateElementEntity,
 } from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
 import { DateElementUtils } from "@/server/utils";
@@ -195,6 +196,38 @@ export namespace DateElementRepository {
     // Reconstruct output
     return {
       base: row.certificate_element,
+      textPropsEntity: row.element_text_props,
+      dateProps: {
+        ...row.date_element,
+        calendarType: row.date_element.calendarType as CalendarType,
+        transformation: row.date_element
+          .transformation as DateTransformationType | null,
+      },
+      dateDataSource: row.date_element.dateDataSource,
+    };
+  };
+
+   export const loadByBase = async (
+      base: CertificateElementEntity
+  ): Promise<DateElementOutput> => {
+    // Join all three tables
+    const result = await db
+      .select()
+      .from(dateElement)
+      .innerJoin(
+        elementTextProps,
+        eq(elementTextProps.id, dateElement.textPropsId)
+      )
+      .where(eq(dateElement.elementId, base.id))
+      .limit(1);
+
+    if (result.length === 0) throw new Error(`DATE element with base ID ${base.id} does not exist.`);
+
+    const row = result[0];
+
+    // Reconstruct output
+    return {
+      base: base,
       textPropsEntity: row.element_text_props,
       dateProps: {
         ...row.date_element,

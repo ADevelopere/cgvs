@@ -13,6 +13,7 @@ import {
   NumberElementEntity,
   ElementTextPropsEntity,
   CertificateElementEntityInput,
+  CertificateElementEntity,
 } from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
 import { NumberElementUtils } from "@/server/utils";
@@ -92,12 +93,7 @@ export namespace NumberElementRepository {
     return {
       base: baseElement,
       textPropsEntity: newTextProps,
-      numberProps: {
-        elementId: newNumberElement.elementId,
-        textPropsId: newNumberElement.textPropsId,
-        mapping: newNumberElement.mapping,
-        variableId: newNumberElement.variableId,
-      },
+      numberProps: newNumberElement,
       numberDataSource: newDataSource,
     };
   };
@@ -157,12 +153,7 @@ export namespace NumberElementRepository {
     return {
       base: updatedBaseElement,
       textPropsEntity: updatedTextProps,
-      numberProps: {
-        elementId: updatedNumberElement.elementId,
-        textPropsId: updatedNumberElement.textPropsId,
-        mapping: updatedNumberElement.mapping,
-        variableId: updatedNumberElement.variableId,
-      },
+      numberProps: updatedNumberElement,
       numberDataSource: updatedNumberElement.numberDataSource,
     };
   };
@@ -201,12 +192,34 @@ export namespace NumberElementRepository {
     return {
       base: row.certificate_element,
       textPropsEntity: row.element_text_props,
-      numberProps: {
-        elementId: row.number_element.elementId,
-        textPropsId: row.number_element.textPropsId,
-        mapping: row.number_element.mapping,
-        variableId: row.number_element.variableId,
-      },
+      numberProps: row.number_element,
+      numberDataSource: row.number_element.numberDataSource,
+    };
+  };
+
+  export const loadByBase = async (
+      base: CertificateElementEntity
+  ): Promise<NumberElementOutput > => {
+    // Join all three tables
+    const result = await db
+      .select()
+      .from(numberElement)
+      .innerJoin(
+        elementTextProps,
+        eq(elementTextProps.id, numberElement.textPropsId)
+      )
+      .where(eq(numberElement.elementId, base.id))
+      .limit(1);
+
+    if (result.length === 0) throw new Error(`NUMBER element with base ID ${base.id} does not exist.`);
+
+    const row = result[0];
+
+    // Reconstruct output
+    return {
+      base: base,
+      textPropsEntity: row.element_text_props,
+      numberProps: row.number_element,
       numberDataSource: row.number_element.numberDataSource,
     };
   };

@@ -180,7 +180,7 @@ export default function TestElementsPage() {
 
       const base: GQL.CertificateElementBaseInput = {
         name: element.base.name,
-        description: element.base?.description,
+        description: element.base?.description ?? "",
         alignment: element.base.alignment,
         renderOrder: element.base.renderOrder,
         positionX: element.base.positionX,

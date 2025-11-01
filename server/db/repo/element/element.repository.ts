@@ -6,7 +6,7 @@ import {
   storageFiles,
   templateVariableBases,
 } from "@/server/db/schema";
-import { TextElementRepository } from "@/server/db/repo";
+import { TextElementRepository, CountryElementRepository, DateElementRepository, GenderElementRepository, ImageElementRepository, NumberElementRepository, QRCodeElementRepository } from "@/server/db/repo";
 import {
   CertificateElementEntity,
   ElementOrderUpdateInput,
@@ -167,8 +167,21 @@ export namespace ElementRepository {
           const groupResultPromises = groupBaseElements.map(
             async (base): Promise<CertificateElementUnion> => {
               // <-- No | Error here
-              if (base.type === ElementType.TEXT) {
-                return await TextElementRepository.loadByBase(base);
+              switch (base.type) {
+                case ElementType.COUNTRY:
+                  return await CountryElementRepository.loadByBase(base);
+                case ElementType.DATE:
+                  return await DateElementRepository.loadByBase(base);
+                case ElementType.GENDER:
+                  return await GenderElementRepository.loadByBase(base);
+                case ElementType.IMAGE:
+                  return await ImageElementRepository.loadByBase(base);
+                case ElementType.NUMBER:
+                  return await NumberElementRepository.loadByBase(base);
+                case ElementType.QR_CODE:
+                  return await QRCodeElementRepository.loadByBase(base);
+                case ElementType.TEXT:
+                  return await TextElementRepository.loadByBase(base);
               }
               // Throw an error instead of returning it
               // This will cause the Promise.all() to reject
