@@ -2,7 +2,7 @@
 
 import React, { useCallback, useMemo } from "react";
 import { useAppTranslation } from "@/client/locale";
-import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import * as GQL from "@/client/graphql/generated/gql/graphql";
 import * as Table from "@/client/components/Table";
 import * as Validators from "@/client/views/student/validators";
 import { useStudentOperations } from "./useStudentOperations";
@@ -22,34 +22,34 @@ const mapColumnIdToGraphQLColumn = (columnId: string): string | null => {
 };
 
 // Column type definitions
-type NameColumn = Table.EditableColumn<Graphql.Student, string, number>;
+type NameColumn = Table.EditableColumn<GQL.Student, string, number>;
 type EmailColumn = Table.EditableColumn<
-  Graphql.Student,
+  GQL.Student,
   string | null | undefined,
   number
 >;
 type DateOfBirthColumn = Table.EditableColumn<
-  Graphql.Student,
+  GQL.Student,
   Date | string | null | undefined,
   number
 >;
 type GenderColumn = Table.EditableColumn<
-  Graphql.Student,
-  Graphql.Gender | null | undefined,
+  GQL.Student,
+  GQL.Gender | null | undefined,
   number
 >;
 type NationalityColumn = Table.EditableColumn<
-  Graphql.Student,
-  Graphql.CountryCode | null | undefined,
+  GQL.Student,
+  GQL.CountryCode | null | undefined,
   number
 >;
 type PhoneNumberColumn = Table.EditableColumn<
-  Graphql.Student,
+  GQL.Student,
   string | null | undefined,
   number
 >;
-type CreatedAtColumn = Table.Column<Graphql.Student>;
-type UpdatedAtColumn = Table.Column<Graphql.Student>;
+type CreatedAtColumn = Table.Column<GQL.Student>;
+type UpdatedAtColumn = Table.Column<GQL.Student>;
 
 /**
  * Table-specific logic for student management
@@ -70,11 +70,11 @@ export const useStudentTable = () => {
   // Build gender options
   const genderOptions: {
     label: string;
-    value: Graphql.Gender | null | undefined;
+    value: GQL.Gender | null | undefined;
   }[] = useMemo(
     () => [
-      { label: genderStrings.male, value: "MALE" },
-      { label: genderStrings.female, value: "FEMALE" },
+      { label: genderStrings.male, value: GQL.Gender.Male },
+      { label: genderStrings.female, value: GQL.Gender.Female },
     ],
     [genderStrings]
   );
@@ -89,7 +89,7 @@ export const useStudentTable = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       value: any
     ): Promise<void> => {
-      const input: Graphql.PartialStudentUpdateInput = {
+      const input: GQL.PartialStudentUpdateInput = {
         id: rowId,
       };
 
@@ -99,14 +99,14 @@ export const useStudentTable = () => {
           input.dateOfBirth = value ? new Date(value).toISOString() : null;
           break;
         case "gender":
-          input.gender = value as Graphql.Gender;
+          input.gender = value as GQL.Gender;
           break;
         case "nationality":
-          input.nationality = value as Graphql.CountryCode;
+          input.nationality = value as GQL.CountryCode;
           break;
         default:
           // For all other columns, use the value directly
-          input[columnId as keyof Graphql.PartialStudentUpdateInput] = value;
+          input[columnId as keyof GQL.PartialStudentUpdateInput] = value;
           break;
       }
 
@@ -162,7 +162,7 @@ export const useStudentTable = () => {
               columnLabel={label}
               value={currentFilter}
               onApply={clause => setColumnFilter(clause, columnId as string)}
-              onClear={() => clearFilter(columnId as keyof Graphql.Student)}
+              onClear={() => clearFilter(columnId as keyof GQL.Student)}
             />
           )}
         />
@@ -210,7 +210,7 @@ export const useStudentTable = () => {
               columnLabel={label}
               value={currentFilter}
               onApply={clause => setColumnFilter(clause, columnId as string)}
-              onClear={() => clearFilter(columnId as keyof Graphql.Student)}
+              onClear={() => clearFilter(columnId as keyof GQL.Student)}
             />
           )}
         />

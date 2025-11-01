@@ -25,3 +25,6 @@ export type QrCodeElementFormErrors = {
   base: BaseElementFormErrors;
   qrCodeProps: QrCodePropsFormErrors;
 };
+
+
+export type QrCodePropsFormUpdateFn = UpdateStateFn<QrCodePropsState>;

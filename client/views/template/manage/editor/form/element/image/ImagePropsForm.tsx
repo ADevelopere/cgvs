@@ -34,19 +34,19 @@ export const ImagePropsForm: React.FC<ImagePropsFormProps> = ({
     icon: React.ReactNode;
   }> = [
     {
-      value: "CONTAIN",
+      value: ElementImageFit.Contain,
       label: strings.imageElement.fitContain,
       description: strings.imageElement.fitContainDesc,
       icon: <ContainIcon />,
     },
     {
-      value: "COVER",
+      value: ElementImageFit.Cover,
       label: strings.imageElement.fitCover,
       description: strings.imageElement.fitCoverDesc,
       icon: <CoverIcon />,
     },
     {
-      value: "FILL",
+      value: ElementImageFit.Fill,
       label: strings.imageElement.fitFill,
       description: strings.imageElement.fitFillDesc,
       icon: <FillIcon />,
@@ -61,7 +61,7 @@ export const ImagePropsForm: React.FC<ImagePropsFormProps> = ({
         <MUI.RadioGroup
           value={imageProps.fit}
           onChange={e =>
-            updateImageProps("fit", e.target.value as ElementImageFit)
+            updateImageProps({ key: "fit", value: e.target.value as ElementImageFit })
           }
           sx={{ mt: 1 }}
         >

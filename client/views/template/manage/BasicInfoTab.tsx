@@ -10,6 +10,7 @@ import {
   FileInfo,
   TemplateUpdateInput,
   Template,
+  FileType,
 } from "@/client/graphql/generated/gql/graphql";
 import { useTemplateOperations } from "../hooks";
 import { TemplateUtils } from "../utils";
@@ -376,7 +377,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
           setFilePickerOpen(false);
         }}
         onFileSelect={handleFileSelect}
-        allowedFileTypes={["IMAGE"]}
+        allowedFileTypes={[FileType.Image]}
         title={storageStrings.ui.filePickerDialogSelectFile}
       />
     </Mui.Box>

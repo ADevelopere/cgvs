@@ -15,7 +15,7 @@ import {
   ViewMode,
   StorageClipboardState,
 } from "@/client/views/storage/core/storage.type";
-import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import * as GQL from "@/client/graphql/generated/gql/graphql";
 
 // Render toolbar with view controls and sorting
 const StorageToolbar: React.FC<{
@@ -23,12 +23,12 @@ const StorageToolbar: React.FC<{
   viewMode: "grid" | "list";
   currentItems: StorageItemType[];
   sortBy: string;
-  sortDirection: "ASC" | "DESC";
+  sortDirection: GQL.OrderSortDirection;
   translations: StorageManagementUITranslations;
-  params: Graphql.FilesListInput;
+  params: GQL.FilesListInput;
   setViewMode: (mode: ViewMode) => void;
   setSortBy: (field: string) => void;
-  setSortDirection: (direction: "ASC" | "DESC") => void;
+  setSortDirection: (direction: GQL.OrderSortDirection) => void;
 }> = ({
   searchMode,
   viewMode,
@@ -64,7 +64,7 @@ const StorageToolbar: React.FC<{
 
   // Handle sort direction change
   const handleSortDirectionChange = React.useCallback(() => {
-    setSortDirection(sortDirection === "ASC" ? "DESC" : "ASC");
+    setSortDirection(sortDirection === GQL.OrderSortDirection.Asc ? GQL.OrderSortDirection.Desc : GQL.OrderSortDirection.Asc);
   }, [setSortDirection, sortDirection]);
 
   // Sort field options for grid view
@@ -184,18 +184,18 @@ const StorageToolbar: React.FC<{
 // function ListView(sortBy: string, sortDirection: "ASC" | "DESC", handleTableSort: (field: string) => void, translations: StorageManagementUITranslations, currentItems: StorageItemType[]) {
 const ListView: React.FC<{
   sortBy: string;
-  sortDirection: "ASC" | "DESC";
+  sortDirection: GQL.OrderSortDirection;
   translations: StorageManagementUITranslations;
   sortedItems: StorageItemType[];
   selectedItems: string[];
   lastSelectedItem: string | null;
   focusedItem: string | null;
   setSortBy: (field: string) => void;
-  setSortDirection: (direction: "ASC" | "DESC") => void;
+  setSortDirection: (direction: GQL.OrderSortDirection) => void;
   onContextMenu: (event: React.MouseEvent) => void;
   onClick: (event: React.MouseEvent) => void;
   viewMode: ViewMode;
-  params: Graphql.FilesListInput;
+  params: GQL.FilesListInput;
   clipboard: StorageClipboardState | null;
   onNavigate: (path: string) => Promise<void>;
   onRefresh: () => Promise<void>;
@@ -246,11 +246,11 @@ const ListView: React.FC<{
     (field: string) => {
       if (sortBy === field) {
         // Same field, toggle direction
-        setSortDirection(sortDirection === "ASC" ? "DESC" : "ASC");
+        setSortDirection(sortDirection === GQL.OrderSortDirection.Asc ? GQL.OrderSortDirection.Desc : GQL.OrderSortDirection.Asc);
       } else {
         // New field, set ascending
         setSortBy(field);
-        setSortDirection("ASC");
+        setSortDirection(GQL.OrderSortDirection.Asc);
       }
     },
     [setSortBy, setSortDirection, sortBy, sortDirection]
@@ -445,7 +445,7 @@ const GridView: React.FC<{
   onClick: (event: React.MouseEvent) => void;
   viewMode: ViewMode;
   focusedItem: string | null;
-  params: Graphql.FilesListInput;
+  params: GQL.FilesListInput;
   clipboard: StorageClipboardState | null;
   onNavigate: (path: string) => Promise<void>;
   onRefresh: () => Promise<void>;
@@ -540,7 +540,7 @@ const GridView: React.FC<{
 
 interface StorageItemsViewProps {
   items: StorageItemType[];
-  pagination: Graphql.PageInfo | null;
+  pagination: GQL.PageInfo | null;
   loading: boolean;
   error: unknown;
   searchMode: boolean;
@@ -549,9 +549,9 @@ interface StorageItemsViewProps {
   lastSelectedItem: string | null;
   focusedItem: string | null;
   sortBy: string;
-  sortDirection: Graphql.OrderSortDirection;
+  sortDirection: GQL.OrderSortDirection;
   setViewMode: (mode: ViewMode) => void;
-  params: Graphql.FilesListInput;
+  params: GQL.FilesListInput;
   onNavigate: (path: string) => Promise<void>;
   onRefresh: () => Promise<void>;
   onPasteItems: () => Promise<boolean>;
@@ -571,7 +571,7 @@ interface StorageItemsViewProps {
   ) => void;
   setFocusedItem: (path: string | null) => void;
   setSortBy: (field: string) => void;
-  setSortDirection: (direction: Graphql.OrderSortDirection) => void;
+  setSortDirection: (direction: GQL.OrderSortDirection) => void;
   getSortedItems: (items: StorageItemType[]) => StorageItemType[];
 }
 

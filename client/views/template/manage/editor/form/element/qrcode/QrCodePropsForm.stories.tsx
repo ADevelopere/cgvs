@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { QrCodePropsForm } from "./QrCodePropsForm";
-import { QrCodePropsState } from "./types";
+import { QrCodeErrorCorrection } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof QrCodePropsForm> = {
   title: "Template/Editor/Form/Element/QrCode/QrCodePropsForm",
@@ -24,13 +24,10 @@ export const Default: Story = {
     qrCodeProps: {
       foregroundColor: "#000000",
       backgroundColor: "#FFFFFF",
-      errorCorrection: "L",
+      errorCorrection: QrCodeErrorCorrection.L,
     },
     errors: {},
-    updateQrCodeProps: <K extends keyof QrCodePropsState>(
-      key: K,
-      value: QrCodePropsState[K]
-    ) => {
+    updateQrCodeProps: ({ key, value }) => {
       logger.info(`QR code prop updated: ${key} =`, value);
     },
     disabled: false,
@@ -43,13 +40,10 @@ export const MediumErrorCorrection: Story = {
     qrCodeProps: {
       foregroundColor: "#000000",
       backgroundColor: "#FFFFFF",
-      errorCorrection: "M",
+      errorCorrection: QrCodeErrorCorrection.M,
     },
     errors: {},
-    updateQrCodeProps: <K extends keyof QrCodePropsState>(
-      key: K,
-      value: QrCodePropsState[K]
-    ) => {
+    updateQrCodeProps: ({ key, value }) => {
       logger.info(`QR code prop updated: ${key} =`, value);
     },
     disabled: false,
@@ -62,13 +56,10 @@ export const QuartileErrorCorrection: Story = {
     qrCodeProps: {
       foregroundColor: "#000000",
       backgroundColor: "#FFFFFF",
-      errorCorrection: "Q",
+      errorCorrection: QrCodeErrorCorrection.Q,
     },
     errors: {},
-    updateQrCodeProps: <K extends keyof QrCodePropsState>(
-      key: K,
-      value: QrCodePropsState[K]
-    ) => {
+    updateQrCodeProps: ({ key, value }) => {
       logger.info(`QR code prop updated: ${key} =`, value);
     },
     disabled: false,
@@ -81,13 +72,10 @@ export const HighErrorCorrection: Story = {
     qrCodeProps: {
       foregroundColor: "#000000",
       backgroundColor: "#FFFFFF",
-      errorCorrection: "H",
+      errorCorrection: QrCodeErrorCorrection.H,
     },
     errors: {},
-    updateQrCodeProps: <K extends keyof QrCodePropsState>(
-      key: K,
-      value: QrCodePropsState[K]
-    ) => {
+    updateQrCodeProps: ({ key, value }) => {
       logger.info(`QR code prop updated: ${key} =`, value);
     },
     disabled: false,
@@ -100,13 +88,10 @@ export const CustomColorsBlue: Story = {
     qrCodeProps: {
       foregroundColor: "#1976D2",
       backgroundColor: "#E3F2FD",
-      errorCorrection: "M",
+      errorCorrection: QrCodeErrorCorrection.M,
     },
     errors: {},
-    updateQrCodeProps: <K extends keyof QrCodePropsState>(
-      key: K,
-      value: QrCodePropsState[K]
-    ) => {
+    updateQrCodeProps: ({ key, value }) => {
       logger.info(`QR code prop updated: ${key} =`, value);
     },
     disabled: false,
@@ -119,13 +104,10 @@ export const CustomColorsDark: Story = {
     qrCodeProps: {
       foregroundColor: "#FFFFFF",
       backgroundColor: "#212121",
-      errorCorrection: "M",
+      errorCorrection: QrCodeErrorCorrection.H,
     },
     errors: {},
-    updateQrCodeProps: <K extends keyof QrCodePropsState>(
-      key: K,
-      value: QrCodePropsState[K]
-    ) => {
+    updateQrCodeProps: ({ key, value }) => {
       logger.info(`QR code prop updated: ${key} =`, value);
     },
     disabled: false,
@@ -138,13 +120,10 @@ export const CustomColorsGreen: Story = {
     qrCodeProps: {
       foregroundColor: "#2E7D32",
       backgroundColor: "#F1F8E9",
-      errorCorrection: "Q",
+      errorCorrection: QrCodeErrorCorrection.Q,
     },
     errors: {},
-    updateQrCodeProps: <K extends keyof QrCodePropsState>(
-      key: K,
-      value: QrCodePropsState[K]
-    ) => {
+    updateQrCodeProps: ({ key, value }) => {
       logger.info(`QR code prop updated: ${key} =`, value);
     },
     disabled: false,
@@ -157,16 +136,13 @@ export const WithErrors: Story = {
     qrCodeProps: {
       foregroundColor: "",
       backgroundColor: "invalid",
-      errorCorrection: "L",
+      errorCorrection: QrCodeErrorCorrection.L,
     },
     errors: {
       foregroundColor: "Foreground color is required",
       backgroundColor: "Invalid hex color format (e.g., #FFFFFF)",
     },
-    updateQrCodeProps: <K extends keyof QrCodePropsState>(
-      key: K,
-      value: QrCodePropsState[K]
-    ) => {
+    updateQrCodeProps: ({ key, value }) => {
       logger.info(`QR code prop updated: ${key} =`, value);
     },
     disabled: false,
@@ -179,17 +155,14 @@ export const AllFieldsWithErrors: Story = {
     qrCodeProps: {
       foregroundColor: "",
       backgroundColor: "",
-      errorCorrection: "L",
+      errorCorrection: QrCodeErrorCorrection.L,
     },
     errors: {
       foregroundColor: "Foreground color is required",
       backgroundColor: "Background color is required",
       errorCorrection: "Error correction level is required",
     },
-    updateQrCodeProps: <K extends keyof QrCodePropsState>(
-      key: K,
-      value: QrCodePropsState[K]
-    ) => {
+    updateQrCodeProps: ({ key, value }) => {
       logger.info(`QR code prop updated: ${key} =`, value);
     },
     disabled: false,
@@ -202,13 +175,10 @@ export const Disabled: Story = {
     qrCodeProps: {
       foregroundColor: "#000000",
       backgroundColor: "#FFFFFF",
-      errorCorrection: "M",
+      errorCorrection: QrCodeErrorCorrection.M,
     },
     errors: {},
-    updateQrCodeProps: <K extends keyof QrCodePropsState>(
-      key: K,
-      value: QrCodePropsState[K]
-    ) => {
+    updateQrCodeProps: ({ key, value }) => {
       logger.info(`QR code prop updated: ${key} =`, value);
     },
     disabled: true,

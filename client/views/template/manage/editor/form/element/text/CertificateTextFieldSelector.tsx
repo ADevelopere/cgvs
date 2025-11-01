@@ -32,7 +32,7 @@ export const CertificateFieldSelector: FC<CertificateFieldSelectorProps> = ({
         label={strings.textElement.certificateFieldLabel}
         onChange={(e) => onChange(e.target.value as CertificateTextField)}
       >
-        <MenuItem value="VERIFICATION_CODE">
+        <MenuItem value={CertificateTextField.VerificationCode}>
           {strings.textElement.certificateFieldVerificationCode}
         </MenuItem>
       </Select>

@@ -32,10 +32,10 @@ export const StudentFieldSelector: FC<StudentFieldSelectorProps> = ({
         label={strings.textElement.studentFieldLabel}
         onChange={e => onChange(e.target.value as StudentTextField)}
       >
-        <MenuItem value="STUDENT_NAME">
+        <MenuItem value={StudentTextField.StudentName}>
           {strings.textElement.studentFieldName}
         </MenuItem>
-        <MenuItem value="STUDENT_EMAIL">
+        <MenuItem value={StudentTextField.StudentEmail}>
           {strings.textElement.studentFieldEmail}
         </MenuItem>
       </Select>

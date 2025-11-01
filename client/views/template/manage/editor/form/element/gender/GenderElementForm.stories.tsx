@@ -3,6 +3,8 @@ import { logger } from "@/client/lib/logger";
 import { mockSelfHostedFonts } from "../story.util";
 import { GenderElementForm } from "./GenderElementForm";
 import type { GenderElementFormErrors, GenderElementFormState } from "./types";
+import { ElementAlignment, ElementOverflow } from "@/client/graphql/generated/gql/graphql";
+import AppLanguage from "@/client/locale/AppLanguage";
 
 const meta: Meta<typeof GenderElementForm> = {
   title: "Template/Editor/Form/Element/Gender/GenderElementForm",
@@ -22,14 +24,14 @@ const mockState: GenderElementFormState = {
     positionY: 100,
     width: 200,
     height: 50,
-    alignment: "START",
+    alignment: ElementAlignment.Start,
     renderOrder: 0,
   },
   textProps: {
     fontRef: { google: { identifier: "Roboto" } },
     color: "#000000",
     fontSize: 14,
-    overflow: "TRUNCATE",
+    overflow: ElementOverflow.Truncate,
   },
 };
 
@@ -43,9 +45,9 @@ export const Default: Story = {
     state: mockState,
     errors: mockErrors,
     selfHostedFonts: mockSelfHostedFonts,
-    locale: "en",
-    updateBase: (key, value) => logger.info("updateBase", { key, value }),
-    updateTextProps: (key, value) =>
+    locale: AppLanguage.default,
+    updateBase: ({ key, value }) => logger.info("updateBase", { key, value }),
+    updateTextProps: ({ key, value }) =>
       logger.info("updateTextProps", { key, value }),
     onSubmit: () => logger.info("Submit"),
     onCancel: () => logger.info("Cancel"),
@@ -64,14 +66,14 @@ export const WithErrors: Story = {
         positionY: 0,
         width: 0,
         height: 0,
-        alignment: "START",
+        alignment: ElementAlignment.Start,
         renderOrder: 0,
       },
       textProps: {
         fontRef: { google: { identifier: "" } },
         color: "",
         fontSize: 0,
-        overflow: "TRUNCATE",
+        overflow: ElementOverflow.Truncate,
       },
     },
     errors: {
@@ -88,9 +90,9 @@ export const WithErrors: Story = {
       },
     },
     selfHostedFonts: mockSelfHostedFonts,
-    locale: "en",
-    updateBase: (key, value) => logger.info("updateBase", { key, value }),
-    updateTextProps: (key, value) =>
+    locale: AppLanguage.default,
+    updateBase: ({ key, value }) => logger.info("updateBase", { key, value }),
+    updateTextProps: ({ key, value }) =>
       logger.info("updateTextProps", { key, value }),
     onSubmit: () => logger.info("Submit"),
     onCancel: () => logger.info("Cancel"),
@@ -103,9 +105,9 @@ export const Submitting: Story = {
     state: mockState,
     errors: mockErrors,
     selfHostedFonts: mockSelfHostedFonts,
-    locale: "en",
-    updateBase: (key, value) => logger.info("updateBase", { key, value }),
-    updateTextProps: (key, value) =>
+    locale: AppLanguage.en,
+    updateBase: ({ key, value }) => logger.info("updateBase", { key, value }),
+    updateTextProps: ({ key, value }) =>
       logger.info("updateTextProps", { key, value }),
     onSubmit: () => logger.info("Submit"),
     onCancel: () => logger.info("Cancel"),
@@ -118,9 +120,9 @@ export const Disabled: Story = {
     state: mockState,
     errors: mockErrors,
     selfHostedFonts: mockSelfHostedFonts,
-    locale: "en",
-    updateBase: (key, value) => logger.info("updateBase", { key, value }),
-    updateTextProps: (key, value) =>
+    locale: AppLanguage.en,
+    updateBase: ({ key, value }) => logger.info("updateBase", { key, value }),
+    updateTextProps: ({ key, value }) =>
       logger.info("updateTextProps", { key, value }),
     onSubmit: () => logger.info("Submit"),
     onCancel: () => logger.info("Cancel"),

@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { DataSourceSelector } from "./TextDataSourceSelector";
+import { TextDataSourceType } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof DataSourceSelector> = {
   title: "Template/Editor/Form/Element/Text/DataSourceSelector",
@@ -13,15 +14,15 @@ type Story = StoryObj<typeof DataSourceSelector>;
 
 export const Static: Story = {
   args: {
-    selectedType: "STATIC",
-    onTypeChange: (type) => logger.log("Type changed:", type),
+    selectedType: TextDataSourceType.Static,
+    onTypeChange: type => logger.log("Type changed:", type),
     disabled: false,
   },
 };
 
 export const StudentField: Story = {
   args: {
-    selectedType: "STUDENT_TEXT_FIELD",
+    selectedType: TextDataSourceType.StudentTextField,
     onTypeChange: (type) => logger.log("Type changed:", type),
     disabled: false,
   },
@@ -29,7 +30,7 @@ export const StudentField: Story = {
 
 export const CertificateField: Story = {
   args: {
-    selectedType: "CERTIFICATE_TEXT_FIELD",
+    selectedType: TextDataSourceType.CertificateTextField,
     onTypeChange: (type) => logger.log("Type changed:", type),
     disabled: false,
   },
@@ -37,7 +38,7 @@ export const CertificateField: Story = {
 
 export const TemplateTextVariable: Story = {
   args: {
-    selectedType: "TEMPLATE_TEXT_VARIABLE",
+    selectedType: TextDataSourceType.TemplateTextVariable,
     onTypeChange: (type) => logger.log("Type changed:", type),
     disabled: false,
   },
@@ -45,7 +46,7 @@ export const TemplateTextVariable: Story = {
 
 export const TemplateSelectVariable: Story = {
   args: {
-    selectedType: "TEMPLATE_SELECT_VARIABLE",
+    selectedType: TextDataSourceType.TemplateSelectVariable,
     onTypeChange: (type) => logger.log("Type changed:", type),
     disabled: false,
   },
@@ -53,7 +54,7 @@ export const TemplateSelectVariable: Story = {
 
 export const Disabled: Story = {
   args: {
-    selectedType: "STATIC",
+    selectedType: TextDataSourceType.Static,
     onTypeChange: (type) => logger.log("Type changed:", type),
     disabled: true,
   },

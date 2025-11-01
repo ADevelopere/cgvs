@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import logger from "@/client/lib/logger";
-import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import * as GQl from "@/client/graphql/generated/gql/graphql";
 
 /**
  * Font UI Store State
@@ -10,10 +10,10 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
  */
 type State = {
   // Query parameters (using GraphQL generated types)
-  queryParams: Graphql.FontsQueryVariables;
+  queryParams: GQl.FontsQueryVariables;
 
   // Selection - store the actual font object
-  selectedFont: Graphql.Font | null;
+  selectedFont: GQl.Font | null;
 
   // UI state
   isCreating: boolean;
@@ -22,10 +22,10 @@ type State = {
 
 type Actions = {
   // Query params actions
-  setQueryParams: (params: Partial<Graphql.FontsQueryVariables>) => void;
+  setQueryParams: (params: Partial<GQl.FontsQueryVariables>) => void;
 
   // Selection actions
-  setSelectedFont: (font: Graphql.Font | null) => void;
+  setSelectedFont: (font: GQl.Font | null) => void;
 
   // UI actions
   startCreating: () => void;
@@ -39,12 +39,12 @@ type Actions = {
 
 type FontStoreState = State & Actions;
 
-const DEFAULT_QUERY_PARAMS: Graphql.FontsQueryVariables = {
+const DEFAULT_QUERY_PARAMS: GQl.FontsQueryVariables = {
   paginationArgs: {
     first: 50,
     page: 1,
   },
-  orderBy: [{ column: "NAME", order: "ASC" }],
+  orderBy: [{ column: GQl.FontsOrderByColumn.Name, order: GQl.OrderSortDirection.Asc }],
   filterArgs: undefined,
 };
 
@@ -119,7 +119,7 @@ export const useFontStore = create<FontStoreState>()(
       merge: (persistedState, currentState) => {
         const typedPersistedState = persistedState as Partial<{
           selectedFontId: number | null;
-          queryParams: Graphql.FontsQueryVariables;
+          queryParams: GQl.FontsQueryVariables;
         }>;
         return {
           ...currentState,

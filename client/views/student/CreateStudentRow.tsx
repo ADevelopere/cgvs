@@ -177,8 +177,8 @@ const CreateStudentRow = () => {
     label: string;
   }[] = useMemo(
     () => [
-      { label: genderStrings.male, value: "MALE" },
-      { label: genderStrings.female, value: "FEMALE" },
+      { label: genderStrings.male, value: Gender.Male },
+      { label: genderStrings.female, value: Gender.Female },
     ],
     [genderStrings]
   );

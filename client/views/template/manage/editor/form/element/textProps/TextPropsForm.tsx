@@ -66,7 +66,7 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
             fontRef={textProps.fontRef}
             locale={locale}
             selfHostedFonts={selfHostedFonts}
-            onFontRefChange={fontRef => onTextPropsChange("fontRef", fontRef)}
+            onFontRefChange={fontRef => onTextPropsChange({ key: "fontRef", value: fontRef })}
             error={errors.fontRef}
             disabled={disabled}
           />
@@ -79,7 +79,7 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
             type="color"
             label={strings.textProps.colorLabel}
             value={textProps.color}
-            onChange={e => onTextPropsChange("color", e.target.value)}
+            onChange={e => onTextPropsChange({ key: "color", value: e.target.value })}
             error={!!errors.color}
             helperText={errors.color}
             disabled={disabled}
@@ -99,7 +99,7 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
                   <Paper>
                     <SketchPicker
                       color={textProps.color}
-                      onChange={color => onTextPropsChange("color", color.hex)}
+                      onChange={color => onTextPropsChange({ key: "color", value: color.hex })}
                     />
                   </Paper>
                 </Fade>
@@ -117,7 +117,7 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
             placeholder={strings.textProps.fontSizePlaceholder}
             value={textProps.fontSize}
             onChange={e =>
-              onTextPropsChange("fontSize", parseInt(e.target.value, 10) || 0)
+              onTextPropsChange({ key: "fontSize", value: parseInt(e.target.value, 10) || 0 })
             }
             error={!!errors.fontSize}
             helperText={errors.fontSize}
@@ -134,7 +134,7 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
               value={textProps.overflow}
               label={strings.textProps.overflowLabel}
               onChange={e =>
-                onTextPropsChange("overflow", e.target.value as ElementOverflow)
+                onTextPropsChange({ key: "overflow", value: e.target.value as ElementOverflow })
               }
             >
               <MenuItem value="RESIZE_DOWN">

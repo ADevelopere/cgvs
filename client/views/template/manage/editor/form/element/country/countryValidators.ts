@@ -1,4 +1,4 @@
-import type { CountryRepresentation } from "@/client/graphql/generated/gql/graphql";
+import { CountryRepresentation } from "@/client/graphql/generated/gql/graphql";
 
 /**
  * Validates the representation field for COUNTRY elements
@@ -17,10 +17,12 @@ export const validateRepresentation = (
     return strings.representationRequired;
   }
 
-  if (representation !== "COUNTRY_NAME" && representation !== "NATIONALITY") {
+  if (
+    representation !== CountryRepresentation.CountryName &&
+    representation !== CountryRepresentation.Nationality
+  ) {
     return strings.representationInvalid;
   }
 
   return undefined;
 };
-

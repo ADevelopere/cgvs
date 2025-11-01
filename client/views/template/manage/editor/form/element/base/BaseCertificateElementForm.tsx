@@ -44,7 +44,9 @@ export const BaseCertificateElementForm: FC<
             label={strings.baseElement.nameLabel}
             placeholder={strings.baseElement.namePlaceholder}
             value={baseProps.name}
-            onChange={e => onFieldChange("name", e.target.value)}
+            onChange={e =>
+              onFieldChange({ key: "name", value: e.target.value })
+            }
             error={!!errors.name}
             helperText={errors.name}
             disabled={disabled}
@@ -61,7 +63,9 @@ export const BaseCertificateElementForm: FC<
             label={strings.baseElement.descriptionLabel}
             placeholder={strings.baseElement.descriptionPlaceholder}
             value={baseProps.description}
-            onChange={e => onFieldChange("description", e.target.value)}
+            onChange={e =>
+              onFieldChange({ key: "description", value: e.target.value })
+            }
             error={!!errors.description}
             helperText={errors.description}
             disabled={disabled}
@@ -76,7 +80,10 @@ export const BaseCertificateElementForm: FC<
             label={strings.baseElement.positionXLabel}
             value={baseProps.positionX}
             onChange={e =>
-              onFieldChange("positionX", parseInt(e.target.value, 10) || 0)
+              onFieldChange({
+                key: "positionX",
+                value: parseInt(e.target.value, 10) || 0,
+              })
             }
             error={!!errors.positionX}
             helperText={errors.positionX}
@@ -94,7 +101,10 @@ export const BaseCertificateElementForm: FC<
             label={strings.baseElement.positionYLabel}
             value={baseProps.positionY}
             onChange={e =>
-              onFieldChange("positionY", parseInt(e.target.value, 10) || 0)
+              onFieldChange({
+                key: "positionY",
+                value: parseInt(e.target.value, 10) || 0,
+              })
             }
             error={!!errors.positionY}
             helperText={errors.positionY}
@@ -112,7 +122,10 @@ export const BaseCertificateElementForm: FC<
             label={strings.baseElement.widthLabel}
             value={baseProps.width}
             onChange={e =>
-              onFieldChange("width", parseInt(e.target.value, 10) || 0)
+              onFieldChange({
+                key: "width",
+                value: parseInt(e.target.value, 10) || 0,
+              })
             }
             error={!!errors.width}
             helperText={errors.width}
@@ -130,7 +143,10 @@ export const BaseCertificateElementForm: FC<
             label={strings.baseElement.heightLabel}
             value={baseProps.height}
             onChange={e =>
-              onFieldChange("height", parseInt(e.target.value, 10) || 0)
+              onFieldChange({
+                key: "height",
+                value: parseInt(e.target.value, 10) || 0,
+              })
             }
             error={!!errors.height}
             helperText={errors.height}
@@ -148,7 +164,10 @@ export const BaseCertificateElementForm: FC<
               value={baseProps.alignment}
               label={strings.baseElement.alignmentLabel}
               onChange={e =>
-                onFieldChange("alignment", e.target.value as ElementAlignment)
+                onFieldChange({
+                  key: "alignment",
+                  value: e.target.value as ElementAlignment,
+                })
               }
             >
               <MenuItem value="START">

@@ -2,7 +2,6 @@ import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
 import * as Types from "@/server/types/element";
 import {
   TemplateRepository,
-  TextElementRepository,
   ElementRepository,
 } from "@/server/db/repo";
 import { TemplatePothosObject } from "@/server/graphql/pothos/template.pothos";
@@ -11,7 +10,6 @@ import {
   ElementAlignmentPothosEnum,
   ElementTypePothosEnum,
 } from "./elementEnum.pothos";
-import logger from "@/server/lib/logger";
 
 // ============================================================================
 // Element Order Update Input (for batch operations)

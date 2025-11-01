@@ -108,16 +108,18 @@ export const FontReferenceSelector: FC<FontReferenceSelectorProps> = ({
               placeholder={strings.textProps.googleFontPlaceholder}
               error={!!error}
               helperText={error}
-              InputProps={{
-                ...params.InputProps,
-                endAdornment: (
-                  <>
-                    {loading ? (
-                      <CircularProgress color="inherit" size={20} />
-                    ) : null}
-                    {params.InputProps.endAdornment}
-                  </>
-                ),
+              slotProps={{
+                input: {
+                  ...params.InputProps,
+                  endAdornment: (
+                    <>
+                      {loading ? (
+                        <CircularProgress color="inherit" size={20} />
+                      ) : null}
+                      {params.InputProps.endAdornment}
+                    </>
+                  ),
+                },
               }}
             />
           )}
@@ -155,9 +157,11 @@ export const FontReferenceSelector: FC<FontReferenceSelectorProps> = ({
   };
 
   // Determine current font source from FontReferenceInput
-  const currentSource: FontSource = fontRef.google?.identifier
-    ? "GOOGLE"
-    : "SELF_HOSTED";
+  const currentSource: FontSource = React.useMemo(
+    () =>
+      fontRef.google?.identifier ? FontSource.Google : FontSource.SelfHosted,
+    [fontRef]
+  );
 
   return (
     <Box>
