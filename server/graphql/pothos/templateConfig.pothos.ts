@@ -36,7 +36,7 @@ export const TemplateConfigPothosObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       id: t.exposeInt("id", { nullable: false }),
-      templateId: t.exposeInt("templateId", { nullable: false }),
+      templateId: t.exposeInt("templateId"),
       width: t.exposeInt("width", { nullable: false }),
       height: t.exposeInt("height", { nullable: false }),
       locale: t.field({
@@ -46,11 +46,9 @@ export const TemplateConfigPothosObject = gqlSchemaBuilder
       }),
       createdAt: t.expose("createdAt", {
         type: "DateTime",
-        nullable: false,
       }),
       updatedAt: t.expose("updatedAt", {
         type: "DateTime",
-        nullable: false,
       }),
     }),
   });

@@ -3,10 +3,10 @@
 import React from "react";
 import { useMutation } from "@apollo/client/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import * as Documents from "./documents";
+import * as Documents from "../../glqDocuments/element";
 import { mapFontRefInputToFontRef } from "./useCertificateElementMutation";
 
-export const extractVariableIdFromDataSourceInput = (
+export const extractVariableIdFromTextDataSourceInput = (
   dataSource: GQL.TextDataSourceInput
 ): number | null => {
   if (dataSource.templateTextVariable?.variableId) {
@@ -112,7 +112,7 @@ export const useTextElementMutation = (
             textDataSource: mapTextDataSourceInputToOutput(input.dataSource),
             textElementSpecProps: {
               ...existingElement.textElementSpecProps,
-              variableId: extractVariableIdFromDataSourceInput(
+              variableId: extractVariableIdFromTextDataSourceInput(
                 input.dataSource
               ),
             },

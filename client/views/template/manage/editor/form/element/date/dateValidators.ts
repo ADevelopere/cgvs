@@ -3,7 +3,7 @@ import type {
   DateProps,
 } from "@/client/graphql/generated/gql/graphql";
 import type { DateDataSourceFormErrors } from "./types";
-import { ValidateFieldFn } from "../types";
+import { ValidateFieldFn } from "../../types";
 
 /**
  * Validates DateDataSourceInput (OneOf type)

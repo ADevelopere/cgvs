@@ -3,7 +3,7 @@ import type {
   TextDataSourceInput,
   TextElementInput,
 } from "@/client/graphql/generated/gql/graphql";
-import { FormErrors } from "../types";
+import { FormErrors } from "../../types";
 import { TextPropsFormErrors } from "../textProps";
 import { BaseElementFormErrors } from "../base";
 

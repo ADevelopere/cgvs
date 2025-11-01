@@ -1,5 +1,5 @@
 import { ImageDataSourceInput } from "@/client/graphql/generated/gql/graphql";
-import { ValidateFieldFn } from "../types";
+import { ValidateFieldFn } from "../../types";
 import {
   ImagePropsState,
   DataSourceFormErrors,

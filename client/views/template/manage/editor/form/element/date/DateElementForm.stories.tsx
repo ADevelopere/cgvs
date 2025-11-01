@@ -3,7 +3,13 @@ import { logger } from "@/client/lib/logger";
 import { DateElementForm } from "./DateElementForm";
 import { mockSelfHostedFonts } from "../story.util";
 import type { DateElementFormErrors, DateElementFormState } from "./types";
-import { TemplateDateVariable } from "@/client/graphql/generated/gql/graphql";
+import {
+  CalendarType,
+  ElementAlignment,
+  ElementOverflow,
+  StudentDateField,
+  TemplateDateVariable,
+} from "@/client/graphql/generated/gql/graphql";
 import { UpdateBaseElementFn } from "../base";
 import type { UpdateDatePropsFn, UpdateDateDataSourceFn } from "./types";
 import { UpdateTextPropsFn } from "../textProps";
@@ -42,7 +48,7 @@ const defaultState: DateElementFormState = {
     positionY: 100,
     width: 200,
     height: 50,
-    alignment: "CENTER",
+    alignment: ElementAlignment.Baseline,
     renderOrder: 1,
     templateId: 1,
   },
@@ -50,11 +56,11 @@ const defaultState: DateElementFormState = {
     fontRef: { google: { identifier: "Roboto" } },
     fontSize: 16,
     color: "#000000",
-    overflow: "WRAP",
+    overflow: ElementOverflow.Wrap,
   },
   dateProps: {
     format: "YYYY-MM-DD",
-    calendarType: "GREGORIAN",
+    calendarType: CalendarType.Gregorian,
     offsetDays: 0,
   },
   dataSource: {
@@ -73,10 +79,25 @@ export const Default: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: ((field, value) => logger.info("Base element updated:", { field, value })) satisfies UpdateBaseElementFn,
-    updateTextProps: ((field, value) => logger.info("Text props updated:", { field, value })) satisfies UpdateTextPropsFn,
-    updateDateProps: ((field, value) => logger.info("Date props updated:", { field, value })) satisfies UpdateDatePropsFn,
-    updateDataSource: ((dataSource) => logger.info("Data source updated:", { dataSource })) satisfies UpdateDateDataSourceFn,
+    updateBaseElement: ((field, value) =>
+      logger.info("Base element updated:", {
+        field,
+        value,
+      })) satisfies UpdateBaseElementFn,
+    updateTextProps: ((field, value) =>
+      logger.info("Text props updated:", {
+        field,
+        value,
+      })) satisfies UpdateTextPropsFn,
+    updateDateProps: ((field, value) =>
+      logger.info("Date props updated:", {
+        field,
+        value,
+      })) satisfies UpdateDatePropsFn,
+    updateDataSource: (dataSource =>
+      logger.info("Data source updated:", {
+        dataSource,
+      })) satisfies UpdateDateDataSourceFn,
     templateId: 1,
     locale: "en",
     dateVariables: mockDateVariables,
@@ -93,14 +114,29 @@ export const WithStudentField: Story = {
     state: {
       ...defaultState,
       dataSource: {
-        studentField: { field: "DATE_OF_BIRTH" },
+        studentField: { field: StudentDateField.DateOfBirth },
       },
     },
     errors: defaultErrors,
-    updateBaseElement: ((field, value) => logger.info("Base element updated:", { field, value })) satisfies UpdateBaseElementFn,
-    updateTextProps: ((field, value) => logger.info("Text props updated:", { field, value })) satisfies UpdateTextPropsFn,
-    updateDateProps: ((field, value) => logger.info("Date props updated:", { field, value })) satisfies UpdateDatePropsFn,
-    updateDataSource: ((dataSource) => logger.info("Data source updated:", { dataSource })) satisfies UpdateDateDataSourceFn,
+    updateBaseElement: ((field, value) =>
+      logger.info("Base element updated:", {
+        field,
+        value,
+      })) satisfies UpdateBaseElementFn,
+    updateTextProps: ((field, value) =>
+      logger.info("Text props updated:", {
+        field,
+        value,
+      })) satisfies UpdateTextPropsFn,
+    updateDateProps: ((field, value) =>
+      logger.info("Date props updated:", {
+        field,
+        value,
+      })) satisfies UpdateDatePropsFn,
+    updateDataSource: (dataSource =>
+      logger.info("Data source updated:", {
+        dataSource,
+      })) satisfies UpdateDateDataSourceFn,
     templateId: 1,
     locale: "en",
     dateVariables: mockDateVariables,
@@ -118,15 +154,30 @@ export const HijriCalendar: Story = {
       ...defaultState,
       dateProps: {
         format: "DD/MM/YYYY",
-        calendarType: "HIJRI",
+        calendarType: CalendarType.Hijri,
         offsetDays: 0,
       },
     },
     errors: defaultErrors,
-    updateBaseElement: ((field, value) => logger.info("Base element updated:", { field, value })) satisfies UpdateBaseElementFn,
-    updateTextProps: ((field, value) => logger.info("Text props updated:", { field, value })) satisfies UpdateTextPropsFn,
-    updateDateProps: ((field, value) => logger.info("Date props updated:", { field, value })) satisfies UpdateDatePropsFn,
-    updateDataSource: ((dataSource) => logger.info("Data source updated:", { dataSource })) satisfies UpdateDateDataSourceFn,
+    updateBaseElement: ((field, value) =>
+      logger.info("Base element updated:", {
+        field,
+        value,
+      })) satisfies UpdateBaseElementFn,
+    updateTextProps: ((field, value) =>
+      logger.info("Text props updated:", {
+        field,
+        value,
+      })) satisfies UpdateTextPropsFn,
+    updateDateProps: ((field, value) =>
+      logger.info("Date props updated:", {
+        field,
+        value,
+      })) satisfies UpdateDatePropsFn,
+    updateDataSource: (dataSource =>
+      logger.info("Data source updated:", {
+        dataSource,
+      })) satisfies UpdateDateDataSourceFn,
     templateId: 1,
     locale: "en",
     dateVariables: mockDateVariables,
@@ -142,10 +193,25 @@ export const Submitting: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: ((field, value) => logger.info("Base element updated:", { field, value })) satisfies UpdateBaseElementFn,
-    updateTextProps: ((field, value) => logger.info("Text props updated:", { field, value })) satisfies UpdateTextPropsFn,
-    updateDateProps: ((field, value) => logger.info("Date props updated:", { field, value })) satisfies UpdateDatePropsFn,
-    updateDataSource: ((dataSource) => logger.info("Data source updated:", { dataSource })) satisfies UpdateDateDataSourceFn,
+    updateBaseElement: ((field, value) =>
+      logger.info("Base element updated:", {
+        field,
+        value,
+      })) satisfies UpdateBaseElementFn,
+    updateTextProps: ((field, value) =>
+      logger.info("Text props updated:", {
+        field,
+        value,
+      })) satisfies UpdateTextPropsFn,
+    updateDateProps: ((field, value) =>
+      logger.info("Date props updated:", {
+        field,
+        value,
+      })) satisfies UpdateDatePropsFn,
+    updateDataSource: (dataSource =>
+      logger.info("Data source updated:", {
+        dataSource,
+      })) satisfies UpdateDateDataSourceFn,
     templateId: 1,
     locale: "en",
     dateVariables: mockDateVariables,
@@ -156,4 +222,3 @@ export const Submitting: Story = {
     submitLabel: "Submit",
   },
 };
-

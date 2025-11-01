@@ -3,18 +3,17 @@
 import React from "react";
 import { useMutation } from "@apollo/client/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import * as Documents from "./config.documents";
+import * as Documents from "../glqDocuments/config.documents";
 
-export const useTemplateConfigMutation = (
-  existingElement: GQL.TemplateConfig
-) => {
+export const useTemplateConfigMutation = () => {
   const [createTemplateConfigMutation] = useMutation(
-   Documents.createTemplateConfigMutationDocument,
+    Documents.createTemplateConfigMutationDocument,
     {
       update(cache, { data }) {
         if (!data?.createTemplateConfig) return;
         const newConfig = data.createTemplateConfig;
         const templateId = newConfig.templateId;
+        if(!templateId) return;
 
         cache.updateQuery<GQL.TemplateConfigsByTemplateIdQuery>(
           {
@@ -22,12 +21,9 @@ export const useTemplateConfigMutation = (
             variables: { templateId },
           },
           existing => {
-            if (!existing?.) return existing;
+            if (!existing?.templateConfigsByTemplateId) return existing;
             return {
-              elementsByTemplateId: [
-                ...existing.elementsByTemplateId,
-                newConfig,
-              ],
+              templateConfigsByTemplateId: newConfig,
             };
           }
         );
@@ -46,45 +42,26 @@ export const useTemplateConfigMutation = (
         return {
           // Key matches your mutation name
           updateTemplateConfig: {
-            __typename: existingElement.__typename,
-            // 1. Spread the "existing value"
-            ...existingElement,
-
-            // 2. Deep-merge the new values from the variables
-            // This is based on your fragment structure
-            base: {
-              ...existingElement.base,
-              ...input.base, // Merge new 'base' fields
-            },
-            textProps: {
-              ...existingElement.textProps,
-              ...input.textProps, // Merge new 'textProps' fields
-              fontRef: mapFontRefInputToFontRef(input.textProps.fontRef),
-            },
-            countryProps: {
-              ...existingElement.countryProps,
-              ...input.countryProps, // Merge new 'countryProps' fields
-            },
+            __typename: "TemplateConfig" as const,
+            ...input,
           },
         };
       },
       update(cache, { data }) {
         if (!data?.updateTemplateConfig) return;
         const updated = data.updateTemplateConfig;
-        const templateId = updated.template?.id;
+        const templateId = updated.templateId;
         if (!templateId) return;
 
-        cache.updateQuery<GQL.ElementsByTemplateIdQuery>(
+        cache.updateQuery<GQL.TemplateConfigsByTemplateIdQuery>(
           {
-            query: Documents.elementsByTemplateIdQueryDocument,
+            query: Documents.templateConfigsByTemplateIdQueryDocument,
             variables: { templateId },
           },
           existing => {
-            if (!existing?.elementsByTemplateId) return existing;
+            if (!existing?.templateConfigsByTemplateId) return existing;
             return {
-              elementsByTemplateId: existing.elementsByTemplateId.map(el =>
-                el.base?.id === updated.base?.id ? updated : el
-              ),
+              templateConfigsByTemplateId: updated,
             };
           }
         );

@@ -1,6 +1,6 @@
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { BaseElementFormErrors } from "../base/types";
-import { FormErrors, UpdateStateFn } from "../types";
+import { FormErrors, UpdateStateFn } from "../../types";
 
 // ============================================================================
 // QR Code-specific Props State

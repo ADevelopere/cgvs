@@ -1823,13 +1823,13 @@ export type TemplateCategoryWithParentTree = {
 
 export type TemplateConfig = {
   __typename?: 'TemplateConfig';
-  createdAt: Scalars['DateTime']['output'];
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
   height: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
   locale: CountryCode;
   template?: Maybe<Template>;
-  templateId: Scalars['Int']['output'];
-  updatedAt: Scalars['DateTime']['output'];
+  templateId?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
   width: Scalars['Int']['output'];
 };
 
@@ -2671,28 +2671,28 @@ export type TemplateConfigQueryVariables = Exact<{
 }>;
 
 
-export type TemplateConfigQuery = { __typename?: 'Query', templateConfig?: { __typename?: 'TemplateConfig', createdAt: any, height: number, id: number, locale: CountryCode, updatedAt: any, width: number, templateId: number } | null };
+export type TemplateConfigQuery = { __typename?: 'Query', templateConfig?: { __typename?: 'TemplateConfig', createdAt?: any | null, height: number, id: number, locale: CountryCode, updatedAt?: any | null, width: number, templateId?: number | null } | null };
 
 export type TemplateConfigsByTemplateIdQueryVariables = Exact<{
   templateId: Scalars['Int']['input'];
 }>;
 
 
-export type TemplateConfigsByTemplateIdQuery = { __typename?: 'Query', templateConfigsByTemplateId?: { __typename?: 'TemplateConfig', createdAt: any, height: number, id: number, locale: CountryCode, updatedAt: any, width: number, templateId: number } | null };
+export type TemplateConfigsByTemplateIdQuery = { __typename?: 'Query', templateConfigsByTemplateId?: { __typename?: 'TemplateConfig', createdAt?: any | null, height: number, id: number, locale: CountryCode, updatedAt?: any | null, width: number, templateId?: number | null } | null };
 
 export type CreateTemplateConfigMutationVariables = Exact<{
   input: TemplateConfigCreateInput;
 }>;
 
 
-export type CreateTemplateConfigMutation = { __typename?: 'Mutation', createTemplateConfig?: { __typename?: 'TemplateConfig', createdAt: any, height: number, id: number, locale: CountryCode, updatedAt: any, width: number, templateId: number } | null };
+export type CreateTemplateConfigMutation = { __typename?: 'Mutation', createTemplateConfig?: { __typename?: 'TemplateConfig', createdAt?: any | null, height: number, id: number, locale: CountryCode, updatedAt?: any | null, width: number, templateId?: number | null } | null };
 
 export type UpdateTemplateConfigMutationVariables = Exact<{
   input: TemplateConfigUpdateInput;
 }>;
 
 
-export type UpdateTemplateConfigMutation = { __typename?: 'Mutation', updateTemplateConfig?: { __typename?: 'TemplateConfig', createdAt: any, height: number, id: number, locale: CountryCode, updatedAt: any, width: number, templateId: number } | null };
+export type UpdateTemplateConfigMutation = { __typename?: 'Mutation', updateTemplateConfig?: { __typename?: 'TemplateConfig', createdAt?: any | null, height: number, id: number, locale: CountryCode, updatedAt?: any | null, width: number, templateId?: number | null } | null };
 
 export type CreateCountryElementMutationVariables = Exact<{
   input: CountryElementInput;

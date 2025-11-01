@@ -9,7 +9,7 @@ import {
 } from "@mui/icons-material";
 import { useAppTranslation } from "@/client/locale";
 import { ElementImageFit } from "@/client/graphql/generated/gql/graphql";
-import { UpdateStateFn } from "../types";
+import { UpdateStateFn } from "../../types";
 import { ImagePropsState, ImagePropsFormErrors } from "./types";
 
 export interface ImagePropsFormProps {

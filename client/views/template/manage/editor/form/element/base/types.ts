@@ -1,5 +1,5 @@
 import type { CertificateElementBaseInput } from "@/client/graphql/generated/gql/graphql";
-import { UpdateStateFn, FormErrors, ValidateFieldFn } from "../types";
+import { UpdateStateFn, FormErrors, ValidateFieldFn } from "../../types";
 
 export type BaseCertificateElementFormState = CertificateElementBaseInput;
 
