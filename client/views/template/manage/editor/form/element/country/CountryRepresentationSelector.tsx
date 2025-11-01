@@ -35,7 +35,7 @@ export const CountryRepresentationSelector: FC<
           onChange={e => onChange(e.target.value as CountryRepresentation)}
         >
           <FormControlLabel
-            value="COUNTRY_NAME"
+            value={CountryRepresentation.CountryName}
             control={<Radio />}
             label={
               <Box>
@@ -49,7 +49,7 @@ export const CountryRepresentationSelector: FC<
             }
           />
           <FormControlLabel
-            value="NATIONALITY"
+            value={CountryRepresentation.Nationality}
             control={<Radio />}
             label={
               <Box>

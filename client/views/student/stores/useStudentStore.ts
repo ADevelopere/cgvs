@@ -33,7 +33,7 @@ const DEFAULT_QUERY_PARAMS: Graphql.StudentsQueryVariables = {
     first: 100,
     page: 1,
   },
-  orderBy: [{ column: "NAME", order: "ASC" }],
+  orderBy: [{ column: Graphql.StudentsOrderByColumn.Name, order: Graphql.OrderSortDirection.Asc }],
 };
 
 const initialState: State = {

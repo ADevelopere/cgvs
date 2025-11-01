@@ -7,13 +7,13 @@ export const mapColumnIdToGraphQLColumn = (
   columnId: string
 ): StudentsOrderByColumn | null => {
   const columnMap: Record<string, StudentsOrderByColumn> = {
-    id: "ID",
-    name: "NAME",
-    email: "EMAIL",
-    dateOfBirth: "DATE_OF_BIRTH",
-    gender: "GENDER",
-    createdAt: "CREATED_AT",
-    updatedAt: "UPDATED_AT",
+    id: StudentsOrderByColumn.Id,
+    name: StudentsOrderByColumn.Name,
+    email: StudentsOrderByColumn.Email,
+    dateOfBirth: StudentsOrderByColumn.DateOfBirth,
+    gender: StudentsOrderByColumn.Gender,
+    createdAt: StudentsOrderByColumn.CreatedAt,
+    updatedAt: StudentsOrderByColumn.UpdatedAt,
   };
 
   return columnMap[columnId] || null;

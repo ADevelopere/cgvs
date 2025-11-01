@@ -7,7 +7,7 @@ import {
 } from "@mui/icons-material";
 import FilePickerDialog from "@/client/views/storage/dialogs/FilePickerDialog";
 import { useAppTranslation } from "@/client/locale";
-import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import * as GQL from "@/client/graphql/generated/gql/graphql";
 
 interface FontFilePickerProps {
   value: {
@@ -33,7 +33,7 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({
   const strings = useAppTranslation("fontManagementTranslations");
   const [isPickerOpen, setIsPickerOpen] = useState(false);
 
-  const handleFileSelect = (file: Graphql.FileInfo) => {
+  const handleFileSelect = (file: GQL.FileInfo) => {
     onChange({
       filePath: file.path,
       fileName: file.name ?? file.path.split("/").pop() ?? "",
@@ -128,7 +128,7 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({
         onClose={() => setIsPickerOpen(false)}
         onFileSelect={handleFileSelect}
         title="Select Font File"
-        allowedFileTypes={["FONT"]}
+        allowedFileTypes={[GQL.FileType.Font]}
       />
     </>
   );

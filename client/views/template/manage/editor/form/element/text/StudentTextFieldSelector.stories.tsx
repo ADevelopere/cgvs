@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { StudentFieldSelector } from "./StudentTextFieldSelector";
+import { StudentTextField } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof StudentFieldSelector> = {
   title: "Template/Editor/Form/Element/Text/StudentFieldSelector",
@@ -13,7 +14,7 @@ type Story = StoryObj<typeof StudentFieldSelector>;
 
 export const StudentName: Story = {
   args: {
-    value: "STUDENT_NAME",
+    value: StudentTextField.StudentName,
     onChange: (field) => logger.log("Field changed:", field),
     disabled: false,
   },
@@ -21,7 +22,7 @@ export const StudentName: Story = {
 
 export const StudentEmail: Story = {
   args: {
-    value: "STUDENT_EMAIL",
+    value: StudentTextField.StudentEmail,
     onChange: (field) => logger.log("Field changed:", field),
     disabled: false,
   },
@@ -29,7 +30,7 @@ export const StudentEmail: Story = {
 
 export const WithError: Story = {
   args: {
-    value: "STUDENT_NAME",
+    value: StudentTextField.StudentName,
     onChange: (field) => logger.log("Field changed:", field),
     error: "Field is required",
     disabled: false,
@@ -38,7 +39,7 @@ export const WithError: Story = {
 
 export const Disabled: Story = {
   args: {
-    value: "STUDENT_NAME",
+    value: StudentTextField.StudentName,
     onChange: (field) => logger.log("Field changed:", field),
     disabled: true,
   },

@@ -320,13 +320,13 @@ export const useRecipientOperations = (templateId?: number) => {
     columnId: string
   ): Graphql.StudentsOrderByColumn | null => {
     const columnMap: Record<string, Graphql.StudentsOrderByColumn> = {
-      id: "ID",
-      name: "NAME",
-      email: "EMAIL",
-      dateOfBirth: "DATE_OF_BIRTH",
-      gender: "GENDER",
-      createdAt: "CREATED_AT",
-      updatedAt: "UPDATED_AT",
+      id: Graphql.StudentsOrderByColumn.Id,
+      name: Graphql.StudentsOrderByColumn.Name,
+      email: Graphql.StudentsOrderByColumn.Email,
+      dateOfBirth: Graphql.StudentsOrderByColumn.DateOfBirth,
+      gender: Graphql.StudentsOrderByColumn.Gender,
+      createdAt: Graphql.StudentsOrderByColumn.CreatedAt,
+      updatedAt: Graphql.StudentsOrderByColumn.UpdatedAt,
     };
     return columnMap[columnId] || null;
   };

@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -32,11 +31,11 @@ function countryNameByCode(strings: CountryTranslations, code: string): string {
 }
 
 /**
- * CountrySelect component allows users to select a country from a dropdown list.
+ * CountrySelector component allows users to select a country from a dropdown list.
  * @param {CountrySelectProps} props - The properties for the component.
- * @returns {JSX.Element} The rendered CountrySelect component.
+ * @returns {JSX.Element} The rendered CountrySelector component.
  */
-export const CountrySelect: React.FC<CountrySelectProps> = ({
+export const CountrySelector: React.FC<CountrySelectProps> = ({
   country,
   setCountryAction: setCountry,
   autoComplete = "country",
@@ -79,14 +78,7 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
             sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
             {...optionProps}
           >
-            <Image
-              width={20}
-              height={15}
-              src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-              alt={option.code}
-              style={{ objectFit: "contain" }}
-              unoptimized
-            />
+            {option.flag}
             {countryNameByCode(strings, option.code)}
           </Box>
         );

@@ -5,6 +5,7 @@ import { mockSelfHostedFonts, mockNumberVariables } from "../story.util";
 import type { NumberElementFormState, NumberElementFormErrors } from "./types";
 import { UpdateBaseElementFn } from "../base";
 import { UpdateTextPropsFn } from "../textProps";
+import { ElementAlignment, ElementOverflow } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof NumberElementForm> = {
   title: "Template/Editor/Form/Element/Number/NumberElementForm",
@@ -23,7 +24,7 @@ const defaultState: NumberElementFormState = {
     positionY: 100,
     width: 150,
     height: 40,
-    ElementAlignment.Baseline
+    alignment: ElementAlignment.Baseline,
     renderOrder: 1,
     templateId: 1,
   },
@@ -31,7 +32,7 @@ const defaultState: NumberElementFormState = {
     fontRef: { google: { identifier: "Roboto" } },
     fontSize: 18,
     color: "#000000",
-    overflow: "WRAP",
+    overflow: ElementOverflow.Wrap,
   },
   dataSource: {
     variableId: 1,
@@ -55,12 +56,12 @@ export const Default: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: (({key, value}) =>
+    updateBaseElement: (({ key, value }) =>
       logger.info("Base element updated:", {
         key,
         value,
       })) satisfies UpdateBaseElementFn,
-    updateTextProps: (({key, value}) =>
+    updateTextProps: (({ key, value }) =>
       logger.info("Text props updated:", {
         key,
         value,
@@ -75,7 +76,7 @@ export const Default: Story = {
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
-    submitLabel: "submit"
+    submitLabel: "submit",
   },
 };
 
@@ -100,12 +101,12 @@ export const WithErrors: Story = {
         en: "Decimal places must be a non-negative number",
       },
     },
-    updateBaseElement: (({key, value}) =>
+    updateBaseElement: (({ key, value }) =>
       logger.info("Base element updated:", {
         key,
         value,
       })) satisfies UpdateBaseElementFn,
-    updateTextProps: (({key, value}) =>
+    updateTextProps: (({ key, value }) =>
       logger.info("Text props updated:", {
         key,
         value,
@@ -120,7 +121,7 @@ export const WithErrors: Story = {
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
-    submitLabel: "submit"
+    submitLabel: "submit",
   },
 };
 
@@ -128,12 +129,12 @@ export const Submitting: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: (({key, value}) =>
+    updateBaseElement: (({ key, value }) =>
       logger.info("Base element updated:", {
         key,
         value,
       })) satisfies UpdateBaseElementFn,
-    updateTextProps: (({key, value}) =>
+    updateTextProps: (({ key, value }) =>
       logger.info("Text props updated:", {
         key,
         value,
@@ -148,7 +149,7 @@ export const Submitting: Story = {
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: true,
-    submitLabel: "submit"
+    submitLabel: "submit",
   },
 };
 
@@ -162,12 +163,12 @@ export const MultipleLocales: Story = {
       },
     },
     errors: defaultErrors,
-    updateBaseElement: (({key, value}) =>
+    updateBaseElement: (({ key, value }) =>
       logger.info("Base element updated:", {
         key,
         value,
       })) satisfies UpdateBaseElementFn,
-    updateTextProps: (({key, value}) =>
+    updateTextProps: (({ key, value }) =>
       logger.info("Text props updated:", {
         key,
         value,

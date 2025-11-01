@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { ImagePropsForm } from "./ImagePropsForm";
-import { ImagePropsState } from "./types";
+import { ElementImageFit } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof ImagePropsForm> = {
   title: "Template/Editor/Form/Element/Image/ImagePropsForm",
@@ -22,13 +22,10 @@ type Story = StoryObj<typeof ImagePropsForm>;
 export const FitContain: Story = {
   args: {
     imageProps: {
-      fit: "CONTAIN",
+      fit: ElementImageFit.Contain,
     },
     errors: {},
-    updateImageProps: <K extends keyof ImagePropsState>(
-      key: K,
-      value: ImagePropsState[K]
-    ) => {
+    updateImageProps: ({ key, value }) => {
       logger.info(`Image prop updated: ${key} =`, value);
     },
     disabled: false,
@@ -39,13 +36,10 @@ export const FitContain: Story = {
 export const FitCover: Story = {
   args: {
     imageProps: {
-      fit: "COVER",
+      fit: ElementImageFit.Cover,
     },
     errors: {},
-    updateImageProps: <K extends keyof ImagePropsState>(
-      key: K,
-      value: ImagePropsState[K]
-    ) => {
+    updateImageProps: ({ key, value }) => {
       logger.info(`Image prop updated: ${key} =`, value);
     },
     disabled: false,
@@ -56,13 +50,10 @@ export const FitCover: Story = {
 export const FitFill: Story = {
   args: {
     imageProps: {
-      fit: "FILL",
+      fit: ElementImageFit.Fill,
     },
     errors: {},
-    updateImageProps: <K extends keyof ImagePropsState>(
-      key: K,
-      value: ImagePropsState[K]
-    ) => {
+    updateImageProps: ({ key, value }) => {
       logger.info(`Image prop updated: ${key} =`, value);
     },
     disabled: false,
@@ -73,15 +64,12 @@ export const FitFill: Story = {
 export const WithError: Story = {
   args: {
     imageProps: {
-      fit: "CONTAIN",
+      fit: ElementImageFit.Contain,
     },
     errors: {
       fit: "Image fit is required",
     },
-    updateImageProps: <K extends keyof ImagePropsState>(
-      key: K,
-      value: ImagePropsState[K]
-    ) => {
+    updateImageProps: ({ key, value }) => {
       logger.info(`Image prop updated: ${key} =`, value);
     },
     disabled: false,
@@ -92,13 +80,10 @@ export const WithError: Story = {
 export const Disabled: Story = {
   args: {
     imageProps: {
-      fit: "CONTAIN",
+      fit: ElementImageFit.Contain,
     },
     errors: {},
-    updateImageProps: <K extends keyof ImagePropsState>(
-      key: K,
-      value: ImagePropsState[K]
-    ) => {
+    updateImageProps: ({ key, value }) => {
       logger.info(`Image prop updated: ${key} =`, value);
     },
     disabled: true,

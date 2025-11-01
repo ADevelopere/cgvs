@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import * as GQL from "@/client/graphql/generated/gql/graphql";
 import {
   StorageItemUnion,
   ViewMode,
@@ -19,7 +19,7 @@ export type StorageUIState = {
   searchResults: StorageItemUnion[];
   clipboard: StorageClipboardState | null;
   sortBy: string;
-  sortDirection: Graphql.OrderSortDirection;
+  sortDirection: GQL.OrderSortDirection;
 };
 
 // ============================================================================
@@ -35,7 +35,7 @@ export type StorageUIStore = StorageUIState & {
   setSearchResults: (results: StorageItemUnion[]) => void;
   setClipboard: (clipboard: StorageClipboardState | null) => void;
   setSortBy: (field: string) => void;
-  setSortDirection: (direction: Graphql.OrderSortDirection) => void;
+  setSortDirection: (direction: GQL.OrderSortDirection) => void;
   reset: () => void;
 };
 
@@ -52,7 +52,7 @@ const initialState: StorageUIState = {
   searchResults: [],
   clipboard: null,
   sortBy: "name",
-  sortDirection: "ASC",
+  sortDirection: GQL.OrderSortDirection.Asc,
 };
 
 // ============================================================================

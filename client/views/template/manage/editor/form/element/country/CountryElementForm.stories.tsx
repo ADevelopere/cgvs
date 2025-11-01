@@ -92,7 +92,7 @@ export const WithErrors: Story = {
         positionY: 0,
         width: 0,
         height: 0,
-        ElementAlignment.Baseline
+        alignment: ElementAlignment.Baseline,
         renderOrder: 0,
         templateId: 1,
       },
@@ -100,10 +100,10 @@ export const WithErrors: Story = {
         fontRef: { google: { identifier: "" } },
         fontSize: 0,
         color: "",
-        overflow: "WRAP",
+        overflow: ElementOverflow.Wrap,
       },
       countryProps: {
-        representation: "COUNTRY_NAME",
+        representation: CountryRepresentation.CountryName,
       },
     },
     errors: {
@@ -119,9 +119,9 @@ export const WithErrors: Story = {
       },
       representation: "Representation is required",
     },
-    updateBaseElement: ({key, value}) =>
+    updateBaseElement: ({ key, value }) =>
       logger.log("Base element updated:", key, value),
-    updateTextProps: ({key, value}) =>
+    updateTextProps: ({ key, value }) =>
       logger.log("Text props updated:", key, value),
     updateRepresentation: value => logger.log("Representation updated:", value),
     locale: "en",

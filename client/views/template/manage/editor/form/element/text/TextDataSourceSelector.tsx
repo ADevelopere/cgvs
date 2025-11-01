@@ -24,19 +24,19 @@ export const DataSourceSelector: FC<DataSourceSelectorProps> = ({
         label={strings.textElement.dataSourceLabel}
         onChange={e => onTypeChange(e.target.value)}
       >
-        <MenuItem value="STATIC">
+        <MenuItem value={TextDataSourceType.Static}>
           {strings.textElement.dataSourceStatic}
         </MenuItem>
-        <MenuItem value="STUDENT_TEXT_FIELD">
+        <MenuItem value={TextDataSourceType.StudentTextField}>
           {strings.textElement.dataSourceStudentField}
         </MenuItem>
-        <MenuItem value="CERTIFICATE_TEXT_FIELD">
+        <MenuItem value={TextDataSourceType.CertificateTextField}>
           {strings.textElement.dataSourceCertificateField}
         </MenuItem>
-        <MenuItem value="TEMPLATE_TEXT_VARIABLE">
+        <MenuItem value={TextDataSourceType.TemplateTextVariable}>
           {strings.textElement.dataSourceTemplateTextVariable}
         </MenuItem>
-        <MenuItem value="TEMPLATE_SELECT_VARIABLE">
+        <MenuItem value={TextDataSourceType.TemplateSelectVariable}>
           {strings.textElement.dataSourceTemplateSelectVariable}
         </MenuItem>
       </Select>

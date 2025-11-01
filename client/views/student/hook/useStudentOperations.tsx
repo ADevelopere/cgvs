@@ -3,7 +3,7 @@
 import { useCallback, useMemo } from "react";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
-import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { isAbortError } from "@/client/utils/errorUtils";
 import {
   DateFilterOperation,
@@ -26,15 +26,15 @@ import { useStudentStore } from "../stores/useStudentStore";
  */
 const mapColumnIdToGraphQLColumn = (
   columnId: string
-): Graphql.StudentsOrderByColumn | null => {
-  const columnMap: Record<string, Graphql.StudentsOrderByColumn> = {
-    id: "ID",
-    name: "NAME",
-    email: "EMAIL",
-    dateOfBirth: "DATE_OF_BIRTH",
-    gender: "GENDER",
-    createdAt: "CREATED_AT",
-    updatedAt: "UPDATED_AT",
+): GQL.StudentsOrderByColumn | null => {
+  const columnMap: Record<string, GQL.StudentsOrderByColumn> = {
+    id: GQL.StudentsOrderByColumn.Id,
+    name: GQL.StudentsOrderByColumn.Name,
+    email: GQL.StudentsOrderByColumn.Email,
+    dateOfBirth: GQL.StudentsOrderByColumn.DateOfBirth,
+    gender: GQL.StudentsOrderByColumn.Gender,
+    createdAt: GQL.StudentsOrderByColumn.CreatedAt,
+    updatedAt: GQL.StudentsOrderByColumn.UpdatedAt,
     // phoneNumber and nationality are not sortable in the GraphQL schema
   };
 
@@ -53,9 +53,9 @@ type DateFilterMap = Partial<
  * Type for the main applyFilters function parameter
  */
 type ApplyFiltersParams =
-  | { columnId: keyof Graphql.Student; type: "text"; filters: TextFilterMap }
+  | { columnId: keyof GQL.Student; type: "text"; filters: TextFilterMap }
   | {
-      columnId: keyof Graphql.Student;
+      columnId: keyof GQL.Student;
       type: "date";
       filters: DateFilterMap;
     };
@@ -75,7 +75,7 @@ export const useStudentOperations = () => {
    */
   const createStudent = useCallback(
     async (
-      variables: Graphql.CreateStudentMutationVariables
+      variables: GQL.CreateStudentMutationVariables
     ): Promise<boolean> => {
       try {
         const result = await apollo.createStudentMutation({ variables });
@@ -115,7 +115,7 @@ export const useStudentOperations = () => {
    */
   const partialUpdateStudent = useCallback(
     async (
-      variables: Graphql.PartiallyUpdateStudentMutationVariables
+      variables: GQL.PartiallyUpdateStudentMutationVariables
     ): Promise<boolean> => {
       try {
         const result = await apollo.partialUpdateStudentMutation({ variables });
@@ -226,7 +226,7 @@ export const useStudentOperations = () => {
     (
       orderByClause: {
         column: string;
-        order: Graphql.OrderSortDirection | null;
+        order: GQL.OrderSortDirection | null;
       }[]
     ) => {
       // Filter out clauses with null order (clear sort)
@@ -247,7 +247,7 @@ export const useStudentOperations = () => {
       }
 
       // Convert generic OrderByClause to GraphQL-specific OrderStudentsByClauseInput
-      const graphqlOrderBy: Graphql.StudentsOrderByClause[] = validClauses
+      const graphqlOrderBy: GQL.StudentsOrderByClause[] = validClauses
         .map(clause => {
           const graphqlColumn = mapColumnIdToGraphQLColumn(clause.column);
           if (!graphqlColumn) {
@@ -256,14 +256,14 @@ export const useStudentOperations = () => {
             );
             return null;
           }
-          const result: Graphql.StudentsOrderByClause = {
+          const result: GQL.StudentsOrderByClause = {
             column: graphqlColumn,
-            order: clause.order as Graphql.OrderSortDirection,
+            order: clause.order as GQL.OrderSortDirection,
           };
           return result;
         })
         .filter(
-          (clause): clause is Graphql.StudentsOrderByClause => clause !== null
+          (clause): clause is GQL.StudentsOrderByClause => clause !== null
         );
 
       store.setQueryParams({
@@ -301,7 +301,7 @@ export const useStudentOperations = () => {
       const activeColumns = new Set(
         Object.values(filtersToUse)
           .filter(f => f !== null)
-          .map(f => f!.columnId as keyof Graphql.Student)
+          .map(f => f!.columnId as keyof GQL.Student)
       );
       logger.info(
         "🔍 useStudentOperations: activeColumns:",
@@ -309,7 +309,7 @@ export const useStudentOperations = () => {
       );
 
       // Clear all filter keys for columns that are no longer active
-      const allPossibleColumns: (keyof Graphql.Student)[] = [
+      const allPossibleColumns: (keyof GQL.Student)[] = [
         "name",
         "email",
         "phoneNumber",
@@ -344,15 +344,15 @@ export const useStudentOperations = () => {
       );
 
       // Build new filters from active filtersToUse
-      const newFilterArgs: Partial<Graphql.StudentFilterArgs> = {};
+      const newFilterArgs: Partial<GQL.StudentFilterArgs> = {};
       Object.values(filtersToUse).forEach(filterClause => {
         if (!filterClause) return;
 
-        const columnId = filterClause.columnId as keyof Graphql.Student;
+        const columnId = filterClause.columnId as keyof GQL.Student;
         const columnType = getColumnType(columnId);
         if (!columnType) return;
 
-        let mappedFilter: Partial<Graphql.StudentFilterArgs> = {};
+        let mappedFilter: Partial<GQL.StudentFilterArgs> = {};
         if (columnType === "text" || columnType === "phone") {
           mappedFilter = mapTextFilter(
             columnId,
@@ -539,7 +539,7 @@ export const useStudentOperations = () => {
    * Clear filter for a column
    */
   const clearFilter = useCallback(
-    (columnId: keyof Graphql.Student) => {
+    (columnId: keyof GQL.Student) => {
       logger.info(
         "🔍 useStudentOperations: clearFilter called with columnId:",
         columnId

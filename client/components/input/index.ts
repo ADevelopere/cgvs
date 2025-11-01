@@ -1,5 +1,5 @@
 export * from "./EditableTypography";
-export * from "./CountrySelect";
+export * from "./CountrySelector";
 export * from "./DateScrollPicker";
 export * from "./GenderSelector";
 export * from "./LanguageSelector";

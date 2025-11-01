@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { TextPropsForm } from "./TextPropsForm";
 import type { TextPropsFormErrors } from "./types";
-import type { TextPropsInput } from "@/client/graphql/generated/gql/graphql";
+import { ElementOverflow, type TextPropsInput } from "@/client/graphql/generated/gql/graphql";
 import { logger } from "@/client/lib/logger";
 import { mockSelfHostedFonts } from "../story.util";
 
@@ -18,7 +18,7 @@ const defaultTextProps: TextPropsInput = {
   fontRef: { google: { identifier: "Roboto" } },
   fontSize: 16,
   color: "#000000",
-  overflow: "WRAP",
+  overflow: ElementOverflow.Truncate,
 };
 
 const defaultErrors: TextPropsFormErrors = {};
@@ -28,7 +28,7 @@ export const Default: Story = {
     textProps: defaultTextProps,
     locale: "en",
     selfHostedFonts: mockSelfHostedFonts,
-    onTextPropsChange: (key, value) =>
+    onTextPropsChange: ({key, value}) =>
       logger.info("Text prop changed:", key, value),
     errors: defaultErrors,
     disabled: false,
@@ -41,11 +41,11 @@ export const ArabicLocale: Story = {
       fontRef: { selfHosted: { fontId: 1 } },
       fontSize: 18,
       color: "#333333",
-      overflow: "RESIZE_DOWN",
+      overflow: ElementOverflow.ResizeDown,
     },
     locale: "ar",
     selfHostedFonts: mockSelfHostedFonts,
-    onTextPropsChange: (key, value) =>
+    onTextPropsChange: ({key, value}) =>
       logger.info("Text prop changed:", key, value),
     errors: defaultErrors,
     disabled: false,
@@ -57,7 +57,7 @@ export const WithErrors: Story = {
     textProps: { ...defaultTextProps, fontSize: 0, color: "invalid" },
     locale: "en",
     selfHostedFonts: mockSelfHostedFonts,
-    onTextPropsChange: (key, value) =>
+    onTextPropsChange: ({key, value}) =>
       logger.info("Text prop changed:", key, value),
     errors: {
       fontSize: "Font size must be positive",
@@ -72,7 +72,7 @@ export const Disabled: Story = {
     textProps: defaultTextProps,
     locale: "en",
     selfHostedFonts: mockSelfHostedFonts,
-    onTextPropsChange: (key, value) =>
+    onTextPropsChange: ({key, value}) =>
       logger.info("Text prop changed:", key, value),
     errors: defaultErrors,
     disabled: true,

@@ -11,11 +11,6 @@ import { OrderSortDirection } from "@/client/graphql/generated/gql/graphql";
 import { useTableLocale } from "../../contexts";
 
 /**
- * Sort direction type - can be ASC, DESC, or null (no sort)
- */
-export type SortDirection = OrderSortDirection | null;
-
-/**
  * Props for BaseHeaderRenderer
  */
 export type BaseHeaderRendererProps = {
@@ -29,7 +24,7 @@ export type BaseHeaderRendererProps = {
   filterable?: boolean;
 
   /** Callback when sort button is clicked - receives the new sort direction */
-  onSort?: (direction: SortDirection) => void;
+  onSort?: (direction: OrderSortDirection | null) => void;
 
   /** Function that renders the filter popover with anchor element and close handler */
   filterPopoverRenderer?: (
@@ -38,7 +33,7 @@ export type BaseHeaderRendererProps = {
   ) => React.ReactNode;
 
   /** Current sort direction */
-  sortDirection?: SortDirection;
+  sortDirection?: OrderSortDirection | null;
 
   /** Whether the column is currently filtered */
   isFiltered?: boolean;
@@ -141,11 +136,11 @@ export const BaseHeaderRenderer = ({
       e.stopPropagation();
 
       // Calculate next sort direction: ASC -> DESC -> null -> ASC
-      let nextDirection: SortDirection;
+      let nextDirection: OrderSortDirection | null;
       if (sortDirection === null || sortDirection === undefined) {
-        nextDirection = "ASC";
-      } else if (sortDirection === "ASC") {
-        nextDirection = "DESC";
+        nextDirection = OrderSortDirection.Asc;
+      } else if (sortDirection === OrderSortDirection.Asc) {
+        nextDirection = OrderSortDirection.Desc;
       } else {
         nextDirection = null; // Clear sort
       }

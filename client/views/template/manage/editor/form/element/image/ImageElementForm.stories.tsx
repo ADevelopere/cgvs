@@ -3,6 +3,7 @@ import { logger } from "@/client/lib/logger";
 import { ImageElementForm } from "./ImageElementForm";
 import type { ImageElementFormErrors, ImageElementFormState, UpdateImageDataSourceFn, UpdateImagePropsFn } from "./types";
 import { UpdateBaseElementFn } from "../base";
+import { ElementAlignment, ElementImageFit } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof ImageElementForm> = {
   title: "Template/Editor/Form/Element/Image/ImageElementForm",
@@ -24,12 +25,12 @@ const defaultState: ImageElementFormState = {
     positionY: 100,
     width: 200,
     height: 120,
-    ElementAlignment.Baseline
+    alignment: ElementAlignment.Baseline,
     renderOrder: 1,
     templateId: 1,
   },
   imageProps: {
-    fit: "CONTAIN",
+    fit: ElementImageFit.Contain,
   },
   dataSource: {
     storageFile: { storageFileId: 1 },

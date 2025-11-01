@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { CertificateFieldSelector } from "./CertificateTextFieldSelector";
+import { CertificateTextField } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof CertificateFieldSelector> = {
   title: "Template/Editor/Form/Element/Text/CertificateFieldSelector",
@@ -13,7 +14,7 @@ type Story = StoryObj<typeof CertificateFieldSelector>;
 
 export const Default: Story = {
   args: {
-    value: "VERIFICATION_CODE",
+    value: CertificateTextField.VerificationCode,
     onChange: (field) => logger.log("Field changed:", field),
     disabled: false,
   },
@@ -21,7 +22,7 @@ export const Default: Story = {
 
 export const WithError: Story = {
   args: {
-    value: "VERIFICATION_CODE",
+    value: CertificateTextField.VerificationCode,
     onChange: (field) => logger.log("Field changed:", field),
     error: "Field is required",
     disabled: false,
@@ -30,7 +31,7 @@ export const WithError: Story = {
 
 export const Disabled: Story = {
   args: {
-    value: "VERIFICATION_CODE",
+    value: CertificateTextField.VerificationCode,
     onChange: (field) => logger.log("Field changed:", field),
     disabled: true,
   },

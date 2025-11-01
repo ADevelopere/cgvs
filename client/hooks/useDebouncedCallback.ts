@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef } from 'react';
-import { debounce } from 'lodash';
+import { useEffect, useMemo, useRef } from "react";
+import { debounce } from "lodash";
 
-export const useDebouncedCallback = <T extends (...args: unknown[]) => unknown>(
-  callback: T,
+export const useDebouncedCallback = <A extends unknown[], R>(
+  callback: (...args: A) => R,
   delay: number
 ) => {
   const callbackRef = useRef(callback);
@@ -12,11 +12,7 @@ export const useDebouncedCallback = <T extends (...args: unknown[]) => unknown>(
   });
 
   return useMemo(
-    () =>
-      debounce(
-        (...args: Parameters<T>): ReturnType<T> => callbackRef.current(...args),
-        delay
-      ),
+    () => debounce((...args: A): R => callbackRef.current(...args), delay),
     [delay]
   );
 };
