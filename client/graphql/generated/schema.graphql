@@ -831,6 +831,7 @@ type Mutation {
   createStudent(input: StudentCreateInput!): Student
   createTemplate(input: TemplateCreateInput!): Template
   createTemplateCategory(input: TemplateCategoryCreateInput!): TemplateCategory!
+  createTemplateConfig(input: TemplateConfigCreateInput!): TemplateConfig
   createTemplateDateVariable(input: TemplateDateVariableCreateInput!): TemplateDateVariable
   createTemplateNumberVariable(input: TemplateNumberVariableCreateInput!): TemplateNumberVariable
   createTemplateRecipientGroup(input: TemplateRecipientGroupCreateInput!): TemplateRecipientGroup
@@ -873,6 +874,7 @@ type Mutation {
   updateQRCodeElement(input: QRCodeElementUpdateInput!): QRCodeElement
   updateTemplate(input: TemplateUpdateInput!): Template
   updateTemplateCategory(input: TemplateCategoryUpdateInput!): TemplateCategory!
+  updateTemplateConfig(input: TemplateConfigUpdateInput!): TemplateConfig
   updateTemplateDateVariable(input: TemplateDateVariableUpdateInput!): TemplateDateVariable
   updateTemplateNumberVariable(input: TemplateNumberVariableUpdateInput!): TemplateNumberVariable
   updateTemplateRecipientGroup(input: TemplateRecipientGroupUpdateInput!): TemplateRecipientGroup
@@ -1066,6 +1068,8 @@ type Query {
   template(id: Int!): Template
   templateCategories: [TemplateCategory!]!
   templateCategory(id: Int!): TemplateCategory
+  templateConfig(id: Int!): TemplateConfig
+  templateConfigsByTemplateId(templateId: Int!): TemplateConfig
   templateRecipientGroupById(id: Int!): TemplateRecipientGroup
   templateRecipientGroupsByTemplateId(templateId: Int!): [TemplateRecipientGroup!]
   templateVariable(id: Int!): TemplateVariable
@@ -1299,6 +1303,7 @@ type TemplateConfig {
   height: Int!
   id: Int!
   locale: CountryCode!
+  template: Template
   templateId: Int!
   updatedAt: DateTime!
   width: Int!

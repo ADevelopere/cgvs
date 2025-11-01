@@ -9,3 +9,4 @@ import "./student.mutation";
 import "./template.mutation";
 import "./templateCategory.mutation";
 import "./templateVariable.mutation";
+import "./templateConfig.mutation";
