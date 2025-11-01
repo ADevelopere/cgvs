@@ -49,7 +49,7 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
             label={strings.dateElement.formatLabel}
             placeholder={strings.dateElement.formatPlaceholder}
             value={dateProps.format || ""}
-            onChange={(e) => onUpdate("format", e.target.value)}
+            onChange={(e) => onUpdate({ key: "format", value: e.target.value })}
             error={!!errors.format}
             helperText={errors.format || strings.dateElement.formatHelper}
             disabled={disabled}
@@ -63,16 +63,16 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
             </FormLabel>
             <RadioGroup
               row
-              value={dateProps.calendarType || "GREGORIAN"}
-              onChange={(e) => onUpdate("calendarType", e.target.value as CalendarType)}
+              value={dateProps.calendarType || CalendarType.Gregorian}
+              onChange={(e) => onUpdate({ key: "calendarType", value: e.target.value as CalendarType })}
             >
               <FormControlLabel
-                value="GREGORIAN"
+                value={CalendarType.Gregorian}
                 control={<Radio />}
                 label={strings.dateElement.calendarTypeGregorian}
               />
               <FormControlLabel
-                value="HIJRI"
+                value={CalendarType.Hijri}
                 control={<Radio />}
                 label={strings.dateElement.calendarTypeHijri}
               />
@@ -87,7 +87,7 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
             label={strings.dateElement.offsetDaysLabel}
             placeholder={strings.dateElement.offsetDaysPlaceholder}
             value={dateProps.offsetDays !== undefined ? dateProps.offsetDays : ""}
-            onChange={(e) => onUpdate("offsetDays", parseInt(e.target.value, 10))}
+            onChange={(e) => onUpdate({ key: "offsetDays", value: parseInt(e.target.value, 10) })}
             error={!!errors.offsetDays}
             helperText={errors.offsetDays || strings.dateElement.offsetDaysHelper}
             disabled={disabled}
@@ -105,7 +105,7 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
               return option.label;
             }}
             onChange={(_event, newValue) => {
-              onUpdate("transformation", newValue?.value || null);
+              onUpdate({ key: "transformation", value: newValue?.value || null });
             }}
             disabled={disabled}
             clearText={strings.dateElement.clearTransformation}

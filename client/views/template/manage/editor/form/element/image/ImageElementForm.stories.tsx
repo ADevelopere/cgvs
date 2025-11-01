@@ -24,7 +24,7 @@ const defaultState: ImageElementFormState = {
     positionY: 100,
     width: 200,
     height: 120,
-    alignment: "CENTER",
+    ElementAlignment.Baseline
     renderOrder: 1,
     templateId: 1,
   },
@@ -46,8 +46,8 @@ export const Default: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: ((field, value) => logger.info("Base element updated:", { field, value })) satisfies UpdateBaseElementFn,
-    updateImageProps: ((field, value) => logger.info("Image props updated:", { field, value })) satisfies UpdateImagePropsFn,
+    updateBaseElement: (({key, value}) => logger.info("Base element updated:", { key, value })) satisfies UpdateBaseElementFn,
+    updateImageProps: (({key, value}) => logger.info("Image props updated:", { key, value })) satisfies UpdateImagePropsFn,
     updateDataSource: ((dataSource) => logger.info("Data source updated:", { dataSource })) satisfies UpdateImageDataSourceFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
@@ -60,8 +60,8 @@ export const Loading: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: ((field, value) => logger.info("Base element updated:", { field, value })) satisfies UpdateBaseElementFn,
-    updateImageProps: ((field, value) => logger.info("Image props updated:", { field, value })) satisfies UpdateImagePropsFn,
+    updateBaseElement: (({key, value}) => logger.info("Base element updated:", { key, value })) satisfies UpdateBaseElementFn,
+    updateImageProps: (({key, value}) => logger.info("Image props updated:", { key, value })) satisfies UpdateImagePropsFn,
     updateDataSource: ((dataSource) => logger.info("Data source updated:", { dataSource })) satisfies UpdateImageDataSourceFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
