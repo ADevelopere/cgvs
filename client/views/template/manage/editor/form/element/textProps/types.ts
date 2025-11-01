@@ -1,5 +1,5 @@
 import type * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { FormErrors, UpdateStateFn } from "../types";
+import { FormErrors, UpdateStateFn } from "../../types";
 
 export type TextPropsFormErrors = FormErrors<Graphql.TextPropsInput>;
 

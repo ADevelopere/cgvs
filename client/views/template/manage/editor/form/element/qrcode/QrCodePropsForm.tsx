@@ -4,7 +4,7 @@ import React from "react";
 import * as MUI from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import { QrCodeErrorCorrection } from "@/client/graphql/generated/gql/graphql";
-import { UpdateStateFn } from "../types";
+import { UpdateStateFn } from "../../types";
 import { QrCodePropsState, QrCodePropsFormErrors } from "./types";
 
 export interface QrCodePropsFormProps {

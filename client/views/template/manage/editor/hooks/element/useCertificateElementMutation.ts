@@ -3,7 +3,7 @@
 import React from "react";
 import { ApolloCache, Reference } from "@apollo/client";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import * as Documents from "./documents";
+import * as Documents from "../../glqDocuments/element";
 
 export const mapFontRefInputToFontRef = (
   fontRefInput: GQL.FontReferenceInput

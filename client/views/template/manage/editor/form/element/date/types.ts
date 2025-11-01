@@ -1,5 +1,5 @@
 import type * as GQL from "@/client/graphql/generated/gql/graphql";
-import { FormErrors, UpdateStateFn } from "../types";
+import { FormErrors, UpdateStateFn } from "../../types";
 import { TextPropsFormErrors } from "../textProps";
 import {
   BaseElementFormErrors,

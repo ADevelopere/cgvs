@@ -2,7 +2,7 @@ import {
     FontReferenceInput,
     TextPropsInput,
   } from "@/client/graphql/generated/gql/graphql";
-  import { ValidateFieldFn } from "../types";
+  import { ValidateFieldFn } from "../../types";
   
   // ============================================================================
   // TEXT PROPS VALIDATORS

@@ -1,6 +1,6 @@
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { BaseElementFormErrors } from "../base/types";
-import { FormErrors, UpdateStateFn } from "../types";
+import { FormErrors, UpdateStateFn } from "../../types";
 
 // Re-export GraphQL types for use in components
 export type ImageDataSourceInput = GQL.ImageDataSourceInput;

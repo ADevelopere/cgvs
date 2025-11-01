@@ -17,7 +17,7 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import { elementsByTemplateIdQueryDocument } from "@/client/views/template/manage/editor/hooks/element/documents/element.documents";
+import { elementsByTemplateIdQueryDocument } from "@/client/views/template/manage/editor/glqDocuments/element/element.documents";
 import { useTextElementMutation } from "@/client/views/template/manage/editor/hooks/element/useTextElementMutation";
 import { TextElementForm } from "@/client/views/template/manage/editor/form/element/text/TextElementForm";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
@@ -172,7 +172,6 @@ export default function TestElementsPage() {
         fontRefInput = { google: { identifier: "Roboto" } };
       }
 
-
       const base: GQL.CertificateElementBaseInput = {
         name: element.base.name,
         description: element.base?.description ?? "",
@@ -272,31 +271,52 @@ export default function TestElementsPage() {
               <TableBody>
                 {elements.map(
                   (el: GQL.CertificateElementUnion, idx: number) => {
+                    let updating = false;
 
-                    let updating = false
-
-                    if(elementToUpdate?.base.id === el.base?.id) {
-                      updating = true
+                    if (elementToUpdate?.base.id === el.base?.id) {
+                      updating = true;
                     }
                     return (
                       <TableRow
                         key={el.base?.id ?? idx}
                         sx={{
-                          backgroundColor:
-                          updating ? (formState as TextElementFormState).textProps.color :
-                           (el as GQL.TextElement).textProps
-                            .color,
+                          backgroundColor: updating
+                            ? (formState as TextElementFormState).textProps
+                                .color
+                            : (el as GQL.TextElement).textProps.color,
                         }}
                       >
                         <TableCell>{el.base?.id}</TableCell>
-                        <TableCell>{updating ? formState.base.name : el.base?.name}</TableCell>
-                        <TableCell>{updating ? formState.base.description : el.base?.description ?? ""}</TableCell>
+                        <TableCell>
+                          {updating ? formState.base.name : el.base?.name}
+                        </TableCell>
+                        <TableCell>
+                          {updating
+                            ? formState.base.description
+                            : (el.base?.description ?? "")}
+                        </TableCell>
                         <TableCell>{el.base?.type}</TableCell>
-                        <TableCell>{updating ? formState.base.alignment : el.base?.alignment}</TableCell>
-                        <TableCell>{updating ? formState.base.positionX : el.base?.positionX}</TableCell>
-                        <TableCell>{updating ? formState.base.positionY : el.base?.positionY}</TableCell>
-                        <TableCell>{updating ? formState.base.width : el.base?.width}</TableCell>
-                        <TableCell>{updating ? formState.base.height : el.base?.height}</TableCell>
+                        <TableCell>
+                          {updating
+                            ? formState.base.alignment
+                            : el.base?.alignment}
+                        </TableCell>
+                        <TableCell>
+                          {updating
+                            ? formState.base.positionX
+                            : el.base?.positionX}
+                        </TableCell>
+                        <TableCell>
+                          {updating
+                            ? formState.base.positionY
+                            : el.base?.positionY}
+                        </TableCell>
+                        <TableCell>
+                          {updating ? formState.base.width : el.base?.width}
+                        </TableCell>
+                        <TableCell>
+                          {updating ? formState.base.height : el.base?.height}
+                        </TableCell>
                         <TableCell>{el.base?.renderOrder}</TableCell>
                         <TableCell>{el.base?.createdAt}</TableCell>
                         <TableCell>{el.base?.updatedAt}</TableCell>

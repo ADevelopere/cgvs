@@ -1,5 +1,5 @@
 import type { QrCodePropsFormErrors, QrCodePropsState } from "./types";
-import { ValidateFieldFn } from "../types";
+import { ValidateFieldFn } from "../../types";
 
 /**
  * Field-level validation for QR code-specific properties

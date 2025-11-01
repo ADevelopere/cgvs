@@ -1299,13 +1299,13 @@ type TemplateCategoryWithParentTree {
 }
 
 type TemplateConfig {
-  createdAt: DateTime!
+  createdAt: DateTime
   height: Int!
   id: Int!
   locale: CountryCode!
   template: Template
-  templateId: Int!
-  updatedAt: DateTime!
+  templateId: Int
+  updatedAt: DateTime
   width: Int!
 }
 
