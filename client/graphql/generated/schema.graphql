@@ -1294,6 +1294,30 @@ type TemplateCategoryWithParentTree {
   updatedAt: DateTime
 }
 
+type TemplateConfig {
+  createdAt: DateTime!
+  height: Int!
+  id: Int!
+  locale: CountryCode!
+  templateId: Int!
+  updatedAt: DateTime!
+  width: Int!
+}
+
+input TemplateConfigCreateInput {
+  height: Int!
+  locale: CountryCode!
+  templateId: Int!
+  width: Int!
+}
+
+input TemplateConfigUpdateInput {
+  height: Int!
+  id: Int!
+  locale: CountryCode!
+  width: Int!
+}
+
 input TemplateCreateInput {
   categoryId: Int!
   description: String
