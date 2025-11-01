@@ -33,11 +33,13 @@ export const LocaleSelector: React.FC<LocaleSelectorProps> = ({
         value: AppLanguage.default,
         label: strings.ar,
         shortLabel: strings.arShort,
+        flag: "🇸🇦",
       },
       {
         value: AppLanguage.en,
         label: strings.en,
         shortLabel: strings.enShort,
+        flag: "🇺🇸",
       },
     ];
   }, [strings]);
@@ -53,7 +55,7 @@ export const LocaleSelector: React.FC<LocaleSelectorProps> = ({
       >
         {languageOptions.map(option => (
           <MenuItem key={option.value} value={option.value}>
-            {option.label}
+            {option.flag} {option.label}
           </MenuItem>
         ))}
       </Select>
