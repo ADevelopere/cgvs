@@ -18,10 +18,7 @@ import {
   Paper,
 } from "@mui/material";
 import { elementsByTemplateIdQueryDocument } from "@/client/views/template/manage/editor/hooks/element/documents/element.documents";
-import {
-  useCertificateElementMutation,
-  useOptimisticTextElementUpdate,
-} from "@/client/views/template/manage/editor/hooks/element/useCertificateElementMutation";
+import { useTextElementMutation } from "@/client/views/template/manage/editor/hooks/element/useTextElementMutation";
 import { TextElementForm } from "@/client/views/template/manage/editor/form/element/text/TextElementForm";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import {
@@ -86,9 +83,6 @@ export default function TestElementsPage() {
     [varsData]
   );
 
-  const { createTextElementMutation } =
-    useCertificateElementMutation(TEST_TEMPLATE_ID);
-
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogContent, setDialogContent] = useState<string>("");
   const [openForm, setOpenForm] = useState(false);
@@ -151,9 +145,10 @@ export default function TestElementsPage() {
     }
   };
 
-  const { updateTextElementMutation } = useOptimisticTextElementUpdate(
-    elementToUpdate as GQL.TextElement
-  );
+  const { updateTextElementMutation, createTextElementMutation } =
+    useTextElementMutation(
+      (elementToUpdate as GQL.TextElement) || ({} as GQL.TextElement)
+    );
 
   // Handler for Update button
   const handleUpdateElementClick = (element: GQL.CertificateElementUnion) => {
@@ -276,46 +271,56 @@ export default function TestElementsPage() {
               </TableHead>
               <TableBody>
                 {elements.map(
-                  (el: GQL.CertificateElementUnion, idx: number) => (
-                    <TableRow
-                      key={el.base?.id ?? idx}
-                      sx={{
-                        backgroundColor: (el as GQL.TextElement).textProps
-                          .color,
-                      }}
-                    >
-                      <TableCell>{el.base?.id}</TableCell>
-                      <TableCell>{el.base?.name}</TableCell>
-                      <TableCell>{el.base?.description ?? ""}</TableCell>
-                      <TableCell>{el.base?.type}</TableCell>
-                      <TableCell>{el.base?.alignment}</TableCell>
-                      <TableCell>{el.base?.positionX}</TableCell>
-                      <TableCell>{el.base?.positionY}</TableCell>
-                      <TableCell>{el.base?.width}</TableCell>
-                      <TableCell>{el.base?.height}</TableCell>
-                      <TableCell>{el.base?.renderOrder}</TableCell>
-                      <TableCell>{el.base?.createdAt}</TableCell>
-                      <TableCell>{el.base?.updatedAt}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => handleShowElement(el)}
-                        >
-                          Show JSON
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="secondary"
-                          size="small"
-                          sx={{ ml: 1 }}
-                          onClick={() => handleUpdateElementClick(el)}
-                        >
-                          Update
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  )
+                  (el: GQL.CertificateElementUnion, idx: number) => {
+
+                    let updating = false
+
+                    if(elementToUpdate?.base.id === el.base?.id) {
+                      updating = true
+                    }
+                    return (
+                      <TableRow
+                        key={el.base?.id ?? idx}
+                        sx={{
+                          backgroundColor:
+                          updating ? (formState as TextElementFormState).textProps.color :
+                           (el as GQL.TextElement).textProps
+                            .color,
+                        }}
+                      >
+                        <TableCell>{el.base?.id}</TableCell>
+                        <TableCell>{updating ? formState.base.name : el.base?.name}</TableCell>
+                        <TableCell>{updating ? formState.base.description : el.base?.description ?? ""}</TableCell>
+                        <TableCell>{el.base?.type}</TableCell>
+                        <TableCell>{updating ? formState.base.alignment : el.base?.alignment}</TableCell>
+                        <TableCell>{updating ? formState.base.positionX : el.base?.positionX}</TableCell>
+                        <TableCell>{updating ? formState.base.positionY : el.base?.positionY}</TableCell>
+                        <TableCell>{updating ? formState.base.width : el.base?.width}</TableCell>
+                        <TableCell>{updating ? formState.base.height : el.base?.height}</TableCell>
+                        <TableCell>{el.base?.renderOrder}</TableCell>
+                        <TableCell>{el.base?.createdAt}</TableCell>
+                        <TableCell>{el.base?.updatedAt}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => handleShowElement(el)}
+                          >
+                            Show JSON
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="secondary"
+                            size="small"
+                            sx={{ ml: 1 }}
+                            onClick={() => handleUpdateElementClick(el)}
+                          >
+                            Update
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  }
                 )}
               </TableBody>
             </Table>

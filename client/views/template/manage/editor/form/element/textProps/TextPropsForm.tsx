@@ -9,6 +9,10 @@ import {
   Select,
   FormHelperText,
   Typography,
+  Popper,
+  Fade,
+  Paper,
+  ClickAwayListener,
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import { FontReferenceSelector } from "./FontReferenceSelector";
@@ -18,6 +22,7 @@ import {
   UpdateTextPropsFn,
   TextPropsState,
 } from "./types";
+import { SketchPicker } from "react-color";
 
 interface TextPropsFormProps {
   textProps: TextPropsState;
@@ -37,6 +42,16 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
   disabled,
 }) => {
   const strings = useAppTranslation("certificateElementsTranslations");
+
+  const [colorPickerOpen, setColorPickerOpen] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setColorPickerOpen(previousOpen => !previousOpen);
+  };
 
   return (
     <Box>
@@ -68,7 +83,29 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
             error={!!errors.color}
             helperText={errors.color}
             disabled={disabled}
+            onClick={handleClick}
           />
+          <ClickAwayListener onClickAway={() => setColorPickerOpen(false)}>
+            <Popper
+              sx={{ zIndex: 2000 }}
+              open={colorPickerOpen}
+              anchorEl={anchorEl}
+              // placement={placement}
+              transition
+              keepMounted={false}
+            >
+              {({ TransitionProps }) => (
+                <Fade {...TransitionProps} timeout={350}>
+                  <Paper>
+                    <SketchPicker
+                      color={textProps.color}
+                      onChange={color => onTextPropsChange("color", color.hex)}
+                    />
+                  </Paper>
+                </Fade>
+              )}
+            </Popper>
+          </ClickAwayListener>
         </Grid>
 
         {/* Font Size */}
