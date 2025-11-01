@@ -379,13 +379,13 @@ export default function TestElementsPage() {
             <TextElementForm
               state={formState}
               errors={formErrors}
-              updateBaseElement={(field, value) =>
+              updateBaseElement={({key, value}) =>
                 setFormState(prev => ({
                   ...prev,
                   base: { ...prev.base, [field]: value },
                 }))
               }
-              updateTextProps={(field, value) =>
+              updateTextProps={({key, value}) =>
                 setFormState(prev => ({
                   ...prev,
                   textProps: { ...prev.textProps, [field]: value },

@@ -23,7 +23,7 @@ const defaultState: NumberElementFormState = {
     positionY: 100,
     width: 150,
     height: 40,
-    alignment: "CENTER",
+    ElementAlignment.Baseline
     renderOrder: 1,
     templateId: 1,
   },
@@ -55,14 +55,14 @@ export const Default: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: ((field, value) =>
+    updateBaseElement: (({key, value}) =>
       logger.info("Base element updated:", {
-        field,
+        key,
         value,
       })) satisfies UpdateBaseElementFn,
-    updateTextProps: ((field, value) =>
+    updateTextProps: (({key, value}) =>
       logger.info("Text props updated:", {
-        field,
+        key,
         value,
       })) satisfies UpdateTextPropsFn,
     updateDataSource: dataSource =>
@@ -100,14 +100,14 @@ export const WithErrors: Story = {
         en: "Decimal places must be a non-negative number",
       },
     },
-    updateBaseElement: ((field, value) =>
+    updateBaseElement: (({key, value}) =>
       logger.info("Base element updated:", {
-        field,
+        key,
         value,
       })) satisfies UpdateBaseElementFn,
-    updateTextProps: ((field, value) =>
+    updateTextProps: (({key, value}) =>
       logger.info("Text props updated:", {
-        field,
+        key,
         value,
       })) satisfies UpdateTextPropsFn,
     updateDataSource: dataSource =>
@@ -128,14 +128,14 @@ export const Submitting: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: ((field, value) =>
+    updateBaseElement: (({key, value}) =>
       logger.info("Base element updated:", {
-        field,
+        key,
         value,
       })) satisfies UpdateBaseElementFn,
-    updateTextProps: ((field, value) =>
+    updateTextProps: (({key, value}) =>
       logger.info("Text props updated:", {
-        field,
+        key,
         value,
       })) satisfies UpdateTextPropsFn,
     updateDataSource: dataSource =>
@@ -162,14 +162,14 @@ export const MultipleLocales: Story = {
       },
     },
     errors: defaultErrors,
-    updateBaseElement: ((field, value) =>
+    updateBaseElement: (({key, value}) =>
       logger.info("Base element updated:", {
-        field,
+        key,
         value,
       })) satisfies UpdateBaseElementFn,
-    updateTextProps: ((field, value) =>
+    updateTextProps: (({key, value}) =>
       logger.info("Text props updated:", {
-        field,
+        key,
         value,
       })) satisfies UpdateTextPropsFn,
     updateDataSource: dataSource =>

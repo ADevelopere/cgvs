@@ -6,6 +6,7 @@ import type {
   CountryElementFormState,
   CountryElementFormErrors,
 } from "./types";
+import { CountryRepresentation, ElementAlignment, ElementOverflow } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof CountryElementForm> = {
   title: "Template/Editor/Form/Element/Country/CountryElementForm",
@@ -24,7 +25,7 @@ const defaultState: CountryElementFormState = {
     positionY: 100,
     width: 200,
     height: 50,
-    alignment: "CENTER",
+    alignment: ElementAlignment.Baseline,
     renderOrder: 1,
     templateId: 1,
   },
@@ -32,10 +33,10 @@ const defaultState: CountryElementFormState = {
     fontRef: { google: { identifier: "Roboto" } },
     fontSize: 16,
     color: "#000000",
-    overflow: "WRAP",
+    overflow: ElementOverflow.Wrap,
   },
   countryProps: {
-    representation: "COUNTRY_NAME",
+    representation: CountryRepresentation.CountryName,
   },
 };
 
@@ -49,10 +50,10 @@ export const Default: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: (field, value) =>
-      logger.log("Base element updated:", field, value),
-    updateTextProps: (field, value) =>
-      logger.log("Text props updated:", field, value),
+    updateBaseElement: ({key, value}) =>
+      logger.log("Base element updated:", key, value),
+    updateTextProps: ({key, value}) =>
+      logger.log("Text props updated:", key, value),
     updateRepresentation: value => logger.log("Representation updated:", value),
     locale: "en",
     selfHostedFonts: mockSelfHostedFonts,
@@ -68,10 +69,10 @@ export const WithNationality: Story = {
       ...defaultState,
     },
     errors: defaultErrors,
-    updateBaseElement: (field, value) =>
-      logger.log("Base element updated:", field, value),
-    updateTextProps: (field, value) =>
-      logger.log("Text props updated:", field, value),
+    updateBaseElement: ({key, value}) =>
+      logger.log("Base element updated:", key, value),
+    updateTextProps: ({key, value}) =>
+      logger.log("Text props updated:", key, value),
     updateRepresentation: value => logger.log("Representation updated:", value),
     locale: "en",
     selfHostedFonts: mockSelfHostedFonts,
@@ -91,7 +92,7 @@ export const WithErrors: Story = {
         positionY: 0,
         width: 0,
         height: 0,
-        alignment: "CENTER",
+        ElementAlignment.Baseline
         renderOrder: 0,
         templateId: 1,
       },
@@ -118,10 +119,10 @@ export const WithErrors: Story = {
       },
       representation: "Representation is required",
     },
-    updateBaseElement: (field, value) =>
-      logger.log("Base element updated:", field, value),
-    updateTextProps: (field, value) =>
-      logger.log("Text props updated:", field, value),
+    updateBaseElement: ({key, value}) =>
+      logger.log("Base element updated:", key, value),
+    updateTextProps: ({key, value}) =>
+      logger.log("Text props updated:", key, value),
     updateRepresentation: value => logger.log("Representation updated:", value),
     locale: "en",
     selfHostedFonts: mockSelfHostedFonts,
@@ -136,10 +137,10 @@ export const Submitting: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: (field, value) =>
-      logger.log("Base element updated:", field, value),
-    updateTextProps: (field, value) =>
-      logger.log("Text props updated:", field, value),
+    updateBaseElement: ({key, value}) =>
+      logger.log("Base element updated:", key, value),
+    updateTextProps: ({key, value}) =>
+      logger.log("Text props updated:", key, value),
     updateRepresentation: value => logger.log("Representation updated:", value),
     locale: "en",
     selfHostedFonts: mockSelfHostedFonts,

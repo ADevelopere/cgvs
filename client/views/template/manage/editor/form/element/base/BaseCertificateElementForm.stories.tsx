@@ -21,7 +21,7 @@ const defaultBaseProps: CertificateElementBaseInput = {
   positionY: 150,
   width: 300,
   height: 50,
-  alignment: "CENTER",
+  ElementAlignment.Baseline
   renderOrder: 1,
 };
 
