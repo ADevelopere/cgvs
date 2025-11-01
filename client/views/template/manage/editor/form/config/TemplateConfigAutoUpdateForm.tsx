@@ -2,7 +2,8 @@ import * as GQL from "@/client/graphql/generated/gql/graphql";
 import React from "react";
 import { TemplateConfigFormErrors, TemplateConfigFormUpdateFn } from "./types";
 import { useTemplateConfigMutation } from "./useTemplateConfigMutation";
-import {  CircularProgress, Stack, Typography } from "@mui/material";
+import { useDebouncedCallback } from "@/client/hooks/useDebouncedCallback";
+import { CircularProgress, Stack, Typography } from "@mui/material";
 import { TemplateConfigForm } from "./TemplateConfigForm";
 import { logger } from "@/client/lib/logger";
 import { useNotifications } from "@toolpad/core/useNotifications";
@@ -78,6 +79,18 @@ export const TemplateConfigAutoUpdateForm: React.FC<
       setUpdating(false);
     }
   }, [updateTemplateConfigMutation, state, notifications]);
+
+  const debouncedUpdate = useDebouncedCallback(update, 3000);
+
+  React.useEffect(() => {
+    debouncedUpdate();
+  }, [state, debouncedUpdate]);
+
+  React.useEffect(() => {
+    return () => {
+      update();
+    };
+  }, [update]);
 
   return (
     <Stack direction={"column"} spacing={2} height="100%">

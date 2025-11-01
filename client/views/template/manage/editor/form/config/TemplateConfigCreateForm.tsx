@@ -72,7 +72,14 @@ export const TemplateConfigCreateForm: React.FC<
   }, [createTemplateConfigMutation, state]);
 
   return (
-    <Stack direction={"column"} spacing={2}>
+    <Stack
+      direction={"column"}
+      spacing={2}
+      width="100%"
+      height="100%"
+      justifyContent="center"
+      alignItems="center"
+    >
       {/* title */}
       <Typography variant="h6">Create Template Configuration</Typography>
       {/* form */}

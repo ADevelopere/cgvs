@@ -26,7 +26,7 @@ const defaultState: TemplateConfigCreateInput = {
 export const Default: Story = {
   args: {
     state: defaultState,
-    updateFn: (key, value) =>
+    updateFn: ({ key, value }) =>
       logger.info("Template config updated:", {
         key,
         value,
@@ -40,7 +40,7 @@ export const ArabicLocale: Story = {
         ...defaultState,
         locale: CountryCode.Sa,
       },
-      updateFn: (key, value) =>
+      updateFn: ({ key, value }) =>
         logger.info("Template config updated:", {
           key,
           value,
