@@ -1,30 +1,7 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import * as Types from "@/server/types";
-import { CountryCodePothosObject } from "../pothos";
-
-export const TemplateConfigPothosObject = gqlSchemaBuilder
-  .objectRef<Types.TemplateConfig>("TemplateConfig")
-  .implement({
-    fields: t => ({
-      id: t.exposeInt("id", { nullable: false }),
-      templateId: t.exposeInt("templateId", { nullable: false }),
-      width: t.exposeInt("width", { nullable: false }),
-      height: t.exposeInt("height", { nullable: false }),
-      locale: t.field({
-        type: CountryCodePothosObject,
-        nullable: false,
-        resolve: tc => tc.locale,
-      }),
-      createdAt: t.expose("createdAt", {
-        type: "DateTime",
-        nullable: false,
-      }),
-      updatedAt: t.expose("updatedAt", {
-        type: "DateTime",
-        nullable: false,
-      }),
-    }),
-  });
+import { CountryCodePothosObject, TemplatePothosObject } from "../pothos";
+import { TemplateRepository } from "@/server/db/repo";
 
 export const TemplateConfigCreateInputPothosObject = gqlSchemaBuilder
   .inputRef<Types.TemplateConfigInput>("TemplateConfigCreateInput")
@@ -53,3 +30,35 @@ export const TemplateConfigUpdateInputPothosObject = gqlSchemaBuilder
       }),
     }),
   });
+
+export const TemplateConfigPothosObject = gqlSchemaBuilder
+  .objectRef<Types.TemplateConfig>("TemplateConfig")
+  .implement({
+    fields: t => ({
+      id: t.exposeInt("id", { nullable: false }),
+      templateId: t.exposeInt("templateId", { nullable: false }),
+      width: t.exposeInt("width", { nullable: false }),
+      height: t.exposeInt("height", { nullable: false }),
+      locale: t.field({
+        type: CountryCodePothosObject,
+        nullable: false,
+        resolve: tc => tc.locale,
+      }),
+      createdAt: t.expose("createdAt", {
+        type: "DateTime",
+        nullable: false,
+      }),
+      updatedAt: t.expose("updatedAt", {
+        type: "DateTime",
+        nullable: false,
+      }),
+    }),
+  });
+
+gqlSchemaBuilder.objectFields(TemplateConfigPothosObject, t => ({
+  template: t.loadable({
+    type: TemplatePothosObject,
+    load: (ids: number[]) => TemplateRepository.loadByIds(ids),
+    resolve: templateVariable => templateVariable.templateId,
+  }),
+}));

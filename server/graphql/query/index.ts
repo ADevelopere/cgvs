@@ -9,3 +9,4 @@ import "./student.query";
 import "./template.query";
 import "./templateCategory.query";
 import "./templateVariable.query";
+import "./templateConfig.query";
