@@ -20,7 +20,7 @@ import { useAppTranslation } from "@/client/locale";
 import { useRouter } from "next/navigation";
 
 export const UserMenu: React.FC = () => {
-  const strings = useAppTranslation("headerTranslations");
+  const { headerTranslations: strings } = useAppTranslation();
   const { user, logout } = useAuth();
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);

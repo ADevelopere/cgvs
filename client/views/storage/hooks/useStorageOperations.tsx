@@ -71,9 +71,9 @@ export const useStorageOperations = (): StorageOperations => {
 
   // Get notifications and translations
   const notifications = useNotifications();
-  const { management: managementTranslations } = useAppTranslation(
-    "storageTranslations"
-  );
+  const {
+    storageTranslations: { management: managementTranslations },
+  } = useAppTranslation();
 
   // ============================================================================
   // HELPER FUNCTIONS

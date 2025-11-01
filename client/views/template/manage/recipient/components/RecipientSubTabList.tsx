@@ -26,7 +26,7 @@ export const RecipientSubTabList: React.FC<RecipientSubTabListProps> = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const strings = useAppTranslation("recipientTranslations");
+  const { recipientTranslations: strings } = useAppTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 

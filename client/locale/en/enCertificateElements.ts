@@ -78,10 +78,11 @@ export const enCertificateElements: CertificateElementsTranslations = {
     calendarTypeHijri: "Hijri",
     offsetDaysLabel: "Offset Days",
     offsetDaysPlaceholder: "0",
-    offsetDaysHelper: "Number of days to add or subtract from the date (use negative numbers to subtract)",
+    offsetDaysHelper:
+      "Number of days to add or subtract from the date (use negative numbers to subtract)",
     offsetDaysRequired: "Offset days is required",
     offsetDaysInvalid: "Offset days must be an integer",
-    
+
     // Transformation
     transformationLabel: "Transformation",
     transformationPlaceholder: "Select transformation type",
@@ -294,4 +295,3 @@ export const enCertificateElements: CertificateElementsTranslations = {
     updateError: "Failed to update",
   },
 };
-

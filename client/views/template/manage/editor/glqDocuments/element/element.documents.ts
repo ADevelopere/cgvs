@@ -8,22 +8,22 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
   query ElementsByTemplateId($templateId: Int!) {
     elementsByTemplateId(templateId: $templateId) {
       base {
-      alignment
-      createdAt
-      description
-      height
-      id
-      name
-      positionX
-      positionY
-      renderOrder
-      type
-      updatedAt
-      width
-    }
-    template{
-      id
-    }
+        alignment
+        createdAt
+        description
+        height
+        id
+        name
+        positionX
+        positionY
+        renderOrder
+        type
+        updatedAt
+        width
+      }
+      template {
+        id
+      }
       ... on CountryElement {
         countryProps {
           representation

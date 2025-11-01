@@ -15,7 +15,6 @@ export const extractVariableIdFromDateDataSourceInput = (
   return null;
 };
 
-
 const mapDateDataSourceInputToOutput = (
   dataSourceInput: GQL.DateDataSourceInput
 ): GQL.DateDataSource => {
@@ -46,11 +45,7 @@ const mapDateDataSourceInputToOutput = (
   }
 };
 
-
-export const useDateElementMutation = (
-  existingElement: GQL.DateElement
-) => {
-
+export const useDateElementMutation = (existingElement: GQL.DateElement) => {
   const [createDateElementMutation] = useMutation(
     Documents.createDateElementMutationDocument,
     {
@@ -60,18 +55,21 @@ export const useDateElementMutation = (
         const templateId = newElement.template?.id;
         if (!templateId) return;
 
-        cache.updateQuery<GQL.ElementsByTemplateIdQuery>({
-          query: Documents.elementsByTemplateIdQueryDocument,
-          variables: { templateId },
-        }, existing => {
-          if (!existing?.elementsByTemplateId) return existing;
-          return {
-            elementsByTemplateId: [
-              ...existing.elementsByTemplateId,
-              newElement,
-            ],
-          };
-        });
+        cache.updateQuery<GQL.ElementsByTemplateIdQuery>(
+          {
+            query: Documents.elementsByTemplateIdQueryDocument,
+            variables: { templateId },
+          },
+          existing => {
+            if (!existing?.elementsByTemplateId) return existing;
+            return {
+              elementsByTemplateId: [
+                ...existing.elementsByTemplateId,
+                newElement,
+              ],
+            };
+          }
+        );
       },
     }
   );
@@ -118,17 +116,20 @@ export const useDateElementMutation = (
         const templateId = updated.template?.id;
         if (!templateId) return;
 
-        cache.updateQuery<GQL.ElementsByTemplateIdQuery>({
-          query: Documents.elementsByTemplateIdQueryDocument,
-          variables: { templateId },
-        }, existing => {
-          if (!existing?.elementsByTemplateId) return existing;
-          return {
-            elementsByTemplateId: existing.elementsByTemplateId.map(el =>
-              el.base?.id === updated.base?.id ? updated : el
-            ),
-          };
-        });
+        cache.updateQuery<GQL.ElementsByTemplateIdQuery>(
+          {
+            query: Documents.elementsByTemplateIdQueryDocument,
+            variables: { templateId },
+          },
+          existing => {
+            if (!existing?.elementsByTemplateId) return existing;
+            return {
+              elementsByTemplateId: existing.elementsByTemplateId.map(el =>
+                el.base?.id === updated.base?.id ? updated : el
+              ),
+            };
+          }
+        );
       },
     }
   );
@@ -137,12 +138,12 @@ export const useDateElementMutation = (
   return React.useMemo(
     () => ({
       /**
-      * Mutation to create a new date element
-      */
+       * Mutation to create a new date element
+       */
       createDateElementMutation,
       /**
- * Mutation to update an existing date element
- */
+       * Mutation to update an existing date element
+       */
       updateDateElementMutation,
     }),
     [createDateElementMutation, updateDateElementMutation]

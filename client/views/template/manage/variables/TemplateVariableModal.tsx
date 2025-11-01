@@ -44,7 +44,7 @@ const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
   templateId,
   variables,
 }) => {
-  const strings = useAppTranslation("templateVariableTranslations");
+  const { templateVariableTranslations: strings } = useAppTranslation();
   const operations = useTemplateVariableOperations();
 
   // Create callbacks for forms

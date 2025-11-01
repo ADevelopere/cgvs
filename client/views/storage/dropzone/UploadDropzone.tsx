@@ -105,7 +105,9 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
   minHeight = 120,
 }) => {
   const theme = MUI.useTheme();
-  const { dropzone: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { dropzone: translations },
+  } = useAppTranslation();
   const { startUpload, uploadBatch } = useStorageUploadOperations();
 
   // Handle file upload

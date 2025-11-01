@@ -19,7 +19,9 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
   onRename,
 }) => {
   const theme = MUI.useTheme();
-  const { ui: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { ui: translations },
+  } = useAppTranslation();
 
   // State
   const [newName, setNewName] = useState("");

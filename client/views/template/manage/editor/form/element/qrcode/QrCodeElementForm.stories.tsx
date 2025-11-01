@@ -7,7 +7,10 @@ import type {
   UpdateQrCodePropsFn,
 } from "./types";
 import { UpdateBaseElementFn } from "../base";
-import { ElementAlignment, QrCodeErrorCorrection } from "@/client/graphql/generated/gql/graphql";
+import {
+  ElementAlignment,
+  QrCodeErrorCorrection,
+} from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof QrCodeElementForm> = {
   title: "Template/Editor/Form/Element/QrCode/QrCodeElementForm",
@@ -50,9 +53,15 @@ export const Default: Story = {
     state: defaultState,
     errors: defaultErrors,
     updateBaseElement: (({ key, value }) =>
-      logger.info("Base element updated:", { key, value })) satisfies UpdateBaseElementFn,
+      logger.info("Base element updated:", {
+        key,
+        value,
+      })) satisfies UpdateBaseElementFn,
     updateQrCodeProps: (({ key, value }) =>
-      logger.info("QR code props updated:", { key, value })) satisfies UpdateQrCodePropsFn,
+      logger.info("QR code props updated:", {
+        key,
+        value,
+      })) satisfies UpdateQrCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -100,9 +109,15 @@ export const HighErrorCorrection: Story = {
     },
     errors: defaultErrors,
     updateBaseElement: (({ key, value }) =>
-      logger.info("Base element updated:", { key, value })) satisfies UpdateBaseElementFn,
+      logger.info("Base element updated:", {
+        key,
+        value,
+      })) satisfies UpdateBaseElementFn,
     updateQrCodeProps: (({ key, value }) =>
-      logger.info("QR code props updated:", { key, value })) satisfies UpdateQrCodePropsFn,
+      logger.info("QR code props updated:", {
+        key,
+        value,
+      })) satisfies UpdateQrCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -127,9 +142,15 @@ export const CustomColorsBlueBrand: Story = {
     },
     errors: defaultErrors,
     updateBaseElement: (({ key, value }) =>
-      logger.info("Base element updated:", { key, value })) satisfies UpdateBaseElementFn,
+      logger.info("Base element updated:", {
+        key,
+        value,
+      })) satisfies UpdateBaseElementFn,
     updateQrCodeProps: (({ key, value }) =>
-      logger.info("QR code props updated:", { key, value })) satisfies UpdateQrCodePropsFn,
+      logger.info("QR code props updated:", {
+        key,
+        value,
+      })) satisfies UpdateQrCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -154,9 +175,15 @@ export const DarkTheme: Story = {
     },
     errors: defaultErrors,
     updateBaseElement: (({ key, value }) =>
-      logger.info("Base element updated:", { key, value })) satisfies UpdateBaseElementFn,
+      logger.info("Base element updated:", {
+        key,
+        value,
+      })) satisfies UpdateBaseElementFn,
     updateQrCodeProps: (({ key, value }) =>
-      logger.info("QR code props updated:", { key, value })) satisfies UpdateQrCodePropsFn,
+      logger.info("QR code props updated:", {
+        key,
+        value,
+      })) satisfies UpdateQrCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -181,9 +208,15 @@ export const GreenBrand: Story = {
     },
     errors: defaultErrors,
     updateBaseElement: (({ key, value }) =>
-      logger.info("Base element updated:", { key, value })) satisfies UpdateBaseElementFn,
+      logger.info("Base element updated:", {
+        key,
+        value,
+      })) satisfies UpdateBaseElementFn,
     updateQrCodeProps: (({ key, value }) =>
-      logger.info("QR code props updated:", { key, value })) satisfies UpdateQrCodePropsFn,
+      logger.info("QR code props updated:", {
+        key,
+        value,
+      })) satisfies UpdateQrCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -209,9 +242,15 @@ export const WithBaseErrors: Story = {
       qrCodeProps: {},
     },
     updateBaseElement: (({ key, value }) =>
-      logger.info("Base element updated:", { key, value })) satisfies UpdateBaseElementFn,
+      logger.info("Base element updated:", {
+        key,
+        value,
+      })) satisfies UpdateBaseElementFn,
     updateQrCodeProps: (({ key, value }) =>
-      logger.info("QR code props updated:", { key, value })) satisfies UpdateQrCodePropsFn,
+      logger.info("QR code props updated:", {
+        key,
+        value,
+      })) satisfies UpdateQrCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -283,9 +322,15 @@ export const AllFieldsWithErrors: Story = {
       },
     },
     updateBaseElement: (({ key, value }) =>
-      logger.info("Base element updated:", { key, value })) satisfies UpdateBaseElementFn,
+      logger.info("Base element updated:", {
+        key,
+        value,
+      })) satisfies UpdateBaseElementFn,
     updateQrCodeProps: (({ key, value }) =>
-      logger.info("QR code props updated:", { key, value })) satisfies UpdateQrCodePropsFn,
+      logger.info("QR code props updated:", {
+        key,
+        value,
+      })) satisfies UpdateQrCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -298,9 +343,15 @@ export const Submitting: Story = {
     state: defaultState,
     errors: defaultErrors,
     updateBaseElement: (({ key, value }) =>
-      logger.info("Base element updated:", { key, value })) satisfies UpdateBaseElementFn,
+      logger.info("Base element updated:", {
+        key,
+        value,
+      })) satisfies UpdateBaseElementFn,
     updateQrCodeProps: (({ key, value }) =>
-      logger.info("QR code props updated:", { key, value })) satisfies UpdateQrCodePropsFn,
+      logger.info("QR code props updated:", {
+        key,
+        value,
+      })) satisfies UpdateQrCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: true,
@@ -330,9 +381,15 @@ export const UpdateMode: Story = {
     },
     errors: defaultErrors,
     updateBaseElement: (({ key, value }) =>
-      logger.info("Base element updated:", { key, value })) satisfies UpdateBaseElementFn,
+      logger.info("Base element updated:", {
+        key,
+        value,
+      })) satisfies UpdateBaseElementFn,
     updateQrCodeProps: (({ key, value }) =>
-      logger.info("QR code props updated:", { key, value })) satisfies UpdateQrCodePropsFn,
+      logger.info("QR code props updated:", {
+        key,
+        value,
+      })) satisfies UpdateQrCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,

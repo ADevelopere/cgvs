@@ -20,7 +20,8 @@ export namespace TextPropsUtils {
   export const entityToTextProps = (
     entity: ElementTextPropsEntity
   ): TextProps => {
-    logger.debug("[entityToTextProps] Converting ElementTextPropsEntity to TextProps",
+    logger.debug(
+      "[entityToTextProps] Converting ElementTextPropsEntity to TextProps",
       entity,
       entity.fontSource
     );
@@ -28,9 +29,9 @@ export namespace TextPropsUtils {
       entity.fontSource === FontSource.SELF_HOSTED
         ? { type: FontSource.SELF_HOSTED as const, fontId: entity.fontId! }
         : {
-          type: FontSource.GOOGLE as const,
-          identifier: entity.googleFontIdentifier!,
-        };
+            type: FontSource.GOOGLE as const,
+            identifier: entity.googleFontIdentifier!,
+          };
 
     return {
       ...entity,

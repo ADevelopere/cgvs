@@ -66,4 +66,3 @@ export const validateImageProps = (
 
   return errors;
 };
-

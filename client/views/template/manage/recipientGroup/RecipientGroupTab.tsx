@@ -20,7 +20,7 @@ interface RecipientGroupTabProps {
 }
 
 const RecipientGroupTab: React.FC<RecipientGroupTabProps> = ({ template }) => {
-  const strings = useAppTranslation("recipientGroupTranslations");
+  const { recipientGroupTranslations: strings } = useAppTranslation();
   const dialogs = useRecipientGroupDialogs();
 
   // Use useQuery directly to fetch recipient groups

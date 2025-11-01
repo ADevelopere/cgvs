@@ -16,7 +16,7 @@ import * as Document from "./hook/student.documents";
 import { Student } from "@/client/graphql/generated/gql/graphql";
 
 const StudentManagementDashboardTitle: React.FC = () => {
-  const strings = useAppTranslation("studentTranslations");
+  const { studentTranslations: strings } = useAppTranslation();
   return (
     <Stack
       direction="row"

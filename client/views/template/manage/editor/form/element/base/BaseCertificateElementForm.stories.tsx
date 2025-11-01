@@ -1,7 +1,10 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { BaseCertificateElementForm } from "./BaseCertificateElementForm";
 import { logger } from "@/client/lib/logger";
-import { CertificateElementBaseInput, ElementAlignment } from "@/client/graphql/generated/gql/graphql";
+import {
+  CertificateElementBaseInput,
+  ElementAlignment,
+} from "@/client/graphql/generated/gql/graphql";
 import { BaseElementFormErrors } from "./types";
 
 const meta: Meta<typeof BaseCertificateElementForm> = {
@@ -30,7 +33,8 @@ const defaultErrors: BaseElementFormErrors = {};
 export const Default: Story = {
   args: {
     baseProps: defaultBaseProps,
-    onFieldChange: ({ key, value }) => logger.info("Field changed:", key, value),
+    onFieldChange: ({ key, value }) =>
+      logger.info("Field changed:", key, value),
     errors: defaultErrors,
     disabled: false,
   },
@@ -39,7 +43,8 @@ export const Default: Story = {
 export const WithErrors: Story = {
   args: {
     baseProps: { ...defaultBaseProps, name: "" },
-    onFieldChange: ({ key, value }) => logger.info("Field changed:", key, value),
+    onFieldChange: ({ key, value }) =>
+      logger.info("Field changed:", key, value),
     errors: {
       name: "Name is required",
       width: "Dimension must be positive",
@@ -51,7 +56,8 @@ export const WithErrors: Story = {
 export const Disabled: Story = {
   args: {
     baseProps: defaultBaseProps,
-    onFieldChange: ({ key, value }) => logger.info("Field changed:", key, value),
+    onFieldChange: ({ key, value }) =>
+      logger.info("Field changed:", key, value),
     errors: defaultErrors,
     disabled: true,
   },

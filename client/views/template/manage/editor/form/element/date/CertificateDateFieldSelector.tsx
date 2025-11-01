@@ -16,13 +16,10 @@ interface CertificateDateFieldSelectorProps {
   disabled?: boolean;
 }
 
-export const CertificateDateFieldSelector: FC<CertificateDateFieldSelectorProps> = ({
-  value,
-  onChange,
-  error,
-  disabled,
-}) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+export const CertificateDateFieldSelector: FC<
+  CertificateDateFieldSelectorProps
+> = ({ value, onChange, error, disabled }) => {
+  const { certificateElementsTranslations: strings } = useAppTranslation();
 
   return (
     <FormControl fullWidth error={!!error} disabled={disabled}>
@@ -40,4 +37,3 @@ export const CertificateDateFieldSelector: FC<CertificateDateFieldSelectorProps>
     </FormControl>
   );
 };
-

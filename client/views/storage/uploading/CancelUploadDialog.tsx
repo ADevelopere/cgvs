@@ -27,7 +27,9 @@ const CancelUploadDialog: React.FC<CancelUploadDialogProps> = ({
   onCancel,
 }) => {
   const theme = useTheme();
-  const { uploading: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { uploading: translations },
+  } = useAppTranslation();
 
   const getDialogContent = () => {
     if (!cancelTarget) return { title: "", message: "" };

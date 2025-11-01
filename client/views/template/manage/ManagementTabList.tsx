@@ -22,7 +22,7 @@ export const ManagementTabList: React.FC<ManagementTabListProps> = ({
   activeTab,
   isLoading,
 }) => {
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
 
   return (
     <Box sx={{ position: "relative" }}>

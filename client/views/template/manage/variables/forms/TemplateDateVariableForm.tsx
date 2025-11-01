@@ -53,7 +53,7 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
     );
   }, [editingVariableID, variables]);
 
-  const strings = useAppTranslation("templateVariableTranslations");
+  const { templateVariableTranslations: strings } = useAppTranslation();
 
   const [state, setState] = useState<TemplateDateVariableCreateInput>(() => {
     if (editingVariable) {

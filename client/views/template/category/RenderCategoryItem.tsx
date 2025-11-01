@@ -49,7 +49,7 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
   createCategory,
 }) => {
   const theme = useTheme();
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
   const [newCategoryName, setNewCategoryName] = React.useState("");
   const [newCategoryDescription, setNewCategoryDescription] =

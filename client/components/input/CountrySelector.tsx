@@ -46,7 +46,7 @@ export const CountrySelector: React.FC<CountrySelectProps> = ({
   style,
 }: CountrySelectProps): React.ReactNode => {
   // Translation strings for country names
-  const strings = useAppTranslation("countryTranslations");
+  const { countryTranslations: strings } = useAppTranslation();
 
   return (
     <Autocomplete

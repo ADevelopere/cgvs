@@ -42,7 +42,7 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
   onErrorChange,
   validator,
 }) => {
-  const countryStrings = useAppTranslation("countryTranslations");
+  const { countryTranslations: countryStrings } = useAppTranslation();
   const {
     strings: { general },
   } = useTableLocale();

@@ -8,7 +8,7 @@ import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
 import { useAppTranslation } from "@/client/locale";
 
 const EmptyGroupsState: React.FC = () => {
-  const strings = useAppTranslation("recipientGroupTranslations");
+  const { recipientGroupTranslations: strings } = useAppTranslation();
   const { openCreateDialog } = useRecipientGroupDialogs();
 
   return (

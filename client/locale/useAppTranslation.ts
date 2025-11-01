@@ -1,12 +1,9 @@
 import { useAppTheme } from "@/client/contexts/ThemeContext";
-import AppLanguage from "@/client/locale/AppLanguage";
-import translations, { Translations } from "@/client/locale/translations";
+import translations from "@/client/locale/translations";
+import { AppLanguage } from "@/lib/enum";
 import { useMemo } from "react";
 
-// const someTranslation = useAppTranslation("key");
-export const useAppTranslation = <T extends keyof Translations>(
-  namespace: T
-) => {
+export const useAppTranslation = () => {
   const { language } = useAppTheme();
   const ts = useMemo(() => {
     // Check if language exists in translations
@@ -17,6 +14,5 @@ export const useAppTranslation = <T extends keyof Translations>(
     return translations[AppLanguage.default];
   }, [language]);
 
-  // Return the namespace - guaranteed to exist due to fallback
-  return ts[namespace];
+  return ts;
 };

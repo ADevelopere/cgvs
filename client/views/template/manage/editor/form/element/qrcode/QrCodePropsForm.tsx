@@ -4,7 +4,11 @@ import React from "react";
 import * as MUI from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import { QrCodeErrorCorrection } from "@/client/graphql/generated/gql/graphql";
-import { QrCodePropsState, QrCodePropsFormErrors, QrCodePropsFormUpdateFn } from "./types";
+import {
+  QrCodePropsState,
+  QrCodePropsFormErrors,
+  QrCodePropsFormUpdateFn,
+} from "./types";
 
 export interface QrCodePropsFormProps {
   qrCodeProps: QrCodePropsState;
@@ -19,7 +23,7 @@ export const QrCodePropsForm: React.FC<QrCodePropsFormProps> = ({
   updateQrCodeProps,
   disabled = false,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
 
   const errorCorrectionOptions: Array<{
     value: QrCodeErrorCorrection;
@@ -57,10 +61,13 @@ export const QrCodePropsForm: React.FC<QrCodePropsFormProps> = ({
           label={strings.qrCodeElement.foregroundColorLabel}
           placeholder="#000000"
           value={qrCodeProps.foregroundColor}
-          onChange={e => updateQrCodeProps({key: "foregroundColor", value: e.target.value})}
+          onChange={e =>
+            updateQrCodeProps({ key: "foregroundColor", value: e.target.value })
+          }
           error={Boolean(errors.foregroundColor)}
           helperText={
-            errors.foregroundColor || strings.qrCodeElement.foregroundColorHelper
+            errors.foregroundColor ||
+            strings.qrCodeElement.foregroundColorHelper
           }
           disabled={disabled}
           required
@@ -90,10 +97,13 @@ export const QrCodePropsForm: React.FC<QrCodePropsFormProps> = ({
           label={strings.qrCodeElement.backgroundColorLabel}
           placeholder="#FFFFFF"
           value={qrCodeProps.backgroundColor}
-          onChange={e => updateQrCodeProps({key: "backgroundColor", value: e.target.value})}
+          onChange={e =>
+            updateQrCodeProps({ key: "backgroundColor", value: e.target.value })
+          }
           error={Boolean(errors.backgroundColor)}
           helperText={
-            errors.backgroundColor || strings.qrCodeElement.backgroundColorHelper
+            errors.backgroundColor ||
+            strings.qrCodeElement.backgroundColorHelper
           }
           disabled={disabled}
           required
@@ -117,7 +127,10 @@ export const QrCodePropsForm: React.FC<QrCodePropsFormProps> = ({
       </MUI.Box>
 
       {/* Error Correction Level */}
-      <MUI.FormControl error={Boolean(errors.errorCorrection)} disabled={disabled}>
+      <MUI.FormControl
+        error={Boolean(errors.errorCorrection)}
+        disabled={disabled}
+      >
         <MUI.FormLabel required>
           {strings.qrCodeElement.errorCorrectionLabel}
         </MUI.FormLabel>
@@ -127,9 +140,10 @@ export const QrCodePropsForm: React.FC<QrCodePropsFormProps> = ({
         <MUI.RadioGroup
           value={qrCodeProps.errorCorrection}
           onChange={e =>
-            updateQrCodeProps(
-              {key: "errorCorrection", value: e.target.value as QrCodeErrorCorrection}
-            )
+            updateQrCodeProps({
+              key: "errorCorrection",
+              value: e.target.value as QrCodeErrorCorrection,
+            })
           }
           sx={{ mt: 1 }}
         >
@@ -177,7 +191,9 @@ export const QrCodePropsForm: React.FC<QrCodePropsFormProps> = ({
           ))}
         </MUI.RadioGroup>
         {errors.errorCorrection && (
-          <MUI.FormHelperText error>{errors.errorCorrection}</MUI.FormHelperText>
+          <MUI.FormHelperText error>
+            {errors.errorCorrection}
+          </MUI.FormHelperText>
         )}
       </MUI.FormControl>
 

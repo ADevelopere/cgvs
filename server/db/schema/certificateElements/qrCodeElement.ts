@@ -10,4 +10,3 @@ export const qrCodeElement = pgTable("qr_code_element", {
   foregroundColor: varchar("foreground_color", { length: 50 }).notNull(),
   backgroundColor: varchar("background_color", { length: 50 }).notNull(),
 });
-

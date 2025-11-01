@@ -41,7 +41,7 @@ const RecipientsManagementTab: React.FC<RecipientsManagementTabProps> = ({
     useRecipientStore();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const strings = useAppTranslation("recipientGroupTranslations");
+  const { recipientGroupTranslations: strings } = useAppTranslation();
   const { isRtl } = useAppTheme();
   const [prevSubTabIndex, setPrevSubTabIndex] = React.useState(
     SUB_TAB_ORDER.indexOf(activeSubTab)

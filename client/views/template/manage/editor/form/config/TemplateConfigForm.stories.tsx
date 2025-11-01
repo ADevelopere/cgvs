@@ -1,4 +1,3 @@
-
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { TemplateConfigForm } from "./TemplateConfigForm";
@@ -35,15 +34,15 @@ export const Default: Story = {
 };
 
 export const ArabicLocale: Story = {
-    args: {
-      state: {
-        ...defaultState,
-        language: AppLanguage.Ar,
-      },
-      updateFn: ({ key, value }) =>
-        logger.info("Template config updated:", {
-          key,
-          value,
-        }),
+  args: {
+    state: {
+      ...defaultState,
+      language: AppLanguage.Ar,
     },
-  };
+    updateFn: ({ key, value }) =>
+      logger.info("Template config updated:", {
+        key,
+        value,
+      }),
+  },
+};

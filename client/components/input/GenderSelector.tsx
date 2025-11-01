@@ -33,7 +33,7 @@ export const GenderSelector: React.FC<GenderSelectorProps> = ({
   error,
   setError,
 }) => {
-  const strings = useAppTranslation("genderTranslations");
+  const { genderTranslations: strings } = useAppTranslation();
   return (
     <Box
       sx={{

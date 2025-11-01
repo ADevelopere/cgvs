@@ -30,8 +30,7 @@ export const WithError: Story = {
 export const Disabled: Story = {
   args: {
     value: CertificateDateField.ReleaseDate,
-    onChange: (field) => logger.info("Certificate field changed", { field }),
+    onChange: field => logger.info("Certificate field changed", { field }),
     disabled: true,
   },
 };
-

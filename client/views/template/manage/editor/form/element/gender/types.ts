@@ -1,4 +1,7 @@
-import type { BaseCertificateElementFormState, BaseElementFormErrors } from "../base/types";
+import type {
+  BaseCertificateElementFormState,
+  BaseElementFormErrors,
+} from "../base/types";
 import type { TextPropsFormErrors, TextPropsState } from "../textProps/types";
 
 // ============================================================================

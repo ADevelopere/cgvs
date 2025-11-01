@@ -16,7 +16,7 @@ import { useTemplateListStore } from "./useTemplateListStore";
 const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
   isMobile: disableTopPadding = false,
 }) => {
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
   const {
     selectCategory,
     expandedCategoryIds,

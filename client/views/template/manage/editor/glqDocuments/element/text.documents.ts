@@ -8,65 +8,65 @@ export const textElementByIdQueryDocument: TypedDocumentNode<
   query textElementById($id: Int!) {
     textElementById(id: $id) {
       base {
-      alignment
-      createdAt
-      description
-      height
-      id
-      name
-      positionX
-      positionY
-      renderOrder
-      type
-      updatedAt
-      width
-    }
-    template {
-      id
-    }
-    textDataSource {
-      ... on TextDataSourceCertificateField {
-        certificateField
+        alignment
+        createdAt
+        description
+        height
+        id
+        name
+        positionX
+        positionY
+        renderOrder
         type
+        updatedAt
+        width
       }
-      ... on TextDataSourceStatic {
-        type
-        value
+      template {
+        id
       }
-      ... on TextDataSourceStudentField {
-        studentField
-        type
-      }
-      ... on TextDataSourceTemplateSelectVariable {
-        selectVariableId
-        type
-      }
-      ... on TextDataSourceTemplateTextVariable {
-        textVariableId
-        type
-      }
-    }
-    textElementSpecProps {
-      elementId
-      textPropsId
-      variableId
-    }
-    textProps {
-      color
-      fontRef {
-        ... on FontReferenceGoogle {
-          identifier
+      textDataSource {
+        ... on TextDataSourceCertificateField {
+          certificateField
           type
         }
-        ... on FontReferenceSelfHosted {
-          fontId
+        ... on TextDataSourceStatic {
+          type
+          value
+        }
+        ... on TextDataSourceStudentField {
+          studentField
+          type
+        }
+        ... on TextDataSourceTemplateSelectVariable {
+          selectVariableId
+          type
+        }
+        ... on TextDataSourceTemplateTextVariable {
+          textVariableId
           type
         }
       }
-      fontSize
-      id
-      overflow
-    }
+      textElementSpecProps {
+        elementId
+        textPropsId
+        variableId
+      }
+      textProps {
+        color
+        fontRef {
+          ... on FontReferenceGoogle {
+            identifier
+            type
+          }
+          ... on FontReferenceSelfHosted {
+            fontId
+            type
+          }
+        }
+        fontSize
+        id
+        overflow
+      }
     }
   }
 `;
@@ -78,65 +78,65 @@ export const createTextElementMutationDocument: TypedDocumentNode<
   mutation createTextElement($input: TextElementInput!) {
     createTextElement(input: $input) {
       base {
-      alignment
-      createdAt
-      description
-      height
-      id
-      name
-      positionX
-      positionY
-      renderOrder
-      type
-      updatedAt
-      width
-    }
-    template {
-      id
-    }
-    textDataSource {
-      ... on TextDataSourceCertificateField {
-        certificateField
+        alignment
+        createdAt
+        description
+        height
+        id
+        name
+        positionX
+        positionY
+        renderOrder
         type
+        updatedAt
+        width
       }
-      ... on TextDataSourceStatic {
-        type
-        value
+      template {
+        id
       }
-      ... on TextDataSourceStudentField {
-        studentField
-        type
-      }
-      ... on TextDataSourceTemplateSelectVariable {
-        selectVariableId
-        type
-      }
-      ... on TextDataSourceTemplateTextVariable {
-        textVariableId
-        type
-      }
-    }
-    textElementSpecProps {
-      elementId
-      textPropsId
-      variableId
-    }
-    textProps {
-      color
-      fontRef {
-        ... on FontReferenceGoogle {
-          identifier
+      textDataSource {
+        ... on TextDataSourceCertificateField {
+          certificateField
           type
         }
-        ... on FontReferenceSelfHosted {
-          fontId
+        ... on TextDataSourceStatic {
+          type
+          value
+        }
+        ... on TextDataSourceStudentField {
+          studentField
+          type
+        }
+        ... on TextDataSourceTemplateSelectVariable {
+          selectVariableId
+          type
+        }
+        ... on TextDataSourceTemplateTextVariable {
+          textVariableId
           type
         }
       }
-      fontSize
-      id
-      overflow
-    }
+      textElementSpecProps {
+        elementId
+        textPropsId
+        variableId
+      }
+      textProps {
+        color
+        fontRef {
+          ... on FontReferenceGoogle {
+            identifier
+            type
+          }
+          ... on FontReferenceSelfHosted {
+            fontId
+            type
+          }
+        }
+        fontSize
+        id
+        overflow
+      }
     }
   }
 `;
@@ -148,65 +148,65 @@ export const updateTextElementMutationDocument: TypedDocumentNode<
   mutation updateTextElement($input: TextElementUpdateInput!) {
     updateTextElement(input: $input) {
       base {
-      alignment
-      createdAt
-      description
-      height
-      id
-      name
-      positionX
-      positionY
-      renderOrder
-      type
-      updatedAt
-      width
-    }
-    template {
-      id
-    }
-    textDataSource {
-      ... on TextDataSourceCertificateField {
-        certificateField
+        alignment
+        createdAt
+        description
+        height
+        id
+        name
+        positionX
+        positionY
+        renderOrder
         type
+        updatedAt
+        width
       }
-      ... on TextDataSourceStatic {
-        type
-        value
+      template {
+        id
       }
-      ... on TextDataSourceStudentField {
-        studentField
-        type
-      }
-      ... on TextDataSourceTemplateSelectVariable {
-        selectVariableId
-        type
-      }
-      ... on TextDataSourceTemplateTextVariable {
-        textVariableId
-        type
-      }
-    }
-    textElementSpecProps {
-      elementId
-      textPropsId
-      variableId
-    }
-    textProps {
-      color
-      fontRef {
-        ... on FontReferenceGoogle {
-          identifier
+      textDataSource {
+        ... on TextDataSourceCertificateField {
+          certificateField
           type
         }
-        ... on FontReferenceSelfHosted {
-          fontId
+        ... on TextDataSourceStatic {
+          type
+          value
+        }
+        ... on TextDataSourceStudentField {
+          studentField
+          type
+        }
+        ... on TextDataSourceTemplateSelectVariable {
+          selectVariableId
+          type
+        }
+        ... on TextDataSourceTemplateTextVariable {
+          textVariableId
           type
         }
       }
-      fontSize
-      id
-      overflow
-    }
+      textElementSpecProps {
+        elementId
+        textPropsId
+        variableId
+      }
+      textProps {
+        color
+        fontRef {
+          ... on FontReferenceGoogle {
+            identifier
+            type
+          }
+          ... on FontReferenceSelfHosted {
+            fontId
+            type
+          }
+        }
+        fontSize
+        id
+        overflow
+      }
     }
   }
 `;

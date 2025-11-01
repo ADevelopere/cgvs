@@ -15,7 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { CalendarTranslations, useAppTranslation } from "@/client/locale";
+import { useAppTranslation } from "@/client/locale";
 import { Calendar } from "@/lib/enum";
 
 export type DateScrollPickerProps = {
@@ -49,9 +49,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
   title,
 }) => {
   // Translation strings
-  const strings: CalendarTranslations = useAppTranslation(
-    "calendarTranslations"
-  );
+  const { calendarTranslations: strings } = useAppTranslation();
 
   useEffect(() => {
     moment.locale("en-US");

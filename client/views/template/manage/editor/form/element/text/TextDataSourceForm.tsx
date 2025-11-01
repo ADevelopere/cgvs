@@ -16,7 +16,6 @@ import {
   TemplateTextVariable,
   TextDataSourceInput,
   TextDataSourceType,
-  
 } from "@/client/graphql/generated/gql/graphql";
 
 interface DataSourceFormProps {
@@ -39,9 +38,11 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
   showSelector,
 }) => {
   const selectedType: TextDataSourceType = useMemo(() => {
-    if (dataSource.certificateField?.field) return TextDataSourceType.CertificateTextField;
+    if (dataSource.certificateField?.field)
+      return TextDataSourceType.CertificateTextField;
     if (dataSource.static?.value) return TextDataSourceType.Static;
-    if (dataSource.studentField?.field) return TextDataSourceType.StudentTextField;
+    if (dataSource.studentField?.field)
+      return TextDataSourceType.StudentTextField;
     if (dataSource.templateTextVariable?.variableId)
       return TextDataSourceType.TemplateTextVariable;
     if (dataSource.templateSelectVariable?.variableId)
@@ -93,7 +94,9 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
       case TextDataSourceType.StudentTextField:
         return (
           <StudentFieldSelector
-            value={dataSource.studentField?.field ||  StudentTextField.StudentName}
+            value={
+              dataSource.studentField?.field || StudentTextField.StudentName
+            }
             onChange={field => onDataSourceChange({ studentField: { field } })}
             error={errors.studentField}
             disabled={disabled}
@@ -103,7 +106,10 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
       case TextDataSourceType.CertificateTextField:
         return (
           <CertificateFieldSelector
-            value={dataSource.certificateField?.field || CertificateTextField.VerificationCode}
+            value={
+              dataSource.certificateField?.field ||
+              CertificateTextField.VerificationCode
+            }
             onChange={field =>
               onDataSourceChange({ certificateField: { field } })
             }

@@ -19,7 +19,7 @@ export const DateStaticSourceInput: FC<DateStaticSourceInputProps> = ({
   error,
   disabled,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
   const { language } = useAppTheme();
 
   const locale = language === "ar" ? arEG : enUS;
@@ -55,4 +55,3 @@ export const DateStaticSourceInput: FC<DateStaticSourceInputProps> = ({
     </LocalizationProvider>
   );
 };
-

@@ -2,7 +2,7 @@ import * as AR from "@/client/locale/ar";
 import * as EN from "@/client/locale/en";
 
 import * as Components from "./components";
-import AppLanguage from "./AppLanguage";
+import { AppLanguage } from "@/lib/enum";
 
 export type Translations = {
   headerTranslations: Components.HeaderTranslations;
@@ -23,6 +23,7 @@ export type Translations = {
   studentTranslations: Components.StudentTranslations;
   templateCategoryTranslations: Components.TemplateCategoryTranslation;
   templateVariableTranslations: Components.TemplateVariableTranslation;
+  templateConfigTranslations: Components.TemplateConfigTranslations;
 };
 
 const translations: Record<AppLanguage, Translations> = {
@@ -45,6 +46,7 @@ const translations: Record<AppLanguage, Translations> = {
     studentTranslations: AR.student,
     templateCategoryTranslations: AR.templateCategory,
     templateVariableTranslations: AR.templateVariable,
+    templateConfigTranslations: AR.templateConfig,
   },
   en: {
     headerTranslations: EN.enHeader,
@@ -65,6 +67,7 @@ const translations: Record<AppLanguage, Translations> = {
     studentTranslations: EN.enStudent,
     templateCategoryTranslations: EN.enTemplateCategory,
     templateVariableTranslations: EN.enTemplateVariable,
+    templateConfigTranslations: EN.enTemplateConfig,
   },
 };
 

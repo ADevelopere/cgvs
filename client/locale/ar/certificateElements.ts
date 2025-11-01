@@ -78,10 +78,11 @@ export const certificateElements: CertificateElementsTranslations = {
     calendarTypeHijri: "هجري",
     offsetDaysLabel: "إزاحة الأيام",
     offsetDaysPlaceholder: "0",
-    offsetDaysHelper: "عدد الأيام لإضافتها أو طرحها من التاريخ (استخدم أرقاماً سالبة للطرح)",
+    offsetDaysHelper:
+      "عدد الأيام لإضافتها أو طرحها من التاريخ (استخدم أرقاماً سالبة للطرح)",
     offsetDaysRequired: "إزاحة الأيام مطلوبة",
     offsetDaysInvalid: "يجب أن تكون إزاحة الأيام رقماً صحيحاً",
-    
+
     // Transformation
     transformationLabel: "التحويل",
     transformationPlaceholder: "اختر نوع التحويل",
@@ -174,7 +175,8 @@ export const certificateElements: CertificateElementsTranslations = {
     backgroundColorHelper: "لون خلفية رمز الاستجابة السريعة",
     backgroundColorRequired: "لون الخلفية مطلوب",
     errorCorrectionLabel: "مستوى تصحيح الخطأ",
-    errorCorrectionHelper: "مستوى أعلى = مزيد من البيانات الزائدة ولكن أكثر موثوقية",
+    errorCorrectionHelper:
+      "مستوى أعلى = مزيد من البيانات الزائدة ولكن أكثر موثوقية",
     errorCorrectionRequired: "مستوى تصحيح الخطأ مطلوب",
     errorCorrectionL: "منخفض (7%)",
     errorCorrectionM: "متوسط (15%)",
@@ -294,4 +296,3 @@ export const certificateElements: CertificateElementsTranslations = {
     updateError: "فشل التحديث",
   },
 };
-

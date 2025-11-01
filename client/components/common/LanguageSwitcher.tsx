@@ -10,11 +10,11 @@ import {
 } from "@mui/material";
 import { Translate as TranslateIcon } from "@mui/icons-material";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
-import AppLanguage from "@/client/locale/AppLanguage";
 import { useAppTranslation } from "@/client/locale";
+import { AppLanguage } from "@/lib/enum";
 
 export const LanguageSwitcher: React.FC = () => {
-  const strings = useAppTranslation("languageTranslations");
+  const { languageTranslations: strings } = useAppTranslation();
   const { language, setLanguage } = useAppTheme();
 
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);

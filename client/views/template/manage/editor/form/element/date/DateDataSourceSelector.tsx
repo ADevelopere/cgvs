@@ -14,7 +14,7 @@ export const DateDataSourceSelector: FC<DateDataSourceSelectorProps> = ({
   onTypeChange,
   disabled,
 }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
 
   return (
     <FormControl fullWidth disabled={disabled}>
@@ -40,4 +40,3 @@ export const DateDataSourceSelector: FC<DateDataSourceSelectorProps> = ({
     </FormControl>
   );
 };
-

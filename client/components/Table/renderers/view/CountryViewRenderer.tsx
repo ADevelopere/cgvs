@@ -18,7 +18,7 @@ export interface CountryViewRendererProps {
 export const CountryViewRenderer: React.FC<CountryViewRendererProps> = ({
   value,
 }) => {
-  const countryStrings = useAppTranslation("countryTranslations");
+  const { countryTranslations: countryStrings } = useAppTranslation();
 
   if (!value) {
     return <span />;

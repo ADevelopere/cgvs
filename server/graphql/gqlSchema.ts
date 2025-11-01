@@ -1,6 +1,6 @@
 import "./query";
 import "./mutation";
-import "./pothos/schema.types"
+import "./pothos/schema.types";
 
 import { gqlSchemaBuilder } from "./gqlSchemaBuilder";
 

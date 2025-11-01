@@ -36,7 +36,9 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   title,
 }) => {
   const theme = useTheme();
-  const { ui: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { ui: translations },
+  } = useAppTranslation();
   const apolloClient = useApolloClient();
 
   // Query variables state

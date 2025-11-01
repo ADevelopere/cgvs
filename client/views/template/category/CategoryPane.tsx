@@ -25,7 +25,7 @@ import { useTemplateCategoryOperations } from "./hooks/useTemplateCategoryOperat
 
 const TemplateCategoryManagementCategoryPane: React.FC = () => {
   const { theme } = useAppTheme();
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
 
   const {
     currentCategory,

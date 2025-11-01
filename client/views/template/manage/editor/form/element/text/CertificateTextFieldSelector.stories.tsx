@@ -15,7 +15,7 @@ type Story = StoryObj<typeof CertificateFieldSelector>;
 export const Default: Story = {
   args: {
     value: CertificateTextField.VerificationCode,
-    onChange: (field) => logger.log("Field changed:", field),
+    onChange: field => logger.log("Field changed:", field),
     disabled: false,
   },
 };
@@ -23,7 +23,7 @@ export const Default: Story = {
 export const WithError: Story = {
   args: {
     value: CertificateTextField.VerificationCode,
-    onChange: (field) => logger.log("Field changed:", field),
+    onChange: field => logger.log("Field changed:", field),
     error: "Field is required",
     disabled: false,
   },
@@ -32,8 +32,7 @@ export const WithError: Story = {
 export const Disabled: Story = {
   args: {
     value: CertificateTextField.VerificationCode,
-    onChange: (field) => logger.log("Field changed:", field),
+    onChange: field => logger.log("Field changed:", field),
     disabled: true,
   },
 };
-

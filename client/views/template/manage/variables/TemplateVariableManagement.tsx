@@ -246,16 +246,24 @@ const Header: FC<FooterProps> = ({ onOpenModal, strings }) => {
 
       {/* popover menu */}
       <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
-        <MenuItem onClick={() => handleVariableTypeSelect(TemplateVariableType.Text)}>
+        <MenuItem
+          onClick={() => handleVariableTypeSelect(TemplateVariableType.Text)}
+        >
           {strings.textVariable}
         </MenuItem>
-        <MenuItem onClick={() => handleVariableTypeSelect(TemplateVariableType.Number)}>
+        <MenuItem
+          onClick={() => handleVariableTypeSelect(TemplateVariableType.Number)}
+        >
           {strings.numberVariable}
         </MenuItem>
-        <MenuItem onClick={() => handleVariableTypeSelect(TemplateVariableType.Date)}>
+        <MenuItem
+          onClick={() => handleVariableTypeSelect(TemplateVariableType.Date)}
+        >
           {strings.dateVariable}
         </MenuItem>
-        <MenuItem onClick={() => handleVariableTypeSelect(TemplateVariableType.Select)}>
+        <MenuItem
+          onClick={() => handleVariableTypeSelect(TemplateVariableType.Select)}
+        >
           {strings.selectVariable}
         </MenuItem>
       </Menu>
@@ -271,15 +279,16 @@ const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
   template,
 }) => {
   const { deleteVariable } = useTemplateVariableOperations();
-  const strings = useAppTranslation("templateVariableTranslations");
+  const { templateVariableTranslations: strings } = useAppTranslation();
 
   // Modal state management
   const [isOpen, setIsOpen] = useState(false);
   const [editingVariableId, setEditingVariableId] = useState<number | null>(
     null
   );
-  const [variableType, setVariableType] =
-    useState<TemplateVariableType>(TemplateVariableType.Text);
+  const [variableType, setVariableType] = useState<TemplateVariableType>(
+    TemplateVariableType.Text
+  );
 
   // Modal control functions
   const openCreateModal = useCallback((type: TemplateVariableType) => {

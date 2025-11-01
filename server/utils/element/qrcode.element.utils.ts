@@ -16,7 +16,6 @@ export namespace QRCodeElementUtils {
   // GraphQL Input Mappers
   // ============================================================================
 
-
   /**
    * Map GraphQL QRCodeElement create input to repository QRCodeElement create input
    */
@@ -77,9 +76,7 @@ export namespace QRCodeElementUtils {
     input: QRCodeElementInput
   ): Promise<void> => {
     if (!input.base || !input.qrCodeProps) {
-      throw new Error(
-        "QRCodeElementInput must include base, qrCodeProps"
-      );
+      throw new Error("QRCodeElementInput must include base, qrCodeProps");
     }
 
     // Validate base element properties

@@ -12,7 +12,9 @@ export const StorageManagementUIProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const coreContext = useStorageManagementCore();
-  const { ui: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { ui: translations },
+  } = useAppTranslation();
 
   // Add the navigation hook
   const { registerResolver, updateParams } = usePageNavigation();
@@ -149,7 +151,7 @@ import { usePageNavigation } from "../usePageNavigation";
 export const TemplateCategoryManagementProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const messages = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: messages } = useAppTranslation();
   const notifications = useNotifications();
   const { setNavigation } = useDashboardLayout();
   const router = useRouter();

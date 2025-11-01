@@ -27,4 +27,3 @@ export const dateElement = pgTable("date_element", {
     { onDelete: "restrict" }
   ),
 });
-

@@ -6,7 +6,11 @@ import type {
   CountryElementFormState,
   CountryElementFormErrors,
 } from "./types";
-import { CountryRepresentation, ElementAlignment, ElementOverflow } from "@/client/graphql/generated/gql/graphql";
+import {
+  CountryRepresentation,
+  ElementAlignment,
+  ElementOverflow,
+} from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof CountryElementForm> = {
   title: "Template/Editor/Form/Element/Country/CountryElementForm",
@@ -50,9 +54,9 @@ export const Default: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: ({key, value}) =>
+    updateBaseElement: ({ key, value }) =>
       logger.log("Base element updated:", key, value),
-    updateTextProps: ({key, value}) =>
+    updateTextProps: ({ key, value }) =>
       logger.log("Text props updated:", key, value),
     updateRepresentation: value => logger.log("Representation updated:", value),
     locale: "en",
@@ -69,9 +73,9 @@ export const WithNationality: Story = {
       ...defaultState,
     },
     errors: defaultErrors,
-    updateBaseElement: ({key, value}) =>
+    updateBaseElement: ({ key, value }) =>
       logger.log("Base element updated:", key, value),
-    updateTextProps: ({key, value}) =>
+    updateTextProps: ({ key, value }) =>
       logger.log("Text props updated:", key, value),
     updateRepresentation: value => logger.log("Representation updated:", value),
     locale: "en",
@@ -137,9 +141,9 @@ export const Submitting: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: ({key, value}) =>
+    updateBaseElement: ({ key, value }) =>
       logger.log("Base element updated:", key, value),
-    updateTextProps: ({key, value}) =>
+    updateTextProps: ({ key, value }) =>
       logger.log("Text props updated:", key, value),
     updateRepresentation: value => logger.log("Representation updated:", value),
     locale: "en",

@@ -28,7 +28,6 @@ export type CountryElementInputGraphql = {
   countryProps: CountryElementCountryPropsInput;
 };
 
-export type CountryElementUpdateInputGraphql =
-  CountryElementInputGraphql & {
-    id: number;
-  };
+export type CountryElementUpdateInputGraphql = CountryElementInputGraphql & {
+  id: number;
+};

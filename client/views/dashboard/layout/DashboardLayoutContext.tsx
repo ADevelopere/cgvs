@@ -44,7 +44,7 @@ export const DashboardLayoutProvider: React.FC<
   const searchParams = useSearchParams();
 
   // Get translation strings
-  const strings = useAppTranslation("dashboardLayoutTranslations");
+  const { dashboardLayoutTranslations: strings } = useAppTranslation();
 
   // Navigation state store
   const {

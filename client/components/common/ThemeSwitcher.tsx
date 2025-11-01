@@ -19,7 +19,7 @@ import { useAppTranslation } from "@/client/locale";
 
 export const ThemeSwitcher: React.FC = () => {
   const { setThemeMode, themeMode, isDark } = useAppTheme();
-  const strings = useAppTranslation("headerTranslations");
+  const { headerTranslations: strings } = useAppTranslation();
 
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement | null>(

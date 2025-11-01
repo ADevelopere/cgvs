@@ -21,12 +21,13 @@ import {
 import BasicInfoTab from "./BasicInfoTab";
 import TemplateVariableManagement from "./variables/TemplateVariableManagement";
 import RecipientGroupTab from "./recipientGroup/RecipientGroupTab";
-import EditorTab from "./editor/EditorTab";
+// import EditorTab from "./editor/EditorTab";
 import { ManagementTabList } from "./ManagementTabList";
 import { TemplateManagementHeader } from "./components/TemplateManagementHeader";
 import { TemplateNotFoundError } from "./components/TemplateNotFoundError";
 import { TemplateContentSkeleton } from "./components/TemplateContentSkeleton";
 import { useAppTheme } from "@/client/contexts";
+import { Editor } from "./editor/Editor";
 
 // Lazy load heavy components that block on mount
 const RecipientsManagementTab = lazy(
@@ -66,7 +67,7 @@ const TAB_ORDER: TemplateManagementTabType[] = [
   "preview",
 ];
 
-export const TemplateManagementPage: React.FC = () => {
+export const TemplateManagementPageContent: React.FC = () => {
   const pathParams = useParams<{ id: string }>();
   const id = pathParams?.id;
   const searchParams = useSearchParams();
@@ -182,46 +183,49 @@ export const TemplateManagementPage: React.FC = () => {
     // Render actual tab content when template is available
     return (
       <TabContext value={activeTab}>
-        <TabPanel value="basic">
+        <TabPanel value="basic" sx={{ width: "100%", height: "100%" }}>
           <Fade in={activeTab === "basic"} timeout={300}>
             <Slide
               direction={slideDirection}
               in={activeTab === "basic"}
               timeout={250}
             >
-              <Box>
+              <Box sx={{ width: "100%", height: "100%" }}>
                 <BasicInfoTab template={template} />
               </Box>
             </Slide>
           </Fade>
         </TabPanel>
-        <TabPanel value="variables">
+        <TabPanel value="variables" sx={{ width: "100%", height: "100%" }}>
           <Fade in={activeTab === "variables"} timeout={300}>
             <Slide
               direction={slideDirection}
               in={activeTab === "variables"}
               timeout={250}
             >
-              <Box>
+              <Box sx={{ width: "100%", height: "100%" }}>
                 <TemplateVariableManagement template={template} />
               </Box>
             </Slide>
           </Fade>
         </TabPanel>
-        <TabPanel value="recipients">
+        <TabPanel value="recipients" sx={{ width: "100%", height: "100%" }}>
           <Fade in={activeTab === "recipients"} timeout={300}>
             <Slide
               direction={slideDirection}
               in={activeTab === "recipients"}
               timeout={250}
             >
-              <Box>
+              <Box sx={{ width: "100%", height: "100%" }}>
                 <RecipientGroupTab template={template} />
               </Box>
             </Slide>
           </Fade>
         </TabPanel>
-        <TabPanel value="recipientsManagement">
+        <TabPanel
+          value="recipientsManagement"
+          sx={{ width: "100%", height: "100%" }}
+        >
           <Suspense fallback={<TabLoadingFallback />}>
             <Fade in={activeTab === "recipientsManagement"} timeout={300}>
               <Slide
@@ -229,14 +233,14 @@ export const TemplateManagementPage: React.FC = () => {
                 in={activeTab === "recipientsManagement"}
                 timeout={250}
               >
-                <Box>
+                <Box sx={{ width: "100%", height: "100%" }}>
                   <RecipientsManagementTab template={template} />
                 </Box>
               </Slide>
             </Fade>
           </Suspense>
         </TabPanel>
-        <TabPanel value="data">
+        <TabPanel value="data" sx={{ width: "100%", height: "100%" }}>
           <Suspense fallback={<TabLoadingFallback />}>
             <Fade in={activeTab === "data"} timeout={300}>
               <Slide
@@ -244,22 +248,23 @@ export const TemplateManagementPage: React.FC = () => {
                 in={activeTab === "data"}
                 timeout={250}
               >
-                <Box>
+                <Box sx={{ width: "100%", height: "100%" }}>
                   <RecipientVariableDataTab template={template} />
                 </Box>
               </Slide>
             </Fade>
           </Suspense>
         </TabPanel>
-        <TabPanel value="editor">
+        <TabPanel value="editor" sx={{ width: "100%", height: "100%" }}>
           <Fade in={activeTab === "editor"} timeout={300}>
             <Slide
               direction={slideDirection}
               in={activeTab === "editor"}
               timeout={250}
             >
-              <Box>
-                <EditorTab template={template} />
+              <Box sx={{ width: "100%", height: "100%" }}>
+                {/* <EditorTab template={template} /> */}
+                <Editor template={template} />
               </Box>
             </Slide>
           </Fade>
@@ -289,7 +294,15 @@ export const TemplateManagementPage: React.FC = () => {
   };
 
   return (
-    <Box id="template-management" sx={{ width: "100%" }}>
+    <Box
+      id="template-management"
+      sx={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       {/* Always render tabs */}
       <ManagementTabList
         onChange={handleTabChange}
@@ -303,4 +316,4 @@ export const TemplateManagementPage: React.FC = () => {
   );
 };
 
-export default TemplateManagementPage;
+export default TemplateManagementPageContent;

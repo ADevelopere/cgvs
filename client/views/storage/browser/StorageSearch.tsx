@@ -52,7 +52,9 @@ const StorageSearch: React.FC<StorageSearchProps> = ({
     setLastSelectedItem(null);
   }, [clearSelection, setLastSelectedItem, setSearchMode, setSearchTerm]);
 
-  const { ui: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { ui: translations },
+  } = useAppTranslation();
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
 
   useEffect(() => {

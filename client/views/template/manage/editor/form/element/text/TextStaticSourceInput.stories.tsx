@@ -14,7 +14,7 @@ type Story = StoryObj<typeof TextStaticSourceInput>;
 export const Empty: Story = {
   args: {
     value: "",
-    onChange: (value) => logger.log("Value changed:", value),
+    onChange: value => logger.log("Value changed:", value),
     disabled: false,
   },
 };
@@ -22,7 +22,7 @@ export const Empty: Story = {
 export const WithValue: Story = {
   args: {
     value: "Certificate of Completion",
-    onChange: (value) => logger.log("Value changed:", value),
+    onChange: value => logger.log("Value changed:", value),
     disabled: false,
   },
 };
@@ -30,7 +30,7 @@ export const WithValue: Story = {
 export const WithError: Story = {
   args: {
     value: "",
-    onChange: (value) => logger.log("Value changed:", value),
+    onChange: value => logger.log("Value changed:", value),
     error: "Value is required",
     disabled: false,
   },
@@ -39,8 +39,7 @@ export const WithError: Story = {
 export const Disabled: Story = {
   args: {
     value: "Certificate of Completion",
-    onChange: (value) => logger.log("Value changed:", value),
+    onChange: value => logger.log("Value changed:", value),
     disabled: true,
   },
 };
-

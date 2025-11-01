@@ -131,6 +131,9 @@ export namespace TemplateConfigRepository {
       throw new Error(`Failed to update template config with ID ${id}.`);
     }
 
-    return { ...updatedConfig, language: updatedConfig.language as AppLanguage };
+    return {
+      ...updatedConfig,
+      language: updatedConfig.language as AppLanguage,
+    };
   }
 }

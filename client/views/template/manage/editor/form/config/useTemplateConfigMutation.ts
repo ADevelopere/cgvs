@@ -13,7 +13,7 @@ export const useTemplateConfigMutation = () => {
         if (!data?.createTemplateConfig) return;
         const newConfig = data.createTemplateConfig;
         const templateId = newConfig.templateId;
-        if(!templateId) return;
+        if (!templateId) return;
 
         cache.updateQuery<GQL.TemplateConfigsByTemplateIdQuery>(
           {

@@ -1,9 +1,17 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { TextElementForm } from "./TextElementForm";
-import { mockSelfHostedFonts, mockTextVariables, mockSelectVariables } from "../story.util";
+import {
+  mockSelfHostedFonts,
+  mockTextVariables,
+  mockSelectVariables,
+} from "../story.util";
 import type { TextElementFormErrors, TextElementFormState } from "./types";
-import { ElementAlignment, ElementOverflow, StudentTextField } from "@/client/graphql/generated/gql/graphql";
+import {
+  ElementAlignment,
+  ElementOverflow,
+  StudentTextField,
+} from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof TextElementForm> = {
   title: "Template/Editor/Form/Element/Text/TextElementForm",
@@ -47,9 +55,12 @@ export const Default: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: ({key, value}) => logger.log("Base element updated:", key, value),
-    updateTextProps: ({key, value}) => logger.log("Text props updated:", key, value),
-    updateDataSource: (dataSource) => logger.log("Data source updated:", dataSource),
+    updateBaseElement: ({ key, value }) =>
+      logger.log("Base element updated:", key, value),
+    updateTextProps: ({ key, value }) =>
+      logger.log("Text props updated:", key, value),
+    updateDataSource: dataSource =>
+      logger.log("Data source updated:", dataSource),
     templateId: 1,
     locale: "en",
     textVariables: mockTextVariables,
@@ -71,9 +82,12 @@ export const WithStudentField: Story = {
       },
     },
     errors: defaultErrors,
-    updateBaseElement: ({key, value}) => logger.log("Base element updated:", key, value),
-    updateTextProps: ({key, value}) => logger.log("Text props updated:", key, value),
-    updateDataSource: (dataSource) => logger.log("Data source updated:", dataSource),
+    updateBaseElement: ({ key, value }) =>
+      logger.log("Base element updated:", key, value),
+    updateTextProps: ({ key, value }) =>
+      logger.log("Text props updated:", key, value),
+    updateDataSource: dataSource =>
+      logger.log("Data source updated:", dataSource),
     templateId: 1,
     locale: "en",
     textVariables: mockTextVariables,
@@ -90,9 +104,12 @@ export const Submitting: Story = {
   args: {
     state: defaultState,
     errors: defaultErrors,
-    updateBaseElement: ({key, value}) => logger.log("Base element updated:", key, value),
-    updateTextProps: ({key, value}) => logger.log("Text props updated:", key, value),
-    updateDataSource: (dataSource) => logger.log("Data source updated:", dataSource),
+    updateBaseElement: ({ key, value }) =>
+      logger.log("Base element updated:", key, value),
+    updateTextProps: ({ key, value }) =>
+      logger.log("Text props updated:", key, value),
+    updateDataSource: dataSource =>
+      logger.log("Data source updated:", dataSource),
     templateId: 1,
     locale: "en",
     textVariables: mockTextVariables,
@@ -103,4 +120,3 @@ export const Submitting: Story = {
     isSubmitting: true,
   },
 };
-

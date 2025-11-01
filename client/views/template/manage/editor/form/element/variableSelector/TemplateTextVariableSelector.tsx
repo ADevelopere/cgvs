@@ -14,7 +14,7 @@ interface TemplateTextVariableSelectorProps {
 export const TemplateTextVariableSelector: FC<
   TemplateTextVariableSelectorProps
 > = ({ value, variables, onChange, error, disabled }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
 
   const selectedVariable = variables.find(v => v.id === value) || null;
 

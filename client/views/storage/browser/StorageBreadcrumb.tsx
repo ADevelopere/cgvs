@@ -45,7 +45,9 @@ const StorageBreadcrumb: React.FC<StorageBreadcrumbProps> = ({
   params,
   onNavigate,
 }) => {
-  const { ui: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { ui: translations },
+  } = useAppTranslation();
 
   // Use custom path if provided, otherwise use current path from params
   const currentPath = customPath || params.path;

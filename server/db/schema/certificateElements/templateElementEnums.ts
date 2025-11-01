@@ -3,13 +3,13 @@ import { createPgEnumFromEnum } from "@/server/utils/db.utils";
 
 /**
  * IMPORTANT: All certificate element enums must be defined in this file.
- * 
+ *
  * This centralized location prevents circular dependency issues during module initialization.
  * When Drizzle ORM processes the schema, it needs all enums to be initialized before
  * any table definitions that reference them. Defining enums in individual table files
  * (like dateElement.ts, countryElement.ts, etc.) can cause "Cannot access X before initialization"
  * errors due to the barrel export chain in index.ts.
- * 
+ *
  * Pattern: Always define enums here, then import them in the table definition files.
  */
 

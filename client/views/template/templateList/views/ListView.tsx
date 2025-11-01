@@ -37,7 +37,7 @@ const ListView: React.FC<ListViewProps> = ({
 }) => {
   const { isDark } = useAppTheme();
   const isMobile = containerWidth > 0 && containerWidth < 900;
-  const strings = useAppTranslation("templateCategoryTranslations");
+  const { templateCategoryTranslations: strings } = useAppTranslation();
 
   return (
     <TableContainer component={Paper}>

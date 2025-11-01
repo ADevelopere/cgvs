@@ -198,8 +198,8 @@ export namespace NumberElementRepository {
   };
 
   export const loadByBase = async (
-      base: CertificateElementEntity
-  ): Promise<NumberElementOutput > => {
+    base: CertificateElementEntity
+  ): Promise<NumberElementOutput> => {
     // Join all three tables
     const result = await db
       .select()
@@ -211,7 +211,8 @@ export namespace NumberElementRepository {
       .where(eq(numberElement.elementId, base.id))
       .limit(1);
 
-    if (result.length === 0) throw new Error(`NUMBER element with base ID ${base.id} does not exist.`);
+    if (result.length === 0)
+      throw new Error(`NUMBER element with base ID ${base.id} does not exist.`);
 
     const row = result[0];
 

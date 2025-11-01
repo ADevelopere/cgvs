@@ -22,11 +22,16 @@ interface CountryRepresentationSelectorProps {
 export const CountryRepresentationSelector: FC<
   CountryRepresentationSelectorProps
 > = ({ value, onChange, error, disabled = false }) => {
-  const strings = useAppTranslation("certificateElementsTranslations");
+  const { certificateElementsTranslations: strings } = useAppTranslation();
 
   return (
     <Box>
-      <FormControl component="fieldset" error={!!error} disabled={disabled} fullWidth>
+      <FormControl
+        component="fieldset"
+        error={!!error}
+        disabled={disabled}
+        fullWidth
+      >
         <FormLabel component="legend">
           {strings.countryElement.representationLabel}
         </FormLabel>
@@ -65,11 +70,14 @@ export const CountryRepresentationSelector: FC<
         </RadioGroup>
         {error && <FormHelperText>{error}</FormHelperText>}
       </FormControl>
-      
-      <Typography variant="caption" color="info.main" sx={{ mt: 2, display: 'block' }}>
+
+      <Typography
+        variant="caption"
+        color="info.main"
+        sx={{ mt: 2, display: "block" }}
+      >
         ℹ️ {strings.countryElement.dataSourceInfo}
       </Typography>
     </Box>
   );
 };
-

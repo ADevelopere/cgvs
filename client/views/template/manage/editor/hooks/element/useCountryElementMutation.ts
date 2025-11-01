@@ -9,7 +9,6 @@ import { mapFontRefInputToFontRef } from "./useCertificateElementMutation";
 export const useCountryElementMutation = (
   existingElement: GQL.CountryElement
 ) => {
-
   const [createCountryElementMutation] = useMutation(
     Documents.createCountryElementMutationDocument,
     {
@@ -19,18 +18,21 @@ export const useCountryElementMutation = (
         const templateId = newElement.template?.id;
         if (!templateId) return;
 
-        cache.updateQuery<GQL.ElementsByTemplateIdQuery>({
-          query: Documents.elementsByTemplateIdQueryDocument,
-          variables: { templateId },
-        }, existing => {
-          if (!existing?.elementsByTemplateId) return existing;
-          return {
-            elementsByTemplateId: [
-              ...existing.elementsByTemplateId,
-              newElement,
-            ],
-          };
-        });
+        cache.updateQuery<GQL.ElementsByTemplateIdQuery>(
+          {
+            query: Documents.elementsByTemplateIdQueryDocument,
+            variables: { templateId },
+          },
+          existing => {
+            if (!existing?.elementsByTemplateId) return existing;
+            return {
+              elementsByTemplateId: [
+                ...existing.elementsByTemplateId,
+                newElement,
+              ],
+            };
+          }
+        );
       },
     }
   );
@@ -64,7 +66,7 @@ export const useCountryElementMutation = (
             countryProps: {
               ...existingElement.countryProps,
               ...input.countryProps, // Merge new 'countryProps' fields
-            }
+            },
           },
         };
       },
@@ -74,17 +76,20 @@ export const useCountryElementMutation = (
         const templateId = updated.template?.id;
         if (!templateId) return;
 
-        cache.updateQuery<GQL.ElementsByTemplateIdQuery>({
-          query: Documents.elementsByTemplateIdQueryDocument,
-          variables: { templateId },
-        }, existing => {
-          if (!existing?.elementsByTemplateId) return existing;
-          return {
-            elementsByTemplateId: existing.elementsByTemplateId.map(el =>
-              el.base?.id === updated.base?.id ? updated : el
-            ),
-          };
-        });
+        cache.updateQuery<GQL.ElementsByTemplateIdQuery>(
+          {
+            query: Documents.elementsByTemplateIdQueryDocument,
+            variables: { templateId },
+          },
+          existing => {
+            if (!existing?.elementsByTemplateId) return existing;
+            return {
+              elementsByTemplateId: existing.elementsByTemplateId.map(el =>
+                el.base?.id === updated.base?.id ? updated : el
+              ),
+            };
+          }
+        );
       },
     }
   );
@@ -93,12 +98,12 @@ export const useCountryElementMutation = (
   return React.useMemo(
     () => ({
       /**
-      * Mutation to create a new country element
-      */
+       * Mutation to create a new country element
+       */
       createCountryElementMutation,
       /**
- * Mutation to update an existing country element
- */
+       * Mutation to update an existing country element
+       */
       updateCountryElementMutation,
     }),
     [createCountryElementMutation, updateCountryElementMutation]

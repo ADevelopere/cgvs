@@ -36,7 +36,9 @@ export const useStorageUploadOperations = () => {
   const apolloClient = useApolloClient();
   const { params } = useStorageDataStore();
   const notifications = useNotifications();
-  const { uploading: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { uploading: translations },
+  } = useAppTranslation();
   const uploadXhrsRef = useRef<Map<string, XMLHttpRequest>>(new Map());
   const uploadStartTimeRef = useRef<number | null>(null);
   const paramsRef = useRef<Graphql.FilesListInput>(params);

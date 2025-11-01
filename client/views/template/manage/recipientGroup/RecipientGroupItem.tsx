@@ -18,7 +18,7 @@ interface RecipientGroupItemProps {
 }
 
 const RecipientGroupItem: React.FC<RecipientGroupItemProps> = ({ group }) => {
-  const strings = useAppTranslation("recipientGroupTranslations");
+  const { recipientGroupTranslations: strings } = useAppTranslation();
   const { openInfoDialog, openSettingsDialog, openDeleteDialog } =
     useRecipientGroupDialogs();
   const { updateGroup } = useRecipientGroupOperations();

@@ -26,7 +26,7 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
 }) => {
   const operations = useRecipientVariableDataOperations();
   const store = useRecipientVariableDataStore();
-  const strings = useAppTranslation("recipientVariableDataTranslations");
+  const { recipientVariableDataTranslations: strings } = useAppTranslation();
 
   // Fetch recipient variable data
   const { data, loading, error } = useQuery(

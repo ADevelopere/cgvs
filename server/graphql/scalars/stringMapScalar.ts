@@ -72,4 +72,3 @@ export const StringMapScalar = new GraphQLScalarType({
     return result;
   },
 });
-

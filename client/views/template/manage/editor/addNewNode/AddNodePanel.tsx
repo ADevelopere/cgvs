@@ -1,6 +1,3 @@
 // props: compact
 
-
-
-
 // grid: two

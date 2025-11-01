@@ -42,7 +42,9 @@ const StorageFilters: React.FC<StorageFiltersProps> = ({
     [updateParams]
   );
 
-  const { ui: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { ui: translations },
+  } = useAppTranslation();
 
   // Local state for date filter (not in URL params yet, but can be extended)
   const [dateFilter, setDateFilter] = useState<string>("");

@@ -29,7 +29,9 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
   onMove,
 }) => {
   const theme = MUI.useTheme();
-  const { ui: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { ui: translations },
+  } = useAppTranslation();
   const apolloClient = useApolloClient();
 
   // Query variables state

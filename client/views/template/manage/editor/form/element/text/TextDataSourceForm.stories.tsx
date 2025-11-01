@@ -2,7 +2,10 @@ import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { DataSourceForm } from "./TextDataSourceForm";
 import { mockTextVariables, mockSelectVariables } from "../story.util";
-import { CertificateTextField, StudentTextField } from "@/client/graphql/generated/gql/graphql";
+import {
+  CertificateTextField,
+  StudentTextField,
+} from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof DataSourceForm> = {
   title: "Template/Editor/Form/Element/Text/DataSourceForm",
@@ -18,7 +21,8 @@ export const StaticSource: Story = {
     dataSource: { static: { value: "Certificate of Completion" } },
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    onDataSourceChange: (dataSource) => logger.log("Data source changed:", dataSource),
+    onDataSourceChange: dataSource =>
+      logger.log("Data source changed:", dataSource),
     errors: {},
     disabled: false,
     showSelector: true,
@@ -58,7 +62,8 @@ export const TemplateTextVariableSource: Story = {
     dataSource: { templateTextVariable: { variableId: 1 } },
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    onDataSourceChange: (dataSource) => logger.log("Data source changed:", dataSource),
+    onDataSourceChange: dataSource =>
+      logger.log("Data source changed:", dataSource),
     errors: {},
     disabled: false,
     showSelector: true,
@@ -70,7 +75,8 @@ export const TemplateSelectVariableSource: Story = {
     dataSource: { templateSelectVariable: { variableId: 1 } },
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    onDataSourceChange: (dataSource) => logger.log("Data source changed:", dataSource),
+    onDataSourceChange: dataSource =>
+      logger.log("Data source changed:", dataSource),
     errors: {},
     disabled: false,
     showSelector: true,
@@ -82,7 +88,8 @@ export const WithErrors: Story = {
     dataSource: { static: { value: "" } },
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    onDataSourceChange: (dataSource) => logger.log("Data source changed:", dataSource),
+    onDataSourceChange: dataSource =>
+      logger.log("Data source changed:", dataSource),
     errors: { static: "Value is required" },
     disabled: false,
     showSelector: true,
@@ -94,7 +101,8 @@ export const WithoutSelector: Story = {
     dataSource: { static: { value: "Certificate of Completion" } },
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    onDataSourceChange: (dataSource) => logger.log("Data source changed:", dataSource),
+    onDataSourceChange: dataSource =>
+      logger.log("Data source changed:", dataSource),
     errors: {},
     disabled: false,
     showSelector: false,
@@ -106,10 +114,10 @@ export const Disabled: Story = {
     dataSource: { static: { value: "Certificate of Completion" } },
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    onDataSourceChange: (dataSource) => logger.log("Data source changed:", dataSource),
+    onDataSourceChange: dataSource =>
+      logger.log("Data source changed:", dataSource),
     errors: {},
     disabled: true,
     showSelector: true,
   },
 };
-

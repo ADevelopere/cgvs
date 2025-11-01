@@ -26,7 +26,9 @@ const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
   onCreateFolder,
 }) => {
   const theme = MUI.useTheme();
-  const { ui: translations } = useAppTranslation("storageTranslations");
+  const {
+    storageTranslations: { ui: translations },
+  } = useAppTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
 
   // State

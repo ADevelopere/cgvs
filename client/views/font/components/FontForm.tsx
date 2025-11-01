@@ -28,7 +28,7 @@ export const FontForm: React.FC<FontFormProps> = ({
   onCancel,
   disabled = false,
 }) => {
-  const strings = useAppTranslation("fontManagementTranslations");
+  const { fontManagementTranslations: strings } = useAppTranslation();
 
   const [formData, setFormData] = useState<FontFormData>({
     name: initialData?.name || "",

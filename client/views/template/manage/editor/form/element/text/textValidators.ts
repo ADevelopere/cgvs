@@ -7,7 +7,10 @@ export const validateTextDataSource = (
   const errors: TextDataSourceFormErrors = {};
 
   if (dataSource.static) {
-    if (!dataSource.static.value || dataSource.static.value.trim().length === 0) {
+    if (
+      !dataSource.static.value ||
+      dataSource.static.value.trim().length === 0
+    ) {
       errors.static = "Static value is required";
     }
   } else if (dataSource.studentField) {
@@ -19,15 +22,20 @@ export const validateTextDataSource = (
       errors.certificateField = "Certificate field is required";
     }
   } else if (dataSource.templateTextVariable) {
-    if (!dataSource.templateTextVariable.variableId || dataSource.templateTextVariable.variableId <= 0) {
+    if (
+      !dataSource.templateTextVariable.variableId ||
+      dataSource.templateTextVariable.variableId <= 0
+    ) {
       errors.templateTextVariable = "Template text variable is required";
     }
   } else if (dataSource.templateSelectVariable) {
-    if (!dataSource.templateSelectVariable.variableId || dataSource.templateSelectVariable.variableId <= 0) {
+    if (
+      !dataSource.templateSelectVariable.variableId ||
+      dataSource.templateSelectVariable.variableId <= 0
+    ) {
       errors.templateSelectVariable = "Template select variable is required";
     }
   }
 
   return errors;
 };
-
