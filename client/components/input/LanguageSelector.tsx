@@ -13,12 +13,14 @@ interface LocaleSelectorProps {
   value: AppLanguage;
   onChange: (value: AppLanguage) => void;
   disabled?: boolean;
+  style?: React.CSSProperties;
 }
 
 export const LanguageSelector: React.FC<LocaleSelectorProps> = ({
   value,
   onChange,
   disabled,
+  style,
 }) => {
   const { languageTranslations: strings } = useAppTranslation();
 
@@ -44,7 +46,7 @@ export const LanguageSelector: React.FC<LocaleSelectorProps> = ({
   }, [strings]);
 
   return (
-    <FormControl fullWidth>
+    <FormControl fullWidth style={style}>
       <InputLabel>{strings.language}</InputLabel>
       <Select
         value={value}

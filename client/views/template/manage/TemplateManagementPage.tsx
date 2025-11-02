@@ -21,13 +21,12 @@ import {
 import BasicInfoTab from "./BasicInfoTab";
 import TemplateVariableManagement from "./variables/TemplateVariableManagement";
 import RecipientGroupTab from "./recipientGroup/RecipientGroupTab";
-// import EditorTab from "./editor/EditorTab";
+import EditorTab from "./editor/EditorTab";
 import { ManagementTabList } from "./ManagementTabList";
 import { TemplateManagementHeader } from "./components/TemplateManagementHeader";
 import { TemplateNotFoundError } from "./components/TemplateNotFoundError";
 import { TemplateContentSkeleton } from "./components/TemplateContentSkeleton";
 import { useAppTheme } from "@/client/contexts";
-import { Editor } from "./editor/Editor";
 
 // Lazy load heavy components that block on mount
 const RecipientsManagementTab = lazy(
@@ -263,8 +262,7 @@ export const TemplateManagementPageContent: React.FC = () => {
               timeout={250}
             >
               <Box sx={{ width: "100%", height: "100%" }}>
-                {/* <EditorTab template={template} /> */}
-                <Editor template={template} />
+                <EditorTab template={template} />
               </Box>
             </Slide>
           </Fade>

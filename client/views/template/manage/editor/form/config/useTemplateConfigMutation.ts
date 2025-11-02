@@ -61,6 +61,9 @@ export const useTemplateConfigMutation = () => {
           updateTemplateConfig: {
             __typename: "TemplateConfig" as const,
             ...input,
+            createdAt: null,
+            updatedAt: null,
+            templateId: null,
           },
         };
       },
