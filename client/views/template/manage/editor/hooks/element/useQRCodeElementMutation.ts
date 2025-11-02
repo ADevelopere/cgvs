@@ -14,7 +14,7 @@ export const useQRCodeElementMutation = (
       update(cache, { data }) {
         if (!data?.createQRCodeElement) return;
         const newElement = data.createQRCodeElement;
-        const templateId = newElement.template?.id;
+        const templateId = newElement.base.templateId;
         if (!templateId) return;
 
         cache.updateQuery<GQL.ElementsByTemplateIdQuery>(
@@ -67,7 +67,7 @@ export const useQRCodeElementMutation = (
       update(cache, { data }) {
         if (!data?.updateQRCodeElement) return;
         const updated = data.updateQRCodeElement;
-        const templateId = updated.template?.id;
+        const templateId = updated.base.templateId;
         if (!templateId) return;
 
         cache.updateQuery<GQL.ElementsByTemplateIdQuery>(

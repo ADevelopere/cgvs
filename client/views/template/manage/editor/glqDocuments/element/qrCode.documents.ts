@@ -8,11 +8,12 @@ export const createQRCodeElementMutationDocument: TypedDocumentNode<
   mutation createQRCodeElement($input: QRCodeElementInput!) {
     createQRCodeElement(input: $input) {
       base {
+        id
+        templateId
         alignment
         createdAt
         description
         height
-        id
         name
         positionX
         positionY
@@ -26,9 +27,6 @@ export const createQRCodeElementMutationDocument: TypedDocumentNode<
         elementId
         errorCorrection
         foregroundColor
-      }
-      template {
-        id
       }
     }
   }
@@ -41,11 +39,12 @@ export const updateQRCodeElementMutationDocument: TypedDocumentNode<
   mutation updateQRCodeElement($input: QRCodeElementUpdateInput!) {
     updateQRCodeElement(input: $input) {
       base {
+        id
+        templateId
         alignment
         createdAt
         description
         height
-        id
         name
         positionX
         positionY
@@ -59,9 +58,6 @@ export const updateQRCodeElementMutationDocument: TypedDocumentNode<
         elementId
         errorCorrection
         foregroundColor
-      }
-      template {
-        id
       }
     }
   }

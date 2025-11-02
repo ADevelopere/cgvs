@@ -59,7 +59,7 @@ export const useTextElementMutation = (existingElement: GQL.TextElement) => {
       update(cache, { data }) {
         if (!data?.createTextElement) return;
         const newElement = data.createTextElement;
-        const templateId = newElement.template?.id;
+        const templateId = newElement.base.templateId;
         if (!templateId) return;
 
         cache.updateQuery<GQL.ElementsByTemplateIdQuery>(
@@ -120,7 +120,7 @@ export const useTextElementMutation = (existingElement: GQL.TextElement) => {
       update(cache, { data }) {
         if (!data?.updateTextElement) return;
         const updated = data.updateTextElement;
-        const templateId = updated.template?.id;
+        const templateId = updated.base.templateId;
         if (!templateId) return;
 
         cache.updateQuery<GQL.ElementsByTemplateIdQuery>(

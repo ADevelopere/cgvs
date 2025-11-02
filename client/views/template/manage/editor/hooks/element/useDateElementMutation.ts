@@ -52,7 +52,7 @@ export const useDateElementMutation = (existingElement: GQL.DateElement) => {
       update(cache, { data }) {
         if (!data?.createDateElement) return;
         const newElement = data.createDateElement;
-        const templateId = newElement.template?.id;
+        const templateId = newElement.base.templateId;
         if (!templateId) return;
 
         cache.updateQuery<GQL.ElementsByTemplateIdQuery>(

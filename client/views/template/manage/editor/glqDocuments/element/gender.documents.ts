@@ -8,11 +8,12 @@ export const createGenderElementMutationDocument: TypedDocumentNode<
   mutation createGenderElement($input: GenderElementInput!) {
     createGenderElement(input: $input) {
       base {
+        id
+        templateId
         alignment
         createdAt
         description
         height
-        id
         name
         positionX
         positionY
@@ -20,9 +21,6 @@ export const createGenderElementMutationDocument: TypedDocumentNode<
         type
         updatedAt
         width
-      }
-      template {
-        id
       }
       textProps {
         color
@@ -51,11 +49,12 @@ export const updateGenderElementMutationDocument: TypedDocumentNode<
   mutation updateGenderElement($input: GenderElementUpdateInput!) {
     updateGenderElement(input: $input) {
       base {
+        id
+        templateId
         alignment
         createdAt
         description
         height
-        id
         name
         positionX
         positionY
@@ -63,9 +62,6 @@ export const updateGenderElementMutationDocument: TypedDocumentNode<
         type
         updatedAt
         width
-      }
-      template {
-        id
       }
       textProps {
         color

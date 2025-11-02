@@ -8,11 +8,12 @@ export const createDateElementMutationDocument: TypedDocumentNode<
   mutation createDateElement($input: DateElementInput!) {
     createDateElement(input: $input) {
       base {
+        id
+        templateId
         alignment
         createdAt
         description
         height
-        id
         name
         positionX
         positionY
@@ -45,9 +46,6 @@ export const createDateElementMutationDocument: TypedDocumentNode<
         offsetDays
         transformation
       }
-      template {
-        id
-      }
       textProps {
         color
         fontRef {
@@ -75,11 +73,12 @@ export const updateDateElementMutationDocument: TypedDocumentNode<
   mutation updateDateElement($input: DateElementUpdateInput!) {
     updateDateElement(input: $input) {
       base {
+        id
+        templateId
         alignment
         createdAt
         description
         height
-        id
         name
         positionX
         positionY

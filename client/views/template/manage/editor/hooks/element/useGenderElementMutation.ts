@@ -15,7 +15,7 @@ export const useGenderElementMutation = (
       update(cache, { data }) {
         if (!data?.createGenderElement) return;
         const newElement = data.createGenderElement;
-        const templateId = newElement.template?.id;
+        const templateId = newElement.base.templateId;
         if (!templateId) return;
 
         cache.updateQuery<GQL.ElementsByTemplateIdQuery>(
@@ -69,7 +69,7 @@ export const useGenderElementMutation = (
       update(cache, { data }) {
         if (!data?.updateGenderElement) return;
         const updated = data.updateGenderElement;
-        const templateId = updated.template?.id;
+        const templateId = updated.base.templateId;
         if (!templateId) return;
 
         cache.updateQuery<GQL.ElementsByTemplateIdQuery>(

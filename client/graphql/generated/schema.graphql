@@ -42,6 +42,7 @@ type CertificateElementBase {
   positionX: Int!
   positionY: Int!
   renderOrder: Int!
+  templateId: Int!
   type: ElementType!
   updatedAt: DateTime!
   width: Int!
@@ -921,7 +922,7 @@ type Mutation {
   updateDateElementDataSource(input: DateDataSourceStandaloneInput!): DateDataSourceUpdateResponse
   updateDateElementSpecProps(input: DateElementSpecPropsStandaloneInput!): DateElementSpecPropsUpdateResponse
   updateDirectoryPermissions(input: DirectoryPermissionsUpdateInput!): FileOperationResult
-  updateElementCommonProperties(input: CertificateElementBaseUpdateInput!): CertificateElement
+  updateElementCommonProperties(input: CertificateElementBaseUpdateInput!): CertificateElementBase
   updateElementTextProps(input: TextPropsUpdateInput!): ElementWithTextProps
   updateElementsRenderOrder(updates: [ElementOrderUpdateInput!]!): Boolean
   updateFont(input: FontUpdateInput!): Font!

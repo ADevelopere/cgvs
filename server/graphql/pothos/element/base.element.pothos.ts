@@ -71,6 +71,7 @@ export const CertificateElementBaseObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       id: t.exposeInt("id", { nullable: false }),
+      templateId: t.exposeInt("templateId", { nullable: false }),
       name: t.exposeString("name", { nullable: false }),
       description: t.exposeString("description"),
       type: t.field({

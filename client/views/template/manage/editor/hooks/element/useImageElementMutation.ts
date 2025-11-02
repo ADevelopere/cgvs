@@ -27,7 +27,7 @@ export const useImageElementMutation = (existingElement: GQL.ImageElement) => {
       update(cache, { data }) {
         if (!data?.createImageElement) return;
         const newElement = data.createImageElement;
-        const templateId = newElement.template?.id;
+        const templateId = newElement.base.templateId;
         if (!templateId) return;
 
         cache.updateQuery<GQL.ElementsByTemplateIdQuery>(
@@ -82,7 +82,7 @@ export const useImageElementMutation = (existingElement: GQL.ImageElement) => {
       update(cache, { data }) {
         if (!data?.updateImageElement) return;
         const updated = data.updateImageElement;
-        const templateId = updated.template?.id;
+        const templateId = updated.base.templateId;
         if (!templateId) return;
 
         cache.updateQuery<GQL.ElementsByTemplateIdQuery>(
