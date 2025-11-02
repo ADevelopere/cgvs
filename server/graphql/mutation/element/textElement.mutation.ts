@@ -55,7 +55,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       const input = TextElementUtils.mapDataSourceStandaloneGqlToInput(
         args.input
       );
-      return await TextElementRepository.standaloneUpdateTextElementDataSource(
+      return await TextElementRepository.updateTextElementDataSource(
         input
       );
     },

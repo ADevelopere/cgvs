@@ -67,6 +67,7 @@ export type TextElementOutput = {
 };
 
 export type TextDataSourceUpdateResponse = {
+  elementId: number;
   textDataSource: TextDataSource;
   variableId: number | null;
 };

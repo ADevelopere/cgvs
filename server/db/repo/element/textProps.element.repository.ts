@@ -73,7 +73,7 @@ export namespace TextPropsRepository {
     // Validate exists
     if (!validated) {
       await findByIdOrThrow(input.id);
-      await CommonElementUtils.validateTextProps(input);
+      await CommonElementUtils.checkTextProps(input);
     }
 
     const updates: ElementTextPropsInsert = {

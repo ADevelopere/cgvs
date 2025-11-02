@@ -74,3 +74,14 @@ export type DateElementOutput = {
   dateProps: DateElementSpecProps;
   dateDataSource: DateDataSource;
 };
+
+export type DateDataSourceUpdateResponse = {
+  elementId: number;
+  dateDataSource: DateDataSource;
+  variableId: number | null;
+};
+
+export type DateElementSpecPropsUpdateResponse = {
+  elementId: number;
+  dateProps: DateElementSpecProps;
+};

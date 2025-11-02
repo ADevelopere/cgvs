@@ -68,3 +68,8 @@ export type DateElementInputGraphql = {
 export type DateElementUpdateInputGraphql = DateElementInputGraphql & {
   id: number;
 };
+
+export type DateDataSourceStandaloneInputGraphql = {
+  elementId: number;
+  dataSource: DateDataSourceInputGraphql;
+};

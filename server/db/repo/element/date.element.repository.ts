@@ -5,19 +5,7 @@ import {
   dateElement,
   elementTextProps,
 } from "@/server/db/schema";
-import {
-  DateElementInput,
-  DateElementUpdateInput,
-  DateElementOutput,
-  ElementType,
-  CertificateElementEntityInput,
-  DateElementEntity,
-  ElementTextPropsEntity,
-  CalendarType,
-  DateTransformationType,
-  DateElementEntityInput,
-  CertificateElementEntity,
-} from "@/server/types/element";
+import * as ElType from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
 import { DateElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
@@ -43,10 +31,10 @@ export namespace DateElementRepository {
    * 6. Load and return full output
    */
   export const create = async (
-    input: DateElementInput
-  ): Promise<DateElementOutput> => {
+    input: ElType.DateElementInput
+  ): Promise<ElType.DateElementOutput> => {
     // 1. Validate input
-    await DateElementUtils.validateInput(input);
+    await DateElementUtils.checkInput(input);
 
     // 2. Create TextProps
     const newTextProps = await TextPropsRepository.create(input.textProps);
@@ -55,9 +43,9 @@ export namespace DateElementRepository {
       input.dataSource
     );
 
-    const baseInput: CertificateElementEntityInput = {
+    const baseInput: ElType.CertificateElementEntityInput = {
       ...input.base,
-      type: ElementType.DATE,
+      type: ElType.ElementType.DATE,
     };
 
     // 4. Insert into certificate_element (base table)
@@ -94,9 +82,9 @@ export namespace DateElementRepository {
       dateProps: {
         ...newDateElement,
         elementId: newDateElement.elementId,
-        calendarType: newDateElement.calendarType as CalendarType,
+        calendarType: newDateElement.calendarType as ElType.CalendarType,
         transformation:
-          newDateElement.transformation as DateTransformationType | null,
+          newDateElement.transformation as ElType.DateTransformationType | null,
       },
       dateDataSource: newDateElement.dateDataSource,
     };
@@ -117,20 +105,20 @@ export namespace DateElementRepository {
    * 6. Return updated element
    */
   export const update = async (
-    input: DateElementUpdateInput
-  ): Promise<DateElementOutput> => {
+    input: ElType.DateElementUpdateInput
+  ): Promise<ElType.DateElementOutput> => {
     // 1. Load existing element
     const existing = await loadByIdOrThrow(input.id);
 
     // 2. Validate type
-    if (existing.base.type !== ElementType.DATE) {
+    if (existing.base.type !== ElType.ElementType.DATE) {
       throw new Error(
         `Element ${input.id} is ${existing.base.type}, not DATE. Use correct repository.`
       );
     }
 
     // 3. Validate update input
-    await DateElementUtils.validateInput(input);
+    await DateElementUtils.checkInput(input);
 
     // 4. Update certificate_element (base table)
     const updatedBaseElement = await ElementRepository.updateBaseElement(
@@ -139,7 +127,7 @@ export namespace DateElementRepository {
     );
 
     // 5. Update element_text_props (full replace required)
-    const updatedTextProps: ElementTextPropsEntity =
+    const updatedTextProps: ElType.ElementTextPropsEntity =
       await TextPropsRepository.update(
         {
           ...input.textProps,
@@ -148,7 +136,7 @@ export namespace DateElementRepository {
         true
       );
 
-    const updatedDateElement = await updateDateElementSpecific(input);
+    const updatedDateElement = await updateDateElementInternal(input);
 
     logger.info(
       `DATE element updated: ${updatedBaseElement.name} (ID: ${input.id})`
@@ -160,9 +148,9 @@ export namespace DateElementRepository {
       textPropsEntity: updatedTextProps,
       dateProps: {
         ...updatedDateElement,
-        calendarType: updatedDateElement.calendarType as CalendarType,
+        calendarType: updatedDateElement.calendarType as ElType.CalendarType,
         transformation:
-          updatedDateElement.transformation as DateTransformationType | null,
+          updatedDateElement.transformation as ElType.DateTransformationType | null,
       },
       dateDataSource: updatedDateElement.dateDataSource,
     };
@@ -178,7 +166,7 @@ export namespace DateElementRepository {
    */
   export const loadById = async (
     id: number
-  ): Promise<DateElementOutput | null> => {
+  ): Promise<ElType.DateElementOutput | null> => {
     // Join all three tables
     const result = await db
       .select()
@@ -201,17 +189,17 @@ export namespace DateElementRepository {
       textPropsEntity: row.element_text_props,
       dateProps: {
         ...row.date_element,
-        calendarType: row.date_element.calendarType as CalendarType,
+        calendarType: row.date_element.calendarType as ElType.CalendarType,
         transformation: row.date_element
-          .transformation as DateTransformationType | null,
+          .transformation as ElType.DateTransformationType | null,
       },
       dateDataSource: row.date_element.dateDataSource,
     };
   };
 
   export const loadByBase = async (
-    base: CertificateElementEntity
-  ): Promise<DateElementOutput> => {
+    base: ElType.CertificateElementEntity
+  ): Promise<ElType.DateElementOutput> => {
     // Join all three tables
     const result = await db
       .select()
@@ -234,9 +222,9 @@ export namespace DateElementRepository {
       textPropsEntity: row.element_text_props,
       dateProps: {
         ...row.date_element,
-        calendarType: row.date_element.calendarType as CalendarType,
+        calendarType: row.date_element.calendarType as ElType.CalendarType,
         transformation: row.date_element
-          .transformation as DateTransformationType | null,
+          .transformation as ElType.DateTransformationType | null,
       },
       dateDataSource: row.date_element.dateDataSource,
     };
@@ -247,7 +235,7 @@ export namespace DateElementRepository {
    */
   export const loadByIdOrThrow = async (
     id: number
-  ): Promise<DateElementOutput> => {
+  ): Promise<ElType.DateElementOutput> => {
     const element = await loadById(id);
     if (!element) {
       throw new Error(`DATE element with ID ${id} does not exist.`);
@@ -261,7 +249,7 @@ export namespace DateElementRepository {
    */
   export const loadByIds = async (
     ids: number[]
-  ): Promise<(DateElementOutput | Error)[]> => {
+  ): Promise<(ElType.DateElementOutput | Error)[]> => {
     if (ids.length === 0) return [];
 
     // Load all elements
@@ -274,7 +262,7 @@ export namespace DateElementRepository {
       }
 
       // Validate element type
-      if (element.base.type !== ElementType.DATE) {
+      if (element.base.type !== ElType.ElementType.DATE) {
         return new Error(
           `Element ${element.base.id} is ${element.base.type}, not DATE`
         );
@@ -292,10 +280,10 @@ export namespace DateElementRepository {
    * Update date_element (type-specific table)
    * Returns updated entity or existing if no changes
    */
-  const updateDateElementSpecific = async (
-    input: DateElementUpdateInput
-  ): Promise<DateElementEntity> => {
-    const dateUpdates: Partial<DateElementEntityInput> = {
+  const updateDateElementInternal = async (
+    input: ElType.DateElementUpdateInput
+  ): Promise<ElType.DateElementEntity> => {
+    const dateUpdates: Partial<ElType.DateElementEntityInput> = {
       calendarType: input.dateProps.calendarType,
       offsetDays: input.dateProps.offsetDays ?? undefined,
       format: input.dateProps.format,
@@ -315,5 +303,69 @@ export namespace DateElementRepository {
       .returning();
 
     return updated;
+  };
+
+  /**
+   * Update date_element (type-specific table)
+   * Returns updated entity or existing if no changes
+   */
+  export const updateDateElementDataSource = async (
+    input: ElType.DateDataSourceStandaloneInput
+  ): Promise<ElType.DateDataSourceUpdateResponse> => {
+    await ElementRepository.findByIdOrThrow(input.elementId);
+
+    await DateElementUtils.checkDataSource(input.dataSource);
+
+    const dataSourceInput = input.dataSource;
+    const dateUpdates: Partial<ElType.DateElementEntityInput> = {
+      ...dataSourceInput,
+      dateDataSource:
+        DateElementUtils.convertInputDataSourceToOutput(dataSourceInput),
+      variableId:
+        DateElementUtils.extractVariableIdFromDataSource(dataSourceInput),
+    };
+
+    const [updated] = await db
+      .update(dateElement)
+      .set(dateUpdates)
+      .where(eq(dateElement.elementId, input.elementId))
+      .returning();
+
+    return updated;
+  };
+
+  /**
+   * Update date_element (type-specific table)
+   * Returns updated entity or existing if no changes
+   */
+  export const updateDateElementSpecProps = async (
+    input: ElType.DateElementSpecPropsStandaloneInput
+  ): Promise<ElType.DateElementSpecPropsUpdateResponse> => {
+    await ElementRepository.findByIdOrThrow(input.elementId);
+
+    await DateElementUtils.checkSpecProps(input.dateProps);
+
+    const datePropsInput = input.dateProps;
+
+    const dateUpdates: Partial<ElType.DateElementEntityInput> = {
+      ...datePropsInput,
+      offsetDays: datePropsInput.offsetDays ?? undefined,
+    };
+
+    const [updated] = await db
+      .update(dateElement)
+      .set(dateUpdates)
+      .where(eq(dateElement.elementId, input.elementId))
+      .returning();
+
+    return {
+      elementId: updated.elementId,
+      dateProps: {
+        ...updated,
+        calendarType: updated.calendarType as ElType.CalendarType,
+        transformation:
+          updated.transformation as ElType.DateTransformationType | null,
+      },
+    };
   };
 }
