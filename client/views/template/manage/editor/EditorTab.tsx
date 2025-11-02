@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Box, Typography, CircularProgress } from "@mui/material";
-import ReactFlowEditor from "./ReactFlowEditor";
+import CertificateReactFlowEditor from "./ReactFlowEditor";
 import EditorPaneViewController from "@/client/components/editorPane/EditorPaneViewController";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
@@ -116,7 +116,7 @@ export default function EditorTab({ template }: { template: Template }) {
         buttonDisabled: false,
         showCollapseButtonInHeader: true,
       }}
-      middlePane={<ReactFlowEditor template={template} />}
+      middlePane={<CertificateReactFlowEditor template={template} elements={elements} />}
       thirdPane={{
         title: (
           <Typography

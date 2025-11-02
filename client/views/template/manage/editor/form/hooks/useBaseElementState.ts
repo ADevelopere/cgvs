@@ -20,10 +20,12 @@ export type UseBaseElementStateParams = {
 };
 
 export type UseBaseElementStateReturn = {
-  getState: (elementId: number) => SanitizedBaseElementFormState | null;
-  updateFn: UpdateBaseElementWithElementIdFn;
-  pushUpdate: (elementId: number) => Promise<void>;
-  errors: Map<number, BaseElementFormErrors>;
+  getBaseElementState: (
+    elementId: number
+  ) => SanitizedBaseElementFormState;
+  updateBaseElementStateFn: UpdateBaseElementWithElementIdFn;
+  pushBaseElementStateUpdate: (elementId: number) => Promise<void>;
+  baseElementStateErrors: Map<number, BaseElementFormErrors>;
 };
 
 /**
@@ -125,9 +127,50 @@ export function useBaseElementState(
   });
 
   return {
-    getState,
-    updateFn,
-    pushUpdate,
-    errors,
+    getBaseElementState: getState,
+    updateBaseElementStateFn: updateFn,
+    pushBaseElementStateUpdate: pushUpdate,
+    baseElementStateErrors: errors,
   };
 }
+
+
+export type UseBaseElementParams = {
+  elementId: number;
+  templateId?: number;
+  elements?: GQL.CertificateElementUnion[];
+};
+
+export const useBaseElement = (params: UseBaseElementParams) => {
+  const {
+    getBaseElementState,
+    updateBaseElementStateFn,
+    pushBaseElementStateUpdate,
+    baseElementStateErrors,
+  } = useBaseElementState(params);
+
+  const baseElementState = getBaseElementState(params.elementId);
+  const pushBaseElementUpdate = React.useCallback(async () => {
+    await pushBaseElementStateUpdate(params.elementId);
+  }, [params.elementId, pushBaseElementStateUpdate]);
+
+  const baseElementErrors = baseElementStateErrors.get(params.elementId) || {};
+
+  
+  const updateBaseElementState = React.useCallback(
+    (newState: Partial<SanitizedBaseElementFormState>) => {
+      if (!baseElementState) return;
+      const updatedState = { ...baseElementState, ...newState };
+      updateBaseElementStateFn(params.elementId, updatedState);
+    },
+    [params.elementId, baseElementState, updateBaseElementStateFn]
+  );
+
+
+  return {
+    baseElementState,
+    updateBaseElementState,
+    pushBaseElementUpdate,
+    baseElementErrors,
+  };
+};
