@@ -5,16 +5,7 @@ import {
   numberElement,
   elementTextProps,
 } from "@/server/db/schema";
-import {
-  NumberElementInput,
-  NumberElementUpdateInput,
-  NumberElementOutput,
-  ElementType,
-  NumberElementEntity,
-  ElementTextPropsEntity,
-  CertificateElementEntityInput,
-  CertificateElementEntity,
-} from "@/server/types/element";
+import * as ElType from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
 import { NumberElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
@@ -40,8 +31,8 @@ export namespace NumberElementRepository {
    * 6. Return full output
    */
   export const create = async (
-    input: NumberElementInput
-  ): Promise<NumberElementOutput> => {
+    input: ElType.NumberElementInput
+  ): Promise<ElType.NumberElementOutput> => {
     // 1. Validate input
     await NumberElementUtils.validateInput(input);
 
@@ -62,9 +53,9 @@ export namespace NumberElementRepository {
       );
     }
 
-    const baseInput: CertificateElementEntityInput = {
+    const baseInput: ElType.CertificateElementEntityInput = {
       ...input.base,
-      type: ElementType.NUMBER,
+      type: ElType.ElementType.NUMBER,
     };
 
     // 4. Insert into certificate_element (base table)
@@ -113,13 +104,13 @@ export namespace NumberElementRepository {
    * 6. Return updated element
    */
   export const update = async (
-    input: NumberElementUpdateInput
-  ): Promise<NumberElementOutput> => {
+    input: ElType.NumberElementUpdateInput
+  ): Promise<ElType.NumberElementOutput> => {
     // 1. Load existing element
     const existing = await loadByIdOrThrow(input.id);
 
     // 2. Validate type
-    if (existing.base.type !== ElementType.NUMBER) {
+    if (existing.base.type !== ElType.ElementType.NUMBER) {
       throw new Error(
         `Element ${input.id} is ${existing.base.type}, not NUMBER. Use correct repository.`
       );
@@ -135,7 +126,7 @@ export namespace NumberElementRepository {
     );
 
     // 5. Update element_text_props (full replace required)
-    const updatedTextProps: ElementTextPropsEntity =
+    const updatedTextProps: ElType.ElementTextPropsEntity =
       await TextPropsRepository.update(
         {
           ...input.textProps,
@@ -143,9 +134,10 @@ export namespace NumberElementRepository {
         },
         true
       );
-      
+
     // 6. Update number_element (type-specific table)
-    const updatedNumberElement = await updateNumberElementSpecific(input);
+    const updatedNumberElement =
+      await updateNumberElementSpecPropsInternal(input);
 
     logger.info(
       `NUMBER element updated: ${updatedBaseElement.name} (ID: ${input.id})`
@@ -170,7 +162,7 @@ export namespace NumberElementRepository {
    */
   export const loadById = async (
     id: number
-  ): Promise<NumberElementOutput | null> => {
+  ): Promise<ElType.NumberElementOutput | null> => {
     // Join all three tables
     const result = await db
       .select()
@@ -200,8 +192,8 @@ export namespace NumberElementRepository {
   };
 
   export const loadByBase = async (
-    base: CertificateElementEntity
-  ): Promise<NumberElementOutput> => {
+    base: ElType.CertificateElementEntity
+  ): Promise<ElType.NumberElementOutput> => {
     // Join all three tables
     const result = await db
       .select()
@@ -232,7 +224,7 @@ export namespace NumberElementRepository {
    */
   export const loadByIdOrThrow = async (
     id: number
-  ): Promise<NumberElementOutput> => {
+  ): Promise<ElType.NumberElementOutput> => {
     const element = await loadById(id);
     if (!element) {
       throw new Error(`NUMBER element with ID ${id} does not exist.`);
@@ -246,7 +238,7 @@ export namespace NumberElementRepository {
    */
   export const loadByIds = async (
     ids: number[]
-  ): Promise<(NumberElementOutput | Error)[]> => {
+  ): Promise<(ElType.NumberElementOutput | Error)[]> => {
     if (ids.length === 0) return [];
 
     // Load all elements
@@ -261,7 +253,7 @@ export namespace NumberElementRepository {
       }
 
       // Validate element type
-      if (element.base.type !== ElementType.NUMBER) {
+      if (element.base.type !== ElType.ElementType.NUMBER) {
         return new Error(
           `Element ${element.base.id} is ${element.base.type}, not NUMBER`
         );
@@ -271,17 +263,37 @@ export namespace NumberElementRepository {
     });
   };
 
+  export const findById = async (
+    id: number
+  ): Promise<ElType.NumberElementEntity | null> => {
+    const result = await db
+      .select()
+      .from(numberElement)
+      .where(eq(numberElement.elementId, id))
+      .limit(1);
+
+    if (result.length === 0) return null;
+
+    return result[0];
+  };
+
+  export const findByIdOrThrow = async (
+    id: number
+  ): Promise<ElType.NumberElementEntity> => {
+    const element = await findById(id);
+    if (!element) {
+      throw new Error(`NUMBER element with ID ${id} does not exist.`);
+    }
+    return element;
+  };
+
   // ============================================================================
   // Update Helper Functions
   // ============================================================================
 
-  /**
-   * Update number_element (type-specific table)
-   * Returns updated entity
-   */
-  const updateNumberElementSpecific = async (
-    input: NumberElementUpdateInput
-  ): Promise<NumberElementEntity> => {
+  const updateNumberElementSpecPropsInternal = async (
+    input: ElType.NumberElementUpdateInput
+  ): Promise<ElType.NumberElementEntity> => {
     const newDataSource = NumberElementUtils.convertInputDataSourceToOutput(
       input.dataSource
     );
@@ -295,7 +307,7 @@ export namespace NumberElementRepository {
       );
     }
 
-    const numberUpdates: Partial<typeof numberElement.$inferInsert> = {
+    const numberUpdates: Partial<ElType.NumberElementEntityInput> = {
       mapping: input.numberProps.mapping,
       numberDataSource: newDataSource,
       variableId,
@@ -308,5 +320,61 @@ export namespace NumberElementRepository {
       .returning();
 
     return updated;
+  };
+
+  /**
+   * Update number_element (type-specific table)
+   * Returns updated entity
+   */
+  export const updateNumberElementDataSource = async (
+    input: ElType.NumberElementDataSourceStandaloneUpdateInput
+  ): Promise<ElType.NumberElementDataSourceUpdateResponse> => {
+    await findByIdOrThrow(input.elementId);
+    const newDataSource = NumberElementUtils.convertInputDataSourceToOutput(
+      input.dataSource
+    );
+    const variableId = NumberElementUtils.extractVariableIdFromDataSource(
+      input.dataSource
+    );
+
+    if (variableId === null) {
+      throw new Error(
+        "NUMBER element data source must include a variableId (TEMPLATE_NUMBER_VARIABLE)"
+      );
+    }
+
+    const numberUpdates: Partial<ElType.NumberElementEntityInput> = {
+      numberDataSource: newDataSource,
+      variableId,
+    };
+
+    const [updated] = await db
+      .update(numberElement)
+      .set(numberUpdates)
+      .where(eq(numberElement.elementId, input.elementId))
+      .returning();
+
+    return updated;
+  };
+
+  export const updateNumberElementSpecProps = async (
+    input: ElType.NumberElementSpecPropsStandaloneUpdateInput
+  ): Promise<ElType.NumberElementSpecPropsUpdateResponse> => {
+    await findByIdOrThrow(input.elementId);
+
+    const numberUpdates: Partial<ElType.NumberElementEntityInput> = {
+      mapping: input.numberProps.mapping,
+    };
+
+    const [updated] = await db
+      .update(numberElement)
+      .set(numberUpdates)
+      .where(eq(numberElement.elementId, input.elementId))
+      .returning();
+
+    return {
+      elementId: updated.elementId,
+      numberProps: updated,
+    };
   };
 }

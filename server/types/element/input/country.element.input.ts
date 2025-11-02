@@ -32,3 +32,8 @@ export type CountryElementInput = {
 export type CountryElementUpdateInput = CountryElementInput & {
   id: number;
 };
+
+export type CountryElementSpecPropsStandaloneUpdateInput = {
+  elementId: number;
+  countryProps: CountryElementCountryPropsInput;
+};

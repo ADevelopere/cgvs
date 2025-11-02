@@ -5,17 +5,7 @@ import {
   countryElement,
   elementTextProps,
 } from "@/server/db/schema";
-import {
-  CountryElementInput,
-  CountryElementUpdateInput,
-  CountryElementOutput,
-  ElementType,
-  CountryElementEntity,
-  ElementTextPropsEntity,
-  CertificateElementEntityInput,
-  CountryRepresentation,
-  CertificateElementEntity,
-} from "@/server/types/element";
+import * as ElTypes from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
 import { CountryElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
@@ -40,17 +30,17 @@ export namespace CountryElementRepository {
    * 5. Return full output
    */
   export const create = async (
-    input: CountryElementInput
-  ): Promise<CountryElementOutput> => {
+    input: ElTypes.CountryElementInput
+  ): Promise<ElTypes.CountryElementOutput> => {
     // 1. Validate input
-    await CountryElementUtils.validateInput(input);
+    await CountryElementUtils.checkInput(input);
 
     // 2. Create TextProps
     const newTextProps = await TextPropsRepository.create(input.textProps);
 
-    const baseInput: CertificateElementEntityInput = {
+    const baseInput: ElTypes.CertificateElementEntityInput = {
       ...input.base,
-      type: ElementType.COUNTRY,
+      type: ElTypes.ElementType.COUNTRY,
     };
 
     // 3. Insert into certificate_element (base table)
@@ -80,7 +70,7 @@ export namespace CountryElementRepository {
       countryProps: {
         ...newCountryElement,
         representation:
-          newCountryElement.representation as CountryRepresentation,
+          newCountryElement.representation as ElTypes.CountryRepresentation,
       },
     };
   };
@@ -100,20 +90,20 @@ export namespace CountryElementRepository {
    * 6. Return updated element
    */
   export const update = async (
-    input: CountryElementUpdateInput
-  ): Promise<CountryElementOutput> => {
+    input: ElTypes.CountryElementUpdateInput
+  ): Promise<ElTypes.CountryElementOutput> => {
     // 1. Load existing element
     const existing = await loadByIdOrThrow(input.id);
 
     // 2. Validate type
-    if (existing.base.type !== ElementType.COUNTRY) {
+    if (existing.base.type !== ElTypes.ElementType.COUNTRY) {
       throw new Error(
         `Element ${input.id} is ${existing.base.type}, not COUNTRY. Use correct repository.`
       );
     }
 
     // 3. Validate update input
-    await CountryElementUtils.validateInput(input);
+    await CountryElementUtils.checkInput(input);
 
     // 4. Update certificate_element (base table)
     const updatedBaseElement = await ElementRepository.updateBaseElement(
@@ -122,7 +112,7 @@ export namespace CountryElementRepository {
     );
 
     // 5. Update element_text_props (full replace required)
-    const updatedTextProps: ElementTextPropsEntity =
+    const updatedTextProps: ElTypes.ElementTextPropsEntity =
       await TextPropsRepository.update(
         {
           ...input.textProps,
@@ -132,11 +122,9 @@ export namespace CountryElementRepository {
       );
 
     // 6. Update country_element (type-specific table)
-    const existingCountryElement: CountryElementEntity = existing.countryProps;
     const updatedCountryElement = await updateCountryElementSpecific(
       input.id,
       input,
-      existingCountryElement
     );
 
     logger.info(
@@ -150,7 +138,7 @@ export namespace CountryElementRepository {
       countryProps: {
         ...updatedCountryElement,
         representation:
-          updatedCountryElement.representation as CountryRepresentation,
+          updatedCountryElement.representation as ElTypes.CountryRepresentation,
       },
     };
   };
@@ -165,7 +153,7 @@ export namespace CountryElementRepository {
    */
   export const loadById = async (
     id: number
-  ): Promise<CountryElementOutput | null> => {
+  ): Promise<ElTypes.CountryElementOutput | null> => {
     // Join all three tables
     const result = await db
       .select()
@@ -192,7 +180,7 @@ export namespace CountryElementRepository {
       countryProps: {
         ...row.country_element,
         representation: row.country_element
-          .representation as CountryRepresentation,
+          .representation as ElTypes.CountryRepresentation,
       },
     };
   };
@@ -202,7 +190,7 @@ export namespace CountryElementRepository {
    */
   export const loadByIdOrThrow = async (
     id: number
-  ): Promise<CountryElementOutput> => {
+  ): Promise<ElTypes.CountryElementOutput> => {
     const element = await loadById(id);
     if (!element) {
       throw new Error(`COUNTRY element with ID ${id} does not exist.`);
@@ -211,8 +199,8 @@ export namespace CountryElementRepository {
   };
 
   export const loadByBase = async (
-    base: CertificateElementEntity
-  ): Promise<CountryElementOutput> => {
+    base: ElTypes.CertificateElementEntity
+  ): Promise<ElTypes.CountryElementOutput> => {
     // Join all three tables
     const result = await db
       .select()
@@ -236,7 +224,7 @@ export namespace CountryElementRepository {
       countryProps: {
         ...row.country_element,
         representation: row.country_element
-          .representation as CountryRepresentation,
+          .representation as ElTypes.CountryRepresentation,
       },
     };
   };
@@ -247,7 +235,7 @@ export namespace CountryElementRepository {
    */
   export const loadByIds = async (
     ids: number[]
-  ): Promise<(CountryElementOutput | Error)[]> => {
+  ): Promise<(ElTypes.CountryElementOutput | Error)[]> => {
     if (ids.length === 0) return [];
 
     // Load all elements
@@ -262,7 +250,7 @@ export namespace CountryElementRepository {
       }
 
       // Validate element type
-      if (element.base.type !== ElementType.COUNTRY) {
+      if (element.base.type !== ElTypes.ElementType.COUNTRY) {
         return new Error(
           `Element ${element.base.id} is ${element.base.type}, not COUNTRY`
         );
@@ -271,6 +259,29 @@ export namespace CountryElementRepository {
       return element;
     });
   };
+
+  export const findById = async (
+    id: number
+  ): Promise<ElTypes.CountryElementEntity | null> => {
+    const countryEl = await db
+      .select()
+      .from(countryElement)
+      .where(eq(countryElement.elementId, id))
+      .limit(1);
+      
+    if (countryEl.length === 0) return null;
+    return countryEl[0];
+  }
+
+  export const findByIdOrThrow = async (
+    id: number
+  ): Promise<ElTypes.CountryElementEntity> => {
+    const countryEl = await findById(id);
+    if (!countryEl) {
+      throw new Error(`Country element with ID ${id} does not exist.`);
+    }
+    return countryEl;
+  }
 
   // ============================================================================
   // Update Helper Functions
@@ -282,17 +293,12 @@ export namespace CountryElementRepository {
    */
   const updateCountryElementSpecific = async (
     elementId: number,
-    input: CountryElementUpdateInput,
-    existingCountryElement: CountryElementEntity
-  ): Promise<CountryElementEntity> => {
+    input: ElTypes.CountryElementUpdateInput,
+  ): Promise<ElTypes.CountryElementEntity> => {
     const countryUpdates: Partial<typeof countryElement.$inferInsert> = {};
 
     // Full replace: representation is required
     countryUpdates.representation = input.countryProps.representation;
-
-    if (Object.keys(countryUpdates).length === 0) {
-      return existingCountryElement;
-    }
 
     const [updated] = await db
       .update(countryElement)
@@ -301,5 +307,35 @@ export namespace CountryElementRepository {
       .returning();
 
     return updated;
+  };
+
+  export const updateSpecProps = async (
+    input: ElTypes.CountryElementSpecPropsStandaloneUpdateInput
+  ): Promise<ElTypes.CountryElementSpecPropsStandaloneUpdateResponse> => {
+    // 1. Load existing element
+     await findByIdOrThrow(input.elementId);
+     await CountryElementUtils.checkSpecProps(input.countryProps);
+
+    // 3. Update country_element (type-specific table)
+    const updatedCountryElement = await db
+      .update(countryElement)
+      .set({
+        representation: input.countryProps.representation,
+      })
+      .where(eq(countryElement.elementId, input.elementId))
+      .returning();
+
+    logger.info(
+      `COUNTRY element specProps updated: (ID: ${input.elementId})`
+    );
+
+    return {
+      elementId: input.elementId,
+      countryProps: {
+        ...updatedCountryElement[0],
+        representation: updatedCountryElement[0]
+          .representation as ElTypes.CountryRepresentation,
+      },
+    };
   };
 }

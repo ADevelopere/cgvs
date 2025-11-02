@@ -32,3 +32,13 @@ export type NumberElementInput = {
 export type NumberElementUpdateInput = NumberElementInput & {
   id: number;
 };
+
+export type NumberElementDataSourceStandaloneUpdateInput = {
+  elementId: number;
+  dataSource: NumberDataSourceInput;
+};
+
+export type NumberElementSpecPropsStandaloneUpdateInput = {
+  elementId: number;
+  numberProps: NumberElementSpecPropsInput;
+};

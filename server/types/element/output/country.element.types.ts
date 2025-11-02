@@ -45,3 +45,8 @@ export type CountryElementOutput = {
   textPropsEntity: ElementTextPropsEntity;
   countryProps: CountryElementCountryProps;
 };
+
+export type CountryElementSpecPropsStandaloneUpdateResponse = {
+  elementId: number;
+  countryProps: CountryElementCountryProps;
+};

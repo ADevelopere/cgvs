@@ -41,3 +41,13 @@ export type NumberElementOutput = {
   numberProps: NumberElementSpecProps;
   numberDataSource: NumberDataSource;
 };
+
+export type NumberElementSpecPropsUpdateResponse = {
+  elementId: number;
+  numberProps: NumberElementSpecProps;
+};
+
+export type NumberElementDataSourceUpdateResponse = {
+  elementId: number;
+  numberDataSource: NumberDataSource;
+};
