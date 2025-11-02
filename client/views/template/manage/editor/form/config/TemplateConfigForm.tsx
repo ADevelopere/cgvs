@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, TextField } from "@mui/material";
+import { Stack, TextField } from "@mui/material";
 import { LanguageSelector } from "@/client/components";
 import {
   TemplateConfigFormErrors,
@@ -7,6 +7,7 @@ import {
   TemplateConfigFormUpdateFn,
 } from "./types";
 import { useAppTranslation } from "@/client/locale";
+import logger from "@/client/lib/logger";
 
 interface TemplateConfigFormProps {
   state: TemplateConfigFormState;
@@ -22,10 +23,23 @@ export const TemplateConfigForm: React.FC<TemplateConfigFormProps> = ({
   disabled,
 }) => {
   const { templateConfigTranslations: strings } = useAppTranslation();
+  logger.info("Rendering TemplateConfigForm with state:", state);
+  logger.info("Errors:", errors);
   return (
-    <Grid container spacing={4}>
+    <Stack direction={"column"} spacing={4} sx={{ paddingY: 2, }}>
       {/* width field */}
-      <Grid size={{ xs: 12, sm: 6 }}>
+      <Stack
+        useFlexGap
+        direction={"row"}
+        sx={{
+          paddingTop: 1,
+          gap: 2,
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+          direction: "row",
+          overflow: "clip",
+        }}
+      >
         <TextField
           label={strings.width}
           type="number"
@@ -33,15 +47,13 @@ export const TemplateConfigForm: React.FC<TemplateConfigFormProps> = ({
           onChange={e =>
             updateFn({ key: "width", value: parseInt(e.target.value, 10) })
           }
-          fullWidth
           error={!!errors.width}
+          color={errors.width ? "error" : "primary"}
           helperText={errors.width}
           disabled={disabled}
+          sx={{ minWidth: 100, flexGrow: 1 }}
         />
-      </Grid>
 
-      {/* Height field */}
-      <Grid size={{ xs: 12, sm: 6 }}>
         <TextField
           label={strings.height}
           type="number"
@@ -49,21 +61,20 @@ export const TemplateConfigForm: React.FC<TemplateConfigFormProps> = ({
           onChange={e =>
             updateFn({ key: "height", value: parseInt(e.target.value, 10) })
           }
-          fullWidth
           error={!!errors.height}
           helperText={errors.height}
           disabled={disabled}
+          sx={{ minWidth: 100, flexGrow: 1 }}
         />
-      </Grid>
+      </Stack>
 
       {/* Language field */}
-      <Grid size={12}>
-        <LanguageSelector
-          value={state.language}
-          onChange={value => updateFn({ key: "language", value })}
-          disabled={disabled}
-        />
-      </Grid>
-    </Grid>
+      <LanguageSelector
+        value={state.language}
+        onChange={value => updateFn({ key: "language", value })}
+        disabled={disabled}
+        style={{ minWidth: 100 }}
+      />
+    </Stack>
   );
 };

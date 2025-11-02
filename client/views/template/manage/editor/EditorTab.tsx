@@ -1,9 +1,15 @@
 "use client";
 
-import { Box, Typography } from "@mui/material";
+import React from "react";
+import { Box, Typography, CircularProgress } from "@mui/material";
 import ReactFlowEditor from "./ReactFlowEditor";
 import EditorPaneViewController from "@/client/components/editorPane/EditorPaneViewController";
 import { Template } from "@/client/graphql/generated/gql/graphql";
+import * as GQL from "@/client/graphql/generated/gql/graphql";
+import { useQuery } from "@apollo/client/react";
+import { templateConfigByTemplateIdQueryDocument } from "./glqDocuments";
+import { TemplateConfigCreateForm } from "./form/config/TemplateConfigCreateForm";
+import { MiscellaneousPanel } from "./miscellaneousPanel/MiscellaneousPanel";
 
 function AddNodePane() {
   return (
@@ -21,23 +27,47 @@ function AddNodePane() {
   );
 }
 
-function MiscellaneousPane() {
-  return (
-    <Box
-      sx={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        px: 1,
-      }}
-      id="miscellaneous-panel"
-    >
-      {/* Miscellaneous Panel Content */}
-    </Box>
-  );
-}
-
 export default function EditorTab({ template }: { template: Template }) {
+  const {
+    data: configData,
+    loading: configApolloLoading,
+    error: configError,
+  } = useQuery(templateConfigByTemplateIdQueryDocument, {
+    variables: { templateId: template.id! },
+    skip: !template.id,
+  });
+
+  const [configLoading, setConfigLoading] = React.useState(true);
+
+  const config: GQL.TemplateConfig | null | undefined = React.useMemo(() => {
+    const config = configData?.templateConfigByTemplateId;
+    setConfigLoading(configApolloLoading);
+    return config;
+  }, [configApolloLoading, configData?.templateConfigByTemplateId]);
+
+  if (configLoading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+        }}
+      >
+        <CircularProgress size={24} />
+      </div>
+    );
+  }
+
+  if (!configLoading && !config) {
+    return <TemplateConfigCreateForm template={template} />;
+  }
+
+  if (configError || !config) {
+    return <div>Error loading template config: {configError?.message}</div>;
+  }
+
   return (
     <EditorPaneViewController
       firstPane={{
@@ -68,7 +98,7 @@ export default function EditorTab({ template }: { template: Template }) {
             Miscellaneous Panel
           </Typography>
         ),
-        content: <MiscellaneousPane />,
+        content: <MiscellaneousPanel config={config} />,
         buttonTooltip: "Toggle Miscellaneous Panel",
         buttonDisabled: false,
         showCollapseButtonInHeader: true,
