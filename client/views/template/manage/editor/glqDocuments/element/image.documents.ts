@@ -76,3 +76,21 @@ export const updateImageElementMutationDocument: TypedDocumentNode<
     }
   }
 `;
+
+export const updateImageElementSpecPropsMutationDocument: TypedDocumentNode<
+  Graphql.UpdateImageElementSpecPropsMutation,
+  Graphql.UpdateImageElementSpecPropsMutationVariables
+> = gql`
+  mutation UpdateImageElementSpecProps(
+    $input: ImageElementSpecPropsStandaloneUpdateInput!
+  ) {
+    updateImageElementSpecProps(input: $input) {
+      elementId
+      imageProps {
+        elementId
+        fit
+        storageFileId
+      }
+    }
+  }
+`;

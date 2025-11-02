@@ -106,3 +106,39 @@ export const updateNumberElementMutationDocument: TypedDocumentNode<
     }
   }
 `;
+
+export const updateNumberElementDataSourceMutationDocument: TypedDocumentNode<
+  Graphql.UpdateNumberElementDataSourceMutation,
+  Graphql.UpdateNumberElementDataSourceMutationVariables
+> = gql`
+  mutation updateNumberElementDataSource(
+    $input: NumberElementDataSourceStandaloneUpdateInput!
+  ) {
+    updateNumberElementDataSource(input: $input) {
+      elementId
+      numberDataSource {
+        numberVariableId
+        type
+      }
+    }
+  }
+`;
+
+export const updateNumberElementSpecPropsMutationDocument: TypedDocumentNode<
+  Graphql.UpdateNumberElementSpecPropsMutation,
+  Graphql.UpdateNumberElementSpecPropsMutationVariables
+> = gql`
+  mutation updateNumberElementSpecProps(
+    $input: NumberElementSpecPropsStandaloneUpdateInput!
+  ) {
+    updateNumberElementSpecProps(input: $input) {
+      elementId
+      numberProps {
+        elementId
+        mapping
+        textPropsId
+        variableId
+      }
+    }
+  }
+`;

@@ -66,3 +66,22 @@ export const updateQRCodeElementMutationDocument: TypedDocumentNode<
     }
   }
 `;
+
+export const updateQRCodeElementSpecPropsMutationDocument: TypedDocumentNode<
+  Graphql.UpdateQrCodeElementSpecPropsMutation,
+  Graphql.UpdateQrCodeElementSpecPropsMutationVariables
+> = gql`
+  mutation updateQRCodeElementSpecProps(
+    $input: QRCodeElementSpecPropsStandaloneUpdateInput!
+  ) {
+    updateQRCodeElementSpecProps(input: $input) {
+      elementId
+      qrCodeProps {
+        backgroundColor
+        elementId
+        errorCorrection
+        foregroundColor
+      }
+    }
+  }
+`;

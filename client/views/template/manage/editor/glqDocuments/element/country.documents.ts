@@ -92,3 +92,17 @@ export const updateCountryElementMutationDocument: TypedDocumentNode<
     }
   }
 `;
+
+export const updateCountryElementSpecPropsMutationDocument: TypedDocumentNode<
+  Graphql.UpdateCountryElementSpecPropsMutation,
+  Graphql.UpdateCountryElementSpecPropsMutationVariables
+> = gql`
+  mutation UpdateCountryElementSpecProps($input: CountryElementSpecPropsStandaloneUpdateInput!) {
+  updateCountryElementSpecProps(input: $input) {
+    countryProps {
+      representation
+    }
+    elementId
+  }
+}
+`;

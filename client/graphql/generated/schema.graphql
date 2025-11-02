@@ -349,6 +349,16 @@ input CountryElementInput {
   textProps: TextPropsInput!
 }
 
+input CountryElementSpecPropsStandaloneUpdateInput {
+  countryProps: CountryElementCountryPropsInput!
+  elementId: Int!
+}
+
+type CountryElementSpecPropsStandaloneUpdateResponse {
+  countryProps: CountryElementCountryProps
+  elementId: Int
+}
+
 input CountryElementUpdateInput {
   base: CertificateElementBaseInput!
   countryProps: CountryElementCountryPropsInput!
@@ -382,6 +392,11 @@ input DateDataSourceInput @oneOf {
   static: DateDataSourceStaticInput
   studentField: DateDataSourceStudentFieldInput
   templateVariable: DateDataSourceTemplateVariableInput
+}
+
+input DateDataSourceStandaloneInput {
+  dataSource: DateDataSourceInput!
+  elementId: Int!
 }
 
 type DateDataSourceStatic {
@@ -418,6 +433,11 @@ enum DateDataSourceType {
   TEMPLATE_DATE_VARIABLE
 }
 
+type DateDataSourceUpdateResponse {
+  dateDataSource: DateDataSource
+  elementId: Int
+}
+
 type DateElement implements CertificateElement {
   base: CertificateElementBase!
   dateDataSource: DateDataSource
@@ -438,6 +458,16 @@ input DateElementSpecPropsInput {
   format: String!
   offsetDays: Int
   transformation: DateTransformationType
+}
+
+input DateElementSpecPropsStandaloneInput {
+  dateProps: DateElementSpecPropsInput!
+  elementId: Int!
+}
+
+type DateElementSpecPropsUpdateResponse {
+  dateProps: DateProps
+  elementId: Int
 }
 
 input DateElementUpdateInput {
@@ -808,6 +838,16 @@ input ImageElementSpecPropsInput {
   fit: ElementImageFit!
 }
 
+input ImageElementSpecPropsStandaloneUpdateInput {
+  elementId: Int!
+  imageProps: ImageElementSpecPropsInput!
+}
+
+type ImageElementSpecPropsStandaloneUpdateResponse {
+  elementId: Int
+  imageProps: ImageElementSpecProps
+}
+
 input ImageElementUpdateInput {
   base: CertificateElementBaseInput!
   dataSource: ImageDataSourceInput!
@@ -876,7 +916,10 @@ type Mutation {
   suspendTemplate(id: Int!): Template
   unsuspendTemplate(id: Int!): Template
   updateCountryElement(input: CountryElementUpdateInput!): CountryElement
+  updateCountryElementSpecProps(input: CountryElementSpecPropsStandaloneUpdateInput!): CountryElementSpecPropsStandaloneUpdateResponse
   updateDateElement(input: DateElementUpdateInput!): DateElement
+  updateDateElementDataSource(input: DateDataSourceStandaloneInput!): DateDataSourceUpdateResponse
+  updateDateElementSpecProps(input: DateElementSpecPropsStandaloneInput!): DateElementSpecPropsUpdateResponse
   updateDirectoryPermissions(input: DirectoryPermissionsUpdateInput!): FileOperationResult
   updateElementCommonProperties(input: CertificateElementBaseUpdateInput!): CertificateElement
   updateElementTextProps(input: TextPropsUpdateInput!): ElementWithTextProps
@@ -884,8 +927,12 @@ type Mutation {
   updateFont(input: FontUpdateInput!): Font!
   updateGenderElement(input: GenderElementUpdateInput!): GenderElement
   updateImageElement(input: ImageElementUpdateInput!): ImageElement
+  updateImageElementSpecProps(input: ImageElementSpecPropsStandaloneUpdateInput!): ImageElementSpecPropsStandaloneUpdateResponse
   updateNumberElement(input: NumberElementUpdateInput!): NumberElement
+  updateNumberElementDataSource(input: NumberElementDataSourceStandaloneUpdateInput!): NumberElementDataSourceUpdateResponse
+  updateNumberElementSpecProps(input: NumberElementSpecPropsStandaloneUpdateInput!): NumberElementSpecPropsUpdateResponse
   updateQRCodeElement(input: QRCodeElementUpdateInput!): QRCodeElement
+  updateQRCodeElementSpecProps(input: QRCodeElementSpecPropsStandaloneUpdateInput!): QRCodeElementSpecPropsStandaloneUpdateResponse
   updateTemplate(input: TemplateUpdateInput!): Template
   updateTemplateCategory(input: TemplateCategoryUpdateInput!): TemplateCategory!
   updateTemplateConfig(input: TemplateConfigUpdateInput!): TemplateConfig
@@ -895,6 +942,7 @@ type Mutation {
   updateTemplateSelectVariable(input: TemplateSelectVariableUpdateInput!): TemplateSelectVariable
   updateTemplateTextVariable(input: TemplateTextVariableUpdateInput!): TemplateTextVariable
   updateTextElement(input: TextElementUpdateInput!): TextElement
+  updateTextElementDataSource(input: TextDataSourceStandaloneInput!): TextDataSourceUpdateResponse
 }
 
 type NumberDataSource {
@@ -918,6 +966,16 @@ type NumberElement implements CertificateElement {
   textProps: TextProps!
 }
 
+input NumberElementDataSourceStandaloneUpdateInput {
+  dataSource: NumberDataSourceInput!
+  elementId: Int!
+}
+
+type NumberElementDataSourceUpdateResponse {
+  elementId: Int
+  numberDataSource: NumberDataSource
+}
+
 input NumberElementInput {
   base: CertificateElementBaseInput!
   dataSource: NumberDataSourceInput!
@@ -927,6 +985,16 @@ input NumberElementInput {
 
 input NumberElementSpecPropsInput {
   mapping: StringMap!
+}
+
+input NumberElementSpecPropsStandaloneUpdateInput {
+  elementId: Int!
+  numberProps: NumberElementSpecPropsInput!
+}
+
+type NumberElementSpecPropsUpdateResponse {
+  elementId: Int
+  numberProps: NumberProps
 }
 
 input NumberElementUpdateInput {
@@ -1008,6 +1076,16 @@ input QRCodeElementSpecPropsInput {
   backgroundColor: String!
   errorCorrection: QRCodeErrorCorrection!
   foregroundColor: String!
+}
+
+input QRCodeElementSpecPropsStandaloneUpdateInput {
+  elementId: Int!
+  qrCodeProps: QRCodeElementSpecPropsInput!
+}
+
+type QRCodeElementSpecPropsStandaloneUpdateResponse {
+  elementId: Int
+  qrCodeProps: QRCodeElementSpecProps
 }
 
 input QRCodeElementUpdateInput {
@@ -1670,6 +1748,7 @@ enum TextDataSourceType {
 }
 
 type TextDataSourceUpdateResponse {
+  elementId: Int!
   textDataSource: TextDataSource!
   variableId: Int
 }

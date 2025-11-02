@@ -213,3 +213,37 @@ export const updateTextElementMutationDocument: TypedDocumentNode<
     }
   }
 `;
+
+export const updateTextElementDataSourceMutationDocument: TypedDocumentNode<
+  Graphql.UpdateTextElementDataSourceMutation,
+  Graphql.UpdateTextElementDataSourceMutationVariables
+> = gql`
+  mutation UpdateTextElementDataSource($input: TextDataSourceStandaloneInput!) {
+  updateTextElementDataSource(input: $input) {
+    elementId
+    variableId
+    textDataSource {
+      ... on TextDataSourceCertificateField {
+        certificateField
+        type
+      }
+      ... on TextDataSourceStatic {
+        type
+        value
+      }
+      ... on TextDataSourceStudentField {
+        studentField
+        type
+      }
+      ... on TextDataSourceTemplateSelectVariable {
+        selectVariableId
+        type
+      }
+      ... on TextDataSourceTemplateTextVariable {
+        textVariableId
+        type
+      }
+    }
+  }
+}
+`;
