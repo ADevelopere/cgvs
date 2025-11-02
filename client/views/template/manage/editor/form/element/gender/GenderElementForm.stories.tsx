@@ -20,7 +20,6 @@ type Story = StoryObj<typeof GenderElementForm>;
 
 const mockState: GenderElementFormState = {
   base: {
-    templateId: 1,
     name: "Student Gender",
     description: "Displays student's gender",
     positionX: 100,
@@ -62,7 +61,6 @@ export const WithErrors: Story = {
   args: {
     state: {
       base: {
-        templateId: 1,
         name: "",
         description: "",
         positionX: -10,

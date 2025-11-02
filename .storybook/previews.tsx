@@ -10,8 +10,15 @@ import { ApolloProvider } from "@apollo/client/react";
 import { AppThemeProvider } from "../client/contexts/ThemeContext";
 import ThemeMode from "../client/theme/ThemeMode";
 import { Box } from "@mui/material";
-import { themes } from "@storybook/theming";
 import { AppLanguage } from "@/lib/enum";
+import {
+  ltrDarkTheme,
+  ltrLightTheme,
+  rtlDarkTheme,
+  rtlLightTheme,
+} from "@/client/theme";
+import { DecoratorHelpers } from "@storybook/addon-themes";
+const { pluckThemeFromContext, initializeThemeState } = DecoratorHelpers;
 
 // Create a lightweight mock Apollo Client for Storybook
 const mockLink = new ApolloLink(() => {
@@ -47,27 +54,10 @@ const preview: Preview = {
       // 'off' - skip a11y checks entirely
       test: "todo",
     },
-    docs: {
-      theme: themes.dark,
-    },
   },
 
   // Global argTypes for theme and language controls
   globalTypes: {
-    themeMode: {
-      description: "Theme mode",
-      defaultValue: ThemeMode.Dark,
-      toolbar: {
-        title: "Theme",
-        icon: "paintbrush",
-        items: [
-          { value: ThemeMode.Light, title: "Light", icon: "sun" },
-          { value: ThemeMode.Dark, title: "Dark", icon: "moon" },
-          { value: ThemeMode.System, title: "System", icon: "browser" },
-        ],
-        dynamicTitle: true,
-      },
-    },
     language: {
       description: "Language",
       defaultValue: AppLanguage.default,
@@ -86,12 +76,24 @@ const preview: Preview = {
   // Global decorator to wrap all stories with AppThemeProvider
   decorators: [
     (Story, context) => {
-      const themeMode = context.globals.themeMode as ThemeMode;
+      // const themeMode = context.globals.themeMode as ThemeMode;
       const language = context.globals.language as string;
+      const selectedTheme = pluckThemeFromContext(context) as ThemeMode;
+      const themes = {
+        light: language === "ar" ? rtlLightTheme : ltrLightTheme,
+        dark: language === "ar" ? rtlDarkTheme : ltrDarkTheme,
+      };
+
+      const defaultTheme = ThemeMode.Dark;
+
+      initializeThemeState(Object.keys(themes), defaultTheme);
 
       return (
         <ApolloProvider client={mockApolloClient}>
-          <AppThemeProvider initialTheme={themeMode} initialLanguage={language}>
+          <AppThemeProvider
+            initialTheme={selectedTheme}
+            initialLanguage={language}
+          >
             <Box
               sx={{
                 backgroundColor: "background.default",
