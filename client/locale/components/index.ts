@@ -17,3 +17,4 @@ export * from "./Student";
 export * from "./TemplateCategory";
 export * from "./TemplateVariable";
 export * from "./TemplateConfig";
+export * from "./TemplateEditor";

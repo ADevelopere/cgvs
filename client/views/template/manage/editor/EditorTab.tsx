@@ -7,9 +7,13 @@ import EditorPaneViewController from "@/client/components/editorPane/EditorPaneV
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { useQuery } from "@apollo/client/react";
-import { templateConfigByTemplateIdQueryDocument } from "./glqDocuments";
+import {
+  elementsByTemplateIdQueryDocument,
+  templateConfigByTemplateIdQueryDocument,
+} from "./glqDocuments";
 import { TemplateConfigCreateForm } from "./form/config/TemplateConfigCreateForm";
 import { MiscellaneousPanel } from "./miscellaneousPanel/MiscellaneousPanel";
+import { useAppTranslation } from "@/client/locale";
 
 function AddNodePane() {
   return (
@@ -29,15 +33,20 @@ function AddNodePane() {
 
 export default function EditorTab({ template }: { template: Template }) {
   const {
+    templateEditorTranslations: { templateEditorPane: strings },
+  } = useAppTranslation();
+  const [configLoading, setConfigLoading] = React.useState(true);
+  const [elementsLoading, setElementsLoading] = React.useState(true);
+
+  // ========== Template Config ==========
+  const {
     data: configData,
     loading: configApolloLoading,
     error: configError,
   } = useQuery(templateConfigByTemplateIdQueryDocument, {
-    variables: { templateId: template.id! },
-    skip: !template.id,
+    variables: { templateId: template.id },
+    fetchPolicy: "cache-first",
   });
-
-  const [configLoading, setConfigLoading] = React.useState(true);
 
   const config: GQL.TemplateConfig | null | undefined = React.useMemo(() => {
     const config = configData?.templateConfigByTemplateId;
@@ -45,7 +54,24 @@ export default function EditorTab({ template }: { template: Template }) {
     return config;
   }, [configApolloLoading, configData?.templateConfigByTemplateId]);
 
-  if (configLoading) {
+  // =========== Elements =============
+
+  const {
+    data: elementsData,
+    loading: elementsApolloLoading,
+    error: elementsError,
+  } = useQuery(elementsByTemplateIdQueryDocument, {
+    variables: { templateId: template.id },
+    fetchPolicy: "cache-first",
+  });
+
+  const elements: GQL.CertificateElementUnion[] = React.useMemo(() => {
+    const elems = elementsData?.elementsByTemplateId || [];
+    setElementsLoading(elementsApolloLoading);
+    return elems;
+  }, [elementsApolloLoading, elementsData?.elementsByTemplateId]);
+
+  if (configLoading || elementsLoading) {
     return (
       <div
         style={{
@@ -68,6 +94,10 @@ export default function EditorTab({ template }: { template: Template }) {
     return <div>Error loading template config: {configError?.message}</div>;
   }
 
+  if (elementsError) {
+    return <div>Error loading elements: {elementsError.message}</div>;
+  }
+
   return (
     <EditorPaneViewController
       firstPane={{
@@ -78,7 +108,7 @@ export default function EditorTab({ template }: { template: Template }) {
               px: 2,
             }}
           >
-            Add Node Panel
+            {strings.addNodePane}
           </Typography>
         ),
         content: <AddNodePane />,
@@ -95,10 +125,10 @@ export default function EditorTab({ template }: { template: Template }) {
               px: 2,
             }}
           >
-            Miscellaneous Panel
+            {strings.miscellaneousPane}
           </Typography>
         ),
-        content: <MiscellaneousPanel config={config} />,
+        content: <MiscellaneousPanel config={config} elements={elements} />,
         buttonTooltip: "Toggle Miscellaneous Panel",
         buttonDisabled: false,
         showCollapseButtonInHeader: true,

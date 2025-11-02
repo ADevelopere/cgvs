@@ -24,6 +24,7 @@ export type Translations = {
   templateCategoryTranslations: Components.TemplateCategoryTranslation;
   templateVariableTranslations: Components.TemplateVariableTranslation;
   templateConfigTranslations: Components.TemplateConfigTranslations;
+  templateEditorTranslations: Components.TemplateEditorTranslations;
 };
 
 const translations: Record<AppLanguage, Translations> = {
@@ -47,6 +48,7 @@ const translations: Record<AppLanguage, Translations> = {
     templateCategoryTranslations: AR.templateCategory,
     templateVariableTranslations: AR.templateVariable,
     templateConfigTranslations: AR.templateConfig,
+    templateEditorTranslations: AR.templateEditor,
   },
   en: {
     headerTranslations: EN.enHeader,
@@ -68,6 +70,7 @@ const translations: Record<AppLanguage, Translations> = {
     templateCategoryTranslations: EN.enTemplateCategory,
     templateVariableTranslations: EN.enTemplateVariable,
     templateConfigTranslations: EN.enTemplateConfig,
+    templateEditorTranslations: EN.enTemplateEditor,
   },
 };
 

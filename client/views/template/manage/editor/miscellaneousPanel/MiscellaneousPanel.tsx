@@ -7,14 +7,21 @@ import { useEditorStore } from "../useEditorStore";
 import { MiscellaneousPanelTab } from "./types";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { TemplateConfigAutoUpdateForm } from "../form/config/TemplateConfigAutoUpdateForm";
+import { useAppTranslation } from "@/client/locale";
+import { ElementsTab } from "./ElementsTab";
 
 export type MiscellaneousPanelProps = {
   config: GQL.TemplateConfig;
+  elements: GQL.CertificateElementUnion[];
 };
 
 export const MiscellaneousPanel: React.FC<MiscellaneousPanelProps> = ({
   config,
+  elements,
 }) => {
+  const {
+    templateEditorTranslations: { miscellaneousPanel: strings },
+  } = useAppTranslation();
   const { currntMiscellaneousPanelTab, setCurrntMiscellaneousPanelTab } =
     useEditorStore();
 
@@ -49,45 +56,45 @@ export const MiscellaneousPanel: React.FC<MiscellaneousPanelProps> = ({
           <MuiTabList
             onChange={handleTabChange}
             aria-label="miscellaneous panel tabs"
-            variant="fullWidth"
-            // sx={{
-            //   "& .MuiTab-root": {
-            //     minHeight: { xs: 48, sm: 56 },
-            //     fontSize: { xs: "0.875rem", sm: "1rem" },
-            //     px: { xs: 1, sm: 2 },
-            //     "&.Mui-selected": {
-            //       backgroundColor: "action.hover",
-            //       color: "primary.main",
-            //       fontWeight: 600,
-            //       transform: "scale(1.02)",
-            //     },
-            //     "&:hover": {
-            //       backgroundColor: "action.hover",
-            //     },
-            //     transition: "all 0.2s ease-in-out",
-            //   },
-            // }}
-            // id="miscellaneous-panel-tabs"
-            // slotProps={{
-            //   indicator: {
-            //     sx: {
-            //       backgroundColor: "primary.main",
-            //       height: 3,
-            //       borderRadius: "3px 3px 0 0",
-            //     },
-            //   },
-            //   list: {
-            //     sx: {
-            //       display: "flex",
-            //       justifyContent: "center",
-            //       gap: 0,
-            //     },
-            //   },
-            // }}
+            variant="scrollable"
+            sx={{
+              "& .MuiTab-root": {
+                minHeight: { xs: 48, sm: 56 },
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+                px: { xs: 1, sm: 2 },
+                "&.Mui-selected": {
+                  backgroundColor: "action.hover",
+                  color: "primary.main",
+                  fontWeight: 600,
+                  transform: "scale(1.02)",
+                },
+                "&:hover": {
+                  backgroundColor: "action.hover",
+                },
+                transition: "all 0.2s ease-in-out",
+              },
+            }}
+            slotProps={{
+              indicator: {
+                sx: {
+                  backgroundColor: "primary.main",
+                  height: 3,
+                  borderRadius: "3px 3px 0 0",
+                },
+              },
+              list: {
+                sx: {
+                  display: "flex",
+                  justifyContent: "start",
+                  alignItems: "center",
+                  gap: 0,
+                },
+              },
+            }}
           >
-            <Tab label="Config" value="config" />
-            <Tab label="Elements" value="elements" />
-            <Tab label="Current Element" value="currentElement" />
+            <Tab label={strings.configTab} value="config" />
+            <Tab label={strings.elementsTab} value="elements" />
+            <Tab label={strings.currentElementTab} value="currentElement" />
           </MuiTabList>
         </Box>
         <TabPanel
@@ -97,7 +104,7 @@ export const MiscellaneousPanel: React.FC<MiscellaneousPanelProps> = ({
           <TemplateConfigAutoUpdateForm config={config} />
         </TabPanel>
         <TabPanel value="elements" sx={{ flexGrow: 1, p: 1 }}>
-          <div>Elements Content</div>
+          <ElementsTab elements={elements} />
         </TabPanel>
         <TabPanel value="currentElement" sx={{ flexGrow: 1, p: 1 }}>
           <div>Current Element Content</div>
