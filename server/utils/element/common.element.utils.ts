@@ -8,6 +8,7 @@ import {
   TextPropsUpdateInputGraphql,
   TextPropsUpdateInput,
   CertificateElementBaseInput,
+  CertificateElementBaseUpdateInput,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { ElementUtils } from "./element.utils";
@@ -206,10 +207,12 @@ export namespace CommonElementUtils {
    * Note: description doesn't need validation
    */
   export const validateBaseInput = async (
-    input: CertificateElementBaseInput
+    input: CertificateElementBaseInput | CertificateElementBaseUpdateInput
   ): Promise<void> => {
     // Template exists
-    await ElementRepository.validateTemplateId(input.templateId);
+    if (input instanceof Object && "templateId" in input) {
+      await ElementRepository.validateTemplateId(input.templateId);
+    }
 
     // Name validation
     const nameError = await ElementUtils.validateName(input.name);

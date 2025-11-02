@@ -113,9 +113,8 @@ export namespace ImageElementRepository {
 
     // 4. Update certificate_element (base table)
     const updatedBaseElement = await ElementRepository.updateBaseElement(
-      input.id,
       { ...input.base, id: input.id },
-      existing.base
+      true
     );
 
     // 5. Update image_element (type-specific table)

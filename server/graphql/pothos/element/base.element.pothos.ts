@@ -87,7 +87,7 @@ export const CertificateElementBaseObject = gqlSchemaBuilder
         nullable: false,
         resolve: element => element.alignment as Types.ElementAlignment,
       }),
-      hidden: t.exposeBoolean("hidden", { nullable: false }),
+      hidden: t.exposeBoolean("hidden"),
       renderOrder: t.exposeInt("renderOrder", { nullable: false }),
       createdAt: t.expose("createdAt", { type: "DateTime", nullable: false }),
       updatedAt: t.expose("updatedAt", { type: "DateTime", nullable: false }),

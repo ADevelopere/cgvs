@@ -134,11 +134,10 @@ export namespace DateElementRepository {
 
     // 4. Update certificate_element (base table)
     const updatedBaseElement = await ElementRepository.updateBaseElement(
-      input.id,
       { ...input.base, id: input.id },
-      existing.base
+      true
     );
-
+    
     // 5. Update element_text_props (full replace required)
     const updatedTextProps: ElementTextPropsEntity =
       await TextPropsRepository.update(existing.textPropsEntity.id, {
