@@ -5,12 +5,12 @@ import { MiscellaneousPanelTab } from "./miscellaneousPanel/types";
 
 interface EditorState {
   currntMiscellaneousPanelTab: MiscellaneousPanelTab;
-  currentCertificateElementId: number | null;
+  currentElementId: number | null;
 }
 
 interface EditorActions {
   setCurrntMiscellaneousPanelTab: (tab: MiscellaneousPanelTab) => void;
-  setCurrentCertificateElementId: (id: number | null) => void;
+  setCurrentElementId: (id: number | null) => void;
 }
 
 type EditorStore = EditorState & EditorActions;
@@ -19,11 +19,11 @@ export const useEditorStore = create<EditorStore>()(
   persist(
     set => ({
       currntMiscellaneousPanelTab: "config",
-      currentCertificateElementId: null,
+      currentElementId: null,
       setCurrntMiscellaneousPanelTab: tab =>
         set({ currntMiscellaneousPanelTab: tab }),
-      setCurrentCertificateElementId: id =>
-        set({ currentCertificateElementId: id }),
+      setCurrentElementId: id =>
+        set({ currentElementId: id }),
     }),
     {
       name: "editor-store",

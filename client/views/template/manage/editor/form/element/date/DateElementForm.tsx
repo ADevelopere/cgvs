@@ -81,7 +81,7 @@ export const DateElementForm: FC<DateElementFormProps> = ({
             <Paper sx={{ p: 3 }}>
               <TextPropsForm
                 textProps={state.textProps}
-                locale={locale}
+                language={locale}
                 selfHostedFonts={selfHostedFonts}
                 onTextPropsChange={updateTextProps}
                 errors={errors.textProps}

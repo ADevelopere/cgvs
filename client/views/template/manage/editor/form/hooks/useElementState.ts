@@ -136,7 +136,7 @@ export function useElementState<T>(
           });
           pendingUpdatesRef.current.delete(elementId);
         }
-      }, 10000); // 10 seconds
+      }, 300); // 10 seconds
 
       debounceTimersRef.current.set(elementId, timer);
     },

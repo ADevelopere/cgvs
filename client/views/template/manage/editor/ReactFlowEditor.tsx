@@ -19,7 +19,7 @@ import { Box } from "@mui/material";
 import DownloadImage from "./download/DownloadImage";
 import { getHelperLines } from "./other/utils";
 import HelperLines from "./other/HelperLines";
-import {   nodeTypes } from "./other/constants";
+import { nodeTypes } from "./other/constants";
 import { useAppTheme } from "@/client/contexts";
 import logger from "@/client/lib/logger";
 
@@ -27,6 +27,7 @@ import { getTemplateImageUrl } from "../../utils/template.utils";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { TextElementNodeData } from "./nodeRendere/TextElementNode";
 import React from "react";
+import { useEditorStore } from "./useEditorStore";
 
 const panOnDrag = [1, 2];
 
@@ -46,27 +47,30 @@ const Flow: React.FC<CertificateReactFlowEditorProps> = ({
   const [nodes, setNodes] = useNodesState<Node>([]);
   const { theme } = useAppTheme();
   const { x, y, zoom } = useViewport();
+  const { setCurrentElementId } = useEditorStore();
 
   React.useEffect(() => {
-    const nodes: Node[] = elements.map(element => {
-      if (element.base.type === GQL.ElementType.Text) {
-        const data: TextElementNodeData = {
-          elementId: element.base.id,
-          elements: elements,
-        };
-        return {
-          id: element.base.id.toString(),
-          type: "text",
-          position: {
-            x: element.base.positionX,
-            y: element.base.positionY,
-          },
-          width: element.base.width,
-          height: element.base.height,
-          data: data,
-        };
-      }
-    }).filter((node) => node !== undefined);
+    const nodes: Node[] = elements
+      .map(element => {
+        if (element.base.type === GQL.ElementType.Text) {
+          const data: TextElementNodeData = {
+            elementId: element.base.id,
+            elements: elements,
+          };
+          return {
+            id: element.base.id.toString(),
+            type: "text",
+            position: {
+              x: element.base.positionX,
+              y: element.base.positionY,
+            },
+            width: element.base.width,
+            height: element.base.height,
+            data: data,
+          };
+        }
+      })
+      .filter(node => node !== undefined);
     setNodes(nodes);
   }, [elements, setNodes]);
 
@@ -113,6 +117,7 @@ const Flow: React.FC<CertificateReactFlowEditorProps> = ({
       // we calculate the helper lines and snap position for the position where the node is being moved to
 
       const firstChange = changes[0];
+
       if (
         changes.length === 1 &&
         firstChange.type === "position" &&
@@ -153,11 +158,16 @@ const Flow: React.FC<CertificateReactFlowEditorProps> = ({
             change.position.y = maxY;
           }
         }
+
+        if (change.type === "select" && change.selected) {
+          const idNum = parseInt(change.id, 10);
+          setCurrentElementId(idNum);
+        }
       });
 
       return applyNodeChanges(changes, nodes);
     },
-    [dimensions.width, dimensions.height]
+    [dimensions.width, dimensions.height, setCurrentElementId]
   );
 
   const onNodesChange: OnNodesChange = useCallback(

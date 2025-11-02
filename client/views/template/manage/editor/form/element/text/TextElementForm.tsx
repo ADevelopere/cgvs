@@ -72,7 +72,7 @@ export const TextElementForm: FC<TextElementFormProps> = ({
             <Paper sx={{ p: 3, height: "100%" }}>
               <TextPropsForm
                 textProps={state.textProps}
-                locale={locale}
+                language={locale}
                 selfHostedFonts={selfHostedFonts}
                 onTextPropsChange={updateTextProps}
                 errors={errors.textProps}
