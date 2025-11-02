@@ -202,6 +202,17 @@ export const DateDataSourceInputObject = gqlSchemaBuilder.inputType(
   }
 );
 
+export const DateDataSourceStandaloneInputObject = gqlSchemaBuilder
+  .inputRef<Types.DateDataSourceStandaloneInputGraphql>(
+    "DateDataSourceStandaloneInput"
+  )
+  .implement({
+    fields: t => ({
+      elementId: t.int({ required: true }),
+      dataSource: t.field({ type: DateDataSourceInputObject, required: true }),
+    }),
+  });
+
 export const DatePropsObject = gqlSchemaBuilder
   .objectRef<Types.DateElementSpecProps>("DateProps")
   .implement({
@@ -216,11 +227,8 @@ export const DatePropsObject = gqlSchemaBuilder
     }),
   });
 
-
 export const DateDataSourceUpdateResponsePothosObject = gqlSchemaBuilder
-  .objectRef<Types.DateDataSourceUpdateResponse>(
-    "DateDataSourceUpdateResponse"
-  )
+  .objectRef<Types.DateDataSourceUpdateResponse>("DateDataSourceUpdateResponse")
   .implement({
     fields: t => ({
       elementId: t.exposeInt("elementId"),
@@ -230,18 +238,18 @@ export const DateDataSourceUpdateResponsePothosObject = gqlSchemaBuilder
     }),
   });
 
-  export const DateElementSpecPropsUpdateResponsePothosObject11 = gqlSchemaBuilder
-    .objectRef<Types.DateElementSpecPropsUpdateResponse>(
-      "DateElementSpecPropsUpdateResponse"
-    )
-    .implement({
-      fields: t => ({
-        elementId: t.exposeInt("elementId"),
-        dateProps: t.expose("dateProps", {
-          type: DatePropsObject,
-        }),
+export const DateElementSpecPropsUpdateResponsePothosObject = gqlSchemaBuilder
+  .objectRef<Types.DateElementSpecPropsUpdateResponse>(
+    "DateElementSpecPropsUpdateResponse"
+  )
+  .implement({
+    fields: t => ({
+      elementId: t.exposeInt("elementId"),
+      dateProps: t.expose("dateProps", {
+        type: DatePropsObject,
       }),
-    });
+    }),
+  });
 
 // ============================================================================
 // Mutation Inputs
@@ -256,6 +264,20 @@ export const DateElementSpecPropsInputObject = gqlSchemaBuilder
       offsetDays: t.int(),
       transformation: t.field({
         type: DateTransformationTypePothosEnum,
+      }),
+    }),
+  });
+
+export const DateElementSpecPropsStandaloneInputObject = gqlSchemaBuilder
+  .inputRef<Types.DateElementSpecPropsStandaloneInput>(
+    "DateElementSpecPropsStandaloneInput"
+  )
+  .implement({
+    fields: t => ({
+      elementId: t.int({ required: true }),
+      dateProps: t.field({
+        type: DateElementSpecPropsInputObject,
+        required: true,
       }),
     }),
   });
