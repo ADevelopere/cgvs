@@ -60,6 +60,8 @@ declare global {
       FUNCTIONS_WORKER_RUNTIME?: string;
       CF_PAGES?: string;
       RAILWAY_ENVIRONMENT?: string;
+
+      GOOGLE_FONTS_API_KEY?: string;
     }
   }
 }

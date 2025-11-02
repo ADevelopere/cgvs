@@ -16,6 +16,7 @@ type TextElementNodeProps = NodeProps & {
   data: TextElementNodeData;
 };
 
+
 export const TextElementNode = ({ data }: TextElementNodeProps) => {
   const { elements, elementId } = data;
   const { textPropsState } = useTextProps({ elements, elementId });

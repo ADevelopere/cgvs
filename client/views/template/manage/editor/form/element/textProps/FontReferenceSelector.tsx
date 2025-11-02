@@ -33,6 +33,9 @@ interface GoogleFont {
   subsets: string[];
 }
 
+
+const GOOGLE_FONTS_API_KEY = process.env.GOOGLE_FONTS_API_KEY || "";
+
 export const FontReferenceSelector: FC<FontReferenceSelectorProps> = ({
   fontRef,
   locale: _locale,
@@ -52,7 +55,7 @@ export const FontReferenceSelector: FC<FontReferenceSelectorProps> = ({
       try {
         // Note: In production, the API key should be from environment variable
         const response = await fetch(
-          "https://www.googleapis.com/webfonts/v1/webfonts?key=YOUR_API_KEY"
+          `https://www.googleapis.com/webfonts/v1/webfonts?key=${GOOGLE_FONTS_API_KEY}`
         );
         const data = await response.json();
         setGoogleFonts(data.items || []);
