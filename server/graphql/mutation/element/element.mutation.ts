@@ -8,7 +8,7 @@ import { CommonElementUtils, TextPropsUtils } from "@/server/utils";
 // =========================================================================
 gqlSchemaBuilder.mutationFields(t => ({
   updateElementCommonProperties: t.field({
-    type: ElementPothos.CertificateElementPothosInterface,
+    type: ElementPothos.CertificateElementBaseObject,
     args: {
       input: t.arg({
         type: ElementPothos.CertificateElementBaseUpdateInputObject,
@@ -17,10 +17,7 @@ gqlSchemaBuilder.mutationFields(t => ({
     },
     resolve: async (_, args) => {
       const input = args.input;
-      const base = await ElementRepository.updateBaseElement(input);
-      return {
-        base: base,
-      };
+      return await ElementRepository.updateBaseElement(input);
     },
   }),
 

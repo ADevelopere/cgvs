@@ -8,11 +8,12 @@ export const textElementByIdQueryDocument: TypedDocumentNode<
   query textElementById($id: Int!) {
     textElementById(id: $id) {
       base {
+        id
+        templateId
         alignment
         createdAt
         description
         height
-        id
         name
         positionX
         positionY
@@ -21,9 +22,6 @@ export const textElementByIdQueryDocument: TypedDocumentNode<
         updatedAt
         width
         hidden
-      }
-      template {
-        id
       }
       textDataSource {
         ... on TextDataSourceCertificateField {
@@ -79,11 +77,12 @@ export const createTextElementMutationDocument: TypedDocumentNode<
   mutation createTextElement($input: TextElementInput!) {
     createTextElement(input: $input) {
       base {
+        id
+        templateId
         alignment
         createdAt
         description
         height
-        id
         name
         positionX
         positionY
@@ -92,9 +91,6 @@ export const createTextElementMutationDocument: TypedDocumentNode<
         updatedAt
         width
         hidden
-      }
-      template {
-        id
       }
       textDataSource {
         ... on TextDataSourceCertificateField {
@@ -150,11 +146,12 @@ export const updateTextElementMutationDocument: TypedDocumentNode<
   mutation updateTextElement($input: TextElementUpdateInput!) {
     updateTextElement(input: $input) {
       base {
+        id
+        templateId
         alignment
         createdAt
         description
         height
-        id
         name
         positionX
         positionY
@@ -163,9 +160,6 @@ export const updateTextElementMutationDocument: TypedDocumentNode<
         updatedAt
         width
         hidden
-      }
-      template {
-        id
       }
       textDataSource {
         ... on TextDataSourceCertificateField {

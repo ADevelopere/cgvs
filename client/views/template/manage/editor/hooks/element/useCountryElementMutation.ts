@@ -15,7 +15,7 @@ export const useCountryElementMutation = (
       update(cache, { data }) {
         if (!data?.createCountryElement) return;
         const newElement = data.createCountryElement;
-        const templateId = newElement.template?.id;
+        const templateId = newElement.base.templateId;
         if (!templateId) return;
 
         cache.updateQuery<GQL.ElementsByTemplateIdQuery>(
@@ -73,7 +73,7 @@ export const useCountryElementMutation = (
       update(cache, { data }) {
         if (!data?.updateCountryElement) return;
         const updated = data.updateCountryElement;
-        const templateId = updated.template?.id;
+        const templateId = updated.base.templateId;
         if (!templateId) return;
 
         cache.updateQuery<GQL.ElementsByTemplateIdQuery>(

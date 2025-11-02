@@ -8,11 +8,12 @@ export const createImageElementMutationDocument: TypedDocumentNode<
   mutation createImageElement($input: ImageElementInput!) {
     createImageElement(input: $input) {
       base {
+        id
+        templateId
         alignment
         createdAt
         description
         height
-        id
         name
         positionX
         positionY
@@ -31,9 +32,6 @@ export const createImageElementMutationDocument: TypedDocumentNode<
         elementId
         fit
         storageFileId
-      }
-      template {
-        id
       }
     }
   }
@@ -46,11 +44,12 @@ export const updateImageElementMutationDocument: TypedDocumentNode<
   mutation updateImageElement($input: ImageElementUpdateInput!) {
     updateImageElement(input: $input) {
       base {
+        id
+        templateId
         alignment
         createdAt
         description
         height
-        id
         name
         positionX
         positionY
@@ -69,9 +68,6 @@ export const updateImageElementMutationDocument: TypedDocumentNode<
         elementId
         fit
         storageFileId
-      }
-      template {
-        id
       }
     }
   }

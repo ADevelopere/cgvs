@@ -8,11 +8,12 @@ export const createNumberElementMutationDocument: TypedDocumentNode<
   mutation createNumberElement($input: NumberElementInput!) {
     createNumberElement(input: $input) {
       base {
+        id
+        templateId
         alignment
         createdAt
         description
         height
-        id
         name
         positionX
         positionY
@@ -30,9 +31,6 @@ export const createNumberElementMutationDocument: TypedDocumentNode<
       numberDataSource {
         numberVariableId
         type
-      }
-      template {
-        id
       }
       textProps {
         color
@@ -61,11 +59,12 @@ export const updateNumberElementMutationDocument: TypedDocumentNode<
   mutation updateNumberElement($input: NumberElementUpdateInput!) {
     updateNumberElement(input: $input) {
       base {
+        id
+        templateId
         alignment
         createdAt
         description
         height
-        id
         name
         positionX
         positionY
@@ -83,9 +82,6 @@ export const updateNumberElementMutationDocument: TypedDocumentNode<
         mapping
         textPropsId
         variableId
-      }
-      template {
-        id
       }
       textProps {
         color

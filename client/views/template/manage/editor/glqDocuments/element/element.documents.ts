@@ -1,18 +1,19 @@
 import { TypedDocumentNode, gql } from "@apollo/client";
-import * as Graphql from "@/client/graphql/generated/gql/graphql";
+import * as GQL from "@/client/graphql/generated/gql/graphql";
 
 export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
-  Graphql.ElementsByTemplateIdQuery,
-  Graphql.ElementsByTemplateIdQueryVariables
+  GQL.ElementsByTemplateIdQuery,
+  GQL.ElementsByTemplateIdQueryVariables
 > = gql`
   query ElementsByTemplateId($templateId: Int!) {
     elementsByTemplateId(templateId: $templateId) {
       base {
+        id
+        templateId
         alignment
         createdAt
         description
         height
-        id
         name
         positionX
         positionY
@@ -21,9 +22,6 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
         updatedAt
         width
         hidden
-      }
-      template {
-        id
       }
       ... on CountryElement {
         countryProps {
@@ -204,7 +202,7 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
   }
 `;
 
-export const certificateElementFragment: TypedDocumentNode<Graphql.CertificateElementFragment> = gql`
+export const certificateElementFragment: TypedDocumentNode<GQL.CertificateElementFragment> = gql`
   fragment CertificateElement on CertificateElementUnion {
     __typename
     ... on TextElement {
@@ -246,8 +244,8 @@ export const certificateElementFragment: TypedDocumentNode<Graphql.CertificateEl
 `;
 
 export const updateElementsRenderOrderMutationDocument: TypedDocumentNode<
-  Graphql.UpdateElementsRenderOrderMutation,
-  Graphql.UpdateElementsRenderOrderMutationVariables
+  GQL.UpdateElementsRenderOrderMutation,
+  GQL.UpdateElementsRenderOrderMutationVariables
 > = gql`
   mutation updateElementsRenderOrder($updates: [ElementOrderUpdateInput!]!) {
     updateElementsRenderOrder(updates: $updates)
@@ -255,8 +253,8 @@ export const updateElementsRenderOrderMutationDocument: TypedDocumentNode<
 `;
 
 export const deleteElementMutationDocument: TypedDocumentNode<
-  Graphql.DeleteElementMutation,
-  Graphql.DeleteElementMutationVariables
+  GQL.DeleteElementMutation,
+  GQL.DeleteElementMutationVariables
 > = gql`
   mutation DeleteElement($deleteElementId: Int!) {
     deleteElement(id: $deleteElementId)
@@ -264,10 +262,40 @@ export const deleteElementMutationDocument: TypedDocumentNode<
 `;
 
 export const deleteElementsByIdsMutationDocument: TypedDocumentNode<
-  Graphql.DeleteElementsMutation,
-  Graphql.DeleteElementsMutationVariables
+  GQL.DeleteElementsMutation,
+  GQL.DeleteElementsMutationVariables
 > = gql`
   mutation deleteElements($ids: [Int!]!) {
     deleteElements(ids: $ids)
+  }
+`;
+
+export const updateElementCommonPropertiesMutationDocument: TypedDocumentNode<
+  {
+    updateElementCommonProperties?: GQL.CertificateElement | null;
+  },
+  {
+    input: GQL.CertificateElementBaseUpdateInput;
+  }
+> = gql`
+  mutation UpdateElementCommonProperties(
+    $input: CertificateElementBaseUpdateInput!
+  ) {
+    updateElementCommonProperties(input: $input) {
+      id
+      templateId
+      alignment
+      createdAt
+      description
+      height
+      name
+      positionX
+      positionY
+      renderOrder
+      type
+      updatedAt
+      width
+      hidden
+    }
   }
 `;

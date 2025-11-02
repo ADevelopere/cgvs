@@ -8,11 +8,12 @@ export const createCountryElementMutationDocument: TypedDocumentNode<
   mutation createCountryElement($input: CountryElementInput!) {
     createCountryElement(input: $input) {
       base {
+        id
+        templateId
         alignment
         createdAt
         description
         height
-        id
         name
         positionX
         positionY
@@ -23,9 +24,6 @@ export const createCountryElementMutationDocument: TypedDocumentNode<
       }
       countryProps {
         representation
-      }
-      template {
-        id
       }
       textProps {
         color
@@ -54,11 +52,12 @@ export const updateCountryElementMutationDocument: TypedDocumentNode<
   mutation updateCountryElement($input: CountryElementUpdateInput!) {
     updateCountryElement(input: $input) {
       base {
+        id
+        templateId
         alignment
         createdAt
         description
         height
-        id
         name
         positionX
         positionY
@@ -69,9 +68,6 @@ export const updateCountryElementMutationDocument: TypedDocumentNode<
       }
       countryProps {
         representation
-      }
-      template {
-        id
       }
       textProps {
         color

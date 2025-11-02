@@ -15,7 +15,7 @@ export const useNumberElementMutation = (
       update(cache, { data }) {
         if (!data?.createNumberElement) return;
         const newElement = data.createNumberElement;
-        const templateId = newElement.template?.id;
+        const templateId = newElement.base.templateId;
         if (!templateId) return;
 
         cache.updateQuery<GQL.ElementsByTemplateIdQuery>(
@@ -78,7 +78,7 @@ export const useNumberElementMutation = (
       update(cache, { data }) {
         if (!data?.updateNumberElement) return;
         const updated = data.updateNumberElement;
-        const templateId = updated.template?.id;
+        const templateId = updated.base.templateId;
         if (!templateId) return;
 
         cache.updateQuery<GQL.ElementsByTemplateIdQuery>(
