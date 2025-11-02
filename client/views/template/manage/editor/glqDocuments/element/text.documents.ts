@@ -20,6 +20,7 @@ export const textElementByIdQueryDocument: TypedDocumentNode<
         type
         updatedAt
         width
+        hidden
       }
       template {
         id
@@ -90,6 +91,7 @@ export const createTextElementMutationDocument: TypedDocumentNode<
         type
         updatedAt
         width
+        hidden
       }
       template {
         id
@@ -160,6 +162,7 @@ export const updateTextElementMutationDocument: TypedDocumentNode<
         type
         updatedAt
         width
+        hidden
       }
       template {
         id

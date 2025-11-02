@@ -43,7 +43,7 @@ export const TemplateConfigForm: React.FC<TemplateConfigFormProps> = ({
         <TextField
           label={strings.width}
           type="number"
-          value={state.width}
+          value={state.width ?? ""}
           onChange={e =>
             updateFn({ key: "width", value: parseInt(e.target.value, 10) })
           }
@@ -57,7 +57,7 @@ export const TemplateConfigForm: React.FC<TemplateConfigFormProps> = ({
         <TextField
           label={strings.height}
           type="number"
-          value={state.height}
+          value={state.height ?? ""}
           onChange={e =>
             updateFn({ key: "height", value: parseInt(e.target.value, 10) })
           }

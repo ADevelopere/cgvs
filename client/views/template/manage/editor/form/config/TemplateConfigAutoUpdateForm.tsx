@@ -7,6 +7,7 @@ import { TemplateConfigForm } from "./TemplateConfigForm";
 import { logger } from "@/client/lib/logger";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
+import { useTemplateConfigFormValidateFn } from "./templateConfigValidator";
 
 export type TemplateConfigAutoUpdateFormProps = {
   config: GQL.TemplateConfig;
@@ -93,53 +94,24 @@ export const TemplateConfigAutoUpdateForm: React.FC<
   const [errors, setErrors] = React.useState<TemplateConfigFormErrors>({});
   const [updating, setUpdating] = React.useState(false);
   const [updateError, setUpdateError] = React.useState<string | null>(null);
+  const validateAction = useTemplateConfigFormValidateFn(strings);
 
   const updater: TemplateConfigFormUpdateFn = React.useCallback(
     action => {
       const { key, value } = action;
+      const errorMessage = validateAction(action);
 
-      if (key === "width" || key === "height") {
-        if (value <= 0) {
-          setErrors(prev => ({
-            ...prev,
-            [key]:
-              strings.valueMustBeGreaterThanZero ?? `${key} must be positive`,
-          }));
-          setInputState(prev => ({
-            ...prev,
-            [key]: value,
-          }));
-          return;
-        } else if (value > 10000) {
-          logger.info("Value too large:", value);
-          setErrors(prev => ({
-            ...prev,
-            [key]:
-              strings.valueMustBeLessThanOrEqualTo10000 ??
-              `${key} must be less than or equal to 10000`,
-          }));
-          setInputState(prev => ({
-            ...prev,
-            [key]: value,
-          }));
-          return;
-        } else {
-          setErrors(prev => {
-            const { [key]: _, ...rest } = prev;
-            return rest;
-          });
-        }
-      }
+      setErrors(prev => ({
+        ...prev,
+        [key]: errorMessage,
+      }));
 
       setInputState(prev => ({
         ...prev,
         [key]: value,
       }));
     },
-    [
-      strings.valueMustBeGreaterThanZero,
-      strings.valueMustBeLessThanOrEqualTo10000,
-    ]
+    [validateAction]
   );
 
   const hasChanged = React.useMemo(() => {

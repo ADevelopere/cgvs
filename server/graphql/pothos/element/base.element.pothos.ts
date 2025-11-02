@@ -38,6 +38,7 @@ export const createBaseElementInputFields = <Types extends SchemaTypes>(
   width: t.int({ required: true }),
   height: t.int({ required: true }),
   alignment: t.field({ type: ElementAlignmentPothosEnum, required: true }),
+  hidden: t.boolean({ required: false }),
   renderOrder: t.int({ required: true }),
 });
 
@@ -86,6 +87,7 @@ export const CertificateElementBaseObject = gqlSchemaBuilder
         nullable: false,
         resolve: element => element.alignment as Types.ElementAlignment,
       }),
+      hidden: t.exposeBoolean("hidden", { nullable: false }),
       renderOrder: t.exposeInt("renderOrder", { nullable: false }),
       createdAt: t.expose("createdAt", { type: "DateTime", nullable: false }),
       updatedAt: t.expose("updatedAt", { type: "DateTime", nullable: false }),
