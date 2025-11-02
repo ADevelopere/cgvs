@@ -40,9 +40,46 @@ export type UpdateDateDataSourceFn = (
   dataSource: GQL.DateDataSourceInput
 ) => void;
 
+export type UpdateDateDataSourceWithElementIdFn = (
+  elementId: number,
+  dataSource: GQL.DateDataSourceInput
+) => void;
+
 export type UpdateDatePropsFn = UpdateStateFn<GQL.DateElementSpecPropsInput>;
 
 export type UpdateDatePropsWithElementIdFn =
   UpdateStateWithElementIdFn<DatePropsState>;
 
 export type ValidateDatePropsFieldFn = ValidateFieldFn<GQL.DateElementSpecPropsInput>;
+
+// ============================================================================
+// SANITIZED STATE TYPES
+// ============================================================================
+
+export type SanitizedDateDataSourceFormState = GQL.DateDataSourceInput;
+
+// ============================================================================
+// CONVERSION UTILITIES
+// ============================================================================
+
+/**
+ * Convert DateDataSource (query union type) to DateDataSourceInput (OneOf input type)
+ */
+export const dateDataSourceToInput = (
+  state: GQL.DateDataSource
+): GQL.DateDataSourceInput => {
+  switch (state.__typename) {
+    case "DateDataSourceStatic":
+      return { static: { value: state.value ?? "" } };
+    case "DateDataSourceStudentField":
+      return { studentField: { field: state.studentField! } };
+    case "DateDataSourceCertificateField":
+      return { certificateField: { field: state.certificateField! } };
+    case "DateDataSourceTemplateVariable":
+      return {
+        templateVariable: { variableId: state.dateVariableId ?? 0 },
+      };
+    default:
+      throw new Error(`Unknown DateDataSource type: ${state.__typename}`);
+  }
+};

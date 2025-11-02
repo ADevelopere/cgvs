@@ -22,3 +22,9 @@ export type { UseQRCodePropsStateParams, UseQRCodePropsStateReturn } from "./use
 export { useTextDataSourceState } from "./useTextDataSourceState";
 export type { UseTextDataSourceStateParams, UseTextDataSourceStateReturn } from "./useTextDataSourceState";
 
+export { useDateDataSourceState } from "./useDateDataSourceState";
+export type { UseDateDataSourceStateParams, UseDateDataSourceStateReturn } from "./useDateDataSourceState";
+
+export { useNumberDataSourceState } from "./useNumberDataSourceState";
+export type { UseNumberDataSourceStateParams, UseNumberDataSourceStateReturn } from "./useNumberDataSourceState";
+

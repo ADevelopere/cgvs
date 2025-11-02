@@ -1,67 +1,69 @@
 <!-- b1e9aa36-b045-4a01-8d45-230242fc6ae2 1824c965-82e7-4ca3-b62d-50aedb38222f -->
-# UseDateDataSourceState Implementation
+# UseNumberDataSourceState Implementation
 
-Implement `useDateDataSourceState` hook for managing dateDataSource state for DateElement. This follows a similar pattern to `useTextDataSourceState`, requiring special handling because `DateDataSourceInput` is a OneOf type (discriminated union) rather than a simple object with individual fields.
+Implement `useNumberDataSourceState` hook for managing numberDataSource state for NumberElement. Unlike `TextDataSourceInput` and `DateDataSourceInput` which are OneOf types (discriminated unions), `NumberDataSourceInput` is a simple object with a `variableId` field, making this implementation simpler and more similar to hooks like `useCountryPropsState`.
 
 ## Implementation Steps
 
 ### 1. Mutation document exists
 
-- **File**: `client/views/template/manage/editor/glqDocuments/element/date.documents.ts`
-- The mutation document `updateDateElementDataSourceMutationDocument` already exists
-- Uses `DateDataSourceStandaloneInput` and returns `DateDataSourceUpdateResponse`
-- No changes needed
+- **File**: `client/views/template/manage/editor/glqDocuments/element/number.documents.ts`
+- The mutation document `updateNumberElementDataSourceMutationDocument` should already exist
+- Uses `NumberDataSourceStandaloneInput` and returns `NumberElementDataSourceUpdateResponse`
+- Verify the document exists, no changes needed if it does
 
-### 2. Add types and utility to date/types.ts
+### 2. Add types to number/types.ts
 
-- **File**: `client/views/template/manage/editor/form/element/date/types.ts`
-- Add `SanitizedDateDataSourceFormState` type (same as `DateDataSourceInput`, no sanitization needed)
-- Add `UpdateDateDataSourceWithElementIdFn` type that takes `(elementId: number, dataSource: DateDataSourceInput) => void`
-- Keep existing `DateDataSourceFormErrors` export
-- Create `dateDataSourceToInput` utility function similar to `textDataSourceToInput`:
-  - Converts `DateDataSource` (query union type) to `DateDataSourceInput` (OneOf input type)
-  - Handles all variants:
-    - `DateDataSourceStatic` → `{ static: { value } }`
-    - `DateDataSourceStudentField` → `{ studentField: { field } }`
-    - `DateDataSourceCertificateField` → `{ certificateField: { field } }`
-    - `DateDataSourceTemplateVariable` → `{ templateVariable: { variableId } }`
-- Note: Since `DateDataSourceInput` is a OneOf type, we can't use the standard `Action<T>` pattern for individual fields. The update function will replace the entire dataSource.
+- **File**: `client/views/template/manage/editor/form/element/number/types.ts`
+- Add `SanitizedNumberDataSourceFormState` type (same as `NumberDataSourceInput`, no sanitization needed)
+- Add `UpdateNumberDataSourceWithElementIdFn` type that takes `(elementId: number, dataSource: NumberDataSourceInput) => void`
+- Keep existing `DataSourceFormErrors` export (already defined as `FormErrors<NumberDataSourceInput>`)
+- Note: Since `NumberDataSourceInput` is a simple object (not OneOf), we can still use `Action<T>` pattern, but for simplicity and consistency with dataSource hooks, we'll use the same pattern as `useTextDataSourceState` - replace entire dataSource.
 
-### 3. Create useDateDataSourceState hook
+### 3. Create numberDataSource conversion utility
 
-- **File**: `client/views/template/manage/editor/form/hooks/useDateDataSourceState.ts`
-- Follow the pattern from `useTextDataSourceState.ts` since both handle OneOf types
-- Extract dateDataSource state from DateElement only:
-  - DateElement: `element.dateDataSource`
-  - Other elements: return null (don't have dateDataSource)
-- Uses the `dateDataSourceToInput` utility to convert `DateDataSource` (query output) to `DateDataSourceInput` (form input)
-- Uses the existing `validateDateDataSource` from `element/date/dateValidators.ts` for validation
-- Uses the existing `updateDateElementDataSourceMutationDocument` from `glqDocuments/element/date.documents.ts`
-- Since `DateDataSourceInput` is a OneOf type (not a simple object), we need a specialized approach:
-  - State is stored as `DateDataSourceInput` (the entire discriminated union)
-  - Update function accepts the entire `DateDataSourceInput` (not individual field actions)
+- **File**: `client/views/template/manage/editor/form/element/number/types.ts`
+- Create `numberDataSourceToInput` utility function
+- Converts `NumberDataSource` (query type) to `NumberDataSourceInput` (input type)
+- Since NumberDataSource only has `numberVariableId`, the conversion is:
+  ```typescript
+  { variableId: numberDataSource.numberVariableId ?? 0 }
+  ```
+
+
+### 4. Create useNumberDataSourceState hook
+
+- **File**: `client/views/template/manage/editor/form/hooks/useNumberDataSourceState.ts`
+- Extract numberDataSource state from NumberElement only:
+  - NumberElement: `element.numberDataSource`
+  - Other elements: return null (don't have numberDataSource)
+- Uses the `numberDataSourceToInput` utility to convert `NumberDataSource` (query output) to `NumberDataSourceInput` (form input)
+- Uses the existing `validateNumberDataSource` from `element/number/numberValidators.ts` for validation
+- Uses the existing `updateNumberElementDataSourceMutationDocument` from `glqDocuments/element/number.documents.ts`
+- Since `NumberDataSourceInput` is a simple object (not OneOf), but to maintain consistency with dataSource hooks, use similar pattern:
+  - State is stored as `NumberDataSourceInput` (entire object with `variableId`)
+  - Update function accepts the entire `NumberDataSourceInput` (not individual field actions)
   - Validation validates the entire dataSource
-  - Use similar pattern to `useTextDataSourceState` - likely needs custom implementation rather than generic `useElementState`
 - Returns `{ getState, updateFn, pushUpdate, errors }` where:
-  - `getState(elementId)`: Returns `DateDataSourceInput | null` (null if element is not DateElement)
-  - `updateFn(elementId, dataSource)`: Updates dateDataSource state for elementId (replaces entire dataSource)
-  - `pushUpdate(elementId)`: Immediately saves dateDataSource state for elementId
+  - `getState(elementId)`: Returns `NumberDataSourceInput | null` (null if element is not NumberElement)
+  - `updateFn(elementId, dataSource)`: Updates numberDataSource state for elementId (replaces entire dataSource)
+  - `pushUpdate(elementId)`: Immediately saves numberDataSource state for elementId
   - `errors`: Map of elementId → errors
 
-### 4. Handle state extraction and conversion
+### 5. Handle state extraction and conversion
 
-- Extract dateDataSource from DateElement using `dateDataSourceToInput` utility:
+- Extract numberDataSource from NumberElement using `numberDataSourceToInput` utility:
   ```typescript
-  if (element.__typename === "DateElement" && element.dateDataSource) {
-    return dateDataSourceToInput(element.dateDataSource);
+  if (element.__typename === "NumberElement" && element.numberDataSource) {
+    return numberDataSourceToInput(element.numberDataSource);
   }
   return null;
   ```
 
 - Convert to mutation input:
   ```typescript
-  // DateDataSourceInput to DateDataSourceStandaloneInput
-  // DateDataSourceStandaloneInput includes elementId
+  // NumberDataSourceInput to NumberDataSourceStandaloneInput
+  // NumberDataSourceStandaloneInput includes elementId
   {
     elementId: elementId,
     dataSource: state
@@ -69,52 +71,53 @@ Implement `useDateDataSourceState` hook for managing dateDataSource state for Da
   ```
 
 
-### 5. Validation approach
+### 6. Validation approach
 
-- Since `DateDataSourceInput` is a OneOf type, we need to validate the entire object
-- Use `validateDateDataSource(dataSource)` which returns `DateDataSourceFormErrors`
-- The validator checks which variant is active and validates accordingly:
-  - `static`: validates value is not empty
-  - `studentField`: validates field is provided
-  - `certificateField`: validates field is provided
-  - `templateVariable`: validates variableId > 0
+- Since `NumberDataSourceInput` is a simple object, validation is straightforward
+- Use `validateNumberDataSource(dataSource)` which returns `DataSourceFormErrors`
+- The validator checks that `variableId` is provided and > 0:
+  - `variableId`: must be > 0
 
-### 6. Update function pattern
+### 7. Update function pattern
 
-- Unlike other hooks that use `Action<T>` pattern for individual fields, this hook needs to replace the entire `DateDataSourceInput`
-- The update function signature will be: `(elementId: number, dataSource: DateDataSourceInput) => void`
-- This replaces the entire dataSource rather than updating individual fields
-- Follow the same pattern as `useTextDataSourceState` (likely custom implementation for OneOf types)
+- For consistency with other dataSource hooks (`useTextDataSourceState`, `useDateDataSourceState`), use the same pattern:
+  - The update function signature: `(elementId: number, dataSource: NumberDataSourceInput) => void`
+  - This replaces the entire dataSource rather than updating individual fields
+  - Follow the same implementation pattern as `useTextDataSourceState` or `useDateDataSourceState`
 
-### 7. Element type detection
+### 8. Element type detection
 
-- Only DateElement should be processed
-- Return null from `extractInitialState` if element is not DateElement
-- Type guard to check if element is DateElement
+- Only NumberElement should be processed
+- Return null from `extractInitialState` if element is not NumberElement
+- Type guard to check if element is NumberElement
 
-### 8. Export hook
+### 9. Export hook
 
 - **File**: `client/views/template/manage/editor/form/hooks/index.ts`
-- Export `useDateDataSourceState` and its types
+- Export `useNumberDataSourceState` and its types
 
 ## Key Implementation Details
 
-### Element Types with dateDataSource
+### Element Types with numberDataSource
 
-- DateElement ✓ (only one)
-- TextElement ✗ (no dateDataSource)
-- ImageElement ✗ (no dateDataSource)
-- NumberElement ✗ (no dateDataSource)
-- CountryElement ✗ (no dateDataSource)
-- GenderElement ✗ (no dateDataSource)
-- QRCodeElement ✗ (no dateDataSource)
+- NumberElement ✓ (only one)
+- TextElement ✗ (no numberDataSource)
+- DateElement ✗ (no numberDataSource)
+- ImageElement ✗ (no numberDataSource)
+- CountryElement ✗ (no numberDataSource)
+- GenderElement ✗ (no numberDataSource)
+- QRCodeElement ✗ (no numberDataSource)
 
 ### State Conversion
 
-- Query output: `DateDataSource` (discriminated union with __typename)
-- Form input: `DateDataSourceInput` (OneOf input type)
-- Mutation input: `DateDataSourceStandaloneInput` (wraps dataSource with elementId)
-- Create `dateDataSourceToInput` utility for conversion (similar to `textDataSourceToInput`)
+- Query output: `NumberDataSource` (has `numberVariableId?: number | null`)
+- Form input: `NumberDataSourceInput` (has `variableId: number`)
+- Mutation input: `NumberDataSourceStandaloneInput` (wraps dataSource with elementId)
+- Create `numberDataSourceToInput` utility for conversion:
+  ```typescript
+  { variableId: numberDataSource.numberVariableId ?? 0 }
+  ```
+
 
 ### Mutation Structure
 
@@ -123,45 +126,42 @@ The mutation takes:
 ```typescript
 {
   elementId: number,
-  dataSource: DateDataSourceInput
+  dataSource: NumberDataSourceInput  // { variableId: number }
 }
 ```
 
 ### Validation
 
-- Uses `validateDateDataSource` which validates the entire `DateDataSourceInput` object
-- Returns `DateDataSourceFormErrors` which is a partial object with error messages
-- Validation depends on which variant of the OneOf is active:
-  - `static`: requires non-empty value
-  - `studentField`: requires field
-  - `certificateField`: requires field
-  - `templateVariable`: requires variableId > 0
+- Uses `validateNumberDataSource` which validates the entire `NumberDataSourceInput` object
+- Returns `DataSourceFormErrors` which has `variableId?: string` error field
+- Validation checks:
+  - `variableId`: must be provided and > 0
 
-### Special Consideration: OneOf Type Pattern
+### Special Consideration: Simple Object Pattern
 
-Since `DateDataSourceInput` is a OneOf type (discriminated union), the update pattern is different:
+Unlike `TextDataSourceInput` and `DateDataSourceInput` which are OneOf types, `NumberDataSourceInput` is a simple object:
 
-- Cannot use individual field updates (Action pattern)
-- Must replace entire dataSource
-- The update function takes the entire `DateDataSourceInput` rather than `Action<DateDataSourceInput>`
-- Follow the same implementation pattern as `useTextDataSourceState`
+- Only has one field: `variableId: number`
+- NUMBER elements only support TEMPLATE_NUMBER_VARIABLE data source type
+- Still use the same pattern as other dataSource hooks for consistency (replace entire object)
 
 ## Files to Create/Modify
 
 ### New Files
 
-- `client/views/template/manage/editor/form/hooks/useDateDataSourceState.ts`
+- `client/views/template/manage/editor/form/hooks/useNumberDataSourceState.ts`
 
 ### Modified Files
 
-- `client/views/template/manage/editor/form/element/date/types.ts` (add UpdateDateDataSourceWithElementIdFn, SanitizedDateDataSourceFormState, and dateDataSourceToInput utility)
-- `client/views/template/manage/editor/form/hooks/index.ts` (export useDateDataSourceState)
+- `client/views/template/manage/editor/form/element/number/types.ts` (add UpdateNumberDataSourceWithElementIdFn, SanitizedNumberDataSourceFormState, and numberDataSourceToInput utility)
+- `client/views/template/manage/editor/form/hooks/index.ts` (export useNumberDataSourceState)
 
 ### Note
 
-- The mutation document already exists in `date.documents.ts`, so no changes needed there
-- Reference `useTextDataSourceState.ts` as a guide since it handles a similar OneOf type pattern
-- The `validateDateDataSource` validator already exists in `dateValidators.ts`
+- The mutation document should already exist in `number.documents.ts`, verify it exists
+- The `validateNumberDataSource` validator already exists in `numberValidators.ts`
+- Reference `useTextDataSourceState.ts` or `useDateDataSourceState.ts` as a guide, but the implementation will be simpler since NumberDataSourceInput is not a OneOf type
+- The conversion utility is simpler since NumberDataSource only has one field
 
 ### To-dos
 

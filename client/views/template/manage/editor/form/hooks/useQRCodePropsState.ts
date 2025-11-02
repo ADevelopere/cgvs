@@ -37,9 +37,11 @@ function extractQRCodePropsState(
   }
 
   return {
-    backgroundColor: element.qrCodeProps.backgroundColor ?? "",
-    foregroundColor: element.qrCodeProps.foregroundColor ?? "",
-    errorCorrection: element.qrCodeProps.errorCorrection as GQL.QrCodeErrorCorrection,
+    backgroundColor: element.qrCodeProps.backgroundColor ?? "#FFFFFF",
+    foregroundColor: element.qrCodeProps.foregroundColor ?? "#000000",
+    errorCorrection:
+      (element.qrCodeProps.errorCorrection as GQL.QrCodeErrorCorrection) ??
+      GQL.QrCodeErrorCorrection.L,
   };
 }
 
@@ -113,4 +115,3 @@ export function useQRCodePropsState(
     errors,
   };
 }
-
