@@ -3,10 +3,10 @@ import type { StorybookConfig } from "@storybook/nextjs-vite";
 const config: StorybookConfig = {
   stories: [
     "../client/stories/**/*.mdx",
-    "../client/stories/**/*.stories.@(js|jsx|mjs|ts|tsx)",
-    "../client/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../client/**/*.stories.@(js|jsx|ts|tsx)",
   ],
   addons: [
+    "@storybook/addon-themes",
     "@chromatic-com/storybook",
     "@storybook/addon-docs",
     "@storybook/addon-onboarding",
@@ -20,3 +20,4 @@ const config: StorybookConfig = {
   staticDirs: ["../public"],
 };
 export default config;
+// No optimizeDeps.include for next/config

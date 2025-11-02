@@ -8,9 +8,9 @@ export const ElementNodes: React.FC<ElementNodesProps> = ({ elements }) => {
   return (
     <>
       {elements.map(element => (
-        <div key={element.id}>
+        <div key={element.base.id}>
           {/* Render element details here */}
-          <p>{element.id}</p>
+          <p>{element.base.id}</p>
         </div>
       ))}
     </>
