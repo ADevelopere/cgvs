@@ -9,9 +9,7 @@ export type UseElementStateParams<T> = {
   templateId?: number;
   elements?: GQL.CertificateElementUnion[];
   validator: ValidateFieldFn<T>;
-  extractInitialState: (
-    element: GQL.CertificateElementUnion
-  ) => T | null;
+  extractInitialState: (element: GQL.CertificateElementUnion) => T | null;
   mutationFn: (elementId: number, state: T) => Promise<void>;
 };
 
@@ -25,12 +23,16 @@ export type UseElementStateReturn<T> = {
 export function useElementState<T>(
   params: UseElementStateParams<T>
 ): UseElementStateReturn<T> {
-  const { templateId, elements: providedElements, validator, extractInitialState, mutationFn } = params;
+  const {
+    templateId,
+    elements: providedElements,
+    validator,
+    extractInitialState,
+    mutationFn,
+  } = params;
 
   // Query elements if templateId provided
-  const {
-    data: elementsData,
-  } = useQuery(elementsByTemplateIdQueryDocument, {
+  const { data: elementsData } = useQuery(elementsByTemplateIdQueryDocument, {
     variables: { templateId: templateId! },
     skip: !templateId || providedElements !== undefined,
     fetchPolicy: "cache-first",
@@ -51,7 +53,9 @@ export function useElementState<T>(
   );
   const errorsRef = React.useRef<Map<number, FormErrors<T>>>(new Map());
   const pendingUpdatesRef = React.useRef<Map<number, T>>(new Map());
-  const debounceTimersRef = React.useRef<Map<number, NodeJS.Timeout>>(new Map());
+  const debounceTimersRef = React.useRef<Map<number, NodeJS.Timeout>>(
+    new Map()
+  );
 
   // Get state, creating from element if missing
   const getState = React.useCallback(
@@ -62,9 +66,7 @@ export function useElementState<T>(
       }
 
       // Find element and extract initial state
-      const element = elements.find(
-        (el) => el.base?.id === elementId
-      );
+      const element = elements.find(el => el.base?.id === elementId);
       if (!element) {
         return null;
       }
@@ -128,7 +130,7 @@ export function useElementState<T>(
         debounceTimersRef.current.delete(elementId);
         const pendingState = pendingUpdatesRef.current.get(elementId);
         if (pendingState) {
-          mutationFn(elementId, pendingState).catch((error) => {
+          mutationFn(elementId, pendingState).catch(error => {
             logger.error("useElementState: Mutation failed", {
               elementId,
               error,
@@ -165,23 +167,24 @@ export function useElementState<T>(
 
   // Cleanup: save pending updates on unmount
   React.useEffect(() => {
+    // Capture the current ref value when effect runs
+    const timers = debounceTimersRef.current;
+    const pendingUpdates = pendingUpdatesRef.current;
     return () => {
       // Clear all timers
-      debounceTimersRef.current.forEach((timer) => {
-        clearTimeout(timer);
-      });
-      debounceTimersRef.current.clear();
+      // Cleanup uses the captured value, not the ref
+      timers.forEach(timer => clearTimeout(timer));
 
       // Save all pending updates
-      pendingUpdatesRef.current.forEach((state, elementId) => {
-        mutationFn(elementId, state).catch((error) => {
+      pendingUpdates.forEach((state, elementId) => {
+        mutationFn(elementId, state).catch(error => {
           logger.error("useElementState: Failed to save on unmount", {
             elementId,
             error,
           });
         });
       });
-      pendingUpdatesRef.current.clear();
+      timers.clear();
     };
   }, [mutationFn]);
 
@@ -192,4 +195,3 @@ export function useElementState<T>(
     errors: errorsMap,
   };
 }
-

@@ -1,16 +1,28 @@
 import type { CertificateElementBaseInput } from "@/client/graphql/generated/gql/graphql";
-import { UpdateStateFn, FormErrors, ValidateFieldFn } from "../../types";
+import {
+  UpdateStateFn,
+  FormErrors,
+  ValidateFieldFn,
+  UpdateStateWithElementIdFn,
+} from "../../types";
 
 export type BaseCertificateElementFormState = CertificateElementBaseInput;
 
 export type BaseElementFormErrors = FormErrors<CertificateElementBaseInput>;
 
-export type ValidateBaseElementFieldFn = ValidateFieldFn<
-  Omit<BaseCertificateElementFormState, "hidden">
+export type SanitizedBaseElementFormState = Omit<
+  BaseCertificateElementFormState,
+  "templateId"
 >;
+
+export type ValidateBaseElementFieldFn =
+  ValidateFieldFn<SanitizedBaseElementFormState>;
 
 // ============================================================================
 // SPECIFIC UPDATE FUNCTION TYPES
 // ============================================================================
 
-export type UpdateBaseElementFn = UpdateStateFn<BaseCertificateElementFormState>;
+export type UpdateBaseElementFn = UpdateStateFn<SanitizedBaseElementFormState>;
+
+export type UpdateBaseElementWithElementIdFn =
+  UpdateStateWithElementIdFn<SanitizedBaseElementFormState>;
