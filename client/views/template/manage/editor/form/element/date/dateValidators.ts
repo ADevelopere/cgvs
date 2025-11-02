@@ -1,9 +1,10 @@
 import type {
   DateDataSourceInput,
-  DateProps,
 } from "@/client/graphql/generated/gql/graphql";
-import type { DateDataSourceFormErrors } from "./types";
-import { ValidateFieldFn } from "../../types";
+import type {
+  DateDataSourceFormErrors,
+  ValidateDatePropsFieldFn,
+} from "./types";
 
 /**
  * Validates DateDataSourceInput (OneOf type)
@@ -44,35 +45,37 @@ export const validateDateDataSource = (
 /**
  * Field-level validation for date-specific properties
  */
-export const validateDatePropsField: ValidateFieldFn<DateProps> = (
-  key,
-  value
-) => {
-  switch (key) {
-    case "format":
-      const formatValue = value as string;
-      if (!formatValue || formatValue.trim().length === 0) {
-        return "Date format is required";
-      }
-      return undefined;
+export const validateDateProps = () => {
+  const validate: ValidateDatePropsFieldFn = action => {
+    if (!action) return undefined;
+    const { key, value } = action;
+    switch (key) {
+      case "format":
+        const formatValue = value as string;
+        if (!formatValue || formatValue.trim().length === 0) {
+          return "Date format is required";
+        }
+        return undefined;
 
-    case "calendarType":
-      if (!value) {
-        return "Calendar type is required";
-      }
-      return undefined;
+      case "calendarType":
+        if (!value) {
+          return "Calendar type is required";
+        }
+        return undefined;
 
-    case "offsetDays":
-      const offsetValue = value as number;
-      if (offsetValue === undefined || offsetValue === null) {
-        return "Offset days is required";
-      }
-      if (!Number.isInteger(offsetValue)) {
-        return "Offset days must be an integer";
-      }
-      return undefined;
+      case "offsetDays":
+        const offsetValue = value as number;
+        if (offsetValue === undefined || offsetValue === null) {
+          return "Offset days is required";
+        }
+        if (!Number.isInteger(offsetValue)) {
+          return "Offset days must be an integer";
+        }
+        return undefined;
 
-    default:
-      return undefined;
-  }
+      default:
+        return undefined;
+    }
+  };
+  return validate;
 };

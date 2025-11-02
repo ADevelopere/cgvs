@@ -1,6 +1,10 @@
-import { CountryElementInput } from "@/client/graphql/generated/gql/graphql";
+import {
+  CountryElementCountryPropsInput,
+  CountryElementInput,
+} from "@/client/graphql/generated/gql/graphql";
 import { BaseElementFormErrors } from "../base/types";
 import { TextPropsFormErrors } from "../textProps/types";
+import { ValidateFieldFn } from "../../types";
 
 // ============================================================================
 // CREATE STATE
@@ -17,3 +21,6 @@ export type CountryElementFormErrors = {
   textProps: TextPropsFormErrors;
   representation?: string;
 };
+
+export type CountryElementCountryPropsValidateFn =
+  ValidateFieldFn<CountryElementCountryPropsInput>;

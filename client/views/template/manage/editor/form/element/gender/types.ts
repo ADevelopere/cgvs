@@ -2,7 +2,7 @@ import type {
   BaseCertificateElementFormState,
   BaseElementFormErrors,
 } from "../base/types";
-import type { TextPropsFormErrors, TextPropsState } from "../textProps/types";
+import type { TextPropsFormErrors, TextPropsFormState } from "../textProps/types";
 
 // ============================================================================
 // ERROR TYPES
@@ -15,5 +15,5 @@ export type GenderElementFormErrors = {
 
 export type GenderElementFormState = {
   base: BaseCertificateElementFormState;
-  textProps: TextPropsState;
+  textProps: TextPropsFormState;
 };

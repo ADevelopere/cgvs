@@ -20,12 +20,12 @@ import { ElementOverflow, Font } from "@/client/graphql/generated/gql/graphql";
 import {
   TextPropsFormErrors,
   UpdateTextPropsFn,
-  TextPropsState,
+  TextPropsFormState,
 } from "./types";
 import { SketchPicker } from "react-color";
 
 interface TextPropsFormProps {
-  textProps: TextPropsState;
+  textProps: TextPropsFormState;
   locale: string;
   selfHostedFonts: Font[];
   onTextPropsChange: UpdateTextPropsFn;

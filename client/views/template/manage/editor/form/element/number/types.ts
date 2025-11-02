@@ -1,8 +1,9 @@
 import type {
   NumberDataSourceInput,
   NumberElementInput,
+  NumberElementSpecPropsInput,
 } from "@/client/graphql/generated/gql/graphql";
-import { FormErrors } from "../../types";
+import { FormErrors, ValidateFieldFn } from "../../types";
 import { TextPropsFormErrors } from "../textProps";
 import { BaseElementFormErrors } from "../base";
 
@@ -33,3 +34,6 @@ export type NumberElementFormErrors = {
 
 export type UpdateDataSourceFn = (dataSource: NumberDataSourceInput) => void;
 export type UpdateMappingFn = (mapping: Record<string, string>) => void;
+
+export type NumberElementSpecPropsValidateFn =
+  ValidateFieldFn<NumberElementSpecPropsInput>;

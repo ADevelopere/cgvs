@@ -1,5 +1,5 @@
 import type * as GQL from "@/client/graphql/generated/gql/graphql";
-import { FormErrors, UpdateStateFn } from "../../types";
+import { FormErrors, UpdateStateFn, ValidateFieldFn } from "../../types";
 import { TextPropsFormErrors } from "../textProps";
 import { BaseElementFormErrors } from "../base";
 
@@ -35,26 +35,4 @@ export type UpdateDateDataSourceFn = (
 
 export type UpdateDatePropsFn = UpdateStateFn<GQL.DateElementSpecPropsInput>;
 
-// ============================================================================
-// CONVERSION UTILITIES
-// ============================================================================
-
-// Convert Output type (with __typename) to Input type (OneOf)
-export const dateDataSourceToGraphQL = (
-  state: GQL.DateDataSource
-): GQL.DateDataSourceInput => {
-  switch (state.__typename) {
-    case "DateDataSourceStatic":
-      return { static: { value: state.value ?? "" } };
-    case "DateDataSourceStudentField":
-      return { studentField: { field: state.studentField! } };
-    case "DateDataSourceCertificateField":
-      return { certificateField: { field: state.certificateField! } };
-    case "DateDataSourceTemplateVariable":
-      return {
-        templateVariable: { variableId: state.dateVariableId ?? 0 },
-      };
-    default:
-      throw new Error(`Unknown DateDataSource type: ${state.__typename}`);
-  }
-};
+export type ValidateDatePropsFieldFn = ValidateFieldFn<GQL.DateElementSpecPropsInput>;

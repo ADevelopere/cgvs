@@ -1,5 +1,9 @@
 import { NumberDataSourceInput } from "@/client/graphql/generated/gql/graphql";
-import { DataSourceFormErrors, MappingFormErrors } from "./types";
+import {
+  DataSourceFormErrors,
+  MappingFormErrors,
+  NumberElementSpecPropsValidateFn,
+} from "./types";
 
 /**
  * Validate NumberDataSourceInput
@@ -21,7 +25,7 @@ export const validateNumberDataSource = (
  * Validate mapping (locale to decimal places)
  * Ensures all values are valid non-negative integers
  */
-export const validateMapping = (
+const validateMapping = (
   mapping: Record<string, string>
 ): MappingFormErrors => {
   const errors: MappingFormErrors = {};
@@ -36,15 +40,13 @@ export const validateMapping = (
   return errors;
 };
 
-/**
- * Validate complete number element form
- */
-export const validateNumberElementForm = (
-  dataSource: NumberDataSourceInput,
-  mapping: Record<string, string>
-): { dataSource: DataSourceFormErrors; mapping: MappingFormErrors } => {
-  return {
-    dataSource: validateNumberDataSource(dataSource),
-    mapping: validateMapping(mapping),
+export const validateNumberElementSpecProps = () => {
+  const validate: NumberElementSpecPropsValidateFn = ({ key, value }) => {
+    switch (key) {
+      case "mapping":
+        return JSON.stringify(validateMapping(value));
+    }
   };
+
+  return validate;
 };

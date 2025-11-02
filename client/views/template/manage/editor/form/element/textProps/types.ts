@@ -1,5 +1,5 @@
 import type * as Graphql from "@/client/graphql/generated/gql/graphql";
-import { FormErrors, UpdateStateFn } from "../../types";
+import { FormErrors, UpdateStateFn, ValidateFieldFn } from "../../types";
 
 export type TextPropsFormErrors = FormErrors<Graphql.TextPropsInput>;
 
@@ -7,8 +7,10 @@ export type TextPropsFormErrors = FormErrors<Graphql.TextPropsInput>;
 // SPECIFIC UPDATE FUNCTION TYPES
 // ============================================================================
 
-export type TextPropsState = Graphql.TextPropsInput;
+export type TextPropsFormState = Graphql.TextPropsInput;
 
 export type UpdateTextPropsFn = UpdateStateFn<Graphql.TextPropsInput>;
 
 export type UpdateFontRefFn = (fontRef: Graphql.FontReferenceInput) => void;
+
+export type ValidateTextPropsFieldFn = ValidateFieldFn<TextPropsFormState>;
