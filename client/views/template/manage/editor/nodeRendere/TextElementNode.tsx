@@ -44,8 +44,8 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
   //   };
   // }, []);
 
-  const style = {
-    fontSize: `${textPropsState.fontSize ?? 16}px`,
+  const style: React.CSSProperties = {
+    fontSize: textPropsState.fontSize,
     color: textPropsState.color ?? "#941717ff",
     // fontFamily: data.fontFamily ?? "Cairo",
     padding: "10px",
@@ -54,12 +54,15 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
     backgroundColor: "white",
     width: baseElementState.width,
     height: baseElementState.height,
+    overflow: "hidden",
+    textOverflow: textPropsState.overflow === GQL.ElementOverflow.Ellipse ? "ellipsis" : "clip",
+    textWrap: "nowrap"
   };
 
   return (
     <div style={style}>
       <Handle type="target" position={Position.Top} />
-      {"testing"}
+      {"testingtestingtestingtestingtestingtestingtestingtesting"}
       <Handle type="source" position={Position.Bottom} />
     </div>
   );

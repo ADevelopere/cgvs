@@ -51,7 +51,7 @@ export const GenderElementForm: FC<GenderElementFormProps> = ({
           <Grid size={{ xs: 12, md: 6 }}>
             <TextPropsForm
               textProps={state.textProps}
-              locale={locale}
+              language={locale}
               selfHostedFonts={selfHostedFonts}
               onTextPropsChange={updateTextProps}
               errors={errors.textProps}

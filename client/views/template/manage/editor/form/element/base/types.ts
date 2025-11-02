@@ -6,14 +6,15 @@ import {
   UpdateStateWithElementIdFn,
 } from "../../types";
 
-export type BaseCertificateElementFormState = CertificateElementBaseInput;
-
-export type BaseElementFormErrors = FormErrors<CertificateElementBaseInput>;
-
 export type SanitizedBaseElementFormState = Omit<
-  BaseCertificateElementFormState,
+  CertificateElementBaseInput,
   "templateId"
 >;
+
+export type BaseCertificateElementFormState = SanitizedBaseElementFormState;
+
+export type BaseElementFormErrors = FormErrors<SanitizedBaseElementFormState>;
+
 
 export type ValidateBaseElementFieldFn =
   ValidateFieldFn<SanitizedBaseElementFormState>;

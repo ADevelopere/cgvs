@@ -91,7 +91,7 @@ export const NumberElementForm: FC<NumberElementFormProps> = ({
             <Paper sx={{ p: 3, height: "100%" }}>
               <TextPropsForm
                 textProps={state.textProps}
-                locale={locale}
+                language={locale}
                 selfHostedFonts={selfHostedFonts}
                 onTextPropsChange={updateTextProps}
                 errors={errors.textProps}

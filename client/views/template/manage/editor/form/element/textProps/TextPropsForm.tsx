@@ -26,7 +26,7 @@ import { SketchPicker } from "react-color";
 
 interface TextPropsFormProps {
   textProps: TextPropsFormState;
-  locale: string;
+  language: string;
   selfHostedFonts: Font[];
   onTextPropsChange: UpdateTextPropsFn;
   errors: TextPropsFormErrors;
@@ -35,7 +35,7 @@ interface TextPropsFormProps {
 
 export const TextPropsForm: FC<TextPropsFormProps> = ({
   textProps,
-  locale,
+  language,
   selfHostedFonts,
   onTextPropsChange,
   errors,
@@ -64,7 +64,7 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
         <Grid size={{ xs: 12 }}>
           <FontReferenceSelector
             fontRef={textProps.fontRef}
-            locale={locale}
+            locale={language}
             selfHostedFonts={selfHostedFonts}
             onFontRefChange={fontRef =>
               onTextPropsChange({ key: "fontRef", value: fontRef })
@@ -91,7 +91,7 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
           />
           <ClickAwayListener onClickAway={() => setColorPickerOpen(false)}>
             <Popper
-              sx={{ zIndex: 2000 }}
+              sx={{ zIndex: 3000 }}
               open={colorPickerOpen}
               anchorEl={anchorEl}
               // placement={placement}

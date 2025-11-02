@@ -29,7 +29,7 @@ const defaultErrors: TextPropsFormErrors = {};
 export const Default: Story = {
   args: {
     textProps: defaultTextProps,
-    locale: "en",
+    language: "en",
     selfHostedFonts: mockSelfHostedFonts,
     onTextPropsChange: ({ key, value }) =>
       logger.info("Text prop changed:", key, value),
@@ -46,7 +46,7 @@ export const ArabicLocale: Story = {
       color: "#333333",
       overflow: ElementOverflow.ResizeDown,
     },
-    locale: "ar",
+    language: "ar",
     selfHostedFonts: mockSelfHostedFonts,
     onTextPropsChange: ({ key, value }) =>
       logger.info("Text prop changed:", key, value),
@@ -58,7 +58,7 @@ export const ArabicLocale: Story = {
 export const WithErrors: Story = {
   args: {
     textProps: { ...defaultTextProps, fontSize: 0, color: "invalid" },
-    locale: "en",
+    language: "en",
     selfHostedFonts: mockSelfHostedFonts,
     onTextPropsChange: ({ key, value }) =>
       logger.info("Text prop changed:", key, value),
@@ -73,7 +73,7 @@ export const WithErrors: Story = {
 export const Disabled: Story = {
   args: {
     textProps: defaultTextProps,
-    locale: "en",
+    language: "en",
     selfHostedFonts: mockSelfHostedFonts,
     onTextPropsChange: ({ key, value }) =>
       logger.info("Text prop changed:", key, value),

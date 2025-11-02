@@ -9,6 +9,7 @@ import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { TemplateConfigAutoUpdateForm } from "../form/config/TemplateConfigAutoUpdateForm";
 import { useAppTranslation } from "@/client/locale";
 import { ElementsTab } from "./elements/ElementsTab";
+import { CertificateElementCurrentItemSettings } from "./currentElement/CurrentElement";
 
 export type MiscellaneousPanelProps = {
   config: GQL.TemplateConfig;
@@ -107,7 +108,7 @@ export const MiscellaneousPanel: React.FC<MiscellaneousPanelProps> = ({
           <ElementsTab elements={elements} />
         </TabPanel>
         <TabPanel value="currentElement" sx={{ flexGrow: 1, p: 1 }}>
-          <div>Current Element Content</div>
+          <CertificateElementCurrentItemSettings elements={elements} />
         </TabPanel>
       </TabContext>
     </Box>
