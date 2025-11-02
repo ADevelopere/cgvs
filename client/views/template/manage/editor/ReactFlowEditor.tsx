@@ -19,11 +19,14 @@ import { Box } from "@mui/material";
 import DownloadImage from "./download/DownloadImage";
 import { getHelperLines } from "./other/utils";
 import HelperLines from "./other/HelperLines";
-import { initialNodes, nodeTypes } from "./other/constants";
+import {  nodeTypes } from "./other/constants";
 import { useAppTheme } from "@/client/contexts";
 import logger from "@/client/lib/logger";
-import { Template } from "@/client/graphql/generated/gql/graphql";
+
 import { getTemplateImageUrl } from "../../utils/template.utils";
+import * as GQL from "@/client/graphql/generated/gql/graphql";
+import { TextElementNodeData } from "./nodeRendere/TextElementNode";
+import React from "react";
 
 const panOnDrag = [1, 2];
 
@@ -31,10 +34,41 @@ const panOnDrag = [1, 2];
 const A4_WIDTH = 1123; // 297mm * 96px/25.4mm
 const A4_HEIGHT = 794; // 210mm * 96px/25.4mm
 
-function Flow({ template }: { template: Template }) {
-  const [nodes, setNodes] = useNodesState(initialNodes);
+export type CertificateReactFlowEditorProps = {
+  template: GQL.Template;
+  elements: GQL.CertificateElementUnion[];
+};
+
+const Flow: React.FC<CertificateReactFlowEditorProps> = ({
+  template,
+  elements,
+}) => {
+  const [nodes, setNodes] = useNodesState<Node>([]);
   const { theme } = useAppTheme();
   const { x, y, zoom } = useViewport();
+
+  React.useEffect(() => {
+    const nodes: Node[] = elements.map(element => {
+      if (element.base.type === GQL.ElementType.Text) {
+        const data: TextElementNodeData = {
+          elementId: element.base.id,
+          elements: elements,
+        };
+        return {
+          id: element.base.id.toString(),
+          type: element.base.type,
+          position: {
+            x: element.base.positionX,
+            y: element.base.positionY,
+          },
+          width: element.base.width,
+          height: element.base.height,
+          data: data,
+        };
+      }
+    }).filter((node) => node !== undefined);
+    setNodes(nodes);
+  }, [elements, setNodes]);
 
   const [helperLineHorizontal, setHelperLineHorizontal] = useState<
     number | undefined
@@ -207,7 +241,7 @@ function Flow({ template }: { template: Template }) {
       </ReactFlow>
     </Box>
   );
-}
+};
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function FlowDebug() {
@@ -221,7 +255,10 @@ function FlowDebug() {
   );
 }
 
-function ReactFlowEditor({ template }: { template: Template }) {
+const CertificateReactFlowEditor: React.FC<CertificateReactFlowEditorProps> = ({
+  template,
+  elements,
+}) => {
   return (
     <Box
       sx={{
@@ -235,10 +272,10 @@ function ReactFlowEditor({ template }: { template: Template }) {
       }}
     >
       <ReactFlowProvider>
-        <Flow template={template} />
+        <Flow template={template} elements={elements} />
       </ReactFlowProvider>
     </Box>
   );
-}
+};
 
-export default ReactFlowEditor;
+export default CertificateReactFlowEditor;

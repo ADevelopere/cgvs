@@ -15,17 +15,15 @@ import {
 } from "../element/textProps";
 
 export type UseTextPropsStateParams = {
-  templateId?: number;
   elements?: GQL.CertificateElementUnion[];
+  templateId?: number;
 };
 
 export type UseTextPropsStateReturn = {
-  getState: (
-    elementId: number
-  ) => SanitizedTextPropsFormState | null;
-  updateFn: UpdateTextPropsWithElementIdFn;
-  pushUpdate: (elementId: number) => Promise<void>;
-  errors: Map<number, TextPropsFormErrors>;
+  getTextPropsState: (elementId: number) => SanitizedTextPropsFormState;
+  updateTextPropsStateFn: UpdateTextPropsWithElementIdFn;
+  pushTextPropsStateUpdate: (elementId: number) => Promise<void>;
+  textPropsStateErrors: Map<number, TextPropsFormErrors>;
 };
 
 /**
@@ -177,10 +175,51 @@ export function useTextPropsState(
   });
 
   return {
-    getState,
-    updateFn,
-    pushUpdate,
-    errors,
+    getTextPropsState: getState,
+    updateTextPropsStateFn: updateFn,
+    pushTextPropsStateUpdate: pushUpdate,
+    textPropsStateErrors: errors,
   };
 }
 
+export type UseTextPropsParams = {
+  elementId: number;
+  templateId?: number;
+  elements?: GQL.CertificateElementUnion[];
+};
+
+export const useTextProps = (params: UseTextPropsParams) => {
+  const {
+    getTextPropsState,
+    updateTextPropsStateFn,
+    pushTextPropsStateUpdate,
+    textPropsStateErrors,
+  } = useTextPropsState({
+    elements: params.elements,
+    templateId: params.templateId,
+  });
+
+  const textPropsState = getTextPropsState(params.elemeentId);
+  const updateTextProps = React.useCallback(
+    (newState: Partial<SanitizedTextPropsFormState>) => {
+      if (!textPropsState) return;
+      const updatedState = { ...textPropsState, ...newState };
+      updateTextPropsStateFn(params.elemeentId, updatedState);
+    },
+    [params.elemeentId, textPropsState, updateTextPropsStateFn]
+  );
+
+  const pushTextPropsUpdate = React.useCallback(async () => {
+    await pushTextPropsStateUpdate(params.elemeentId);
+  }, [params.elemeentId, pushTextPropsStateUpdate]);
+
+  const textPropsErrors =
+    textPropsStateErrors.get(params.elemeentId) || {};
+
+  return {
+    textPropsState,
+    updateTextProps,
+    pushTextPropsUpdate,
+    textPropsErrors,
+  };
+}
