@@ -134,6 +134,7 @@ export const QRCodeElementObject = gqlSchemaBuilder.loadableObject<
   fields: t => ({
     qrCodeProps: t.expose("qrCodeProps", {
       type: QRCodeElementSpecPropsObject,
+      nullable: false,
     }),
   }),
 });

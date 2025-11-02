@@ -36,6 +36,17 @@ export type TextElementFormErrors = {
 
 export type UpdateTextDataSourceFn = (dataSource: TextDataSourceInput) => void;
 
+export type UpdateTextDataSourceWithElementIdFn = (
+  elementId: number,
+  dataSource: TextDataSourceInput
+) => void;
+
+// ============================================================================
+// SANITIZED STATE TYPES
+// ============================================================================
+
+export type SanitizedTextDataSourceFormState = TextDataSourceInput;
+
 // ============================================================================
 // CONVERSION UTILITIES
 // ============================================================================
