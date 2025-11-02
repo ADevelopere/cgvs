@@ -1,11 +1,10 @@
 "use client";
 
 import { NodeProps, Handle, Position } from "@xyflow/react";
-import { useEffect } from "react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import { useBaseElementState, useTextPropsState } from "../form/hooks";
 import { useBaseElement } from "../form/hooks/useBaseElementState";
 import { useTextProps } from "../form/hooks/useTextPropsState";
+import { logger } from "@/client/lib/logger";
 
 export type TextElementNodeData = {
   // templateId: number;
@@ -19,20 +18,18 @@ type TextElementNodeProps = NodeProps & {
 
 export const TextElementNode = ({ data }: TextElementNodeProps) => {
   const { elements, elementId } = data;
-  const {
-    textPropsState,
-    updateTextProps,
-    pushTextPropsUpdate,
-    textPropsErrors,
-  } = useTextProps({
-    elements,
+  const { textPropsState } = useTextProps({ elements, elementId });
+  const { baseElementState } = useBaseElement({ elements, elementId });
+
+  logger.log("TextElementNode render:", {
     elementId,
+    textPropsState,
+    baseElementState,
   });
-  const { baseElementState, updateBaseElementState, pushBaseElementUpdate } =
-    useBaseElement({
-      elements,
-      elementId,
-    });
+
+  if (!textPropsState || !baseElementState) {
+    return <div>Loading...</div>;
+  }
 
   // useEffect(() => {
   //   // Load Google Fonts dynamically
@@ -49,7 +46,7 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
 
   const style = {
     fontSize: `${textPropsState.fontSize ?? 16}px`,
-    color: textPropsState.color ?? "#000000",
+    color: textPropsState.color ?? "#941717ff",
     // fontFamily: data.fontFamily ?? "Cairo",
     padding: "10px",
     border: "1px solid #eee",

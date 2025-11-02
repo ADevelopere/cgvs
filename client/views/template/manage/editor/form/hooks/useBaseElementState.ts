@@ -13,6 +13,7 @@ import {
   UpdateBaseElementWithElementIdFn,
   ValidateBaseElementFieldFn,
 } from "../element/base";
+import { Action } from "../types";
 
 export type UseBaseElementStateParams = {
   templateId?: number;
@@ -34,7 +35,7 @@ export type UseBaseElementStateReturn = {
 function extractBaseState(
   element: GQL.CertificateElementUnion
 ): SanitizedBaseElementFormState | null {
-  if (!element.base || !element.template?.id) {
+  if (!element.base || !element.base.templateId) {
     return null;
   }
 
@@ -156,12 +157,11 @@ export const useBaseElement = (params: UseBaseElementParams) => {
 
   const baseElementErrors = baseElementStateErrors.get(params.elementId) || {};
 
-  
+
   const updateBaseElementState = React.useCallback(
-    (newState: Partial<SanitizedBaseElementFormState>) => {
+    (action: Action<SanitizedBaseElementFormState>) => {
       if (!baseElementState) return;
-      const updatedState = { ...baseElementState, ...newState };
-      updateBaseElementStateFn(params.elementId, updatedState);
+      updateBaseElementStateFn(params.elementId, action);
     },
     [params.elementId, baseElementState, updateBaseElementStateFn]
   );

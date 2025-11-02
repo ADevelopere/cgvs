@@ -14,7 +14,7 @@ export type UseElementStateParams<T> = {
 };
 
 export type UseElementStateReturn<T> = {
-  getState: (elementId: number) => T | null;
+  getState: (elementId: number) => T;
   updateFn: (elementId: number, action: Action<T>) => void;
   pushUpdate: (elementId: number) => Promise<void>;
   errors: Map<number, FormErrors<T>>;
@@ -59,21 +59,25 @@ export function useElementState<T>(
 
   // Get state, creating from element if missing
   const getState = React.useCallback(
-    (elementId: number): T | null => {
+    (elementId: number): T => {
       // Return existing state if present
       if (statesRef.current.has(elementId)) {
-        return statesRef.current.get(elementId)!;
+        const state = statesRef.current.get(elementId);
+        if (state === undefined) {
+          throw new Error(`useElementState: State is undefined for element id ${elementId}`);
+        }
+        return state;
       }
 
       // Find element and extract initial state
       const element = elements.find(el => el.base?.id === elementId);
       if (!element) {
-        return null;
+        throw new Error(`useElementState: Element not found for id ${elementId}`);
       }
 
       const initialState = extractInitialState(element);
-      if (initialState === null) {
-        return null;
+      if (initialState === undefined || initialState === null) {
+        throw new Error(`useElementState: Failed to extract initial state for element id ${elementId}`);
       }
 
       // Store and return
@@ -88,14 +92,8 @@ export function useElementState<T>(
     (elementId: number, action: Action<T>) => {
       const { key, value } = action;
 
-      // Get current state
+      // Get current state (will throw if element not found)
       const currentState = getState(elementId);
-      if (!currentState) {
-        logger.warn("useElementState: Cannot update state for elementId", {
-          elementId,
-        });
-        return;
-      }
 
       // Validate
       const errorMessage = validator(action);
