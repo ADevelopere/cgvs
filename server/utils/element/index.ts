@@ -1,4 +1,3 @@
-export { BaseElementUtils } from "./base.element.utils";
 export { ElementUtils } from "./element.utils";
 export { CommonElementUtils } from "./common.element.utils";
 export { TextElementUtils } from "./text.element.utils";

@@ -1,15 +1,4 @@
-import {
-  TextDataSourceType,
-  StudentTextField,
-  CertificateTextField,
-  TextElementInput,
-  TextElementUpdateInput,
-  TextDataSourceInput,
-  TextDataSourceInputGraphql,
-  TextElementInputGraphql,
-  TextElementUpdateInputGraphql,
-  TextDataSource,
-} from "@/server/types/element";
+import * as ElTypes from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { CommonElementUtils } from "./common.element.utils";
 import { TemplateVariableType } from "@/server/types";
@@ -27,8 +16,8 @@ export namespace TextElementUtils {
    * Map GraphQL TextDataSource input (isOneOf) to repository TextDataSource input (discriminated union)
    */
   export const mapTextDataSourceGraphqlToInput = (
-    input: TextDataSourceInputGraphql
-  ): TextDataSourceInput => {
+    input: ElTypes.TextDataSourceInputGraphql
+  ): ElTypes.TextDataSourceInput => {
     if (!input) {
       throw new Error(
         "TextDataSourceInputGraphql must not be null or undefined"
@@ -37,27 +26,27 @@ export namespace TextElementUtils {
 
     if (input.static) {
       return {
-        type: TextDataSourceType.STATIC,
+        type: ElTypes.TextDataSourceType.STATIC,
         value: input.static.value,
       };
     } else if (input.studentField) {
       return {
-        type: TextDataSourceType.STUDENT_TEXT_FIELD,
+        type: ElTypes.TextDataSourceType.STUDENT_TEXT_FIELD,
         field: input.studentField.field,
       };
     } else if (input.certificateField) {
       return {
-        type: TextDataSourceType.CERTIFICATE_TEXT_FIELD,
+        type: ElTypes.TextDataSourceType.CERTIFICATE_TEXT_FIELD,
         field: input.certificateField.field,
       };
     } else if (input.templateTextVariable) {
       return {
-        type: TextDataSourceType.TEMPLATE_TEXT_VARIABLE,
+        type: ElTypes.TextDataSourceType.TEMPLATE_TEXT_VARIABLE,
         variableId: input.templateTextVariable.variableId,
       };
     } else if (input.templateSelectVariable) {
       return {
-        type: TextDataSourceType.TEMPLATE_SELECT_VARIABLE,
+        type: ElTypes.TextDataSourceType.TEMPLATE_SELECT_VARIABLE,
         variableId: input.templateSelectVariable.variableId,
       };
     }
@@ -66,12 +55,21 @@ export namespace TextElementUtils {
     );
   };
 
+  export const mapDataSourceStandaloneGqlToInput = (
+    input: ElTypes.TextDataSourceStandaloneInputGraphql
+  ): ElTypes.TextDataSourceStandaloneInput => {
+    return {
+      ...input,
+      dataSource: mapTextDataSourceGraphqlToInput(input.dataSource),
+    };
+  };
+
   /**
    * Map GraphQL TextElement create input to repository TextElement create input
    */
   export const mapTextElementGraphqlToInput = (
-    input: TextElementInputGraphql
-  ): TextElementInput => {
+    input: ElTypes.TextElementInputGraphql
+  ): ElTypes.TextElementInput => {
     if (!input || !input.base || !input.textProps || !input.dataSource) {
       throw new Error(
         "TextElementInputGraphql must include base, textProps, and dataSource"
@@ -90,8 +88,8 @@ export namespace TextElementUtils {
    * Map GraphQL TextElement update input to repository TextElement update input
    */
   export const mapTextElementUpdateGraphqlToInput = (
-    input: TextElementUpdateInputGraphql
-  ): TextElementUpdateInput => {
+    input: ElTypes.TextElementUpdateInputGraphql
+  ): ElTypes.TextElementUpdateInput => {
     if (!input || !input.base || !input.textProps || !input.dataSource) {
       throw new Error(
         "TextElementUpdateInputGraphql must include base, textProps, and dataSource"
@@ -113,24 +111,24 @@ export namespace TextElementUtils {
   /**
    * Validate text data source based on type
    */
-  const validateDataSource = async (
-    dataSource: TextDataSourceInput
+  export const validateDataSource = async (
+    dataSource: ElTypes.TextDataSourceInput
   ): Promise<void> => {
     switch (dataSource.type) {
-      case TextDataSourceType.STATIC:
+      case ElTypes.TextDataSourceType.STATIC:
         validateStaticDataSource(dataSource.value);
         break;
 
-      case TextDataSourceType.STUDENT_TEXT_FIELD:
+      case ElTypes.TextDataSourceType.STUDENT_TEXT_FIELD:
         validateStudentTextField(dataSource.field);
         break;
 
-      case TextDataSourceType.CERTIFICATE_TEXT_FIELD:
+      case ElTypes.TextDataSourceType.CERTIFICATE_TEXT_FIELD:
         validateCertificateTextField(dataSource.field);
         break;
 
-      case TextDataSourceType.TEMPLATE_TEXT_VARIABLE:
-      case TextDataSourceType.TEMPLATE_SELECT_VARIABLE:
+      case ElTypes.TextDataSourceType.TEMPLATE_TEXT_VARIABLE:
+      case ElTypes.TextDataSourceType.TEMPLATE_SELECT_VARIABLE:
         await validateTemplateVariable(dataSource.variableId);
         break;
 
@@ -151,8 +149,8 @@ export namespace TextElementUtils {
   /**
    * Validate student text field enum
    */
-  const validateStudentTextField = (field: StudentTextField): void => {
-    const validFields = Object.values(StudentTextField);
+  const validateStudentTextField = (field: ElTypes.StudentTextField): void => {
+    const validFields = Object.values(ElTypes.StudentTextField);
     if (!validFields.includes(field)) {
       throw new Error(
         `Invalid student text field: ${field}. Must be one of: ${validFields.join(", ")}`
@@ -163,8 +161,10 @@ export namespace TextElementUtils {
   /**
    * Validate certificate text field enum
    */
-  const validateCertificateTextField = (field: CertificateTextField): void => {
-    const validFields = Object.values(CertificateTextField);
+  const validateCertificateTextField = (
+    field: ElTypes.CertificateTextField
+  ): void => {
+    const validFields = Object.values(ElTypes.CertificateTextField);
     if (!validFields.includes(field)) {
       throw new Error(
         `Invalid certificate text field: ${field}. Must be one of: ${validFields.join(", ")}`
@@ -192,7 +192,7 @@ export namespace TextElementUtils {
    * Validate all fields for TEXT element (create/update)
    */
   export const validateInput = async (
-    input: TextElementInput
+    input: ElTypes.TextElementInput
   ): Promise<void> => {
     if (!input.base || !input.textProps || !input.dataSource) {
       throw new Error(
@@ -219,22 +219,22 @@ export namespace TextElementUtils {
    * Input uses 'field' property, output uses 'studentField'/'certificateField'
    */
   export const convertInputDataSourceToOutput = (
-    input: TextDataSourceInput
-  ): TextDataSource => {
+    input: ElTypes.TextDataSourceInput
+  ): ElTypes.TextDataSource => {
     switch (input.type) {
-      case TextDataSourceType.STATIC:
+      case ElTypes.TextDataSourceType.STATIC:
         return { type: input.type, value: input.value };
 
-      case TextDataSourceType.STUDENT_TEXT_FIELD:
+      case ElTypes.TextDataSourceType.STUDENT_TEXT_FIELD:
         return { type: input.type, studentField: input.field };
 
-      case TextDataSourceType.CERTIFICATE_TEXT_FIELD:
+      case ElTypes.TextDataSourceType.CERTIFICATE_TEXT_FIELD:
         return { type: input.type, certificateField: input.field };
 
-      case TextDataSourceType.TEMPLATE_TEXT_VARIABLE:
+      case ElTypes.TextDataSourceType.TEMPLATE_TEXT_VARIABLE:
         return { type: input.type, textVariableId: input.variableId };
 
-      case TextDataSourceType.TEMPLATE_SELECT_VARIABLE:
+      case ElTypes.TextDataSourceType.TEMPLATE_SELECT_VARIABLE:
         return { type: input.type, selectVariableId: input.variableId };
 
       default:
@@ -247,11 +247,11 @@ export namespace TextElementUtils {
    * Maps to correct TypeScript field name based on type
    */
   export const extractVariableIdFromDataSource = (
-    dataSource: TextDataSourceInput
+    dataSource: ElTypes.TextDataSourceInput
   ): number | null => {
     switch (dataSource.type) {
-      case TextDataSourceType.TEMPLATE_TEXT_VARIABLE:
-      case TextDataSourceType.TEMPLATE_SELECT_VARIABLE:
+      case ElTypes.TextDataSourceType.TEMPLATE_TEXT_VARIABLE:
+      case ElTypes.TextDataSourceType.TEMPLATE_SELECT_VARIABLE:
         return dataSource.variableId;
       default:
         return null;

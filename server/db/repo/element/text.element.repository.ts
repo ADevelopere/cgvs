@@ -5,20 +5,10 @@ import {
   textElement,
   elementTextProps,
 } from "@/server/db/schema";
-import {
-  TextElementInput,
-  TextElementUpdateInput,
-  TextElementOutput,
-  ElementType,
-  TextElementEntity,
-  ElementTextPropsEntity,
-  CertificateElementEntity,
-  CertificateElementEntityInput,
-} from "@/server/types/element";
-import { TextPropsRepository } from "./textProps.element.repository";
+import * as ElType from "@/server/types/element";
 import { TextElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
-import { ElementRepository } from ".";
+import { ElementRepository, TextPropsRepository } from ".";
 
 /**
  * Repository for TEXT element operations
@@ -40,8 +30,8 @@ export namespace TextElementRepository {
    * 6. Return full output
    */
   export const create = async (
-    input: TextElementInput
-  ): Promise<TextElementOutput> => {
+    input: ElType.TextElementInput
+  ): Promise<ElType.TextElementOutput> => {
     // 1. Validate input
     await TextElementUtils.validateInput(input);
 
@@ -56,9 +46,9 @@ export namespace TextElementRepository {
       input.dataSource
     );
 
-    const baseInput: CertificateElementEntityInput = {
+    const baseInput: ElType.CertificateElementEntityInput = {
       ...input.base,
-      type: ElementType.TEXT,
+      type: ElType.ElementType.TEXT,
     };
 
     // 4. Insert into certificate_element (base table)
@@ -110,13 +100,13 @@ export namespace TextElementRepository {
    * 6. Return updated element
    */
   export const update = async (
-    input: TextElementUpdateInput
-  ): Promise<TextElementOutput> => {
+    input: ElType.TextElementUpdateInput
+  ): Promise<ElType.TextElementOutput> => {
     // 1. Load existing element
     const existing = await loadByIdOrThrow(input.id);
 
     // 2. Validate type
-    if (existing.base.type !== ElementType.TEXT) {
+    if (existing.base.type !== ElType.ElementType.TEXT) {
       throw new Error(
         `Element ${input.id} is ${existing.base.type}, not TEXT. Use correct repository.`
       );
@@ -132,14 +122,20 @@ export namespace TextElementRepository {
     );
 
     // 5. Update element_text_props (full replace required)
-    const updatedTextProps: ElementTextPropsEntity =
-      await TextPropsRepository.update(existing.textPropsEntity.id, {
-        ...input.textProps,
-        id: existing.textPropsEntity.id,
-      });
+    const updatedTextProps: ElType.ElementTextPropsEntity =
+      await TextPropsRepository.update(
+        {
+          ...input.textProps,
+          id: existing.textPropsEntity.id,
+        },
+        true
+      );
 
     // 6. Update text_element (type-specific table)
-    const updatedTextElement = await updateTextElementSpecific(input);
+    const updatedDataSource = await updateTextElementDataSource(
+      input.dataSource,
+      input.id
+    );
 
     logger.info(
       `TEXT element updated: ${updatedBaseElement.name} (ID: ${input.id})`
@@ -150,11 +146,11 @@ export namespace TextElementRepository {
       base: updatedBaseElement,
       textPropsEntity: updatedTextProps,
       textElementSpecProps: {
-        elementId: updatedTextElement.elementId,
-        textPropsId: updatedTextElement.textPropsId,
-        variableId: updatedTextElement.variableId,
+        elementId: existing.textElementSpecProps.elementId,
+        textPropsId: existing.textElementSpecProps.textPropsId,
+        variableId: updatedDataSource.variableId,
       },
-      textDataSource: updatedTextElement.textDataSource,
+      textDataSource: updatedDataSource.textDataSource,
     };
   };
 
@@ -168,7 +164,7 @@ export namespace TextElementRepository {
    */
   export const loadById = async (
     id: number
-  ): Promise<TextElementOutput | null> => {
+  ): Promise<ElType.TextElementOutput | null> => {
     // Join all three tables
     const result = await db
       .select()
@@ -203,7 +199,7 @@ export namespace TextElementRepository {
    */
   export const loadByIdOrThrow = async (
     id: number
-  ): Promise<TextElementOutput> => {
+  ): Promise<ElType.TextElementOutput> => {
     const element = await loadById(id);
     if (!element) {
       throw new Error(`TEXT element with ID ${id} does not exist.`);
@@ -212,8 +208,8 @@ export namespace TextElementRepository {
   };
 
   export const loadByBase = async (
-    base: CertificateElementEntity
-  ): Promise<TextElementOutput> => {
+    base: ElType.CertificateElementEntity
+  ): Promise<ElType.TextElementOutput> => {
     const result = await db
       .select()
       .from(textElement)
@@ -248,7 +244,7 @@ export namespace TextElementRepository {
    */
   export const loadByIds = async (
     ids: number[]
-  ): Promise<(TextElementOutput | Error)[]> => {
+  ): Promise<(ElType.TextElementOutput | Error)[]> => {
     if (ids.length === 0) return [];
 
     // Load all elements
@@ -261,7 +257,7 @@ export namespace TextElementRepository {
       }
 
       // Validate element type
-      if (element.base.type !== ElementType.TEXT) {
+      if (element.base.type !== ElType.ElementType.TEXT) {
         return new Error(
           `Element ${element.base.id} is ${element.base.type}, not TEXT`
         );
@@ -275,19 +271,13 @@ export namespace TextElementRepository {
   // Update Helper Functions
   // ============================================================================
 
-  /**
-   * Update text_element (type-specific table)
-   * Returns updated entity
-   */
-  const updateTextElementSpecific = async (
-    input: TextElementUpdateInput
-  ): Promise<TextElementEntity> => {
-    const newDataSource = TextElementUtils.convertInputDataSourceToOutput(
-      input.dataSource
-    );
-    const variableId = TextElementUtils.extractVariableIdFromDataSource(
-      input.dataSource
-    );
+  const updateTextElementDataSource = async (
+    input: ElType.TextDataSourceInput,
+    elementId: number
+  ): Promise<ElType.TextDataSourceUpdateResponse> => {
+    const newDataSource =
+      TextElementUtils.convertInputDataSourceToOutput(input);
+    const variableId = TextElementUtils.extractVariableIdFromDataSource(input);
 
     const textUpdates: Partial<typeof textElement.$inferInsert> = {
       textDataSource: newDataSource,
@@ -297,9 +287,22 @@ export namespace TextElementRepository {
     const [updated] = await db
       .update(textElement)
       .set(textUpdates)
-      .where(eq(textElement.elementId, input.id))
+      .where(eq(textElement.elementId, elementId))
       .returning();
 
-    return updated;
+    return {
+      textDataSource: updated.textDataSource,
+      variableId: updated.variableId,
+    };
+  };
+
+  export const standaloneUpdateTextElementDataSource = async (
+    input: ElType.TextDataSourceStandaloneInput
+  ): Promise<ElType.TextDataSourceUpdateResponse> => {
+    await ElementRepository.findByIdOrThrow(input.elementId);
+
+    await TextElementUtils.validateDataSource(input.dataSource);
+
+    return await updateTextElementDataSource(input.dataSource, input.elementId);
   };
 }

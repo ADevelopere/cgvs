@@ -99,6 +99,17 @@ export const TextPropsObject = gqlSchemaBuilder
     }),
   });
 
+export const ElementWithTextPropsPothosObject = gqlSchemaBuilder
+  .objectRef<Types.ElementWithTextProps>("ElementWithTextProps")
+  .implement({
+    fields: t => ({
+      textProps: t.expose("textProps", {
+        type: TextPropsObject,
+        nullable: false,
+      }),
+    }),
+  });
+
 const createTextPropsInputFields = <Types extends SchemaTypes>(
   t: InputFieldBuilder<Types, "InputObject">
 ) => ({

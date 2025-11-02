@@ -136,11 +136,14 @@ export namespace NumberElementRepository {
 
     // 5. Update element_text_props (full replace required)
     const updatedTextProps: ElementTextPropsEntity =
-      await TextPropsRepository.update(existing.textPropsEntity.id, {
-        ...input.textProps,
-        id: existing.textPropsEntity.id,
-      });
-
+      await TextPropsRepository.update(
+        {
+          ...input.textProps,
+          id: existing.textPropsEntity.id,
+        },
+        true
+      );
+      
     // 6. Update number_element (type-specific table)
     const updatedNumberElement = await updateNumberElementSpecific(input);
 
