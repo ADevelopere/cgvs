@@ -1458,7 +1458,7 @@ export type PartialStudentUpdateInput = {
 export type QrCodeElement = CertificateElement & {
   __typename?: 'QRCodeElement';
   base: CertificateElementBase;
-  qrCodeProps?: Maybe<QrCodeElementSpecProps>;
+  qrCodeProps: QrCodeElementSpecProps;
   template?: Maybe<Template>;
 };
 
@@ -2961,7 +2961,7 @@ export type ElementsByTemplateIdQuery = { __typename?: 'Query', elementsByTempla
           | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
           | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
          }, base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null } }
-    | { __typename?: 'QRCodeElement', qrCodeProps?: { __typename?: 'QRCodeElementSpecProps', backgroundColor?: string | null, elementId?: number | null, errorCorrection?: QrCodeErrorCorrection | null, foregroundColor?: string | null } | null, base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null } }
+    | { __typename?: 'QRCodeElement', qrCodeProps: { __typename?: 'QRCodeElementSpecProps', backgroundColor?: string | null, elementId?: number | null, errorCorrection?: QrCodeErrorCorrection | null, foregroundColor?: string | null }, base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null } }
     | { __typename?: 'TextElement', textDataSource:
         | { __typename?: 'TextDataSourceCertificateField', certificateField?: CertificateTextField | null, type?: TextDataSourceType | null }
         | { __typename?: 'TextDataSourceStatic', type?: TextDataSourceType | null, value?: string | null }
@@ -3116,14 +3116,14 @@ export type CreateQrCodeElementMutationVariables = Exact<{
 }>;
 
 
-export type CreateQrCodeElementMutation = { __typename?: 'Mutation', createQRCodeElement?: { __typename?: 'QRCodeElement', base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number }, qrCodeProps?: { __typename?: 'QRCodeElementSpecProps', backgroundColor?: string | null, elementId?: number | null, errorCorrection?: QrCodeErrorCorrection | null, foregroundColor?: string | null } | null } | null };
+export type CreateQrCodeElementMutation = { __typename?: 'Mutation', createQRCodeElement?: { __typename?: 'QRCodeElement', base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number }, qrCodeProps: { __typename?: 'QRCodeElementSpecProps', backgroundColor?: string | null, elementId?: number | null, errorCorrection?: QrCodeErrorCorrection | null, foregroundColor?: string | null } } | null };
 
 export type UpdateQrCodeElementMutationVariables = Exact<{
   input: QrCodeElementUpdateInput;
 }>;
 
 
-export type UpdateQrCodeElementMutation = { __typename?: 'Mutation', updateQRCodeElement?: { __typename?: 'QRCodeElement', base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number }, qrCodeProps?: { __typename?: 'QRCodeElementSpecProps', backgroundColor?: string | null, elementId?: number | null, errorCorrection?: QrCodeErrorCorrection | null, foregroundColor?: string | null } | null } | null };
+export type UpdateQrCodeElementMutation = { __typename?: 'Mutation', updateQRCodeElement?: { __typename?: 'QRCodeElement', base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number }, qrCodeProps: { __typename?: 'QRCodeElementSpecProps', backgroundColor?: string | null, elementId?: number | null, errorCorrection?: QrCodeErrorCorrection | null, foregroundColor?: string | null } } | null };
 
 export type UpdateQrCodeElementSpecPropsMutationVariables = Exact<{
   input: QrCodeElementSpecPropsStandaloneUpdateInput;

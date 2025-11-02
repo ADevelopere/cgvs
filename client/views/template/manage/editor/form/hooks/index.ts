@@ -19,3 +19,6 @@ export type { UseCountryPropsStateParams, UseCountryPropsStateReturn } from "./u
 export { useQRCodePropsState } from "./useQRCodePropsState";
 export type { UseQRCodePropsStateParams, UseQRCodePropsStateReturn } from "./useQRCodePropsState";
 
+export { useTextDataSourceState } from "./useTextDataSourceState";
+export type { UseTextDataSourceStateParams, UseTextDataSourceStateReturn } from "./useTextDataSourceState";
+

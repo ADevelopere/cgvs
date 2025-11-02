@@ -1057,7 +1057,7 @@ scalar PhoneNumber
 
 type QRCodeElement implements CertificateElement {
   base: CertificateElementBase!
-  qrCodeProps: QRCodeElementSpecProps
+  qrCodeProps: QRCodeElementSpecProps!
   template: Template
 }
 
