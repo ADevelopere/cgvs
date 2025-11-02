@@ -72,6 +72,21 @@ export const QRCodeElementUpdateInputObject = gqlSchemaBuilder
     }),
   });
 
+export const QRCodeElementSpecPropsStandaloneUpdateInputObject =
+  gqlSchemaBuilder
+    .inputRef<Types.QRCodeElementSpecPropsStandaloneUpdateInput>(
+      "QRCodeElementSpecPropsStandaloneUpdateInput"
+    )
+    .implement({
+      fields: t => ({
+        elementId: t.int({ required: true }),
+        qrCodeProps: t.field({
+          type: QRCodeElementSpecPropsInputObject,
+          required: true,
+        }),
+      }),
+    });
+
 // ============================================================================
 // Loadable Element Object
 // ============================================================================
@@ -88,6 +103,20 @@ export const QRCodeElementSpecPropsObject = gqlSchemaBuilder
       backgroundColor: t.exposeString("backgroundColor"),
     }),
   });
+
+export const QRCodeElementSpecPropsStandaloneUpdateResponseObject =
+  gqlSchemaBuilder
+    .objectRef<Types.QRCodeElementSpecPropsStandaloneUpdateResponse>(
+      "QRCodeElementSpecPropsStandaloneUpdateResponse"
+    )
+    .implement({
+      fields: t => ({
+        elementId: t.expose("elementId", { type: "Int" }),
+        qrCodeProps: t.expose("qrCodeProps", {
+          type: QRCodeElementSpecPropsObject,
+        }),
+      }),
+    });
 
 const QRCodeElementObjectRef =
   gqlSchemaBuilder.objectRef<Types.QRCodeElementOutput>("QRCodeElement");

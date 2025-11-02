@@ -10,6 +10,8 @@ import {
   CertificateElementEntityInput,
   QRCodeErrorCorrection,
   CertificateElementEntity,
+  QRCodeElementSpecPropsStandaloneUpdateInput,
+  QRCodeElementSpecPropsStandaloneUpdateResponse,
 } from "@/server/types/element";
 import { QRCodeElementUtils } from "@/server/utils/element";
 import logger from "@/server/lib/logger";
@@ -233,6 +235,40 @@ export namespace QRCodeElementRepository {
   };
 
   // ============================================================================
+  // Find Operations (for standalone updates)
+  // ============================================================================
+
+  /**
+   * Find qrCode element entity by elementId
+   * Returns entity from qr_code_element table only
+   */
+  export const findById = async (
+    id: number
+  ): Promise<QRCodeElementEntity | null> => {
+    const qrCodeEl = await db
+      .select()
+      .from(qrCodeElement)
+      .where(eq(qrCodeElement.elementId, id))
+      .limit(1);
+
+    if (qrCodeEl.length === 0) return null;
+    return qrCodeEl[0];
+  };
+
+  /**
+   * Find qrCode element entity by elementId or throw error
+   */
+  export const findByIdOrThrow = async (
+    id: number
+  ): Promise<QRCodeElementEntity> => {
+    const qrCodeEl = await findById(id);
+    if (!qrCodeEl) {
+      throw new Error(`QRCode element with ID ${id} does not exist.`);
+    }
+    return qrCodeEl;
+  };
+
+  // ============================================================================
   // Update Helper Functions
   // ============================================================================
 
@@ -257,5 +293,41 @@ export namespace QRCodeElementRepository {
       .returning();
 
     return updated;
+  };
+
+  /**
+   * Update only qrCodeProps of a QR_CODE element
+   * Pattern: Load element → validate → update qr_code_element table → return response
+   */
+  export const updateSpecProps = async (
+    input: QRCodeElementSpecPropsStandaloneUpdateInput
+  ): Promise<QRCodeElementSpecPropsStandaloneUpdateResponse> => {
+    // 1. Load existing element
+    await findByIdOrThrow(input.elementId);
+    await QRCodeElementUtils.checkSpecProps(input.qrCodeProps);
+
+    // 3. Update qr_code_element (type-specific table)
+    const updatedQRCodeElement = await db
+      .update(qrCodeElement)
+      .set({
+        errorCorrection: input.qrCodeProps.errorCorrection,
+        foregroundColor: input.qrCodeProps.foregroundColor,
+        backgroundColor: input.qrCodeProps.backgroundColor,
+      })
+      .where(eq(qrCodeElement.elementId, input.elementId))
+      .returning();
+
+    logger.info(
+      `QR_CODE element specProps updated: (ID: ${input.elementId})`
+    );
+
+    return {
+      elementId: input.elementId,
+      qrCodeProps: {
+        ...updatedQRCodeElement[0],
+        errorCorrection: updatedQRCodeElement[0]
+          .errorCorrection as QRCodeErrorCorrection,
+      },
+    };
   };
 }

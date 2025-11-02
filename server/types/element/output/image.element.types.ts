@@ -47,3 +47,8 @@ export type ImageElementOutput = {
   imageProps: ImageElementSpecProps;
   imageDataSource: ImageDataSource;
 };
+
+export type ImageElementSpecPropsStandaloneUpdateResponse = {
+  elementId: number;
+  imageProps: ImageElementSpecProps;
+};

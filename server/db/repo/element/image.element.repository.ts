@@ -10,6 +10,8 @@ import {
   CertificateElementEntityInput,
   ElementImageFit,
   CertificateElementEntity,
+  ImageElementSpecPropsStandaloneUpdateInput,
+  ImageElementSpecPropsStandaloneUpdateResponse,
 } from "@/server/types/element";
 import { ImageElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
@@ -244,6 +246,40 @@ export namespace ImageElementRepository {
   };
 
   // ============================================================================
+  // Find Operations (for standalone updates)
+  // ============================================================================
+
+  /**
+   * Find image element entity by elementId
+   * Returns entity from image_element table only
+   */
+  export const findById = async (
+    id: number
+  ): Promise<ImageElementEntity | null> => {
+    const imageEl = await db
+      .select()
+      .from(imageElement)
+      .where(eq(imageElement.elementId, id))
+      .limit(1);
+
+    if (imageEl.length === 0) return null;
+    return imageEl[0];
+  };
+
+  /**
+   * Find image element entity by elementId or throw error
+   */
+  export const findByIdOrThrow = async (
+    id: number
+  ): Promise<ImageElementEntity> => {
+    const imageEl = await findById(id);
+    if (!imageEl) {
+      throw new Error(`Image element with ID ${id} does not exist.`);
+    }
+    return imageEl;
+  };
+
+  // ============================================================================
   // Update Helper Functions
   // ============================================================================
 
@@ -271,5 +307,39 @@ export namespace ImageElementRepository {
       .returning();
 
     return updated;
+  };
+
+  /**
+   * Update only imageProps (fit) of an IMAGE element
+   * Pattern: Load element → validate → update image_element table → return response
+   */
+  export const updateSpecProps = async (
+    input: ImageElementSpecPropsStandaloneUpdateInput
+  ): Promise<ImageElementSpecPropsStandaloneUpdateResponse> => {
+    // 1. Load existing element
+    await findByIdOrThrow(input.elementId);
+    await ImageElementUtils.checkSpecProps(input.imageProps);
+
+    // 3. Update image_element (type-specific table)
+    const updatedImageElement = await db
+      .update(imageElement)
+      .set({
+        fit: input.imageProps.fit,
+      })
+      .where(eq(imageElement.elementId, input.elementId))
+      .returning();
+
+    logger.info(
+      `IMAGE element specProps updated: (ID: ${input.elementId})`
+    );
+
+    return {
+      elementId: input.elementId,
+      imageProps: {
+        elementId: updatedImageElement[0].elementId,
+        storageFileId: updatedImageElement[0].storageFileId,
+        fit: updatedImageElement[0].fit as ElementImageFit,
+      },
+    };
   };
 }
