@@ -7,7 +7,8 @@ export type TemplateConfigFormState =
 
 type SanitizedTemplateConfigFormState = Omit<
   TemplateConfigFormState,
-  "id" | "templateId"
+  "id"
+  //  | "templateId"
 >;
 
 export type TemplateConfigFormErrors =

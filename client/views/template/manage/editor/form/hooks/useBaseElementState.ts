@@ -5,9 +5,9 @@ import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { updateElementCommonPropertiesMutationDocument } from "../../glqDocuments/element/element.documents";
 import { useElementState } from "./useElementState";
 import { validateBaseElementField } from "../element/base/cretElementBaseValidator";
-import { CertificateElementBaseInput } from "@/client/graphql/generated/gql/graphql";
 import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale";
+import {  BaseElementFormErrors, SanitizedBaseElementFormState, UpdateBaseElementWithElementIdFn, ValidateBaseElementFieldFn } from "../element/base";
 
 export type UseBaseElementStateParams = {
   templateId?: number;
@@ -15,10 +15,10 @@ export type UseBaseElementStateParams = {
 };
 
 export type UseBaseElementStateReturn = {
-  getState: (elementId: number) => GQL.CertificateElementBaseInput | null;
-  updateFn: (elementId: number, action: { key: keyof GQL.CertificateElementBaseInput; value: any }) => void;
+  getState: (elementId: number) => SanitizedBaseElementFormState | null;
+  updateFn: UpdateBaseElementWithElementIdFn;
   pushUpdate: (elementId: number) => Promise<void>;
-  errors: Map<number, Partial<Record<keyof GQL.CertificateElementBaseInput, string>>>;
+  errors: Map<number, BaseElementFormErrors>;
 };
 
 /**
@@ -26,13 +26,12 @@ export type UseBaseElementStateReturn = {
  */
 function extractBaseState(
   element: GQL.CertificateElementUnion
-): GQL.CertificateElementBaseInput | null {
+): SanitizedBaseElementFormState | null {
   if (!element.base || !element.template?.id) {
     return null;
   }
 
   return {
-    templateId: element.template.id,
     alignment: element.base.alignment,
     description: element.base.description ?? "",
     height: element.base.height,
@@ -50,7 +49,7 @@ function extractBaseState(
  */
 function toUpdateInput(
   elementId: number,
-  state: GQL.CertificateElementBaseInput
+  state: SanitizedBaseElementFormState
 ): GQL.CertificateElementBaseUpdateInput {
   return {
     id: elementId,
@@ -79,7 +78,7 @@ export function useBaseElementState(
 
   // Mutation function
   const mutationFn = React.useCallback(
-    async (elementId: number, state: GQL.CertificateElementBaseInput) => {
+    async (elementId: number, state: SanitizedBaseElementFormState) => {
       try {
         const updateInput = toUpdateInput(elementId, state);
         await updateElementCommonPropertiesMutation({
@@ -108,12 +107,9 @@ export function useBaseElementState(
   // Note: validateBaseElementField returns a validator for Omit<CertificateElementBaseInput, "hidden">
   // but we need one for CertificateElementBaseInput. We'll cast it for now.
   const baseValidator = validateBaseElementField();
-  const validator: (action: { key: keyof GQL.CertificateElementBaseInput; value: any }) => string | undefined = 
-    (action) => {
-      // Skip hidden field validation
-      if (action.key === "hidden") return undefined;
-      return baseValidator(action as any);
-    };
+  const validator: ValidateBaseElementFieldFn = action => {
+    return baseValidator(action);
+  };
 
   const { getState, updateFn, pushUpdate, errors } = useElementState({
     templateId,
