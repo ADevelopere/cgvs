@@ -112,7 +112,7 @@ export namespace NumberElementUtils {
     }
 
     // Validate template variable exists
-    await ElementRepository.validateTemplateVariableId(
+    await ElementRepository.checkTemplateVariableId(
       dataSource.variableId,
       TemplateVariableType.NUMBER
     );
@@ -277,10 +277,10 @@ export namespace NumberElementUtils {
     }
 
     // Validate base element properties
-    await CommonElementUtils.validateBaseInput(input.base);
+    await CommonElementUtils.checkBaseInput(input.base);
 
     // Validate textProps
-    await CommonElementUtils.validateTextProps(input.textProps);
+    await CommonElementUtils.checkTextProps(input.textProps);
 
     // Validate data source
     await validateDataSource(input.dataSource);

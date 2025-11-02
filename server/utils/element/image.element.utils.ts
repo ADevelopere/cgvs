@@ -126,7 +126,7 @@ export namespace ImageElementUtils {
     }
 
     // Validate base element properties
-    await CommonElementUtils.validateBaseInput(input.base);
+    await CommonElementUtils.checkBaseInput(input.base);
 
     // Validate data source
     await validateDataSource(input.dataSource);

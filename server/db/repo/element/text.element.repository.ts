@@ -132,7 +132,7 @@ export namespace TextElementRepository {
       );
 
     // 6. Update text_element (type-specific table)
-    const updatedDataSource = await updateTextElementDataSource(
+    const updatedDataSource = await updateTextElementDataSourceInternal(
       input.dataSource,
       input.id
     );
@@ -271,7 +271,7 @@ export namespace TextElementRepository {
   // Update Helper Functions
   // ============================================================================
 
-  const updateTextElementDataSource = async (
+  const updateTextElementDataSourceInternal = async (
     input: ElType.TextDataSourceInput,
     elementId: number
   ): Promise<ElType.TextDataSourceUpdateResponse> => {
@@ -293,16 +293,17 @@ export namespace TextElementRepository {
     return {
       textDataSource: updated.textDataSource,
       variableId: updated.variableId,
+      elementId: updated.elementId,
     };
   };
 
-  export const standaloneUpdateTextElementDataSource = async (
+  export const updateTextElementDataSource = async (
     input: ElType.TextDataSourceStandaloneInput
   ): Promise<ElType.TextDataSourceUpdateResponse> => {
     await ElementRepository.findByIdOrThrow(input.elementId);
 
     await TextElementUtils.validateDataSource(input.dataSource);
 
-    return await updateTextElementDataSource(input.dataSource, input.elementId);
+    return await updateTextElementDataSourceInternal(input.dataSource, input.elementId);
   };
 }

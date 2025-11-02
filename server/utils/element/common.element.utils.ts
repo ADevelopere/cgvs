@@ -75,7 +75,7 @@ export namespace CommonElementUtils {
    * Validate text properties (font, size, color, overflow)
    * Used by TEXT, DATE, NUMBER, COUNTRY, GENDER elements
    */
-  export const validateTextProps = async (
+  export const checkTextProps = async (
     textProps: TextPropsInput | TextPropsUpdateInput
   ): Promise<void> => {
     // Validate font reference
@@ -200,7 +200,7 @@ export namespace CommonElementUtils {
    * Validates: templateId, name, dimensions, position, renderOrder
    * Note: description doesn't need validation
    */
-  export const validateBaseInput = async (
+  export const checkBaseInput = async (
     input: CertificateElementBaseInput | CertificateElementBaseUpdateInput
   ): Promise<void> => {
     // Template exists

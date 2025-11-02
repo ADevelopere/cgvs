@@ -125,7 +125,7 @@ export namespace CountryElementUtils {
     input: CountryElementInput
   ): Promise<void> => {
     // Validate base element properties
-    await CommonElementUtils.validateBaseInput(input.base);
+    await CommonElementUtils.checkBaseInput(input.base);
 
     if (!input.base || !input.textProps || !input.countryProps) {
       throw new Error(
@@ -134,7 +134,7 @@ export namespace CountryElementUtils {
     }
 
     // Validate textProps
-    await CommonElementUtils.validateTextProps(input.textProps);
+    await CommonElementUtils.checkTextProps(input.textProps);
 
     // Validate representation
     validateRepresentation(input.countryProps.representation);

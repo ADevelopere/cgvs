@@ -233,6 +233,7 @@ export const TextDataSourceUpdateResponsePothosObject = gqlSchemaBuilder
   .objectRef<Types.TextDataSourceUpdateResponse>("TextDataSourceUpdateResponse")
   .implement({
     fields: t => ({
+      elementId: t.exposeInt("elementId", { nullable: false }),
       textDataSource: t.expose("textDataSource", {
         type: TextDataSourceUnion,
         nullable: false,

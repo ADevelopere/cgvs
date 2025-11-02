@@ -202,6 +202,47 @@ export const DateDataSourceInputObject = gqlSchemaBuilder.inputType(
   }
 );
 
+export const DatePropsObject = gqlSchemaBuilder
+  .objectRef<Types.DateElementSpecProps>("DateProps")
+  .implement({
+    fields: t => ({
+      calendarType: t.expose("calendarType", { type: CalendarTypePothosEnum }),
+      offsetDays: t.exposeInt("offsetDays"),
+      format: t.exposeString("format"),
+      transformation: t.expose("transformation", {
+        type: DateTransformationTypePothosEnum,
+        nullable: true,
+      }),
+    }),
+  });
+
+
+export const DateDataSourceUpdateResponsePothosObject = gqlSchemaBuilder
+  .objectRef<Types.DateDataSourceUpdateResponse>(
+    "DateDataSourceUpdateResponse"
+  )
+  .implement({
+    fields: t => ({
+      elementId: t.exposeInt("elementId"),
+      dateDataSource: t.expose("dateDataSource", {
+        type: DateDataSourceUnion,
+      }),
+    }),
+  });
+
+  export const DateElementSpecPropsUpdateResponsePothosObject11 = gqlSchemaBuilder
+    .objectRef<Types.DateElementSpecPropsUpdateResponse>(
+      "DateElementSpecPropsUpdateResponse"
+    )
+    .implement({
+      fields: t => ({
+        elementId: t.exposeInt("elementId"),
+        dateProps: t.expose("dateProps", {
+          type: DatePropsObject,
+        }),
+      }),
+    });
+
 // ============================================================================
 // Mutation Inputs
 // ============================================================================
@@ -254,21 +295,6 @@ export const DateElementUpdateInputObject = gqlSchemaBuilder
 // ============================================================================
 // Loadable Element Object
 // ============================================================================
-
-export const DatePropsObject = gqlSchemaBuilder
-  .objectRef<Types.DateElementSpecProps>("DateProps")
-  .implement({
-    fields: t => ({
-      calendarType: t.expose("calendarType", { type: CalendarTypePothosEnum }),
-      offsetDays: t.exposeInt("offsetDays"),
-      format: t.exposeString("format"),
-      transformation: t.expose("transformation", {
-        type: DateTransformationTypePothosEnum,
-        nullable: true,
-      }),
-    }),
-  });
-
 const DateElementObjectRef =
   gqlSchemaBuilder.objectRef<Types.DateElementOutput>("DateElement");
 

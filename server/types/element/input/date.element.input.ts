@@ -39,6 +39,11 @@ export type DateDataSourceInput =
   | DateDataSourceCertificateFieldInput
   | DateDataSourceTemplateVariableInput;
 
+export type DateDataSourceStandaloneInput = {
+  elementId: number;
+  dataSource: DateDataSourceInput;
+};
+
 // ============================================================================
 // Mutation Inputs
 // ============================================================================
@@ -59,4 +64,9 @@ export type DateElementInput = {
 
 export type DateElementUpdateInput = DateElementInput & {
   id: number;
+};
+
+export type DateElementSpecPropsStandaloneInput = {
+  elementId: number;
+  dateProps: DateElementSpecPropsInput;
 };

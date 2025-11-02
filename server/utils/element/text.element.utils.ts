@@ -178,7 +178,7 @@ export namespace TextElementUtils {
   const validateTemplateVariable = async (
     variableId: number
   ): Promise<void> => {
-    await ElementRepository.validateTemplateVariableId(
+    await ElementRepository.checkTemplateVariableId(
       variableId,
       TemplateVariableType.TEXT
     );
@@ -201,10 +201,10 @@ export namespace TextElementUtils {
     }
 
     // Validate base element properties
-    await CommonElementUtils.validateBaseInput(input.base);
+    await CommonElementUtils.checkBaseInput(input.base);
 
     // Validate textProps
-    await CommonElementUtils.validateTextProps(input.textProps);
+    await CommonElementUtils.checkTextProps(input.textProps);
 
     // Validate data source
     await validateDataSource(input.dataSource);

@@ -43,7 +43,7 @@ export namespace ElementRepository {
   ): Promise<CertificateElementEntity> => {
     if (!validated) {
       await findByIdOrThrow(input.id);
-      await CommonElementUtils.validateBaseInput(input);
+      await CommonElementUtils.checkBaseInput(input);
     }
 
     const [updated] = await db
@@ -261,7 +261,7 @@ export namespace ElementRepository {
    * Validate template variable exists by ID
    * @throws Error if variable doesn't exist
    */
-  export const validateTemplateVariableId = async (
+  export const checkTemplateVariableId = async (
     variableId: number,
     type: TemplateVariableType
   ): Promise<void> => {

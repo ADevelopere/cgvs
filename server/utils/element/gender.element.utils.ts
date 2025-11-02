@@ -66,9 +66,9 @@ export namespace GenderElementUtils {
     }
 
     // Validate base element properties
-    await CommonElementUtils.validateBaseInput(input.base);
+    await CommonElementUtils.checkBaseInput(input.base);
 
     // Validate textProps
-    await CommonElementUtils.validateTextProps(input.textProps);
+    await CommonElementUtils.checkTextProps(input.textProps);
   };
 }

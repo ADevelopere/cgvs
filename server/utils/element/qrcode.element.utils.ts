@@ -80,7 +80,7 @@ export namespace QRCodeElementUtils {
     }
 
     // Validate base element properties
-    await CommonElementUtils.validateBaseInput(input.base);
+    await CommonElementUtils.checkBaseInput(input.base);
 
     // Validate error correction level
     validateErrorCorrection(input.qrCodeProps.errorCorrection);
