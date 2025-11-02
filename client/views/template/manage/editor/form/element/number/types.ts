@@ -1,4 +1,5 @@
 import type {
+  NumberDataSource,
   NumberDataSourceInput,
   NumberElementInput,
   NumberElementSpecPropsInput,
@@ -42,9 +43,35 @@ export type NumberElementFormErrors = {
 export type UpdateDataSourceFn = (dataSource: NumberDataSourceInput) => void;
 export type UpdateMappingFn = (mapping: Record<string, string>) => void;
 
+export type UpdateNumberDataSourceWithElementIdFn = (
+  elementId: number,
+  dataSource: NumberDataSourceInput
+) => void;
+
 export type NumberElementSpecPropsValidateFn =
   ValidateFieldFn<NumberElementSpecPropsInput>;
 export type ValidateNumberPropsFieldFn =
   ValidateFieldFn<NumberElementSpecPropsInput>;
 export type UpdateNumberPropsWithElementIdFn =
   UpdateStateWithElementIdFn<NumberElementSpecPropsInput>;
+
+// ============================================================================
+// SANITIZED STATE TYPES
+// ============================================================================
+
+export type SanitizedNumberDataSourceFormState = NumberDataSourceInput;
+
+// ============================================================================
+// CONVERSION UTILITIES
+// ============================================================================
+
+/**
+ * Convert NumberDataSource (query type) to NumberDataSourceInput (input type)
+ */
+export const numberDataSourceToInput = (
+  numberDataSource: NumberDataSource
+): NumberDataSourceInput => {
+  return {
+    variableId: numberDataSource.numberVariableId ?? 0,
+  };
+};
