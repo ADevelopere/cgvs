@@ -7,7 +7,12 @@ import { useElementState } from "./useElementState";
 import { validateBaseElementField } from "../element/base/cretElementBaseValidator";
 import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale";
-import {  BaseElementFormErrors, SanitizedBaseElementFormState, UpdateBaseElementWithElementIdFn, ValidateBaseElementFieldFn } from "../element/base";
+import {
+  BaseElementFormErrors,
+  SanitizedBaseElementFormState,
+  UpdateBaseElementWithElementIdFn,
+  ValidateBaseElementFieldFn,
+} from "../element/base";
 
 export type UseBaseElementStateParams = {
   templateId?: number;
@@ -126,4 +131,3 @@ export function useBaseElementState(
     errors,
   };
 }
-

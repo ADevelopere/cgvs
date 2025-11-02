@@ -3,7 +3,11 @@ import type {
   NumberElementInput,
   NumberElementSpecPropsInput,
 } from "@/client/graphql/generated/gql/graphql";
-import { FormErrors, ValidateFieldFn } from "../../types";
+import {
+  FormErrors,
+  ValidateFieldFn,
+  UpdateStateWithElementIdFn,
+} from "../../types";
 import { TextPropsFormErrors } from "../textProps";
 import { BaseElementFormErrors } from "../base";
 
@@ -14,12 +18,15 @@ import { BaseElementFormErrors } from "../base";
 // Complete number element working state
 export type NumberElementFormState = NumberElementInput;
 
+export type SanitizedNumberPropsFormState = NumberElementSpecPropsInput;
+
 // ============================================================================
 // MODULAR ERROR TYPES
 // ============================================================================
 
 export type DataSourceFormErrors = FormErrors<NumberDataSourceInput>;
 export type MappingFormErrors = { [key: string]: string };
+export type NumberPropsFormErrors = FormErrors<NumberElementSpecPropsInput>;
 
 export type NumberElementFormErrors = {
   base: BaseElementFormErrors;
@@ -37,3 +44,7 @@ export type UpdateMappingFn = (mapping: Record<string, string>) => void;
 
 export type NumberElementSpecPropsValidateFn =
   ValidateFieldFn<NumberElementSpecPropsInput>;
+export type ValidateNumberPropsFieldFn =
+  ValidateFieldFn<NumberElementSpecPropsInput>;
+export type UpdateNumberPropsWithElementIdFn =
+  UpdateStateWithElementIdFn<NumberElementSpecPropsInput>;

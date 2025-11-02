@@ -1,6 +1,11 @@
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { BaseElementFormErrors } from "../base/types";
-import { FormErrors, UpdateStateFn } from "../../types";
+import {
+  FormErrors,
+  UpdateStateFn,
+  ValidateFieldFn,
+  UpdateStateWithElementIdFn,
+} from "../../types";
 
 // Re-export GraphQL types for use in components
 export type ImageDataSourceInput = GQL.ImageDataSourceInput;
@@ -14,7 +19,11 @@ export type UpdateImageDataSourceFn = (
 // ============================================================================
 
 export type ImagePropsState = GQL.ImageElementSpecPropsInput;
+export type SanitizedImagePropsFormState = ImagePropsState;
 export type UpdateImagePropsFn = UpdateStateFn<ImagePropsState>;
+export type UpdateImagePropsWithElementIdFn =
+  UpdateStateWithElementIdFn<ImagePropsState>;
+export type ValidateImagePropsFieldFn = ValidateFieldFn<ImagePropsState>;
 
 // ============================================================================
 // Form State Types
