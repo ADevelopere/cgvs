@@ -13,6 +13,7 @@ import {
   UpdateTextPropsWithElementIdFn,
   ValidateTextPropsFieldFn,
 } from "../element/textProps";
+import { Action } from "../types";
 
 export type UseTextPropsStateParams = {
   elements?: GQL.CertificateElementUnion[];
@@ -199,22 +200,20 @@ export const useTextProps = (params: UseTextPropsParams) => {
     templateId: params.templateId,
   });
 
-  const textPropsState = getTextPropsState(params.elemeentId);
+  const textPropsState = getTextPropsState(params.elementId);
   const updateTextProps = React.useCallback(
-    (newState: Partial<SanitizedTextPropsFormState>) => {
+    (action: Action<GQL.TextPropsInput>) => {
       if (!textPropsState) return;
-      const updatedState = { ...textPropsState, ...newState };
-      updateTextPropsStateFn(params.elemeentId, updatedState);
+      updateTextPropsStateFn(params.elementId, action);
     },
-    [params.elemeentId, textPropsState, updateTextPropsStateFn]
+    [params.elementId, textPropsState, updateTextPropsStateFn]
   );
 
   const pushTextPropsUpdate = React.useCallback(async () => {
-    await pushTextPropsStateUpdate(params.elemeentId);
-  }, [params.elemeentId, pushTextPropsStateUpdate]);
+    await pushTextPropsStateUpdate(params.elementId);
+  }, [params.elementId, pushTextPropsStateUpdate]);
 
-  const textPropsErrors =
-    textPropsStateErrors.get(params.elemeentId) || {};
+  const textPropsErrors = textPropsStateErrors.get(params.elementId) || {};
 
   return {
     textPropsState,

@@ -19,7 +19,7 @@ import { Box } from "@mui/material";
 import DownloadImage from "./download/DownloadImage";
 import { getHelperLines } from "./other/utils";
 import HelperLines from "./other/HelperLines";
-import {  nodeTypes } from "./other/constants";
+import {   nodeTypes } from "./other/constants";
 import { useAppTheme } from "@/client/contexts";
 import logger from "@/client/lib/logger";
 
@@ -56,7 +56,7 @@ const Flow: React.FC<CertificateReactFlowEditorProps> = ({
         };
         return {
           id: element.base.id.toString(),
-          type: element.base.type,
+          type: "text",
           position: {
             x: element.base.positionX,
             y: element.base.positionY,
