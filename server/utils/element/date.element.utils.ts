@@ -18,11 +18,6 @@ export namespace DateElementUtils {
   export const mapDateDataSourceGraphqlToInput = (
     input: ElType.DateDataSourceInputGraphql
   ): ElType.DateDataSourceInput => {
-    if (!input) {
-      throw new Error(
-        "DateDataSourceInputGraphql must not be null or undefined"
-      );
-    }
     if (input.static) {
       return {
         type: ElType.DateDataSourceType.STATIC,
@@ -49,23 +44,21 @@ export namespace DateElementUtils {
     );
   };
 
+  export const mapDataSourceStandaloneGqlToInput = (
+    input: ElType.DateDataSourceStandaloneInputGraphql
+  ): ElType.DateDataSourceStandaloneInput => {
+    return {
+      ...input,
+      dataSource: mapDateDataSourceGraphqlToInput(input.dataSource),
+    };
+  };
+
   /**
    * Map GraphQL DateElement create input to repository DateElement create input
    */
   export const mapDateElementCreateGraphqlToInput = (
     input: ElType.DateElementInputGraphql
   ): ElType.DateElementInput => {
-    if (
-      !input ||
-      !input.base ||
-      !input.textProps ||
-      !input.dataSource ||
-      !input.dateProps
-    ) {
-      throw new Error(
-        "DateElementInputGraphql must include base, textProps, dataSource, and dateProps"
-      );
-    }
     return {
       base: input.base,
       textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
@@ -82,17 +75,6 @@ export namespace DateElementUtils {
   export const mapDateElementUpdateGraphqlToInput = (
     input: ElType.DateElementUpdateInputGraphql
   ): ElType.DateElementUpdateInput => {
-    if (
-      !input ||
-      !input.base ||
-      !input.textProps ||
-      !input.dataSource ||
-      !input.dateProps
-    ) {
-      throw new Error(
-        "DateElementUpdateInputGraphql must include base, textProps, dataSource, and dateProps"
-      );
-    }
     return {
       id: input.id,
       base: input.base,
