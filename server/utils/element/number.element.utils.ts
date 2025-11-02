@@ -7,6 +7,8 @@ import {
   NumberElementInputGraphql,
   NumberElementUpdateInputGraphql,
   NumberDataSource,
+  NumberElementDataSourceStandaloneUpdateInputGraphql,
+  NumberElementDataSourceStandaloneUpdateInput,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { TemplateVariableType } from "@/server/types";
@@ -28,15 +30,18 @@ export namespace NumberElementUtils {
   export const mapNumberDataSourceGraphqlToInput = (
     input: NumberDataSourceInputGraphql
   ): NumberDataSourceInput => {
-    if (!input) {
-      throw new Error(
-        "NumberDataSourceInputGraphql must not be null or undefined"
-      );
-    }
-
     return {
       type: NumberDataSourceType.TEMPLATE_NUMBER_VARIABLE,
       variableId: input.variableId,
+    };
+  };
+
+  export const mapNumberElementDataSourceStandaloneUpdateGraphqlToInput = (
+    input: NumberElementDataSourceStandaloneUpdateInputGraphql
+  ): NumberElementDataSourceStandaloneUpdateInput => {
+    return {
+      ...input,
+      dataSource: mapNumberDataSourceGraphqlToInput(input.dataSource),
     };
   };
 
@@ -46,17 +51,6 @@ export namespace NumberElementUtils {
   export const mapNumberElementCreateGraphqlToInput = (
     input: NumberElementInputGraphql
   ): NumberElementInput => {
-    if (
-      !input ||
-      !input.base ||
-      !input.textProps ||
-      !input.numberProps ||
-      !input.dataSource
-    ) {
-      throw new Error(
-        "NumberElementInputGraphql must include base, textProps, numberProps, and dataSource"
-      );
-    }
     return {
       base: input.base,
       textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
@@ -73,17 +67,6 @@ export namespace NumberElementUtils {
   export const mapNumberElementUpdateGraphqlToInput = (
     input: NumberElementUpdateInputGraphql
   ): NumberElementUpdateInput => {
-    if (
-      !input ||
-      !input.base ||
-      !input.textProps ||
-      !input.numberProps ||
-      !input.dataSource
-    ) {
-      throw new Error(
-        "NumberElementUpdateInputGraphql must include base, textProps, numberProps, and dataSource"
-      );
-    }
     return {
       id: input.id,
       base: input.base,

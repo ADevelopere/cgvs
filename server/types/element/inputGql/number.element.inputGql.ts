@@ -29,3 +29,8 @@ export type NumberElementInputGraphql = {
 export type NumberElementUpdateInputGraphql = NumberElementInputGraphql & {
   id: number;
 };
+
+export type NumberElementDataSourceStandaloneUpdateInputGraphql = {
+  elementId: number;
+  dataSource: NumberDataSourceInputGraphql;
+};

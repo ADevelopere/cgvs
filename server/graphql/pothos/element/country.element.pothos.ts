@@ -68,6 +68,35 @@ export const CountryElementUpdateInputObject = gqlSchemaBuilder
     }),
   });
 
+export const CountryElementSpecPropsStandaloneUpdateInputObject =
+  gqlSchemaBuilder
+    .inputRef<Types.CountryElementSpecPropsStandaloneUpdateInput>(
+      "CountryElementSpecPropsStandaloneUpdateInput"
+    )
+    .implement({
+      fields: t => ({
+        elementId: t.int({ required: true }),
+        countryProps: t.field({
+          type: CountryElementCountryPropsInputObject,
+          required: true,
+        }),
+      }),
+    });
+
+export const CountryElementSpecPropsStandaloneUpdateResponseObject =
+  gqlSchemaBuilder
+    .objectRef<Types.CountryElementSpecPropsStandaloneUpdateResponse>(
+      "CountryElementSpecPropsStandaloneUpdateResponse"
+    )
+    .implement({
+      fields: t => ({
+        elementId: t.expose("elementId", { type: "Int" }),
+        countryProps: t.expose("countryProps", {
+          type: CountryElementCountryPropsPothosObject,
+        }),
+      }),
+    });
+
 // ============================================================================
 // Loadable Element Object
 // ============================================================================

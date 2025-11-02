@@ -7,6 +7,7 @@ import {
   CountryDataSourceInputGraphql,
   CountryElementInputGraphql,
   CountryElementUpdateInputGraphql,
+  CountryElementCountryPropsInput,
 } from "@/server/types/element";
 import { CommonElementUtils } from "./common.element.utils";
 
@@ -87,9 +88,7 @@ export namespace CountryElementUtils {
   /**
    * Validate country representation enum
    */
-  const validateRepresentation = (
-    representation: CountryRepresentation
-  ): void => {
+  const checkRepresentation = (representation: CountryRepresentation): void => {
     const validRepresentations = Object.values(CountryRepresentation);
     if (!validRepresentations.includes(representation)) {
       throw new Error(
@@ -118,10 +117,17 @@ export namespace CountryElementUtils {
   // Create Input Validation
   // ============================================================================
 
+  export const checkSpecProps = async (
+    countryProps: CountryElementCountryPropsInput
+  ): Promise<void> => {
+    // Validate representation
+    await checkRepresentation(countryProps.representation);
+  };
+
   /**
    * Validate all fields for COUNTRY element creation
    */
-  export const validateInput = async (
+  export const checkInput = async (
     input: CountryElementInput
   ): Promise<void> => {
     // Validate base element properties
@@ -136,8 +142,8 @@ export namespace CountryElementUtils {
     // Validate textProps
     await CommonElementUtils.checkTextProps(input.textProps);
 
-    // Validate representation
-    validateRepresentation(input.countryProps.representation);
+    // Validate countryProps
+    await checkSpecProps(input.countryProps);
 
     // COUNTRY has fixed data source (STUDENT_NATIONALITY), no validation needed
   };

@@ -93,6 +93,61 @@ export const NumberElementUpdateInputObject = gqlSchemaBuilder
     }),
   });
 
+export const NumberElementDataSourceStandaloneUpdateInputObject =
+  gqlSchemaBuilder
+    .inputRef<Types.NumberElementDataSourceStandaloneUpdateInputGraphql>(
+      "NumberElementDataSourceStandaloneUpdateInput"
+    )
+    .implement({
+      fields: t => ({
+        elementId: t.int({ required: true }),
+        dataSource: t.field({
+          type: NumberDataSourceInputObject,
+          required: true,
+        }),
+      }),
+    });
+
+export const NumberElementSpecPropsStandaloneUpdateInputObject =
+  gqlSchemaBuilder
+    .inputRef<Types.NumberElementSpecPropsStandaloneUpdateInput>(
+      "NumberElementSpecPropsStandaloneUpdateInput"
+    )
+    .implement({
+      fields: t => ({
+        elementId: t.int({ required: true }),
+        numberProps: t.field({
+          type: NumberElementSpecPropsInputObject,
+          required: true,
+        }),
+      }),
+    });
+
+export const NumberElementSpecPropsUpdateResponseObject = gqlSchemaBuilder
+  .objectRef<Types.NumberElementSpecPropsUpdateResponse>(
+    "NumberElementSpecPropsUpdateResponse"
+  )
+  .implement({
+    fields: t => ({
+      elementId: t.exposeInt("elementId"),
+      numberProps: t.expose("numberProps", {
+        type: NumberPropsObject,
+      }),
+    }),
+  });
+
+export const NumberElementDataSourceUpdateResponseObject = gqlSchemaBuilder
+  .objectRef<Types.NumberElementDataSourceUpdateResponse>(
+    "NumberElementDataSourceUpdateResponse"
+  )
+  .implement({
+    fields: t => ({
+      elementId: t.exposeInt("elementId"),
+      numberDataSource: t.expose("numberDataSource", {
+        type: NumberDataSourceObject,
+      }),
+    }),
+  });
 // ============================================================================
 // Loadable Element Object
 // ============================================================================

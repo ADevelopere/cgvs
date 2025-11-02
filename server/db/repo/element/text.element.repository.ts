@@ -267,6 +267,28 @@ export namespace TextElementRepository {
     });
   };
 
+  export const findById = async (
+    id: number
+  ): Promise<ElType.TextElementEntity | null> => {
+    const [element] = await db
+      .select()
+      .from(textElement)
+      .where(eq(textElement.elementId, id))
+      .limit(1);
+
+    return element ?? null;
+  };
+
+  export const findByIdOrThrow = async (
+    id: number
+  ): Promise<ElType.TextElementEntity> => {
+    const element = await findById(id);
+    if (!element) {
+      throw new Error(`Text element with ID ${id} does not exist.`);
+    }
+    return element;
+  };
+
   // ============================================================================
   // Update Helper Functions
   // ============================================================================
@@ -300,10 +322,13 @@ export namespace TextElementRepository {
   export const updateTextElementDataSource = async (
     input: ElType.TextDataSourceStandaloneInput
   ): Promise<ElType.TextDataSourceUpdateResponse> => {
-    await ElementRepository.findByIdOrThrow(input.elementId);
+    await findByIdOrThrow(input.elementId);
 
     await TextElementUtils.validateDataSource(input.dataSource);
 
-    return await updateTextElementDataSourceInternal(input.dataSource, input.elementId);
+    return await updateTextElementDataSourceInternal(
+      input.dataSource,
+      input.elementId
+    );
   };
 }

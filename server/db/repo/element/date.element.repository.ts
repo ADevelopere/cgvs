@@ -305,6 +305,30 @@ export namespace DateElementRepository {
     return updated;
   };
 
+  export const findById = async (
+    id: number
+  ): Promise<ElType.DateElementEntity | null> => {
+    const result = await db
+      .select()
+      .from(dateElement)
+      .where(eq(dateElement.elementId, id))
+      .limit(1);
+
+    if (result.length === 0) return null;
+
+    return result[0];
+  };
+
+  export const findByIdOrThrow = async (  
+    id: number
+  ): Promise<ElType.DateElementEntity> => {
+    const element = await findById(id);
+    if (!element) {
+      throw new Error(`DATE element with ID ${id} does not exist.`);
+    }
+    return element;
+  }
+
   /**
    * Update date_element (type-specific table)
    * Returns updated entity or existing if no changes
@@ -312,7 +336,7 @@ export namespace DateElementRepository {
   export const updateDateElementDataSource = async (
     input: ElType.DateDataSourceStandaloneInput
   ): Promise<ElType.DateDataSourceUpdateResponse> => {
-    await ElementRepository.findByIdOrThrow(input.elementId);
+    await findByIdOrThrow(input.elementId);
 
     await DateElementUtils.checkDataSource(input.dataSource);
 
@@ -341,7 +365,7 @@ export namespace DateElementRepository {
   export const updateDateElementSpecProps = async (
     input: ElType.DateElementSpecPropsStandaloneInput
   ): Promise<ElType.DateElementSpecPropsUpdateResponse> => {
-    await ElementRepository.findByIdOrThrow(input.elementId);
+    await findByIdOrThrow(input.elementId);
 
     await DateElementUtils.checkSpecProps(input.dateProps);
 
