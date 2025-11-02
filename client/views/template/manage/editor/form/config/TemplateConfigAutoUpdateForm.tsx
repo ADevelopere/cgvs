@@ -224,11 +224,20 @@ export const TemplateConfigAutoUpdateForm: React.FC<
             input: latestStateRef.current,
           },
         }).catch(error => {
+          const errorMessage = strings.failedToUpdateTemplateConfiguration;
+          notifications.show(errorMessage, {
+            severity: "error",
+            autoHideDuration: 3000,
+          });
           logger.error("Failed to save on unmount", { error });
         });
       }
     };
-  }, [updateTemplateConfigMutation]);
+  }, [
+    notifications,
+    strings.failedToUpdateTemplateConfiguration,
+    updateTemplateConfigMutation,
+  ]);
 
   return (
     <TemplateConfigAutoUpdateFormContent
