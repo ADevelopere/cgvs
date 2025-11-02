@@ -299,3 +299,29 @@ export const updateElementCommonPropertiesMutationDocument: TypedDocumentNode<
     }
   }
 `;
+
+export const updateElementTextPropsMutationDocument: TypedDocumentNode<
+  GQL.UpdateElementTextPropsMutation,
+  GQL.UpdateElementTextPropsMutationVariables
+> = gql`
+  mutation UpdateElementTextProps($input: TextPropsUpdateInput!) {
+    updateElementTextProps(input: $input) {
+      textProps {
+        id
+        color
+        fontSize
+        overflow
+        fontRef {
+          ... on FontReferenceGoogle {
+            identifier
+            type
+          }
+          ... on FontReferenceSelfHosted {
+            fontId
+            type
+          }
+        }
+      }
+    }
+  }
+`;

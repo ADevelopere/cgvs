@@ -1,6 +1,6 @@
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { BaseElementFormErrors } from "../base/types";
-import { FormErrors, UpdateStateFn, ValidateFieldFn } from "../../types";
+import { FormErrors, UpdateStateFn, ValidateFieldFn, UpdateStateWithElementIdFn } from "../../types";
 
 // ============================================================================
 // QR Code-specific Props State
@@ -15,6 +15,9 @@ export type UpdateQrCodePropsFn = UpdateStateFn<QrCodePropsState>;
 
 export type QrCodeElementFormState = GQL.QrCodeElementInput;
 
+// Sanitized form state (same as QrCodePropsState, no sanitization needed)
+export type SanitizedQRCodePropsFormState = GQL.QrCodeElementSpecPropsInput;
+
 // ============================================================================
 // Error Types
 // ============================================================================
@@ -26,6 +29,14 @@ export type QrCodeElementFormErrors = {
   qrCodeProps: QrCodePropsFormErrors;
 };
 
+// ============================================================================
+// Update and Validation Function Types
+// ============================================================================
+
 export type QrCodePropsFormUpdateFn = UpdateStateFn<QrCodePropsState>;
 export type QrCodeElementSpecPropsValidateFn =
   ValidateFieldFn<GQL.QrCodeElementSpecPropsInput>;
+export type ValidateQRCodePropsFieldFn =
+  ValidateFieldFn<GQL.QrCodeElementSpecPropsInput>;
+export type UpdateQRCodePropsWithElementIdFn =
+  UpdateStateWithElementIdFn<GQL.QrCodeElementSpecPropsInput>;
