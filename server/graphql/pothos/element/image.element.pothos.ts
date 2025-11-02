@@ -134,6 +134,21 @@ export const ImageElementUpdateInputObject = gqlSchemaBuilder
     }),
   });
 
+export const ImageElementSpecPropsStandaloneUpdateInputObject =
+  gqlSchemaBuilder
+    .inputRef<Types.ImageElementSpecPropsStandaloneUpdateInput>(
+      "ImageElementSpecPropsStandaloneUpdateInput"
+    )
+    .implement({
+      fields: t => ({
+        elementId: t.int({ required: true }),
+        imageProps: t.field({
+          type: ImageElementSpecPropsInputObject,
+          required: true,
+        }),
+      }),
+    });
+
 // ============================================================================
 // Loadable Element Object
 // ============================================================================
@@ -147,6 +162,20 @@ export const ImageElementSpecPropsObject = gqlSchemaBuilder
       fit: t.expose("fit", { type: ElementImageFitPothosEnum }),
     }),
   });
+
+export const ImageElementSpecPropsStandaloneUpdateResponseObject =
+  gqlSchemaBuilder
+    .objectRef<Types.ImageElementSpecPropsStandaloneUpdateResponse>(
+      "ImageElementSpecPropsStandaloneUpdateResponse"
+    )
+    .implement({
+      fields: t => ({
+        elementId: t.expose("elementId", { type: "Int" }),
+        imageProps: t.expose("imageProps", {
+          type: ImageElementSpecPropsObject,
+        }),
+      }),
+    });
 
 const ImageElementObjectRef =
   gqlSchemaBuilder.objectRef<Types.ImageElementOutput>("ImageElement");

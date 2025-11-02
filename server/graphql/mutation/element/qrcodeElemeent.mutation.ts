@@ -42,4 +42,17 @@ gqlSchemaBuilder.mutationFields(t => ({
       return await QRCodeElementRepository.update(input);
     },
   }),
+
+  updateQRCodeElementSpecProps: t.field({
+    type: ElementPothos.QRCodeElementSpecPropsStandaloneUpdateResponseObject,
+    args: {
+      input: t.arg({
+        type: ElementPothos.QRCodeElementSpecPropsStandaloneUpdateInputObject,
+        required: true,
+      }),
+    },
+    resolve: async (_, args) => {
+      return await QRCodeElementRepository.updateSpecProps(args.input);
+    },
+  }),
 }));

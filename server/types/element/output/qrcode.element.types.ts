@@ -34,3 +34,8 @@ export type QRCodeElementOutput = {
   base: CertificateElementEntity;
   qrCodeProps: QRCodeElementSpecProps;
 };
+
+export type QRCodeElementSpecPropsStandaloneUpdateResponse = {
+  elementId: number;
+  qrCodeProps: QRCodeElementSpecProps;
+};

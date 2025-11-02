@@ -8,6 +8,7 @@ import {
   ImageElementInputGraphql,
   ImageElementUpdateInputGraphql,
   ImageDataSource,
+  ImageElementSpecPropsInput,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { CommonElementUtils } from "./common.element.utils";
@@ -133,6 +134,16 @@ export namespace ImageElementUtils {
 
     // Validate image fit
     validateImageFit(input.imageProps.fit);
+  };
+
+  /**
+   * Validate imageProps for standalone update
+   */
+  export const checkSpecProps = async (
+    imageProps: ImageElementSpecPropsInput
+  ): Promise<void> => {
+    // Validate image fit
+    validateImageFit(imageProps.fit);
   };
 
   // ============================================================================

@@ -4,6 +4,7 @@ import {
   QRCodeElementUpdateInput,
   QRCodeElementUpdateInputGraphql,
   QRCodeErrorCorrection,
+  QRCodeElementSpecPropsInput,
 } from "@/server/types/element";
 import { CommonElementUtils } from "./common.element.utils";
 
@@ -88,5 +89,19 @@ export namespace QRCodeElementUtils {
     // Validate colors
     CommonElementUtils.validateColor(input.qrCodeProps.foregroundColor);
     CommonElementUtils.validateColor(input.qrCodeProps.backgroundColor);
+  };
+
+  /**
+   * Validate qrCodeProps for standalone update
+   */
+  export const checkSpecProps = async (
+    qrCodeProps: QRCodeElementSpecPropsInput
+  ): Promise<void> => {
+    // Validate error correction level
+    validateErrorCorrection(qrCodeProps.errorCorrection);
+
+    // Validate colors
+    CommonElementUtils.validateColor(qrCodeProps.foregroundColor);
+    CommonElementUtils.validateColor(qrCodeProps.backgroundColor);
   };
 }

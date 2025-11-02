@@ -22,3 +22,8 @@ export type QRCodeElementInput = {
 export type QRCodeElementUpdateInput = QRCodeElementInput & {
   id: number;
 };
+
+export type QRCodeElementSpecPropsStandaloneUpdateInput = {
+  elementId: number;
+  qrCodeProps: QRCodeElementSpecPropsInput;
+};
