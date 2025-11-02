@@ -43,6 +43,14 @@ export type TextDataSourceInput =
   | TextDataSourceTemplateTextVariableInput
   | TextDataSourceTemplateSelectVariableInput;
 
+/**
+ * when only updating data source of an existing element
+ */
+export type TextDataSourceStandaloneInput = {
+  elementId: number;
+  dataSource: TextDataSourceInput;
+};
+
 // ============================================================================
 // Mutation Inputs (no config field)
 // ============================================================================

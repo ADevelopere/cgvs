@@ -12,3 +12,4 @@ export * from "./qrcode.element.pothos";
 
 // Export union (last, after all individual elements)
 export * from "./union.element.pothos";
+export * from "./textProps.pothos";

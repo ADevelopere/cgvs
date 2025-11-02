@@ -229,9 +229,34 @@ export const TextDataSourceInputObject = gqlSchemaBuilder.inputType(
   }
 );
 
+export const TextDataSourceUpdateResponsePothosObject = gqlSchemaBuilder
+  .objectRef<Types.TextDataSourceUpdateResponse>("TextDataSourceUpdateResponse")
+  .implement({
+    fields: t => ({
+      textDataSource: t.expose("textDataSource", {
+        type: TextDataSourceUnion,
+        nullable: false,
+      }),
+      variableId: t.exposeInt("variableId", { nullable: true }),
+    }),
+  });
+
 // ============================================================================
 // Mutation Inputs
 // ============================================================================
+export const TextDataSourceStandaloneInputPothosObject = gqlSchemaBuilder
+  .inputRef<Types.TextDataSourceStandaloneInputGraphql>(
+    "TextDataSourceStandaloneInput"
+  )
+  .implement({
+    fields: t => ({
+      elementId: t.int({ required: true }),
+      dataSource: t.field({
+        type: TextDataSourceInputObject,
+        required: true,
+      }),
+    }),
+  });
 
 const createTextElementInputFields = <Types extends SchemaTypes>(
   t: InputFieldBuilder<Types, "InputObject">

@@ -65,3 +65,8 @@ export type TextElementOutput = {
   textElementSpecProps: TextElementSpecProps;
   textDataSource: TextDataSource;
 };
+
+export type TextDataSourceUpdateResponse = {
+  textDataSource: TextDataSource;
+  variableId: number | null;
+};

@@ -9,6 +9,7 @@ import {
   GenderElementRepository,
   ImageElementRepository,
   QRCodeElementRepository,
+  TextPropsRepository,
 } from "@/server/db/repo";
 import * as Types from "@/server/types";
 import {
@@ -19,6 +20,8 @@ import {
   GenderElementUtils,
   ImageElementUtils,
   QRCodeElementUtils,
+  CommonElementUtils,
+  TextPropsUtils,
 } from "@/server/utils";
 
 gqlSchemaBuilder.mutationFields(t => ({
@@ -283,6 +286,25 @@ gqlSchemaBuilder.mutationFields(t => ({
       const base = await ElementRepository.updateBaseElement(input);
       return {
         base: base,
+      };
+    },
+  }),
+
+  updateElementTextProps: t.field({
+    type: ElementPothos.ElementWithTextPropsPothosObject,
+    args: {
+      input: t.arg({
+        type: ElementPothos.TextPropsUpdateInputObject,
+        required: true,
+      }),
+    },
+    resolve: async (_, args) => {
+      const input = args.input;
+      const textProps =
+        CommonElementUtils.mapTextPropsUpdateGraphqlToInput(input)!;
+      const result = await TextPropsRepository.update(textProps);
+      return {
+        textProps: TextPropsUtils.entityToTextProps(result),
       };
     },
   }),

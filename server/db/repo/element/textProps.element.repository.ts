@@ -9,6 +9,7 @@ import {
   FontSource,
 } from "@/server/types/element";
 import logger from "@/server/lib/logger";
+import { CommonElementUtils } from "@/server/utils";
 
 /**
  * Repository for element_text_props table operations
@@ -66,58 +67,33 @@ export namespace TextPropsRepository {
    * - value = update field to value
    */
   export const update = async (
-    id: number,
-    textProps: TextPropsUpdateInput
+    input: TextPropsUpdateInput,
+    validated: boolean = false
   ): Promise<ElementTextPropsEntity> => {
     // Validate exists
-    await findByIdOrThrow(id);
+    if (!validated) {
+      await findByIdOrThrow(input.id);
+      await CommonElementUtils.validateTextProps(input);
+    }
 
-    // Build update object - only include fields that are not undefined
-    const updates: Partial<ElementTextPropsInsert> = {
-      fontSize: textProps.fontSize,
-      color: textProps.color,
-      overflow: textProps.overflow,
+    const updates: ElementTextPropsInsert = {
+      ...input,
+      fontSource: input.fontRef.type,
+      fontId:
+        input.fontRef.type === FontSource.SELF_HOSTED
+          ? input.fontRef.fontId
+          : null,
+      googleFontIdentifier:
+        input.fontRef.type === FontSource.GOOGLE
+          ? input.fontRef.identifier
+          : null,
     };
-
-    // Handle fontRef update
-    if (textProps.fontRef) {
-      updates.fontSource = textProps.fontRef.type;
-      updates.fontId =
-        textProps.fontRef.type === FontSource.SELF_HOSTED
-          ? textProps.fontRef.fontId
-          : null;
-      updates.googleFontIdentifier =
-        textProps.fontRef.type === FontSource.GOOGLE
-          ? textProps.fontRef.identifier
-          : null;
-    }
-
-    // Handle fontSize
-    if (textProps.fontSize) {
-      updates.fontSize = textProps.fontSize;
-    }
-
-    // Handle color
-    if (textProps.color) {
-      updates.color = textProps.color;
-    }
-
-    // Handle overflow
-    if (textProps.overflow) {
-      updates.overflow = textProps.overflow;
-    }
-
-    // Only update if there are changes
-    if (Object.keys(updates).length === 0) {
-      logger.info(`TextProps update skipped (no changes): ID ${id}`);
-      return findByIdOrThrow(id);
-    }
 
     // Update
     const [updated] = await db
       .update(elementTextProps)
       .set(updates)
-      .where(eq(elementTextProps.id, id))
+      .where(eq(elementTextProps.id, input.id))
       .returning();
 
     logger.info(`TextProps updated: ID ${updated.id}`);

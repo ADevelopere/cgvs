@@ -48,11 +48,8 @@ export namespace CommonElementUtils {
    * Map GraphQL TextProps input to repository TextProps input
    */
   export const mapTextPropsGraphqlCreateToInput = (
-    input?: TextPropsInputGraphql | null
-  ): TextPropsInput | null | undefined => {
-    if (!input) {
-      return input;
-    }
+    input: TextPropsInputGraphql
+  ): TextPropsInput => {
     return {
       ...input,
       fontRef: mapFontReferenceGraphqlToInput(input.fontRef)!,
@@ -63,11 +60,8 @@ export namespace CommonElementUtils {
    * Map GraphQL TextProps update input (partial) to repository TextProps input (partial)
    */
   export const mapTextPropsUpdateGraphqlToInput = (
-    input?: TextPropsUpdateInputGraphql | null
-  ): TextPropsUpdateInput | null | undefined => {
-    if (!input) {
-      return input;
-    }
+    input: TextPropsUpdateInputGraphql
+  ): TextPropsUpdateInput => {
     return {
       ...input,
       fontRef: mapFontReferenceGraphqlToInput(input.fontRef),

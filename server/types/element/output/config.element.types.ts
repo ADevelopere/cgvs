@@ -35,3 +35,7 @@ export type TextProps = Omit<
   fontRef: FontReference;
   overflow: ElementOverflow;
 };
+
+export type ElementWithTextProps = {
+  textProps: TextProps;
+};

@@ -114,10 +114,13 @@ export namespace GenderElementRepository {
 
     // 5. Update element_text_props (full replace required)
     const updatedTextProps: ElementTextPropsEntity =
-      await TextPropsRepository.update(existing.textPropsEntity.id, {
-        ...input.textProps,
-        id: existing.textPropsEntity.id,
-      });
+      await TextPropsRepository.update(
+        {
+          ...input.textProps,
+          id: existing.textPropsEntity.id,
+        },
+        true
+      );
 
     logger.info(
       `GENDER element updated: ${updatedBaseElement.name} (ID: ${input.id})`

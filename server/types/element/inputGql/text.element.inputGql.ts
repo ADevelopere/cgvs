@@ -68,6 +68,11 @@ export type TextDataSourceInputGraphql =
 // Mutation Inputs
 // ============================================================================
 
+export type TextDataSourceStandaloneInputGraphql = {
+  elementId: number;
+  dataSource: TextDataSourceInputGraphql;
+};
+
 // GraphQL create input type
 export type TextElementInputGraphql = {
   base: CertificateElementBaseInput;

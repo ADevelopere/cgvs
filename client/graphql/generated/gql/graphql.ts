@@ -69,7 +69,7 @@ export type CertificateElementBase = {
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   height: Scalars['Int']['output'];
-  hidden: Scalars['Boolean']['output'];
+  hidden?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
   positionX: Scalars['Int']['output'];
@@ -570,6 +570,11 @@ export enum ElementType {
   Text = 'TEXT'
 }
 
+export type ElementWithTextProps = {
+  __typename?: 'ElementWithTextProps';
+  textProps: TextProps;
+};
+
 export type FileInfo = StorageObject & {
   __typename?: 'FileInfo';
   contentType?: Maybe<Scalars['String']['output']>;
@@ -914,6 +919,8 @@ export type Mutation = {
   updateCountryElement?: Maybe<CountryElement>;
   updateDateElement?: Maybe<DateElement>;
   updateDirectoryPermissions?: Maybe<FileOperationResult>;
+  updateElementCommonProperties?: Maybe<CertificateElement>;
+  updateElementTextProps?: Maybe<ElementWithTextProps>;
   updateElementsRenderOrder?: Maybe<Scalars['Boolean']['output']>;
   updateFont: Font;
   updateGenderElement?: Maybe<GenderElement>;
@@ -1155,6 +1162,16 @@ export type MutationUpdateDateElementArgs = {
 
 export type MutationUpdateDirectoryPermissionsArgs = {
   input: DirectoryPermissionsUpdateInput;
+};
+
+
+export type MutationUpdateElementCommonPropertiesArgs = {
+  input: CertificateElementBaseUpdateInput;
+};
+
+
+export type MutationUpdateElementTextPropsArgs = {
+  input: TextPropsUpdateInput;
 };
 
 
@@ -2147,6 +2164,11 @@ export type TextDataSourceInput =
   |  { certificateField?: never; static?: never; studentField?: never; templateSelectVariable: TextDataSourceTemplateSelectVariableInput; templateTextVariable?: never; }
   |  { certificateField?: never; static?: never; studentField?: never; templateSelectVariable?: never; templateTextVariable: TextDataSourceTemplateTextVariableInput; };
 
+export type TextDataSourceStandaloneInput = {
+  dataSource: TextDataSourceInput;
+  elementId: Scalars['Int']['input'];
+};
+
 export type TextDataSourceStatic = {
   __typename?: 'TextDataSourceStatic';
   type?: Maybe<TextDataSourceType>;
@@ -2194,6 +2216,12 @@ export enum TextDataSourceType {
   TemplateSelectVariable = 'TEMPLATE_SELECT_VARIABLE',
   TemplateTextVariable = 'TEMPLATE_TEXT_VARIABLE'
 }
+
+export type TextDataSourceUpdateResponse = {
+  __typename?: 'TextDataSourceUpdateResponse';
+  textDataSource: TextDataSource;
+  variableId?: Maybe<Scalars['Int']['output']>;
+};
 
 export type TextElement = CertificateElement & {
   __typename?: 'TextElement';
@@ -2761,7 +2789,7 @@ export type ElementsByTemplateIdQuery = { __typename?: 'Query', elementsByTempla
     | { __typename?: 'CountryElement', countryProps?: { __typename?: 'CountryElementCountryProps', representation?: CountryRepresentation | null } | null, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
           | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
           | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
-         }, base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden: boolean }, template?: { __typename?: 'Template', id: number } | null }
+         }, base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null }, template?: { __typename?: 'Template', id: number } | null }
     | { __typename?: 'DateElement', dateDataSource?:
         | { __typename?: 'DateDataSourceCertificateField', certificateField?: CertificateDateField | null, type?: DateDataSourceType | null }
         | { __typename?: 'DateDataSourceStatic', type?: DateDataSourceType | null, value?: string | null }
@@ -2770,17 +2798,17 @@ export type ElementsByTemplateIdQuery = { __typename?: 'Query', elementsByTempla
        | null, dateProps?: { __typename?: 'DateProps', calendarType?: CalendarType | null, format?: string | null, offsetDays?: number | null, transformation?: DateTransformationType | null } | null, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
           | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
           | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
-         }, base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden: boolean }, template?: { __typename?: 'Template', id: number } | null }
+         }, base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null }, template?: { __typename?: 'Template', id: number } | null }
     | { __typename?: 'GenderElement', textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
           | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
           | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
-         }, base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden: boolean }, template?: { __typename?: 'Template', id: number } | null }
-    | { __typename?: 'ImageElement', imageDataSource?: { __typename?: 'ImageDataSourceStorageFile', storageFileId?: number | null, type?: ImageDataSourceType | null } | null, imageProps?: { __typename?: 'ImageElementSpecProps', elementId?: number | null, fit?: ElementImageFit | null, storageFileId?: number | null } | null, base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden: boolean }, template?: { __typename?: 'Template', id: number } | null }
+         }, base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null }, template?: { __typename?: 'Template', id: number } | null }
+    | { __typename?: 'ImageElement', imageDataSource?: { __typename?: 'ImageDataSourceStorageFile', storageFileId?: number | null, type?: ImageDataSourceType | null } | null, imageProps?: { __typename?: 'ImageElementSpecProps', elementId?: number | null, fit?: ElementImageFit | null, storageFileId?: number | null } | null, base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null }, template?: { __typename?: 'Template', id: number } | null }
     | { __typename?: 'NumberElement', numberDataSource?: { __typename?: 'NumberDataSource', numberVariableId?: number | null, type?: NumberDataSourceType | null } | null, numberProps?: { __typename?: 'NumberProps', elementId?: number | null, mapping?: any | null, textPropsId?: number | null, variableId?: number | null } | null, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
           | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
           | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
-         }, base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden: boolean }, template?: { __typename?: 'Template', id: number } | null }
-    | { __typename?: 'QRCodeElement', qrCodeProps?: { __typename?: 'QRCodeElementSpecProps', backgroundColor?: string | null, elementId?: number | null, errorCorrection?: QrCodeErrorCorrection | null, foregroundColor?: string | null } | null, base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden: boolean }, template?: { __typename?: 'Template', id: number } | null }
+         }, base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null }, template?: { __typename?: 'Template', id: number } | null }
+    | { __typename?: 'QRCodeElement', qrCodeProps?: { __typename?: 'QRCodeElementSpecProps', backgroundColor?: string | null, elementId?: number | null, errorCorrection?: QrCodeErrorCorrection | null, foregroundColor?: string | null } | null, base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null }, template?: { __typename?: 'Template', id: number } | null }
     | { __typename?: 'TextElement', textDataSource:
         | { __typename?: 'TextDataSourceCertificateField', certificateField?: CertificateTextField | null, type?: TextDataSourceType | null }
         | { __typename?: 'TextDataSourceStatic', type?: TextDataSourceType | null, value?: string | null }
@@ -2790,7 +2818,7 @@ export type ElementsByTemplateIdQuery = { __typename?: 'Query', elementsByTempla
       , textElementSpecProps: { __typename?: 'TextElementSpecProps', elementId: number, textPropsId: number, variableId?: number | null }, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
           | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
           | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
-         }, base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden: boolean }, template?: { __typename?: 'Template', id: number } | null }
+         }, base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null }, template?: { __typename?: 'Template', id: number } | null }
   > | null };
 
 type CertificateElement_CountryElement_Fragment = { __typename: 'CountryElement', base: { __typename?: 'CertificateElementBase', id: number } };
@@ -2911,7 +2939,7 @@ export type TextElementByIdQueryVariables = Exact<{
 }>;
 
 
-export type TextElementByIdQuery = { __typename?: 'Query', textElementById?: { __typename?: 'TextElement', base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden: boolean }, template?: { __typename?: 'Template', id: number } | null, textDataSource:
+export type TextElementByIdQuery = { __typename?: 'Query', textElementById?: { __typename?: 'TextElement', base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null }, template?: { __typename?: 'Template', id: number } | null, textDataSource:
       | { __typename?: 'TextDataSourceCertificateField', certificateField?: CertificateTextField | null, type?: TextDataSourceType | null }
       | { __typename?: 'TextDataSourceStatic', type?: TextDataSourceType | null, value?: string | null }
       | { __typename?: 'TextDataSourceStudentField', studentField?: StudentTextField | null, type?: TextDataSourceType | null }
@@ -2927,7 +2955,7 @@ export type CreateTextElementMutationVariables = Exact<{
 }>;
 
 
-export type CreateTextElementMutation = { __typename?: 'Mutation', createTextElement?: { __typename?: 'TextElement', base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden: boolean }, template?: { __typename?: 'Template', id: number } | null, textDataSource:
+export type CreateTextElementMutation = { __typename?: 'Mutation', createTextElement?: { __typename?: 'TextElement', base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null }, template?: { __typename?: 'Template', id: number } | null, textDataSource:
       | { __typename?: 'TextDataSourceCertificateField', certificateField?: CertificateTextField | null, type?: TextDataSourceType | null }
       | { __typename?: 'TextDataSourceStatic', type?: TextDataSourceType | null, value?: string | null }
       | { __typename?: 'TextDataSourceStudentField', studentField?: StudentTextField | null, type?: TextDataSourceType | null }
@@ -2943,7 +2971,7 @@ export type UpdateTextElementMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTextElementMutation = { __typename?: 'Mutation', updateTextElement?: { __typename?: 'TextElement', base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden: boolean }, template?: { __typename?: 'Template', id: number } | null, textDataSource:
+export type UpdateTextElementMutation = { __typename?: 'Mutation', updateTextElement?: { __typename?: 'TextElement', base: { __typename?: 'CertificateElementBase', alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, id: number, name: string, positionX: number, positionY: number, renderOrder: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null }, template?: { __typename?: 'Template', id: number } | null, textDataSource:
       | { __typename?: 'TextDataSourceCertificateField', certificateField?: CertificateTextField | null, type?: TextDataSourceType | null }
       | { __typename?: 'TextDataSourceStatic', type?: TextDataSourceType | null, value?: string | null }
       | { __typename?: 'TextDataSourceStudentField', studentField?: StudentTextField | null, type?: TextDataSourceType | null }
