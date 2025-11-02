@@ -134,3 +134,51 @@ export const updateDateElementMutationDocument: TypedDocumentNode<
     }
   }
 `;
+
+export const updateDateElementDataSourceMutationDocument: TypedDocumentNode<
+  Graphql.UpdateDateElementDataSourceMutation,
+  Graphql.UpdateDateElementDataSourceMutationVariables
+> = gql`
+  mutation updateDateElementDataSource($input: DateDataSourceStandaloneInput!) {
+    updateDateElementDataSource(input: $input) {
+      elementId
+      dateDataSource {
+        ... on DateDataSourceCertificateField {
+          certificateField
+          type
+        }
+        ... on DateDataSourceStatic {
+          type
+          value
+        }
+        ... on DateDataSourceStudentField {
+          studentField
+          type
+        }
+        ... on DateDataSourceTemplateVariable {
+          dateVariableId
+          type
+        }
+      }
+    }
+  }
+`;
+
+export const updateDateElementSpecPropsMutationDocument: TypedDocumentNode<
+  Graphql.UpdateDateElementSpecPropsMutation,
+  Graphql.UpdateDateElementSpecPropsMutationVariables
+> = gql`
+  mutation updateDateElementSpecProps(
+    $input: DateElementSpecPropsStandaloneInput!
+  ) {
+    updateDateElementSpecProps(input: $input) {
+      dateProps {
+        calendarType
+        format
+        offsetDays
+        transformation
+      }
+      elementId
+    }
+  }
+`;

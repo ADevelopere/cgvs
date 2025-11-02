@@ -1,5 +1,4 @@
 import "./auth.mutation";
-import "./element.mutation";
 import "./font.mutation";
 import "./recipient.mutation";
 import "./recipientGroup.mutation";
@@ -10,3 +9,12 @@ import "./template.mutation";
 import "./templateCategory.mutation";
 import "./templateVariable.mutation";
 import "./templateConfig.mutation";
+// Element Mutations
+import "./element/element.mutation";
+import "./element/countryElement.mutation";
+import "./element/dateElement.mutation";
+import "./element/genderElement.mutation";
+import "./element/imageElement.mutation";
+import "./element/numberElement.mutation";
+import "./element/qrcodeElement.mutation";
+import "./element/textElement.mutation";
