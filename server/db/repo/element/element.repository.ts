@@ -25,8 +25,8 @@ import {
 } from "@/server/types/element";
 import logger from "@/server/lib/logger";
 import { TemplateRepository } from "../template.repository";
-import { BaseElementUtils } from "@/server/utils";
 import { TemplateVariableType } from "@/server/types";
+import { CommonElementUtils } from "@/server/utils";
 
 /**
  * Master repository for certificate elements
@@ -38,21 +38,18 @@ export namespace ElementRepository {
    * Returns updated entity or existing if no changes
    */
   export const updateBaseElement = async (
-    elementId: number,
     input: CertificateElementBaseUpdateInput,
-    existing: CertificateElementEntity
+    validated: boolean = false
   ): Promise<CertificateElementEntity> => {
-    const baseUpdates = BaseElementUtils.baseUpdates(input, existing);
-
-    if (Object.keys(baseUpdates).length === 0) {
-      return existing;
+    if (!validated) {
+      await findByIdOrThrow(input.id);
+      await CommonElementUtils.validateBaseInput(input);
     }
 
-    baseUpdates.updatedAt = new Date();
     const [updated] = await db
       .update(certificateElement)
-      .set(baseUpdates)
-      .where(eq(certificateElement.id, elementId))
+      .set(input)
+      .where(eq(certificateElement.id, input.id))
       .returning();
 
     return updated;

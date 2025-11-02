@@ -270,6 +270,23 @@ gqlSchemaBuilder.mutationFields(t => ({
   // Generic Element Mutations (Work Across All Types)
   // =========================================================================
 
+  updateElementCommonProperties: t.field({
+    type: ElementPothos.CertificateElementPothosInterface,
+    args: {
+      input: t.arg({
+        type: ElementPothos.CertificateElementBaseUpdateInputObject,
+        required: true,
+      }),
+    },
+    resolve: async (_, args) => {
+      const input = args.input;
+      const base = await ElementRepository.updateBaseElement(input);
+      return {
+        base: base,
+      };
+    },
+  }),
+
   deleteElement: t.field({
     type: "Boolean",
     args: {

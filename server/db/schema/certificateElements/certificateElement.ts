@@ -21,7 +21,7 @@ export const certificateElement = pgTable("certificate_element", {
   width: integer("width").notNull(),
   height: integer("height").notNull(),
   alignment: elementAlignmentEnum("alignment"),
-  hidden: boolean("hidden").notNull().default(false),
+  hidden: boolean("hidden").default(false),
   renderOrder: integer("render_order").notNull(), // Lower values render first
 
   type: elementTypeEnum("type").notNull(), // Discriminator for element type
