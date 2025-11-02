@@ -6,6 +6,8 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import { TemplateConfigForm } from "./TemplateConfigForm";
 import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale/useAppTranslation";
+import { useTemplateConfigFormValidateFn } from "./templateConfigValidator";
+import { TemplateConfigTranslations } from "@/client/locale";
 
 export type TemplateConfigCreateFormProps = {
   template: GQL.Template;
@@ -18,6 +20,7 @@ export type TemplateConfigCreateFormContentProps = {
   createError: string | null;
   updater: TemplateConfigFormUpdateFn;
   handleCreate: () => Promise<void>;
+  strings: TemplateConfigTranslations;
 };
 
 export const TemplateConfigCreateFormContent: React.FC<
@@ -29,9 +32,8 @@ export const TemplateConfigCreateFormContent: React.FC<
   createError,
   updater,
   handleCreate,
+  strings,
 }) => {
-  const { templateConfigTranslations: strings } = useAppTranslation();
-
   return (
     <Stack
       direction={"column"}
@@ -92,26 +94,17 @@ export const TemplateConfigCreateForm: React.FC<
   const [errors, setErrors] = React.useState<TemplateConfigFormErrors>({});
   const [creating, setCreating] = React.useState(false);
   const [createError, setCreateError] = React.useState<string | null>(null);
+  const validateAction = useTemplateConfigFormValidateFn(strings);
 
   const updater: TemplateConfigFormUpdateFn = action => {
     const { key, value } = action;
-    if (key === "width" || key === "height") {
-      if (value <= 0) {
-        setErrors(prev => ({
-          ...prev,
-          [key]: strings.valueMustBePositive,
-        }));
-      } else if (value > 10000) {
-        setErrors(prev => ({
-          ...prev,
-          [key]: strings.valueMustBeLessThan10000,
-        }));
-      }
-    }
-    setErrors(prev => {
-      const { [key]: _, ...rest } = prev;
-      return rest;
-    });
+    const errorMessage = validateAction(action);
+
+    setErrors(prev => ({
+      ...prev,
+      [key]: errorMessage,
+    }));
+
     setState(prev => ({
       ...prev,
       [key]: value,
@@ -151,6 +144,7 @@ export const TemplateConfigCreateForm: React.FC<
       createError={createError}
       updater={updater}
       handleCreate={handleCreate}
+      strings={strings}
     />
   );
 };

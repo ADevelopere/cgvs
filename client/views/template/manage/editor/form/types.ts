@@ -11,10 +11,7 @@ type Action<T> = {
 export type UpdateStateFn<T> = (action: Action<T>) => void;
 
 // export type UpdateStateFn<T> = <K extends keyof T>(key: K, value: T[K]) => void;
-export type ValidateFieldFn<T> = <K extends keyof T>(
-  key: K,
-  value: T[K]
-) => string | undefined;
+export type ValidateFieldFn<T> = (action: Action<T>) => string | undefined;
 
 // ============================================================================
 // TYPE-SAFE ERROR MAP

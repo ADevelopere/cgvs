@@ -20,6 +20,7 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
         type
         updatedAt
         width
+        hidden
       }
       template {
         id

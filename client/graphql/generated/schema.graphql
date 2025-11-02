@@ -36,6 +36,7 @@ type CertificateElementBase {
   createdAt: DateTime!
   description: String
   height: Int!
+  hidden: Boolean!
   id: Int!
   name: String!
   positionX: Int!
@@ -50,6 +51,7 @@ input CertificateElementBaseInput {
   alignment: ElementAlignment!
   description: String!
   height: Int!
+  hidden: Boolean
   name: String!
   positionX: Int!
   positionY: Int!
@@ -62,6 +64,7 @@ input CertificateElementBaseUpdateInput {
   alignment: ElementAlignment!
   description: String!
   height: Int!
+  hidden: Boolean
   id: Int!
   name: String!
   positionX: Int!

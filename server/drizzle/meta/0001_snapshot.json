@@ -1,5 +1,5 @@
 {
-  "id": "d9b01b7e-d35d-45ba-8466-a33daf542c15",
+  "id": "011bb3d6-68c9-47c0-b75f-afb4177d9434",
   "prevId": "a03697e8-0c3c-4c86-8680-1a949f474bf6",
   "version": "7",
   "dialect": "postgresql",
@@ -586,6 +586,13 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
+        },
+        "hidden": {
+          "name": "hidden",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         },
         "render_order": {
           "name": "render_order",

@@ -8,7 +8,7 @@ import { MiscellaneousPanelTab } from "./types";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { TemplateConfigAutoUpdateForm } from "../form/config/TemplateConfigAutoUpdateForm";
 import { useAppTranslation } from "@/client/locale";
-import { ElementsTab } from "./ElementsTab";
+import { ElementsTab } from "./elements/ElementsTab";
 
 export type MiscellaneousPanelProps = {
   config: GQL.TemplateConfig;

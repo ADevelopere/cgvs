@@ -96,6 +96,7 @@ CREATE TABLE "certificate_element" (
 	"width" integer NOT NULL,
 	"height" integer NOT NULL,
 	"alignment" "element_alignment",
+	"hidden" boolean DEFAULT false NOT NULL,
 	"render_order" integer NOT NULL,
 	"type" "element_type" NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
