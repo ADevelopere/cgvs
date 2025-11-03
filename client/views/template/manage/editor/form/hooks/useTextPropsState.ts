@@ -21,9 +21,10 @@ export type UseTextPropsStateParams = {
 };
 
 export type UseTextPropsStateReturn = {
-  getTextPropsState: (elementId: number) => SanitizedTextPropsFormState;
+  textPropsStates: Map<number, SanitizedTextPropsFormState>;
   updateTextPropsStateFn: UpdateTextPropsWithElementIdFn;
   pushTextPropsStateUpdate: (elementId: number) => Promise<void>;
+  initTextPropsState: (elementId: number) => SanitizedTextPropsFormState;
   textPropsStateErrors: Map<number, TextPropsFormErrors>;
 };
 
@@ -167,7 +168,7 @@ export function useTextPropsState(
   // Use generic hook
   const validator: ValidateTextPropsFieldFn = validateTextPropsField();
 
-  const { getState, updateFn, pushUpdate, errors } = useElementState({
+  const { states, updateFn, pushUpdate, initState, errors } = useElementState({
     templateId,
     elements,
     validator,
@@ -176,9 +177,10 @@ export function useTextPropsState(
   });
 
   return {
-    getTextPropsState: getState,
+    textPropsStates: states,
     updateTextPropsStateFn: updateFn,
     pushTextPropsStateUpdate: pushUpdate,
+    initTextPropsState: initState,
     textPropsStateErrors: errors,
   };
 }
@@ -191,22 +193,31 @@ export type UseTextPropsParams = {
 
 export const useTextProps = (params: UseTextPropsParams) => {
   const {
-    getTextPropsState,
+    textPropsStates,
     updateTextPropsStateFn,
     pushTextPropsStateUpdate,
+    initTextPropsState,
     textPropsStateErrors,
   } = useTextPropsState({
     elements: params.elements,
     templateId: params.templateId,
   });
 
-  const textPropsState = getTextPropsState(params.elementId);
+  // Get state or initialize if not present
+  const textPropsState = textPropsStates.get(params.elementId) ?? initTextPropsState(params.elementId) ?? initTextPropsState(params.elementId);
   const updateTextProps = React.useCallback(
     (action: Action<GQL.TextPropsInput>) => {
-      if (!textPropsState) return;
       updateTextPropsStateFn(params.elementId, action);
     },
-    [params.elementId, textPropsState, updateTextPropsStateFn]
+    [params.elementId, updateTextPropsStateFn]
+  );
+
+  logger.log(
+    "useTextProps: textPropsState",
+    JSON.stringify({
+      elementId: params.elementId,
+      textPropsState,
+    })
   );
 
   const pushTextPropsUpdate = React.useCallback(async () => {

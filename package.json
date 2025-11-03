@@ -52,6 +52,7 @@
     "@types/react-color": "^3.0.13",
     "@types/stylis": "^4.2.7",
     "@types/validator": "^13.15.4",
+    "@types/webfontloader": "^1.6.38",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
     "@upstash/ratelimit": "^2.0.6",
@@ -96,6 +97,7 @@
     "tsconfig-paths": "^4.2.0",
     "use-debounce": "^10.0.6",
     "validator": "^13.15.20",
+    "webfontloader": "^1.6.28",
     "xlsx": "^0.18.5",
     "zustand": "^5.0.8"
   },

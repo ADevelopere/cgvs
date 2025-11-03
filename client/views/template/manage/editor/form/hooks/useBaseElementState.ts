@@ -21,11 +21,10 @@ export type UseBaseElementStateParams = {
 };
 
 export type UseBaseElementStateReturn = {
-  getBaseElementState: (
-    elementId: number
-  ) => SanitizedBaseElementFormState;
+  baseElementStates: Map<number, SanitizedBaseElementFormState>;
   updateBaseElementStateFn: UpdateBaseElementWithElementIdFn;
   pushBaseElementStateUpdate: (elementId: number) => Promise<void>;
+  initBaseElementState: (elementId: number) => SanitizedBaseElementFormState;
   baseElementStateErrors: Map<number, BaseElementFormErrors>;
 };
 
@@ -119,7 +118,7 @@ export function useBaseElementState(
     return baseValidator(action);
   };
 
-  const { getState, updateFn, pushUpdate, errors } = useElementState({
+  const { states, updateFn, pushUpdate, initState, errors } = useElementState({
     templateId,
     elements,
     validator,
@@ -128,9 +127,10 @@ export function useBaseElementState(
   });
 
   return {
-    getBaseElementState: getState,
+    baseElementStates: states,
     updateBaseElementStateFn: updateFn,
     pushBaseElementStateUpdate: pushUpdate,
+    initBaseElementState: initState,
     baseElementStateErrors: errors,
   };
 }
@@ -144,13 +144,15 @@ export type UseBaseElementParams = {
 
 export const useBaseElement = (params: UseBaseElementParams) => {
   const {
-    getBaseElementState,
+    baseElementStates,
     updateBaseElementStateFn,
     pushBaseElementStateUpdate,
+    initBaseElementState,
     baseElementStateErrors,
   } = useBaseElementState(params);
 
-  const baseElementState = getBaseElementState(params.elementId);
+  // Get state or initialize if not present
+  const baseElementState = baseElementStates.get(params.elementId) ?? initBaseElementState(params.elementId) ?? initBaseElementState(params.elementId);
   const pushBaseElementUpdate = React.useCallback(async () => {
     await pushBaseElementStateUpdate(params.elementId);
   }, [params.elementId, pushBaseElementStateUpdate]);
@@ -160,10 +162,9 @@ export const useBaseElement = (params: UseBaseElementParams) => {
 
   const updateBaseElementState = React.useCallback(
     (action: Action<SanitizedBaseElementFormState>) => {
-      if (!baseElementState) return;
       updateBaseElementStateFn(params.elementId, action);
     },
-    [params.elementId, baseElementState, updateBaseElementStateFn]
+    [params.elementId, updateBaseElementStateFn]
   );
 
 

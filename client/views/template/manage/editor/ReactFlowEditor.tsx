@@ -161,7 +161,8 @@ const Flow: React.FC<CertificateReactFlowEditorProps> = ({
 
         if (change.type === "select" && change.selected) {
           const idNum = parseInt(change.id, 10);
-          setCurrentElementId(idNum);
+          // Defer state update to avoid updating during render
+          setTimeout(() => setCurrentElementId(idNum), 0);
         }
       });
 

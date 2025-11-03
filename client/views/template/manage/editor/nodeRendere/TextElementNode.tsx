@@ -5,6 +5,9 @@ import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { useBaseElement } from "../form/hooks/useBaseElementState";
 import { useTextProps } from "../form/hooks/useTextPropsState";
 import { logger } from "@/client/lib/logger";
+import React from "react";
+import { FontFamily, getFontByFamily, GoogleFontItem } from "@/lib/font/google";
+import WebFont from "webfontloader";
 
 export type TextElementNodeData = {
   // templateId: number;
@@ -16,37 +19,56 @@ type TextElementNodeProps = NodeProps & {
   data: TextElementNodeData;
 };
 
+// Helper to format the font string
+function getFontFamilyString(fontItem: GoogleFontItem): string | null {
+  if (!fontItem) return null;
+  const variants = fontItem.variants.join(",");
+  return `${fontItem.family}:${variants}`;
+}
 
 export const TextElementNode = ({ data }: TextElementNodeProps) => {
   const { elements, elementId } = data;
   const { textPropsState } = useTextProps({ elements, elementId });
   const { baseElementState } = useBaseElement({ elements, elementId });
 
-  logger.log("TextElementNode render:", {
-    elementId,
-    textPropsState,
-    baseElementState,
-  });
+  const [fontFamily, setFontFamily] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (textPropsState.fontRef.google?.identifier) {
+      const family = textPropsState.fontRef.google.identifier;
+      logger.log("Loading font family:", family);
+      const fontFamily = family as FontFamily;
+      logger.log("Resolved font family:", fontFamily);
+      const font = getFontByFamily(family as FontFamily);
+
+      if (font) {
+        setFontFamily(family);
+        const fontFamily = getFontFamilyString(font);
+        logger.log("Loading font:", fontFamily);
+
+        if (fontFamily) {
+          WebFont.load({
+            google: {
+              families: [fontFamily],
+            },
+            active: () => {
+              logger.info(`Font ${font.family} is active!`);
+              // You can set a state here to update your UI
+            },
+
+          });
+        }
+      }
+    }
+  }, [textPropsState.fontRef.google?.identifier]);
 
   if (!textPropsState || !baseElementState) {
     return <div>Loading...</div>;
   }
 
-  // useEffect(() => {
-  //   // Load Google Fonts dynamically
-  //   const link = document.createElement("link");
-  //   link.href =
-  //     "https://fonts.googleapis.com/css2?family=Cairo&family=Reem+Kufi+Ink&display=swap";
-  //   link.rel = "stylesheet";
-  //   document.head.appendChild(link);
-
-  //   return () => {
-  //     document.head.removeChild(link);
-  //   };
-  // }, []);
-
   const style: React.CSSProperties = {
     fontSize: textPropsState.fontSize,
+    fontFamily: fontFamily ?? "Cairo",
     color: textPropsState.color ?? "#941717ff",
     // fontFamily: data.fontFamily ?? "Cairo",
     padding: "10px",
@@ -56,8 +78,11 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
     width: baseElementState.width,
     height: baseElementState.height,
     overflow: "hidden",
-    textOverflow: textPropsState.overflow === GQL.ElementOverflow.Ellipse ? "ellipsis" : "clip",
-    textWrap: "nowrap"
+    textOverflow:
+      textPropsState.overflow === GQL.ElementOverflow.Ellipse
+        ? "ellipsis"
+        : "clip",
+    textWrap: "nowrap",
   };
 
   return (
