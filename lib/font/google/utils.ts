@@ -9,7 +9,7 @@ import { GoogleFontItem } from "./types";
  * @returns Array of FontSubset enums required for the language
  */
 export function getLanguageSubsets(language: Language): FontSubset[] {
-  return languageSubsetMap[language] || [FontSubset.LATIN];
+  return languageSubsetMap[language] ?? [FontSubset.LATIN];
 }
 
 /**
