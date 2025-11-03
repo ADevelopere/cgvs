@@ -217,12 +217,18 @@ export const certificateElements: CertificateElementsTranslations = {
     // Alignment
     alignmentLabel: "المحاذاة",
     alignmentRequired: "المحاذاة مطلوبة",
-    alignmentStart: "البداية",
-    alignmentEnd: "النهاية",
-    alignmentTop: "أعلى",
-    alignmentBottom: "أسفل",
+    alignmentTopStart: "أعلى اليمين",
+    alignmentTopCenter: "أعلى الوسط",
+    alignmentTopEnd: "أعلى اليسار",
+    alignmentCenterStart: "وسط اليمين",
     alignmentCenter: "وسط",
-    alignmentBaseline: "خط الأساس",
+    alignmentCenterEnd: "وسط اليسار",
+    alignmentBottomStart: "أسفل اليمين",
+    alignmentBottomCenter: "أسفل الوسط",
+    alignmentBottomEnd: "أسفل اليسار",
+    alignmentBaselineStart: "خط الأساس اليمين",
+    alignmentBaselineCenter: "خط الأساس الوسط",
+    alignmentBaselineEnd: "خط الأساس اليسار",
 
     // Render order
     renderOrderLabel: "ترتيب العرض",

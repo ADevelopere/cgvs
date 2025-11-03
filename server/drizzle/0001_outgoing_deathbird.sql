@@ -9,7 +9,7 @@ CREATE TYPE "public"."certificate_text_field" AS ENUM('VERIFICATION_CODE');--> s
 CREATE TYPE "public"."country_representation" AS ENUM('COUNTRY_NAME', 'NATIONALITY');--> statement-breakpoint
 CREATE TYPE "public"."date_data_source_type" AS ENUM('STATIC', 'TEMPLATE_DATE_VARIABLE', 'STUDENT_DATE_FIELD', 'CERTIFICATE_DATE_FIELD');--> statement-breakpoint
 CREATE TYPE "public"."date_transformation_type" AS ENUM('AGE_CALCULATION');--> statement-breakpoint
-CREATE TYPE "public"."element_alignment" AS ENUM('START', 'END', 'TOP', 'BOTTOM', 'CENTER', 'BASELINE');--> statement-breakpoint
+CREATE TYPE "public"."element_alignment" AS ENUM('TOP_START', 'TOP_CENTER', 'TOP_END', 'CENTER_START', 'CENTER', 'CENTER_END', 'BOTTOM_START', 'BOTTOM_CENTER', 'BOTTOM_END', 'BASELINE_START', 'BASELINE_CENTER', 'BASELINE_END');--> statement-breakpoint
 CREATE TYPE "public"."element_image_fit" AS ENUM('COVER', 'CONTAIN', 'FILL');--> statement-breakpoint
 CREATE TYPE "public"."element_overflow" AS ENUM('RESIZE_DOWN', 'TRUNCATE', 'ELLIPSE', 'WRAP');--> statement-breakpoint
 CREATE TYPE "public"."element_type" AS ENUM('TEXT', 'NUMBER', 'DATE', 'IMAGE', 'GENDER', 'COUNTRY', 'QR_CODE');--> statement-breakpoint
@@ -96,7 +96,7 @@ CREATE TABLE "certificate_element" (
 	"width" integer NOT NULL,
 	"height" integer NOT NULL,
 	"alignment" "element_alignment",
-	"hidden" boolean DEFAULT false NOT NULL,
+	"hidden" boolean DEFAULT false,
 	"render_order" integer NOT NULL,
 	"type" "element_type" NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,

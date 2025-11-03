@@ -1,5 +1,5 @@
 {
-  "id": "011bb3d6-68c9-47c0-b75f-afb4177d9434",
+  "id": "38ca6673-db03-4f40-b203-03b18366b2cd",
   "prevId": "a03697e8-0c3c-4c86-8680-1a949f474bf6",
   "version": "7",
   "dialect": "postgresql",
@@ -591,7 +591,7 @@
           "name": "hidden",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "default": false
         },
         "render_order": {
@@ -2662,12 +2662,18 @@
       "name": "element_alignment",
       "schema": "public",
       "values": [
-        "START",
-        "END",
-        "TOP",
-        "BOTTOM",
+        "TOP_START",
+        "TOP_CENTER",
+        "TOP_END",
+        "CENTER_START",
         "CENTER",
-        "BASELINE"
+        "CENTER_END",
+        "BOTTOM_START",
+        "BOTTOM_CENTER",
+        "BOTTOM_END",
+        "BASELINE_START",
+        "BASELINE_CENTER",
+        "BASELINE_END"
       ]
     },
     "public.element_image_fit": {

@@ -533,12 +533,18 @@ input DirectoryPermissionsUpdateInput {
 }
 
 enum ElementAlignment {
-  BASELINE
-  BOTTOM
+  BASELINE_CENTER
+  BASELINE_END
+  BASELINE_START
+  BOTTOM_CENTER
+  BOTTOM_END
+  BOTTOM_START
   CENTER
-  END
-  START
-  TOP
+  CENTER_END
+  CENTER_START
+  TOP_CENTER
+  TOP_END
+  TOP_START
 }
 
 enum ElementImageFit {

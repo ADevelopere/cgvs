@@ -24,11 +24,70 @@ interface BaseCertificateElementFormProps {
   errors: BaseElementFormErrors;
   disabled?: boolean;
 }
+type AlignmentOption = {
+  label: string;
+  value: ElementAlignment;
+};
 
 export const BaseCertificateElementForm: FC<
   BaseCertificateElementFormProps
 > = ({ baseProps, onFieldChange, errors, disabled }) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
+
+  const alignments: AlignmentOption[] = React.useMemo(
+    () => [
+      {
+        label: strings.baseElement.alignmentTopStart,
+        value: ElementAlignment.TopStart,
+      },
+      {
+        label: strings.baseElement.alignmentTopCenter,
+        value: ElementAlignment.TopCenter,
+      },
+      {
+        label: strings.baseElement.alignmentTopEnd,
+        value: ElementAlignment.TopEnd,
+      },
+      {
+        label: strings.baseElement.alignmentCenterStart,
+        value: ElementAlignment.CenterStart,
+      },
+      {
+        label: strings.baseElement.alignmentCenter,
+        value: ElementAlignment.Center,
+      },
+      {
+        label: strings.baseElement.alignmentCenterEnd,
+        value: ElementAlignment.CenterEnd,
+      },
+      {
+        label: strings.baseElement.alignmentBottomStart,
+        value: ElementAlignment.BottomStart,
+      },
+      {
+        label: strings.baseElement.alignmentBottomCenter,
+        value: ElementAlignment.BottomCenter,
+      },
+      {
+        label: strings.baseElement.alignmentBottomEnd,
+        value: ElementAlignment.BottomEnd,
+      },
+      {
+        label: strings.baseElement.alignmentBaselineStart,
+        value: ElementAlignment.BaselineStart,
+      },
+      {
+        label: strings.baseElement.alignmentBaselineCenter,
+        value: ElementAlignment.BaselineCenter,
+      },
+      {
+        label: strings.baseElement.alignmentBaselineEnd,
+        value: ElementAlignment.BaselineEnd,
+      },
+    ],
+    [strings]
+  );
+
   return (
     <Box>
       <Typography variant="h6" gutterBottom>
@@ -169,7 +228,7 @@ export const BaseCertificateElementForm: FC<
                 })
               }
             >
-              <MenuItem value="START">
+              {/* <MenuItem value="START">
                 {strings.baseElement.alignmentStart}
               </MenuItem>
               <MenuItem value="END">
@@ -186,7 +245,12 @@ export const BaseCertificateElementForm: FC<
               </MenuItem>
               <MenuItem value="BASELINE">
                 {strings.baseElement.alignmentBaseline}
-              </MenuItem>
+              </MenuItem> */}
+              {alignments.map(option => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
             </Select>
             {errors.alignment && (
               <FormHelperText>{errors.alignment}</FormHelperText>

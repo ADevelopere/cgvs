@@ -568,12 +568,18 @@ export type DirectoryPermissionsUpdateInput = {
 };
 
 export enum ElementAlignment {
-  Baseline = 'BASELINE',
-  Bottom = 'BOTTOM',
+  BaselineCenter = 'BASELINE_CENTER',
+  BaselineEnd = 'BASELINE_END',
+  BaselineStart = 'BASELINE_START',
+  BottomCenter = 'BOTTOM_CENTER',
+  BottomEnd = 'BOTTOM_END',
+  BottomStart = 'BOTTOM_START',
   Center = 'CENTER',
-  End = 'END',
-  Start = 'START',
-  Top = 'TOP'
+  CenterEnd = 'CENTER_END',
+  CenterStart = 'CENTER_START',
+  TopCenter = 'TOP_CENTER',
+  TopEnd = 'TOP_END',
+  TopStart = 'TOP_START'
 }
 
 export enum ElementImageFit {

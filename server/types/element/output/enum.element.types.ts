@@ -9,12 +9,18 @@ export enum ElementType {
 }
 
 export enum ElementAlignment {
-  START = "START",
-  END = "END",
-  TOP = "TOP",
-  BOTTOM = "BOTTOM",
-  CENTER = "CENTER",
-  BASELINE = "BASELINE",
+  TopStart = 'TOP_START',
+  TopCenter = 'TOP_CENTER',
+  TopEnd = 'TOP_END',
+  CenterStart = 'CENTER_START',
+  Center = 'CENTER', // Represents CenterCenter
+  CenterEnd = 'CENTER_END',
+  BottomStart = 'BOTTOM_START',
+  BottomCenter = 'BOTTOM_CENTER',
+  BottomEnd = 'BOTTOM_END',
+  BaselineStart = 'BASELINE_START',
+  BaselineCenter = 'BASELINE_CENTER',
+  BaselineEnd = 'BASELINE_END',
 }
 
 export enum FontSource {
