@@ -8,12 +8,14 @@ export abstract class BaseLogger {
   protected enabled: boolean;
   protected logsDir: string;
   protected logKey: string;
+  protected writeToFileEnabled: boolean;
 
-  constructor(logKey: string) {
+  constructor(logKey: string, writeToFileEnabled = true) {
     // Only enable in development
     this.enabled = process.env.NODE_ENV !== "production";
     this.logsDir = join(process.cwd(), "logs");
     this.logKey = logKey;
+    this.writeToFileEnabled = writeToFileEnabled;
   }
 
   private formatTimestamp(): string {
@@ -93,7 +95,7 @@ export abstract class BaseLogger {
     }
 
     // Write to file
-    this.writeToFile(level, message);
+    if (this.writeToFileEnabled) this.writeToFile(level, message);
   }
 
   public log(...args: unknown[]): void {

@@ -17,6 +17,7 @@ import {
   FontSource,
 } from "@/client/graphql/generated/gql/graphql";
 import { UpdateFontRefFn } from "./types";
+import {  } from "next/font/google";
 
 interface FontReferenceSelectorProps {
   fontRef: FontReferenceInput;
