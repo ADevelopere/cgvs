@@ -2,6 +2,8 @@ import { FontSubset, Language } from "./enum";
 import { googleFontSubsetMap } from "./googleFontSubsetMap.const";
 import { languageSubsetMap } from "./languageSubsetMap";
 import { GoogleFontItem } from "./types";
+import { googleFontFamilyMap } from "./fontFamily.map";
+import { FontFamily } from "./fontFamily.enum";
 
 /**
  * Get the required font subsets for a given language
@@ -47,4 +49,13 @@ export function getLanguageFonts(language: Language): GoogleFontItem[] {
   }
 
   return Array.from(fontMap.values());
+}
+
+/**
+ * Get a Google Font by its family name using type-safe enum
+ * @param family - The FontFamily enum value
+ * @returns The GoogleFontItem for that family, or undefined if not found
+ */
+export function getFontByFamily(family: FontFamily): GoogleFontItem | undefined {
+  return googleFontFamilyMap[family];
 }

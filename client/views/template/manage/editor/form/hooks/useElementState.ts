@@ -14,9 +14,10 @@ export type UseElementStateParams<T> = {
 };
 
 export type UseElementStateReturn<T> = {
-  getState: (elementId: number) => T;
+  states: Map<number, T>;
   updateFn: (elementId: number, action: Action<T>) => void;
   pushUpdate: (elementId: number) => Promise<void>;
+  initState: (elementId: number) => T;
   errors: Map<number, FormErrors<T>>;
 };
 
@@ -48,6 +49,7 @@ export function useElementState<T>(
 
   // State management
   const statesRef = React.useRef<Map<number, T>>(new Map());
+  const [statesMap, setStatesMap] = React.useState<Map<number, T>>(new Map());
   const [errorsMap, setErrorsMap] = React.useState<Map<number, FormErrors<T>>>(
     new Map()
   );
@@ -57,6 +59,52 @@ export function useElementState<T>(
     new Map()
   );
 
+  // Refs for dependencies to stabilize callbacks
+  const elementsRef = React.useRef(elements);
+  elementsRef.current = elements;
+  const extractInitialStateRef = React.useRef(extractInitialState);
+  extractInitialStateRef.current = extractInitialState;
+  const validatorRef = React.useRef(validator);
+  validatorRef.current = validator;
+  const mutationFnRef = React.useRef(mutationFn);
+  mutationFnRef.current = mutationFn;
+
+  // Initialize state for an element
+  const initState = React.useCallback(
+    (elementId: number): T => {
+      // Return existing state if already present
+      if (statesRef.current.has(elementId)) {
+        const state = statesRef.current.get(elementId);
+        if (state === undefined) {
+          throw new Error(
+            `useElementState: State is undefined for element id ${elementId}`
+          );
+        }
+        return state;
+      }
+
+      // Find element and extract initial state
+      const element = elementsRef.current.find(el => el.base?.id === elementId);
+      if (!element) {
+        throw new Error(`useElementState: Element not found for id ${elementId}`);
+      }
+
+      const initialState = extractInitialStateRef.current(element);
+      if (initialState === undefined || initialState === null) {
+        throw new Error(
+          `useElementState: Failed to extract initial state for element id ${elementId}`
+        );
+      }
+
+      // Store and trigger re-render
+      statesRef.current.set(elementId, initialState);
+      setStatesMap(new Map(statesRef.current));
+      
+      return initialState;
+    },
+    []
+  );
+
   // Get state, creating from element if missing
   const getState = React.useCallback(
     (elementId: number): T => {
@@ -64,27 +112,26 @@ export function useElementState<T>(
       if (statesRef.current.has(elementId)) {
         const state = statesRef.current.get(elementId);
         if (state === undefined) {
-          throw new Error(`useElementState: State is undefined for element id ${elementId}`);
+          throw new Error(
+            `useElementState: State is undefined for element id ${elementId}`
+          );
         }
         return state;
       }
 
-      // Find element and extract initial state
-      const element = elements.find(el => el.base?.id === elementId);
-      if (!element) {
-        throw new Error(`useElementState: Element not found for id ${elementId}`);
+      // Initialize if missing
+      initState(elementId);
+      
+      // Now it should exist
+      const state = statesRef.current.get(elementId);
+      if (state === undefined) {
+        throw new Error(
+          `useElementState: State is undefined after initialization for element id ${elementId}`
+        );
       }
-
-      const initialState = extractInitialState(element);
-      if (initialState === undefined || initialState === null) {
-        throw new Error(`useElementState: Failed to extract initial state for element id ${elementId}`);
-      }
-
-      // Store and return
-      statesRef.current.set(elementId, initialState);
-      return initialState;
+      return state;
     },
-    [elements, extractInitialState]
+    [initState]
   );
 
   // Update function
@@ -92,11 +139,16 @@ export function useElementState<T>(
     (elementId: number, action: Action<T>) => {
       const { key, value } = action;
 
+      logger.log("useElementState: updateFn called", JSON.stringify({
+        elementId,
+        action,
+      }));
+
       // Get current state (will throw if element not found)
       const currentState = getState(elementId);
 
       // Validate
-      const errorMessage = validator(action);
+      const errorMessage = validatorRef.current(action);
 
       // Update errors
       const currentErrors = errorsRef.current.get(elementId) || {};
@@ -113,6 +165,7 @@ export function useElementState<T>(
         [key]: value,
       };
       statesRef.current.set(elementId, newState);
+      setStatesMap(new Map(statesRef.current));
 
       // Store pending update
       pendingUpdatesRef.current.set(elementId, newState);
@@ -128,7 +181,7 @@ export function useElementState<T>(
         debounceTimersRef.current.delete(elementId);
         const pendingState = pendingUpdatesRef.current.get(elementId);
         if (pendingState) {
-          mutationFn(elementId, pendingState).catch(error => {
+          mutationFnRef.current(elementId, pendingState).catch(error => {
             logger.error("useElementState: Mutation failed", {
               elementId,
               error,
@@ -140,7 +193,7 @@ export function useElementState<T>(
 
       debounceTimersRef.current.set(elementId, timer);
     },
-    [getState, validator, mutationFn]
+    [getState]
   );
 
   // Push update immediately
@@ -156,11 +209,11 @@ export function useElementState<T>(
       // Get pending state
       const pendingState = pendingUpdatesRef.current.get(elementId);
       if (pendingState) {
-        await mutationFn(elementId, pendingState);
+        await mutationFnRef.current(elementId, pendingState);
         pendingUpdatesRef.current.delete(elementId);
       }
     },
-    [mutationFn]
+    []
   );
 
   // Cleanup: save pending updates on unmount
@@ -168,6 +221,7 @@ export function useElementState<T>(
     // Capture the current ref value when effect runs
     const timers = debounceTimersRef.current;
     const pendingUpdates = pendingUpdatesRef.current;
+    const mutationFnOnUnmount = mutationFnRef.current;
     return () => {
       // Clear all timers
       // Cleanup uses the captured value, not the ref
@@ -175,7 +229,7 @@ export function useElementState<T>(
 
       // Save all pending updates
       pendingUpdates.forEach((state, elementId) => {
-        mutationFn(elementId, state).catch(error => {
+        mutationFnOnUnmount(elementId, state).catch(error => {
           logger.error("useElementState: Failed to save on unmount", {
             elementId,
             error,
@@ -184,12 +238,13 @@ export function useElementState<T>(
       });
       timers.clear();
     };
-  }, [mutationFn]);
+  }, []);
 
   return {
-    getState,
+    states: statesMap,
     updateFn,
     pushUpdate,
+    initState,
     errors: errorsMap,
   };
 }
