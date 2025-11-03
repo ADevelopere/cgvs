@@ -103,12 +103,12 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
             label={strings.dateElement.offsetDaysLabel}
             placeholder={strings.dateElement.offsetDaysPlaceholder}
             value={
-              dateProps.offsetDays !== undefined ? dateProps.offsetDays : ""
+              dateProps.offsetDays === undefined ? "" : dateProps.offsetDays
             }
             onChange={e =>
               onUpdate({
                 key: "offsetDays",
-                value: parseInt(e.target.value, 10),
+                value: Number.parseInt(e.target.value, 10),
               })
             }
             error={!!errors.offsetDays}

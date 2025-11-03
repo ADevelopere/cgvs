@@ -29,7 +29,7 @@ export const CertificateDateFieldSelector: FC<
         label={strings.dateElement.certificateFieldLabel}
         onChange={e => onChange(e.target.value as CertificateDateField)}
       >
-        <MenuItem value="RELEASE_DATE">
+        <MenuItem value={CertificateDateField.ReleaseDate}>
           {strings.dateElement.certificateFieldReleaseDate}
         </MenuItem>
       </Select>
