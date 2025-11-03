@@ -1,8 +1,6 @@
 import React from "react";
-import { useMutation } from "@apollo/client/react";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import { updateElementTextPropsMutationDocument } from "../../glqDocuments/element/element.documents";
 import { useElementState } from "./useElementState";
 import { validateTextPropsField } from "../element/textProps/textPropsValidator";
 import { logger } from "@/client/lib/logger";
@@ -14,6 +12,7 @@ import {
   ValidateTextPropsFieldFn,
 } from "../element/textProps";
 import { Action } from "../types";
+import {  useTextPropsMutation_Evict } from "../../hooks";
 
 export type UseTextPropsStateParams = {
   elements?: GQL.CertificateElementUnion[];
@@ -114,9 +113,7 @@ export function useTextPropsState(
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
 
-  const [updateElementTextPropsMutation] = useMutation(
-    updateElementTextPropsMutationDocument
-  );
+  const { updateTextPropsMutation } = useTextPropsMutation_Evict(templateId ?? 0);
 
   // Get textPropsId from element - we need to track this per elementId
   // Store mapping of elementId -> textPropsId
@@ -143,7 +140,7 @@ export function useTextPropsState(
         }
 
         const updateInput = toUpdateInput(textPropsId, state);
-        await updateElementTextPropsMutation({
+        await updateTextPropsMutation({
           variables: {
             input: updateInput,
           },
@@ -162,7 +159,7 @@ export function useTextPropsState(
         throw error;
       }
     },
-    [updateElementTextPropsMutation, notifications, errorStrings]
+    [updateTextPropsMutation, notifications, errorStrings]
   );
 
   // Use generic hook
@@ -205,7 +202,10 @@ export const useTextProps = (params: UseTextPropsParams) => {
 
   // Get state or initialize if not present (only initialize once)
   const textPropsState = React.useMemo(() => {
-    return textPropsStates.get(params.elementId) ?? initTextPropsState(params.elementId);
+    return (
+      textPropsStates.get(params.elementId) ??
+      initTextPropsState(params.elementId)
+    );
   }, [textPropsStates, params.elementId, initTextPropsState]);
   const updateTextProps = React.useCallback(
     (action: Action<GQL.TextPropsInput>) => {
@@ -234,4 +234,4 @@ export const useTextProps = (params: UseTextPropsParams) => {
     pushTextPropsUpdate,
     textPropsErrors,
   };
-}
+};
