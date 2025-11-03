@@ -34,6 +34,8 @@ export const enCertificateElements: CertificateElementsTranslations = {
     selectVariable: "Select Variable",
     noVariablesAvailable: "No variables available",
     variableRequired: "Variable is required",
+
+    textPreviewValue: "The quick brown fox jumps over the lazy dog.",
   },
 
   dateElement: {

@@ -7,12 +7,16 @@ interface DataSourceSelectorProps {
   selectedType: TextDataSourceType;
   onTypeChange: (type: TextDataSourceType) => void;
   disabled?: boolean;
+  textVariablesDisabled: boolean;
+  selectVariablesDisabled: boolean;
 }
 
 export const DataSourceSelector: FC<DataSourceSelectorProps> = ({
   selectedType,
   onTypeChange,
   disabled,
+  textVariablesDisabled,
+  selectVariablesDisabled,
 }) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
 
@@ -33,10 +37,18 @@ export const DataSourceSelector: FC<DataSourceSelectorProps> = ({
         <MenuItem value={TextDataSourceType.CertificateTextField}>
           {strings.textElement.dataSourceCertificateField}
         </MenuItem>
-        <MenuItem value={TextDataSourceType.TemplateTextVariable}>
+        <MenuItem
+          value={TextDataSourceType.TemplateTextVariable}
+          disabled={textVariablesDisabled}
+          color={textVariablesDisabled ? "disabled" : "inherit"}
+        >
           {strings.textElement.dataSourceTemplateTextVariable}
         </MenuItem>
-        <MenuItem value={TextDataSourceType.TemplateSelectVariable}>
+        <MenuItem
+          value={TextDataSourceType.TemplateSelectVariable}
+          disabled={selectVariablesDisabled}
+          color={selectVariablesDisabled ? "disabled" : "inherit"}
+        >
           {strings.textElement.dataSourceTemplateSelectVariable}
         </MenuItem>
       </Select>

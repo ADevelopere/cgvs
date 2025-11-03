@@ -117,7 +117,8 @@ export default function TestElementsPage() {
       static: { value: "Certificate of Completion" },
     },
   });
-  const [formErrors, _setFormErrors] = useState<TextElementFormErrors>({
+
+  const [formErrors] = useState<TextElementFormErrors>({
     base: {},
     textProps: {},
     dataSource: {},
@@ -399,11 +400,10 @@ export default function TestElementsPage() {
                   textProps: { ...prev.textProps, [key]: value },
                 }))
               }
-              updateDataSource={dataSource =>
-                setFormState(prev => ({ ...prev, dataSource }))
-              }
-              templateId={TEST_TEMPLATE_ID}
-              locale="en"
+              updateDataSource={dataSource => {
+                setFormState(prev => ({ ...prev, dataSource }));
+              }}
+              language={GQL.AppLanguage.Ar}
               textVariables={textVariables}
               selectVariables={selectVariables}
               selfHostedFonts={fonts}

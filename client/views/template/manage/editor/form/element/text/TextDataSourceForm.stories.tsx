@@ -21,7 +21,7 @@ export const StaticSource: Story = {
     dataSource: { static: { value: "Certificate of Completion" } },
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    onDataSourceChange: dataSource =>
+    updateDataSource: dataSource =>
       logger.log("Data source changed:", dataSource),
     errors: {},
     disabled: false,
@@ -34,7 +34,7 @@ export const StudentFieldSource: Story = {
     dataSource: { studentField: { field: StudentTextField.StudentName } },
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    onDataSourceChange: dataSource =>
+    updateDataSource: dataSource =>
       logger.log("Data source changed:", dataSource),
     errors: {},
     disabled: false,
@@ -49,7 +49,7 @@ export const CertificateFieldSource: Story = {
     },
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    onDataSourceChange: dataSource =>
+    updateDataSource: dataSource =>
       logger.log("Data source changed:", dataSource),
     errors: {},
     disabled: false,
@@ -62,7 +62,7 @@ export const TemplateTextVariableSource: Story = {
     dataSource: { templateTextVariable: { variableId: 1 } },
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    onDataSourceChange: dataSource =>
+    updateDataSource: dataSource =>
       logger.log("Data source changed:", dataSource),
     errors: {},
     disabled: false,
@@ -75,7 +75,7 @@ export const TemplateSelectVariableSource: Story = {
     dataSource: { templateSelectVariable: { variableId: 1 } },
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    onDataSourceChange: dataSource =>
+    updateDataSource: dataSource =>
       logger.log("Data source changed:", dataSource),
     errors: {},
     disabled: false,
@@ -88,7 +88,7 @@ export const WithErrors: Story = {
     dataSource: { static: { value: "" } },
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    onDataSourceChange: dataSource =>
+    updateDataSource: dataSource =>
       logger.log("Data source changed:", dataSource),
     errors: { static: "Value is required" },
     disabled: false,
@@ -101,7 +101,7 @@ export const WithoutSelector: Story = {
     dataSource: { static: { value: "Certificate of Completion" } },
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    onDataSourceChange: dataSource =>
+    updateDataSource: dataSource =>
       logger.log("Data source changed:", dataSource),
     errors: {},
     disabled: false,
@@ -114,7 +114,7 @@ export const Disabled: Story = {
     dataSource: { static: { value: "Certificate of Completion" } },
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    onDataSourceChange: dataSource =>
+    updateDataSource: dataSource =>
       logger.log("Data source changed:", dataSource),
     errors: {},
     disabled: true,

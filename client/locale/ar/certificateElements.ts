@@ -34,6 +34,8 @@ export const certificateElements: CertificateElementsTranslations = {
     selectVariable: "اختر متغير",
     noVariablesAvailable: "لا توجد متغيرات متاحة",
     variableRequired: "المتغير مطلوب",
+
+    textPreviewValue: "أبجد هَوَّز حُطِّي كَلِمُن سَعْفَص قُرِشَت ثَخَذ ضَظَغ",
   },
 
   dateElement: {

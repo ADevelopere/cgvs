@@ -49,6 +49,12 @@ export type TextElementTranslations = {
   selectVariable: string;
   noVariablesAvailable: string;
   variableRequired: string;
+
+  /**
+   * Preview text
+   * it has all letters of the language alphabet to showcase font rendering
+   */
+  textPreviewValue: string;
 };
 
 export type DateElementTranslations = {

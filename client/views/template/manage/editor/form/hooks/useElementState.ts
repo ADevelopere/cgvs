@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery } from "@apollo/client/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { elementsByTemplateIdQueryDocument } from "../../glqDocuments/element/element.documents";
-import { Action, FormErrors, ValidateFieldFn } from "../types";
+import { Action, ValidateFieldFn } from "../types";
 import { logger } from "@/client/lib/logger";
 
 // Persistent state cache at module level - survives remounts
@@ -11,28 +11,28 @@ const persistentStateCache = new Map<string, any>();
  
 const updateDebounceDelayMs = 10000; // 10 seconds
 
-export type UseElementStateParams<T> = {
+export type UseElementStateParams<T, E> = {
   templateId?: number;
   elements?: GQL.CertificateElementUnion[];
-  validator: ValidateFieldFn<T>;
+  validator: ValidateFieldFn<T, E>;
   extractInitialState: (element: GQL.CertificateElementUnion) => T | null;
   mutationFn: (elementId: number, state: T) => Promise<void>;
   stateNamespace: string; // e.g., "textProps", "baseElement", "dateProps"
 };
 
-export type UseElementStateReturn<T> = {
+export type UseElementStateReturn<T, E> = {
   states: Map<number, T>;
   updateFn: (elementId: number, action: Action<T>) => void;
   pushUpdate: (elementId: number) => Promise<void>;
   initState: (elementId: number) => T;
-  errors: Map<number, FormErrors<T>>;
+  errors: Map<number, E>;
   resetStateFromElements: (elementId: number) => void;
   getState: (elementId: number) => T | undefined;
 };
 
-export function useElementState<T>(
-  params: UseElementStateParams<T>
-): UseElementStateReturn<T> {
+export function useElementState<T, E>(
+  params: UseElementStateParams<T, E>
+): UseElementStateReturn<T, E> {
   const {
     templateId,
     elements: providedElements,
@@ -108,10 +108,10 @@ export function useElementState<T>(
     statesRef.current = initialStates;
     return initialStates;
   });
-  const [errorsMap, setErrorsMap] = React.useState<Map<number, FormErrors<T>>>(
+  const [errorsMap, setErrorsMap] = React.useState<Map<number, E>>(
     new Map()
   );
-  const errorsRef = React.useRef<Map<number, FormErrors<T>>>(new Map());
+  const errorsRef = React.useRef<Map<number, E>>(new Map());
   const pendingUpdatesRef = React.useRef<Map<number, T>>(new Map());
   const debounceTimersRef = React.useRef<Map<number, NodeJS.Timeout>>(
     new Map()
@@ -256,14 +256,15 @@ export function useElementState<T>(
       const currentState = getStateForUpdate(elementId);
 
       // Validate
-      const errorMessage = validatorRef.current(action);
+      const error = validatorRef.current(action);
 
       // Update errors
-      const currentErrors = errorsRef.current.get(elementId) || {};
+      const currentErrors =
+        (errorsRef.current.get(elementId) as Partial<E>) ?? {};
       const newErrors = {
         ...currentErrors,
-        [key]: errorMessage,
-      };
+        [key]: error,
+      } as E
       errorsRef.current.set(elementId, newErrors);
       setErrorsMap(new Map(errorsRef.current));
 
@@ -287,7 +288,7 @@ export function useElementState<T>(
 
       // Set new debounce timer
       const timer = setTimeout(() => {
-        if (errorMessage) return;
+        if (error) return;
         debounceTimersRef.current.delete(elementId);
         const pendingState = pendingUpdatesRef.current.get(elementId);
         if (pendingState) {
