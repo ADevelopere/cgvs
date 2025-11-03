@@ -25,7 +25,7 @@ export type TextDataSourceFormState = {
 // ============================================================================
 // MODULAR ERROR TYPES
 // ============================================================================
-export type TextDataSourceFieldErrors = FormErrors<GQL.TextDataSourceInput> | undefined
+export type TextDataSourceFieldErrors = FormErrors<GQL.TextDataSourceInput> 
 export type TextDataSourceFormErrors = {
   dataSource: TextDataSourceFieldErrors
 };

@@ -42,7 +42,7 @@ export const validateTextDataSource = () => {
     }
 
     return {
-      dataSource: undefined,
+      dataSource: {},
     }
   };
 

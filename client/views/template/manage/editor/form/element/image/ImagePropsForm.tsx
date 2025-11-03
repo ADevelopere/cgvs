@@ -1,21 +1,23 @@
 "use client";
 
 import React from "react";
-import * as MUI from "@mui/material";
+import * as Mui from "@mui/material";
 import {
   AspectRatio as ContainIcon,
   CropFree as CoverIcon,
   Fullscreen as FillIcon,
 } from "@mui/icons-material";
 import { useAppTranslation } from "@/client/locale";
-import { ElementImageFit } from "@/client/graphql/generated/gql/graphql";
-import { UpdateStateFn } from "../../types";
-import { ImagePropsState, ImagePropsFormErrors } from "./types";
+import {
+  ElementImageFit,
+  ImageElementSpecPropsInput,
+} from "@/client/graphql/generated/gql/graphql";
+import { UpdateImagePropsFieldsFn, ImagePropsFieldErrors } from "./types";
 
 export interface ImagePropsFormProps {
-  imageProps: ImagePropsState;
-  errors: ImagePropsFormErrors;
-  updateImageProps: UpdateStateFn<ImagePropsState>;
+  imageProps: ImageElementSpecPropsInput;
+  errors: ImagePropsFieldErrors;
+  updateImageProps: UpdateImagePropsFieldsFn;
   disabled?: boolean;
 }
 
@@ -54,11 +56,11 @@ export const ImagePropsForm: React.FC<ImagePropsFormProps> = ({
   ];
 
   return (
-    <MUI.Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    <Mui.Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       {/* Image Fit */}
-      <MUI.FormControl error={Boolean(errors.fit)} disabled={disabled}>
-        <MUI.FormLabel required>{strings.imageElement.fitLabel}</MUI.FormLabel>
-        <MUI.RadioGroup
+      <Mui.FormControl error={Boolean(errors.fit)} disabled={disabled}>
+        <Mui.FormLabel required>{strings.imageElement.fitLabel}</Mui.FormLabel>
+        <Mui.RadioGroup
           value={imageProps.fit}
           onChange={e =>
             updateImageProps({
@@ -69,7 +71,7 @@ export const ImagePropsForm: React.FC<ImagePropsFormProps> = ({
           sx={{ mt: 1 }}
         >
           {fitOptions.map(option => (
-            <MUI.Box
+            <Mui.Box
               key={option.value}
               sx={{
                 border: 1,
@@ -92,33 +94,33 @@ export const ImagePropsForm: React.FC<ImagePropsFormProps> = ({
                 },
               }}
             >
-              <MUI.FormControlLabel
+              <Mui.FormControlLabel
                 value={option.value}
-                control={<MUI.Radio />}
+                control={<Mui.Radio />}
                 label={
-                  <MUI.Box
+                  <Mui.Box
                     sx={{ display: "flex", alignItems: "center", gap: 1 }}
                   >
-                    <MUI.Box sx={{ color: "primary.main" }}>
+                    <Mui.Box sx={{ color: "primary.main" }}>
                       {option.icon}
-                    </MUI.Box>
-                    <MUI.Box>
-                      <MUI.Typography variant="body2" fontWeight="medium">
+                    </Mui.Box>
+                    <Mui.Box>
+                      <Mui.Typography variant="body2" fontWeight="medium">
                         {option.label}
-                      </MUI.Typography>
-                      <MUI.Typography variant="caption" color="text.secondary">
+                      </Mui.Typography>
+                      <Mui.Typography variant="caption" color="text.secondary">
                         {option.description}
-                      </MUI.Typography>
-                    </MUI.Box>
-                  </MUI.Box>
+                      </Mui.Typography>
+                    </Mui.Box>
+                  </Mui.Box>
                 }
                 sx={{ width: "100%", m: 0 }}
               />
-            </MUI.Box>
+            </Mui.Box>
           ))}
-        </MUI.RadioGroup>
-        {errors.fit && <MUI.FormHelperText>{errors.fit}</MUI.FormHelperText>}
-      </MUI.FormControl>
-    </MUI.Box>
+        </Mui.RadioGroup>
+        {errors.fit && <Mui.FormHelperText>{errors.fit}</Mui.FormHelperText>}
+      </Mui.FormControl>
+    </Mui.Box>
   );
 };

@@ -4,15 +4,15 @@ import { useNotifications } from "@toolpad/core/useNotifications";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { updateImageElementSpecPropsMutationDocument } from "../../glqDocuments/element/image.documents";
 import { useElementState } from "./useElementState";
-import { validateImagePropsField } from "../element/image/imageValidators";
+import { validateImageProps } from "../element/image/imageValidators";
 import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale";
 import {
-  SanitizedImagePropsFormState,
+  ImagePropsFormState,
   ImagePropsFormErrors,
   UpdateImagePropsWithElementIdFn,
-  ValidateImagePropsFieldFn,
 } from "../element/image";
+import { useCertificateElementContext } from "../../CertificateElementContext";
 
 export type UseImagePropsStateParams = {
   templateId?: number;
@@ -20,10 +20,11 @@ export type UseImagePropsStateParams = {
 };
 
 export type UseImagePropsStateReturn = {
-  getState: (elementId: number) => SanitizedImagePropsFormState | null;
-  updateFn: UpdateImagePropsWithElementIdFn;
-  pushUpdate: (elementId: number) => Promise<void>;
-  errors: Map<number, ImagePropsFormErrors>;
+  imagePropsStates: Map<number, ImagePropsFormState>;
+  updateImagePropsStateFn: UpdateImagePropsWithElementIdFn;
+  pushImagePropsStateUpdate: (elementId: number) => Promise<void>;
+  initImagePropsState: (elementId: number) => ImagePropsFormState;
+  imagePropsStateErrors: Map<number, ImagePropsFormErrors>;
 };
 
 /**
@@ -31,13 +32,15 @@ export type UseImagePropsStateReturn = {
  */
 function extractImagePropsState(
   element: GQL.CertificateElementUnion
-): SanitizedImagePropsFormState | null {
+): ImagePropsFormState | null {
   if (element.__typename !== "ImageElement" || !element.imageProps) {
     return null;
   }
 
   return {
-    fit: element.imageProps.fit as GQL.ElementImageFit,
+    imageProps: {
+      fit: element.imageProps.fit as GQL.ElementImageFit,
+    },
   };
 }
 
@@ -46,12 +49,12 @@ function extractImagePropsState(
  */
 function toUpdateInput(
   elementId: number,
-  state: SanitizedImagePropsFormState
+  state: ImagePropsFormState
 ): GQL.ImageElementSpecPropsStandaloneUpdateInput {
   return {
     elementId: elementId,
     imageProps: {
-      fit: state.fit,
+      fit: state.imageProps.fit,
     },
   };
 }
@@ -69,7 +72,7 @@ export function useImagePropsState(
 
   // Mutation function
   const mutationFn = React.useCallback(
-    async (elementId: number, state: SanitizedImagePropsFormState) => {
+    async (elementId: number, state: ImagePropsFormState) => {
       try {
         const updateInput = toUpdateInput(elementId, state);
         await updateImageElementSpecPropsMutation({
@@ -95,9 +98,9 @@ export function useImagePropsState(
   );
 
   // Use generic hook
-  const validator: ValidateImagePropsFieldFn = validateImageProps();
+  const validator = validateImageProps();
 
-  const { getState, updateFn, pushUpdate, errors } = useElementState({
+  const { states, updateFn, pushUpdate, initState, errors } = useElementState({
     templateId,
     elements,
     validator,
@@ -107,9 +110,63 @@ export function useImagePropsState(
   });
 
   return {
-    getState,
-    updateFn,
-    pushUpdate,
-    errors,
+    imagePropsStates: states,
+    updateImagePropsStateFn: updateFn,
+    pushImagePropsStateUpdate: pushUpdate,
+    initImagePropsState: initState,
+    imagePropsStateErrors: errors,
   };
 }
+
+export type UseImagePropsParams = {
+  elementId: number;
+};
+
+export const useImageProps = (params: UseImagePropsParams) => {
+  const {
+    imageProps: {
+      imagePropsStates,
+      updateImagePropsStateFn,
+      pushImagePropsStateUpdate,
+      initImagePropsState,
+      imagePropsStateErrors,
+    },
+  } = useCertificateElementContext();
+
+  // Get state or initialize if not present (only initialize once)
+  const { imageProps } = React.useMemo(() => {
+    return (
+      imagePropsStates.get(params.elementId) ??
+      initImagePropsState(params.elementId)
+    );
+  }, [imagePropsStates, params.elementId, initImagePropsState]);
+
+  const updateImageProps = React.useCallback(
+    (imageProps: GQL.ImageElementSpecPropsInput) => {
+      updateImagePropsStateFn(params.elementId, {
+        key: "imageProps",
+        value: imageProps,
+      });
+    },
+    [params.elementId, updateImagePropsStateFn]
+  );
+
+  const pushImagePropsUpdate = React.useCallback(async () => {
+    await pushImagePropsStateUpdate(params.elementId);
+  }, [params.elementId, pushImagePropsStateUpdate]);
+
+  const { imageProps: errors } = React.useMemo(() => {
+    return (
+      imagePropsStateErrors.get(params.elementId) || {
+        imageProps: {},
+      }
+    );
+  }, [imagePropsStateErrors, params.elementId]);
+
+  return {
+    imagePropsState: imageProps,
+    updateImageProps,
+    pushImagePropsUpdate,
+    imagePropsErrors: errors,
+  };
+};
