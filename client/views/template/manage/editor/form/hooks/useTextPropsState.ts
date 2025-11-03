@@ -203,8 +203,10 @@ export const useTextProps = (params: UseTextPropsParams) => {
     templateId: params.templateId,
   });
 
-  // Get state or initialize if not present
-  const textPropsState = textPropsStates.get(params.elementId) ?? initTextPropsState(params.elementId) ?? initTextPropsState(params.elementId);
+  // Get state or initialize if not present (only initialize once)
+  const textPropsState = React.useMemo(() => {
+    return textPropsStates.get(params.elementId) ?? initTextPropsState(params.elementId);
+  }, [textPropsStates, params.elementId, initTextPropsState]);
   const updateTextProps = React.useCallback(
     (action: Action<GQL.TextPropsInput>) => {
       updateTextPropsStateFn(params.elementId, action);
