@@ -1,4 +1,4 @@
-import React, { type FC, useState, useEffect } from "react";
+import React, { type FC, useMemo } from "react";
 import {
   Box,
   FormControl,
@@ -8,17 +8,17 @@ import {
   Radio,
   TextField,
   Autocomplete,
-  CircularProgress,
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import {
+  AppLanguage,
   Font,
   FontReferenceInput,
   FontSource,
 } from "@/client/graphql/generated/gql/graphql";
 import { UpdateFontRefFn } from "./types";
-import {  } from "next/font/google";
-import { AppLanguage } from "@/lib/enum";
+import { getLanguageFonts } from "@/lib/font/google/utils";
+import { Language } from "@/lib/font/google/enum";
 
 interface FontReferenceSelectorProps {
   fontRef: FontReferenceInput;
@@ -29,15 +29,6 @@ interface FontReferenceSelectorProps {
   disabled?: boolean;
 }
 
-interface GoogleFont {
-  family: string;
-  variants: string[];
-  subsets: string[];
-}
-
-
-const GOOGLE_FONTS_API_KEY = process.env.GOOGLE_FONTS_API_KEY || "";
-
 export const FontReferenceSelector: FC<FontReferenceSelectorProps> = ({
   fontRef,
   language,
@@ -47,36 +38,10 @@ export const FontReferenceSelector: FC<FontReferenceSelectorProps> = ({
   disabled,
 }) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
-  const [googleFonts, setGoogleFonts] = useState<GoogleFont[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  // Fetch Google Fonts on mount
-  useEffect(() => {
-    const fetchGoogleFonts = async () => {
-      setLoading(true);
-      try {
-        // Note: In production, the API key should be from environment variable
-        const response = await fetch(
-          `https://www.googleapis.com/webfonts/v1/webfonts?key=${GOOGLE_FONTS_API_KEY}`
-        );
-        const data = await response.json();
-        setGoogleFonts(data.items || []);
-      } catch (_err) {
-        // Fallback to common fonts if API fails
-        setGoogleFonts([
-          { family: "Roboto", variants: [], subsets: [] },
-          { family: "Open Sans", variants: [], subsets: [] },
-          { family: "Lato", variants: [], subsets: [] },
-          { family: "Montserrat", variants: [], subsets: [] },
-          { family: "Oswald", variants: [], subsets: [] },
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchGoogleFonts();
-  }, []);
+  
+  const googleFonts = useMemo(() => {
+    return getLanguageFonts(language as string as Language);
+  }, [language]);
 
   const handleSourceChange = (newSource: FontSource) => {
     if (newSource === "GOOGLE") {
@@ -104,7 +69,6 @@ export const FontReferenceSelector: FC<FontReferenceSelectorProps> = ({
               });
             }
           }}
-          loading={loading}
           disabled={disabled}
           renderInput={params => (
             <TextField
@@ -113,19 +77,6 @@ export const FontReferenceSelector: FC<FontReferenceSelectorProps> = ({
               placeholder={strings.textProps.googleFontPlaceholder}
               error={!!error}
               helperText={error}
-              slotProps={{
-                input: {
-                  ...params.InputProps,
-                  endAdornment: (
-                    <>
-                      {loading ? (
-                        <CircularProgress color="inherit" size={20} />
-                      ) : null}
-                      {params.InputProps.endAdornment}
-                    </>
-                  ),
-                },
-              }}
             />
           )}
         />

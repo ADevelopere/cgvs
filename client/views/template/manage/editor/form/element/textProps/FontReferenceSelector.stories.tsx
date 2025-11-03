@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { FontReferenceSelector } from "./FontReferenceSelector";
 import { mockSelfHostedFonts } from "../story.util";
-import { AppLanguage } from "@/lib/enum";
+import { AppLanguage } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof FontReferenceSelector> = {
   title: "Template/Editor/Form/Element/TextProps/FontReferenceSelector",
@@ -16,7 +16,7 @@ type Story = StoryObj<typeof FontReferenceSelector>;
 export const GoogleFont: Story = {
   args: {
     fontRef: { google: { identifier: "Roboto" } },
-    locale: "en",
+    language: AppLanguage.En,
     selfHostedFonts: mockSelfHostedFonts,
     onFontRefChange: fontRef => logger.log("Font changed:", fontRef),
     disabled: false,
@@ -26,7 +26,7 @@ export const GoogleFont: Story = {
 export const SelfHostedFont: Story = {
   args: {
     fontRef: { selfHosted: { fontId: 1 } },
-    locale: AppLanguage.default,
+    language: AppLanguage.Ar,
     selfHostedFonts: mockSelfHostedFonts,
     onFontRefChange: fontRef => logger.log("Font changed:", fontRef),
     disabled: false,
@@ -36,7 +36,7 @@ export const SelfHostedFont: Story = {
 export const WithError: Story = {
   args: {
     fontRef: { google: { identifier: "" } },
-    locale: AppLanguage.en,
+    language: AppLanguage.En,
     selfHostedFonts: mockSelfHostedFonts,
     onFontRefChange: fontRef => logger.log("Font changed:", fontRef),
     error: "Font identifier is required",
@@ -47,7 +47,7 @@ export const WithError: Story = {
 export const Disabled: Story = {
   args: {
     fontRef: { google: { identifier: "Roboto" } },
-    locale: AppLanguage.en,
+    language: AppLanguage.En,
     selfHostedFonts: mockSelfHostedFonts,
     onFontRefChange: fontRef => logger.log("Font changed:", fontRef),
     disabled: true,
