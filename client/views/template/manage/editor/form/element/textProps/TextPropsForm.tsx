@@ -16,13 +16,18 @@ import {
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import { FontReferenceSelector } from "./FontReferenceSelector";
-import { ElementOverflow, Font, AppLanguage } from "@/client/graphql/generated/gql/graphql";
+import {
+  ElementOverflow,
+  Font,
+  AppLanguage,
+} from "@/client/graphql/generated/gql/graphql";
 import {
   TextPropsFormErrors,
   UpdateTextPropsFn,
   TextPropsFormState,
 } from "./types";
 import { SketchPicker } from "react-color";
+import logger from "@/client/lib/logger";
 
 interface TextPropsFormProps {
   textProps: TextPropsFormState;
@@ -89,7 +94,10 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
             disabled={disabled}
             onClick={handleClick}
           />
-          <ClickAwayListener onClickAway={() => setColorPickerOpen(false)}>
+          <ClickAwayListener
+            onClickAway={() => setColorPickerOpen(false)}
+            mouseEvent={"onMouseUp"}
+          >
             <Popper
               sx={{ zIndex: 3000 }}
               open={colorPickerOpen}
@@ -125,7 +133,7 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
             onChange={e =>
               onTextPropsChange({
                 key: "fontSize",
-                value: parseInt(e.target.value, 10) || 0,
+                value: Number.parseInt(e.target.value, 10) || 0,
               })
             }
             error={!!errors.fontSize}

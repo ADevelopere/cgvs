@@ -38,12 +38,6 @@ const getFlexAlignment = (alignment: ElementAlignment): React.CSSProperties => {
 
   switch (alignment) {
     // --- Top Aligned ---
-    case ElementAlignment.TopStart:
-      return {
-        ...baseStyles,
-        alignItems: "flex-start",
-        justifyContent: "flex-start",
-      };
     case ElementAlignment.TopCenter:
       return {
         ...baseStyles,
@@ -114,8 +108,8 @@ const getFlexAlignment = (alignment: ElementAlignment): React.CSSProperties => {
       };
 
     // --- Default Case ---
+    case ElementAlignment.TopStart:
     default:
-      // Default to TopStart
       return {
         ...baseStyles,
         alignItems: "flex-start",
@@ -165,9 +159,7 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
     }
   }, [textPropsState.fontRef.google?.identifier]);
 
-  if (!textPropsState || !baseElementState) {
-    return <div>Loading...</div>;
-  }
+
 
   const style: React.CSSProperties = React.useMemo(() => {
     return {
@@ -192,7 +184,10 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
       ...getFlexAlignment(baseElementState.alignment),
     };
   }, [textPropsState, baseElementState, fontFamily]);
-
+  
+  if (!textPropsState || !baseElementState) {
+    return <div>Loading...</div>;
+  }
   return (
     <div style={style}>
       <Handle type="target" position={Position.Top} />
