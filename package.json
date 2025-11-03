@@ -18,7 +18,8 @@
     "codegen": "graphql-codegen --watch",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test": "bun test --timeout=60000"
+    "test": "bun test --timeout=60000",
+    "fetchGoogleFontsAndGenerateSubsets": "bun run lib/google/fetchGoogleFontsAndGenerateSubsets.ts"
   },
   "dependencies": {
     "@apollo/client": "^4.0.9",
