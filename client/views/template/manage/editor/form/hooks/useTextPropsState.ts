@@ -11,12 +11,12 @@ import {
   ValidateTextPropsFieldFn,
 } from "../element/textProps";
 import { Action } from "../types";
-import { useTextPropsMutation } from "../../hooks";
 import {
-  CertificateElementContext,
   useCertificateElementContext,
 } from "@/client/views/template/manage/editor/CertificateElementContext";
 import logger from "@/client/lib/logger";
+import { useMutation } from "@apollo/client/react";
+import { updateElementTextPropsMutationDocument } from "../../glqDocuments";
 
 export type UseTextPropsStateParams = {
   elements?: GQL.CertificateElementUnion[];
@@ -38,14 +38,14 @@ function mapFontRefToFontRefInput(
   fontRef: GQL.FontReference
 ): GQL.FontReferenceInput {
   if (fontRef.__typename === "FontReferenceGoogle") {
-    const googleRef = fontRef as GQL.FontReferenceGoogle;
+    const googleRef = fontRef;
     return {
       google: {
         identifier: googleRef.identifier ?? "",
       },
     };
   } else if (fontRef.__typename === "FontReferenceSelfHosted") {
-    const selfHostedRef = fontRef as GQL.FontReferenceSelfHosted;
+    const selfHostedRef = fontRef;
     return {
       selfHosted: {
         fontId: selfHostedRef.fontId ?? 0,
@@ -112,8 +112,8 @@ export function useTextPropsState(
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
 
-  const { updateTextPropsMutation } = useTextPropsMutation(templateId ?? 0);
-
+  const [updateTextPropsMutation] = useMutation(updateElementTextPropsMutationDocument)
+     
   // Get textPropsId from element - we need to track this per elementId
   // Store mapping of elementId -> textPropsId
   const textPropsIdMapRef = React.useRef<Map<number, number>>(new Map());
@@ -121,11 +121,13 @@ export function useTextPropsState(
   // Build textPropsId map from elements
   React.useEffect(() => {
     const map = new Map<number, number>();
-    elements?.forEach(element => {
-      if (hasTextProps(element) && element.textProps?.id && element.base?.id) {
-        map.set(element.base.id, element.textProps.id);
+    if (elements) {
+      for (const element of elements) {
+        if (hasTextProps(element) && element.textProps?.id && element.base?.id) {
+          map.set(element.base.id, element.textProps.id);
+        }
       }
-    });
+    }
     textPropsIdMapRef.current = map;
   }, [elements]);
 

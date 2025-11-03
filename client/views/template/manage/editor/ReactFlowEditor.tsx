@@ -13,7 +13,7 @@ import {
   useNodesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./other/EditorTab.module.css";
 import { Box } from "@mui/material";
 import DownloadImage from "./download/DownloadImage";
@@ -22,11 +22,9 @@ import HelperLines from "./other/HelperLines";
 import { nodeTypes } from "./other/constants";
 import { useAppTheme } from "@/client/contexts";
 import logger from "@/client/lib/logger";
-
 import { getTemplateImageUrl } from "../../utils/template.utils";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { TextElementNodeData } from "./nodeRendere/TextElementNode";
-import React from "react";
 import { useEditorStore } from "./useEditorStore";
 
 const panOnDrag = [1, 2];
@@ -35,10 +33,20 @@ const panOnDrag = [1, 2];
 const A4_WIDTH = 1123; // 297mm * 96px/25.4mm
 const A4_HEIGHT = 794; // 210mm * 96px/25.4mm
 
+export type ElementNodeData = {
+  id: number;
+  type: GQL.ElementType;
+  positionX: number;
+  positionY: number;
+  width: number;
+  height: number;
+}
+
 export type CertificateReactFlowEditorProps = {
   template: GQL.Template;
-  elements: GQL.CertificateElementUnion[];
+  elements: ElementNodeData[];
 };
+
 
 const Flow: React.FC<CertificateReactFlowEditorProps> = ({
   template,
@@ -52,19 +60,19 @@ const Flow: React.FC<CertificateReactFlowEditorProps> = ({
   React.useEffect(() => {
     const nodes: Node[] = elements
       .map(element => {
-        if (element.base.type === GQL.ElementType.Text) {
+        if (element.type === GQL.ElementType.Text) {
           const data: TextElementNodeData = {
-            elementId: element.base.id,
+            elementId: element.id,
           };
           return {
-            id: element.base.id.toString(),
+            id: element.id.toString(),
             type: "text",
             position: {
-              x: element.base.positionX,
-              y: element.base.positionY,
+              x: element.positionX,
+              y: element.positionY,
             },
-            width: element.base.width,
-            height: element.base.height,
+            width: element.width,
+            height: element.height,
             data: data,
           };
         }
@@ -137,7 +145,7 @@ const Flow: React.FC<CertificateReactFlowEditorProps> = ({
         setHelperLineVertical(helperLines.vertical);
       }
 
-      changes.forEach(change => {
+      for (const change of changes) {
         if (change.type === "position" && change.dragging && change.position) {
           const nodeId = change.id;
           const node = nodes.find(n => n.id === nodeId);
@@ -159,11 +167,11 @@ const Flow: React.FC<CertificateReactFlowEditorProps> = ({
         }
 
         if (change.type === "select" && change.selected) {
-          const idNum = parseInt(change.id, 10);
+          const idNum = Number.parseInt(change.id, 10);
           // Defer state update to avoid updating during render
           setTimeout(() => setCurrentElementId(idNum), 0);
         }
-      });
+      }
 
       return applyNodeChanges(changes, nodes);
     },
