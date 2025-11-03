@@ -13,12 +13,10 @@ import { fontsQueryDocument } from "@/client/views/font/hooks";
 
 export type CurrentTextElementProps = {
   element: TextElement;
-  elements: CertificateElementUnion[];
 };
 
 export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
   element,
-  elements,
 }) => {
   const {
     data: fontsData,

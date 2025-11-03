@@ -56,34 +56,48 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
   const [containerNode, setContainerNode] = useState<Node>({
     id: "container-node",
     type: "container",
+    data: {},
     position: { x: 0, y: 0 },
-    data: {
-      ...container
-    },
     width: container.width,
     height: container.height,
     draggable: false,
     selectable: false,
+    style: {
+      width: container.width,
+      height: container.height,
+      border: "2px solid #000000",
+      boxSizing: "border-box",
+      backgroundColor: "transparent",
+    },
   });
   const { theme } = useAppTheme();
   const { x, y, zoom } = useViewport();
   const { setCurrentElementId } = useEditorStore();
 
+  // Update container node when container data changes
   React.useEffect(() => {
     if (container) {
       const containerNode: Node = {
         id: "container-node",
         type: "container",
-        position: { x: 0, y: 0 },
         data: {},
+        position: { x: 0, y: 0 },
         draggable: false,
         selectable: false,
+        style: {
+          width: container.width,
+          height: container.height,
+          border: "2px solid #000000",
+          boxSizing: "border-box",
+          backgroundColor: "transparent",
+        },
       };
       setContainerNode(containerNode);
       setNodes([containerNode, ...elementNodes]);
     }
   }, [container, setNodes]);
 
+  // Update element nodes when elements change
   React.useEffect(() => {
     const nodes: Node[] = elements
       .map(element => {
@@ -91,7 +105,7 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
           const data: TextElementNodeData = {
             elementId: element.id,
           };
-          return {
+          const node: Node<TextElementNodeData> = {
             id: element.id.toString(),
             type: "text",
             position: {
@@ -101,7 +115,9 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
             width: element.width,
             height: element.height,
             data: data,
+            connectable: false,
           };
+          return node;
         }
       })
       .filter(node => node !== undefined);
@@ -119,7 +135,6 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
   useEffect(() => {
     logger.log("Viewport changed:", { x, y, zoom });
   }, [x, y, zoom]);
-
 
   const customApplyNodeChanges = useCallback(
     (changes: NodeChange[], nodes: Node[]): Node[] => {
@@ -241,6 +256,7 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
             backgroundColor: theme.palette.background.paper,
           }}
         />
+        {/* <MiniMap /> */}
         <Controls
           className={"controlButton"}
           style={{
@@ -248,7 +264,6 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
             borderRadius: theme.shape.borderRadius,
           }}
         />
-        {/* <MiniMap /> */}
         <HelperLines
           horizontal={helperLineHorizontal}
           vertical={helperLineVertical}

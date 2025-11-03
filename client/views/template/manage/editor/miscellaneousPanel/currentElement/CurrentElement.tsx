@@ -31,7 +31,6 @@ export const CertificateElementCurrentItemSettings: React.FC<
         return (
           <CurrentTextElement
             element={currentElement as TextElement}
-            elements={elements}
           />
         );
       default:
