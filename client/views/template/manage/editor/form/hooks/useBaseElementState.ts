@@ -151,8 +151,10 @@ export const useBaseElement = (params: UseBaseElementParams) => {
     baseElementStateErrors,
   } = useBaseElementState(params);
 
-  // Get state or initialize if not present
-  const baseElementState = baseElementStates.get(params.elementId) ?? initBaseElementState(params.elementId) ?? initBaseElementState(params.elementId);
+  // Get state or initialize if not present (only initialize once)
+  const baseElementState = React.useMemo(() => {
+    return baseElementStates.get(params.elementId) ?? initBaseElementState(params.elementId);
+  }, [baseElementStates, params.elementId, initBaseElementState]);
   const pushBaseElementUpdate = React.useCallback(async () => {
     await pushBaseElementStateUpdate(params.elementId);
   }, [params.elementId, pushBaseElementStateUpdate]);

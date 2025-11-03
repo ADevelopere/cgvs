@@ -21,7 +21,6 @@ function AddNodePane() {
       sx={{
         minHeight: "100%",
         display: "flex",
-        flexDirection: "column",
         px: 1,
       }}
       id="add-node-panel"

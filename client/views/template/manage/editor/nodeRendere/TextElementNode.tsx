@@ -29,6 +29,7 @@ function getFontFamilyString(fontItem: GoogleFontItem): string | null {
 export const TextElementNode = ({ data }: TextElementNodeProps) => {
   const { elements, elementId } = data;
   const { textPropsState } = useTextProps({ elements, elementId });
+  logger.log("[TextElementNode] textPropsState", JSON.stringify({ elementId, textPropsState }));
   const { baseElementState } = useBaseElement({ elements, elementId });
 
   const [fontFamily, setFontFamily] = React.useState<string | null>(null);

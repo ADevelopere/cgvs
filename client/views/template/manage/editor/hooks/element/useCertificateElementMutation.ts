@@ -78,6 +78,41 @@ export const useUpdateElementsCache = (templateId?: number | null) => {
     [templateId]
   );
 
+  // Example for your 'updateTextProps' mutation
+  const [updateTextProps] = useMutation(Documents.updateElementTextPropsMutationDocument, {
+    update(cache, { data: mutationResult }) {
+      // 1. Get the updated data from the mutation
+      const updatedItemFragment = mutationResult?.updateElementTextProps;
+      if (!updatedItemFragment) {
+        return;
+      }
+
+      // 2. Identify the item in the cache
+      const cacheId = cache.identify({
+        __typename: "Item", // Or your item's __typename
+        id: updatedItemFragment.id,
+      });
+
+      if (!cacheId) {
+        return; // Item isn't in the cache
+      }
+
+      // 3. Modify only the fields that changed
+      cache.modify({
+        id: cacheId,
+        fields: {
+          // This 'fields' function gives you access to the existing values
+          textProps(existingValue) {
+            // Return the new 'textProps' from the mutation result
+            return updatedItemFragment.textProps;
+          },
+          // Note: You don't need to touch 'base' or
+          // 'specificItemTypeProps'. They remain untouched.
+        },
+      });
+    },
+  });
+
   return React.useMemo(
     () => ({
       updateElementsCache,
