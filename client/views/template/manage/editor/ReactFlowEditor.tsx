@@ -132,10 +132,6 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
     number | undefined
   >(undefined);
 
-  useEffect(() => {
-    logger.log("Viewport changed:", { x, y, zoom });
-  }, [x, y, zoom]);
-
   const customApplyNodeChanges = useCallback(
     (changes: NodeChange[], nodes: Node[]): Node[] => {
       // reset the helper lines (clear existing lines, if any)
