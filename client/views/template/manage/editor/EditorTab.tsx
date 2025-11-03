@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { Box, Typography, CircularProgress } from "@mui/material";
-import CertificateReactFlowEditor, { ElementNodeData } from "./ReactFlowEditor";
+import { Box, Typography } from "@mui/material";
+import CertificateReactFlowEditor, { ContainerNodeData, ElementNodeData } from "./ReactFlowEditor";
 import EditorPaneViewController from "@/client/components/editorPane/EditorPaneViewController";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
@@ -15,7 +15,7 @@ import { TemplateConfigCreateForm } from "./form/config/TemplateConfigCreateForm
 import { MiscellaneousPanel } from "./miscellaneousPanel/MiscellaneousPanel";
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/client/lib/logger";
-import { CertificateElemenetProvider } from "@/client/views/template/manage/editor/CertificateElementContext";
+import { CertificateElemenetProvider, useCertificateElementContext } from "@/client/views/template/manage/editor/CertificateElementContext";
 
 function AddNodePane() {
   return (
@@ -32,7 +32,11 @@ function AddNodePane() {
   );
 }
 
-export default function EditorTab({ template }: { template: Template }) {
+export type EditorTabProps = {
+  template: Template;
+};
+
+export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
   const {
     templateEditorTranslations: { templateEditorPane: strings },
   } = useAppTranslation();
@@ -49,7 +53,7 @@ export default function EditorTab({ template }: { template: Template }) {
     fetchPolicy: "cache-and-network",
   });
 
-  const config: GQL.TemplateConfig | null | undefined = React.useMemo(() => {
+  const tempalteConfig: GQL.TemplateConfig | null | undefined = React.useMemo(() => {
     const config = configData?.templateConfigByTemplateId;
     setConfigLoading(configApolloLoading);
     return config;
@@ -104,11 +108,11 @@ export default function EditorTab({ template }: { template: Template }) {
   //   );
   // }
 
-  if (!configLoading && !config) {
+  if (!configLoading && !tempalteConfig) {
     return <TemplateConfigCreateForm template={template} />;
   }
 
-  if (configError || !config) {
+  if (configError || !tempalteConfig) {
     return <div>Error loading template config: {configError?.message}</div>;
   }
 
@@ -117,7 +121,7 @@ export default function EditorTab({ template }: { template: Template }) {
   }
 
   return (
-    <CertificateElemenetProvider templateId={template.id} elements={elements}>
+    <CertificateElemenetProvider templateId={template.id} elements={elements} tempalteConfig={tempalteConfig} >
       <EditorPaneViewController
         firstPane={{
           title: (
@@ -136,7 +140,7 @@ export default function EditorTab({ template }: { template: Template }) {
           showCollapseButtonInHeader: true,
         }}
         middlePane={
-          <CertificateReactFlowEditor template={template} elements={elementsNodeData} />
+          <CertificateReactFlowEditor template={template} elements={elementsNodeData}/>
         }
         thirdPane={{
           title: (
@@ -149,7 +153,7 @@ export default function EditorTab({ template }: { template: Template }) {
               {strings.miscellaneousPane}
             </Typography>
           ),
-          content: <MiscellaneousPanel config={config} elements={elements} />,
+          content: <MiscellaneousPanel elements={elements} />,
           buttonTooltip: "Toggle Miscellaneous Panel",
           buttonDisabled: false,
           showCollapseButtonInHeader: true,

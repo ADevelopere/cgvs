@@ -1,5 +1,5 @@
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import { FormErrors, UpdateStateFn, ValidateFieldFn } from "../types";
+import { Action, FormErrors, UpdateStateFn, ValidateFieldFn } from "../types";
 
 export type TemplateConfigFormState =
   | GQL.TemplateConfigCreateInput
@@ -10,6 +10,8 @@ type SanitizedTemplateConfigFormState = Omit<
   "id"
   //  | "templateId"
 >;
+
+export type TemplateConfigUpdateAction = Action<SanitizedTemplateConfigFormState>;
 
 export type TemplateConfigFormErrors =
   FormErrors<SanitizedTemplateConfigFormState>;
