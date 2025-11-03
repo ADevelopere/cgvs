@@ -21,6 +21,10 @@ export type DateDataSourceFormState = {
   dataSource: GQL.DateDataSourceInput;
 };
 
+export type DatePropsFormState = {
+  dateProps: GQL.DateElementSpecPropsInput;
+};
+
 // ============================================================================
 // MODULAR ERROR TYPES
 // ============================================================================
@@ -31,12 +35,18 @@ export type DateDataSourceFieldErrors =
 export type DateDataSourceFormErrors = {
   dataSource: DateDataSourceFieldErrors;
 };
-export type DatePropsFormErrors = FormErrors<GQL.DateElementSpecPropsInput>;
 
-export type DateElementFormErrors = DateDataSourceFormErrors & {
+export type DatePropsFieldErrors =
+  | FormErrors<GQL.DateElementSpecPropsInput>
+  | undefined;
+
+export type DatePropsFormErrors = {
+  dateProps: DatePropsFieldErrors;
+};
+
+export type DateElementFormErrors = DateDataSourceFormErrors & DatePropsFormErrors & {
   base: BaseElementFormErrors;
   textProps: TextPropsFormErrors;
-  dateProps: DatePropsFormErrors;
 };
 
 // ============================================================================
@@ -50,10 +60,13 @@ export type UpdateDateDataSourceWithElementIdFn =
 
 export type DateDataSourceUpdateAction = Action<DateDataSourceFormState>;
 
-export type UpdateDatePropsFn = UpdateStateFn<GQL.DateElementSpecPropsInput>;
+export type UpdateDatePropsFieldsFn = UpdateStateFn<GQL.DateElementSpecPropsInput>;
+export type UpdateDatePropsFn = UpdateStateFn<DatePropsFormState>;
 
 export type UpdateDatePropsWithElementIdFn =
-  UpdateStateWithElementIdFn<DatePropsState>;
+  UpdateStateWithElementIdFn<DatePropsFormState>;
+
+export type DatePropsUpdateAction = Action<DatePropsFormState>;
 
 export type ValidateDatePropsFieldFn = ValidateFieldFn<
   GQL.DateElementSpecPropsInput,
@@ -63,6 +76,11 @@ export type ValidateDatePropsFieldFn = ValidateFieldFn<
 export type ValidateDateDataSourceFn = ValidateFieldFn<
   DateDataSourceFormState,
   DateDataSourceFormErrors
+>;
+
+export type ValidateDatePropsFn = ValidateFieldFn<
+  DatePropsFormState,
+  DatePropsFormErrors
 >;
 
 // ============================================================================

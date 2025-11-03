@@ -16,15 +16,15 @@ import {
   DateTransformationType,
 } from "@/client/graphql/generated/gql/graphql";
 import type {
-  DatePropsFormErrors,
+  DatePropsFieldErrors,
   DatePropsState,
-  UpdateDatePropsFn,
+  UpdateDatePropsFieldsFn,
 } from "./types";
 
 interface DatePropsFormProps {
   dateProps: DatePropsState;
-  onUpdate: UpdateDatePropsFn;
-  errors: DatePropsFormErrors;
+  onUpdate: UpdateDatePropsFieldsFn;
+  errors: DatePropsFieldErrors;
   disabled?: boolean;
 }
 
@@ -57,8 +57,8 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
             placeholder={strings.dateElement.formatPlaceholder}
             value={dateProps.format || ""}
             onChange={e => onUpdate({ key: "format", value: e.target.value })}
-            error={!!errors.format}
-            helperText={errors.format || strings.dateElement.formatHelper}
+            error={!!errors?.format}
+            helperText={errors?.format || strings.dateElement.formatHelper}
             disabled={disabled}
           />
         </Grid>
@@ -67,7 +67,7 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
           <FormControl
             component="fieldset"
             disabled={disabled}
-            error={!!errors.calendarType}
+            error={!!errors?.calendarType}
           >
             <FormLabel component="legend">
               {strings.dateElement.calendarTypeLabel}
@@ -111,9 +111,9 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
                 value: Number.parseInt(e.target.value, 10),
               })
             }
-            error={!!errors.offsetDays}
+            error={!!errors?.offsetDays}
             helperText={
-              errors.offsetDays || strings.dateElement.offsetDaysHelper
+              errors?.offsetDays || strings.dateElement.offsetDaysHelper
             }
             disabled={disabled}
           />
@@ -143,8 +143,8 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
                 {...params}
                 label={strings.dateElement.transformationLabel}
                 placeholder={strings.dateElement.transformationPlaceholder}
-                error={!!errors.transformation}
-                helperText={errors.transformation}
+                error={!!errors?.transformation}
+                helperText={errors?.transformation}
               />
             )}
           />
