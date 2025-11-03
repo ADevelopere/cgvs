@@ -1,5 +1,6 @@
 import type * as GQL from "@/client/graphql/generated/gql/graphql";
 import {
+  Action,
   FormErrors,
   UpdateStateFn,
   ValidateFieldFn,
@@ -16,41 +17,53 @@ export type DatePropsState = GQL.DateElementSpecPropsInput;
 // Complete date element working state
 export type DateElementFormState = GQL.DateElementInput;
 
-export type SanitizedDatePropsFormState = DatePropsState;
+export type DateDataSourceFormState = {
+  dataSource: GQL.DateDataSourceInput;
+};
 
 // ============================================================================
 // MODULAR ERROR TYPES
 // ============================================================================
 
-export type DateDataSourceFormErrors = FormErrors<GQL.DateDataSourceInput>;
+export type DateDataSourceFieldErrors =
+  | FormErrors<GQL.DateDataSourceInput>
+  | undefined;
+export type DateDataSourceFormErrors = {
+  dataSource: DateDataSourceFieldErrors;
+};
 export type DatePropsFormErrors = FormErrors<GQL.DateElementSpecPropsInput>;
 
-export type DateElementFormErrors = {
+export type DateElementFormErrors = DateDataSourceFormErrors & {
   base: BaseElementFormErrors;
   textProps: TextPropsFormErrors;
   dateProps: DatePropsFormErrors;
-  dataSource: DateDataSourceFormErrors;
 };
 
 // ============================================================================
 // SPECIFIC UPDATE FUNCTION TYPES
 // ============================================================================
 
-export type UpdateDateDataSourceFn = (
-  dataSource: GQL.DateDataSourceInput
-) => void;
+export type UpdateDateDataSourceFn = UpdateStateFn<DateDataSourceFormState>;
 
-export type UpdateDateDataSourceWithElementIdFn = (
-  elementId: number,
-  dataSource: GQL.DateDataSourceInput
-) => void;
+export type UpdateDateDataSourceWithElementIdFn =
+  UpdateStateWithElementIdFn<DateDataSourceFormState>;
+
+export type DateDataSourceUpdateAction = Action<DateDataSourceFormState>;
 
 export type UpdateDatePropsFn = UpdateStateFn<GQL.DateElementSpecPropsInput>;
 
 export type UpdateDatePropsWithElementIdFn =
   UpdateStateWithElementIdFn<DatePropsState>;
 
-export type ValidateDatePropsFieldFn = ValidateFieldFn<GQL.DateElementSpecPropsInput>;
+export type ValidateDatePropsFieldFn = ValidateFieldFn<
+  GQL.DateElementSpecPropsInput,
+  string | undefined
+>;
+
+export type ValidateDateDataSourceFn = ValidateFieldFn<
+  DateDataSourceFormState,
+  DateDataSourceFormErrors
+>;
 
 // ============================================================================
 // SANITIZED STATE TYPES

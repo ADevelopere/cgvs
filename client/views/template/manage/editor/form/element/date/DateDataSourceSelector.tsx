@@ -7,12 +7,14 @@ interface DateDataSourceSelectorProps {
   selectedType: DateDataSourceType;
   onTypeChange: (type: DateDataSourceType) => void;
   disabled?: boolean;
+  dateVariablesDisabled: boolean;
 }
 
 export const DateDataSourceSelector: FC<DateDataSourceSelectorProps> = ({
   selectedType,
   onTypeChange,
   disabled,
+  dateVariablesDisabled,
 }) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
 
@@ -24,16 +26,19 @@ export const DateDataSourceSelector: FC<DateDataSourceSelectorProps> = ({
         label={strings.dateElement.dataSourceLabel}
         onChange={e => onTypeChange(e.target.value)}
       >
-        <MenuItem value="STATIC">
+        <MenuItem value={DateDataSourceType.Static}>
           {strings.dateElement.dataSourceStatic}
         </MenuItem>
-        <MenuItem value="STUDENT_DATE_FIELD">
+        <MenuItem value={DateDataSourceType.StudentDateField}>
           {strings.dateElement.dataSourceStudentField}
         </MenuItem>
-        <MenuItem value="CERTIFICATE_DATE_FIELD">
+        <MenuItem value={DateDataSourceType.CertificateDateField}>
           {strings.dateElement.dataSourceCertificateField}
         </MenuItem>
-        <MenuItem value="TEMPLATE_DATE_VARIABLE">
+        <MenuItem
+          value={DateDataSourceType.TemplateDateVariable}
+          disabled={dateVariablesDisabled}
+        >
           {strings.dateElement.dataSourceTemplateVariable}
         </MenuItem>
       </Select>

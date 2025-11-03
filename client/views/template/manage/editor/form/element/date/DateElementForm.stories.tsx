@@ -2,8 +2,13 @@ import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { DateElementForm } from "./DateElementForm";
 import { mockSelfHostedFonts } from "../story.util";
-import type { DateElementFormErrors, DateElementFormState } from "./types";
+import type {
+  DateElementFormErrors,
+  DateElementFormState,
+  UpdateDatePropsFn,
+} from "./types";
 import {
+  AppLanguage,
   CalendarType,
   ElementAlignment,
   ElementOverflow,
@@ -11,7 +16,6 @@ import {
   TemplateDateVariable,
 } from "@/client/graphql/generated/gql/graphql";
 import { UpdateBaseElementFn } from "../base";
-import type { UpdateDatePropsFn, UpdateDateDataSourceFn } from "./types";
 import { UpdateTextPropsFn } from "../textProps";
 
 const mockDateVariables: TemplateDateVariable[] = [
@@ -48,7 +52,7 @@ const defaultState: DateElementFormState = {
     positionY: 100,
     width: 200,
     height: 50,
-    alignment: ElementAlignment.Baseline,
+    alignment: ElementAlignment.Center,
     renderOrder: 1,
     templateId: 1,
   },
@@ -93,12 +97,11 @@ export const Default: Story = {
       logger.info("Date props updated:", {
         ...action,
       })) satisfies UpdateDatePropsFn,
-    updateDataSource: (dataSource =>
+    updateDataSource: dataSource =>
       logger.info("Data source updated:", {
         dataSource,
-      })) satisfies UpdateDateDataSourceFn,
-    templateId: 1,
-    locale: "en",
+      }),
+    language: AppLanguage.Ar,
     dateVariables: mockDateVariables,
     selfHostedFonts: mockSelfHostedFonts,
     onSubmit: () => logger.info("Form submitted"),
@@ -131,12 +134,11 @@ export const WithStudentField: Story = {
       logger.info("Date props updated:", {
         ...action,
       })) satisfies UpdateDatePropsFn,
-    updateDataSource: (dataSource =>
+    updateDataSource: dataSource =>
       logger.info("Data source updated:", {
         dataSource,
-      })) satisfies UpdateDateDataSourceFn,
-    templateId: 1,
-    locale: "en",
+      }),
+    language: AppLanguage.En,
     dateVariables: mockDateVariables,
     selfHostedFonts: mockSelfHostedFonts,
     onSubmit: () => logger.info("Form submitted"),
@@ -171,12 +173,11 @@ export const HijriCalendar: Story = {
       logger.info("Date props updated:", {
         ...action,
       })) satisfies UpdateDatePropsFn,
-    updateDataSource: (dataSource =>
+    updateDataSource: dataSource =>
       logger.info("Data source updated:", {
         dataSource,
-      })) satisfies UpdateDateDataSourceFn,
-    templateId: 1,
-    locale: "en",
+      }),
+    language: AppLanguage.Ar,
     dateVariables: mockDateVariables,
     selfHostedFonts: mockSelfHostedFonts,
     onSubmit: () => logger.info("Form submitted"),
@@ -204,12 +205,11 @@ export const Submitting: Story = {
       logger.info("Date props updated:", {
         ...action,
       })) satisfies UpdateDatePropsFn,
-    updateDataSource: (dataSource =>
+    updateDataSource: dataSource =>
       logger.info("Data source updated:", {
         dataSource,
-      })) satisfies UpdateDateDataSourceFn,
-    templateId: 1,
-    locale: "en",
+      }),
+    language: AppLanguage.En,
     dateVariables: mockDateVariables,
     selfHostedFonts: mockSelfHostedFonts,
     onSubmit: () => logger.info("Form submitted"),

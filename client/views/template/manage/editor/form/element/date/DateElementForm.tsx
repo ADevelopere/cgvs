@@ -13,6 +13,7 @@ import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../component/ActionButtons";
 import { UpdateBaseElementFn } from "../base";
 import {
+  DateDataSourceInput,
   Font,
   TemplateDateVariable,
 } from "@/client/graphql/generated/gql/graphql";
@@ -24,9 +25,8 @@ interface DateElementFormProps {
   updateBaseElement: UpdateBaseElementFn;
   updateTextProps: UpdateTextPropsFn;
   updateDateProps: UpdateDatePropsFn;
-  updateDataSource: UpdateDateDataSourceFn;
-  templateId: number;
-  locale: string;
+  updateDataSource: (dataSource: DateDataSourceInput) => void;
+  language: string;
   dateVariables: TemplateDateVariable[];
   selfHostedFonts: Font[];
   onSubmit: () => void;
@@ -42,7 +42,7 @@ export const DateElementForm: FC<DateElementFormProps> = ({
   updateTextProps,
   updateDateProps,
   updateDataSource,
-  locale,
+  language,
   dateVariables,
   selfHostedFonts,
   onSubmit,
@@ -81,7 +81,7 @@ export const DateElementForm: FC<DateElementFormProps> = ({
             <Paper sx={{ p: 3 }}>
               <TextPropsForm
                 textProps={state.textProps}
-                language={locale}
+                language={language}
                 selfHostedFonts={selfHostedFonts}
                 onTextPropsChange={updateTextProps}
                 errors={errors.textProps}

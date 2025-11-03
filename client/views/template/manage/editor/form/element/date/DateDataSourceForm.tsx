@@ -1,6 +1,6 @@
-import React, { useMemo, type FC } from "react";
+import { useMemo, type FC } from "react";
 import { Box, Stack } from "@mui/material";
-import type { DateDataSourceFormErrors, UpdateDateDataSourceFn } from "./types";
+import type { DateDataSourceFieldErrors } from "./types";
 import { DateDataSourceSelector } from "./DateDataSourceSelector";
 import { DateStaticSourceInput } from "./DateStaticSourceInput";
 import { StudentDateFieldSelector } from "./StudentDateFieldSelector";
@@ -11,8 +11,8 @@ import * as GQL from "@/client/graphql/generated/gql/graphql";
 interface DateDataSourceFormProps {
   dataSource: GQL.DateDataSourceInput;
   dateVariables: GQL.TemplateDateVariable[];
-  onDataSourceChange: UpdateDateDataSourceFn;
-  errors: DateDataSourceFormErrors;
+  onDataSourceChange: (dataSource: GQL.DateDataSourceInput) => void;
+  errors: DateDataSourceFieldErrors;
   disabled?: boolean;
   showSelector: boolean;
 }
@@ -40,20 +40,20 @@ export const DateDataSourceForm: FC<DateDataSourceFormProps> = ({
   const handleTypeChange = (type: GQL.DateDataSourceType) => {
     // Create new data source with default values based on type
     switch (type) {
-      case "STATIC":
+      case GQL.DateDataSourceType.Static:
         onDataSourceChange({ static: { value: "" } });
         break;
-      case "STUDENT_DATE_FIELD":
+      case GQL.DateDataSourceType.StudentDateField:
         onDataSourceChange({
           studentField: { field: GQL.StudentDateField.DateOfBirth },
         });
         break;
-      case "CERTIFICATE_DATE_FIELD":
+      case GQL.DateDataSourceType.CertificateDateField:
         onDataSourceChange({
           certificateField: { field: GQL.CertificateDateField.ReleaseDate },
         });
         break;
-      case "TEMPLATE_DATE_VARIABLE":
+      case GQL.DateDataSourceType.TemplateDateVariable:
         onDataSourceChange({
           templateVariable: { variableId: dateVariables[0]?.id || 0 },
         });
@@ -63,29 +63,29 @@ export const DateDataSourceForm: FC<DateDataSourceFormProps> = ({
 
   const renderDataSourceInput = () => {
     switch (selectedType) {
-      case "STATIC":
+      case GQL.DateDataSourceType.Static:
         return (
           <DateStaticSourceInput
             value={dataSource.static?.value || ""}
             onChange={value => onDataSourceChange({ static: { value } })}
-            error={errors.static}
+            error={errors?.static}
             disabled={disabled}
           />
         );
 
-      case "STUDENT_DATE_FIELD":
+      case GQL.DateDataSourceType.StudentDateField:
         return (
           <StudentDateFieldSelector
             value={
               dataSource.studentField?.field || GQL.StudentDateField.DateOfBirth
             }
             onChange={field => onDataSourceChange({ studentField: { field } })}
-            error={errors.studentField}
+            error={errors?.studentField}
             disabled={disabled}
           />
         );
 
-      case "CERTIFICATE_DATE_FIELD":
+      case GQL.DateDataSourceType.CertificateDateField:
         return (
           <CertificateDateFieldSelector
             value={
@@ -95,12 +95,12 @@ export const DateDataSourceForm: FC<DateDataSourceFormProps> = ({
             onChange={field =>
               onDataSourceChange({ certificateField: { field } })
             }
-            error={errors.certificateField}
+            error={errors?.certificateField}
             disabled={disabled}
           />
         );
 
-      case "TEMPLATE_DATE_VARIABLE":
+      case GQL.DateDataSourceType.TemplateDateVariable:
         return (
           <TemplateDateVariableSelector
             value={dataSource.templateVariable?.variableId}
@@ -108,7 +108,7 @@ export const DateDataSourceForm: FC<DateDataSourceFormProps> = ({
             onChange={variableId =>
               onDataSourceChange({ templateVariable: { variableId } })
             }
-            error={errors.templateVariable}
+            error={errors?.templateVariable}
             disabled={disabled}
           />
         );
@@ -122,6 +122,7 @@ export const DateDataSourceForm: FC<DateDataSourceFormProps> = ({
           selectedType={selectedType}
           onTypeChange={handleTypeChange}
           disabled={disabled}
+          dateVariablesDisabled={dateVariables.length === 0}
         />
       )}
       <Box>{renderDataSourceInput()}</Box>

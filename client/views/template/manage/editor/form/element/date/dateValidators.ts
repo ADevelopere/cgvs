@@ -1,8 +1,5 @@
 import type {
-  DateDataSourceInput,
-} from "@/client/graphql/generated/gql/graphql";
-import type {
-  DateDataSourceFormErrors,
+  ValidateDateDataSourceFn,
   ValidateDatePropsFieldFn,
 } from "./types";
 
@@ -10,36 +7,33 @@ import type {
  * Validates DateDataSourceInput (OneOf type)
  * Checks each variant and validates the active one
  */
-export const validateDateDataSource = (
-  dataSource: DateDataSourceInput
-): DateDataSourceFormErrors => {
-  const errors: DateDataSourceFormErrors = {};
+export const validateDateDataSource = (): ValidateDateDataSourceFn => {
+  const validate: ValidateDateDataSourceFn = ({ value: source }) => {
+    if (source.static && !source.static.value?.trim()) {
+      return { dataSource: { static: "Static date value is required" } };
+    }
 
-  if (dataSource.static) {
-    if (
-      !dataSource.static.value ||
-      dataSource.static.value.trim().length === 0
-    ) {
-      errors.static = "Static date value is required";
+    if (source.studentField && !source.studentField.field) {
+      return {
+        dataSource: { studentField: "Student date field is required" },
+      };
     }
-  } else if (dataSource.studentField) {
-    if (!dataSource.studentField.field) {
-      errors.studentField = "Student date field is required";
-    }
-  } else if (dataSource.certificateField) {
-    if (!dataSource.certificateField.field) {
-      errors.certificateField = "Certificate date field is required";
-    }
-  } else if (dataSource.templateVariable) {
-    if (
-      !dataSource.templateVariable.variableId ||
-      dataSource.templateVariable.variableId <= 0
-    ) {
-      errors.templateVariable = "Template date variable is required";
-    }
-  }
 
-  return errors;
+    if (source.certificateField && !source.certificateField.field) {
+      return {
+        dataSource: { certificateField: "Certificate date field is required" },
+      };
+    }
+
+    if (source.templateVariable && !source.templateVariable.variableId) {
+      return {
+        dataSource: { templateVariable: "Template date variable is required" },
+      };
+    }
+
+    return undefined;
+  };
+  return validate;
 };
 
 /**
@@ -50,12 +44,13 @@ export const validateDateProps = () => {
     if (!action) return undefined;
     const { key, value } = action;
     switch (key) {
-      case "format":
-        const formatValue = value as string;
+      case "format": {
+        const formatValue = value;
         if (!formatValue || formatValue.trim().length === 0) {
           return "Date format is required";
         }
         return undefined;
+      }
 
       case "calendarType":
         if (!value) {
@@ -63,7 +58,7 @@ export const validateDateProps = () => {
         }
         return undefined;
 
-      case "offsetDays":
+      case "offsetDays": {
         const offsetValue = value as number;
         if (offsetValue === undefined || offsetValue === null) {
           return "Offset days is required";
@@ -72,6 +67,7 @@ export const validateDateProps = () => {
           return "Offset days must be an integer";
         }
         return undefined;
+      }
 
       default:
         return undefined;
