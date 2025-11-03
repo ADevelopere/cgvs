@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir, readdir, unlink } from "fs/promises";
-import { join } from "path";
+import { writeFile, mkdir, readdir, unlink } from "node:fs/promises";
+import { join } from "node:path";
 
 interface LogEntry {
   sessionId: string;

@@ -100,7 +100,7 @@ export default function TestElementsPage() {
       positionY: 100,
       width: 200,
       height: 50,
-      alignment: GQL.ElementAlignment.Baseline,
+      alignment: GQL.ElementAlignment.Center,
       renderOrder: 1,
       templateId: TEST_TEMPLATE_ID,
     },

@@ -3,7 +3,6 @@ import { useNotifications } from "@toolpad/core/useNotifications";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { useElementState } from "./useElementState";
 import { validateTextPropsField } from "../element/textProps/textPropsValidator";
-import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale";
 import {
   SanitizedTextPropsFormState,
@@ -17,6 +16,7 @@ import {
   CertificateElementContext,
   useCertificateElementContext,
 } from "@/client/views/template/manage/editor/CertificateElementContext";
+import logger from "@/client/lib/logger";
 
 export type UseTextPropsStateParams = {
   elements?: GQL.CertificateElementUnion[];
@@ -210,14 +210,6 @@ export const useTextProps = (params: UseTextPropsParams) => {
       updateTextPropsStateFn(params.elementId, action);
     },
     [params.elementId, updateTextPropsStateFn]
-  );
-
-  logger.log(
-    "useTextProps: textPropsState",
-    JSON.stringify({
-      elementId: params.elementId,
-      textPropsState,
-    })
   );
 
   const pushTextPropsUpdate = React.useCallback(async () => {
