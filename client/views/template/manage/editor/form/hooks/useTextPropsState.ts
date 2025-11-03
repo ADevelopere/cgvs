@@ -13,7 +13,10 @@ import {
 } from "../element/textProps";
 import { Action } from "../types";
 import { useTextPropsMutation } from "../../hooks";
-import { TextPropsContext } from "@/client/contexts/TextPropsContext";
+import {
+  CertificateElementContext,
+  useCertificateElementContext,
+} from "@/client/views/template/manage/editor/CertificateElementContext";
 
 export type UseTextPropsStateParams = {
   elements?: GQL.CertificateElementUnion[];
@@ -58,7 +61,7 @@ function mapFontRefToFontRefInput(
  */
 export function hasTextProps(
   element: GQL.CertificateElementUnion
-): element is {textProps: GQL.TextProps, base: GQL.CertificateElementBase} {
+): element is { textProps: GQL.TextProps; base: GQL.CertificateElementBase } {
   return (
     element.__typename === "TextElement" ||
     element.__typename === "DateElement" ||
@@ -181,21 +184,18 @@ export function useTextPropsState(
 
 export type UseTextPropsParams = {
   elementId: number;
-  templateId?: number;
-  elements?: GQL.CertificateElementUnion[];
 };
 
 export const useTextProps = (params: UseTextPropsParams) => {
   const {
-    textPropsStates,
-    updateTextPropsStateFn,
-    pushTextPropsStateUpdate,
-    initTextPropsState,
-    textPropsStateErrors,
-  } = useTextPropsState({
-    templateId: params.templateId,
-    elements: params.elements,
-  });
+    textProps: {
+      textPropsStates,
+      updateTextPropsStateFn,
+      pushTextPropsStateUpdate,
+      initTextPropsState,
+      textPropsStateErrors,
+    },
+  } = useCertificateElementContext();
 
   // Get state or initialize if not present (only initialize once)
   const textPropsState = React.useMemo(() => {
@@ -204,7 +204,7 @@ export const useTextProps = (params: UseTextPropsParams) => {
       initTextPropsState(params.elementId)
     );
   }, [textPropsStates, params.elementId, initTextPropsState]);
-  
+
   const updateTextProps = React.useCallback(
     (action: Action<GQL.TextPropsInput>) => {
       updateTextPropsStateFn(params.elementId, action);

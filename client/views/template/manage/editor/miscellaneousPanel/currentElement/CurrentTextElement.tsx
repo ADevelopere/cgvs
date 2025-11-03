@@ -37,7 +37,6 @@ export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
   
   const { baseElementState, updateBaseElementState, baseElementErrors } =
     useBaseElement({
-      elements,
       elementId: element.base.id,
     });
   return (

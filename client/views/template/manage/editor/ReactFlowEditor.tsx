@@ -55,7 +55,6 @@ const Flow: React.FC<CertificateReactFlowEditorProps> = ({
         if (element.base.type === GQL.ElementType.Text) {
           const data: TextElementNodeData = {
             elementId: element.base.id,
-            elements: elements,
           };
           return {
             id: element.base.id.toString(),

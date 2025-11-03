@@ -14,6 +14,7 @@ import {
   ValidateBaseElementFieldFn,
 } from "../element/base";
 import { Action } from "../types";
+import { useCertificateElementContext } from "../../CertificateElementContext";
 
 export type UseBaseElementStateParams = {
   templateId?: number;
@@ -136,32 +137,32 @@ export function useBaseElementState(
   };
 }
 
-
 export type UseBaseElementParams = {
   elementId: number;
-  templateId?: number;
-  elements?: GQL.CertificateElementUnion[];
 };
 
 export const useBaseElement = (params: UseBaseElementParams) => {
   const {
-    baseElementStates,
-    updateBaseElementStateFn,
-    pushBaseElementStateUpdate,
-    initBaseElementState,
-    baseElementStateErrors,
-  } = useBaseElementState(params);
+    bases: {
+      baseElementStates,
+      updateBaseElementStateFn,
+      pushBaseElementStateUpdate,
+      initBaseElementState,
+      baseElementStateErrors,
+    },
+  } = useCertificateElementContext();
 
   // Get state or initialize if not present (only initialize once)
   const baseElementState = React.useMemo(() => {
-    return baseElementStates.get(params.elementId) ?? initBaseElementState(params.elementId);
+    return (
+      baseElementStates.get(params.elementId) ??
+      initBaseElementState(params.elementId)
+    );
   }, [baseElementStates, params.elementId, initBaseElementState]);
-  
+
   const pushBaseElementUpdate = React.useCallback(async () => {
     await pushBaseElementStateUpdate(params.elementId);
   }, [params.elementId, pushBaseElementStateUpdate]);
-
-
 
   const updateBaseElementState = React.useCallback(
     (action: Action<SanitizedBaseElementFormState>) => {
@@ -171,7 +172,6 @@ export const useBaseElement = (params: UseBaseElementParams) => {
   );
 
   const baseElementErrors = baseElementStateErrors.get(params.elementId) || {};
-
 
   return {
     baseElementState,

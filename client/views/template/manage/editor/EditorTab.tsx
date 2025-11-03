@@ -15,7 +15,7 @@ import { TemplateConfigCreateForm } from "./form/config/TemplateConfigCreateForm
 import { MiscellaneousPanel } from "./miscellaneousPanel/MiscellaneousPanel";
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/client/lib/logger";
-import { TextPropsProvider } from "@/client/contexts/TextPropsContext";
+import { CertificateElemenetProvider } from "@/client/views/template/manage/editor/CertificateElementContext";
 
 function AddNodePane() {
   return (
@@ -106,7 +106,7 @@ export default function EditorTab({ template }: { template: Template }) {
   }
 
   return (
-    // <TextPropsProvider templateId={template.id} elements={elements}>
+    <CertificateElemenetProvider templateId={template.id} elements={elements}>
       <EditorPaneViewController
         firstPane={{
           title: (
@@ -145,6 +145,6 @@ export default function EditorTab({ template }: { template: Template }) {
         }}
         storageKey="templateManagementEditor"
       />
-    // </TextPropsProvider>
+    </CertificateElemenetProvider>
   );
 }
