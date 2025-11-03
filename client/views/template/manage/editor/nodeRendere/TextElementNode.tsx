@@ -4,7 +4,6 @@ import { NodeProps, Handle, Position } from "@xyflow/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { useBaseElement } from "../form/hooks/useBaseElementState";
 import { useTextProps } from "../form/hooks/useTextPropsState";
-import { logger } from "@/client/lib/logger";
 import React from "react";
 import { FontFamily, getFontByFamily, GoogleFontItem } from "@/lib/font/google";
 import WebFont from "webfontloader";
@@ -12,7 +11,6 @@ import { ElementAlignment } from "@/client/graphql/generated/gql/graphql";
 import { useTextDataSource } from "../form/hooks";
 import { useCertificateElementContext } from "../CertificateElementContext";
 import {
-  useAppTranslation,
   useAppTranslationForLanguage,
 } from "@/client/locale";
 
@@ -147,6 +145,7 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
       state: { language },
     },
   } = useCertificateElementContext();
+  
   const {
     certificateElementsTranslations: { textElement },
   } = useAppTranslationForLanguage(language);
@@ -170,12 +169,8 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
       }
     }
     return textElement.textPreviewValue;
-  }, [source]);
-  
-  logger.log(
-    "[TextElementNode] textPropsState",
-    JSON.stringify({ elementId, textPropsState })
-  );
+  }, [source, textElement]);
+
   const { baseElementState } = useBaseElement({
     elementId,
   });
@@ -185,15 +180,11 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
   React.useEffect(() => {
     if (textPropsState.fontRef.google?.identifier) {
       const family = textPropsState.fontRef.google.identifier;
-      logger.log("Loading font family:", family);
-      const fontFamily = family as FontFamily;
-      logger.log("Resolved font family:", fontFamily);
       const font = getFontByFamily(family as FontFamily);
 
       if (font) {
         setFontFamily(family);
         const fontFamily = getFontFamilyString(font);
-        logger.log("Loading font:", fontFamily);
 
         if (fontFamily) {
           WebFont.load({
@@ -201,7 +192,6 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
               families: [fontFamily],
             },
             active: () => {
-              logger.info(`Font ${font.family} is active!`);
               // You can set a state here to update your UI
             },
           });
