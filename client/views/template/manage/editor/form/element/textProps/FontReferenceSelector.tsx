@@ -18,10 +18,11 @@ import {
 } from "@/client/graphql/generated/gql/graphql";
 import { UpdateFontRefFn } from "./types";
 import {  } from "next/font/google";
+import { AppLanguage } from "@/lib/enum";
 
 interface FontReferenceSelectorProps {
   fontRef: FontReferenceInput;
-  locale: string;
+  language: AppLanguage;
   selfHostedFonts: Font[];
   onFontRefChange: UpdateFontRefFn;
   error?: string;
@@ -39,7 +40,7 @@ const GOOGLE_FONTS_API_KEY = process.env.GOOGLE_FONTS_API_KEY || "";
 
 export const FontReferenceSelector: FC<FontReferenceSelectorProps> = ({
   fontRef,
-  locale: _locale,
+  language,
   selfHostedFonts,
   onFontRefChange,
   error,

@@ -19,7 +19,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "bun test --timeout=60000",
-    "fetchGoogleFontsAndGenerateSubsets": "bun run lib/google/fetchGoogleFontsAndGenerateSubsets.ts"
+    "fetchGoogleFontsAndGenerateSubsets": "bun run lib/font/google/generator/fetchGoogleFontsAndGenerateSubsets.ts"
   },
   "dependencies": {
     "@apollo/client": "^4.0.9",

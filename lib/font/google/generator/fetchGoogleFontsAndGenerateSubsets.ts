@@ -8,7 +8,7 @@ import { dirname } from "path";
 
 // This function is imported from your other script
 import { generateFontSubsetFiles } from "./generateFontSubsetFiles";
-import { logger } from "../simpleLogger";
+import { logger } from "../../../simpleLogger";
 
 // --- Setup __dirname and .env ---
 // This is the modern ES Module way to get __dirname

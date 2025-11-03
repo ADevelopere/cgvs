@@ -4,13 +4,14 @@
 import * as fs from "fs";
 import * as path from "path";
 // Assumes this script is at the project root, importing from the client dir
-import { processFontList, GoogleFontItem } from "./types";
-import { logger } from "../simpleLogger";
+import { GoogleFontItem } from "../types";
+import { logger } from "../../../simpleLogger";
+import { processFontList } from "./utils";
 
 // --- Configuration ---
 // Define all the paths based on the project root
-const SUBSET_DIR = path.resolve(__dirname, "subset");
-const GOOGLE_FONT_DIR = path.resolve(__dirname, ".");
+const SUBSET_DIR = path.resolve(__dirname, "../subset");
+const GOOGLE_FONT_DIR = path.resolve(__dirname, "..");
 const TYPES_FILE_PATH = path.resolve(
   GOOGLE_FONT_DIR,
   "googleFontSubsetMap.type.ts"
