@@ -67,7 +67,7 @@ export const NumberMappingInput = ({
       </Typography>
 
       {entries.map(([locale, decimalPlaces], index) => (
-        <Grid container spacing={2} key={index} sx={{ mb: 2 }}>
+        <Grid container spacing={2} key={locale} sx={{ mb: 2 }}>
           <Grid size={{ xs: 12, sm: 5 }}>
             <TextField
               fullWidth
@@ -90,7 +90,7 @@ export const NumberMappingInput = ({
               type="number"
               error={!!errors[locale]}
               helperText={errors[locale]}
-              inputProps={{ min: 0, step: 1 }}
+              slotProps={{ htmlInput: { min: 0, step: 1 } }}
             />
           </Grid>
           <Grid

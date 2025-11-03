@@ -3,7 +3,6 @@ import { Box, Grid, Paper, Typography } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import type {
   NumberElementFormErrors,
-  UpdateMappingFn,
   NumberElementFormState,
 } from "./types";
 import { TextPropsForm } from "../textProps/TextPropsForm";
@@ -25,7 +24,7 @@ interface NumberElementFormProps {
   updateBaseElement: UpdateBaseElementFn;
   updateTextProps: UpdateTextPropsFn;
   updateDataSource: (dataSource: NumberDataSourceInput) => void;
-  updateMapping: UpdateMappingFn;
+  updateMapping: (mapping: Record<string, string>) => void;
   language: string;
   numberVariables: TemplateNumberVariable[];
   selfHostedFonts: Font[];

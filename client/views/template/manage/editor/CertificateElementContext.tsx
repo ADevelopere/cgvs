@@ -34,6 +34,10 @@ import {
   useImagePropsState,
   UseImagePropsStateReturn,
 } from "./form/hooks/useImagePropsState";
+import {
+  useNumberPropsState,
+  UseNumberPropsStateReturn,
+} from "./form/hooks/useNumberPropsState";
 
 type CertificateElementContextType = {
   bases: UseBaseElementStateReturn;
@@ -44,6 +48,7 @@ type CertificateElementContextType = {
   dateProps: UseDatePropsStateReturn;
   countryProps: UseCountryPropsStateReturn;
   imageProps: UseImagePropsStateReturn;
+  numberProps: UseNumberPropsStateReturn;
   config: UseTemplateConfigStateReturn;
   textVariables: GQL.TemplateTextVariable[];
   selectVariables: GQL.TemplateSelectVariable[];
@@ -75,6 +80,7 @@ export const CertificateElemenetProvider: React.FC<
   const dateProps = useDatePropsState({ elements, templateId });
   const countryProps = useCountryPropsState({ elements, templateId });
   const imageProps = useImagePropsState({ elements, templateId });
+  const numberProps = useNumberPropsState({ elements, templateId });
 
   const { textVariables, selectVariables, dateVariables, numberVariables } =
     React.useMemo(() => {
@@ -114,6 +120,7 @@ export const CertificateElemenetProvider: React.FC<
       dateProps,
       countryProps,
       imageProps,
+      numberProps,
       textVariables,
       selectVariables,
       dateVariables,
@@ -129,6 +136,7 @@ export const CertificateElemenetProvider: React.FC<
       dateProps,
       countryProps,
       imageProps,
+      numberProps,
       textVariables,
       selectVariables,
       dateVariables,
