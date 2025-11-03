@@ -4,10 +4,7 @@ import {
   useTextPropsState,
   UseTextPropsStateReturn,
 } from "@/client/views/template/manage/editor/form/hooks/useTextPropsState";
-import {
-  CertificateElementUnion,
-  TemplateConfig,
-} from "@/client/graphql/generated/gql/graphql";
+import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { useBaseElementState, UseBaseElementStateReturn } from "./form/hooks";
 import {
   useTemplateConfigState,
@@ -18,15 +15,20 @@ type CertificateElementContextType = {
   bases: UseBaseElementStateReturn;
   textProps: UseTextPropsStateReturn;
   config: UseTemplateConfigStateReturn;
+  textVariables: GQL.TemplateTextVariable[];
+  selectVariables: GQL.TemplateSelectVariable[];
+  dateVariables: GQL.TemplateDateVariable[];
+  numberVariables: GQL.TemplateNumberVariable[];
 };
 
 export const CertificateElementContext =
   React.createContext<CertificateElementContextType | null>(null);
 
 export type CertificateElemenetProviderProps = {
-  elements: CertificateElementUnion[];
+  elements: GQL.CertificateElementUnion[];
   templateId?: number;
-  tempalteConfig: TemplateConfig;
+  tempalteConfig: GQL.TemplateConfig;
+  variables: GQL.TemplateVariable[];
   children: React.ReactNode;
 };
 
@@ -38,10 +40,54 @@ export const CertificateElemenetProvider: React.FC<
   const textProps = useTextPropsState({ elements, templateId });
   const bases = useBaseElementState({ elements, templateId });
 
+  const { textVariables, selectVariables, dateVariables, numberVariables } =
+    React.useMemo(() => {
+      const textVariables: GQL.TemplateTextVariable[] = [];
+      const selectVariables: GQL.TemplateSelectVariable[] = [];
+      const dateVariables: GQL.TemplateDateVariable[] = [];
+      const numberVariables: GQL.TemplateNumberVariable[] = [];
+
+      for (const variable of props.variables) {
+        switch (variable.type) {
+          case GQL.TemplateVariableType.Text:
+            textVariables.push(variable);
+            break;
+          case GQL.TemplateVariableType.Select:
+            selectVariables.push(variable);
+            break;
+          case GQL.TemplateVariableType.Date:
+            dateVariables.push(variable);
+            break;
+          case GQL.TemplateVariableType.Number:
+            numberVariables.push(variable);
+            break;
+        }
+      }
+
+      return { textVariables, selectVariables, dateVariables, numberVariables };
+    }, [props.variables]);
+
   const value = React.useMemo(
-    () => ({ textProps, bases, config }),
-    [textProps]
+    () => ({
+      textProps,
+      bases,
+      config,
+      textVariables,
+      selectVariables,
+      dateVariables,
+      numberVariables,
+    }),
+    [
+      textProps,
+      bases,
+      config,
+      textVariables,
+      selectVariables,
+      dateVariables,
+      numberVariables,
+    ]
   );
+
   return (
     <CertificateElementContext.Provider value={value}>
       {children}
