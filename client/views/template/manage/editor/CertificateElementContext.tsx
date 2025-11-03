@@ -22,6 +22,10 @@ import {
   useNumberDataSourceState,
   UseNumberDataSourceStateReturn,
 } from "./form/hooks/useNumberDataSourceState";
+import {
+  useDatePropsState,
+  UseDatePropsStateReturn,
+} from "./form/hooks/useDatePropsState";
 
 type CertificateElementContextType = {
   bases: UseBaseElementStateReturn;
@@ -29,6 +33,7 @@ type CertificateElementContextType = {
   textDataSource: UseTextDataSourceStateReturn;
   dateDataSource: UseDateDataSourceStateReturn;
   numberDataSource: UseNumberDataSourceStateReturn;
+  dateProps: UseDatePropsStateReturn;
   config: UseTemplateConfigStateReturn;
   textVariables: GQL.TemplateTextVariable[];
   selectVariables: GQL.TemplateSelectVariable[];
@@ -57,6 +62,7 @@ export const CertificateElemenetProvider: React.FC<
   const textDataSource = useTextDataSourceState({ elements, templateId });
   const dateDataSource = useDateDataSourceState({ elements, templateId });
   const numberDataSource = useNumberDataSourceState({ elements, templateId });
+  const dateProps = useDatePropsState({ elements, templateId });
 
   const { textVariables, selectVariables, dateVariables, numberVariables } =
     React.useMemo(() => {
@@ -93,6 +99,7 @@ export const CertificateElemenetProvider: React.FC<
       textDataSource,
       dateDataSource,
       numberDataSource,
+      dateProps,
       textVariables,
       selectVariables,
       dateVariables,
@@ -105,6 +112,7 @@ export const CertificateElemenetProvider: React.FC<
       textDataSource,
       dateDataSource,
       numberDataSource,
+      dateProps,
       textVariables,
       selectVariables,
       dateVariables,

@@ -1,6 +1,7 @@
 import type {
+  DatePropsFormErrors,
   ValidateDateDataSourceFn,
-  ValidateDatePropsFieldFn,
+  ValidateDatePropsFn,
 } from "./types";
 
 /**
@@ -39,39 +40,34 @@ export const validateDateDataSource = (): ValidateDateDataSourceFn => {
 /**
  * Field-level validation for date-specific properties
  */
-export const validateDateProps = () => {
-  const validate: ValidateDatePropsFieldFn = action => {
-    if (!action) return undefined;
-    const { key, value } = action;
-    switch (key) {
-      case "format": {
-        const formatValue = value;
-        if (!formatValue || formatValue.trim().length === 0) {
-          return "Date format is required";
-        }
-        return undefined;
-      }
+export const validateDateProps = (): ValidateDatePropsFn => {
+  const validate: ValidateDatePropsFn = ({ value: dateProps}) => {
+    const errors: DatePropsFormErrors = { dateProps: {} };
 
-      case "calendarType":
-        if (!value) {
-          return "Calendar type is required";
-        }
-        return undefined;
-
-      case "offsetDays": {
-        const offsetValue = value as number;
-        if (offsetValue === undefined || offsetValue === null) {
-          return "Offset days is required";
-        }
-        if (!Number.isInteger(offsetValue)) {
-          return "Offset days must be an integer";
-        }
-        return undefined;
-      }
-
-      default:
-        return undefined;
+    if (!dateProps.format?.trim()) {
+      if (errors.dateProps)
+        errors.dateProps.format = "Date format is required";
     }
+
+    if (!dateProps.calendarType) {
+      if (errors.dateProps)
+        errors.dateProps.calendarType = "Calendar type is required";
+    }
+
+    if (
+      dateProps.offsetDays === undefined ||
+      dateProps.offsetDays === null ||
+      !Number.isInteger(dateProps.offsetDays)
+    ) {
+      if (errors.dateProps)
+        errors.dateProps.offsetDays = "Offset days must be an integer";
+    }
+
+    if (Object.keys(errors.dateProps ?? {}).length === 0) {
+      return undefined;
+    }
+
+    return errors;
   };
   return validate;
 };

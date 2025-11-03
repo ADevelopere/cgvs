@@ -8,11 +8,11 @@ import { validateDateProps } from "../element/date/dateValidators";
 import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale";
 import {
-  SanitizedDatePropsFormState,
+  DatePropsFormState,
   DatePropsFormErrors,
   UpdateDatePropsWithElementIdFn,
-  ValidateDatePropsFieldFn,
 } from "../element/date";
+import { useCertificateElementContext } from "../../CertificateElementContext";
 
 export type UseDatePropsStateParams = {
   templateId?: number;
@@ -20,10 +20,11 @@ export type UseDatePropsStateParams = {
 };
 
 export type UseDatePropsStateReturn = {
-  getState: (elementId: number) => SanitizedDatePropsFormState | null;
-  updateFn: UpdateDatePropsWithElementIdFn;
-  pushUpdate: (elementId: number) => Promise<void>;
-  errors: Map<number, DatePropsFormErrors>;
+  datePropsStates: Map<number, DatePropsFormState>;
+  updateDatePropsStateFn: UpdateDatePropsWithElementIdFn;
+  pushDatePropsStateUpdate: (elementId: number) => Promise<void>;
+  initDatePropsState: (elementId: number) => DatePropsFormState;
+  datePropsStateErrors: Map<number, DatePropsFormErrors>;
 };
 
 /**
@@ -31,16 +32,19 @@ export type UseDatePropsStateReturn = {
  */
 function extractDatePropsState(
   element: GQL.CertificateElementUnion
-): SanitizedDatePropsFormState | null {
+): DatePropsFormState | null {
   if (element.__typename !== "DateElement" || !element.dateProps) {
     return null;
   }
 
   return {
-    calendarType: element.dateProps.calendarType as GQL.CalendarType ?? undefined,
-    format: element.dateProps.format ?? "",
-    offsetDays: element.dateProps.offsetDays ?? 0,
-    transformation: element.dateProps.transformation ?? undefined,
+    dateProps: {
+      calendarType:
+        (element.dateProps.calendarType as GQL.CalendarType) ?? undefined,
+      format: element.dateProps.format ?? "",
+      offsetDays: element.dateProps.offsetDays ?? 0,
+      transformation: element.dateProps.transformation ?? undefined,
+    },
   };
 }
 
@@ -49,15 +53,15 @@ function extractDatePropsState(
  */
 function toUpdateInput(
   elementId: number,
-  state: SanitizedDatePropsFormState
+  state: DatePropsFormState
 ): GQL.DateElementSpecPropsStandaloneInput {
   return {
     elementId: elementId,
     dateProps: {
-      calendarType: state.calendarType,
-      format: state.format,
-      offsetDays: state.offsetDays,
-      transformation: state.transformation,
+      calendarType: state.dateProps.calendarType,
+      format: state.dateProps.format,
+      offsetDays: state.dateProps.offsetDays,
+      transformation: state.dateProps.transformation,
     },
   };
 }
@@ -75,7 +79,7 @@ export function useDatePropsState(
 
   // Mutation function
   const mutationFn = React.useCallback(
-    async (elementId: number, state: SanitizedDatePropsFormState) => {
+    async (elementId: number, state: DatePropsFormState) => {
       try {
         const updateInput = toUpdateInput(elementId, state);
         await updateDateElementSpecPropsMutation({
@@ -101,9 +105,9 @@ export function useDatePropsState(
   );
 
   // Use generic hook
-  const validator: ValidateDatePropsFieldFn = validateDateProps();
+  const validator = validateDateProps();
 
-  const { getState, updateFn, pushUpdate, errors } = useElementState({
+  const { states, updateFn, pushUpdate, initState, errors } = useElementState({
     templateId,
     elements,
     validator,
@@ -113,10 +117,64 @@ export function useDatePropsState(
   });
 
   return {
-    getState,
-    updateFn,
-    pushUpdate,
-    errors,
+    datePropsStates: states,
+    updateDatePropsStateFn: updateFn,
+    pushDatePropsStateUpdate: pushUpdate,
+    initDatePropsState: initState,
+    datePropsStateErrors: errors,
   };
 }
+
+export type UseDatePropsParams = {
+  elementId: number;
+};
+
+export const useDateProps = (params: UseDatePropsParams) => {
+  const {
+    dateProps: {
+      datePropsStates,
+      updateDatePropsStateFn,
+      pushDatePropsStateUpdate,
+      initDatePropsState,
+      datePropsStateErrors,
+    },
+  } = useCertificateElementContext();
+
+  // Get state or initialize if not present (only initialize once)
+  const { dateProps } = React.useMemo(() => {
+    return (
+      datePropsStates.get(params.elementId) ??
+      initDatePropsState(params.elementId)
+    );
+  }, [datePropsStates, params.elementId, initDatePropsState]);
+
+  const updateDateProps = React.useCallback(
+    (dateProps: GQL.DateElementSpecPropsInput) => {
+      updateDatePropsStateFn(params.elementId, {
+        key: "dateProps",
+        value: dateProps,
+      });
+    },
+    [params.elementId, updateDatePropsStateFn]
+  );
+
+  const pushDatePropsUpdate = React.useCallback(async () => {
+    await pushDatePropsStateUpdate(params.elementId);
+  }, [params.elementId, pushDatePropsStateUpdate]);
+
+  const { dateProps: errors } = React.useMemo(() => {
+    return (
+      datePropsStateErrors.get(params.elementId) || {
+        dateProps: {},
+      }
+    );
+  }, [datePropsStateErrors, params.elementId]);
+
+  return {
+    datePropsState: dateProps,
+    updateDateProps,
+    pushDatePropsUpdate,
+    datePropsErrors: errors,
+  };
+};
 
