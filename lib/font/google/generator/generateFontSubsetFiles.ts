@@ -3,7 +3,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
-// Assumes this script is at the project root, importing from the client dir
+import prettier from "prettier";
 import { GoogleFontItem } from "../types";
 import { logger } from "../../../simpleLogger";
 import { processFontList } from "./utils";
@@ -48,17 +48,33 @@ function sanitizeSubsetForVar(name: string): string {
 /**
  * Creates a file, ensuring the directory exists first.
  */
-function writeFile(filePath: string, content: string): void {
+async function writeFile(filePath: string, content: string): Promise<void> {
   try {
     const dir = path.dirname(filePath);
     if (!fs.existsSync(dir)) {
       // Create the directory recursively if it doesn't exist
       fs.mkdirSync(dir, { recursive: true });
     }
-    fs.writeFileSync(filePath, content, "utf-8");
+
+    // Resolve Prettier config
+    const prettierConfig = await prettier.resolveConfig(filePath);
+    if (!prettierConfig) {
+      logger.warn(
+        `⚠️ No Prettier config found for ${filePath}. Skipping formatting.`
+      );
+      fs.writeFileSync(filePath, content, "utf-8");
+      return;
+    }
+
+    // Format the content using Prettier
+    const formattedContent = await prettier.format(content, {
+      ...prettierConfig,
+      filepath: filePath, // Pass filepath for parser inference
+    });
+
+    fs.writeFileSync(filePath, formattedContent, "utf-8");
     logger.log(`✅ Successfully wrote: ${path.basename(filePath)}`);
   } catch (error) {
-    // ...existing code...
     logger.error(`❌ Error writing file ${filePath}:`, error);
   }
 }
@@ -206,7 +222,9 @@ ${exports}
  *
  * @param jsonString The raw JSON string from the Google Fonts API.
  */
-export function generateFontSubsetFiles(jsonString: string) {
+export async function generateFontSubsetFiles(
+  jsonString: string
+): Promise<void> {
   logger.log("Starting font subset file generation...");
 
   // 1. Process the raw string into the map
@@ -228,23 +246,23 @@ export function generateFontSubsetFiles(jsonString: string) {
   for (const [subsetName, fontItems] of subsetMap.entries()) {
     const subsetFilePath = path.resolve(SUBSET_DIR, `${subsetName}.ts`);
     const fileContent = createSubsetFileContent(fontItems);
-    writeFile(subsetFilePath, fileContent);
+    await writeFile(subsetFilePath, fileContent);
   }
 
   // 3. Generate and write the subset index file
   logger.log(`Generating subset index file: ${SUBSET_INDEX_FILE_PATH}...`);
   const subsetIndexContent = createSubsetIndexFileContent(subsetKeys);
-  writeFile(SUBSET_INDEX_FILE_PATH, subsetIndexContent);
+  await writeFile(SUBSET_INDEX_FILE_PATH, subsetIndexContent);
 
   // 4. Generate and write the main type file
   logger.log(`Generating type file: ${TYPES_FILE_PATH}...`);
   const typeFileContent = createTypeFileContent(subsetKeys);
-  writeFile(TYPES_FILE_PATH, typeFileContent);
+  await writeFile(TYPES_FILE_PATH, typeFileContent);
 
   // 5. Generate and write the main const file
   logger.log(`Generating const file: ${CONST_FILE_PATH}...`);
   const constFileContent = createConstFileContent(subsetKeys);
-  writeFile(CONST_FILE_PATH, constFileContent);
+  await writeFile(CONST_FILE_PATH, constFileContent);
 
   logger.log("\n🎉 Font subset file generation complete.");
 }
@@ -257,21 +275,23 @@ export function generateFontSubsetFiles(jsonString: string) {
 //    ts-node ./generateFontSubsetFiles.ts
 
 // This block automatically runs the function if the script is executed directly
-try {
-  // Assumes google_fonts.json is at the project root
-  const fontJsonPath = path.resolve(__dirname, "google_fonts.json");
-  if (fs.existsSync(fontJsonPath)) {
-    logger.log("Found 'google_fonts.json', starting generation...");
-    const jsonString = fs.readFileSync(fontJsonPath, "utf-8");
-    generateFontSubsetFiles(jsonString);
-  } else {
-    logger.warn(
-      "⚠️ 'google_fonts.json' not found at project root. Script will not run automatically."
-    );
-    logger.log(
-      "You can still import 'generateFontSubsetFiles' and run it manually."
-    );
+(async () => {
+  try {
+    // Assumes google_fonts.json is at the project root
+    const fontJsonPath = path.resolve(__dirname, "google_fonts.json");
+    if (fs.existsSync(fontJsonPath)) {
+      logger.log("Found 'google_fonts.json', starting generation...");
+      const jsonString = fs.readFileSync(fontJsonPath, "utf-8");
+      await generateFontSubsetFiles(jsonString);
+    } else {
+      logger.warn(
+        "⚠️ 'google_fonts.json' not found at project root. Script will not run automatically."
+      );
+      logger.log(
+        "You can still import 'generateFontSubsetFiles' and run it manually."
+      );
+    }
+  } catch (error) {
+    logger.error("❌ Failed to read 'google_fonts.json'.", error);
   }
-} catch (error) {
-  logger.error("❌ Failed to read 'google_fonts.json'.", error);
-}
+})();
