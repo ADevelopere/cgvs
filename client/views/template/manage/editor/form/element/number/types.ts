@@ -17,10 +17,12 @@ export type NumberDataSourceFormState = {
   dataSource: GQL.NumberDataSourceInput;
 };
 
+export type NumberPropsFormState = {
+  numberProps: GQL.NumberElementSpecPropsInput;
+};
+
 // Complete number element working state
 export type NumberElementFormState = GQL.NumberElementInput;
-
-export type SanitizedNumberPropsFormState = GQL.NumberElementSpecPropsInput;
 
 // ============================================================================
 // MODULAR ERROR TYPES
@@ -28,45 +30,53 @@ export type SanitizedNumberPropsFormState = GQL.NumberElementSpecPropsInput;
 
 export type NumberDataSourceFieldErrors =
   | FormErrors<GQL.NumberDataSourceInput>
+  | undefined;
 
 export type NumberDataSourceFormErrors = {
   dataSource: NumberDataSourceFieldErrors;
 };
-export type MappingFormErrors = { [key: string]: string };
-export type NumberPropsFormErrors = FormErrors<GQL.NumberElementSpecPropsInput>;
 
-export type NumberElementFormErrors = NumberDataSourceFormErrors & {
+export type NumberPropsFieldErrors =
+  | FormErrors<Omit<GQL.NumberElementSpecPropsInput, "mapping">>
+export type MappingFormErrors = { [key: string]: string };
+
+export type NumberPropsFormErrors = {
+  numberProps: NumberPropsFieldErrors;
+  mapping: MappingFormErrors;
+};
+
+
+export type NumberElementFormErrors = NumberDataSourceFormErrors & NumberPropsFormErrors& {
   base: BaseElementFormErrors;
   textProps: TextPropsFormErrors;
-  mapping: MappingFormErrors;
 };
 
 // ============================================================================
 // SPECIFIC UPDATE FUNCTION TYPES
 // ============================================================================
 
-export type UpdateDataSourceFn = UpdateStateFn<NumberDataSourceFormState>;
-export type UpdateMappingFn = (mapping: Record<string, string>) => void;
+export type UpdateNumberDataSourceFn = UpdateStateFn<NumberDataSourceFormState>;
 
 export type UpdateNumberDataSourceWithElementIdFn =
   UpdateStateWithElementIdFn<NumberDataSourceFormState>;
 
 export type NumberDataSourceUpdateAction = Action<NumberDataSourceFormState>;
 
-export type NumberElementSpecPropsValidateFn = ValidateFieldFn<
-  GQL.NumberElementSpecPropsInput,
-  string | undefined
->;
-export type ValidateNumberPropsFieldFn = ValidateFieldFn<
-  GQL.NumberElementSpecPropsInput,
-  string | undefined
->;
+export type UpdateNumberPropsFn = UpdateStateFn<NumberPropsFormState>;
+
 export type UpdateNumberPropsWithElementIdFn =
-  UpdateStateWithElementIdFn<GQL.NumberElementSpecPropsInput>;
+  UpdateStateWithElementIdFn<NumberPropsFormState>;
+
+export type NumberPropsUpdateAction = Action<NumberPropsFormState>;
 
 export type ValidateNumberDataSourceFn = ValidateFieldFn<
   NumberDataSourceFormState,
   NumberDataSourceFormErrors
+>;
+
+export type ValidateNumberPropsFn = ValidateFieldFn<
+  NumberPropsFormState,
+  NumberPropsFormErrors
 >;
 
 // ============================================================================

@@ -1,7 +1,8 @@
 import {
   MappingFormErrors,
-  NumberElementSpecPropsValidateFn,
   ValidateNumberDataSourceFn,
+  ValidateNumberPropsFn,
+  NumberPropsFormErrors,
 } from "./types";
 
 /**
@@ -39,12 +40,17 @@ const validateMapping = (
   return errors;
 };
 
-export const validateNumberElementSpecProps = () => {
-  const validate: NumberElementSpecPropsValidateFn = ({ key, value }) => {
-    if (key === "mapping") {
-      return JSON.stringify(validateMapping(value));
+export const validateNumberProps = (): ValidateNumberPropsFn => {
+  const validate: ValidateNumberPropsFn = ({ value: numberProps }) => {
+    const errors: NumberPropsFormErrors = { numberProps: {}, mapping: {} };
+
+    const mappingErrors = validateMapping(numberProps.mapping);
+    if (Object.keys(mappingErrors).length > 0) {
+      if (errors.numberProps)
+        errors.mapping = mappingErrors;
     }
-    return undefined;
+
+    return errors;
   };
 
   return validate;

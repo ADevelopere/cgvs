@@ -13,17 +13,17 @@ export type SanitizedBaseElementFormState = Omit<
 
 export type BaseCertificateElementFormState = SanitizedBaseElementFormState;
 
-export type BaseElementFormErrors = FormErrors<SanitizedBaseElementFormState>;
+export type BaseElementFormErrors = FormErrors<BaseCertificateElementFormState>;
 
 
 export type ValidateBaseElementFieldFn =
-  ValidateFieldFn<SanitizedBaseElementFormState>;
+  ValidateFieldFn<BaseCertificateElementFormState, BaseElementFormErrors>;
 
 // ============================================================================
 // SPECIFIC UPDATE FUNCTION TYPES
 // ============================================================================
 
-export type UpdateBaseElementFn = UpdateStateFn<SanitizedBaseElementFormState>;
+export type UpdateBaseElementFn = UpdateStateFn<BaseCertificateElementFormState>;
 
 export type UpdateBaseElementWithElementIdFn =
-  UpdateStateWithElementIdFn<SanitizedBaseElementFormState>;
+  UpdateStateWithElementIdFn<BaseCertificateElementFormState>;

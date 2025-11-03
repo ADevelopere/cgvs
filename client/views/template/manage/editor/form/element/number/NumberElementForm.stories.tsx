@@ -53,6 +53,7 @@ const defaultErrors: NumberElementFormErrors = {
   base: {},
   textProps: {},
   dataSource: {},
+  numberProps: {},
   mapping: {},
 };
 
@@ -103,6 +104,7 @@ export const WithErrors: Story = {
         ar: "Decimal places must be a non-negative number",
         en: "Decimal places must be a non-negative number",
       },
+      numberProps: {}
     },
     updateBaseElement: (({ key, value }) =>
       logger.info("Base element updated:", {
