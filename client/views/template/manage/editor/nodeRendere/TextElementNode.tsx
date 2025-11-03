@@ -12,7 +12,6 @@ import WebFont from "webfontloader";
 export type TextElementNodeData = {
   // templateId: number;
   elementId: number;
-  elements: GQL.CertificateElementUnion[];
 };
 
 type TextElementNodeProps = NodeProps & {
@@ -27,10 +26,15 @@ function getFontFamilyString(fontItem: GoogleFontItem): string | null {
 }
 
 export const TextElementNode = ({ data }: TextElementNodeProps) => {
-  const { elementId, elements } = data;
-  const { textPropsState } = useTextProps({ elementId, elements });
-  logger.log("[TextElementNode] textPropsState", JSON.stringify({ elementId, textPropsState }));
-  const { baseElementState } = useBaseElement({ elements:data.elements, elementId });
+  const { elementId } = data;
+  const { textPropsState } = useTextProps({ elementId });
+  logger.log(
+    "[TextElementNode] textPropsState",
+    JSON.stringify({ elementId, textPropsState })
+  );
+  const { baseElementState } = useBaseElement({
+    elementId,
+  });
 
   const [fontFamily, setFontFamily] = React.useState<string | null>(null);
 
@@ -56,7 +60,6 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
               logger.info(`Font ${font.family} is active!`);
               // You can set a state here to update your UI
             },
-
           });
         }
       }
