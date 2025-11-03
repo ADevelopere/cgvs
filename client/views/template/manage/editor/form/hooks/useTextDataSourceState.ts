@@ -228,17 +228,19 @@ export function useTextDataSourceState(
     const pendingUpdates = pendingUpdatesRef.current;
     return () => {
       // Clear all timers
-      timers.forEach(timer => clearTimeout(timer));
+      for (const timer of timers.values()) {
+        clearTimeout(timer);
+      }
 
       // Save all pending updates
-      pendingUpdates.forEach((state, elementId) => {
+      for (const [elementId, state] of pendingUpdates.entries()) {
         mutationFn(elementId, state).catch(error => {
           logger.error("useTextDataSourceState: Failed to save on unmount", {
             elementId,
             error,
           });
         });
-      });
+      }
       timers.clear();
     };
   }, [mutationFn]);

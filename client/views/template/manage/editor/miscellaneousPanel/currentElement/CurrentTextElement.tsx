@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  CertificateElementUnion,
-  TextElement,
-} from "@/client/graphql/generated/gql/graphql";
+import { TextElement } from "@/client/graphql/generated/gql/graphql";
 import { useTextProps } from "../../form/hooks/useTextPropsState";
 import { useBaseElement } from "../../form/hooks/useBaseElementState";
 import { Stack } from "@mui/material";
@@ -10,6 +7,7 @@ import { BaseCertificateElementForm } from "../../form/element/base";
 import { TextPropsForm } from "../../form/element/textProps";
 import { useQuery } from "@apollo/client/react";
 import { fontsQueryDocument } from "@/client/views/font/hooks";
+import { DataSourceForm } from "../../form/element/text";
 
 export type CurrentTextElementProps = {
   element: TextElement;
@@ -32,13 +30,15 @@ export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
     elementId: element.base.id,
   });
 
-  
   const { baseElementState, updateBaseElementState, baseElementErrors } =
     useBaseElement({
       elementId: element.base.id,
     });
   return (
     <Stack>
+      <DataSourceForm 
+      
+      />
       <BaseCertificateElementForm
         baseProps={baseElementState}
         onFieldChange={updateBaseElementState}
