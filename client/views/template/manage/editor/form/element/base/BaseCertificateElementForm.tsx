@@ -140,7 +140,7 @@ export const BaseCertificateElementForm: FC<
             onChange={e =>
               onFieldChange({
                 key: "positionX",
-                value: parseInt(e.target.value, 10) || 0,
+                value: Number.parseInt(e.target.value, 10) || 0,
               })
             }
             error={!!errors.positionX}
@@ -161,7 +161,7 @@ export const BaseCertificateElementForm: FC<
             onChange={e =>
               onFieldChange({
                 key: "positionY",
-                value: parseInt(e.target.value, 10) || 0,
+                value: Number.parseInt(e.target.value, 10) || 0,
               })
             }
             error={!!errors.positionY}
@@ -182,7 +182,7 @@ export const BaseCertificateElementForm: FC<
             onChange={e =>
               onFieldChange({
                 key: "width",
-                value: parseInt(e.target.value, 10) || 0,
+                value: Number.parseInt(e.target.value, 10) || 0,
               })
             }
             error={!!errors.width}
@@ -203,7 +203,7 @@ export const BaseCertificateElementForm: FC<
             onChange={e =>
               onFieldChange({
                 key: "height",
-                value: parseInt(e.target.value, 10) || 0,
+                value: Number.parseInt(e.target.value, 10) || 0,
               })
             }
             error={!!errors.height}
@@ -228,24 +228,6 @@ export const BaseCertificateElementForm: FC<
                 })
               }
             >
-              {/* <MenuItem value="START">
-                {strings.baseElement.alignmentStart}
-              </MenuItem>
-              <MenuItem value="END">
-                {strings.baseElement.alignmentEnd}
-              </MenuItem>
-              <MenuItem value="TOP">
-                {strings.baseElement.alignmentTop}
-              </MenuItem>
-              <MenuItem value="BOTTOM">
-                {strings.baseElement.alignmentBottom}
-              </MenuItem>
-              <MenuItem value="CENTER">
-                {strings.baseElement.alignmentCenter}
-              </MenuItem>
-              <MenuItem value="BASELINE">
-                {strings.baseElement.alignmentBaseline}
-              </MenuItem> */}
               {alignments.map(option => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
@@ -257,25 +239,6 @@ export const BaseCertificateElementForm: FC<
             )}
           </FormControl>
         </Grid>
-
-        {/* Render Order */}
-        {/* <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField
-            fullWidth
-            type="number"
-            label={strings.baseElement.renderOrderLabel}
-            placeholder={strings.baseElement.renderOrderPlaceholder}
-            value={baseProps.renderOrder}
-            onChange={e =>
-              onFieldChange("renderOrder", parseInt(e.target.value, 10) || 0)
-            }
-            error={!!errors.renderOrder}
-            helperText={errors.renderOrder}
-            disabled={disabled}
-            required
-            slotProps={{ htmlInput: { min: 0 } }}
-          />
-        </Grid> */}
       </Grid>
     </Box>
   );

@@ -25,5 +25,14 @@
         "revealOn": "run",
         "revealWithFocus": "none",
         "clearOnRun": "none"
-    }
+    },
+
+    // sonarlint
+    "sonarlint.pathToNodeExecutable": "/home/vscode/.nvm/versions/node/v25.1.0/bin/node",
+    "sonarlint.rules": {
+    
+        "typescript:S125": {
+            "level": "off"
+        }
+    },
 }
