@@ -12,7 +12,8 @@ import {
   ValidateTextPropsFieldFn,
 } from "../element/textProps";
 import { Action } from "../types";
-import {  useTextPropsMutation_Evict } from "../../hooks";
+import { useTextPropsMutation } from "../../hooks";
+import { TextPropsContext } from "@/client/contexts/TextPropsContext";
 
 export type UseTextPropsStateParams = {
   elements?: GQL.CertificateElementUnion[];
@@ -55,14 +56,9 @@ function mapFontRefToFontRefInput(
 /**
  * Type guard to check if element has textProps
  */
-function hasTextProps(
+export function hasTextProps(
   element: GQL.CertificateElementUnion
-): element is
-  | GQL.TextElement
-  | GQL.DateElement
-  | GQL.NumberElement
-  | GQL.CountryElement
-  | GQL.GenderElement {
+): element is {textProps: GQL.TextProps, base: GQL.CertificateElementBase} {
   return (
     element.__typename === "TextElement" ||
     element.__typename === "DateElement" ||
@@ -113,7 +109,7 @@ export function useTextPropsState(
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
 
-  const { updateTextPropsMutation } = useTextPropsMutation_Evict(templateId ?? 0);
+  const { updateTextPropsMutation } = useTextPropsMutation(templateId ?? 0);
 
   // Get textPropsId from element - we need to track this per elementId
   // Store mapping of elementId -> textPropsId
@@ -171,6 +167,7 @@ export function useTextPropsState(
     validator,
     extractInitialState: extractTextPropsState,
     mutationFn,
+    stateNamespace: "textProps",
   });
 
   return {
@@ -196,8 +193,8 @@ export const useTextProps = (params: UseTextPropsParams) => {
     initTextPropsState,
     textPropsStateErrors,
   } = useTextPropsState({
-    elements: params.elements,
     templateId: params.templateId,
+    elements: params.elements,
   });
 
   // Get state or initialize if not present (only initialize once)
@@ -207,6 +204,7 @@ export const useTextProps = (params: UseTextPropsParams) => {
       initTextPropsState(params.elementId)
     );
   }, [textPropsStates, params.elementId, initTextPropsState]);
+  
   const updateTextProps = React.useCallback(
     (action: Action<GQL.TextPropsInput>) => {
       updateTextPropsStateFn(params.elementId, action);

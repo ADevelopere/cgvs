@@ -15,6 +15,7 @@ import { TemplateConfigCreateForm } from "./form/config/TemplateConfigCreateForm
 import { MiscellaneousPanel } from "./miscellaneousPanel/MiscellaneousPanel";
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/client/lib/logger";
+import { TextPropsProvider } from "@/client/contexts/TextPropsContext";
 
 function AddNodePane() {
   return (
@@ -105,43 +106,45 @@ export default function EditorTab({ template }: { template: Template }) {
   }
 
   return (
-    <EditorPaneViewController
-      firstPane={{
-        title: (
-          <Typography
-            variant="h6"
-            sx={{
-              px: 2,
-            }}
-          >
-            {strings.addNodePane}
-          </Typography>
-        ),
-        content: <AddNodePane />,
-        buttonTooltip: "Toggle Add Node Panel",
-        buttonDisabled: false,
-        showCollapseButtonInHeader: true,
-      }}
-      middlePane={
-        <CertificateReactFlowEditor template={template} elements={elements} />
-      }
-      thirdPane={{
-        title: (
-          <Typography
-            variant="h6"
-            sx={{
-              px: 2,
-            }}
-          >
-            {strings.miscellaneousPane}
-          </Typography>
-        ),
-        content: <MiscellaneousPanel config={config} elements={elements} />,
-        buttonTooltip: "Toggle Miscellaneous Panel",
-        buttonDisabled: false,
-        showCollapseButtonInHeader: true,
-      }}
-      storageKey="templateManagementEditor"
-    />
+    // <TextPropsProvider templateId={template.id} elements={elements}>
+      <EditorPaneViewController
+        firstPane={{
+          title: (
+            <Typography
+              variant="h6"
+              sx={{
+                px: 2,
+              }}
+            >
+              {strings.addNodePane}
+            </Typography>
+          ),
+          content: <AddNodePane />,
+          buttonTooltip: "Toggle Add Node Panel",
+          buttonDisabled: false,
+          showCollapseButtonInHeader: true,
+        }}
+        middlePane={
+          <CertificateReactFlowEditor template={template} elements={elements} />
+        }
+        thirdPane={{
+          title: (
+            <Typography
+              variant="h6"
+              sx={{
+                px: 2,
+              }}
+            >
+              {strings.miscellaneousPane}
+            </Typography>
+          ),
+          content: <MiscellaneousPanel config={config} elements={elements} />,
+          buttonTooltip: "Toggle Miscellaneous Panel",
+          buttonDisabled: false,
+          showCollapseButtonInHeader: true,
+        }}
+        storageKey="templateManagementEditor"
+      />
+    // </TextPropsProvider>
   );
 }

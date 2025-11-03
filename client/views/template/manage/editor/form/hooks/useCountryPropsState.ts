@@ -116,6 +116,7 @@ export function useCountryPropsState(
     validator,
     extractInitialState: extractCountryPropsState,
     mutationFn,
+    stateNamespace: "countryProps",
   });
 
   return {

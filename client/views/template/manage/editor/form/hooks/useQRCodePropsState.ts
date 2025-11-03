@@ -106,6 +106,7 @@ export function useQRCodePropsState(
     validator,
     extractInitialState: extractQRCodePropsState,
     mutationFn,
+    stateNamespace: "qrCodeProps",
   });
 
   return {

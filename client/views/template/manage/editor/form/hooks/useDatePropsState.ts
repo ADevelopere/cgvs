@@ -109,6 +109,7 @@ export function useDatePropsState(
     validator,
     extractInitialState: extractDatePropsState,
     mutationFn,
+    stateNamespace: "dateProps",
   });
 
   return {

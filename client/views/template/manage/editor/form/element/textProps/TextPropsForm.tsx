@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import { FontReferenceSelector } from "./FontReferenceSelector";
-import { ElementOverflow, Font } from "@/client/graphql/generated/gql/graphql";
+import { ElementOverflow, Font, AppLanguage } from "@/client/graphql/generated/gql/graphql";
 import {
   TextPropsFormErrors,
   UpdateTextPropsFn,
@@ -64,7 +64,7 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
         <Grid size={{ xs: 12 }}>
           <FontReferenceSelector
             fontRef={textProps.fontRef}
-            locale={language}
+            language={language as AppLanguage}
             selfHostedFonts={selfHostedFonts}
             onFontRefChange={fontRef =>
               onTextPropsChange({ key: "fontRef", value: fontRef })

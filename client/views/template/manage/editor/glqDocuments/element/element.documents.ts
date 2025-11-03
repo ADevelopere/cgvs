@@ -282,20 +282,22 @@ export const updateElementCommonPropertiesMutationDocument: TypedDocumentNode<
     $input: CertificateElementBaseUpdateInput!
   ) {
     updateElementCommonProperties(input: $input) {
-      id
-      templateId
-      alignment
-      createdAt
-      description
-      height
-      name
-      positionX
-      positionY
-      renderOrder
-      type
-      updatedAt
-      width
-      hidden
+      base {
+        id
+        templateId
+        alignment
+        createdAt
+        description
+        height
+        name
+        positionX
+        positionY
+        renderOrder
+        type
+        updatedAt
+        width
+        hidden
+      }
     }
   }
 `;

@@ -95,7 +95,7 @@ export function useImagePropsState(
   );
 
   // Use generic hook
-  const validator: ValidateImagePropsFieldFn = validateImagePropsField();
+  const validator: ValidateImagePropsFieldFn = validateImageProps();
 
   const { getState, updateFn, pushUpdate, errors } = useElementState({
     templateId,
@@ -103,6 +103,7 @@ export function useImagePropsState(
     validator,
     extractInitialState: extractImagePropsState,
     mutationFn,
+    stateNamespace: "imageProps",
   });
 
   return {

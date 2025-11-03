@@ -54,22 +54,22 @@ const handler = startServerAndCreateNextHandler<NextRequest>(server, {
  * CORS preflight handler
  * Handles OPTIONS requests for CORS
  */
-export async function OPTIONS() {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      "Access-Control-Allow-Origin":
-        process.env.NODE_ENV === "production"
-          ? process.env.ALLOWED_ORIGIN || "https://yourdomain.com"
-          : "http://localhost:3000",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS, HEAD",
-      "Access-Control-Allow-Headers":
-        "Authorization, Content-Type, Accept, X-Requested-With, X-Refresh-Token, X-Apollo-Operation-Name, Apollo-Require-Preflight, X-CSRF-Token",
-      "Access-Control-Allow-Credentials": "true",
-      "Access-Control-Max-Age": "86400",
-    },
-  });
-}
+// export async function OPTIONS() {
+//   return new Response(null, {
+//     status: 204,
+//     headers: {
+//       "Access-Control-Allow-Origin":
+//         process.env.NODE_ENV === "production"
+//           ? process.env.ALLOWED_ORIGIN || "https://yourdomain.com"
+//           : "http://localhost:3000",
+//       "Access-Control-Allow-Methods": "GET, POST, OPTIONS, HEAD",
+//       "Access-Control-Allow-Headers":
+//         "Authorization, Content-Type, Accept, X-Requested-With, X-Refresh-Token, X-Apollo-Operation-Name, Apollo-Require-Preflight, X-CSRF-Token",
+//       "Access-Control-Allow-Credentials": "true",
+//       "Access-Control-Max-Age": "86400",
+//     },
+//   });
+// }
 
 /**
  * Health check handler
