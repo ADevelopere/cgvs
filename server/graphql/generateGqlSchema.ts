@@ -17,7 +17,7 @@ fs.writeFileSync(outputPath, schemaAsString);
 
 logger.log("📜 Schema generated at", outputPath);
 
-const codegenProcess = spawn("bun", ["run", "graphql-codegen"], {
+const codegenProcess = spawn("bun", ["run", "graphql-codegen --config codegen.ts --verbose"], {
   stdio: "inherit",
   shell: true,
 });
