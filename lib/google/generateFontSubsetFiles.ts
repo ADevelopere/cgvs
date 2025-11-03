@@ -9,8 +9,8 @@ import { logger } from "../simpleLogger";
 
 // --- Configuration ---
 // Define all the paths based on the project root
-const SUBSET_DIR = path.resolve(__dirname, "lib/font/google/subset");
-const GOOGLE_FONT_DIR = path.resolve(__dirname, "lib/font/google");
+const SUBSET_DIR = path.resolve(__dirname, "lsubset");
+const GOOGLE_FONT_DIR = path.resolve(__dirname, "google");
 const TYPES_FILE_PATH = path.resolve(
   GOOGLE_FONT_DIR,
   "google-font-subset-map.type.ts"
