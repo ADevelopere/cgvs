@@ -3,7 +3,6 @@ import React from "react";
 import {
   useTextPropsState,
   UseTextPropsStateReturn,
-  UseTextPropsStateParams,
 } from "@/client/views/template/manage/editor/form/hooks/useTextPropsState";
 import { CertificateElementUnion } from "@/client/graphql/generated/gql/graphql";
 import { useBaseElementState, UseBaseElementStateReturn } from "./form/hooks";

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { useQuery } from "@apollo/client/react";
+import { useMutation, useQuery } from "@apollo/client/react";
 import {
   Box,
   Button,
@@ -18,7 +18,6 @@ import {
   Paper,
 } from "@mui/material";
 import { elementsByTemplateIdQueryDocument } from "@/client/views/template/manage/editor/glqDocuments/element/element.documents";
-import { useTextElementMutation } from "@/client/views/template/manage/editor/hooks/element/useTextElementMutation";
 import { TextElementForm } from "@/client/views/template/manage/editor/form/element/text/TextElementForm";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import {
@@ -28,6 +27,10 @@ import {
 } from "@/client/views/template/manage/editor/form/element/text";
 import { fontsQueryDocument } from "@/client/views/font/hooks/font.documents";
 import { templateVariablesByTemplateIdQueryDocument } from "@/client/views/template/manage/variables/hooks/templateVariable.documents";
+import {
+  createTextElementMutationDocument,
+  updateTextElementMutationDocument,
+} from "@/client/views/template/manage/editor/glqDocuments";
 
 const TEST_TEMPLATE_ID = 1;
 
@@ -145,10 +148,13 @@ export default function TestElementsPage() {
     }
   };
 
-  const { updateTextElementMutation, createTextElementMutation } =
-    useTextElementMutation(
-      (elementToUpdate as GQL.TextElement) || ({} as GQL.TextElement)
-    );
+  const [createTextElementMutation] = useMutation(
+    createTextElementMutationDocument
+  );
+
+  const [updateTextElementMutation] = useMutation(
+    updateTextElementMutationDocument
+  );
 
   // Handler for Update button
   const handleUpdateElementClick = (element: GQL.CertificateElementUnion) => {

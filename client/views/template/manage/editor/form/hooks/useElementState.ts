@@ -8,6 +8,8 @@ import { logger } from "@/client/lib/logger";
 // Persistent state cache at module level - survives remounts
 // Key format: "templateId:namespace:elementId"
 const persistentStateCache = new Map<string, any>();
+ 
+const updateDebounceDelayMs = 10000; // 10 seconds
 
 export type UseElementStateParams<T> = {
   templateId?: number;
@@ -86,7 +88,7 @@ export function useElementState<T>(
     const initialStates = new Map<number, T>();
     const initialElements =
       providedElements || elementsData?.elementsByTemplateId || [];
-    initialElements.forEach(element => {
+    for (const element of initialElements) {
       if (element.base?.id) {
         const elementId = element.base.id;
         // Check persistent cache first
@@ -102,7 +104,7 @@ export function useElementState<T>(
           }
         }
       }
-    });
+    }
     statesRef.current = initialStates;
     return initialStates;
   });
@@ -143,7 +145,8 @@ export function useElementState<T>(
       const cachedState = getFromPersistentCache(elementId);
       if (cachedState) {
         statesRef.current.set(elementId, cachedState);
-        setStatesMap(new Map(statesRef.current));
+        // Schedule a state update instead of calling it directly
+        Promise.resolve().then(() => setStatesMap(new Map(statesRef.current)));
         return cachedState;
       }
 
@@ -165,7 +168,8 @@ export function useElementState<T>(
       // Store in both ref and persistent cache
       statesRef.current.set(elementId, initialState);
       setInPersistentCache(elementId, initialState);
-      setStatesMap(new Map(statesRef.current));
+      // Schedule a state update instead of calling it directly
+      Promise.resolve().then(() => setStatesMap(new Map(statesRef.current)));
 
       return initialState;
     },
@@ -300,7 +304,7 @@ export function useElementState<T>(
           });
           pendingUpdatesRef.current.delete(elementId);
         }
-      }, 300);
+      }, updateDebounceDelayMs);
 
       debounceTimersRef.current.set(elementId, timer);
     },
@@ -350,10 +354,12 @@ export function useElementState<T>(
     const resetFn = resetStateFromElements;
     return () => {
       // Clear all timers
-      timers.forEach(timer => clearTimeout(timer));
+      for (const timer of timers.values()) {
+        clearTimeout(timer);
+      }
 
       // Save all pending updates
-      pendingUpdates.forEach((state, elementId) => {
+      for (const [elementId, state] of pendingUpdates.entries()) {
         mutationFnOnUnmount(elementId, state).catch(error => {
           logger.error(
             "useElementState: Failed to save on unmount, resetting to server state",
@@ -365,7 +371,7 @@ export function useElementState<T>(
           // Reset to server state on failure
           resetFn(elementId);
         });
-      });
+      }
       timers.clear();
     };
   }, [resetStateFromElements]);
