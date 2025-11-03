@@ -49,7 +49,20 @@ export function useElementState<T>(
 
   // State management
   const statesRef = React.useRef<Map<number, T>>(new Map());
-  const [statesMap, setStatesMap] = React.useState<Map<number, T>>(new Map());
+  const [statesMap, setStatesMap] = React.useState<Map<number, T>>(() => {
+    const initialStates = new Map<number, T>();
+    const initialElements = providedElements || elementsData?.elementsByTemplateId || [];
+    initialElements.forEach(element => {
+      if (element.base?.id) {
+        const initialState = extractInitialState(element);
+        if (initialState) {
+          initialStates.set(element.base.id, initialState);
+        }
+      }
+    });
+    statesRef.current = initialStates;
+    return initialStates;
+  });
   const [errorsMap, setErrorsMap] = React.useState<Map<number, FormErrors<T>>>(
     new Map()
   );
@@ -102,7 +115,7 @@ export function useElementState<T>(
       
       return initialState;
     },
-    []
+    [elementsRef, extractInitialStateRef]
   );
 
   // Get state, creating from element if missing

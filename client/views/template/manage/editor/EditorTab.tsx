@@ -14,6 +14,7 @@ import {
 import { TemplateConfigCreateForm } from "./form/config/TemplateConfigCreateForm";
 import { MiscellaneousPanel } from "./miscellaneousPanel/MiscellaneousPanel";
 import { useAppTranslation } from "@/client/locale";
+import logger from "@/client/lib/logger";
 
 function AddNodePane() {
   return (
@@ -44,7 +45,7 @@ export default function EditorTab({ template }: { template: Template }) {
     error: configError,
   } = useQuery(templateConfigByTemplateIdQueryDocument, {
     variables: { templateId: template.id },
-    fetchPolicy: "cache-first",
+    fetchPolicy: "cache-and-network",
   });
 
   const config: GQL.TemplateConfig | null | undefined = React.useMemo(() => {
@@ -64,26 +65,32 @@ export default function EditorTab({ template }: { template: Template }) {
     fetchPolicy: "cache-first",
   });
 
+  React.useEffect(() => {
+    logger.info("EditorTab: Loaded elements", {
+      elements: elementsData?.elementsByTemplateId,
+    });
+  }, [elementsData?.elementsByTemplateId]);
+
   const elements: GQL.CertificateElementUnion[] = React.useMemo(() => {
     const elems = elementsData?.elementsByTemplateId || [];
     setElementsLoading(elementsApolloLoading);
     return elems;
   }, [elementsApolloLoading, elementsData?.elementsByTemplateId]);
 
-  if (configLoading || elementsLoading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100%",
-        }}
-      >
-        <CircularProgress size={24} />
-      </div>
-    );
-  }
+  // if (configLoading || elementsLoading) {
+  //   return (
+  //     <div
+  //       style={{
+  //         display: "flex",
+  //         justifyContent: "center",
+  //         alignItems: "center",
+  //         height: "100%",
+  //       }}
+  //     >
+  //       <CircularProgress size={24} />
+  //     </div>
+  //   );
+  // }
 
   if (!configLoading && !config) {
     return <TemplateConfigCreateForm template={template} />;
@@ -115,7 +122,9 @@ export default function EditorTab({ template }: { template: Template }) {
         buttonDisabled: false,
         showCollapseButtonInHeader: true,
       }}
-      middlePane={<CertificateReactFlowEditor template={template} elements={elements} />}
+      middlePane={
+        <CertificateReactFlowEditor template={template} elements={elements} />
+      }
       thirdPane={{
         title: (
           <Typography
