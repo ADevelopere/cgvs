@@ -1,8 +1,5 @@
 import { ImageDataSourceInput } from "@/client/graphql/generated/gql/graphql";
-import {
-  DataSourceFormErrors,
-  ValidateImagePropsFieldFn,
-} from "./types";
+import { DataSourceFormErrors, ValidateImagePropsFn } from "./types";
 
 // ============================================================================
 // Data Source Validation
@@ -39,8 +36,8 @@ export const validateImageDataSource = (
  * Validate imageProps field
  * No required validations for imageProps
  */
-export const validateImagePropsField = () => {
-  const validate: ValidateImagePropsFieldFn = () => {
+export const validateImageProps = () => {
+  const validate: ValidateImagePropsFn = () => {
     // No validations required for imageProps
     return undefined;
   };

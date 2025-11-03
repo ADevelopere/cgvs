@@ -1,38 +1,53 @@
-import {
-  CountryElementCountryPropsInput,
-  CountryElementInput,
-} from "@/client/graphql/generated/gql/graphql";
+import type * as GQL from "@/client/graphql/generated/gql/graphql";
 import { BaseElementFormErrors } from "../base/types";
 import { TextPropsFormErrors } from "../textProps/types";
 import {
   ValidateFieldFn,
   UpdateStateWithElementIdFn,
   FormErrors,
+  Action,
+  UpdateStateFn,
 } from "../../types";
 
 // ============================================================================
 // CREATE STATE
 // ============================================================================
 
-export type CountryElementFormState = CountryElementInput;
+export type CountryElementFormState = GQL.CountryElementInput;
 
-export type SanitizedCountryPropsFormState = CountryElementCountryPropsInput;
+export type CountryPropsFormState = {
+  countryProps: GQL.CountryElementCountryPropsInput;
+};
 
 // ============================================================================
 // ERROR TYPES
 // ============================================================================
 
-export type CountryPropsFormErrors = FormErrors<CountryElementCountryPropsInput>;
+export type CountryPropsFieldErrors =
+  | FormErrors<GQL.CountryElementCountryPropsInput>
+  | undefined;
 
-export type CountryElementFormErrors = {
-  base: BaseElementFormErrors;
-  textProps: TextPropsFormErrors;
-  representation?: string;
+export type CountryPropsFormErrors = {
+  countryProps: CountryPropsFieldErrors;
 };
 
-export type CountryElementCountryPropsValidateFn =
-  ValidateFieldFn<CountryElementCountryPropsInput>;
-export type ValidateCountryPropsFieldFn =
-  ValidateFieldFn<CountryElementCountryPropsInput>;
+export type CountryElementFormErrors = CountryPropsFormErrors & {
+  base: BaseElementFormErrors;
+  textProps: TextPropsFormErrors;
+};
+
+// ============================================================================
+// SPECIFIC UPDATE FUNCTION TYPES
+// ============================================================================
+
+export type UpdateCountryPropsFn = UpdateStateFn<CountryPropsFormState>;
+
 export type UpdateCountryPropsWithElementIdFn =
-  UpdateStateWithElementIdFn<CountryElementCountryPropsInput>;
+  UpdateStateWithElementIdFn<CountryPropsFormState>;
+
+export type CountryPropsUpdateAction = Action<CountryPropsFormState>;
+
+export type ValidateCountryPropsFn = ValidateFieldFn<
+  CountryPropsFormState,
+  CountryPropsFormErrors
+>;

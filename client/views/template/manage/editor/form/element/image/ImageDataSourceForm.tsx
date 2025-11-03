@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import * as MUI from "@mui/material";
+import * as Mui from "@mui/material";
 import {
   Image as ImageIcon,
   CloudUpload as UploadIcon,
@@ -74,16 +74,16 @@ export const ImageDataSourceForm: React.FC<ImageDataSourceFormProps> = ({
   };
 
   return (
-    <MUI.Box>
-      <MUI.FormLabel required>
+    <Mui.Box>
+      <Mui.FormLabel required>
         {strings.imageElement.dataSourceLabel}
-      </MUI.FormLabel>
-      <MUI.Box sx={{ mt: 1 }}>
+      </Mui.FormLabel>
+      <Mui.Box sx={{ mt: 1 }}>
         {hasFile && selectedFile ? (
           // Show selected file
-          <MUI.Card variant="outlined">
-            <MUI.CardContent>
-              <MUI.Box
+          <Mui.Card variant="outlined">
+            <Mui.CardContent>
+              <Mui.Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
@@ -91,7 +91,7 @@ export const ImageDataSourceForm: React.FC<ImageDataSourceFormProps> = ({
                   gap: 2,
                 }}
               >
-                <MUI.Box
+                <Mui.Box
                   sx={{
                     display: "flex",
                     alignItems: "center",
@@ -101,43 +101,43 @@ export const ImageDataSourceForm: React.FC<ImageDataSourceFormProps> = ({
                   }}
                 >
                   <ImageIcon sx={{ fontSize: 32, color: "primary.main" }} />
-                  <MUI.Box sx={{ flex: 1, minWidth: 0 }}>
-                    <MUI.Typography variant="body2" fontWeight="medium" noWrap>
+                  <Mui.Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Mui.Typography variant="body2" fontWeight="medium" noWrap>
                       {selectedFile.name}
-                    </MUI.Typography>
-                    <MUI.Typography
+                    </Mui.Typography>
+                    <Mui.Typography
                       variant="caption"
                       color="text.secondary"
                       noWrap
                     >
                       {selectedFile.path}
-                    </MUI.Typography>
-                  </MUI.Box>
-                </MUI.Box>
-                <MUI.Box sx={{ display: "flex", gap: 1 }}>
-                  <MUI.Button
+                    </Mui.Typography>
+                  </Mui.Box>
+                </Mui.Box>
+                <Mui.Box sx={{ display: "flex", gap: 1 }}>
+                  <Mui.Button
                     variant="outlined"
                     size="small"
                     onClick={() => setIsPickerOpen(true)}
                     disabled={disabled}
                   >
                     {strings.imageElement.changeFile}
-                  </MUI.Button>
-                  <MUI.IconButton
+                  </Mui.Button>
+                  <Mui.IconButton
                     size="small"
                     onClick={handleClear}
                     disabled={disabled}
                     color="error"
                   >
                     <CloseIcon />
-                  </MUI.IconButton>
-                </MUI.Box>
-              </MUI.Box>
-            </MUI.CardContent>
-          </MUI.Card>
+                  </Mui.IconButton>
+                </Mui.Box>
+              </Mui.Box>
+            </Mui.CardContent>
+          </Mui.Card>
         ) : (
           // Show file picker button
-          <MUI.Button
+          <Mui.Button
             variant="outlined"
             startIcon={<UploadIcon />}
             onClick={() => setIsPickerOpen(true)}
@@ -150,13 +150,13 @@ export const ImageDataSourceForm: React.FC<ImageDataSourceFormProps> = ({
             }}
           >
             {strings.imageElement.selectImageFile}
-          </MUI.Button>
+          </Mui.Button>
         )}
 
         {errors.storageFile && (
-          <MUI.FormHelperText error>{errors.storageFile}</MUI.FormHelperText>
+          <Mui.FormHelperText error>{errors.storageFile}</Mui.FormHelperText>
         )}
-      </MUI.Box>
+      </Mui.Box>
 
       {/* File Picker Dialog */}
       <FilePickerDialog
@@ -166,6 +166,6 @@ export const ImageDataSourceForm: React.FC<ImageDataSourceFormProps> = ({
         allowedFileTypes={["IMAGE" as FileType]}
         title={strings.imageElement.selectImageFile}
       />
-    </MUI.Box>
+    </Mui.Box>
   );
 };

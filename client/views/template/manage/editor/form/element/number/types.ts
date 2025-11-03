@@ -28,7 +28,6 @@ export type SanitizedNumberPropsFormState = GQL.NumberElementSpecPropsInput;
 
 export type NumberDataSourceFieldErrors =
   | FormErrors<GQL.NumberDataSourceInput>
-  | undefined;
 
 export type NumberDataSourceFormErrors = {
   dataSource: NumberDataSourceFieldErrors;

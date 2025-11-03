@@ -31,14 +31,12 @@ export type DatePropsFormState = {
 
 export type DateDataSourceFieldErrors =
   | FormErrors<GQL.DateDataSourceInput>
-  | undefined;
 export type DateDataSourceFormErrors = {
   dataSource: DateDataSourceFieldErrors;
 };
 
 export type DatePropsFieldErrors =
   | FormErrors<GQL.DateElementSpecPropsInput>
-  | undefined;
 
 export type DatePropsFormErrors = {
   dateProps: DatePropsFieldErrors;

@@ -86,7 +86,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
           <TextStaticSourceInput
             value={dataSource.static?.value || ""}
             onChange={value => updateDataSource({ static: { value } })}
-            error={errors?.static}
+            error={errors.static}
             disabled={disabled}
           />
         );
@@ -98,7 +98,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
               dataSource.studentField?.field || StudentTextField.StudentName
             }
             onChange={field => updateDataSource({ studentField: { field } })}
-            error={errors?.studentField}
+            error={errors.studentField}
             disabled={disabled}
           />
         );
@@ -113,7 +113,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
             onChange={field =>
               updateDataSource({ certificateField: { field } })
             }
-            error={errors?.certificateField}
+            error={errors.certificateField}
             disabled={disabled}
           />
         );
@@ -126,7 +126,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
             onChange={variableId =>
               updateDataSource({ templateTextVariable: { variableId } })
             }
-            error={errors?.templateTextVariable}
+            error={errors.templateTextVariable}
             disabled={disabled}
           />
         );
@@ -141,7 +141,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
                 templateSelectVariable: { variableId },
               })
             }
-            error={errors?.templateSelectVariable}
+            error={errors.templateSelectVariable}
             disabled={disabled}
           />
         );

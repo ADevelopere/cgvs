@@ -8,11 +8,11 @@ import { validateCountryElementCountryProps } from "../element/country/countryVa
 import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale";
 import {
-  SanitizedCountryPropsFormState,
+  CountryPropsFormState,
   CountryPropsFormErrors,
   UpdateCountryPropsWithElementIdFn,
-  ValidateCountryPropsFieldFn,
 } from "../element/country";
+import { useCertificateElementContext } from "../../CertificateElementContext";
 
 export type UseCountryPropsStateParams = {
   templateId?: number;
@@ -20,10 +20,11 @@ export type UseCountryPropsStateParams = {
 };
 
 export type UseCountryPropsStateReturn = {
-  getState: (elementId: number) => SanitizedCountryPropsFormState | null;
-  updateFn: UpdateCountryPropsWithElementIdFn;
-  pushUpdate: (elementId: number) => Promise<void>;
-  errors: Map<number, CountryPropsFormErrors>;
+  countryPropsStates: Map<number, CountryPropsFormState>;
+  updateCountryPropsStateFn: UpdateCountryPropsWithElementIdFn;
+  pushCountryPropsStateUpdate: (elementId: number) => Promise<void>;
+  initCountryPropsState: (elementId: number) => CountryPropsFormState;
+  countryPropsStateErrors: Map<number, CountryPropsFormErrors>;
 };
 
 /**
@@ -31,13 +32,16 @@ export type UseCountryPropsStateReturn = {
  */
 function extractCountryPropsState(
   element: GQL.CertificateElementUnion
-): SanitizedCountryPropsFormState | null {
+): CountryPropsFormState | null {
   if (element.__typename !== "CountryElement" || !element.countryProps) {
     return null;
   }
 
   return {
-    representation: element.countryProps.representation as GQL.CountryRepresentation,
+    countryProps: {
+      representation:
+        element.countryProps.representation as GQL.CountryRepresentation,
+    },
   };
 }
 
@@ -46,12 +50,12 @@ function extractCountryPropsState(
  */
 function toUpdateInput(
   elementId: number,
-  state: SanitizedCountryPropsFormState
+  state: CountryPropsFormState
 ): GQL.CountryElementSpecPropsStandaloneUpdateInput {
   return {
     elementId: elementId,
     countryProps: {
-      representation: state.representation,
+      representation: state.countryProps.representation,
     },
   };
 }
@@ -69,7 +73,7 @@ export function useCountryPropsState(
   );
 
   // Get validator with translations
-  const validator: ValidateCountryPropsFieldFn = React.useMemo(
+  const validator = React.useMemo(
     () =>
       validateCountryElementCountryProps({
         representationRequired:
@@ -84,7 +88,7 @@ export function useCountryPropsState(
 
   // Mutation function
   const mutationFn = React.useCallback(
-    async (elementId: number, state: SanitizedCountryPropsFormState) => {
+    async (elementId: number, state: CountryPropsFormState) => {
       try {
         const updateInput = toUpdateInput(elementId, state);
         await updateCountryElementSpecPropsMutation({
@@ -110,7 +114,7 @@ export function useCountryPropsState(
   );
 
   // Use generic hook
-  const { getState, updateFn, pushUpdate, errors } = useElementState({
+  const { states, updateFn, pushUpdate, initState, errors } = useElementState({
     templateId,
     elements,
     validator,
@@ -120,10 +124,64 @@ export function useCountryPropsState(
   });
 
   return {
-    getState,
-    updateFn,
-    pushUpdate,
-    errors,
+    countryPropsStates: states,
+    updateCountryPropsStateFn: updateFn,
+    pushCountryPropsStateUpdate: pushUpdate,
+    initCountryPropsState: initState,
+    countryPropsStateErrors: errors,
   };
 }
+
+export type UseCountryPropsParams = {
+  elementId: number;
+};
+
+export const useCountryProps = (params: UseCountryPropsParams) => {
+  const {
+    countryProps: {
+      countryPropsStates,
+      updateCountryPropsStateFn,
+      pushCountryPropsStateUpdate,
+      initCountryPropsState,
+      countryPropsStateErrors,
+    },
+  } = useCertificateElementContext();
+
+  // Get state or initialize if not present (only initialize once)
+  const { countryProps } = React.useMemo(() => {
+    return (
+      countryPropsStates.get(params.elementId) ??
+      initCountryPropsState(params.elementId)
+    );
+  }, [countryPropsStates, params.elementId, initCountryPropsState]);
+
+  const updateCountryProps = React.useCallback(
+    (countryProps: GQL.CountryElementCountryPropsInput) => {
+      updateCountryPropsStateFn(params.elementId, {
+        key: "countryProps",
+        value: countryProps,
+      });
+    },
+    [params.elementId, updateCountryPropsStateFn]
+  );
+
+  const pushCountryPropsUpdate = React.useCallback(async () => {
+    await pushCountryPropsStateUpdate(params.elementId);
+  }, [params.elementId, pushCountryPropsStateUpdate]);
+
+  const { countryProps: errors } = React.useMemo(() => {
+    return (
+      countryPropsStateErrors.get(params.elementId) || {
+        countryProps: {},
+      }
+    );
+  }, [countryPropsStateErrors, params.elementId]);
+
+  return {
+    countryPropsState: countryProps,
+    updateCountryProps,
+    pushCountryPropsUpdate,
+    countryPropsErrors: errors,
+  };
+};
 

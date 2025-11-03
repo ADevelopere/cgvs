@@ -1,5 +1,5 @@
 import { CountryRepresentation } from "@/client/graphql/generated/gql/graphql";
-import { CountryElementCountryPropsValidateFn } from "./types";
+import { CountryPropsFormErrors, ValidateCountryPropsFn } from "./types";
 
 /**
  * Validates the representation field for COUNTRY elements
@@ -31,12 +31,25 @@ export const validateRepresentation = (
 export const validateCountryElementCountryProps = (strings: {
   representationRequired: string;
   representationInvalid: string;
-}) => {
-  const validate: CountryElementCountryPropsValidateFn = ({ key, value }) => {
-    switch (key) {
-      case "representation":
-        return validateRepresentation(value as CountryRepresentation, strings);
+}): ValidateCountryPropsFn => {
+  const validate: ValidateCountryPropsFn = ({ value: countryProps }) => {
+    const errors: CountryPropsFormErrors = { countryProps: {} };
+
+    const representationError = validateRepresentation(
+      countryProps.representation,
+      strings
+    );
+
+    if (representationError) {
+      if (errors.countryProps)
+        errors.countryProps.representation = representationError;
     }
+
+    if (Object.keys(errors.countryProps ?? {}).length === 0) {
+      return undefined;
+    }
+
+    return errors;
   };
   return validate;
 };

@@ -51,7 +51,7 @@ export const CountryElementForm: FC<CountryElementFormProps> = ({
           <CountryRepresentationSelector
             value={state.countryProps.representation}
             onChange={updateRepresentation}
-            error={errors.representation}
+            error={errors.countryProps?.representation}
             disabled={isSubmitting}
           />
         </Paper>

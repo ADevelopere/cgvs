@@ -29,7 +29,7 @@ const defaultState: CountryElementFormState = {
     positionY: 100,
     width: 200,
     height: 50,
-    alignment: ElementAlignment.Baseline,
+    alignment: ElementAlignment.Center,
     renderOrder: 1,
     templateId: 1,
   },
@@ -47,7 +47,7 @@ const defaultState: CountryElementFormState = {
 const defaultErrors: CountryElementFormErrors = {
   base: {},
   textProps: {},
-  representation: undefined,
+  countryProps: {},
 };
 
 export const Default: Story = {
@@ -96,7 +96,7 @@ export const WithErrors: Story = {
         positionY: 0,
         width: 0,
         height: 0,
-        alignment: ElementAlignment.Baseline,
+        alignment: ElementAlignment.TopCenter,
         renderOrder: 0,
         templateId: 1,
       },
@@ -121,7 +121,9 @@ export const WithErrors: Story = {
         color: "Color is required",
         fontSize: "Font size must be positive",
       },
-      representation: "Representation is required",
+      countryProps: {
+        representation: "Representation is required",
+      },
     },
     updateBaseElement: ({ key, value }) =>
       logger.log("Base element updated:", key, value),
