@@ -26,12 +26,9 @@ import { getTemplateImageUrl } from "../../utils/template.utils";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { TextElementNodeData } from "./nodeRendere/TextElementNode";
 import { useEditorStore } from "./useEditorStore";
+import { useCertificateElementContext } from "./CertificateElementContext";
 
 const panOnDrag = [1, 2];
-
-// A4 landscape dimensions in pixels (297mm × 210mm at 96 DPI)
-const A4_WIDTH = 1123; // 297mm * 96px/25.4mm
-const A4_HEIGHT = 794; // 210mm * 96px/25.4mm
 
 export type ElementNodeData = {
   id: number;
@@ -40,22 +37,52 @@ export type ElementNodeData = {
   positionY: number;
   width: number;
   height: number;
-}
-
-export type CertificateReactFlowEditorProps = {
-  template: GQL.Template;
-  elements: ElementNodeData[];
 };
 
+export type ContainerNodeData = {
+  width: number;
+  height: number;
+};
 
-const Flow: React.FC<CertificateReactFlowEditorProps> = ({
-  template,
-  elements,
-}) => {
+type FlowEditorProps = {
+  template: GQL.Template;
+  elements: ElementNodeData[];
+  container: ContainerNodeData;
+};
+
+const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
   const [nodes, setNodes] = useNodesState<Node>([]);
+  const [elementNodes, setElementNodes] = useState<Node[]>([]);
+  const [containerNode, setContainerNode] = useState<Node>({
+    id: "container-node",
+    type: "container",
+    position: { x: 0, y: 0 },
+    data: {
+      ...container
+    },
+    width: container.width,
+    height: container.height,
+    draggable: false,
+    selectable: false,
+  });
   const { theme } = useAppTheme();
   const { x, y, zoom } = useViewport();
   const { setCurrentElementId } = useEditorStore();
+
+  React.useEffect(() => {
+    if (container) {
+      const containerNode: Node = {
+        id: "container-node",
+        type: "container",
+        position: { x: 0, y: 0 },
+        data: {},
+        draggable: false,
+        selectable: false,
+      };
+      setContainerNode(containerNode);
+      setNodes([containerNode, ...elementNodes]);
+    }
+  }, [container, setNodes]);
 
   React.useEffect(() => {
     const nodes: Node[] = elements
@@ -78,7 +105,8 @@ const Flow: React.FC<CertificateReactFlowEditorProps> = ({
         }
       })
       .filter(node => node !== undefined);
-    setNodes(nodes);
+    setElementNodes(nodes);
+    setNodes([containerNode, ...nodes]);
   }, [elements, setNodes]);
 
   const [helperLineHorizontal, setHelperLineHorizontal] = useState<
@@ -92,27 +120,6 @@ const Flow: React.FC<CertificateReactFlowEditorProps> = ({
     logger.log("Viewport changed:", { x, y, zoom });
   }, [x, y, zoom]);
 
-  const [dimensions, setDimensions] = useState({
-    width: A4_WIDTH,
-    height: A4_HEIGHT,
-  });
-
-  useEffect(() => {
-    if (template?.imageUrl) {
-      const img = new Image();
-      img.src = template.imageUrl;
-      img.onload = () => {
-        setDimensions({
-          width: img.width,
-          height: img.height,
-        });
-      };
-    }
-  }, [template?.imageUrl]);
-
-  useEffect(() => {
-    logger.log("Dimensions changed:", dimensions);
-  }, [dimensions]);
 
   const customApplyNodeChanges = useCallback(
     (changes: NodeChange[], nodes: Node[]): Node[] => {
@@ -150,8 +157,8 @@ const Flow: React.FC<CertificateReactFlowEditorProps> = ({
           const nodeId = change.id;
           const node = nodes.find(n => n.id === nodeId);
 
-          const maxX = dimensions.width - (node?.measured?.width ?? 0);
-          const maxY = dimensions.height - (node?.measured?.height ?? 0);
+          const maxX = container.width - (node?.measured?.width ?? 0);
+          const maxY = container.height - (node?.measured?.height ?? 0);
 
           if (change.position.x < 0) {
             change.position.x = 0;
@@ -175,7 +182,7 @@ const Flow: React.FC<CertificateReactFlowEditorProps> = ({
 
       return applyNodeChanges(changes, nodes);
     },
-    [dimensions.width, dimensions.height, setCurrentElementId]
+    [container.width, container.height, setCurrentElementId]
   );
 
   const onNodesChange: OnNodesChange = useCallback(
@@ -273,10 +280,26 @@ function FlowDebug() {
   );
 }
 
+export type CertificateReactFlowEditorProps = {
+  template: GQL.Template;
+  elements: ElementNodeData[];
+};
+
 const CertificateReactFlowEditor: React.FC<CertificateReactFlowEditorProps> = ({
   template,
   elements,
 }) => {
+  // state used in config settings form
+  const {
+    config: { state: configUpdateState },
+  } = useCertificateElementContext();
+
+  const containerData: ContainerNodeData = React.useMemo(() => {
+    return {
+      width: configUpdateState.width,
+      height: configUpdateState.height,
+    };
+  }, [configUpdateState.width, configUpdateState.height]);
   return (
     <Box
       sx={{
@@ -290,7 +313,11 @@ const CertificateReactFlowEditor: React.FC<CertificateReactFlowEditorProps> = ({
       }}
     >
       <ReactFlowProvider>
-        <Flow template={template} elements={elements} />
+        <Flow
+          template={template}
+          elements={elements}
+          container={containerData}
+        />
       </ReactFlowProvider>
     </Box>
   );

@@ -21,7 +21,7 @@ import {
 import BasicInfoTab from "./BasicInfoTab";
 import TemplateVariableManagement from "./variables/TemplateVariableManagement";
 import RecipientGroupTab from "./recipientGroup/RecipientGroupTab";
-import EditorTab from "./editor/EditorTab";
+import { EditorTab } from "./editor/EditorTab";
 import { ManagementTabList } from "./ManagementTabList";
 import { TemplateManagementHeader } from "./components/TemplateManagementHeader";
 import { TemplateNotFoundError } from "./components/TemplateNotFoundError";
@@ -85,7 +85,7 @@ export const TemplateManagementPageContent: React.FC = () => {
     loading: apolloLoading,
     error,
   } = useQuery(templateQueryDocument, {
-    variables: { id: id ? parseInt(id, 10) : 0 },
+    variables: { id: id ? Number.parseInt(id, 10) : 0 },
     skip: !id,
     fetchPolicy: "cache-first",
   });

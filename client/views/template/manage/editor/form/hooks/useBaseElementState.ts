@@ -35,7 +35,7 @@ export type UseBaseElementStateReturn = {
 function extractBaseState(
   element: GQL.CertificateElementUnion
 ): SanitizedBaseElementFormState | null {
-  if (!element.base || !element.base.templateId) {
+  if (!element.base?.templateId) {
     return null;
   }
 

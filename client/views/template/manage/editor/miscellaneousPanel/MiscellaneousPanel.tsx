@@ -12,12 +12,10 @@ import { ElementsTab } from "./elements/ElementsTab";
 import { CertificateElementCurrentItemSettings } from "./currentElement/CurrentElement";
 
 export type MiscellaneousPanelProps = {
-  config: GQL.TemplateConfig;
   elements: GQL.CertificateElementUnion[];
 };
 
 export const MiscellaneousPanel: React.FC<MiscellaneousPanelProps> = ({
-  config,
   elements,
 }) => {
   const {
@@ -102,7 +100,7 @@ export const MiscellaneousPanel: React.FC<MiscellaneousPanelProps> = ({
           value="config"
           sx={{ flexGrow: 1, p: 1, width: "100%", height: "100%" }}
         >
-          <TemplateConfigAutoUpdateForm config={config} />
+          <TemplateConfigAutoUpdateForm />
         </TabPanel>
         <TabPanel value="elements" sx={{ flexGrow: 1, p: 1 }}>
           <ElementsTab elements={elements} />
