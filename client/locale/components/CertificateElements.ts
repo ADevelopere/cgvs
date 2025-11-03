@@ -138,12 +138,18 @@ export type BaseElementTranslations = {
   // Alignment
   alignmentLabel: string;
   alignmentRequired: string;
-  alignmentStart: string;
-  alignmentEnd: string;
-  alignmentTop: string;
-  alignmentBottom: string;
-  alignmentCenter: string;
-  alignmentBaseline: string;
+  alignmentTopStart: string;
+  alignmentTopCenter: string;
+  alignmentTopEnd: string;
+  alignmentCenterStart: string;
+  alignmentCenter: string; // For Center-Center
+  alignmentCenterEnd: string;
+  alignmentBottomStart: string;
+  alignmentBottomCenter: string;
+  alignmentBottomEnd: string;
+  alignmentBaselineStart: string;
+  alignmentBaselineCenter: string;
+  alignmentBaselineEnd: string;
 
   // Render order
   renderOrderLabel: string;

@@ -216,12 +216,18 @@ export const enCertificateElements: CertificateElementsTranslations = {
     // Alignment
     alignmentLabel: "Alignment",
     alignmentRequired: "Alignment is required",
-    alignmentStart: "Start",
-    alignmentEnd: "End",
-    alignmentTop: "Top",
-    alignmentBottom: "Bottom",
+    alignmentTopStart: "Top Start",
+    alignmentTopCenter: "Top Center",
+    alignmentTopEnd: "Top End",
+    alignmentCenterStart: "Center Start",
     alignmentCenter: "Center",
-    alignmentBaseline: "Baseline",
+    alignmentCenterEnd: "Center End",
+    alignmentBottomStart: "Bottom Start",
+    alignmentBottomCenter: "Bottom Center",
+    alignmentBottomEnd: "Bottom End",
+    alignmentBaselineStart: "Baseline Start",
+    alignmentBaselineCenter: "Baseline Center",
+    alignmentBaselineEnd: "Baseline End",
 
     // Render order
     renderOrderLabel: "Render Order",
