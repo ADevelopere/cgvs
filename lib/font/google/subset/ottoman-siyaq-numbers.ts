@@ -3,23 +3,23 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Serif Ottoman Siyaq",
-    "variants": [
+    family: "Noto Serif Ottoman Siyaq",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "ottoman-siyaq-numbers"
     ],
-    "version": "v2",
-    "lastModified": "2025-05-30",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notoserifottomansiyaq/v2/fC1yPZ9IYnzRhTrrc4s8cSvYI0eozzaFOQ01qoHLJrgA00kAdA.ttf"
+    version: "v2",
+    lastModified: "2025-05-30",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notoserifottomansiyaq/v2/fC1yPZ9IYnzRhTrrc4s8cSvYI0eozzaFOQ01qoHLJrgA00kAdA.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notoserifottomansiyaq/v2/fC1yPZ9IYnzRhTrrc4s8cSvYI0eozzaFOQ01qoH7J7IE.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notoserifottomansiyaq/v2/fC1yPZ9IYnzRhTrrc4s8cSvYI0eozzaFOQ01qoH7J7IE.ttf"
   }
 ];
 

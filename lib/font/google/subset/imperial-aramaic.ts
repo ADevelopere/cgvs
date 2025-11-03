@@ -3,23 +3,23 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Imperial Aramaic",
-    "variants": [
+    family: "Noto Sans Imperial Aramaic",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "imperial-aramaic",
       "latin",
       "latin-ext"
     ],
-    "version": "v18",
-    "lastModified": "2025-09-05",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosansimperialaramaic/v18/a8IMNpjwKmHXpgXbMIsbTc_kvks91LlLetBr5itQrtdml3YfPNno.ttf"
+    version: "v18",
+    lastModified: "2025-09-05",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosansimperialaramaic/v18/a8IMNpjwKmHXpgXbMIsbTc_kvks91LlLetBr5itQrtdml3YfPNno.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansimperialaramaic/v18/a8IMNpjwKmHXpgXbMIsbTc_kvks91LlLetBr5itQrudnnXI.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansimperialaramaic/v18/a8IMNpjwKmHXpgXbMIsbTc_kvks91LlLetBr5itQrudnnXI.ttf"
   }
 ];
 

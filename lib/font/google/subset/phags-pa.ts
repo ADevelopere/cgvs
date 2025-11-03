@@ -3,25 +3,25 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans PhagsPa",
-    "variants": [
+    family: "Noto Sans PhagsPa",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "math",
       "phags-pa",
       "symbols"
     ],
-    "version": "v24",
-    "lastModified": "2025-09-10",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosansphagspa/v24/XLY8IYr5bJNDGYxPGjyYbaEjwQR-LFlsYMYHGGeT.ttf"
+    version: "v24",
+    lastModified: "2025-09-10",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosansphagspa/v24/XLY8IYr5bJNDGYxPGjyYbaEjwQR-LFlsYMYHGGeT.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansphagspa/v24/XLY8IYr5bJNDGYxPGjyYbaEjwQR-LGltasI.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansphagspa/v24/XLY8IYr5bJNDGYxPGjyYbaEjwQR-LGltasI.ttf"
   }
 ];
 

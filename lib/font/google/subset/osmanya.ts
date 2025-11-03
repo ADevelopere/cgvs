@@ -3,23 +3,23 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Osmanya",
-    "variants": [
+    family: "Noto Sans Osmanya",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "osmanya"
     ],
-    "version": "v19",
-    "lastModified": "2025-09-11",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosansosmanya/v19/8vIS7xs32H97qzQKnzfeWzUyUpOJmz6kR47NCV5Z.ttf"
+    version: "v19",
+    lastModified: "2025-09-11",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosansosmanya/v19/8vIS7xs32H97qzQKnzfeWzUyUpOJmz6kR47NCV5Z.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansosmanya/v19/8vIS7xs32H97qzQKnzfeWzUyUpOJmw6lTYo.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansosmanya/v19/8vIS7xs32H97qzQKnzfeWzUyUpOJmw6lTYo.ttf"
   }
 ];
 

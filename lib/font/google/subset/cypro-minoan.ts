@@ -3,23 +3,23 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Cypro Minoan",
-    "variants": [
+    family: "Noto Sans Cypro Minoan",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "cypro-minoan",
       "latin",
       "latin-ext"
     ],
-    "version": "v1",
-    "lastModified": "2025-05-30",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosanscyprominoan/v1/2Eb2L_dtDUlkNmPHB_UVtEzp3ZlPGqZ_4nAGq9eSf8_eQSE.ttf"
+    version: "v1",
+    lastModified: "2025-05-30",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosanscyprominoan/v1/2Eb2L_dtDUlkNmPHB_UVtEzp3ZlPGqZ_4nAGq9eSf8_eQSE.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanscyprominoan/v1/2Eb2L_dtDUlkNmPHB_UVtEzp3ZlPGqZ_4nAGm9aYew.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanscyprominoan/v1/2Eb2L_dtDUlkNmPHB_UVtEzp3ZlPGqZ_4nAGm9aYew.ttf"
   }
 ];
 

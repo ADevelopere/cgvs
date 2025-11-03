@@ -3,23 +3,23 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Mro",
-    "variants": [
+    family: "Noto Sans Mro",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "mro"
     ],
-    "version": "v19",
-    "lastModified": "2025-09-10",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosansmro/v19/qWcsB6--pZv9TqnUQMhe9b39WDzRtjkho4M.ttf"
+    version: "v19",
+    lastModified: "2025-09-10",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosansmro/v19/qWcsB6--pZv9TqnUQMhe9b39WDzRtjkho4M.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansmro/v19/qWcsB6--pZv9TqnUQMhe9b39aD3bsg.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansmro/v19/qWcsB6--pZv9TqnUQMhe9b39aD3bsg.ttf"
   }
 ];
 

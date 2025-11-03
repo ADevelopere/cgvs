@@ -3,29 +3,29 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Nag Mundari",
-    "variants": [
+    family: "Noto Sans Nag Mundari",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "nag-mundari"
     ],
-    "version": "v4",
-    "lastModified": "2025-09-08",
-    "files": {
+    version: "v4",
+    lastModified: "2025-09-08",
+    files: {
       "500": "https://fonts.gstatic.com/s/notosansnagmundari/v4/3qTAoi2hnSyU8TNFIdhZTyod3g5lBnKlQFk2kS9fr9Eq09RHRyqrbUGA0whP19M.ttf",
       "600": "https://fonts.gstatic.com/s/notosansnagmundari/v4/3qTAoi2hnSyU8TNFIdhZTyod3g5lBnKlQFk2kS9fr9Eq09RHR8asbUGA0whP19M.ttf",
       "700": "https://fonts.gstatic.com/s/notosansnagmundari/v4/3qTAoi2hnSyU8TNFIdhZTyod3g5lBnKlQFk2kS9fr9Eq09RHR_-sbUGA0whP19M.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosansnagmundari/v4/3qTAoi2hnSyU8TNFIdhZTyod3g5lBnKlQFk2kS9fr9Eq09RHRxirbUGA0whP19M.ttf"
+      regular: "https://fonts.gstatic.com/s/notosansnagmundari/v4/3qTAoi2hnSyU8TNFIdhZTyod3g5lBnKlQFk2kS9fr9Eq09RHRxirbUGA0whP19M.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansnagmundari/v4/3qTAoi2hnSyU8TNFIdhZTyod3g5lBnKlQFk2kS9fr9Eq09RHRxirXUCK1w.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansnagmundari/v4/3qTAoi2hnSyU8TNFIdhZTyod3g5lBnKlQFk2kS9fr9Eq09RHRxirXUCK1w.ttf"
   }
 ];
 

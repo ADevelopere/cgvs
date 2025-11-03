@@ -3,8 +3,8 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Lao",
-    "variants": [
+    family: "Noto Sans Lao",
+    variants: [
       "100",
       "200",
       "300",
@@ -15,14 +15,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "lao",
       "latin",
       "latin-ext"
     ],
-    "version": "v33",
-    "lastModified": "2025-09-02",
-    "files": {
+    version: "v33",
+    lastModified: "2025-09-02",
+    files: {
       "100": "https://fonts.gstatic.com/s/notosanslao/v33/bx6lNx2Ol_ixgdYWLm9BwxM3NW6BOkuf763Clj73CiQ_J1Djx9pidOt4ccfdf5MK3riB2w.ttf",
       "200": "https://fonts.gstatic.com/s/notosanslao/v33/bx6lNx2Ol_ixgdYWLm9BwxM3NW6BOkuf763Clj73CiQ_J1Djx9pidOt48cbdf5MK3riB2w.ttf",
       "300": "https://fonts.gstatic.com/s/notosanslao/v33/bx6lNx2Ol_ixgdYWLm9BwxM3NW6BOkuf763Clj73CiQ_J1Djx9pidOt4L8bdf5MK3riB2w.ttf",
@@ -31,15 +31,15 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notosanslao/v33/bx6lNx2Ol_ixgdYWLm9BwxM3NW6BOkuf763Clj73CiQ_J1Djx9pidOt4lsHdf5MK3riB2w.ttf",
       "800": "https://fonts.gstatic.com/s/notosanslao/v33/bx6lNx2Ol_ixgdYWLm9BwxM3NW6BOkuf763Clj73CiQ_J1Djx9pidOt48cHdf5MK3riB2w.ttf",
       "900": "https://fonts.gstatic.com/s/notosanslao/v33/bx6lNx2Ol_ixgdYWLm9BwxM3NW6BOkuf763Clj73CiQ_J1Djx9pidOt42MHdf5MK3riB2w.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosanslao/v33/bx6lNx2Ol_ixgdYWLm9BwxM3NW6BOkuf763Clj73CiQ_J1Djx9pidOt4ccbdf5MK3riB2w.ttf"
+      regular: "https://fonts.gstatic.com/s/notosanslao/v33/bx6lNx2Ol_ixgdYWLm9BwxM3NW6BOkuf763Clj73CiQ_J1Djx9pidOt4ccbdf5MK3riB2w.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanslao/v33/bx6lNx2Ol_ixgdYWLm9BwxM3NW6BOkuf763Clj73CiQ_J1Djx9pidOt4ccbtfpkO.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanslao/v33/bx6lNx2Ol_ixgdYWLm9BwxM3NW6BOkuf763Clj73CiQ_J1Djx9pidOt4ccbtfpkO.ttf"
   },
   {
-    "family": "Noto Sans Lao Looped",
-    "variants": [
+    family: "Noto Sans Lao Looped",
+    variants: [
       "100",
       "200",
       "300",
@@ -50,14 +50,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "lao",
       "latin",
       "latin-ext"
     ],
-    "version": "v10",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v10",
+    lastModified: "2025-09-16",
+    files: {
       "100": "https://fonts.gstatic.com/s/notosanslaolooped/v10/a8IgNpbwKmHXpgXbMIsbSMP7-3U72qUOX5gBg6LRXExhqHIX9YPTpvqkW4UthhjomPr2M-Zw5V_T71k.ttf",
       "200": "https://fonts.gstatic.com/s/notosanslaolooped/v10/a8IgNpbwKmHXpgXbMIsbSMP7-3U72qUOX5gBg6LRXExhqHIX9YPTpvqkW4UthhjomHr3M-Zw5V_T71k.ttf",
       "300": "https://fonts.gstatic.com/s/notosanslaolooped/v10/a8IgNpbwKmHXpgXbMIsbSMP7-3U72qUOX5gBg6LRXExhqHIX9YPTpvqkW4UthhjomKT3M-Zw5V_T71k.ttf",
@@ -66,15 +66,15 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notosanslaolooped/v10/a8IgNpbwKmHXpgXbMIsbSMP7-3U72qUOX5gBg6LRXExhqHIX9YPTpvqkW4UthhjomB3wM-Zw5V_T71k.ttf",
       "800": "https://fonts.gstatic.com/s/notosanslaolooped/v10/a8IgNpbwKmHXpgXbMIsbSMP7-3U72qUOX5gBg6LRXExhqHIX9YPTpvqkW4UthhjomHrwM-Zw5V_T71k.ttf",
       "900": "https://fonts.gstatic.com/s/notosanslaolooped/v10/a8IgNpbwKmHXpgXbMIsbSMP7-3U72qUOX5gBg6LRXExhqHIX9YPTpvqkW4UthhjomFPwM-Zw5V_T71k.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosanslaolooped/v10/a8IgNpbwKmHXpgXbMIsbSMP7-3U72qUOX5gBg6LRXExhqHIX9YPTpvqkW4UthhjomPr3M-Zw5V_T71k.ttf"
+      regular: "https://fonts.gstatic.com/s/notosanslaolooped/v10/a8IgNpbwKmHXpgXbMIsbSMP7-3U72qUOX5gBg6LRXExhqHIX9YPTpvqkW4UthhjomPr3M-Zw5V_T71k.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanslaolooped/v10/a8IgNpbwKmHXpgXbMIsbSMP7-3U72qUOX5gBg6LRXExhqHIX9YPTpvqkW4UthhjomPr3A-d64Q.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanslaolooped/v10/a8IgNpbwKmHXpgXbMIsbSMP7-3U72qUOX5gBg6LRXExhqHIX9YPTpvqkW4UthhjomPr3A-d64Q.ttf"
   },
   {
-    "family": "Noto Serif Lao",
-    "variants": [
+    family: "Noto Serif Lao",
+    variants: [
       "100",
       "200",
       "300",
@@ -85,14 +85,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "lao",
       "latin",
       "latin-ext"
     ],
-    "version": "v29",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v29",
+    lastModified: "2025-09-16",
+    files: {
       "100": "https://fonts.gstatic.com/s/notoseriflao/v29/3y9C6bYwcCjmsU8JEzCMxEwQfEBLk3f0rlSqCdaM_LlSNZ59oNw0BWH8VeMLrvOjlmyhHHQ.ttf",
       "200": "https://fonts.gstatic.com/s/notoseriflao/v29/3y9C6bYwcCjmsU8JEzCMxEwQfEBLk3f0rlSqCdaM_LlSNZ59oNw0BWH8VWMKrvOjlmyhHHQ.ttf",
       "300": "https://fonts.gstatic.com/s/notoseriflao/v29/3y9C6bYwcCjmsU8JEzCMxEwQfEBLk3f0rlSqCdaM_LlSNZ59oNw0BWH8Vb0KrvOjlmyhHHQ.ttf",
@@ -101,30 +101,30 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notoseriflao/v29/3y9C6bYwcCjmsU8JEzCMxEwQfEBLk3f0rlSqCdaM_LlSNZ59oNw0BWH8VQQNrvOjlmyhHHQ.ttf",
       "800": "https://fonts.gstatic.com/s/notoseriflao/v29/3y9C6bYwcCjmsU8JEzCMxEwQfEBLk3f0rlSqCdaM_LlSNZ59oNw0BWH8VWMNrvOjlmyhHHQ.ttf",
       "900": "https://fonts.gstatic.com/s/notoseriflao/v29/3y9C6bYwcCjmsU8JEzCMxEwQfEBLk3f0rlSqCdaM_LlSNZ59oNw0BWH8VUoNrvOjlmyhHHQ.ttf",
-      "regular": "https://fonts.gstatic.com/s/notoseriflao/v29/3y9C6bYwcCjmsU8JEzCMxEwQfEBLk3f0rlSqCdaM_LlSNZ59oNw0BWH8VeMKrvOjlmyhHHQ.ttf"
+      regular: "https://fonts.gstatic.com/s/notoseriflao/v29/3y9C6bYwcCjmsU8JEzCMxEwQfEBLk3f0rlSqCdaM_LlSNZ59oNw0BWH8VeMKrvOjlmyhHHQ.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notoseriflao/v29/3y9C6bYwcCjmsU8JEzCMxEwQfEBLk3f0rlSqCdaM_LlSNZ59oNw0BWH8VeMKnvKpkg.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notoseriflao/v29/3y9C6bYwcCjmsU8JEzCMxEwQfEBLk3f0rlSqCdaM_LlSNZ59oNw0BWH8VeMKnvKpkg.ttf"
   },
   {
-    "family": "Phetsarath",
-    "variants": [
+    family: "Phetsarath",
+    variants: [
       "regular",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "lao"
     ],
-    "version": "v3",
-    "lastModified": "2025-09-17",
-    "files": {
+    version: "v3",
+    lastModified: "2025-09-17",
+    files: {
       "700": "https://fonts.gstatic.com/s/phetsarath/v3/N0bT2SpTP-plK0uWayAYOWLSudf7ZZlIHD0.ttf",
-      "regular": "https://fonts.gstatic.com/s/phetsarath/v3/N0bQ2SpTP-plK0uWayAYAd79nd_QeZA.ttf"
+      regular: "https://fonts.gstatic.com/s/phetsarath/v3/N0bQ2SpTP-plK0uWayAYAd79nd_QeZA.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/phetsarath/v3/N0bQ2SpTP-plK0uWayAYMd_3mQ.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/phetsarath/v3/N0bQ2SpTP-plK0uWayAYMd_3mQ.ttf"
   }
 ];
 

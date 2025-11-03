@@ -3,23 +3,23 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Ogham",
-    "variants": [
+    family: "Noto Sans Ogham",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "ogham"
     ],
-    "version": "v18",
-    "lastModified": "2025-09-05",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosansogham/v18/kmKlZqk1GBDGN0mY6k5lmEmww4hrt5laQxcoCA.ttf"
+    version: "v18",
+    lastModified: "2025-09-05",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosansogham/v18/kmKlZqk1GBDGN0mY6k5lmEmww4hrt5laQxcoCA.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansogham/v18/kmKlZqk1GBDGN0mY6k5lmEmww4hbtpNe.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansogham/v18/kmKlZqk1GBDGN0mY6k5lmEmww4hbtpNe.ttf"
   }
 ];
 

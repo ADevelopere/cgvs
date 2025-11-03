@@ -3,23 +3,23 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Tai Le",
-    "variants": [
+    family: "Noto Sans Tai Le",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "tai-le"
     ],
-    "version": "v18",
-    "lastModified": "2025-09-11",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosanstaile/v18/vEFK2-VODB8RrNDvZSUmVxEATwR58tK1W77HtMo.ttf"
+    version: "v18",
+    lastModified: "2025-09-11",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosanstaile/v18/vEFK2-VODB8RrNDvZSUmVxEATwR58tK1W77HtMo.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanstaile/v18/vEFK2-VODB8RrNDvZSUmVxEATwR5wtO_Xw.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanstaile/v18/vEFK2-VODB8RrNDvZSUmVxEATwR5wtO_Xw.ttf"
   }
 ];
 

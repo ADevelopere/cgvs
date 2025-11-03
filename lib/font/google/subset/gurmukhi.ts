@@ -3,8 +3,8 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Anek Gurmukhi",
-    "variants": [
+    family: "Anek Gurmukhi",
+    variants: [
       "100",
       "200",
       "300",
@@ -14,14 +14,14 @@ const data: GoogleFontItem[] = [
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "gurmukhi",
       "latin",
       "latin-ext"
     ],
-    "version": "v13",
-    "lastModified": "2025-09-05",
-    "files": {
+    version: "v13",
+    lastModified: "2025-09-05",
+    files: {
       "100": "https://fonts.gstatic.com/s/anekgurmukhi/v13/0QIAMXRO_YSkA0quVLY79JnHybfeEOrXCa9Dmd9Ql6a6R_vEMc5TaLkbd5ppXK41H6DjbA.ttf",
       "200": "https://fonts.gstatic.com/s/anekgurmukhi/v13/0QIAMXRO_YSkA0quVLY79JnHybfeEOrXCa9Dmd9Ql6a6R_vEMc5TaLkb95tpXK41H6DjbA.ttf",
       "300": "https://fonts.gstatic.com/s/anekgurmukhi/v13/0QIAMXRO_YSkA0quVLY79JnHybfeEOrXCa9Dmd9Ql6a6R_vEMc5TaLkbKZtpXK41H6DjbA.ttf",
@@ -29,101 +29,101 @@ const data: GoogleFontItem[] = [
       "600": "https://fonts.gstatic.com/s/anekgurmukhi/v13/0QIAMXRO_YSkA0quVLY79JnHybfeEOrXCa9Dmd9Ql6a6R_vEMc5TaLkbqZxpXK41H6DjbA.ttf",
       "700": "https://fonts.gstatic.com/s/anekgurmukhi/v13/0QIAMXRO_YSkA0quVLY79JnHybfeEOrXCa9Dmd9Ql6a6R_vEMc5TaLkbkJxpXK41H6DjbA.ttf",
       "800": "https://fonts.gstatic.com/s/anekgurmukhi/v13/0QIAMXRO_YSkA0quVLY79JnHybfeEOrXCa9Dmd9Ql6a6R_vEMc5TaLkb95xpXK41H6DjbA.ttf",
-      "regular": "https://fonts.gstatic.com/s/anekgurmukhi/v13/0QIAMXRO_YSkA0quVLY79JnHybfeEOrXCa9Dmd9Ql6a6R_vEMc5TaLkbd5tpXK41H6DjbA.ttf"
+      regular: "https://fonts.gstatic.com/s/anekgurmukhi/v13/0QIAMXRO_YSkA0quVLY79JnHybfeEOrXCa9Dmd9Ql6a6R_vEMc5TaLkbd5tpXK41H6DjbA.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/anekgurmukhi/v13/0QIAMXRO_YSkA0quVLY79JnHybfeEOrXCa9Dmd9Ql6a6R_vEMc5TaLkbd5tZXaQx.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/anekgurmukhi/v13/0QIAMXRO_YSkA0quVLY79JnHybfeEOrXCa9Dmd9Ql6a6R_vEMc5TaLkbd5tZXaQx.ttf"
   },
   {
-    "family": "Baloo Paaji 2",
-    "variants": [
+    family: "Baloo Paaji 2",
+    variants: [
       "regular",
       "500",
       "600",
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "gurmukhi",
       "latin",
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v29",
-    "lastModified": "2025-09-10",
-    "files": {
+    version: "v29",
+    lastModified: "2025-09-10",
+    files: {
       "500": "https://fonts.gstatic.com/s/baloopaaji2/v29/i7dfIFFzbz-QHZUdV9_UGWZuelmy79QJ1HOSY9Al74fybRUz1r5t.ttf",
       "600": "https://fonts.gstatic.com/s/baloopaaji2/v29/i7dfIFFzbz-QHZUdV9_UGWZuelmy79QJ1HOSY9DJ6IfybRUz1r5t.ttf",
       "700": "https://fonts.gstatic.com/s/baloopaaji2/v29/i7dfIFFzbz-QHZUdV9_UGWZuelmy79QJ1HOSY9Dw6IfybRUz1r5t.ttf",
       "800": "https://fonts.gstatic.com/s/baloopaaji2/v29/i7dfIFFzbz-QHZUdV9_UGWZuelmy79QJ1HOSY9CX6IfybRUz1r5t.ttf",
-      "regular": "https://fonts.gstatic.com/s/baloopaaji2/v29/i7dfIFFzbz-QHZUdV9_UGWZuelmy79QJ1HOSY9AX74fybRUz1r5t.ttf"
+      regular: "https://fonts.gstatic.com/s/baloopaaji2/v29/i7dfIFFzbz-QHZUdV9_UGWZuelmy79QJ1HOSY9AX74fybRUz1r5t.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/baloopaaji2/v29/i7dfIFFzbz-QHZUdV9_UGWZuelmy79QJ1HOSY9AX77fzZxE.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/baloopaaji2/v29/i7dfIFFzbz-QHZUdV9_UGWZuelmy79QJ1HOSY9AX77fzZxE.ttf"
   },
   {
-    "family": "BhuTuka Expanded One",
-    "variants": [
+    family: "BhuTuka Expanded One",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "gurmukhi",
       "latin",
       "latin-ext"
     ],
-    "version": "v9",
-    "lastModified": "2025-09-08",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/bhutukaexpandedone/v9/SLXXc0jZ4WUJcClHTtv0t7IaDRsBsWRiJCyX8pg_RVH1.ttf"
+    version: "v9",
+    lastModified: "2025-09-08",
+    files: {
+      regular: "https://fonts.gstatic.com/s/bhutukaexpandedone/v9/SLXXc0jZ4WUJcClHTtv0t7IaDRsBsWRiJCyX8pg_RVH1.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/bhutukaexpandedone/v9/SLXXc0jZ4WUJcClHTtv0t7IaDRsBsWRiJByW-Jw.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/bhutukaexpandedone/v9/SLXXc0jZ4WUJcClHTtv0t7IaDRsBsWRiJByW-Jw.ttf"
   },
   {
-    "family": "Braah One",
-    "variants": [
+    family: "Braah One",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "gurmukhi",
       "latin",
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v8",
-    "lastModified": "2025-09-11",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/braahone/v8/KFOlCnWUpt6LsxxxiylvAx05IsDqlA.ttf"
+    version: "v8",
+    lastModified: "2025-09-11",
+    files: {
+      regular: "https://fonts.gstatic.com/s/braahone/v8/KFOlCnWUpt6LsxxxiylvAx05IsDqlA.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/braahone/v8/KFOlCnWUpt6LsxxxiylfAhc9.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/braahone/v8/KFOlCnWUpt6LsxxxiylfAhc9.ttf"
   },
   {
-    "family": "Langar",
-    "variants": [
+    family: "Langar",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "gurmukhi",
       "latin",
       "latin-ext"
     ],
-    "version": "v30",
-    "lastModified": "2025-09-08",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/langar/v30/kJEyBukW7AIlgjGVrTVZ99sqrQ.ttf"
+    version: "v30",
+    lastModified: "2025-09-08",
+    files: {
+      regular: "https://fonts.gstatic.com/s/langar/v30/kJEyBukW7AIlgjGVrTVZ99sqrQ.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/langar/v30/kJEyBukW7AIlgjGlrD9d.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/langar/v30/kJEyBukW7AIlgjGlrD9d.ttf"
   },
   {
-    "family": "Mukta Mahee",
-    "variants": [
+    family: "Mukta Mahee",
+    variants: [
       "200",
       "300",
       "regular",
@@ -132,29 +132,29 @@ const data: GoogleFontItem[] = [
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "gurmukhi",
       "latin",
       "latin-ext"
     ],
-    "version": "v19",
-    "lastModified": "2025-09-05",
-    "files": {
+    version: "v19",
+    lastModified: "2025-09-05",
+    files: {
       "200": "https://fonts.gstatic.com/s/muktamahee/v19/XRXN3IOIi0hcP8iVU67hA9MFcBoHJndqZCsW.ttf",
       "300": "https://fonts.gstatic.com/s/muktamahee/v19/XRXN3IOIi0hcP8iVU67hA9NhcxoHJndqZCsW.ttf",
       "500": "https://fonts.gstatic.com/s/muktamahee/v19/XRXN3IOIi0hcP8iVU67hA9M5choHJndqZCsW.ttf",
       "600": "https://fonts.gstatic.com/s/muktamahee/v19/XRXN3IOIi0hcP8iVU67hA9MVdRoHJndqZCsW.ttf",
       "700": "https://fonts.gstatic.com/s/muktamahee/v19/XRXN3IOIi0hcP8iVU67hA9NxdBoHJndqZCsW.ttf",
       "800": "https://fonts.gstatic.com/s/muktamahee/v19/XRXN3IOIi0hcP8iVU67hA9NtdxoHJndqZCsW.ttf",
-      "regular": "https://fonts.gstatic.com/s/muktamahee/v19/XRXQ3IOIi0hcP8iVU67hA-vNWz4PDWtj.ttf"
+      regular: "https://fonts.gstatic.com/s/muktamahee/v19/XRXQ3IOIi0hcP8iVU67hA-vNWz4PDWtj.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/muktamahee/v19/XRXQ3IOIi0hcP8iVU67hA9vMUTo.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/muktamahee/v19/XRXQ3IOIi0hcP8iVU67hA9vMUTo.ttf"
   },
   {
-    "family": "Noto Sans Gurmukhi",
-    "variants": [
+    family: "Noto Sans Gurmukhi",
+    variants: [
       "100",
       "200",
       "300",
@@ -165,14 +165,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "gurmukhi",
       "latin",
       "latin-ext"
     ],
-    "version": "v29",
-    "lastModified": "2025-09-05",
-    "files": {
+    version: "v29",
+    lastModified: "2025-09-05",
+    files: {
       "100": "https://fonts.gstatic.com/s/notosansgurmukhi/v29/w8g9H3EvQP81sInb43inmyN9zZ7hb7ATbSWo4q8dJ74a3cVrYFQ_bogT0-gPeG1Oe3bxZ_trdp7h.ttf",
       "200": "https://fonts.gstatic.com/s/notosansgurmukhi/v29/w8g9H3EvQP81sInb43inmyN9zZ7hb7ATbSWo4q8dJ74a3cVrYFQ_bogT0-gPeG3OenbxZ_trdp7h.ttf",
       "300": "https://fonts.gstatic.com/s/notosansgurmukhi/v29/w8g9H3EvQP81sInb43inmyN9zZ7hb7ATbSWo4q8dJ74a3cVrYFQ_bogT0-gPeG0QenbxZ_trdp7h.ttf",
@@ -181,15 +181,15 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notosansgurmukhi/v29/w8g9H3EvQP81sInb43inmyN9zZ7hb7ATbSWo4q8dJ74a3cVrYFQ_bogT0-gPeG2pfXbxZ_trdp7h.ttf",
       "800": "https://fonts.gstatic.com/s/notosansgurmukhi/v29/w8g9H3EvQP81sInb43inmyN9zZ7hb7ATbSWo4q8dJ74a3cVrYFQ_bogT0-gPeG3OfXbxZ_trdp7h.ttf",
       "900": "https://fonts.gstatic.com/s/notosansgurmukhi/v29/w8g9H3EvQP81sInb43inmyN9zZ7hb7ATbSWo4q8dJ74a3cVrYFQ_bogT0-gPeG3nfXbxZ_trdp7h.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosansgurmukhi/v29/w8g9H3EvQP81sInb43inmyN9zZ7hb7ATbSWo4q8dJ74a3cVrYFQ_bogT0-gPeG1OenbxZ_trdp7h.ttf"
+      regular: "https://fonts.gstatic.com/s/notosansgurmukhi/v29/w8g9H3EvQP81sInb43inmyN9zZ7hb7ATbSWo4q8dJ74a3cVrYFQ_bogT0-gPeG1OenbxZ_trdp7h.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansgurmukhi/v29/w8g9H3EvQP81sInb43inmyN9zZ7hb7ATbSWo4q8dJ74a3cVrYFQ_bogT0-gPeG1Oekbwbf8.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansgurmukhi/v29/w8g9H3EvQP81sInb43inmyN9zZ7hb7ATbSWo4q8dJ74a3cVrYFQ_bogT0-gPeG1Oekbwbf8.ttf"
   },
   {
-    "family": "Noto Serif Gurmukhi",
-    "variants": [
+    family: "Noto Serif Gurmukhi",
+    variants: [
       "100",
       "200",
       "300",
@@ -200,14 +200,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "gurmukhi",
       "latin",
       "latin-ext"
     ],
-    "version": "v22",
-    "lastModified": "2025-09-11",
-    "files": {
+    version: "v22",
+    lastModified: "2025-09-11",
+    files: {
       "100": "https://fonts.gstatic.com/s/notoserifgurmukhi/v22/92z-tA9LNqsg7tCYlXdCV1VPnAEeDU0vLoYMbylXk0xTCr6-eBTNmqVU7y6l.ttf",
       "200": "https://fonts.gstatic.com/s/notoserifgurmukhi/v22/92z-tA9LNqsg7tCYlXdCV1VPnAEeDU0vLoYMbylXk0xTCr4-eRTNmqVU7y6l.ttf",
       "300": "https://fonts.gstatic.com/s/notoserifgurmukhi/v22/92z-tA9LNqsg7tCYlXdCV1VPnAEeDU0vLoYMbylXk0xTCr7geRTNmqVU7y6l.ttf",
@@ -216,32 +216,32 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notoserifgurmukhi/v22/92z-tA9LNqsg7tCYlXdCV1VPnAEeDU0vLoYMbylXk0xTCr5ZfhTNmqVU7y6l.ttf",
       "800": "https://fonts.gstatic.com/s/notoserifgurmukhi/v22/92z-tA9LNqsg7tCYlXdCV1VPnAEeDU0vLoYMbylXk0xTCr4-fhTNmqVU7y6l.ttf",
       "900": "https://fonts.gstatic.com/s/notoserifgurmukhi/v22/92z-tA9LNqsg7tCYlXdCV1VPnAEeDU0vLoYMbylXk0xTCr4XfhTNmqVU7y6l.ttf",
-      "regular": "https://fonts.gstatic.com/s/notoserifgurmukhi/v22/92z-tA9LNqsg7tCYlXdCV1VPnAEeDU0vLoYMbylXk0xTCr6-eRTNmqVU7y6l.ttf"
+      regular: "https://fonts.gstatic.com/s/notoserifgurmukhi/v22/92z-tA9LNqsg7tCYlXdCV1VPnAEeDU0vLoYMbylXk0xTCr6-eRTNmqVU7y6l.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notoserifgurmukhi/v22/92z-tA9LNqsg7tCYlXdCV1VPnAEeDU0vLoYMbylXk0xTCr6-eSTMkKE.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notoserifgurmukhi/v22/92z-tA9LNqsg7tCYlXdCV1VPnAEeDU0vLoYMbylXk0xTCr6-eSTMkKE.ttf"
   },
   {
-    "family": "Tiro Gurmukhi",
-    "variants": [
+    family: "Tiro Gurmukhi",
+    variants: [
       "regular",
       "italic"
     ],
-    "subsets": [
+    subsets: [
       "gurmukhi",
       "latin",
       "latin-ext"
     ],
-    "version": "v6",
-    "lastModified": "2025-05-30",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/tirogurmukhi/v6/x3dmckXSYq-Uqjc048JUF7Jvly7HAQsyA2Y.ttf",
-      "italic": "https://fonts.gstatic.com/s/tirogurmukhi/v6/x3d4ckXSYq-Uqjc048JUF7JvpyzNBSk3E2YljQ.ttf"
+    version: "v6",
+    lastModified: "2025-05-30",
+    files: {
+      regular: "https://fonts.gstatic.com/s/tirogurmukhi/v6/x3dmckXSYq-Uqjc048JUF7Jvly7HAQsyA2Y.ttf",
+      italic: "https://fonts.gstatic.com/s/tirogurmukhi/v6/x3d4ckXSYq-Uqjc048JUF7JvpyzNBSk3E2YljQ.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/tirogurmukhi/v6/x3dmckXSYq-Uqjc048JUF7Jvpy_NBQ.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/tirogurmukhi/v6/x3dmckXSYq-Uqjc048JUF7Jvpy_NBQ.ttf"
   }
 ];
 

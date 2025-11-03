@@ -3,23 +3,23 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Coptic",
-    "variants": [
+    family: "Noto Sans Coptic",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "coptic",
       "latin",
       "latin-ext"
     ],
-    "version": "v22",
-    "lastModified": "2025-09-05",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosanscoptic/v22/iJWfBWmUZi_OHPqn4wq6kgqumOEd78u_VG0xR4Y.ttf"
+    version: "v22",
+    lastModified: "2025-09-05",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosanscoptic/v22/iJWfBWmUZi_OHPqn4wq6kgqumOEd78u_VG0xR4Y.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanscoptic/v22/iJWfBWmUZi_OHPqn4wq6kgqumOEd38q1UA.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanscoptic/v22/iJWfBWmUZi_OHPqn4wq6kgqumOEd38q1UA.ttf"
   }
 ];
 

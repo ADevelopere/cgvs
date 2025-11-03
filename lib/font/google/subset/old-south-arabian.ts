@@ -3,23 +3,23 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Old South Arabian",
-    "variants": [
+    family: "Noto Sans Old South Arabian",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "old-south-arabian"
     ],
-    "version": "v17",
-    "lastModified": "2025-09-16",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosansoldsoutharabian/v17/3qT5oiOhnSyU8TNFIdhZTice3hB_HWKsEnF--0XCHiKx1OtDT9HwTA.ttf"
+    version: "v17",
+    lastModified: "2025-09-16",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosansoldsoutharabian/v17/3qT5oiOhnSyU8TNFIdhZTice3hB_HWKsEnF--0XCHiKx1OtDT9HwTA.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansoldsoutharabian/v17/3qT5oiOhnSyU8TNFIdhZTice3hB_HWKsEnF--0XCHiKB1eFH.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansoldsoutharabian/v17/3qT5oiOhnSyU8TNFIdhZTice3hB_HWKsEnF--0XCHiKB1eFH.ttf"
   }
 ];
 

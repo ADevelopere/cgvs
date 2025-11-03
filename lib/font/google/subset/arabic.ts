@@ -3,8 +3,8 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Alexandria",
-    "variants": [
+    family: "Alexandria",
+    variants: [
       "100",
       "200",
       "300",
@@ -15,15 +15,15 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v6",
-    "lastModified": "2025-09-05",
-    "files": {
+    version: "v6",
+    lastModified: "2025-09-05",
+    files: {
       "100": "https://fonts.gstatic.com/s/alexandria/v6/UMBCrPdDqW66y0Y2usFeQCH18mulUxBvI9r7T6bHHJ8BRq0b.ttf",
       "200": "https://fonts.gstatic.com/s/alexandria/v6/UMBCrPdDqW66y0Y2usFeQCH18mulUxBvI9p7TqbHHJ8BRq0b.ttf",
       "300": "https://fonts.gstatic.com/s/alexandria/v6/UMBCrPdDqW66y0Y2usFeQCH18mulUxBvI9qlTqbHHJ8BRq0b.ttf",
@@ -32,194 +32,194 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/alexandria/v6/UMBCrPdDqW66y0Y2usFeQCH18mulUxBvI9ocSabHHJ8BRq0b.ttf",
       "800": "https://fonts.gstatic.com/s/alexandria/v6/UMBCrPdDqW66y0Y2usFeQCH18mulUxBvI9p7SabHHJ8BRq0b.ttf",
       "900": "https://fonts.gstatic.com/s/alexandria/v6/UMBCrPdDqW66y0Y2usFeQCH18mulUxBvI9pSSabHHJ8BRq0b.ttf",
-      "regular": "https://fonts.gstatic.com/s/alexandria/v6/UMBCrPdDqW66y0Y2usFeQCH18mulUxBvI9r7TqbHHJ8BRq0b.ttf"
+      regular: "https://fonts.gstatic.com/s/alexandria/v6/UMBCrPdDqW66y0Y2usFeQCH18mulUxBvI9r7TqbHHJ8BRq0b.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/alexandria/v6/UMBCrPdDqW66y0Y2usFeQCH18mulUxBvI9r7TpbGFps.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/alexandria/v6/UMBCrPdDqW66y0Y2usFeQCH18mulUxBvI9r7TpbGFps.ttf"
   },
   {
-    "family": "Alkalami",
-    "variants": [
+    family: "Alkalami",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v8",
-    "lastModified": "2025-09-16",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/alkalami/v8/zOL_4pfDmqRL95WXi5eLw8BMuvhH.ttf"
+    version: "v8",
+    lastModified: "2025-09-16",
+    files: {
+      regular: "https://fonts.gstatic.com/s/alkalami/v8/zOL_4pfDmqRL95WXi5eLw8BMuvhH.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/alkalami/v8/zOL_4pfDmqRL95WXi6eKycQ.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/alkalami/v8/zOL_4pfDmqRL95WXi6eKycQ.ttf"
   },
   {
-    "family": "Almarai",
-    "variants": [
+    family: "Almarai",
+    variants: [
       "300",
       "regular",
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin"
     ],
-    "version": "v19",
-    "lastModified": "2025-09-02",
-    "files": {
+    version: "v19",
+    lastModified: "2025-09-02",
+    files: {
       "300": "https://fonts.gstatic.com/s/almarai/v19/tssoApxBaigK_hnnS_anhnicoq72sXg.ttf",
       "700": "https://fonts.gstatic.com/s/almarai/v19/tssoApxBaigK_hnnS-aghnicoq72sXg.ttf",
       "800": "https://fonts.gstatic.com/s/almarai/v19/tssoApxBaigK_hnnS_qjhnicoq72sXg.ttf",
-      "regular": "https://fonts.gstatic.com/s/almarai/v19/tsstApxBaigK_hnnc1qPonC3vqc.ttf"
+      regular: "https://fonts.gstatic.com/s/almarai/v19/tsstApxBaigK_hnnc1qPonC3vqc.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/almarai/v19/tsstApxBaigK_hnnQ1uFpg.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/almarai/v19/tsstApxBaigK_hnnQ1uFpg.ttf"
   },
   {
-    "family": "Amiri",
-    "variants": [
+    family: "Amiri",
+    variants: [
       "regular",
       "italic",
       "700",
       "700italic"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v30",
-    "lastModified": "2025-08-26",
-    "files": {
+    version: "v30",
+    lastModified: "2025-08-26",
+    files: {
       "700": "https://fonts.gstatic.com/s/amiri/v30/J7acnpd8CGxBHp2VkZY4xJ9CGyAa.ttf",
-      "regular": "https://fonts.gstatic.com/s/amiri/v30/J7aRnpd8CGxBHqUpvrIw74NL.ttf",
-      "italic": "https://fonts.gstatic.com/s/amiri/v30/J7afnpd8CGxBHpUrtLYS6pNLAjk.ttf",
+      regular: "https://fonts.gstatic.com/s/amiri/v30/J7aRnpd8CGxBHqUpvrIw74NL.ttf",
+      italic: "https://fonts.gstatic.com/s/amiri/v30/J7afnpd8CGxBHpUrtLYS6pNLAjk.ttf",
       "700italic": "https://fonts.gstatic.com/s/amiri/v30/J7aanpd8CGxBHpUrjAo9zptgHjAavCA.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/amiri/v30/J7aRnpd8CGxBHpUotLY.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/amiri/v30/J7aRnpd8CGxBHpUotLY.ttf"
   },
   {
-    "family": "Amiri Quran",
-    "variants": [
+    family: "Amiri Quran",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin"
     ],
-    "version": "v19",
-    "lastModified": "2025-08-26",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/amiriquran/v19/_Xmo-Hk0rD6DbUL4_vH8Zq5t7Cycsu-2.ttf"
+    version: "v19",
+    lastModified: "2025-08-26",
+    files: {
+      regular: "https://fonts.gstatic.com/s/amiriquran/v19/_Xmo-Hk0rD6DbUL4_vH8Zq5t7Cycsu-2.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/amiriquran/v19/_Xmo-Hk0rD6DbUL4_vH8Zp5s5ig.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/amiriquran/v19/_Xmo-Hk0rD6DbUL4_vH8Zp5s5ig.ttf"
   },
   {
-    "family": "Aref Ruqaa",
-    "variants": [
+    family: "Aref Ruqaa",
+    variants: [
       "regular",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v26",
-    "lastModified": "2025-09-11",
-    "files": {
+    version: "v26",
+    lastModified: "2025-09-11",
+    files: {
       "700": "https://fonts.gstatic.com/s/arefruqaa/v26/WwkYxPW1E165rajQKDulKDwNcNIS2N_7Bdk.ttf",
-      "regular": "https://fonts.gstatic.com/s/arefruqaa/v26/WwkbxPW1E165rajQKDulEIAiVNo5xNY.ttf"
+      regular: "https://fonts.gstatic.com/s/arefruqaa/v26/WwkbxPW1E165rajQKDulEIAiVNo5xNY.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/arefruqaa/v26/WwkbxPW1E165rajQKDulIIEoUA.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/arefruqaa/v26/WwkbxPW1E165rajQKDulIIEoUA.ttf"
   },
   {
-    "family": "Aref Ruqaa Ink",
-    "variants": [
+    family: "Aref Ruqaa Ink",
+    variants: [
       "regular",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v11",
-    "lastModified": "2025-05-30",
-    "files": {
+    version: "v11",
+    lastModified: "2025-05-30",
+    files: {
       "700": "https://fonts.gstatic.com/s/arefruqaaink/v11/1q2cY5WOGUFlt84GTOkP6Kdx71xde6WhqWBCyxWn.ttf",
-      "regular": "https://fonts.gstatic.com/s/arefruqaaink/v11/1q2fY5WOGUFlt84GTOkP6Kdx72ThVIGpgnxL.ttf"
+      regular: "https://fonts.gstatic.com/s/arefruqaaink/v11/1q2fY5WOGUFlt84GTOkP6Kdx72ThVIGpgnxL.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/arefruqaaink/v11/1q2fY5WOGUFlt84GTOkP6Kdx71TgXoU.ttf",
-    "colorCapabilities": [
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/arefruqaaink/v11/1q2fY5WOGUFlt84GTOkP6Kdx71TgXoU.ttf",
+    colorCapabilities: [
       "COLRv1",
       "SVG"
     ]
   },
   {
-    "family": "Badeen Display",
-    "variants": [
+    family: "Badeen Display",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v1",
-    "lastModified": "2025-05-30",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/badeendisplay/v1/pxidypY2sdZSjFU4cPmNBzckadeLYk1Mq3ap.ttf"
+    version: "v1",
+    lastModified: "2025-05-30",
+    files: {
+      regular: "https://fonts.gstatic.com/s/badeendisplay/v1/pxidypY2sdZSjFU4cPmNBzckadeLYk1Mq3ap.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/badeendisplay/v1/pxidypY2sdZSjFU4cPmNBzckaeeKaEk.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/badeendisplay/v1/pxidypY2sdZSjFU4cPmNBzckaeeKaEk.ttf"
   },
   {
-    "family": "Baloo Bhaijaan 2",
-    "variants": [
+    family: "Baloo Bhaijaan 2",
+    variants: [
       "regular",
       "500",
       "600",
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v21",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v21",
+    lastModified: "2025-09-16",
+    files: {
       "500": "https://fonts.gstatic.com/s/baloobhaijaan2/v21/zYXwKUwuEqdVGqM8tPDdAA_Y-_bMKo1EhQd2tWxo8TyjSqP4L4ppfcyC.ttf",
       "600": "https://fonts.gstatic.com/s/baloobhaijaan2/v21/zYXwKUwuEqdVGqM8tPDdAA_Y-_bMKo1EhQd2tWxo8TxPTaP4L4ppfcyC.ttf",
       "700": "https://fonts.gstatic.com/s/baloobhaijaan2/v21/zYXwKUwuEqdVGqM8tPDdAA_Y-_bMKo1EhQd2tWxo8Tx2TaP4L4ppfcyC.ttf",
       "800": "https://fonts.gstatic.com/s/baloobhaijaan2/v21/zYXwKUwuEqdVGqM8tPDdAA_Y-_bMKo1EhQd2tWxo8TwRTaP4L4ppfcyC.ttf",
-      "regular": "https://fonts.gstatic.com/s/baloobhaijaan2/v21/zYXwKUwuEqdVGqM8tPDdAA_Y-_bMKo1EhQd2tWxo8TyRSqP4L4ppfcyC.ttf"
+      regular: "https://fonts.gstatic.com/s/baloobhaijaan2/v21/zYXwKUwuEqdVGqM8tPDdAA_Y-_bMKo1EhQd2tWxo8TyRSqP4L4ppfcyC.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/baloobhaijaan2/v21/zYXwKUwuEqdVGqM8tPDdAA_Y-_bMKo1EhQd2tWxo8TyRSpP5JY4.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/baloobhaijaan2/v21/zYXwKUwuEqdVGqM8tPDdAA_Y-_bMKo1EhQd2tWxo8TyRSpP5JY4.ttf"
   },
   {
-    "family": "Beiruti",
-    "variants": [
+    family: "Beiruti",
+    variants: [
       "200",
       "300",
       "regular",
@@ -229,15 +229,15 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v5",
-    "lastModified": "2025-09-10",
-    "files": {
+    version: "v5",
+    lastModified: "2025-09-10",
+    files: {
       "200": "https://fonts.gstatic.com/s/beiruti/v5/JTUIjIU69Cmr9FGcYgRFEb7cdQn2-9Y95wujgWg2SGdV.ttf",
       "300": "https://fonts.gstatic.com/s/beiruti/v5/JTUIjIU69Cmr9FGcYgRFEb7cdQn2-9bj5wujgWg2SGdV.ttf",
       "500": "https://fonts.gstatic.com/s/beiruti/v5/JTUIjIU69Cmr9FGcYgRFEb7cdQn2-9aP5wujgWg2SGdV.ttf",
@@ -245,76 +245,76 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/beiruti/v5/JTUIjIU69Cmr9FGcYgRFEb7cdQn2-9Za4AujgWg2SGdV.ttf",
       "800": "https://fonts.gstatic.com/s/beiruti/v5/JTUIjIU69Cmr9FGcYgRFEb7cdQn2-9Y94AujgWg2SGdV.ttf",
       "900": "https://fonts.gstatic.com/s/beiruti/v5/JTUIjIU69Cmr9FGcYgRFEb7cdQn2-9YU4AujgWg2SGdV.ttf",
-      "regular": "https://fonts.gstatic.com/s/beiruti/v5/JTUIjIU69Cmr9FGcYgRFEb7cdQn2-9a95wujgWg2SGdV.ttf"
+      regular: "https://fonts.gstatic.com/s/beiruti/v5/JTUIjIU69Cmr9FGcYgRFEb7cdQn2-9a95wujgWg2SGdV.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/beiruti/v5/JTUIjIU69Cmr9FGcYgRFEb7cdQn2-9a95zuii2w.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/beiruti/v5/JTUIjIU69Cmr9FGcYgRFEb7cdQn2-9a95zuii2w.ttf"
   },
   {
-    "family": "Blaka",
-    "variants": [
+    family: "Blaka",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v8",
-    "lastModified": "2025-09-16",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/blaka/v8/8vIG7w8722p_6kdr20D2FV5e.ttf"
+    version: "v8",
+    lastModified: "2025-09-16",
+    files: {
+      regular: "https://fonts.gstatic.com/s/blaka/v8/8vIG7w8722p_6kdr20D2FV5e.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/blaka/v8/8vIG7w8722p_6ndq0UQ.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/blaka/v8/8vIG7w8722p_6ndq0UQ.ttf"
   },
   {
-    "family": "Blaka Hollow",
-    "variants": [
+    family: "Blaka Hollow",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v8",
-    "lastModified": "2025-09-11",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/blakahollow/v8/MCoUzAL91sjRE2FsKsxUtezYB9oFyW_-oA.ttf"
+    version: "v8",
+    lastModified: "2025-09-11",
+    files: {
+      regular: "https://fonts.gstatic.com/s/blakahollow/v8/MCoUzAL91sjRE2FsKsxUtezYB9oFyW_-oA.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/blakahollow/v8/MCoUzAL91sjRE2FsKsxUtezoBtAB.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/blakahollow/v8/MCoUzAL91sjRE2FsKsxUtezoBtAB.ttf"
   },
   {
-    "family": "Blaka Ink",
-    "variants": [
+    family: "Blaka Ink",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v10",
-    "lastModified": "2025-05-30",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/blakaink/v10/AlZy_zVVtpj22Znag2chdXf4XB0Tow.ttf"
+    version: "v10",
+    lastModified: "2025-05-30",
+    files: {
+      regular: "https://fonts.gstatic.com/s/blakaink/v10/AlZy_zVVtpj22Znag2chdXf4XB0Tow.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/blakaink/v10/AlZy_zVVtpj22Znag2cRdH38.ttf",
-    "colorCapabilities": [
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/blakaink/v10/AlZy_zVVtpj22Znag2cRdH38.ttf",
+    colorCapabilities: [
       "COLRv1",
       "SVG"
     ]
   },
   {
-    "family": "Cairo",
-    "variants": [
+    family: "Cairo",
+    variants: [
       "200",
       "300",
       "regular",
@@ -324,14 +324,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v31",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v31",
+    lastModified: "2025-09-16",
+    files: {
       "200": "https://fonts.gstatic.com/s/cairo/v31/SLXgc1nY6HkvangtZmpQdkhzfH5lkSs2SgRjCAGMQ1z0hGA-W1ToLQ-HmkA.ttf",
       "300": "https://fonts.gstatic.com/s/cairo/v31/SLXgc1nY6HkvangtZmpQdkhzfH5lkSs2SgRjCAGMQ1z0hL4-W1ToLQ-HmkA.ttf",
       "500": "https://fonts.gstatic.com/s/cairo/v31/SLXgc1nY6HkvangtZmpQdkhzfH5lkSs2SgRjCAGMQ1z0hNI-W1ToLQ-HmkA.ttf",
@@ -339,15 +339,15 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/cairo/v31/SLXgc1nY6HkvangtZmpQdkhzfH5lkSs2SgRjCAGMQ1z0hAc5W1ToLQ-HmkA.ttf",
       "800": "https://fonts.gstatic.com/s/cairo/v31/SLXgc1nY6HkvangtZmpQdkhzfH5lkSs2SgRjCAGMQ1z0hGA5W1ToLQ-HmkA.ttf",
       "900": "https://fonts.gstatic.com/s/cairo/v31/SLXgc1nY6HkvangtZmpQdkhzfH5lkSs2SgRjCAGMQ1z0hEk5W1ToLQ-HmkA.ttf",
-      "regular": "https://fonts.gstatic.com/s/cairo/v31/SLXgc1nY6HkvangtZmpQdkhzfH5lkSs2SgRjCAGMQ1z0hOA-W1ToLQ-HmkA.ttf"
+      regular: "https://fonts.gstatic.com/s/cairo/v31/SLXgc1nY6HkvangtZmpQdkhzfH5lkSs2SgRjCAGMQ1z0hOA-W1ToLQ-HmkA.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/cairo/v31/SLXgc1nY6HkvangtZmpQdkhzfH5lkSs2SgRjCAGMQ1z0hOA-a1XiKQ.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/cairo/v31/SLXgc1nY6HkvangtZmpQdkhzfH5lkSs2SgRjCAGMQ1z0hOA-a1XiKQ.ttf"
   },
   {
-    "family": "Cairo Play",
-    "variants": [
+    family: "Cairo Play",
+    variants: [
       "200",
       "300",
       "regular",
@@ -357,14 +357,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v13",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v13",
+    lastModified: "2025-09-16",
+    files: {
       "200": "https://fonts.gstatic.com/s/cairoplay/v13/wXKEE3QSpo4vpRz_mz6FP-8iaauCLt_Hjopv3miu5IvcJo49mOo1EnYq9yXa8GvzaA.ttf",
       "300": "https://fonts.gstatic.com/s/cairoplay/v13/wXKEE3QSpo4vpRz_mz6FP-8iaauCLt_Hjopv3miu5IvcJo49mOo1zHYq9yXa8GvzaA.ttf",
       "500": "https://fonts.gstatic.com/s/cairoplay/v13/wXKEE3QSpo4vpRz_mz6FP-8iaauCLt_Hjopv3miu5IvcJo49mOo1oHYq9yXa8GvzaA.ttf",
@@ -372,18 +372,18 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/cairoplay/v13/wXKEE3QSpo4vpRz_mz6FP-8iaauCLt_Hjopv3miu5IvcJo49mOo1dXEq9yXa8GvzaA.ttf",
       "800": "https://fonts.gstatic.com/s/cairoplay/v13/wXKEE3QSpo4vpRz_mz6FP-8iaauCLt_Hjopv3miu5IvcJo49mOo1EnEq9yXa8GvzaA.ttf",
       "900": "https://fonts.gstatic.com/s/cairoplay/v13/wXKEE3QSpo4vpRz_mz6FP-8iaauCLt_Hjopv3miu5IvcJo49mOo1O3Eq9yXa8GvzaA.ttf",
-      "regular": "https://fonts.gstatic.com/s/cairoplay/v13/wXKEE3QSpo4vpRz_mz6FP-8iaauCLt_Hjopv3miu5IvcJo49mOo1knYq9yXa8GvzaA.ttf"
+      regular: "https://fonts.gstatic.com/s/cairoplay/v13/wXKEE3QSpo4vpRz_mz6FP-8iaauCLt_Hjopv3miu5IvcJo49mOo1knYq9yXa8GvzaA.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/cairoplay/v13/wXKEE3QSpo4vpRz_mz6FP-8iaauCLt_Hjopv3miu5IvcJo49mOo1knYa9i_e.ttf",
-    "colorCapabilities": [
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/cairoplay/v13/wXKEE3QSpo4vpRz_mz6FP-8iaauCLt_Hjopv3miu5IvcJo49mOo1knYa9i_e.ttf",
+    colorCapabilities: [
       "COLRv0"
     ]
   },
   {
-    "family": "Cascadia Code",
-    "variants": [
+    family: "Cascadia Code",
+    variants: [
       "200",
       "300",
       "regular",
@@ -397,7 +397,7 @@ const data: GoogleFontItem[] = [
       "600italic",
       "700italic"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "braille",
       "cyrillic",
@@ -409,29 +409,29 @@ const data: GoogleFontItem[] = [
       "symbols2",
       "vietnamese"
     ],
-    "version": "v5",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v5",
+    lastModified: "2025-09-16",
+    files: {
       "200": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuWMOaDPb9pHaHCA.ttf",
       "300": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuVSOaDPb9pHaHCA.ttf",
       "500": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuU-OaDPb9pHaHCA.ttf",
       "600": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuXSPqDPb9pHaHCA.ttf",
       "700": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuXrPqDPb9pHaHCA.ttf",
-      "regular": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuUMOaDPb9pHaHCA.ttf",
+      regular: "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuUMOaDPb9pHaHCA.ttf",
       "200italic": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc9B6-zq5zxD57cT5s916v3aD7BuTnUax-yWfDEesiMZd5lbWCAUXU.ttf",
       "300italic": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc9B6-zq5zxD57cT5s916v3aD7BuTnUax-yWfDEehaMZd5lbWCAUXU.ttf",
-      "italic": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc9B6-zq5zxD57cT5s916v3aD7BuTnUax-yWfDEekiMZd5lbWCAUXU.ttf",
+      italic: "https://fonts.gstatic.com/s/cascadiacode/v5/qWc9B6-zq5zxD57cT5s916v3aD7BuTnUax-yWfDEekiMZd5lbWCAUXU.ttf",
       "500italic": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc9B6-zq5zxD57cT5s916v3aD7BuTnUax-yWfDEenqMZd5lbWCAUXU.ttf",
       "600italic": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc9B6-zq5zxD57cT5s916v3aD7BuTnUax-yWfDEepaLZd5lbWCAUXU.ttf",
       "700italic": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc9B6-zq5zxD57cT5s916v3aD7BuTnUax-yWfDEeq-LZd5lbWCAUXU.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuUMOZDOZd4.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuUMOZDOZd4.ttf"
   },
   {
-    "family": "Cascadia Mono",
-    "variants": [
+    family: "Cascadia Mono",
+    variants: [
       "200",
       "300",
       "regular",
@@ -445,7 +445,7 @@ const data: GoogleFontItem[] = [
       "600italic",
       "700italic"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "braille",
       "cyrillic",
@@ -457,29 +457,29 @@ const data: GoogleFontItem[] = [
       "symbols2",
       "vietnamese"
     ],
-    "version": "v5",
-    "lastModified": "2025-09-08",
-    "files": {
+    version: "v5",
+    lastModified: "2025-09-08",
+    files: {
       "200": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTadsWVkNot27AYk.ttf",
       "300": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTZDsWVkNot27AYk.ttf",
       "500": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTYvsWVkNot27AYk.ttf",
       "600": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTbDtmVkNot27AYk.ttf",
       "700": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTb6tmVkNot27AYk.ttf",
-      "regular": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTYdsWVkNot27AYk.ttf",
+      regular: "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTYdsWVkNot27AYk.ttf",
       "200italic": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZnzw5pquJF3iuizJDZYqr1aZc93m0eKfzCTiPV8g0nPI9U6RYkQrY.ttf",
       "300italic": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZnzw5pquJF3iuizJDZYqr1aZc93m0eKfzCTiPV8tMnPI9U6RYkQrY.ttf",
-      "italic": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZnzw5pquJF3iuizJDZYqr1aZc93m0eKfzCTiPV8o0nPI9U6RYkQrY.ttf",
+      italic: "https://fonts.gstatic.com/s/cascadiamono/v5/TUZnzw5pquJF3iuizJDZYqr1aZc93m0eKfzCTiPV8o0nPI9U6RYkQrY.ttf",
       "500italic": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZnzw5pquJF3iuizJDZYqr1aZc93m0eKfzCTiPV8r8nPI9U6RYkQrY.ttf",
       "600italic": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZnzw5pquJF3iuizJDZYqr1aZc93m0eKfzCTiPV8lMgPI9U6RYkQrY.ttf",
       "700italic": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZnzw5pquJF3iuizJDZYqr1aZc93m0eKfzCTiPV8mogPI9U6RYkQrY.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTYdsVVlPI8.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTYdsVVlPI8.ttf"
   },
   {
-    "family": "Changa",
-    "variants": [
+    family: "Changa",
+    variants: [
       "200",
       "300",
       "regular",
@@ -488,55 +488,55 @@ const data: GoogleFontItem[] = [
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v29",
-    "lastModified": "2025-09-10",
-    "files": {
+    version: "v29",
+    lastModified: "2025-09-10",
+    files: {
       "200": "https://fonts.gstatic.com/s/changa/v29/2-c79JNi2YuVOUcOarRPgnNGooxCZy2xQjDp9htf1ZM.ttf",
       "300": "https://fonts.gstatic.com/s/changa/v29/2-c79JNi2YuVOUcOarRPgnNGooxCZ_OxQjDp9htf1ZM.ttf",
       "500": "https://fonts.gstatic.com/s/changa/v29/2-c79JNi2YuVOUcOarRPgnNGooxCZ5-xQjDp9htf1ZM.ttf",
       "600": "https://fonts.gstatic.com/s/changa/v29/2-c79JNi2YuVOUcOarRPgnNGooxCZ3O2QjDp9htf1ZM.ttf",
       "700": "https://fonts.gstatic.com/s/changa/v29/2-c79JNi2YuVOUcOarRPgnNGooxCZ0q2QjDp9htf1ZM.ttf",
       "800": "https://fonts.gstatic.com/s/changa/v29/2-c79JNi2YuVOUcOarRPgnNGooxCZy22QjDp9htf1ZM.ttf",
-      "regular": "https://fonts.gstatic.com/s/changa/v29/2-c79JNi2YuVOUcOarRPgnNGooxCZ62xQjDp9htf1ZM.ttf"
+      regular: "https://fonts.gstatic.com/s/changa/v29/2-c79JNi2YuVOUcOarRPgnNGooxCZ62xQjDp9htf1ZM.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/changa/v29/2-c79JNi2YuVOUcOarRPgnNGooxCZ62xcjHj8g.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/changa/v29/2-c79JNi2YuVOUcOarRPgnNGooxCZ62xcjHj8g.ttf"
   },
   {
-    "family": "El Messiri",
-    "variants": [
+    family: "El Messiri",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "cyrillic",
       "latin",
       "latin-ext"
     ],
-    "version": "v25",
-    "lastModified": "2025-09-11",
-    "files": {
+    version: "v25",
+    lastModified: "2025-09-11",
+    files: {
       "500": "https://fonts.gstatic.com/s/elmessiri/v25/K2FhfZBRmr9vQ1pHEey6GIGo8_pv3myYjuXCe65ghj3OoapG.ttf",
       "600": "https://fonts.gstatic.com/s/elmessiri/v25/K2FhfZBRmr9vQ1pHEey6GIGo8_pv3myYjuUufK5ghj3OoapG.ttf",
       "700": "https://fonts.gstatic.com/s/elmessiri/v25/K2FhfZBRmr9vQ1pHEey6GIGo8_pv3myYjuUXfK5ghj3OoapG.ttf",
-      "regular": "https://fonts.gstatic.com/s/elmessiri/v25/K2FhfZBRmr9vQ1pHEey6GIGo8_pv3myYjuXwe65ghj3OoapG.ttf"
+      regular: "https://fonts.gstatic.com/s/elmessiri/v25/K2FhfZBRmr9vQ1pHEey6GIGo8_pv3myYjuXwe65ghj3OoapG.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/elmessiri/v25/K2FhfZBRmr9vQ1pHEey6GIGo8_pv3myYjuXwe55hjDk.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/elmessiri/v25/K2FhfZBRmr9vQ1pHEey6GIGo8_pv3myYjuXwe55hjDk.ttf"
   },
   {
-    "family": "Fustat",
-    "variants": [
+    family: "Fustat",
+    variants: [
       "200",
       "300",
       "regular",
@@ -545,48 +545,48 @@ const data: GoogleFontItem[] = [
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v4",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v4",
+    lastModified: "2025-09-16",
+    files: {
       "200": "https://fonts.gstatic.com/s/fustat/v4/NaPEcZ_aHO9Iy5thRNqze7YGY9HGCMQQRryztWo_3fk.ttf",
       "300": "https://fonts.gstatic.com/s/fustat/v4/NaPEcZ_aHO9Iy5thRNqze7YGY9HGCBoQRryztWo_3fk.ttf",
       "500": "https://fonts.gstatic.com/s/fustat/v4/NaPEcZ_aHO9Iy5thRNqze7YGY9HGCHYQRryztWo_3fk.ttf",
       "600": "https://fonts.gstatic.com/s/fustat/v4/NaPEcZ_aHO9Iy5thRNqze7YGY9HGCJoXRryztWo_3fk.ttf",
       "700": "https://fonts.gstatic.com/s/fustat/v4/NaPEcZ_aHO9Iy5thRNqze7YGY9HGCKMXRryztWo_3fk.ttf",
       "800": "https://fonts.gstatic.com/s/fustat/v4/NaPEcZ_aHO9Iy5thRNqze7YGY9HGCMQXRryztWo_3fk.ttf",
-      "regular": "https://fonts.gstatic.com/s/fustat/v4/NaPEcZ_aHO9Iy5thRNqze7YGY9HGCEQQRryztWo_3fk.ttf"
+      regular: "https://fonts.gstatic.com/s/fustat/v4/NaPEcZ_aHO9Iy5thRNqze7YGY9HGCEQQRryztWo_3fk.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/fustat/v4/NaPEcZ_aHO9Iy5thRNqze7YGY9HGCEQQdr25sQ.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/fustat/v4/NaPEcZ_aHO9Iy5thRNqze7YGY9HGCEQQdr25sQ.ttf"
   },
   {
-    "family": "Gulzar",
-    "variants": [
+    family: "Gulzar",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v14",
-    "lastModified": "2025-09-05",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/gulzar/v14/Wnz6HAc9eB3HB2ILYTwZqg_MPQ.ttf"
+    version: "v14",
+    lastModified: "2025-09-05",
+    files: {
+      regular: "https://fonts.gstatic.com/s/gulzar/v14/Wnz6HAc9eB3HB2ILYTwZqg_MPQ.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/gulzar/v14/Wnz6HAc9eB3HB2I7YDYd.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/gulzar/v14/Wnz6HAc9eB3HB2I7YDYd.ttf"
   },
   {
-    "family": "Handjet",
-    "variants": [
+    family: "Handjet",
+    variants: [
       "100",
       "200",
       "300",
@@ -597,7 +597,7 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "armenian",
       "cyrillic",
@@ -608,9 +608,9 @@ const data: GoogleFontItem[] = [
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v22",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v22",
+    lastModified: "2025-09-16",
+    files: {
       "100": "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHTmbUkUsEHFAH2A.ttf",
       "200": "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHbmaUkUsEHFAH2A.ttf",
       "300": "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHWeaUkUsEHFAH2A.ttf",
@@ -619,40 +619,40 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHd6dUkUsEHFAH2A.ttf",
       "800": "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHbmdUkUsEHFAH2A.ttf",
       "900": "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHZCdUkUsEHFAH2A.ttf",
-      "regular": "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHTmaUkUsEHFAH2A.ttf"
+      regular: "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHTmaUkUsEHFAH2A.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHTmaYkQmFA.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHTmaYkQmFA.ttf"
   },
   {
-    "family": "Harmattan",
-    "variants": [
+    family: "Harmattan",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v24",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v24",
+    lastModified: "2025-09-16",
+    files: {
       "500": "https://fonts.gstatic.com/s/harmattan/v24/gokpH6L2DkFvVvRp9Xprv2mHmNZEq6TTFw.ttf",
       "600": "https://fonts.gstatic.com/s/harmattan/v24/gokpH6L2DkFvVvRp9Xprk26HmNZEq6TTFw.ttf",
       "700": "https://fonts.gstatic.com/s/harmattan/v24/gokpH6L2DkFvVvRp9Xpr92-HmNZEq6TTFw.ttf",
-      "regular": "https://fonts.gstatic.com/s/harmattan/v24/goksH6L2DkFvVvRp9XpTS0CjkP1Yog.ttf"
+      regular: "https://fonts.gstatic.com/s/harmattan/v24/goksH6L2DkFvVvRp9XpTS0CjkP1Yog.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/harmattan/v24/goksH6L2DkFvVvRp9XpjSkqn.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/harmattan/v24/goksH6L2DkFvVvRp9XpjSkqn.ttf"
   },
   {
-    "family": "IBM Plex Sans Arabic",
-    "variants": [
+    family: "IBM Plex Sans Arabic",
+    variants: [
       "100",
       "200",
       "300",
@@ -661,49 +661,49 @@ const data: GoogleFontItem[] = [
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "cyrillic-ext",
       "latin",
       "latin-ext"
     ],
-    "version": "v14",
-    "lastModified": "2025-09-10",
-    "files": {
+    version: "v14",
+    lastModified: "2025-09-10",
+    files: {
       "100": "https://fonts.gstatic.com/s/ibmplexsansarabic/v14/Qw3MZRtWPQCuHme67tEYUIx3Kh0PHR9N6YNe3PC5eMlAMg0.ttf",
       "200": "https://fonts.gstatic.com/s/ibmplexsansarabic/v14/Qw3NZRtWPQCuHme67tEYUIx3Kh0PHR9N6YPy_dCTVsVJKxTs.ttf",
       "300": "https://fonts.gstatic.com/s/ibmplexsansarabic/v14/Qw3NZRtWPQCuHme67tEYUIx3Kh0PHR9N6YOW_tCTVsVJKxTs.ttf",
       "500": "https://fonts.gstatic.com/s/ibmplexsansarabic/v14/Qw3NZRtWPQCuHme67tEYUIx3Kh0PHR9N6YPO_9CTVsVJKxTs.ttf",
       "600": "https://fonts.gstatic.com/s/ibmplexsansarabic/v14/Qw3NZRtWPQCuHme67tEYUIx3Kh0PHR9N6YPi-NCTVsVJKxTs.ttf",
       "700": "https://fonts.gstatic.com/s/ibmplexsansarabic/v14/Qw3NZRtWPQCuHme67tEYUIx3Kh0PHR9N6YOG-dCTVsVJKxTs.ttf",
-      "regular": "https://fonts.gstatic.com/s/ibmplexsansarabic/v14/Qw3CZRtWPQCuHme67tEYUIx3Kh0PHR9N6bs61vSbfdlA.ttf"
+      regular: "https://fonts.gstatic.com/s/ibmplexsansarabic/v14/Qw3CZRtWPQCuHme67tEYUIx3Kh0PHR9N6bs61vSbfdlA.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/ibmplexsansarabic/v14/Qw3CZRtWPQCuHme67tEYUIx3Kh0PHR9N6Ys73PA.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/ibmplexsansarabic/v14/Qw3CZRtWPQCuHme67tEYUIx3Kh0PHR9N6Ys73PA.ttf"
   },
   {
-    "family": "Katibeh",
-    "variants": [
+    family: "Katibeh",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v22",
-    "lastModified": "2025-09-10",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/katibeh/v22/ZGjXol5MQJog4bxDaC1RVDNdGDs.ttf"
+    version: "v22",
+    lastModified: "2025-09-10",
+    files: {
+      regular: "https://fonts.gstatic.com/s/katibeh/v22/ZGjXol5MQJog4bxDaC1RVDNdGDs.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/katibeh/v22/ZGjXol5MQJog4bxDWCxbUA.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/katibeh/v22/ZGjXol5MQJog4bxDWCxbUA.ttf"
   },
   {
-    "family": "Kufam",
-    "variants": [
+    family: "Kufam",
+    variants: [
       "regular",
       "500",
       "600",
@@ -717,55 +717,55 @@ const data: GoogleFontItem[] = [
       "800italic",
       "900italic"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v26",
-    "lastModified": "2025-09-02",
-    "files": {
+    version: "v26",
+    lastModified: "2025-09-02",
+    files: {
       "500": "https://fonts.gstatic.com/s/kufam/v26/C8c-4cY7pG7w_oSJDszBXsKCcBH3pKk7qQCJHvIwYg.ttf",
       "600": "https://fonts.gstatic.com/s/kufam/v26/C8c-4cY7pG7w_oSJDszBXsKCcBH3SK47qQCJHvIwYg.ttf",
       "700": "https://fonts.gstatic.com/s/kufam/v26/C8c-4cY7pG7w_oSJDszBXsKCcBH3ca47qQCJHvIwYg.ttf",
       "800": "https://fonts.gstatic.com/s/kufam/v26/C8c-4cY7pG7w_oSJDszBXsKCcBH3Fq47qQCJHvIwYg.ttf",
       "900": "https://fonts.gstatic.com/s/kufam/v26/C8c-4cY7pG7w_oSJDszBXsKCcBH3P647qQCJHvIwYg.ttf",
-      "regular": "https://fonts.gstatic.com/s/kufam/v26/C8c-4cY7pG7w_oSJDszBXsKCcBH3lqk7qQCJHvIwYg.ttf",
-      "italic": "https://fonts.gstatic.com/s/kufam/v26/C8c84cY7pG7w_q6APDMZN6kY3hbiXurT6gqNPPcgYp0i.ttf",
+      regular: "https://fonts.gstatic.com/s/kufam/v26/C8c-4cY7pG7w_oSJDszBXsKCcBH3lqk7qQCJHvIwYg.ttf",
+      italic: "https://fonts.gstatic.com/s/kufam/v26/C8c84cY7pG7w_q6APDMZN6kY3hbiXurT6gqNPPcgYp0i.ttf",
       "500italic": "https://fonts.gstatic.com/s/kufam/v26/C8c84cY7pG7w_q6APDMZN6kY3hbiXurh6gqNPPcgYp0i.ttf",
       "600italic": "https://fonts.gstatic.com/s/kufam/v26/C8c84cY7pG7w_q6APDMZN6kY3hbiXuoN7QqNPPcgYp0i.ttf",
       "700italic": "https://fonts.gstatic.com/s/kufam/v26/C8c84cY7pG7w_q6APDMZN6kY3hbiXuo07QqNPPcgYp0i.ttf",
       "800italic": "https://fonts.gstatic.com/s/kufam/v26/C8c84cY7pG7w_q6APDMZN6kY3hbiXupT7QqNPPcgYp0i.ttf",
       "900italic": "https://fonts.gstatic.com/s/kufam/v26/C8c84cY7pG7w_q6APDMZN6kY3hbiXup67QqNPPcgYp0i.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/kufam/v26/C8c-4cY7pG7w_oSJDszBXsKCcBH3lqkLqAqN.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/kufam/v26/C8c-4cY7pG7w_oSJDszBXsKCcBH3lqkLqAqN.ttf"
   },
   {
-    "family": "Lalezar",
-    "variants": [
+    family: "Lalezar",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v16",
-    "lastModified": "2025-09-16",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/lalezar/v16/zrfl0HLVx-HwTP82UaDyIiL0RCg.ttf"
+    version: "v16",
+    lastModified: "2025-09-16",
+    files: {
+      regular: "https://fonts.gstatic.com/s/lalezar/v16/zrfl0HLVx-HwTP82UaDyIiL0RCg.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/lalezar/v16/zrfl0HLVx-HwTP82YaH4Jg.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/lalezar/v16/zrfl0HLVx-HwTP82YaH4Jg.ttf"
   },
   {
-    "family": "Lateef",
-    "variants": [
+    family: "Lateef",
+    variants: [
       "200",
       "300",
       "regular",
@@ -774,57 +774,57 @@ const data: GoogleFontItem[] = [
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v35",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v35",
+    lastModified: "2025-09-16",
+    files: {
       "200": "https://fonts.gstatic.com/s/lateef/v35/hESz6XVnNCxEvkb0bjygbqTb9nQ-RA.ttf",
       "300": "https://fonts.gstatic.com/s/lateef/v35/hESz6XVnNCxEvkb0Cj-gbqTb9nQ-RA.ttf",
       "500": "https://fonts.gstatic.com/s/lateef/v35/hESz6XVnNCxEvkb0Uj6gbqTb9nQ-RA.ttf",
       "600": "https://fonts.gstatic.com/s/lateef/v35/hESz6XVnNCxEvkb0fjmgbqTb9nQ-RA.ttf",
       "700": "https://fonts.gstatic.com/s/lateef/v35/hESz6XVnNCxEvkb0GjigbqTb9nQ-RA.ttf",
       "800": "https://fonts.gstatic.com/s/lateef/v35/hESz6XVnNCxEvkb0BjugbqTb9nQ-RA.ttf",
-      "regular": "https://fonts.gstatic.com/s/lateef/v35/hESw6XVnNCxEvkbMpheEZo_H_w.ttf"
+      regular: "https://fonts.gstatic.com/s/lateef/v35/hESw6XVnNCxEvkbMpheEZo_H_w.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/lateef/v35/hESw6XVnNCxEvkb8px2A.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/lateef/v35/hESw6XVnNCxEvkb8px2A.ttf"
   },
   {
-    "family": "Lemonada",
-    "variants": [
+    family: "Lemonada",
+    variants: [
       "300",
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v31",
-    "lastModified": "2025-09-02",
-    "files": {
+    version: "v31",
+    lastModified: "2025-09-02",
+    files: {
       "300": "https://fonts.gstatic.com/s/lemonada/v31/0QI-MXFD9oygTWy_R-FFlwV-bgfR7QJGJOt2mfWc3Z2pTg.ttf",
       "500": "https://fonts.gstatic.com/s/lemonada/v31/0QI-MXFD9oygTWy_R-FFlwV-bgfR7QJGSOt2mfWc3Z2pTg.ttf",
       "600": "https://fonts.gstatic.com/s/lemonada/v31/0QI-MXFD9oygTWy_R-FFlwV-bgfR7QJGpOx2mfWc3Z2pTg.ttf",
       "700": "https://fonts.gstatic.com/s/lemonada/v31/0QI-MXFD9oygTWy_R-FFlwV-bgfR7QJGnex2mfWc3Z2pTg.ttf",
-      "regular": "https://fonts.gstatic.com/s/lemonada/v31/0QI-MXFD9oygTWy_R-FFlwV-bgfR7QJGeut2mfWc3Z2pTg.ttf"
+      regular: "https://fonts.gstatic.com/s/lemonada/v31/0QI-MXFD9oygTWy_R-FFlwV-bgfR7QJGeut2mfWc3Z2pTg.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/lemonada/v31/0QI-MXFD9oygTWy_R-FFlwV-bgfR7QJGeutGmP-Y.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/lemonada/v31/0QI-MXFD9oygTWy_R-FFlwV-bgfR7QJGeutGmP-Y.ttf"
   },
   {
-    "family": "Mada",
-    "variants": [
+    family: "Mada",
+    variants: [
       "200",
       "300",
       "regular",
@@ -834,14 +834,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v21",
-    "lastModified": "2025-09-05",
-    "files": {
+    version: "v21",
+    lastModified: "2025-09-05",
+    files: {
       "200": "https://fonts.gstatic.com/s/mada/v21/7Aulp_0qnzeSVz7u3PJLcUMYOFlOkHkw2-m9x2iC.ttf",
       "300": "https://fonts.gstatic.com/s/mada/v21/7Aulp_0qnzeSVz7u3PJLcUMYOFmQkHkw2-m9x2iC.ttf",
       "500": "https://fonts.gstatic.com/s/mada/v21/7Aulp_0qnzeSVz7u3PJLcUMYOFn8kHkw2-m9x2iC.ttf",
@@ -849,93 +849,93 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/mada/v21/7Aulp_0qnzeSVz7u3PJLcUMYOFkpl3kw2-m9x2iC.ttf",
       "800": "https://fonts.gstatic.com/s/mada/v21/7Aulp_0qnzeSVz7u3PJLcUMYOFlOl3kw2-m9x2iC.ttf",
       "900": "https://fonts.gstatic.com/s/mada/v21/7Aulp_0qnzeSVz7u3PJLcUMYOFlnl3kw2-m9x2iC.ttf",
-      "regular": "https://fonts.gstatic.com/s/mada/v21/7Aulp_0qnzeSVz7u3PJLcUMYOFnOkHkw2-m9x2iC.ttf"
+      regular: "https://fonts.gstatic.com/s/mada/v21/7Aulp_0qnzeSVz7u3PJLcUMYOFnOkHkw2-m9x2iC.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/mada/v21/7Aulp_0qnzeSVz7u3PJLcUMYOFnOkEkx0e0.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/mada/v21/7Aulp_0qnzeSVz7u3PJLcUMYOFnOkEkx0e0.ttf"
   },
   {
-    "family": "Marhey",
-    "variants": [
+    family: "Marhey",
+    variants: [
       "300",
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v8",
-    "lastModified": "2025-09-08",
-    "files": {
+    version: "v8",
+    lastModified: "2025-09-08",
+    files: {
       "300": "https://fonts.gstatic.com/s/marhey/v8/x3d8ck7Laq-T7wl7mqfVrEe9sDvtBZVwO2cXiGevOMw.ttf",
       "500": "https://fonts.gstatic.com/s/marhey/v8/x3d8ck7Laq-T7wl7mqfVrEe9sDvtBflwO2cXiGevOMw.ttf",
       "600": "https://fonts.gstatic.com/s/marhey/v8/x3d8ck7Laq-T7wl7mqfVrEe9sDvtBRV3O2cXiGevOMw.ttf",
       "700": "https://fonts.gstatic.com/s/marhey/v8/x3d8ck7Laq-T7wl7mqfVrEe9sDvtBSx3O2cXiGevOMw.ttf",
-      "regular": "https://fonts.gstatic.com/s/marhey/v8/x3d8ck7Laq-T7wl7mqfVrEe9sDvtBctwO2cXiGevOMw.ttf"
+      regular: "https://fonts.gstatic.com/s/marhey/v8/x3d8ck7Laq-T7wl7mqfVrEe9sDvtBctwO2cXiGevOMw.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/marhey/v8/x3d8ck7Laq-T7wl7mqfVrEe9sDvtBctwC2YdjA.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/marhey/v8/x3d8ck7Laq-T7wl7mqfVrEe9sDvtBctwC2YdjA.ttf"
   },
   {
-    "family": "Markazi Text",
-    "variants": [
+    family: "Markazi Text",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v28",
-    "lastModified": "2025-09-05",
-    "files": {
+    version: "v28",
+    lastModified: "2025-09-05",
+    files: {
       "500": "https://fonts.gstatic.com/s/markazitext/v28/sykh-ydym6AtQaiEtX7yhqb_rV1k_81ZVYYZtcaQT4MlBekmJLo.ttf",
       "600": "https://fonts.gstatic.com/s/markazitext/v28/sykh-ydym6AtQaiEtX7yhqb_rV1k_81ZVYYZtSqXT4MlBekmJLo.ttf",
       "700": "https://fonts.gstatic.com/s/markazitext/v28/sykh-ydym6AtQaiEtX7yhqb_rV1k_81ZVYYZtROXT4MlBekmJLo.ttf",
-      "regular": "https://fonts.gstatic.com/s/markazitext/v28/sykh-ydym6AtQaiEtX7yhqb_rV1k_81ZVYYZtfSQT4MlBekmJLo.ttf"
+      regular: "https://fonts.gstatic.com/s/markazitext/v28/sykh-ydym6AtQaiEtX7yhqb_rV1k_81ZVYYZtfSQT4MlBekmJLo.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/markazitext/v28/sykh-ydym6AtQaiEtX7yhqb_rV1k_81ZVYYZtfSQf4IvAQ.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/markazitext/v28/sykh-ydym6AtQaiEtX7yhqb_rV1k_81ZVYYZtfSQf4IvAQ.ttf"
   },
   {
-    "family": "Mirza",
-    "variants": [
+    family: "Mirza",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v19",
-    "lastModified": "2025-09-08",
-    "files": {
+    version: "v19",
+    lastModified: "2025-09-08",
+    files: {
       "500": "https://fonts.gstatic.com/s/mirza/v19/co3FmWlikiN5EtIpAeO4mafBomDi.ttf",
       "600": "https://fonts.gstatic.com/s/mirza/v19/co3FmWlikiN5EtIFBuO4mafBomDi.ttf",
       "700": "https://fonts.gstatic.com/s/mirza/v19/co3FmWlikiN5EtJhB-O4mafBomDi.ttf",
-      "regular": "https://fonts.gstatic.com/s/mirza/v19/co3ImWlikiN5EurdKMewsrvI.ttf"
+      regular: "https://fonts.gstatic.com/s/mirza/v19/co3ImWlikiN5EurdKMewsrvI.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/mirza/v19/co3ImWlikiN5EtrcIsM.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/mirza/v19/co3ImWlikiN5EtrcIsM.ttf"
   },
   {
-    "family": "Noto Kufi Arabic",
-    "variants": [
+    family: "Noto Kufi Arabic",
+    variants: [
       "100",
       "200",
       "300",
@@ -946,16 +946,16 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext",
       "math",
       "symbols"
     ],
-    "version": "v27",
-    "lastModified": "2025-09-11",
-    "files": {
+    version: "v27",
+    lastModified: "2025-09-11",
+    files: {
       "100": "https://fonts.gstatic.com/s/notokufiarabic/v27/CSRp4ydQnPyaDxEXLFF6LZVLKrodhu8t57o1kDc5Wh5v3obPnLSmf5yD.ttf",
       "200": "https://fonts.gstatic.com/s/notokufiarabic/v27/CSRp4ydQnPyaDxEXLFF6LZVLKrodhu8t57o1kDc5Wh7v34bPnLSmf5yD.ttf",
       "300": "https://fonts.gstatic.com/s/notokufiarabic/v27/CSRp4ydQnPyaDxEXLFF6LZVLKrodhu8t57o1kDc5Wh4x34bPnLSmf5yD.ttf",
@@ -964,67 +964,67 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notokufiarabic/v27/CSRp4ydQnPyaDxEXLFF6LZVLKrodhu8t57o1kDc5Wh6I2IbPnLSmf5yD.ttf",
       "800": "https://fonts.gstatic.com/s/notokufiarabic/v27/CSRp4ydQnPyaDxEXLFF6LZVLKrodhu8t57o1kDc5Wh7v2IbPnLSmf5yD.ttf",
       "900": "https://fonts.gstatic.com/s/notokufiarabic/v27/CSRp4ydQnPyaDxEXLFF6LZVLKrodhu8t57o1kDc5Wh7G2IbPnLSmf5yD.ttf",
-      "regular": "https://fonts.gstatic.com/s/notokufiarabic/v27/CSRp4ydQnPyaDxEXLFF6LZVLKrodhu8t57o1kDc5Wh5v34bPnLSmf5yD.ttf"
+      regular: "https://fonts.gstatic.com/s/notokufiarabic/v27/CSRp4ydQnPyaDxEXLFF6LZVLKrodhu8t57o1kDc5Wh5v34bPnLSmf5yD.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notokufiarabic/v27/CSRp4ydQnPyaDxEXLFF6LZVLKrodhu8t57o1kDc5Wh5v37bOlrA.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notokufiarabic/v27/CSRp4ydQnPyaDxEXLFF6LZVLKrodhu8t57o1kDc5Wh5v37bOlrA.ttf"
   },
   {
-    "family": "Noto Naskh Arabic",
-    "variants": [
+    family: "Noto Naskh Arabic",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext",
       "math",
       "symbols"
     ],
-    "version": "v40",
-    "lastModified": "2025-10-29",
-    "files": {
+    version: "v40",
+    lastModified: "2025-10-29",
+    files: {
       "500": "https://fonts.gstatic.com/s/notonaskharabic/v40/RrQ5bpV-9Dd1b1OAGA6M9PkyDuVBePeKNaxcsss0Y7bwj85krK0z9_Mnuw.ttf",
       "600": "https://fonts.gstatic.com/s/notonaskharabic/v40/RrQ5bpV-9Dd1b1OAGA6M9PkyDuVBePeKNaxcsss0Y7bwY8lkrK0z9_Mnuw.ttf",
       "700": "https://fonts.gstatic.com/s/notonaskharabic/v40/RrQ5bpV-9Dd1b1OAGA6M9PkyDuVBePeKNaxcsss0Y7bwWslkrK0z9_Mnuw.ttf",
-      "regular": "https://fonts.gstatic.com/s/notonaskharabic/v40/RrQ5bpV-9Dd1b1OAGA6M9PkyDuVBePeKNaxcsss0Y7bwvc5krK0z9_Mnuw.ttf"
+      regular: "https://fonts.gstatic.com/s/notonaskharabic/v40/RrQ5bpV-9Dd1b1OAGA6M9PkyDuVBePeKNaxcsss0Y7bwvc5krK0z9_Mnuw.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notonaskharabic/v40/RrQ5bpV-9Dd1b1OAGA6M9PkyDuVBePeKNaxcsss0Y7bwvc5Urac3.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notonaskharabic/v40/RrQ5bpV-9Dd1b1OAGA6M9PkyDuVBePeKNaxcsss0Y7bwvc5Urac3.ttf"
   },
   {
-    "family": "Noto Nastaliq Urdu",
-    "variants": [
+    family: "Noto Nastaliq Urdu",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v23",
-    "lastModified": "2025-09-02",
-    "files": {
+    version: "v23",
+    lastModified: "2025-09-02",
+    files: {
       "500": "https://fonts.gstatic.com/s/notonastaliqurdu/v23/LhWNMUPbN-oZdNFcBy1-DJYsEoTq5pudQ9L940pGPkB3Qu3-DK2f2-_8mEw.ttf",
       "600": "https://fonts.gstatic.com/s/notonastaliqurdu/v23/LhWNMUPbN-oZdNFcBy1-DJYsEoTq5pudQ9L940pGPkB3QgH5DK2f2-_8mEw.ttf",
       "700": "https://fonts.gstatic.com/s/notonastaliqurdu/v23/LhWNMUPbN-oZdNFcBy1-DJYsEoTq5pudQ9L940pGPkB3Qjj5DK2f2-_8mEw.ttf",
-      "regular": "https://fonts.gstatic.com/s/notonastaliqurdu/v23/LhWNMUPbN-oZdNFcBy1-DJYsEoTq5pudQ9L940pGPkB3Qt_-DK2f2-_8mEw.ttf"
+      regular: "https://fonts.gstatic.com/s/notonastaliqurdu/v23/LhWNMUPbN-oZdNFcBy1-DJYsEoTq5pudQ9L940pGPkB3Qt_-DK2f2-_8mEw.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notonastaliqurdu/v23/LhWNMUPbN-oZdNFcBy1-DJYsEoTq5pudQ9L940pGPkB3Qt_-PKyV3w.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notonastaliqurdu/v23/LhWNMUPbN-oZdNFcBy1-DJYsEoTq5pudQ9L940pGPkB3Qt_-PKyV3w.ttf"
   },
   {
-    "family": "Noto Sans Arabic",
-    "variants": [
+    family: "Noto Sans Arabic",
+    variants: [
       "100",
       "200",
       "300",
@@ -1035,16 +1035,16 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext",
       "math",
       "symbols"
     ],
-    "version": "v33",
-    "lastModified": "2025-09-17",
-    "files": {
+    version: "v33",
+    lastModified: "2025-09-17",
+    files: {
       "100": "https://fonts.gstatic.com/s/notosansarabic/v33/nwpxtLGrOAZMl5nJ_wfgRg3DrWFZWsnVBJ_sS6tlqHHFlhQ5l3sQWIHPqzCfyG2vu3CBFQLaig.ttf",
       "200": "https://fonts.gstatic.com/s/notosansarabic/v33/nwpxtLGrOAZMl5nJ_wfgRg3DrWFZWsnVBJ_sS6tlqHHFlhQ5l3sQWIHPqzCfSGyvu3CBFQLaig.ttf",
       "300": "https://fonts.gstatic.com/s/notosansarabic/v33/nwpxtLGrOAZMl5nJ_wfgRg3DrWFZWsnVBJ_sS6tlqHHFlhQ5l3sQWIHPqzCflmyvu3CBFQLaig.ttf",
@@ -1053,18 +1053,18 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notosansarabic/v33/nwpxtLGrOAZMl5nJ_wfgRg3DrWFZWsnVBJ_sS6tlqHHFlhQ5l3sQWIHPqzCfL2uvu3CBFQLaig.ttf",
       "800": "https://fonts.gstatic.com/s/notosansarabic/v33/nwpxtLGrOAZMl5nJ_wfgRg3DrWFZWsnVBJ_sS6tlqHHFlhQ5l3sQWIHPqzCfSGuvu3CBFQLaig.ttf",
       "900": "https://fonts.gstatic.com/s/notosansarabic/v33/nwpxtLGrOAZMl5nJ_wfgRg3DrWFZWsnVBJ_sS6tlqHHFlhQ5l3sQWIHPqzCfYWuvu3CBFQLaig.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosansarabic/v33/nwpxtLGrOAZMl5nJ_wfgRg3DrWFZWsnVBJ_sS6tlqHHFlhQ5l3sQWIHPqzCfyGyvu3CBFQLaig.ttf"
+      regular: "https://fonts.gstatic.com/s/notosansarabic/v33/nwpxtLGrOAZMl5nJ_wfgRg3DrWFZWsnVBJ_sS6tlqHHFlhQ5l3sQWIHPqzCfyGyvu3CBFQLaig.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansarabic/v33/nwpxtLGrOAZMl5nJ_wfgRg3DrWFZWsnVBJ_sS6tlqHHFlhQ5l3sQWIHPqzCfyGyfunqF.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansarabic/v33/nwpxtLGrOAZMl5nJ_wfgRg3DrWFZWsnVBJ_sS6tlqHHFlhQ5l3sQWIHPqzCfyGyfunqF.ttf"
   },
   {
-    "family": "Oi",
-    "variants": [
+    family: "Oi",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "cyrillic",
       "cyrillic-ext",
@@ -1074,44 +1074,44 @@ const data: GoogleFontItem[] = [
       "tamil",
       "vietnamese"
     ],
-    "version": "v21",
-    "lastModified": "2025-09-05",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/oi/v21/w8gXH2EuRqtaut6yjBOG.ttf"
+    version: "v21",
+    lastModified: "2025-09-05",
+    files: {
+      regular: "https://fonts.gstatic.com/s/oi/v21/w8gXH2EuRqtaut6yjBOG.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/oi/v21/w8gXH2EuRptbsNo.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/oi/v21/w8gXH2EuRptbsNo.ttf"
   },
   {
-    "family": "Parastoo",
-    "variants": [
+    family: "Parastoo",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v3",
-    "lastModified": "2025-10-29",
-    "files": {
+    version: "v3",
+    lastModified: "2025-10-29",
+    files: {
       "500": "https://fonts.gstatic.com/s/parastoo/v3/-F6vfj90ITQ4d9euQVDbrtWYW5MNx1dlfak1FPNkx5rq1w.ttf",
       "600": "https://fonts.gstatic.com/s/parastoo/v3/-F6vfj90ITQ4d9euQVDbrtWYW5MNx1dlka41FPNkx5rq1w.ttf",
       "700": "https://fonts.gstatic.com/s/parastoo/v3/-F6vfj90ITQ4d9euQVDbrtWYW5MNx1dlqK41FPNkx5rq1w.ttf",
-      "regular": "https://fonts.gstatic.com/s/parastoo/v3/-F6vfj90ITQ4d9euQVDbrtWYW5MNx1dlT6k1FPNkx5rq1w.ttf"
+      regular: "https://fonts.gstatic.com/s/parastoo/v3/-F6vfj90ITQ4d9euQVDbrtWYW5MNx1dlT6k1FPNkx5rq1w.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/parastoo/v3/-F6vfj90ITQ4d9euQVDbrtWYW5MNx1dlT6kFFflg.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/parastoo/v3/-F6vfj90ITQ4d9euQVDbrtWYW5MNx1dlT6kFFflg.ttf"
   },
   {
-    "family": "Playpen Sans Arabic",
-    "variants": [
+    family: "Playpen Sans Arabic",
+    variants: [
       "100",
       "200",
       "300",
@@ -1121,16 +1121,16 @@ const data: GoogleFontItem[] = [
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "emoji",
       "latin",
       "latin-ext",
       "math"
     ],
-    "version": "v8",
-    "lastModified": "2025-09-10",
-    "files": {
+    version: "v8",
+    lastModified: "2025-09-10",
+    files: {
       "100": "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-ZBobPcBO1L0EHE.ttf",
       "200": "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-bBoLPcBO1L0EHE.ttf",
       "300": "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-YfoLPcBO1L0EHE.ttf",
@@ -1138,52 +1138,52 @@ const data: GoogleFontItem[] = [
       "600": "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-afp7PcBO1L0EHE.ttf",
       "700": "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-amp7PcBO1L0EHE.ttf",
       "800": "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-bBp7PcBO1L0EHE.ttf",
-      "regular": "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-ZBoLPcBO1L0EHE.ttf"
+      regular: "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-ZBoLPcBO1L0EHE.ttf"
     },
-    "category": "handwriting",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-ZBoIPdDuk.ttf"
+    category: "handwriting",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-ZBoIPdDuk.ttf"
   },
   {
-    "family": "Qahiri",
-    "variants": [
+    family: "Qahiri",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin"
     ],
-    "version": "v11",
-    "lastModified": "2025-09-10",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/qahiri/v11/tsssAp1RZy0C_hGuU3Chrnmupw.ttf"
+    version: "v11",
+    lastModified: "2025-09-10",
+    files: {
+      regular: "https://fonts.gstatic.com/s/qahiri/v11/tsssAp1RZy0C_hGuU3Chrnmupw.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/qahiri/v11/tsssAp1RZy0C_hGeUnql.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/qahiri/v11/tsssAp1RZy0C_hGeUnql.ttf"
   },
   {
-    "family": "Rakkas",
-    "variants": [
+    family: "Rakkas",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v22",
-    "lastModified": "2025-09-10",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/rakkas/v22/Qw3cZQlNHiblL3j_lttPOeMcCw.ttf"
+    version: "v22",
+    lastModified: "2025-09-10",
+    files: {
+      regular: "https://fonts.gstatic.com/s/rakkas/v22/Qw3cZQlNHiblL3j_lttPOeMcCw.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/rakkas/v22/Qw3cZQlNHiblL3jPl9FL.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/rakkas/v22/Qw3cZQlNHiblL3jPl9FL.ttf"
   },
   {
-    "family": "Readex Pro",
-    "variants": [
+    family: "Readex Pro",
+    variants: [
       "200",
       "300",
       "regular",
@@ -1191,108 +1191,108 @@ const data: GoogleFontItem[] = [
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v27",
-    "lastModified": "2025-09-10",
-    "files": {
+    version: "v27",
+    lastModified: "2025-09-10",
+    files: {
       "200": "https://fonts.gstatic.com/s/readexpro/v27/SLXnc1bJ7HE5YDoGPuzj_dh8uc7wUy8ZQQyX2KY8TL0kGZN6blTCYUSmgmsglvjkag.ttf",
       "300": "https://fonts.gstatic.com/s/readexpro/v27/SLXnc1bJ7HE5YDoGPuzj_dh8uc7wUy8ZQQyX2KY8TL0kGZN6blTCv0Smgmsglvjkag.ttf",
       "500": "https://fonts.gstatic.com/s/readexpro/v27/SLXnc1bJ7HE5YDoGPuzj_dh8uc7wUy8ZQQyX2KY8TL0kGZN6blTC00Smgmsglvjkag.ttf",
       "600": "https://fonts.gstatic.com/s/readexpro/v27/SLXnc1bJ7HE5YDoGPuzj_dh8uc7wUy8ZQQyX2KY8TL0kGZN6blTCP0Omgmsglvjkag.ttf",
       "700": "https://fonts.gstatic.com/s/readexpro/v27/SLXnc1bJ7HE5YDoGPuzj_dh8uc7wUy8ZQQyX2KY8TL0kGZN6blTCBkOmgmsglvjkag.ttf",
-      "regular": "https://fonts.gstatic.com/s/readexpro/v27/SLXnc1bJ7HE5YDoGPuzj_dh8uc7wUy8ZQQyX2KY8TL0kGZN6blTC4USmgmsglvjkag.ttf"
+      regular: "https://fonts.gstatic.com/s/readexpro/v27/SLXnc1bJ7HE5YDoGPuzj_dh8uc7wUy8ZQQyX2KY8TL0kGZN6blTC4USmgmsglvjkag.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/readexpro/v27/SLXnc1bJ7HE5YDoGPuzj_dh8uc7wUy8ZQQyX2KY8TL0kGZN6blTC4USWg2Ek.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/readexpro/v27/SLXnc1bJ7HE5YDoGPuzj_dh8uc7wUy8ZQQyX2KY8TL0kGZN6blTC4USWg2Ek.ttf"
   },
   {
-    "family": "Reem Kufi",
-    "variants": [
+    family: "Reem Kufi",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v28",
-    "lastModified": "2025-09-05",
-    "files": {
+    version: "v28",
+    lastModified: "2025-09-05",
+    files: {
       "500": "https://fonts.gstatic.com/s/reemkufi/v28/2sDPZGJLip7W2J7v7wQZZE1I0yCmYzzQttRnEGGf3qGuvM4.ttf",
       "600": "https://fonts.gstatic.com/s/reemkufi/v28/2sDPZGJLip7W2J7v7wQZZE1I0yCmYzzQtjhgEGGf3qGuvM4.ttf",
       "700": "https://fonts.gstatic.com/s/reemkufi/v28/2sDPZGJLip7W2J7v7wQZZE1I0yCmYzzQtgFgEGGf3qGuvM4.ttf",
-      "regular": "https://fonts.gstatic.com/s/reemkufi/v28/2sDPZGJLip7W2J7v7wQZZE1I0yCmYzzQtuZnEGGf3qGuvM4.ttf"
+      regular: "https://fonts.gstatic.com/s/reemkufi/v28/2sDPZGJLip7W2J7v7wQZZE1I0yCmYzzQtuZnEGGf3qGuvM4.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/reemkufi/v28/2sDPZGJLip7W2J7v7wQZZE1I0yCmYzzQtuZnIGCV2g.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/reemkufi/v28/2sDPZGJLip7W2J7v7wQZZE1I0yCmYzzQtuZnIGCV2g.ttf"
   },
   {
-    "family": "Reem Kufi Fun",
-    "variants": [
+    family: "Reem Kufi Fun",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v13",
-    "lastModified": "2025-09-02",
-    "files": {
+    version: "v13",
+    lastModified: "2025-09-02",
+    files: {
       "500": "https://fonts.gstatic.com/s/reemkufifun/v13/uK_m4rOFYukkmyUEbF43fIryZEk5qRZ8nrKChoYR3nCgrvqZzZXq.ttf",
       "600": "https://fonts.gstatic.com/s/reemkufifun/v13/uK_m4rOFYukkmyUEbF43fIryZEk5qRZ8nrKChob92XCgrvqZzZXq.ttf",
       "700": "https://fonts.gstatic.com/s/reemkufifun/v13/uK_m4rOFYukkmyUEbF43fIryZEk5qRZ8nrKChobE2XCgrvqZzZXq.ttf",
-      "regular": "https://fonts.gstatic.com/s/reemkufifun/v13/uK_m4rOFYukkmyUEbF43fIryZEk5qRZ8nrKChoYj3nCgrvqZzZXq.ttf"
+      regular: "https://fonts.gstatic.com/s/reemkufifun/v13/uK_m4rOFYukkmyUEbF43fIryZEk5qRZ8nrKChoYj3nCgrvqZzZXq.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/reemkufifun/v13/uK_m4rOFYukkmyUEbF43fIryZEk5qRZ8nrKChoYj3kChpP4.ttf",
-    "colorCapabilities": [
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/reemkufifun/v13/uK_m4rOFYukkmyUEbF43fIryZEk5qRZ8nrKChoYj3kChpP4.ttf",
+    colorCapabilities: [
       "COLRv0"
     ]
   },
   {
-    "family": "Reem Kufi Ink",
-    "variants": [
+    family: "Reem Kufi Ink",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v11",
-    "lastModified": "2025-06-25",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/reemkufiink/v11/oPWJ_kJmmu8hCvB9iFumxZSnRj5dQnSX1ko.ttf"
+    version: "v11",
+    lastModified: "2025-06-25",
+    files: {
+      regular: "https://fonts.gstatic.com/s/reemkufiink/v11/oPWJ_kJmmu8hCvB9iFumxZSnRj5dQnSX1ko.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/reemkufiink/v11/oPWJ_kJmmu8hCvB9iFumxZSndj9XRg.ttf",
-    "colorCapabilities": [
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/reemkufiink/v11/oPWJ_kJmmu8hCvB9iFumxZSndj9XRg.ttf",
+    colorCapabilities: [
       "COLRv1",
       "SVG"
     ]
   },
   {
-    "family": "Rubik",
-    "variants": [
+    family: "Rubik",
+    variants: [
       "300",
       "regular",
       "500",
@@ -1308,7 +1308,7 @@ const data: GoogleFontItem[] = [
       "800italic",
       "900italic"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "cyrillic",
       "cyrillic-ext",
@@ -1316,81 +1316,81 @@ const data: GoogleFontItem[] = [
       "latin",
       "latin-ext"
     ],
-    "version": "v31",
-    "lastModified": "2025-09-10",
-    "files": {
+    version: "v31",
+    lastModified: "2025-09-10",
+    files: {
       "300": "https://fonts.gstatic.com/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-WYi1UE80V4bVkA.ttf",
       "500": "https://fonts.gstatic.com/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-NYi1UE80V4bVkA.ttf",
       "600": "https://fonts.gstatic.com/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-2Y-1UE80V4bVkA.ttf",
       "700": "https://fonts.gstatic.com/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-4I-1UE80V4bVkA.ttf",
       "800": "https://fonts.gstatic.com/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-h4-1UE80V4bVkA.ttf",
       "900": "https://fonts.gstatic.com/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-ro-1UE80V4bVkA.ttf",
-      "regular": "https://fonts.gstatic.com/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4i1UE80V4bVkA.ttf",
+      regular: "https://fonts.gstatic.com/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4i1UE80V4bVkA.ttf",
       "300italic": "https://fonts.gstatic.com/s/rubik/v31/iJWbBXyIfDnIV7nEt3KSJbVDV49rz8sDE0UwdYPFkJ1O.ttf",
-      "italic": "https://fonts.gstatic.com/s/rubik/v31/iJWbBXyIfDnIV7nEt3KSJbVDV49rz8tdE0UwdYPFkJ1O.ttf",
+      italic: "https://fonts.gstatic.com/s/rubik/v31/iJWbBXyIfDnIV7nEt3KSJbVDV49rz8tdE0UwdYPFkJ1O.ttf",
       "500italic": "https://fonts.gstatic.com/s/rubik/v31/iJWbBXyIfDnIV7nEt3KSJbVDV49rz8tvE0UwdYPFkJ1O.ttf",
       "600italic": "https://fonts.gstatic.com/s/rubik/v31/iJWbBXyIfDnIV7nEt3KSJbVDV49rz8uDFEUwdYPFkJ1O.ttf",
       "700italic": "https://fonts.gstatic.com/s/rubik/v31/iJWbBXyIfDnIV7nEt3KSJbVDV49rz8u6FEUwdYPFkJ1O.ttf",
       "800italic": "https://fonts.gstatic.com/s/rubik/v31/iJWbBXyIfDnIV7nEt3KSJbVDV49rz8vdFEUwdYPFkJ1O.ttf",
       "900italic": "https://fonts.gstatic.com/s/rubik/v31/iJWbBXyIfDnIV7nEt3KSJbVDV49rz8v0FEUwdYPFkJ1O.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4iFUUUw.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/rubik/v31/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4iFUUUw.ttf"
   },
   {
-    "family": "Ruwudu",
-    "variants": [
+    family: "Ruwudu",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v4",
-    "lastModified": "2025-05-30",
-    "files": {
+    version: "v4",
+    lastModified: "2025-05-30",
+    files: {
       "500": "https://fonts.gstatic.com/s/ruwudu/v4/sykx-y1tj6UzRKf1YSm3_vjBrlSILg.ttf",
       "600": "https://fonts.gstatic.com/s/ruwudu/v4/sykx-y1tj6UzRKf1TS63_vjBrlSILg.ttf",
       "700": "https://fonts.gstatic.com/s/ruwudu/v4/sykx-y1tj6UzRKf1KS-3_vjBrlSILg.ttf",
-      "regular": "https://fonts.gstatic.com/s/ruwudu/v4/syky-y1tj6UzRKfNlQCT9tPdpw.ttf"
+      regular: "https://fonts.gstatic.com/s/ruwudu/v4/syky-y1tj6UzRKfNlQCT9tPdpw.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/ruwudu/v4/syky-y1tj6UzRKf9lAqX.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/ruwudu/v4/syky-y1tj6UzRKf9lAqX.ttf"
   },
   {
-    "family": "Scheherazade New",
-    "variants": [
+    family: "Scheherazade New",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v20",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v20",
+    lastModified: "2025-09-16",
+    files: {
       "500": "https://fonts.gstatic.com/s/scheherazadenew/v20/4UaerFhTvxVnHDvUkUiHg8jprP4DM_dFHlYC-IKnoSE.ttf",
       "600": "https://fonts.gstatic.com/s/scheherazadenew/v20/4UaerFhTvxVnHDvUkUiHg8jprP4DM9tCHlYC-IKnoSE.ttf",
       "700": "https://fonts.gstatic.com/s/scheherazadenew/v20/4UaerFhTvxVnHDvUkUiHg8jprP4DM79DHlYC-IKnoSE.ttf",
-      "regular": "https://fonts.gstatic.com/s/scheherazadenew/v20/4UaZrFhTvxVnHDvUkUiHg8jprP4DCwNsOl4p5Is.ttf"
+      regular: "https://fonts.gstatic.com/s/scheherazadenew/v20/4UaZrFhTvxVnHDvUkUiHg8jprP4DCwNsOl4p5Is.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/scheherazadenew/v20/4UaZrFhTvxVnHDvUkUiHg8jprP4DOwJmPg.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/scheherazadenew/v20/4UaZrFhTvxVnHDvUkUiHg8jprP4DOwJmPg.ttf"
   },
   {
-    "family": "Tajawal",
-    "variants": [
+    family: "Tajawal",
+    variants: [
       "200",
       "300",
       "regular",
@@ -1399,28 +1399,28 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin"
     ],
-    "version": "v12",
-    "lastModified": "2025-09-08",
-    "files": {
+    version: "v12",
+    lastModified: "2025-09-08",
+    files: {
       "200": "https://fonts.gstatic.com/s/tajawal/v12/Iurf6YBj_oCad4k1l_6gLrZjiLlJ-G0.ttf",
       "300": "https://fonts.gstatic.com/s/tajawal/v12/Iurf6YBj_oCad4k1l5qjLrZjiLlJ-G0.ttf",
       "500": "https://fonts.gstatic.com/s/tajawal/v12/Iurf6YBj_oCad4k1l8KiLrZjiLlJ-G0.ttf",
       "700": "https://fonts.gstatic.com/s/tajawal/v12/Iurf6YBj_oCad4k1l4qkLrZjiLlJ-G0.ttf",
       "800": "https://fonts.gstatic.com/s/tajawal/v12/Iurf6YBj_oCad4k1l5anLrZjiLlJ-G0.ttf",
       "900": "https://fonts.gstatic.com/s/tajawal/v12/Iurf6YBj_oCad4k1l7KmLrZjiLlJ-G0.ttf",
-      "regular": "https://fonts.gstatic.com/s/tajawal/v12/Iura6YBj_oCad4k1rzaLCr5IlLA.ttf"
+      regular: "https://fonts.gstatic.com/s/tajawal/v12/Iura6YBj_oCad4k1rzaLCr5IlLA.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/tajawal/v12/Iura6YBj_oCad4k1nzeBDg.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/tajawal/v12/Iura6YBj_oCad4k1nzeBDg.ttf"
   },
   {
-    "family": "Vazirmatn",
-    "variants": [
+    family: "Vazirmatn",
+    variants: [
       "100",
       "200",
       "300",
@@ -1431,14 +1431,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin",
       "latin-ext"
     ],
-    "version": "v16",
-    "lastModified": "2025-09-10",
-    "files": {
+    version: "v16",
+    lastModified: "2025-09-10",
+    files: {
       "100": "https://fonts.gstatic.com/s/vazirmatn/v16/Dxx78j6PP2D_kU2muijPEe1n2vVbfJRklWgyOReZ72DF_QY.ttf",
       "200": "https://fonts.gstatic.com/s/vazirmatn/v16/Dxx78j6PP2D_kU2muijPEe1n2vVbfJRklegzOReZ72DF_QY.ttf",
       "300": "https://fonts.gstatic.com/s/vazirmatn/v16/Dxx78j6PP2D_kU2muijPEe1n2vVbfJRklTYzOReZ72DF_QY.ttf",
@@ -1447,33 +1447,33 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/vazirmatn/v16/Dxx78j6PP2D_kU2muijPEe1n2vVbfJRklY80OReZ72DF_QY.ttf",
       "800": "https://fonts.gstatic.com/s/vazirmatn/v16/Dxx78j6PP2D_kU2muijPEe1n2vVbfJRkleg0OReZ72DF_QY.ttf",
       "900": "https://fonts.gstatic.com/s/vazirmatn/v16/Dxx78j6PP2D_kU2muijPEe1n2vVbfJRklcE0OReZ72DF_QY.ttf",
-      "regular": "https://fonts.gstatic.com/s/vazirmatn/v16/Dxx78j6PP2D_kU2muijPEe1n2vVbfJRklWgzOReZ72DF_QY.ttf"
+      regular: "https://fonts.gstatic.com/s/vazirmatn/v16/Dxx78j6PP2D_kU2muijPEe1n2vVbfJRklWgzOReZ72DF_QY.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/vazirmatn/v16/Dxx78j6PP2D_kU2muijPEe1n2vVbfJRklWgzCRaT6w.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/vazirmatn/v16/Dxx78j6PP2D_kU2muijPEe1n2vVbfJRklWgzCRaT6w.ttf"
   },
   {
-    "family": "Vibes",
-    "variants": [
+    family: "Vibes",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin"
     ],
-    "version": "v16",
-    "lastModified": "2025-09-10",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/vibes/v16/QdVYSTsmIB6tmbd3HpbsuBlh.ttf"
+    version: "v16",
+    lastModified: "2025-09-10",
+    files: {
+      regular: "https://fonts.gstatic.com/s/vibes/v16/QdVYSTsmIB6tmbd3HpbsuBlh.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/vibes/v16/QdVYSTsmIB6tmYd2FJI.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/vibes/v16/QdVYSTsmIB6tmYd2FJI.ttf"
   },
   {
-    "family": "Zain",
-    "variants": [
+    family: "Zain",
+    variants: [
       "200",
       "300",
       "300italic",
@@ -1483,25 +1483,25 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "latin"
     ],
-    "version": "v4",
-    "lastModified": "2025-10-29",
-    "files": {
+    version: "v4",
+    lastModified: "2025-10-29",
+    files: {
       "200": "https://fonts.gstatic.com/s/zain/v4/sykz-y9lm7soOBrstSq9-trEvlQ.ttf",
       "300": "https://fonts.gstatic.com/s/zain/v4/sykz-y9lm7soOH7vtSq9-trEvlQ.ttf",
       "700": "https://fonts.gstatic.com/s/zain/v4/sykz-y9lm7soOG7otSq9-trEvlQ.ttf",
       "800": "https://fonts.gstatic.com/s/zain/v4/sykz-y9lm7soOHLrtSq9-trEvlQ.ttf",
       "900": "https://fonts.gstatic.com/s/zain/v4/sykz-y9lm7soOFbqtSq9-trEvlQ.ttf",
       "300italic": "https://fonts.gstatic.com/s/zain/v4/sykx-y9lm7soMND1OSi3_vjBrlSILg.ttf",
-      "regular": "https://fonts.gstatic.com/s/zain/v4/syk8-y9lm7soANLHkSKW5tM.ttf",
-      "italic": "https://fonts.gstatic.com/s/zain/v4/syky-y9lm7soMNDNlQCT9tPdpw.ttf"
+      regular: "https://fonts.gstatic.com/s/zain/v4/syk8-y9lm7soANLHkSKW5tM.ttf",
+      italic: "https://fonts.gstatic.com/s/zain/v4/syky-y9lm7soMNDNlQCT9tPdpw.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/zain/v4/syk8-y9lm7soMNPNlQ.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/zain/v4/syk8-y9lm7soMNPNlQ.ttf"
   }
 ];
 

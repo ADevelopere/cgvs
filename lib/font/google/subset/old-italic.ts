@@ -3,13 +3,13 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Cardo",
-    "variants": [
+    family: "Cardo",
+    variants: [
       "regular",
       "italic",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "gothic",
       "greek",
       "greek-ext",
@@ -19,35 +19,35 @@ const data: GoogleFontItem[] = [
       "old-italic",
       "runic"
     ],
-    "version": "v21",
-    "lastModified": "2025-09-08",
-    "files": {
+    version: "v21",
+    lastModified: "2025-09-08",
+    files: {
       "700": "https://fonts.gstatic.com/s/cardo/v21/wlpygwjKBV1pqhND-aQR82JHaTBX.ttf",
-      "regular": "https://fonts.gstatic.com/s/cardo/v21/wlp_gwjKBV1pqiv_1oAZ2H5O.ttf",
-      "italic": "https://fonts.gstatic.com/s/cardo/v21/wlpxgwjKBV1pqhv93IQ73W5OcCk.ttf"
+      regular: "https://fonts.gstatic.com/s/cardo/v21/wlp_gwjKBV1pqiv_1oAZ2H5O.ttf",
+      italic: "https://fonts.gstatic.com/s/cardo/v21/wlpxgwjKBV1pqhv93IQ73W5OcCk.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/cardo/v21/wlp_gwjKBV1pqhv-3IQ.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/cardo/v21/wlp_gwjKBV1pqhv-3IQ.ttf"
   },
   {
-    "family": "Noto Sans Old Italic",
-    "variants": [
+    family: "Noto Sans Old Italic",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "old-italic"
     ],
-    "version": "v18",
-    "lastModified": "2025-09-08",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosansolditalic/v18/TuGOUUFzXI5FBtUq5a8bh68BJxxEVam7tWlRdRhtCC4d.ttf"
+    version: "v18",
+    lastModified: "2025-09-08",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosansolditalic/v18/TuGOUUFzXI5FBtUq5a8bh68BJxxEVam7tWlRdRhtCC4d.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansolditalic/v18/TuGOUUFzXI5FBtUq5a8bh68BJxxEVam7tVlQfxw.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansolditalic/v18/TuGOUUFzXI5FBtUq5a8bh68BJxxEVam7tVlQfxw.ttf"
   }
 ];
 

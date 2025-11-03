@@ -3,15 +3,15 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Jura",
-    "variants": [
+    family: "Jura",
+    variants: [
       "300",
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "cyrillic",
       "cyrillic-ext",
       "greek",
@@ -21,68 +21,68 @@ const data: GoogleFontItem[] = [
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v34",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v34",
+    lastModified: "2025-09-16",
+    files: {
       "300": "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP0D7auhTfmrH_rt.ttf",
       "500": "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP1v7auhTfmrH_rt.ttf",
       "600": "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP2D6quhTfmrH_rt.ttf",
       "700": "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP266quhTfmrH_rt.ttf",
-      "regular": "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP1d7auhTfmrH_rt.ttf"
+      regular: "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP1d7auhTfmrH_rt.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP1d7ZugR_0.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP1d7ZugR_0.ttf"
   },
   {
-    "family": "Kay Pho Du",
-    "variants": [
+    family: "Kay Pho Du",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "kayah-li",
       "latin",
       "latin-ext"
     ],
-    "version": "v2",
-    "lastModified": "2025-05-30",
-    "files": {
+    version: "v2",
+    lastModified: "2025-05-30",
+    files: {
       "500": "https://fonts.gstatic.com/s/kayphodu/v2/jizcREFPvGNOx-jhPwHR2B2OCDUy_zoyk18.ttf",
       "600": "https://fonts.gstatic.com/s/kayphodu/v2/jizcREFPvGNOx-jhPwHR2DGJCDUy_zoyk18.ttf",
       "700": "https://fonts.gstatic.com/s/kayphodu/v2/jizcREFPvGNOx-jhPwHR2FWICDUy_zoyk18.ttf",
-      "regular": "https://fonts.gstatic.com/s/kayphodu/v2/jizfREFPvGNOx-jhPwHR4OmnLD0Z4zM.ttf"
+      regular: "https://fonts.gstatic.com/s/kayphodu/v2/jizfREFPvGNOx-jhPwHR4OmnLD0Z4zM.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/kayphodu/v2/jizfREFPvGNOx-jhPwHR0OitKA.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/kayphodu/v2/jizfREFPvGNOx-jhPwHR0OitKA.ttf"
   },
   {
-    "family": "Noto Sans Kayah Li",
-    "variants": [
+    family: "Noto Sans Kayah Li",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "kayah-li",
       "latin",
       "latin-ext"
     ],
-    "version": "v26",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v26",
+    lastModified: "2025-09-16",
+    files: {
       "500": "https://fonts.gstatic.com/s/notosanskayahli/v26/B50nF61OpWTRcGrhOVJJwOMXdca6Yecki3E06x2jVTX3WBU3CZH4EXLuKVM.ttf",
       "600": "https://fonts.gstatic.com/s/notosanskayahli/v26/B50nF61OpWTRcGrhOVJJwOMXdca6Yecki3E06x2jVTX3WPkwCZH4EXLuKVM.ttf",
       "700": "https://fonts.gstatic.com/s/notosanskayahli/v26/B50nF61OpWTRcGrhOVJJwOMXdca6Yecki3E06x2jVTX3WMAwCZH4EXLuKVM.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosanskayahli/v26/B50nF61OpWTRcGrhOVJJwOMXdca6Yecki3E06x2jVTX3WCc3CZH4EXLuKVM.ttf"
+      regular: "https://fonts.gstatic.com/s/notosanskayahli/v26/B50nF61OpWTRcGrhOVJJwOMXdca6Yecki3E06x2jVTX3WCc3CZH4EXLuKVM.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanskayahli/v26/B50nF61OpWTRcGrhOVJJwOMXdca6Yecki3E06x2jVTX3WCc3OZDyFQ.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanskayahli/v26/B50nF61OpWTRcGrhOVJJwOMXdca6Yecki3E06x2jVTX3WCc3OZDyFQ.ttf"
   }
 ];
 

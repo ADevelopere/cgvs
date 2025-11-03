@@ -3,29 +3,29 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Serif Yezidi",
-    "variants": [
+    family: "Noto Serif Yezidi",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "yezidi"
     ],
-    "version": "v23",
-    "lastModified": "2025-09-05",
-    "files": {
+    version: "v23",
+    lastModified: "2025-09-05",
+    files: {
       "500": "https://fonts.gstatic.com/s/notoserifyezidi/v23/XLYPIYr5bJNDGYxLBibeHZAn3B5KJENnQjbfhMSVZspD6SEkrlGJgmVCqg.ttf",
       "600": "https://fonts.gstatic.com/s/notoserifyezidi/v23/XLYPIYr5bJNDGYxLBibeHZAn3B5KJENnQjbfhMSVZspDBSYkrlGJgmVCqg.ttf",
       "700": "https://fonts.gstatic.com/s/notoserifyezidi/v23/XLYPIYr5bJNDGYxLBibeHZAn3B5KJENnQjbfhMSVZspDPCYkrlGJgmVCqg.ttf",
-      "regular": "https://fonts.gstatic.com/s/notoserifyezidi/v23/XLYPIYr5bJNDGYxLBibeHZAn3B5KJENnQjbfhMSVZspD2yEkrlGJgmVCqg.ttf"
+      regular: "https://fonts.gstatic.com/s/notoserifyezidi/v23/XLYPIYr5bJNDGYxLBibeHZAn3B5KJENnQjbfhMSVZspD2yEkrlGJgmVCqg.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notoserifyezidi/v23/XLYPIYr5bJNDGYxLBibeHZAn3B5KJENnQjbfhMSVZspD2yEUr1uN.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notoserifyezidi/v23/XLYPIYr5bJNDGYxLBibeHZAn3B5KJENnQjbfhMSVZspD2yEUr1uN.ttf"
   }
 ];
 

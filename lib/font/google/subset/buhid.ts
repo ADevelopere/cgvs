@@ -3,23 +3,23 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Buhid",
-    "variants": [
+    family: "Noto Sans Buhid",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "buhid",
       "latin",
       "latin-ext"
     ],
-    "version": "v23",
-    "lastModified": "2025-09-16",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosansbuhid/v23/Dxxy8jiXMW75w3OmoDXVWJD7YwzAe6tgnaFoGA.ttf"
+    version: "v23",
+    lastModified: "2025-09-16",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosansbuhid/v23/Dxxy8jiXMW75w3OmoDXVWJD7YwzAe6tgnaFoGA.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansbuhid/v23/Dxxy8jiXMW75w3OmoDXVWJD7YwzweqFk.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansbuhid/v23/Dxxy8jiXMW75w3OmoDXVWJD7YwzweqFk.ttf"
   }
 ];
 

@@ -3,8 +3,8 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Google Sans Code",
-    "variants": [
+    family: "Google Sans Code",
+    variants: [
       "300",
       "regular",
       "500",
@@ -18,7 +18,7 @@ const data: GoogleFontItem[] = [
       "700italic",
       "800italic"
     ],
-    "subsets": [
+    subsets: [
       "adlam",
       "canadian-aboriginal",
       "cherokee",
@@ -31,45 +31,45 @@ const data: GoogleFontItem[] = [
       "syriac",
       "vietnamese"
     ],
-    "version": "v14",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v14",
+    lastModified: "2025-09-16",
+    files: {
       "300": "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXE_ggF--rWcgmBz.ttf",
       "500": "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXFTggF--rWcgmBz.ttf",
       "600": "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXG_hQF--rWcgmBz.ttf",
       "700": "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXGGhQF--rWcgmBz.ttf",
       "800": "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXHhhQF--rWcgmBz.ttf",
-      "regular": "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXFhggF--rWcgmBz.ttf",
+      regular: "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXFhggF--rWcgmBz.ttf",
       "300italic": "https://fonts.gstatic.com/s/googlesanscode/v14/pxisyogzv91QhV44Z_GQBHsGf5PuWEt-oWZcdm_0jmSpwbc98LG-h3BzvSU.ttf",
-      "italic": "https://fonts.gstatic.com/s/googlesanscode/v14/pxisyogzv91QhV44Z_GQBHsGf5PuWEt-oWZcdm_0jmSpwek98LG-h3BzvSU.ttf",
+      italic: "https://fonts.gstatic.com/s/googlesanscode/v14/pxisyogzv91QhV44Z_GQBHsGf5PuWEt-oWZcdm_0jmSpwek98LG-h3BzvSU.ttf",
       "500italic": "https://fonts.gstatic.com/s/googlesanscode/v14/pxisyogzv91QhV44Z_GQBHsGf5PuWEt-oWZcdm_0jmSpwds98LG-h3BzvSU.ttf",
       "600italic": "https://fonts.gstatic.com/s/googlesanscode/v14/pxisyogzv91QhV44Z_GQBHsGf5PuWEt-oWZcdm_0jmSpwTc68LG-h3BzvSU.ttf",
       "700italic": "https://fonts.gstatic.com/s/googlesanscode/v14/pxisyogzv91QhV44Z_GQBHsGf5PuWEt-oWZcdm_0jmSpwQ468LG-h3BzvSU.ttf",
       "800italic": "https://fonts.gstatic.com/s/googlesanscode/v14/pxisyogzv91QhV44Z_GQBHsGf5PuWEt-oWZcdm_0jmSpwWk68LG-h3BzvSU.ttf"
     },
-    "category": "monospace",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXFhgjF_8LE.ttf"
+    category: "monospace",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXFhgjF_8LE.ttf"
   },
   {
-    "family": "Noto Sans Old Permic",
-    "variants": [
+    family: "Noto Sans Old Permic",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "cyrillic-ext",
       "latin",
       "latin-ext",
       "old-permic"
     ],
-    "version": "v18",
-    "lastModified": "2025-09-10",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosansoldpermic/v18/snf1s1q1-dF8pli1TesqcbUY4Mr-ElrwKLdXgv_dKYB5.ttf"
+    version: "v18",
+    lastModified: "2025-09-10",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosansoldpermic/v18/snf1s1q1-dF8pli1TesqcbUY4Mr-ElrwKLdXgv_dKYB5.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansoldpermic/v18/snf1s1q1-dF8pli1TesqcbUY4Mr-ElrwKIdWiPs.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansoldpermic/v18/snf1s1q1-dF8pli1TesqcbUY4Mr-ElrwKIdWiPs.ttf"
   }
 ];
 

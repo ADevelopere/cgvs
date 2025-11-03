@@ -3,8 +3,8 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Thaana",
-    "variants": [
+    family: "Noto Sans Thaana",
+    variants: [
       "100",
       "200",
       "300",
@@ -15,14 +15,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "thaana"
     ],
-    "version": "v26",
-    "lastModified": "2025-09-05",
-    "files": {
+    version: "v26",
+    lastModified: "2025-09-05",
+    files: {
       "100": "https://fonts.gstatic.com/s/notosansthaana/v26/C8c14dM-vnz-s-3jaEsxlxHkBH-WZOETXfoQrfQ9Y4XrbxLhnu4-tbNu.ttf",
       "200": "https://fonts.gstatic.com/s/notosansthaana/v26/C8c14dM-vnz-s-3jaEsxlxHkBH-WZOETXfoQrfQ9Y4VrbhLhnu4-tbNu.ttf",
       "300": "https://fonts.gstatic.com/s/notosansthaana/v26/C8c14dM-vnz-s-3jaEsxlxHkBH-WZOETXfoQrfQ9Y4W1bhLhnu4-tbNu.ttf",
@@ -31,11 +31,11 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notosansthaana/v26/C8c14dM-vnz-s-3jaEsxlxHkBH-WZOETXfoQrfQ9Y4UMaRLhnu4-tbNu.ttf",
       "800": "https://fonts.gstatic.com/s/notosansthaana/v26/C8c14dM-vnz-s-3jaEsxlxHkBH-WZOETXfoQrfQ9Y4VraRLhnu4-tbNu.ttf",
       "900": "https://fonts.gstatic.com/s/notosansthaana/v26/C8c14dM-vnz-s-3jaEsxlxHkBH-WZOETXfoQrfQ9Y4VCaRLhnu4-tbNu.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosansthaana/v26/C8c14dM-vnz-s-3jaEsxlxHkBH-WZOETXfoQrfQ9Y4XrbhLhnu4-tbNu.ttf"
+      regular: "https://fonts.gstatic.com/s/notosansthaana/v26/C8c14dM-vnz-s-3jaEsxlxHkBH-WZOETXfoQrfQ9Y4XrbhLhnu4-tbNu.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansthaana/v26/C8c14dM-vnz-s-3jaEsxlxHkBH-WZOETXfoQrfQ9Y4XrbiLglOo.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansthaana/v26/C8c14dM-vnz-s-3jaEsxlxHkBH-WZOETXfoQrfQ9Y4XrbiLglOo.ttf"
   }
 ];
 

@@ -3,23 +3,23 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Carian",
-    "variants": [
+    family: "Noto Sans Carian",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "carian",
       "latin",
       "latin-ext"
     ],
-    "version": "v17",
-    "lastModified": "2025-09-05",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosanscarian/v17/LDIpaoiONgYwA9Yc6f0gUILeMIOgs7ob9yGLmfI.ttf"
+    version: "v17",
+    lastModified: "2025-09-05",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosanscarian/v17/LDIpaoiONgYwA9Yc6f0gUILeMIOgs7ob9yGLmfI.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanscarian/v17/LDIpaoiONgYwA9Yc6f0gUILeMIOgg7sR8w.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanscarian/v17/LDIpaoiONgYwA9Yc6f0gUILeMIOgg7sR8w.ttf"
   }
 ];
 

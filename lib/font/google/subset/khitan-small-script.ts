@@ -3,23 +3,23 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Serif Khitan Small Script",
-    "variants": [
+    family: "Noto Serif Khitan Small Script",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "khitan-small-script",
       "latin",
       "latin-ext"
     ],
-    "version": "v4",
-    "lastModified": "2025-05-30",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notoserifkhitansmallscript/v4/jizzRFVKsm4Bt9PrbSzC4KLlQUF5lRJg5j-l5PvyhfTdd4TsZ8lb39iddA.ttf"
+    version: "v4",
+    lastModified: "2025-05-30",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notoserifkhitansmallscript/v4/jizzRFVKsm4Bt9PrbSzC4KLlQUF5lRJg5j-l5PvyhfTdd4TsZ8lb39iddA.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notoserifkhitansmallscript/v4/jizzRFVKsm4Bt9PrbSzC4KLlQUF5lRJg5j-l5PvyhfTdd4TcZsNf.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notoserifkhitansmallscript/v4/jizzRFVKsm4Bt9PrbSzC4KLlQUF5lRJg5j-l5PvyhfTdd4TcZsNf.ttf"
   }
 ];
 

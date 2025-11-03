@@ -3,8 +3,8 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Handjet",
-    "variants": [
+    family: "Handjet",
+    variants: [
       "100",
       "200",
       "300",
@@ -15,7 +15,7 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "armenian",
       "cyrillic",
@@ -26,9 +26,9 @@ const data: GoogleFontItem[] = [
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v22",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v22",
+    lastModified: "2025-09-16",
+    files: {
       "100": "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHTmbUkUsEHFAH2A.ttf",
       "200": "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHbmaUkUsEHFAH2A.ttf",
       "300": "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHWeaUkUsEHFAH2A.ttf",
@@ -37,15 +37,15 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHd6dUkUsEHFAH2A.ttf",
       "800": "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHbmdUkUsEHFAH2A.ttf",
       "900": "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHZCdUkUsEHFAH2A.ttf",
-      "regular": "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHTmaUkUsEHFAH2A.ttf"
+      regular: "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHTmaUkUsEHFAH2A.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHTmaYkQmFA.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHTmaYkQmFA.ttf"
   },
   {
-    "family": "Noto Sans Armenian",
-    "variants": [
+    family: "Noto Sans Armenian",
+    variants: [
       "100",
       "200",
       "300",
@@ -56,14 +56,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "armenian",
       "latin",
       "latin-ext"
     ],
-    "version": "v47",
-    "lastModified": "2025-09-10",
-    "files": {
+    version: "v47",
+    lastModified: "2025-09-10",
+    files: {
       "100": "https://fonts.gstatic.com/s/notosansarmenian/v47/ZgN0jOZKPa7CHqq0h37c7ReDUubm2SEdFXp7ig73qtTY5idb74R9UdM3y2nZLorxbq0iYy6zF3Eg.ttf",
       "200": "https://fonts.gstatic.com/s/notosansarmenian/v47/ZgN0jOZKPa7CHqq0h37c7ReDUubm2SEdFXp7ig73qtTY5idb74R9UdM3y2nZLopxb60iYy6zF3Eg.ttf",
       "300": "https://fonts.gstatic.com/s/notosansarmenian/v47/ZgN0jOZKPa7CHqq0h37c7ReDUubm2SEdFXp7ig73qtTY5idb74R9UdM3y2nZLoqvb60iYy6zF3Eg.ttf",
@@ -72,15 +72,15 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notosansarmenian/v47/ZgN0jOZKPa7CHqq0h37c7ReDUubm2SEdFXp7ig73qtTY5idb74R9UdM3y2nZLooWaK0iYy6zF3Eg.ttf",
       "800": "https://fonts.gstatic.com/s/notosansarmenian/v47/ZgN0jOZKPa7CHqq0h37c7ReDUubm2SEdFXp7ig73qtTY5idb74R9UdM3y2nZLopxaK0iYy6zF3Eg.ttf",
       "900": "https://fonts.gstatic.com/s/notosansarmenian/v47/ZgN0jOZKPa7CHqq0h37c7ReDUubm2SEdFXp7ig73qtTY5idb74R9UdM3y2nZLopYaK0iYy6zF3Eg.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosansarmenian/v47/ZgN0jOZKPa7CHqq0h37c7ReDUubm2SEdFXp7ig73qtTY5idb74R9UdM3y2nZLorxb60iYy6zF3Eg.ttf"
+      regular: "https://fonts.gstatic.com/s/notosansarmenian/v47/ZgN0jOZKPa7CHqq0h37c7ReDUubm2SEdFXp7ig73qtTY5idb74R9UdM3y2nZLorxb60iYy6zF3Eg.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansarmenian/v47/ZgN0jOZKPa7CHqq0h37c7ReDUubm2SEdFXp7ig73qtTY5idb74R9UdM3y2nZLorxb50jaSo.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansarmenian/v47/ZgN0jOZKPa7CHqq0h37c7ReDUubm2SEdFXp7ig73qtTY5idb74R9UdM3y2nZLorxb50jaSo.ttf"
   },
   {
-    "family": "Noto Serif Armenian",
-    "variants": [
+    family: "Noto Serif Armenian",
+    variants: [
       "100",
       "200",
       "300",
@@ -91,14 +91,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "armenian",
       "latin",
       "latin-ext"
     ],
-    "version": "v30",
-    "lastModified": "2025-09-05",
-    "files": {
+    version: "v30",
+    lastModified: "2025-09-05",
+    files: {
       "100": "https://fonts.gstatic.com/s/notoserifarmenian/v30/3XFMEqMt3YoFsciDRZxptyCUKJmytZ0kVU-XvF7QaZuL85rnQ_zDNzDe5xNnKxyZi8ObxvXagGdkbg.ttf",
       "200": "https://fonts.gstatic.com/s/notoserifarmenian/v30/3XFMEqMt3YoFsciDRZxptyCUKJmytZ0kVU-XvF7QaZuL85rnQ_zDNzDe5xNnKxyZC8KbxvXagGdkbg.ttf",
       "300": "https://fonts.gstatic.com/s/notoserifarmenian/v30/3XFMEqMt3YoFsciDRZxptyCUKJmytZ0kVU-XvF7QaZuL85rnQ_zDNzDe5xNnKxyZ1cKbxvXagGdkbg.ttf",
@@ -107,11 +107,11 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notoserifarmenian/v30/3XFMEqMt3YoFsciDRZxptyCUKJmytZ0kVU-XvF7QaZuL85rnQ_zDNzDe5xNnKxyZbMWbxvXagGdkbg.ttf",
       "800": "https://fonts.gstatic.com/s/notoserifarmenian/v30/3XFMEqMt3YoFsciDRZxptyCUKJmytZ0kVU-XvF7QaZuL85rnQ_zDNzDe5xNnKxyZC8WbxvXagGdkbg.ttf",
       "900": "https://fonts.gstatic.com/s/notoserifarmenian/v30/3XFMEqMt3YoFsciDRZxptyCUKJmytZ0kVU-XvF7QaZuL85rnQ_zDNzDe5xNnKxyZIsWbxvXagGdkbg.ttf",
-      "regular": "https://fonts.gstatic.com/s/notoserifarmenian/v30/3XFMEqMt3YoFsciDRZxptyCUKJmytZ0kVU-XvF7QaZuL85rnQ_zDNzDe5xNnKxyZi8KbxvXagGdkbg.ttf"
+      regular: "https://fonts.gstatic.com/s/notoserifarmenian/v30/3XFMEqMt3YoFsciDRZxptyCUKJmytZ0kVU-XvF7QaZuL85rnQ_zDNzDe5xNnKxyZi8KbxvXagGdkbg.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notoserifarmenian/v30/3XFMEqMt3YoFsciDRZxptyCUKJmytZ0kVU-XvF7QaZuL85rnQ_zDNzDe5xNnKxyZi8Krx__e.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notoserifarmenian/v30/3XFMEqMt3YoFsciDRZxptyCUKJmytZ0kVU-XvF7QaZuL85rnQ_zDNzDe5xNnKxyZi8Krx__e.ttf"
   }
 ];
 

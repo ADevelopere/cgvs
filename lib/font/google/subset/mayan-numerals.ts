@@ -3,30 +3,30 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Mayan Numerals",
-    "variants": [
+    family: "Noto Sans Mayan Numerals",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "mayan-numerals"
     ],
-    "version": "v17",
-    "lastModified": "2025-09-11",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosansmayannumerals/v17/PlIuFk25O6RzLfvNNVSivR09_KqYMwvvDKYjfIiE68oo6eepYQ.ttf"
+    version: "v17",
+    lastModified: "2025-09-11",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosansmayannumerals/v17/PlIuFk25O6RzLfvNNVSivR09_KqYMwvvDKYjfIiE68oo6eepYQ.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansmayannumerals/v17/PlIuFk25O6RzLfvNNVSivR09_KqYMwvvDKYjfIi06sAs.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansmayannumerals/v17/PlIuFk25O6RzLfvNNVSivR09_KqYMwvvDKYjfIi06sAs.ttf"
   },
   {
-    "family": "Noto Sans Symbols 2",
-    "variants": [
+    family: "Noto Sans Symbols 2",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "braille",
       "latin",
       "latin-ext",
@@ -34,14 +34,14 @@ const data: GoogleFontItem[] = [
       "mayan-numerals",
       "symbols"
     ],
-    "version": "v25",
-    "lastModified": "2025-09-05",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosanssymbols2/v25/I_uyMoGduATTei9eI8daxVHDyfisHr71ypPqfX71-AI.ttf"
+    version: "v25",
+    lastModified: "2025-09-05",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosanssymbols2/v25/I_uyMoGduATTei9eI8daxVHDyfisHr71ypPqfX71-AI.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanssymbols2/v25/I_uyMoGduATTei9eI8daxVHDyfisHr71-pLgeQ.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanssymbols2/v25/I_uyMoGduATTei9eI8daxVHDyfisHr71-pLgeQ.ttf"
   }
 ];
 

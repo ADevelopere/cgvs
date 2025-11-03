@@ -3,13 +3,13 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Cardo",
-    "variants": [
+    family: "Cardo",
+    variants: [
       "regular",
       "italic",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "gothic",
       "greek",
       "greek-ext",
@@ -19,26 +19,26 @@ const data: GoogleFontItem[] = [
       "old-italic",
       "runic"
     ],
-    "version": "v21",
-    "lastModified": "2025-09-08",
-    "files": {
+    version: "v21",
+    lastModified: "2025-09-08",
+    files: {
       "700": "https://fonts.gstatic.com/s/cardo/v21/wlpygwjKBV1pqhND-aQR82JHaTBX.ttf",
-      "regular": "https://fonts.gstatic.com/s/cardo/v21/wlp_gwjKBV1pqiv_1oAZ2H5O.ttf",
-      "italic": "https://fonts.gstatic.com/s/cardo/v21/wlpxgwjKBV1pqhv93IQ73W5OcCk.ttf"
+      regular: "https://fonts.gstatic.com/s/cardo/v21/wlp_gwjKBV1pqiv_1oAZ2H5O.ttf",
+      italic: "https://fonts.gstatic.com/s/cardo/v21/wlpxgwjKBV1pqhv93IQ73W5OcCk.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/cardo/v21/wlp_gwjKBV1pqhv-3IQ.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/cardo/v21/wlp_gwjKBV1pqhv-3IQ.ttf"
   },
   {
-    "family": "Caudex",
-    "variants": [
+    family: "Caudex",
+    variants: [
       "regular",
       "italic",
       "700",
       "700italic"
     ],
-    "subsets": [
+    subsets: [
       "greek",
       "greek-ext",
       "latin",
@@ -46,36 +46,36 @@ const data: GoogleFontItem[] = [
       "runic",
       "vietnamese"
     ],
-    "version": "v19",
-    "lastModified": "2025-09-05",
-    "files": {
+    version: "v19",
+    lastModified: "2025-09-05",
+    files: {
       "700": "https://fonts.gstatic.com/s/caudex/v19/esDT311QOP6BJUrwdteklZUCGpG-GQ.ttf",
-      "regular": "https://fonts.gstatic.com/s/caudex/v19/esDQ311QOP6BJUrIyviAnb4eEw.ttf",
-      "italic": "https://fonts.gstatic.com/s/caudex/v19/esDS311QOP6BJUr4yPKEv7sOE4in.ttf",
+      regular: "https://fonts.gstatic.com/s/caudex/v19/esDQ311QOP6BJUrIyviAnb4eEw.ttf",
+      italic: "https://fonts.gstatic.com/s/caudex/v19/esDS311QOP6BJUr4yPKEv7sOE4in.ttf",
       "700italic": "https://fonts.gstatic.com/s/caudex/v19/esDV311QOP6BJUr4yMo4kJ8GOJSuGdLB.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/caudex/v19/esDQ311QOP6BJUr4y_KE.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/caudex/v19/esDQ311QOP6BJUr4y_KE.ttf"
   },
   {
-    "family": "Noto Sans Runic",
-    "variants": [
+    family: "Noto Sans Runic",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "runic"
     ],
-    "version": "v18",
-    "lastModified": "2025-09-11",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosansrunic/v18/H4c_BXWPl9DZ0Xe_nHUaus7W68WWaxpvHtgIYg.ttf"
+    version: "v18",
+    lastModified: "2025-09-11",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosansrunic/v18/H4c_BXWPl9DZ0Xe_nHUaus7W68WWaxpvHtgIYg.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansrunic/v18/H4c_BXWPl9DZ0Xe_nHUaus7W68WmahBr.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansrunic/v18/H4c_BXWPl9DZ0Xe_nHUaus7W68WmahBr.ttf"
   }
 ];
 

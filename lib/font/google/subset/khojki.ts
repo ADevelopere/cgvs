@@ -3,48 +3,48 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Khojki",
-    "variants": [
+    family: "Noto Sans Khojki",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "khojki",
       "latin",
       "latin-ext"
     ],
-    "version": "v20",
-    "lastModified": "2025-09-08",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosanskhojki/v20/-nFnOHM29Oofr2wohFbTuPPKVWpmK_d709jy92k.ttf"
+    version: "v20",
+    lastModified: "2025-09-08",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosanskhojki/v20/-nFnOHM29Oofr2wohFbTuPPKVWpmK_d709jy92k.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanskhojki/v20/-nFnOHM29Oofr2wohFbTuPPKVWpmG_Zx1w.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanskhojki/v20/-nFnOHM29Oofr2wohFbTuPPKVWpmG_Zx1w.ttf"
   },
   {
-    "family": "Noto Serif Khojki",
-    "variants": [
+    family: "Noto Serif Khojki",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "khojki",
       "latin",
       "latin-ext"
     ],
-    "version": "v13",
-    "lastModified": "2025-09-08",
-    "files": {
+    version: "v13",
+    lastModified: "2025-09-08",
+    files: {
       "500": "https://fonts.gstatic.com/s/notoserifkhojki/v13/I_uHMoOduATTei9aP90ctmPGxP2rBKTM4mcQ5M3z9QMY4AhvyZ0Qtc5HAQ.ttf",
       "600": "https://fonts.gstatic.com/s/notoserifkhojki/v13/I_uHMoOduATTei9aP90ctmPGxP2rBKTM4mcQ5M3z9QMYDA9vyZ0Qtc5HAQ.ttf",
       "700": "https://fonts.gstatic.com/s/notoserifkhojki/v13/I_uHMoOduATTei9aP90ctmPGxP2rBKTM4mcQ5M3z9QMYNQ9vyZ0Qtc5HAQ.ttf",
-      "regular": "https://fonts.gstatic.com/s/notoserifkhojki/v13/I_uHMoOduATTei9aP90ctmPGxP2rBKTM4mcQ5M3z9QMY0ghvyZ0Qtc5HAQ.ttf"
+      regular: "https://fonts.gstatic.com/s/notoserifkhojki/v13/I_uHMoOduATTei9aP90ctmPGxP2rBKTM4mcQ5M3z9QMY0ghvyZ0Qtc5HAQ.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notoserifkhojki/v13/I_uHMoOduATTei9aP90ctmPGxP2rBKTM4mcQ5M3z9QMY0ghfyJcU.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notoserifkhojki/v13/I_uHMoOduATTei9aP90ctmPGxP2rBKTM4mcQ5M3z9QMY0ghfyJcU.ttf"
   }
 ];
 

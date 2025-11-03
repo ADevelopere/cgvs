@@ -3,23 +3,23 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Tamil Supplement",
-    "variants": [
+    family: "Noto Sans Tamil Supplement",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "tamil-supplement"
     ],
-    "version": "v23",
-    "lastModified": "2025-09-17",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosanstamilsupplement/v23/DdTz78kEtnooLS5rXF1DaruiCd_bFp_Ph4sGcn7ax_vsAeMkeq1x.ttf"
+    version: "v23",
+    lastModified: "2025-09-17",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosanstamilsupplement/v23/DdTz78kEtnooLS5rXF1DaruiCd_bFp_Ph4sGcn7ax_vsAeMkeq1x.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanstamilsupplement/v23/DdTz78kEtnooLS5rXF1DaruiCd_bFp_Ph4sGcn7ax8vtC-c.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanstamilsupplement/v23/DdTz78kEtnooLS5rXF1DaruiCd_bFp_Ph4sGcn7ax8vtC-c.ttf"
   }
 ];
 

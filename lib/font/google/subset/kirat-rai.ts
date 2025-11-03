@@ -3,28 +3,28 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Kanchenjunga",
-    "variants": [
+    family: "Kanchenjunga",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "kirat-rai",
       "latin"
     ],
-    "version": "v2",
-    "lastModified": "2025-04-23",
-    "files": {
+    version: "v2",
+    lastModified: "2025-04-23",
+    files: {
       "500": "https://fonts.gstatic.com/s/kanchenjunga/v2/RWmQoKKd5fUmrILiWsjCI6TaXaIiDEtvAlaMKw.ttf",
       "600": "https://fonts.gstatic.com/s/kanchenjunga/v2/RWmQoKKd5fUmrILiWsjCI6TacaUiDEtvAlaMKw.ttf",
       "700": "https://fonts.gstatic.com/s/kanchenjunga/v2/RWmQoKKd5fUmrILiWsjCI6TaFaQiDEtvAlaMKw.ttf",
-      "regular": "https://fonts.gstatic.com/s/kanchenjunga/v2/RWmPoKKd5fUmrILiWsjCI6TiqYsGBGBzCw.ttf"
+      regular: "https://fonts.gstatic.com/s/kanchenjunga/v2/RWmPoKKd5fUmrILiWsjCI6TiqYsGBGBzCw.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/kanchenjunga/v2/RWmPoKKd5fUmrILiWsjCI6TSqIEC.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/kanchenjunga/v2/RWmPoKKd5fUmrILiWsjCI6TSqIEC.ttf"
   }
 ];
 
