@@ -3,8 +3,8 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Dai Banna SIL",
-    "variants": [
+    family: "Dai Banna SIL",
+    variants: [
       "300",
       "300italic",
       "regular",
@@ -16,53 +16,53 @@ const data: GoogleFontItem[] = [
       "700",
       "700italic"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "new-tai-lue"
     ],
-    "version": "v2",
-    "lastModified": "2025-05-30",
-    "files": {
+    version: "v2",
+    lastModified: "2025-05-30",
+    files: {
       "300": "https://fonts.gstatic.com/s/daibannasil/v2/lW-lwj0AJWmpwGyJ2uEoA4I7tYKoDsrKOgMX95A.ttf",
       "500": "https://fonts.gstatic.com/s/daibannasil/v2/lW-lwj0AJWmpwGyJ2uEoA4I7tdqpDsrKOgMX95A.ttf",
       "600": "https://fonts.gstatic.com/s/daibannasil/v2/lW-lwj0AJWmpwGyJ2uEoA4I7tfauDsrKOgMX95A.ttf",
       "700": "https://fonts.gstatic.com/s/daibannasil/v2/lW-lwj0AJWmpwGyJ2uEoA4I7tZKvDsrKOgMX95A.ttf",
       "300italic": "https://fonts.gstatic.com/s/daibannasil/v2/lW-jwj0AJWmpwGyJ2uEoA4I7vSyygsjAPiES55D3Vg.ttf",
-      "regular": "https://fonts.gstatic.com/s/daibannasil/v2/lW-4wj0AJWmpwGyJ2uEoA4I7jS6AKsLhJgo.ttf",
-      "italic": "https://fonts.gstatic.com/s/daibannasil/v2/lW-mwj0AJWmpwGyJ2uEoA4I7vSyKLuDkNgoO7g.ttf",
+      regular: "https://fonts.gstatic.com/s/daibannasil/v2/lW-4wj0AJWmpwGyJ2uEoA4I7jS6AKsLhJgo.ttf",
+      italic: "https://fonts.gstatic.com/s/daibannasil/v2/lW-mwj0AJWmpwGyJ2uEoA4I7vSyKLuDkNgoO7g.ttf",
       "500italic": "https://fonts.gstatic.com/s/daibannasil/v2/lW-jwj0AJWmpwGyJ2uEoA4I7vSyy2snAPiES55D3Vg.ttf",
       "600italic": "https://fonts.gstatic.com/s/daibannasil/v2/lW-jwj0AJWmpwGyJ2uEoA4I7vSyy9s7APiES55D3Vg.ttf",
       "700italic": "https://fonts.gstatic.com/s/daibannasil/v2/lW-jwj0AJWmpwGyJ2uEoA4I7vSyyks_APiES55D3Vg.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/daibannasil/v2/lW-4wj0AJWmpwGyJ2uEoA4I7vS-KLg.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/daibannasil/v2/lW-4wj0AJWmpwGyJ2uEoA4I7vS-KLg.ttf"
   },
   {
-    "family": "Noto Sans New Tai Lue",
-    "variants": [
+    family: "Noto Sans New Tai Lue",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "new-tai-lue"
     ],
-    "version": "v24",
-    "lastModified": "2025-09-02",
-    "files": {
+    version: "v24",
+    lastModified: "2025-09-02",
+    files: {
       "500": "https://fonts.gstatic.com/s/notosansnewtailue/v24/H4cKBW-Pl9DZ0Xe_nHUapt7PovLXAhAnY7wqaLy-OJgU3p_pddfAYUbghFPKzeY.ttf",
       "600": "https://fonts.gstatic.com/s/notosansnewtailue/v24/H4cKBW-Pl9DZ0Xe_nHUapt7PovLXAhAnY7wqaLy-OJgU3p_pdTvHYUbghFPKzeY.ttf",
       "700": "https://fonts.gstatic.com/s/notosansnewtailue/v24/H4cKBW-Pl9DZ0Xe_nHUapt7PovLXAhAnY7wqaLy-OJgU3p_pdQLHYUbghFPKzeY.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosansnewtailue/v24/H4cKBW-Pl9DZ0Xe_nHUapt7PovLXAhAnY7wqaLy-OJgU3p_pdeXAYUbghFPKzeY.ttf"
+      regular: "https://fonts.gstatic.com/s/notosansnewtailue/v24/H4cKBW-Pl9DZ0Xe_nHUapt7PovLXAhAnY7wqaLy-OJgU3p_pdeXAYUbghFPKzeY.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansnewtailue/v24/H4cKBW-Pl9DZ0Xe_nHUapt7PovLXAhAnY7wqaLy-OJgU3p_pdeXAUUfqgA.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansnewtailue/v24/H4cKBW-Pl9DZ0Xe_nHUapt7PovLXAhAnY7wqaLy-OJgU3p_pdeXAUUfqgA.ttf"
   }
 ];
 

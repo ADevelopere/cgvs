@@ -3,23 +3,23 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Avestan",
-    "variants": [
+    family: "Noto Sans Avestan",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "avestan",
       "latin",
       "latin-ext"
     ],
-    "version": "v22",
-    "lastModified": "2025-09-16",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosansavestan/v22/bWti7ejKfBziStx7lIzKOLQZKhIJkyu9SASLji8U.ttf"
+    version: "v22",
+    lastModified: "2025-09-16",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosansavestan/v22/bWti7ejKfBziStx7lIzKOLQZKhIJkyu9SASLji8U.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansavestan/v22/bWti7ejKfBziStx7lIzKOLQZKhIJkxu8QgA.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansavestan/v22/bWti7ejKfBziStx7lIzKOLQZKhIJkxu8QgA.ttf"
   }
 ];
 

@@ -3,8 +3,8 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Google Sans Code",
-    "variants": [
+    family: "Google Sans Code",
+    variants: [
       "300",
       "regular",
       "500",
@@ -18,7 +18,7 @@ const data: GoogleFontItem[] = [
       "700italic",
       "800italic"
     ],
-    "subsets": [
+    subsets: [
       "adlam",
       "canadian-aboriginal",
       "cherokee",
@@ -31,29 +31,29 @@ const data: GoogleFontItem[] = [
       "syriac",
       "vietnamese"
     ],
-    "version": "v14",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v14",
+    lastModified: "2025-09-16",
+    files: {
       "300": "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXE_ggF--rWcgmBz.ttf",
       "500": "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXFTggF--rWcgmBz.ttf",
       "600": "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXG_hQF--rWcgmBz.ttf",
       "700": "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXGGhQF--rWcgmBz.ttf",
       "800": "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXHhhQF--rWcgmBz.ttf",
-      "regular": "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXFhggF--rWcgmBz.ttf",
+      regular: "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXFhggF--rWcgmBz.ttf",
       "300italic": "https://fonts.gstatic.com/s/googlesanscode/v14/pxisyogzv91QhV44Z_GQBHsGf5PuWEt-oWZcdm_0jmSpwbc98LG-h3BzvSU.ttf",
-      "italic": "https://fonts.gstatic.com/s/googlesanscode/v14/pxisyogzv91QhV44Z_GQBHsGf5PuWEt-oWZcdm_0jmSpwek98LG-h3BzvSU.ttf",
+      italic: "https://fonts.gstatic.com/s/googlesanscode/v14/pxisyogzv91QhV44Z_GQBHsGf5PuWEt-oWZcdm_0jmSpwek98LG-h3BzvSU.ttf",
       "500italic": "https://fonts.gstatic.com/s/googlesanscode/v14/pxisyogzv91QhV44Z_GQBHsGf5PuWEt-oWZcdm_0jmSpwds98LG-h3BzvSU.ttf",
       "600italic": "https://fonts.gstatic.com/s/googlesanscode/v14/pxisyogzv91QhV44Z_GQBHsGf5PuWEt-oWZcdm_0jmSpwTc68LG-h3BzvSU.ttf",
       "700italic": "https://fonts.gstatic.com/s/googlesanscode/v14/pxisyogzv91QhV44Z_GQBHsGf5PuWEt-oWZcdm_0jmSpwQ468LG-h3BzvSU.ttf",
       "800italic": "https://fonts.gstatic.com/s/googlesanscode/v14/pxisyogzv91QhV44Z_GQBHsGf5PuWEt-oWZcdm_0jmSpwWk68LG-h3BzvSU.ttf"
     },
-    "category": "monospace",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXFhgjF_8LE.ttf"
+    category: "monospace",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/googlesanscode/v14/pxiSyogzv91QhV44Z_GQBHsGf5PuckJMXr41HfVaiXFhgjF_8LE.ttf"
   },
   {
-    "family": "Noto Sans Syriac",
-    "variants": [
+    family: "Noto Sans Syriac",
+    variants: [
       "100",
       "200",
       "300",
@@ -64,14 +64,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "syriac"
     ],
-    "version": "v18",
-    "lastModified": "2025-09-05",
-    "files": {
+    version: "v18",
+    lastModified: "2025-09-05",
+    files: {
       "100": "https://fonts.gstatic.com/s/notosanssyriac/v18/Ktk7AKuMeZjqPnXgyqribqzQqgW0LYiVqV7dXcP0C-VD9caJyZfUL_FC.ttf",
       "200": "https://fonts.gstatic.com/s/notosanssyriac/v18/Ktk7AKuMeZjqPnXgyqribqzQqgW0LYiVqV7dXcP0C-XD9MaJyZfUL_FC.ttf",
       "300": "https://fonts.gstatic.com/s/notosanssyriac/v18/Ktk7AKuMeZjqPnXgyqribqzQqgW0LYiVqV7dXcP0C-Ud9MaJyZfUL_FC.ttf",
@@ -80,15 +80,15 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notosanssyriac/v18/Ktk7AKuMeZjqPnXgyqribqzQqgW0LYiVqV7dXcP0C-Wk88aJyZfUL_FC.ttf",
       "800": "https://fonts.gstatic.com/s/notosanssyriac/v18/Ktk7AKuMeZjqPnXgyqribqzQqgW0LYiVqV7dXcP0C-XD88aJyZfUL_FC.ttf",
       "900": "https://fonts.gstatic.com/s/notosanssyriac/v18/Ktk7AKuMeZjqPnXgyqribqzQqgW0LYiVqV7dXcP0C-Xq88aJyZfUL_FC.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosanssyriac/v18/Ktk7AKuMeZjqPnXgyqribqzQqgW0LYiVqV7dXcP0C-VD9MaJyZfUL_FC.ttf"
+      regular: "https://fonts.gstatic.com/s/notosanssyriac/v18/Ktk7AKuMeZjqPnXgyqribqzQqgW0LYiVqV7dXcP0C-VD9MaJyZfUL_FC.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanssyriac/v18/Ktk7AKuMeZjqPnXgyqribqzQqgW0LYiVqV7dXcP0C-VD9PaIw5M.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanssyriac/v18/Ktk7AKuMeZjqPnXgyqribqzQqgW0LYiVqV7dXcP0C-VD9PaIw5M.ttf"
   },
   {
-    "family": "Noto Sans Syriac Eastern",
-    "variants": [
+    family: "Noto Sans Syriac Eastern",
+    variants: [
       "100",
       "200",
       "300",
@@ -99,14 +99,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "syriac"
     ],
-    "version": "v3",
-    "lastModified": "2025-09-02",
-    "files": {
+    version: "v3",
+    lastModified: "2025-09-02",
+    files: {
       "100": "https://fonts.gstatic.com/s/notosanssyriaceastern/v3/Noac6Vj_wIWFbTTCrYmvy8AjVU8aslWRHHvRYxS-Ro3yS0FDacnHPi-eszCL5ep1QPQ.ttf",
       "200": "https://fonts.gstatic.com/s/notosanssyriaceastern/v3/Noac6Vj_wIWFbTTCrYmvy8AjVU8aslWRHHvRYxS-Ro3yS0FDacnHPq-fszCL5ep1QPQ.ttf",
       "300": "https://fonts.gstatic.com/s/notosanssyriaceastern/v3/Noac6Vj_wIWFbTTCrYmvy8AjVU8aslWRHHvRYxS-Ro3yS0FDacnHPnGfszCL5ep1QPQ.ttf",
@@ -115,15 +115,15 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notosanssyriaceastern/v3/Noac6Vj_wIWFbTTCrYmvy8AjVU8aslWRHHvRYxS-Ro3yS0FDacnHPsiYszCL5ep1QPQ.ttf",
       "800": "https://fonts.gstatic.com/s/notosanssyriaceastern/v3/Noac6Vj_wIWFbTTCrYmvy8AjVU8aslWRHHvRYxS-Ro3yS0FDacnHPq-YszCL5ep1QPQ.ttf",
       "900": "https://fonts.gstatic.com/s/notosanssyriaceastern/v3/Noac6Vj_wIWFbTTCrYmvy8AjVU8aslWRHHvRYxS-Ro3yS0FDacnHPoaYszCL5ep1QPQ.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosanssyriaceastern/v3/Noac6Vj_wIWFbTTCrYmvy8AjVU8aslWRHHvRYxS-Ro3yS0FDacnHPi-fszCL5ep1QPQ.ttf"
+      regular: "https://fonts.gstatic.com/s/notosanssyriaceastern/v3/Noac6Vj_wIWFbTTCrYmvy8AjVU8aslWRHHvRYxS-Ro3yS0FDacnHPi-fszCL5ep1QPQ.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanssyriaceastern/v3/Noac6Vj_wIWFbTTCrYmvy8AjVU8aslWRHHvRYxS-Ro3yS0FDacnHPi-fgzGB4Q.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanssyriaceastern/v3/Noac6Vj_wIWFbTTCrYmvy8AjVU8aslWRHHvRYxS-Ro3yS0FDacnHPi-fgzGB4Q.ttf"
   },
   {
-    "family": "Noto Sans Syriac Western",
-    "variants": [
+    family: "Noto Sans Syriac Western",
+    variants: [
       "100",
       "200",
       "300",
@@ -134,14 +134,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "syriac"
     ],
-    "version": "v2",
-    "lastModified": "2025-10-29",
-    "files": {
+    version: "v2",
+    lastModified: "2025-10-29",
+    files: {
       "100": "https://fonts.gstatic.com/s/notosanssyriacwestern/v2/ke8LOhEEMVFsvCav8hWjbItd6Jf6MP7Z9spJZ6UNIILh-71aJmOWEaw_X8uP2jTYyH0.ttf",
       "200": "https://fonts.gstatic.com/s/notosanssyriacwestern/v2/ke8LOhEEMVFsvCav8hWjbItd6Jf6MP7Z9spJZ6UNIILh-71aJmOWESw-X8uP2jTYyH0.ttf",
       "300": "https://fonts.gstatic.com/s/notosanssyriacwestern/v2/ke8LOhEEMVFsvCav8hWjbItd6Jf6MP7Z9spJZ6UNIILh-71aJmOWEfI-X8uP2jTYyH0.ttf",
@@ -150,11 +150,11 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notosanssyriacwestern/v2/ke8LOhEEMVFsvCav8hWjbItd6Jf6MP7Z9spJZ6UNIILh-71aJmOWEUs5X8uP2jTYyH0.ttf",
       "800": "https://fonts.gstatic.com/s/notosanssyriacwestern/v2/ke8LOhEEMVFsvCav8hWjbItd6Jf6MP7Z9spJZ6UNIILh-71aJmOWESw5X8uP2jTYyH0.ttf",
       "900": "https://fonts.gstatic.com/s/notosanssyriacwestern/v2/ke8LOhEEMVFsvCav8hWjbItd6Jf6MP7Z9spJZ6UNIILh-71aJmOWEQU5X8uP2jTYyH0.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosanssyriacwestern/v2/ke8LOhEEMVFsvCav8hWjbItd6Jf6MP7Z9spJZ6UNIILh-71aJmOWEaw-X8uP2jTYyH0.ttf"
+      regular: "https://fonts.gstatic.com/s/notosanssyriacwestern/v2/ke8LOhEEMVFsvCav8hWjbItd6Jf6MP7Z9spJZ6UNIILh-71aJmOWEaw-X8uP2jTYyH0.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanssyriacwestern/v2/ke8LOhEEMVFsvCav8hWjbItd6Jf6MP7Z9spJZ6UNIILh-71aJmOWEaw-b8qF3g.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanssyriacwestern/v2/ke8LOhEEMVFsvCav8hWjbItd6Jf6MP7Z9spJZ6UNIILh-71aJmOWEaw-b8qF3g.ttf"
   }
 ];
 

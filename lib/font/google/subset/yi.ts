@@ -3,42 +3,42 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Yi",
-    "variants": [
+    family: "Noto Sans Yi",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "yi"
     ],
-    "version": "v20",
-    "lastModified": "2025-09-05",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosansyi/v20/sJoD3LFXjsSdcnzn071rO3apxVDJNVgSNg.ttf"
+    version: "v20",
+    lastModified: "2025-09-05",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosansyi/v20/sJoD3LFXjsSdcnzn071rO3apxVDJNVgSNg.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansyi/v20/sJoD3LFXjsSdcnzn071rO3aZxFrN.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansyi/v20/sJoD3LFXjsSdcnzn071rO3aZxFrN.ttf"
   },
   {
-    "family": "Nuosu SIL",
-    "variants": [
+    family: "Nuosu SIL",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "yi"
     ],
-    "version": "v12",
-    "lastModified": "2025-09-05",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/nuosusil/v12/8vIK7wM3wmRn_kc4uAjeFGxbO_zo-w.ttf"
+    version: "v12",
+    lastModified: "2025-09-05",
+    files: {
+      regular: "https://fonts.gstatic.com/s/nuosusil/v12/8vIK7wM3wmRn_kc4uAjeFGxbO_zo-w.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/nuosusil/v12/8vIK7wM3wmRn_kc4uAjuFWZf.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/nuosusil/v12/8vIK7wM3wmRn_kc4uAjuFWZf.ttf"
   }
 ];
 

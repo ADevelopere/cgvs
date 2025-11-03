@@ -3,29 +3,29 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Javanese",
-    "variants": [
+    family: "Noto Sans Javanese",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "javanese",
       "latin",
       "latin-ext"
     ],
-    "version": "v25",
-    "lastModified": "2025-09-11",
-    "files": {
+    version: "v25",
+    lastModified: "2025-09-11",
+    files: {
       "500": "https://fonts.gstatic.com/s/notosansjavanese/v25/2V01KJkDAIA6Hp4zoSScDjV0Y-eoHAHT-Z3MngEefiidxKvkFFliZYWj4O8.ttf",
       "600": "https://fonts.gstatic.com/s/notosansjavanese/v25/2V01KJkDAIA6Hp4zoSScDjV0Y-eoHAHT-Z3MngEefiidxEfjFFliZYWj4O8.ttf",
       "700": "https://fonts.gstatic.com/s/notosansjavanese/v25/2V01KJkDAIA6Hp4zoSScDjV0Y-eoHAHT-Z3MngEefiidxH7jFFliZYWj4O8.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosansjavanese/v25/2V01KJkDAIA6Hp4zoSScDjV0Y-eoHAHT-Z3MngEefiidxJnkFFliZYWj4O8.ttf"
+      regular: "https://fonts.gstatic.com/s/notosansjavanese/v25/2V01KJkDAIA6Hp4zoSScDjV0Y-eoHAHT-Z3MngEefiidxJnkFFliZYWj4O8.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansjavanese/v25/2V01KJkDAIA6Hp4zoSScDjV0Y-eoHAHT-Z3MngEefiidxJnkJFhoYQ.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansjavanese/v25/2V01KJkDAIA6Hp4zoSScDjV0Y-eoHAHT-Z3MngEefiidxJnkJFhoYQ.ttf"
   }
 ];
 

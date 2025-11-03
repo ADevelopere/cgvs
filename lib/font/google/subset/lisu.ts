@@ -3,13 +3,13 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "LXGW WenKai Mono TC",
-    "variants": [
+    family: "LXGW WenKai Mono TC",
+    variants: [
       "300",
       "regular",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "chinese-traditional",
       "cyrillic",
       "cyrillic-ext",
@@ -20,25 +20,25 @@ const data: GoogleFontItem[] = [
       "lisu",
       "vietnamese"
     ],
-    "version": "v9",
-    "lastModified": "2025-06-09",
-    "files": {
+    version: "v9",
+    lastModified: "2025-06-09",
+    files: {
       "300": "https://fonts.gstatic.com/s/lxgwwenkaimonotc/v9/pxiVyos4iPVgyWx9WtufHnsIf5nkaB0HssKqhvJljXmo2SA.ttf",
       "700": "https://fonts.gstatic.com/s/lxgwwenkaimonotc/v9/pxiVyos4iPVgyWx9WtufHnsIf5nkaB0HstKthvJljXmo2SA.ttf",
-      "regular": "https://fonts.gstatic.com/s/lxgwwenkaimonotc/v9/pxiYyos4iPVgyWx9WtufHnsIf5nkaB0Him6CovpOkXA.ttf"
+      regular: "https://fonts.gstatic.com/s/lxgwwenkaimonotc/v9/pxiYyos4iPVgyWx9WtufHnsIf5nkaB0Him6CovpOkXA.ttf"
     },
-    "category": "monospace",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/lxgwwenkaimonotc/v9/pxiYyos4iPVgyWx9WtufHnsIf5nkaB0Hum-Ipg.ttf"
+    category: "monospace",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/lxgwwenkaimonotc/v9/pxiYyos4iPVgyWx9WtufHnsIf5nkaB0Hum-Ipg.ttf"
   },
   {
-    "family": "LXGW WenKai TC",
-    "variants": [
+    family: "LXGW WenKai TC",
+    variants: [
       "300",
       "regular",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "chinese-traditional",
       "cyrillic",
       "cyrillic-ext",
@@ -49,20 +49,20 @@ const data: GoogleFontItem[] = [
       "lisu",
       "vietnamese"
     ],
-    "version": "v9",
-    "lastModified": "2025-06-09",
-    "files": {
+    version: "v9",
+    lastModified: "2025-06-09",
+    files: {
       "300": "https://fonts.gstatic.com/s/lxgwwenkaitc/v9/w8gAH20td8wNsI3f40DmtXZb4_MmBfkpTClICyan.ttf",
       "700": "https://fonts.gstatic.com/s/lxgwwenkaitc/v9/w8gAH20td8wNsI3f40DmtXZb4_M2AvkpTClICyan.ttf",
-      "regular": "https://fonts.gstatic.com/s/lxgwwenkaitc/v9/w8gDH20td8wNsI3f40DmtXZb48uKLd0hZzVB.ttf"
+      regular: "https://fonts.gstatic.com/s/lxgwwenkaitc/v9/w8gDH20td8wNsI3f40DmtXZb48uKLd0hZzVB.ttf"
     },
-    "category": "handwriting",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/lxgwwenkaitc/v9/w8gDH20td8wNsI3f40DmtXZb4_uLJ9k.ttf"
+    category: "handwriting",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/lxgwwenkaitc/v9/w8gDH20td8wNsI3f40DmtXZb4_uLJ9k.ttf"
   },
   {
-    "family": "Lisu Bosa",
-    "variants": [
+    family: "Lisu Bosa",
+    variants: [
       "200",
       "200italic",
       "300",
@@ -80,14 +80,14 @@ const data: GoogleFontItem[] = [
       "900",
       "900italic"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "lisu"
     ],
-    "version": "v2",
-    "lastModified": "2025-05-30",
-    "files": {
+    version: "v2",
+    lastModified: "2025-05-30",
+    files: {
       "200": "https://fonts.gstatic.com/s/lisubosa/v2/3XFtErkv240fsdmJRJQXX2DGRdbY1P1Sbg.ttf",
       "300": "https://fonts.gstatic.com/s/lisubosa/v2/3XFtErkv240fsdmJRJQXO2PGRdbY1P1Sbg.ttf",
       "500": "https://fonts.gstatic.com/s/lisubosa/v2/3XFtErkv240fsdmJRJQXY2LGRdbY1P1Sbg.ttf",
@@ -97,42 +97,42 @@ const data: GoogleFontItem[] = [
       "900": "https://fonts.gstatic.com/s/lisubosa/v2/3XFtErkv240fsdmJRJQXE2bGRdbY1P1Sbg.ttf",
       "200italic": "https://fonts.gstatic.com/s/lisubosa/v2/3XFzErkv240fsdmJRJQflXkuRNzc9vhCblye.ttf",
       "300italic": "https://fonts.gstatic.com/s/lisubosa/v2/3XFzErkv240fsdmJRJQflXlKR9zc9vhCblye.ttf",
-      "regular": "https://fonts.gstatic.com/s/lisubosa/v2/3XFoErkv240fsdmJRJQvl0viTf3E3Q.ttf",
-      "italic": "https://fonts.gstatic.com/s/lisubosa/v2/3XFuErkv240fsdmJRJQflUHmb_jU3eRL.ttf",
+      regular: "https://fonts.gstatic.com/s/lisubosa/v2/3XFoErkv240fsdmJRJQvl0viTf3E3Q.ttf",
+      italic: "https://fonts.gstatic.com/s/lisubosa/v2/3XFuErkv240fsdmJRJQflUHmb_jU3eRL.ttf",
       "500italic": "https://fonts.gstatic.com/s/lisubosa/v2/3XFzErkv240fsdmJRJQflXkSRtzc9vhCblye.ttf",
       "600italic": "https://fonts.gstatic.com/s/lisubosa/v2/3XFzErkv240fsdmJRJQflXk-Qdzc9vhCblye.ttf",
       "700italic": "https://fonts.gstatic.com/s/lisubosa/v2/3XFzErkv240fsdmJRJQflXlaQNzc9vhCblye.ttf",
       "800italic": "https://fonts.gstatic.com/s/lisubosa/v2/3XFzErkv240fsdmJRJQflXlGQ9zc9vhCblye.ttf",
       "900italic": "https://fonts.gstatic.com/s/lisubosa/v2/3XFzErkv240fsdmJRJQflXliQtzc9vhCblye.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/lisubosa/v2/3XFoErkv240fsdmJRJQflkHm.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/lisubosa/v2/3XFoErkv240fsdmJRJQflkHm.ttf"
   },
   {
-    "family": "Noto Sans Lisu",
-    "variants": [
+    family: "Noto Sans Lisu",
+    variants: [
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "lisu"
     ],
-    "version": "v27",
-    "lastModified": "2025-09-10",
-    "files": {
+    version: "v27",
+    lastModified: "2025-09-10",
+    files: {
       "500": "https://fonts.gstatic.com/s/notosanslisu/v27/uk-3EGO3o6EruUbnwovcYhz6kh57_nqbcTdjJnHP61wt29IlxkVdig.ttf",
       "600": "https://fonts.gstatic.com/s/notosanslisu/v27/uk-3EGO3o6EruUbnwovcYhz6kh57_nqbcTdjJnHPB1st29IlxkVdig.ttf",
       "700": "https://fonts.gstatic.com/s/notosanslisu/v27/uk-3EGO3o6EruUbnwovcYhz6kh57_nqbcTdjJnHPPlst29IlxkVdig.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosanslisu/v27/uk-3EGO3o6EruUbnwovcYhz6kh57_nqbcTdjJnHP2Vwt29IlxkVdig.ttf"
+      regular: "https://fonts.gstatic.com/s/notosanslisu/v27/uk-3EGO3o6EruUbnwovcYhz6kh57_nqbcTdjJnHP2Vwt29IlxkVdig.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanslisu/v27/uk-3EGO3o6EruUbnwovcYhz6kh57_nqbcTdjJnHP2Vwd2tgh.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanslisu/v27/uk-3EGO3o6EruUbnwovcYhz6kh57_nqbcTdjJnHP2Vwd2tgh.ttf"
   }
 ];
 

@@ -3,8 +3,8 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Anek Malayalam",
-    "variants": [
+    family: "Anek Malayalam",
+    variants: [
       "100",
       "200",
       "300",
@@ -14,14 +14,14 @@ const data: GoogleFontItem[] = [
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "malayalam"
     ],
-    "version": "v18",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v18",
+    lastModified: "2025-09-16",
+    files: {
       "100": "https://fonts.gstatic.com/s/anekmalayalam/v18/6qLjKZActRTs_mZAJUZWWkhke0nYa_vC8_Azq3-gP1SReZeOtqQuDVUTUZu_HMr5PDO71Qs.ttf",
       "200": "https://fonts.gstatic.com/s/anekmalayalam/v18/6qLjKZActRTs_mZAJUZWWkhke0nYa_vC8_Azq3-gP1SReZeOtqQuDVUTURu-HMr5PDO71Qs.ttf",
       "300": "https://fonts.gstatic.com/s/anekmalayalam/v18/6qLjKZActRTs_mZAJUZWWkhke0nYa_vC8_Azq3-gP1SReZeOtqQuDVUTUcW-HMr5PDO71Qs.ttf",
@@ -29,15 +29,15 @@ const data: GoogleFontItem[] = [
       "600": "https://fonts.gstatic.com/s/anekmalayalam/v18/6qLjKZActRTs_mZAJUZWWkhke0nYa_vC8_Azq3-gP1SReZeOtqQuDVUTUUW5HMr5PDO71Qs.ttf",
       "700": "https://fonts.gstatic.com/s/anekmalayalam/v18/6qLjKZActRTs_mZAJUZWWkhke0nYa_vC8_Azq3-gP1SReZeOtqQuDVUTUXy5HMr5PDO71Qs.ttf",
       "800": "https://fonts.gstatic.com/s/anekmalayalam/v18/6qLjKZActRTs_mZAJUZWWkhke0nYa_vC8_Azq3-gP1SReZeOtqQuDVUTURu5HMr5PDO71Qs.ttf",
-      "regular": "https://fonts.gstatic.com/s/anekmalayalam/v18/6qLjKZActRTs_mZAJUZWWkhke0nYa_vC8_Azq3-gP1SReZeOtqQuDVUTUZu-HMr5PDO71Qs.ttf"
+      regular: "https://fonts.gstatic.com/s/anekmalayalam/v18/6qLjKZActRTs_mZAJUZWWkhke0nYa_vC8_Azq3-gP1SReZeOtqQuDVUTUZu-HMr5PDO71Qs.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/anekmalayalam/v18/6qLjKZActRTs_mZAJUZWWkhke0nYa_vC8_Azq3-gP1SReZeOtqQuDVUTUZu-LMvzOA.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/anekmalayalam/v18/6qLjKZActRTs_mZAJUZWWkhke0nYa_vC8_Azq3-gP1SReZeOtqQuDVUTUZu-LMvzOA.ttf"
   },
   {
-    "family": "Arima",
-    "variants": [
+    family: "Arima",
+    variants: [
       "100",
       "200",
       "300",
@@ -46,7 +46,7 @@ const data: GoogleFontItem[] = [
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "greek",
       "greek-ext",
       "latin",
@@ -55,116 +55,116 @@ const data: GoogleFontItem[] = [
       "tamil",
       "vietnamese"
     ],
-    "version": "v7",
-    "lastModified": "2025-09-10",
-    "files": {
+    version: "v7",
+    lastModified: "2025-09-10",
+    files: {
       "100": "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1YTE-pQGOyYw2fw.ttf",
       "200": "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX14TA-pQGOyYw2fw.ttf",
       "300": "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1PzA-pQGOyYw2fw.ttf",
       "500": "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1UzA-pQGOyYw2fw.ttf",
       "600": "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1vzc-pQGOyYw2fw.ttf",
       "700": "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1hjc-pQGOyYw2fw.ttf",
-      "regular": "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1YTA-pQGOyYw2fw.ttf"
+      regular: "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1YTA-pQGOyYw2fw.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1YTAOpAuK.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1YTAOpAuK.ttf"
   },
   {
-    "family": "Baloo Chettan 2",
-    "variants": [
+    family: "Baloo Chettan 2",
+    variants: [
       "regular",
       "500",
       "600",
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "malayalam",
       "vietnamese"
     ],
-    "version": "v23",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v23",
+    lastModified: "2025-09-16",
+    files: {
       "500": "https://fonts.gstatic.com/s/baloochettan2/v23/vm8hdRbmXEva26PK-NtuX4ynWEzF69-L4gqgkIL5CdCTO1oeH9xI2gc.ttf",
       "600": "https://fonts.gstatic.com/s/baloochettan2/v23/vm8hdRbmXEva26PK-NtuX4ynWEzF69-L4gqgkIL5CTyUO1oeH9xI2gc.ttf",
       "700": "https://fonts.gstatic.com/s/baloochettan2/v23/vm8hdRbmXEva26PK-NtuX4ynWEzF69-L4gqgkIL5CQWUO1oeH9xI2gc.ttf",
       "800": "https://fonts.gstatic.com/s/baloochettan2/v23/vm8hdRbmXEva26PK-NtuX4ynWEzF69-L4gqgkIL5CWKUO1oeH9xI2gc.ttf",
-      "regular": "https://fonts.gstatic.com/s/baloochettan2/v23/vm8hdRbmXEva26PK-NtuX4ynWEzF69-L4gqgkIL5CeKTO1oeH9xI2gc.ttf"
+      regular: "https://fonts.gstatic.com/s/baloochettan2/v23/vm8hdRbmXEva26PK-NtuX4ynWEzF69-L4gqgkIL5CeKTO1oeH9xI2gc.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/baloochettan2/v23/vm8hdRbmXEva26PK-NtuX4ynWEzF69-L4gqgkIL5CeKTC1sUGw.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/baloochettan2/v23/vm8hdRbmXEva26PK-NtuX4ynWEzF69-L4gqgkIL5CeKTC1sUGw.ttf"
   },
   {
-    "family": "Chilanka",
-    "variants": [
+    family: "Chilanka",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "malayalam"
     ],
-    "version": "v23",
-    "lastModified": "2025-09-16",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/chilanka/v23/WWXRlj2DZQiMJYaYRrJQI9EAZhTO.ttf"
+    version: "v23",
+    lastModified: "2025-09-16",
+    files: {
+      regular: "https://fonts.gstatic.com/s/chilanka/v23/WWXRlj2DZQiMJYaYRrJQI9EAZhTO.ttf"
     },
-    "category": "handwriting",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/chilanka/v23/WWXRlj2DZQiMJYaYRoJRKdU.ttf"
+    category: "handwriting",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/chilanka/v23/WWXRlj2DZQiMJYaYRoJRKdU.ttf"
   },
   {
-    "family": "Gayathri",
-    "variants": [
+    family: "Gayathri",
+    variants: [
       "100",
       "regular",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "malayalam"
     ],
-    "version": "v20",
-    "lastModified": "2025-09-05",
-    "files": {
+    version: "v20",
+    lastModified: "2025-09-05",
+    files: {
       "100": "https://fonts.gstatic.com/s/gayathri/v20/MCoWzAb429DbBilWLLhc-pvSA_gA2W8.ttf",
       "700": "https://fonts.gstatic.com/s/gayathri/v20/MCoXzAb429DbBilWLLiE37v4LfQJwHbn.ttf",
-      "regular": "https://fonts.gstatic.com/s/gayathri/v20/MCoQzAb429DbBilWLIA48J_wBugA.ttf"
+      regular: "https://fonts.gstatic.com/s/gayathri/v20/MCoQzAb429DbBilWLIA48J_wBugA.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/gayathri/v20/MCoQzAb429DbBilWLLA5-ps.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/gayathri/v20/MCoQzAb429DbBilWLLA5-ps.ttf"
   },
   {
-    "family": "Manjari",
-    "variants": [
+    family: "Manjari",
+    variants: [
       "100",
       "regular",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "malayalam"
     ],
-    "version": "v14",
-    "lastModified": "2025-09-11",
-    "files": {
+    version: "v14",
+    lastModified: "2025-09-11",
+    files: {
       "100": "https://fonts.gstatic.com/s/manjari/v14/k3kSo8UPMOBO2w1UdbroK2vFIaOV8A.ttf",
       "700": "https://fonts.gstatic.com/s/manjari/v14/k3kVo8UPMOBO2w1UdWLNC0HrLaqM6Q4.ttf",
-      "regular": "https://fonts.gstatic.com/s/manjari/v14/k3kQo8UPMOBO2w1UTd7iL0nAMaM.ttf"
+      regular: "https://fonts.gstatic.com/s/manjari/v14/k3kQo8UPMOBO2w1UTd7iL0nAMaM.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/manjari/v14/k3kQo8UPMOBO2w1Ufd_oKw.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/manjari/v14/k3kQo8UPMOBO2w1Ufd_oKw.ttf"
   },
   {
-    "family": "Noto Sans Malayalam",
-    "variants": [
+    family: "Noto Sans Malayalam",
+    variants: [
       "100",
       "200",
       "300",
@@ -175,14 +175,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "malayalam"
     ],
-    "version": "v29",
-    "lastModified": "2025-09-11",
-    "files": {
+    version: "v29",
+    lastModified: "2025-09-11",
+    files: {
       "100": "https://fonts.gstatic.com/s/notosansmalayalam/v29/sJoi3K5XjsSdcnzn071rL37lpAOsUThnDZIfPdbeSNzVakglNM-Qw8EaeB8Nss-_RuH9BFzEr6HxEA.ttf",
       "200": "https://fonts.gstatic.com/s/notosansmalayalam/v29/sJoi3K5XjsSdcnzn071rL37lpAOsUThnDZIfPdbeSNzVakglNM-Qw8EaeB8Nss-_xuD9BFzEr6HxEA.ttf",
       "300": "https://fonts.gstatic.com/s/notosansmalayalam/v29/sJoi3K5XjsSdcnzn071rL37lpAOsUThnDZIfPdbeSNzVakglNM-Qw8EaeB8Nss-_GOD9BFzEr6HxEA.ttf",
@@ -191,15 +191,15 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notosansmalayalam/v29/sJoi3K5XjsSdcnzn071rL37lpAOsUThnDZIfPdbeSNzVakglNM-Qw8EaeB8Nss-_oef9BFzEr6HxEA.ttf",
       "800": "https://fonts.gstatic.com/s/notosansmalayalam/v29/sJoi3K5XjsSdcnzn071rL37lpAOsUThnDZIfPdbeSNzVakglNM-Qw8EaeB8Nss-_xuf9BFzEr6HxEA.ttf",
       "900": "https://fonts.gstatic.com/s/notosansmalayalam/v29/sJoi3K5XjsSdcnzn071rL37lpAOsUThnDZIfPdbeSNzVakglNM-Qw8EaeB8Nss-_7-f9BFzEr6HxEA.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosansmalayalam/v29/sJoi3K5XjsSdcnzn071rL37lpAOsUThnDZIfPdbeSNzVakglNM-Qw8EaeB8Nss-_RuD9BFzEr6HxEA.ttf"
+      regular: "https://fonts.gstatic.com/s/notosansmalayalam/v29/sJoi3K5XjsSdcnzn071rL37lpAOsUThnDZIfPdbeSNzVakglNM-Qw8EaeB8Nss-_RuD9BFzEr6HxEA.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansmalayalam/v29/sJoi3K5XjsSdcnzn071rL37lpAOsUThnDZIfPdbeSNzVakglNM-Qw8EaeB8Nss-_RuDNBVbA.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansmalayalam/v29/sJoi3K5XjsSdcnzn071rL37lpAOsUThnDZIfPdbeSNzVakglNM-Qw8EaeB8Nss-_RuDNBVbA.ttf"
   },
   {
-    "family": "Noto Serif Malayalam",
-    "variants": [
+    family: "Noto Serif Malayalam",
+    variants: [
       "100",
       "200",
       "300",
@@ -210,14 +210,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "malayalam"
     ],
-    "version": "v32",
-    "lastModified": "2025-09-10",
-    "files": {
+    version: "v32",
+    lastModified: "2025-09-10",
+    files: {
       "100": "https://fonts.gstatic.com/s/notoserifmalayalam/v32/JIAZUU5sdmdP_HMcVcZFcH7DeVBeGVgSMEk2cmVDq1ihUXL1t-1fnVwHpQVySg.ttf",
       "200": "https://fonts.gstatic.com/s/notoserifmalayalam/v32/JIAZUU5sdmdP_HMcVcZFcH7DeVBeGVgSMEk2cmVDq1ihUXL1N-xfnVwHpQVySg.ttf",
       "300": "https://fonts.gstatic.com/s/notoserifmalayalam/v32/JIAZUU5sdmdP_HMcVcZFcH7DeVBeGVgSMEk2cmVDq1ihUXL16exfnVwHpQVySg.ttf",
@@ -226,11 +226,11 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notoserifmalayalam/v32/JIAZUU5sdmdP_HMcVcZFcH7DeVBeGVgSMEk2cmVDq1ihUXL1UOtfnVwHpQVySg.ttf",
       "800": "https://fonts.gstatic.com/s/notoserifmalayalam/v32/JIAZUU5sdmdP_HMcVcZFcH7DeVBeGVgSMEk2cmVDq1ihUXL1N-tfnVwHpQVySg.ttf",
       "900": "https://fonts.gstatic.com/s/notoserifmalayalam/v32/JIAZUU5sdmdP_HMcVcZFcH7DeVBeGVgSMEk2cmVDq1ihUXL1HutfnVwHpQVySg.ttf",
-      "regular": "https://fonts.gstatic.com/s/notoserifmalayalam/v32/JIAZUU5sdmdP_HMcVcZFcH7DeVBeGVgSMEk2cmVDq1ihUXL1t-xfnVwHpQVySg.ttf"
+      regular: "https://fonts.gstatic.com/s/notoserifmalayalam/v32/JIAZUU5sdmdP_HMcVcZFcH7DeVBeGVgSMEk2cmVDq1ihUXL1t-xfnVwHpQVySg.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notoserifmalayalam/v32/JIAZUU5sdmdP_HMcVcZFcH7DeVBeGVgSMEk2cmVDq1ihUXL1t-xvnFYD.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notoserifmalayalam/v32/JIAZUU5sdmdP_HMcVcZFcH7DeVBeGVgSMEk2cmVDq1ihUXL1t-xvnFYD.ttf"
   }
 ];
 

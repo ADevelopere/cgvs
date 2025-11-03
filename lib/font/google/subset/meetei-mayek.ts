@@ -3,8 +3,8 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Meetei Mayek",
-    "variants": [
+    family: "Noto Sans Meetei Mayek",
+    variants: [
       "100",
       "200",
       "300",
@@ -15,14 +15,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "meetei-mayek"
     ],
-    "version": "v20",
-    "lastModified": "2025-09-08",
-    "files": {
+    version: "v20",
+    lastModified: "2025-09-08",
+    files: {
       "100": "https://fonts.gstatic.com/s/notosansmeeteimayek/v20/HTxAL3QyKieByqY9eZPFweO0be7M21uSphSdhqILnmrRfJ8t_1TJ__TW5PgeFYVa.ttf",
       "200": "https://fonts.gstatic.com/s/notosansmeeteimayek/v20/HTxAL3QyKieByqY9eZPFweO0be7M21uSphSdhqILnmrRfJ8t_1RJ_vTW5PgeFYVa.ttf",
       "300": "https://fonts.gstatic.com/s/notosansmeeteimayek/v20/HTxAL3QyKieByqY9eZPFweO0be7M21uSphSdhqILnmrRfJ8t_1SX_vTW5PgeFYVa.ttf",
@@ -31,11 +31,11 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notosansmeeteimayek/v20/HTxAL3QyKieByqY9eZPFweO0be7M21uSphSdhqILnmrRfJ8t_1Qu-fTW5PgeFYVa.ttf",
       "800": "https://fonts.gstatic.com/s/notosansmeeteimayek/v20/HTxAL3QyKieByqY9eZPFweO0be7M21uSphSdhqILnmrRfJ8t_1RJ-fTW5PgeFYVa.ttf",
       "900": "https://fonts.gstatic.com/s/notosansmeeteimayek/v20/HTxAL3QyKieByqY9eZPFweO0be7M21uSphSdhqILnmrRfJ8t_1Rg-fTW5PgeFYVa.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosansmeeteimayek/v20/HTxAL3QyKieByqY9eZPFweO0be7M21uSphSdhqILnmrRfJ8t_1TJ_vTW5PgeFYVa.ttf"
+      regular: "https://fonts.gstatic.com/s/notosansmeeteimayek/v20/HTxAL3QyKieByqY9eZPFweO0be7M21uSphSdhqILnmrRfJ8t_1TJ_vTW5PgeFYVa.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansmeeteimayek/v20/HTxAL3QyKieByqY9eZPFweO0be7M21uSphSdhqILnmrRfJ8t_1TJ_sTX7vw.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansmeeteimayek/v20/HTxAL3QyKieByqY9eZPFweO0be7M21uSphSdhqILnmrRfJ8t_1TJ_sTX7vw.ttf"
   }
 ];
 

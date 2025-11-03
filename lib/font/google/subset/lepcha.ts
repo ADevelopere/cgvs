@@ -3,42 +3,42 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Mingzat",
-    "variants": [
+    family: "Mingzat",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "lepcha"
     ],
-    "version": "v11",
-    "lastModified": "2025-09-05",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/mingzat/v11/0QIgMX5C-o-oWWyvBttkm_mv670.ttf"
+    version: "v11",
+    lastModified: "2025-09-05",
+    files: {
+      regular: "https://fonts.gstatic.com/s/mingzat/v11/0QIgMX5C-o-oWWyvBttkm_mv670.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/mingzat/v11/0QIgMX5C-o-oWWyvNtpunw.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/mingzat/v11/0QIgMX5C-o-oWWyvNtpunw.ttf"
   },
   {
-    "family": "Noto Sans Lepcha",
-    "variants": [
+    family: "Noto Sans Lepcha",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "lepcha"
     ],
-    "version": "v20",
-    "lastModified": "2025-09-08",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosanslepcha/v20/0QI7MWlB_JWgA166SKhu05TekNS32AJstqBXgd4.ttf"
+    version: "v20",
+    lastModified: "2025-09-08",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosanslepcha/v20/0QI7MWlB_JWgA166SKhu05TekNS32AJstqBXgd4.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanslepcha/v20/0QI7MWlB_JWgA166SKhu05TekNS36ANmsg.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanslepcha/v20/0QI7MWlB_JWgA166SKhu05TekNS36ANmsg.ttf"
   }
 ];
 

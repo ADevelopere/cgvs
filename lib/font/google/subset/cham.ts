@@ -3,8 +3,8 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Cham",
-    "variants": [
+    family: "Noto Sans Cham",
+    variants: [
       "100",
       "200",
       "300",
@@ -15,14 +15,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "cham",
       "latin",
       "latin-ext"
     ],
-    "version": "v33",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v33",
+    lastModified: "2025-09-16",
+    files: {
       "100": "https://fonts.gstatic.com/s/notosanscham/v33/pe06MIySN5pO62Z5YkFyQb_bbuRhe6D4yip43qfcER0cv7GykboaLg.ttf",
       "200": "https://fonts.gstatic.com/s/notosanscham/v33/pe06MIySN5pO62Z5YkFyQb_bbuRhe6D4yip43qfckRwcv7GykboaLg.ttf",
       "300": "https://fonts.gstatic.com/s/notosanscham/v33/pe06MIySN5pO62Z5YkFyQb_bbuRhe6D4yip43qfcTxwcv7GykboaLg.ttf",
@@ -31,11 +31,11 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notosanscham/v33/pe06MIySN5pO62Z5YkFyQb_bbuRhe6D4yip43qfc9hscv7GykboaLg.ttf",
       "800": "https://fonts.gstatic.com/s/notosanscham/v33/pe06MIySN5pO62Z5YkFyQb_bbuRhe6D4yip43qfckRscv7GykboaLg.ttf",
       "900": "https://fonts.gstatic.com/s/notosanscham/v33/pe06MIySN5pO62Z5YkFyQb_bbuRhe6D4yip43qfcuBscv7GykboaLg.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosanscham/v33/pe06MIySN5pO62Z5YkFyQb_bbuRhe6D4yip43qfcERwcv7GykboaLg.ttf"
+      regular: "https://fonts.gstatic.com/s/notosanscham/v33/pe06MIySN5pO62Z5YkFyQb_bbuRhe6D4yip43qfcERwcv7GykboaLg.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanscham/v33/pe06MIySN5pO62Z5YkFyQb_bbuRhe6D4yip43qfcERwsvru2.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanscham/v33/pe06MIySN5pO62Z5YkFyQb_bbuRhe6D4yip43qfcERwsvru2.ttf"
   }
 ];
 

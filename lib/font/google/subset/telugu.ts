@@ -3,27 +3,27 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Akaya Telivigala",
-    "variants": [
+    family: "Akaya Telivigala",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "telugu"
     ],
-    "version": "v28",
-    "lastModified": "2025-09-02",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/akayatelivigala/v28/lJwc-oo_iG9wXqU3rCTD395tp0uifdLdsIH0YH8.ttf"
+    version: "v28",
+    lastModified: "2025-09-02",
+    files: {
+      regular: "https://fonts.gstatic.com/s/akayatelivigala/v28/lJwc-oo_iG9wXqU3rCTD395tp0uifdLdsIH0YH8.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/akayatelivigala/v28/lJwc-oo_iG9wXqU3rCTD395tp0uiTdPXtA.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/akayatelivigala/v28/lJwc-oo_iG9wXqU3rCTD395tp0uiTdPXtA.ttf"
   },
   {
-    "family": "Anek Telugu",
-    "variants": [
+    family: "Anek Telugu",
+    variants: [
       "100",
       "200",
       "300",
@@ -33,14 +33,14 @@ const data: GoogleFontItem[] = [
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "telugu"
     ],
-    "version": "v13",
-    "lastModified": "2025-09-08",
-    "files": {
+    version: "v13",
+    lastModified: "2025-09-08",
+    files: {
       "100": "https://fonts.gstatic.com/s/anektelugu/v13/LhWLMVrUNvsddMtYGCx4FcVWOjlwE1WgXdoJ-5XHMl2DkooGK7i13y-_oE2G2ep10_8.ttf",
       "200": "https://fonts.gstatic.com/s/anektelugu/v13/LhWLMVrUNvsddMtYGCx4FcVWOjlwE1WgXdoJ-5XHMl2DkooGK7i136--oE2G2ep10_8.ttf",
       "300": "https://fonts.gstatic.com/s/anektelugu/v13/LhWLMVrUNvsddMtYGCx4FcVWOjlwE1WgXdoJ-5XHMl2DkooGK7i133G-oE2G2ep10_8.ttf",
@@ -48,224 +48,224 @@ const data: GoogleFontItem[] = [
       "600": "https://fonts.gstatic.com/s/anektelugu/v13/LhWLMVrUNvsddMtYGCx4FcVWOjlwE1WgXdoJ-5XHMl2DkooGK7i13_G5oE2G2ep10_8.ttf",
       "700": "https://fonts.gstatic.com/s/anektelugu/v13/LhWLMVrUNvsddMtYGCx4FcVWOjlwE1WgXdoJ-5XHMl2DkooGK7i138i5oE2G2ep10_8.ttf",
       "800": "https://fonts.gstatic.com/s/anektelugu/v13/LhWLMVrUNvsddMtYGCx4FcVWOjlwE1WgXdoJ-5XHMl2DkooGK7i136-5oE2G2ep10_8.ttf",
-      "regular": "https://fonts.gstatic.com/s/anektelugu/v13/LhWLMVrUNvsddMtYGCx4FcVWOjlwE1WgXdoJ-5XHMl2DkooGK7i13y--oE2G2ep10_8.ttf"
+      regular: "https://fonts.gstatic.com/s/anektelugu/v13/LhWLMVrUNvsddMtYGCx4FcVWOjlwE1WgXdoJ-5XHMl2DkooGK7i13y--oE2G2ep10_8.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/anektelugu/v13/LhWLMVrUNvsddMtYGCx4FcVWOjlwE1WgXdoJ-5XHMl2DkooGK7i13y--kEyM3Q.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/anektelugu/v13/LhWLMVrUNvsddMtYGCx4FcVWOjlwE1WgXdoJ-5XHMl2DkooGK7i13y--kEyM3Q.ttf"
   },
   {
-    "family": "Baloo Tammudu 2",
-    "variants": [
+    family: "Baloo Tammudu 2",
+    variants: [
       "regular",
       "500",
       "600",
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "telugu",
       "vietnamese"
     ],
-    "version": "v27",
-    "lastModified": "2025-09-11",
-    "files": {
+    version: "v27",
+    lastModified: "2025-09-11",
+    files: {
       "500": "https://fonts.gstatic.com/s/balootammudu2/v27/1Pt5g8TIS_SAmkLguUdFP8UaJcKkzlPmMT00GaE_Jc0e4c6PZSlGmAA.ttf",
       "600": "https://fonts.gstatic.com/s/balootammudu2/v27/1Pt5g8TIS_SAmkLguUdFP8UaJcKkzlPmMT00GaE_JSEZ4c6PZSlGmAA.ttf",
       "700": "https://fonts.gstatic.com/s/balootammudu2/v27/1Pt5g8TIS_SAmkLguUdFP8UaJcKkzlPmMT00GaE_JRgZ4c6PZSlGmAA.ttf",
       "800": "https://fonts.gstatic.com/s/balootammudu2/v27/1Pt5g8TIS_SAmkLguUdFP8UaJcKkzlPmMT00GaE_JX8Z4c6PZSlGmAA.ttf",
-      "regular": "https://fonts.gstatic.com/s/balootammudu2/v27/1Pt5g8TIS_SAmkLguUdFP8UaJcKkzlPmMT00GaE_Jf8e4c6PZSlGmAA.ttf"
+      regular: "https://fonts.gstatic.com/s/balootammudu2/v27/1Pt5g8TIS_SAmkLguUdFP8UaJcKkzlPmMT00GaE_Jf8e4c6PZSlGmAA.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/balootammudu2/v27/1Pt5g8TIS_SAmkLguUdFP8UaJcKkzlPmMT00GaE_Jf8e0c-FYQ.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/balootammudu2/v27/1Pt5g8TIS_SAmkLguUdFP8UaJcKkzlPmMT00GaE_Jf8e0c-FYQ.ttf"
   },
   {
-    "family": "Chathura",
-    "variants": [
+    family: "Chathura",
+    variants: [
       "100",
       "300",
       "regular",
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v22",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v22",
+    lastModified: "2025-09-16",
+    files: {
       "100": "https://fonts.gstatic.com/s/chathura/v22/_gP91R7-rzUuVjim42dEq0SbTvZyuDo.ttf",
       "300": "https://fonts.gstatic.com/s/chathura/v22/_gP81R7-rzUuVjim42eMiWSxYPp7oSNy.ttf",
       "700": "https://fonts.gstatic.com/s/chathura/v22/_gP81R7-rzUuVjim42ecjmSxYPp7oSNy.ttf",
       "800": "https://fonts.gstatic.com/s/chathura/v22/_gP81R7-rzUuVjim42eAjWSxYPp7oSNy.ttf",
-      "regular": "https://fonts.gstatic.com/s/chathura/v22/_gP71R7-rzUuVjim418goUC5S-Zy.ttf"
+      regular: "https://fonts.gstatic.com/s/chathura/v22/_gP71R7-rzUuVjim418goUC5S-Zy.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/chathura/v22/_gP71R7-rzUuVjim428hq0Q.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/chathura/v22/_gP71R7-rzUuVjim428hq0Q.ttf"
   },
   {
-    "family": "Dhurjati",
-    "variants": [
+    family: "Dhurjati",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v27",
-    "lastModified": "2025-09-10",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/dhurjati/v27/_6_8ED3gSeatXfFiFX3ySKQtuTA2.ttf"
+    version: "v27",
+    lastModified: "2025-09-10",
+    files: {
+      regular: "https://fonts.gstatic.com/s/dhurjati/v27/_6_8ED3gSeatXfFiFX3ySKQtuTA2.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/dhurjati/v27/_6_8ED3gSeatXfFiFU3zQqA.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/dhurjati/v27/_6_8ED3gSeatXfFiFU3zQqA.ttf"
   },
   {
-    "family": "Gidugu",
-    "variants": [
+    family: "Gidugu",
+    variants: [
       "regular"
     ],
-    "subsets": [
-      "latin",
-      "latin-ext",
-      "telugu"
-    ],
-    "version": "v28",
-    "lastModified": "2025-09-08",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/gidugu/v28/L0x8DFMkk1Uf6w3RvPCmRSlUig.ttf"
-    },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/gidugu/v28/L0x8DFMkk1Uf6w3hvfqi.ttf"
-  },
-  {
-    "family": "Gurajada",
-    "variants": [
-      "regular"
-    ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "telugu"
     ],
-    "version": "v22",
-    "lastModified": "2025-06-25",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/gurajada/v22/FwZY7-Qx308m-l-0Kd6A4sijpFu_.ttf"
+    version: "v28",
+    lastModified: "2025-09-08",
+    files: {
+      regular: "https://fonts.gstatic.com/s/gidugu/v28/L0x8DFMkk1Uf6w3RvPCmRSlUig.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/gurajada/v22/FwZY7-Qx308m-l-0Ke6B6Mw.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/gidugu/v28/L0x8DFMkk1Uf6w3hvfqi.ttf"
   },
   {
-    "family": "Hind Guntur",
-    "variants": [
+    family: "Gurajada",
+    variants: [
+      "regular"
+    ],
+    subsets: [
+      "latin",
+      "latin-ext",
+      "telugu"
+    ],
+    version: "v22",
+    lastModified: "2025-06-25",
+    files: {
+      regular: "https://fonts.gstatic.com/s/gurajada/v22/FwZY7-Qx308m-l-0Kd6A4sijpFu_.ttf"
+    },
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/gurajada/v22/FwZY7-Qx308m-l-0Ke6B6Mw.ttf"
+  },
+  {
+    family: "Hind Guntur",
+    variants: [
       "300",
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "telugu"
     ],
-    "version": "v14",
-    "lastModified": "2025-09-08",
-    "files": {
+    version: "v14",
+    lastModified: "2025-09-08",
+    files: {
       "300": "https://fonts.gstatic.com/s/hindguntur/v14/wXKyE3UZrok56nvamSuJd_yGn1czn9zaj5Ju.ttf",
       "500": "https://fonts.gstatic.com/s/hindguntur/v14/wXKyE3UZrok56nvamSuJd_zenlczn9zaj5Ju.ttf",
       "600": "https://fonts.gstatic.com/s/hindguntur/v14/wXKyE3UZrok56nvamSuJd_zymVczn9zaj5Ju.ttf",
       "700": "https://fonts.gstatic.com/s/hindguntur/v14/wXKyE3UZrok56nvamSuJd_yWmFczn9zaj5Ju.ttf",
-      "regular": "https://fonts.gstatic.com/s/hindguntur/v14/wXKvE3UZrok56nvamSuJd8Qqt3M7tMDT.ttf"
+      regular: "https://fonts.gstatic.com/s/hindguntur/v14/wXKvE3UZrok56nvamSuJd8Qqt3M7tMDT.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/hindguntur/v14/wXKvE3UZrok56nvamSuJd_QrvXc.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/hindguntur/v14/wXKvE3UZrok56nvamSuJd_QrvXc.ttf"
   },
   {
-    "family": "Lakki Reddy",
-    "variants": [
+    family: "Lakki Reddy",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v25",
-    "lastModified": "2025-09-10",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/lakkireddy/v25/S6u5w49MUSzD9jlCPmvLZQfox9k97-xZ.ttf"
+    version: "v25",
+    lastModified: "2025-09-10",
+    files: {
+      regular: "https://fonts.gstatic.com/s/lakkireddy/v25/S6u5w49MUSzD9jlCPmvLZQfox9k97-xZ.ttf"
     },
-    "category": "handwriting",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/lakkireddy/v25/S6u5w49MUSzD9jlCPmvLZTfpzd0.ttf"
+    category: "handwriting",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/lakkireddy/v25/S6u5w49MUSzD9jlCPmvLZTfpzd0.ttf"
   },
   {
-    "family": "Mallanna",
-    "variants": [
+    family: "Mallanna",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v15",
-    "lastModified": "2025-09-10",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/mallanna/v15/hv-Vlzx-KEQb84YaDGwzEzRwVvJ-.ttf"
+    version: "v15",
+    lastModified: "2025-09-10",
+    files: {
+      regular: "https://fonts.gstatic.com/s/mallanna/v15/hv-Vlzx-KEQb84YaDGwzEzRwVvJ-.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/mallanna/v15/hv-Vlzx-KEQb84YaDFwyGTA.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/mallanna/v15/hv-Vlzx-KEQb84YaDFwyGTA.ttf"
   },
   {
-    "family": "Mandali",
-    "variants": [
+    family: "Mandali",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v16",
-    "lastModified": "2025-09-10",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/mandali/v16/LhWlMVbYOfASNfNUVFk1ZPdcKtA.ttf"
+    version: "v16",
+    lastModified: "2025-09-10",
+    files: {
+      regular: "https://fonts.gstatic.com/s/mandali/v16/LhWlMVbYOfASNfNUVFk1ZPdcKtA.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/mandali/v16/LhWlMVbYOfASNfNUZFg_YA.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/mandali/v16/LhWlMVbYOfASNfNUZFg_YA.ttf"
   },
   {
-    "family": "NTR",
-    "variants": [
+    family: "NTR",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v19",
-    "lastModified": "2025-09-11",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/ntr/v19/RLpzK5Xy0ZjiGGhs5TA4bg.ttf"
+    version: "v19",
+    lastModified: "2025-09-11",
+    files: {
+      regular: "https://fonts.gstatic.com/s/ntr/v19/RLpzK5Xy0ZjiGGhs5TA4bg.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/ntr/v19/RLpzK5Xy0ZjSGWJo.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/ntr/v19/RLpzK5Xy0ZjSGWJo.ttf"
   },
   {
-    "family": "Noto Sans Telugu",
-    "variants": [
+    family: "Noto Sans Telugu",
+    variants: [
       "100",
       "200",
       "300",
@@ -276,14 +276,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "telugu"
     ],
-    "version": "v30",
-    "lastModified": "2025-09-08",
-    "files": {
+    version: "v30",
+    lastModified: "2025-09-08",
+    files: {
       "100": "https://fonts.gstatic.com/s/notosanstelugu/v30/0FlxVOGZlE2Rrtr-HmgkMWJNjJ5_RyT8o8c7fHkeg-esVC5dzHkHIJQqrEntezfqQUbf-3v37w.ttf",
       "200": "https://fonts.gstatic.com/s/notosanstelugu/v30/0FlxVOGZlE2Rrtr-HmgkMWJNjJ5_RyT8o8c7fHkeg-esVC5dzHkHIJQqrEnt-zbqQUbf-3v37w.ttf",
       "300": "https://fonts.gstatic.com/s/notosanstelugu/v30/0FlxVOGZlE2Rrtr-HmgkMWJNjJ5_RyT8o8c7fHkeg-esVC5dzHkHIJQqrEntJTbqQUbf-3v37w.ttf",
@@ -292,15 +292,15 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notosanstelugu/v30/0FlxVOGZlE2Rrtr-HmgkMWJNjJ5_RyT8o8c7fHkeg-esVC5dzHkHIJQqrEntnDHqQUbf-3v37w.ttf",
       "800": "https://fonts.gstatic.com/s/notosanstelugu/v30/0FlxVOGZlE2Rrtr-HmgkMWJNjJ5_RyT8o8c7fHkeg-esVC5dzHkHIJQqrEnt-zHqQUbf-3v37w.ttf",
       "900": "https://fonts.gstatic.com/s/notosanstelugu/v30/0FlxVOGZlE2Rrtr-HmgkMWJNjJ5_RyT8o8c7fHkeg-esVC5dzHkHIJQqrEnt0jHqQUbf-3v37w.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosanstelugu/v30/0FlxVOGZlE2Rrtr-HmgkMWJNjJ5_RyT8o8c7fHkeg-esVC5dzHkHIJQqrEntezbqQUbf-3v37w.ttf"
+      regular: "https://fonts.gstatic.com/s/notosanstelugu/v30/0FlxVOGZlE2Rrtr-HmgkMWJNjJ5_RyT8o8c7fHkeg-esVC5dzHkHIJQqrEntezbqQUbf-3v37w.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanstelugu/v30/0FlxVOGZlE2Rrtr-HmgkMWJNjJ5_RyT8o8c7fHkeg-esVC5dzHkHIJQqrEntezbaQEzb.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanstelugu/v30/0FlxVOGZlE2Rrtr-HmgkMWJNjJ5_RyT8o8c7fHkeg-esVC5dzHkHIJQqrEntezbaQEzb.ttf"
   },
   {
-    "family": "Noto Serif Telugu",
-    "variants": [
+    family: "Noto Serif Telugu",
+    variants: [
       "100",
       "200",
       "300",
@@ -311,14 +311,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "telugu"
     ],
-    "version": "v29",
-    "lastModified": "2025-09-11",
-    "files": {
+    version: "v29",
+    lastModified: "2025-09-11",
+    files: {
       "100": "https://fonts.gstatic.com/s/notoseriftelugu/v29/tDbl2pCbnkEKmXNVmt2M1q6f4HWbbj6MRbYEeav7Fe9D9TGwuY2fjgrZYA.ttf",
       "200": "https://fonts.gstatic.com/s/notoseriftelugu/v29/tDbl2pCbnkEKmXNVmt2M1q6f4HWbbj6MRbYEeav7Fe9DdTCwuY2fjgrZYA.ttf",
       "300": "https://fonts.gstatic.com/s/notoseriftelugu/v29/tDbl2pCbnkEKmXNVmt2M1q6f4HWbbj6MRbYEeav7Fe9DqzCwuY2fjgrZYA.ttf",
@@ -327,230 +327,230 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notoseriftelugu/v29/tDbl2pCbnkEKmXNVmt2M1q6f4HWbbj6MRbYEeav7Fe9DEjewuY2fjgrZYA.ttf",
       "800": "https://fonts.gstatic.com/s/notoseriftelugu/v29/tDbl2pCbnkEKmXNVmt2M1q6f4HWbbj6MRbYEeav7Fe9DdTewuY2fjgrZYA.ttf",
       "900": "https://fonts.gstatic.com/s/notoseriftelugu/v29/tDbl2pCbnkEKmXNVmt2M1q6f4HWbbj6MRbYEeav7Fe9DXDewuY2fjgrZYA.ttf",
-      "regular": "https://fonts.gstatic.com/s/notoseriftelugu/v29/tDbl2pCbnkEKmXNVmt2M1q6f4HWbbj6MRbYEeav7Fe9D9TCwuY2fjgrZYA.ttf"
+      regular: "https://fonts.gstatic.com/s/notoseriftelugu/v29/tDbl2pCbnkEKmXNVmt2M1q6f4HWbbj6MRbYEeav7Fe9D9TCwuY2fjgrZYA.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notoseriftelugu/v29/tDbl2pCbnkEKmXNVmt2M1q6f4HWbbj6MRbYEeav7Fe9D9TCAuIeb.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notoseriftelugu/v29/tDbl2pCbnkEKmXNVmt2M1q6f4HWbbj6MRbYEeav7Fe9D9TCAuIeb.ttf"
   },
   {
-    "family": "Peddana",
-    "variants": [
+    family: "Peddana",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v24",
-    "lastModified": "2025-09-08",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/peddana/v24/aFTU7PBhaX89UcKWhh2aBYyMcKw.ttf"
+    version: "v24",
+    lastModified: "2025-09-08",
+    files: {
+      regular: "https://fonts.gstatic.com/s/peddana/v24/aFTU7PBhaX89UcKWhh2aBYyMcKw.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/peddana/v24/aFTU7PBhaX89UcKWthyQAQ.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/peddana/v24/aFTU7PBhaX89UcKWthyQAQ.ttf"
   },
   {
-    "family": "Ponnala",
-    "variants": [
+    family: "Ponnala",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v3",
-    "lastModified": "2025-09-17",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/ponnala/v3/w8gaH2QxQOU08bbbrQut2F4OuOo.ttf"
+    version: "v3",
+    lastModified: "2025-09-17",
+    files: {
+      regular: "https://fonts.gstatic.com/s/ponnala/v3/w8gaH2QxQOU08bbbrQut2F4OuOo.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/ponnala/v3/w8gaH2QxQOU08bbbnQqn3A.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/ponnala/v3/w8gaH2QxQOU08bbbnQqn3A.ttf"
   },
   {
-    "family": "Ramabhadra",
-    "variants": [
+    family: "Ramabhadra",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v17",
-    "lastModified": "2025-09-16",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/ramabhadra/v17/EYq2maBOwqRW9P1SQ83LehNGX5uWw3o.ttf"
+    version: "v17",
+    lastModified: "2025-09-16",
+    files: {
+      regular: "https://fonts.gstatic.com/s/ramabhadra/v17/EYq2maBOwqRW9P1SQ83LehNGX5uWw3o.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/ramabhadra/v17/EYq2maBOwqRW9P1SQ83LShJMWw.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/ramabhadra/v17/EYq2maBOwqRW9P1SQ83LShJMWw.ttf"
   },
   {
-    "family": "Ramaraja",
-    "variants": [
+    family: "Ramaraja",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v17",
-    "lastModified": "2025-09-10",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/ramaraja/v17/SlGTmQearpYAYG1CABIkqnB6aSQU.ttf"
+    version: "v17",
+    lastModified: "2025-09-10",
+    files: {
+      regular: "https://fonts.gstatic.com/s/ramaraja/v17/SlGTmQearpYAYG1CABIkqnB6aSQU.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/ramaraja/v17/SlGTmQearpYAYG1CACIloHQ.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/ramaraja/v17/SlGTmQearpYAYG1CACIloHQ.ttf"
   },
   {
-    "family": "Ravi Prakash",
-    "variants": [
+    family: "Ravi Prakash",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v21",
-    "lastModified": "2025-09-16",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/raviprakash/v21/gokpH6fsDkVrF9Bv9X8SOAKHmNZEq6TTFw.ttf"
+    version: "v21",
+    lastModified: "2025-09-16",
+    files: {
+      regular: "https://fonts.gstatic.com/s/raviprakash/v21/gokpH6fsDkVrF9Bv9X8SOAKHmNZEq6TTFw.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/raviprakash/v21/gokpH6fsDkVrF9Bv9X8SOAK3mdxA.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/raviprakash/v21/gokpH6fsDkVrF9Bv9X8SOAK3mdxA.ttf"
   },
   {
-    "family": "Sirivennela",
-    "variants": [
+    family: "Sirivennela",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v2",
-    "lastModified": "2025-08-26",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/sirivennela/v2/kmK5Zq0oHhbAYX-X6lgptg7YiOFDtqtf.ttf"
+    version: "v2",
+    lastModified: "2025-08-26",
+    files: {
+      regular: "https://fonts.gstatic.com/s/sirivennela/v2/kmK5Zq0oHhbAYX-X6lgptg7YiOFDtqtf.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/sirivennela/v2/kmK5Zq0oHhbAYX-X6lgptj7ZguU.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/sirivennela/v2/kmK5Zq0oHhbAYX-X6lgptj7ZguU.ttf"
   },
   {
-    "family": "Sree Krushnadevaraya",
-    "variants": [
+    family: "Sree Krushnadevaraya",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v23",
-    "lastModified": "2025-09-11",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/sreekrushnadevaraya/v23/R70FjzQeifmPepmyQQjQ9kvwMkWYPfTA_EWb2FhQuXir.ttf"
+    version: "v23",
+    lastModified: "2025-09-11",
+    files: {
+      regular: "https://fonts.gstatic.com/s/sreekrushnadevaraya/v23/R70FjzQeifmPepmyQQjQ9kvwMkWYPfTA_EWb2FhQuXir.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/sreekrushnadevaraya/v23/R70FjzQeifmPepmyQQjQ9kvwMkWYPfTA_HWa0lw.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/sreekrushnadevaraya/v23/R70FjzQeifmPepmyQQjQ9kvwMkWYPfTA_HWa0lw.ttf"
   },
   {
-    "family": "Suranna",
-    "variants": [
+    family: "Suranna",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v15",
-    "lastModified": "2025-09-08",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/suranna/v15/gokuH6ztGkFjWe58tBRZT2KmgP0.ttf"
+    version: "v15",
+    lastModified: "2025-09-08",
+    files: {
+      regular: "https://fonts.gstatic.com/s/suranna/v15/gokuH6ztGkFjWe58tBRZT2KmgP0.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/suranna/v15/gokuH6ztGkFjWe58hBVTSw.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/suranna/v15/gokuH6ztGkFjWe58hBVTSw.ttf"
   },
   {
-    "family": "Suravaram",
-    "variants": [
+    family: "Suravaram",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v23",
-    "lastModified": "2025-09-10",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/suravaram/v23/_gP61R_usiY7SCym4xIAi261Qv9roQ.ttf"
+    version: "v23",
+    lastModified: "2025-09-10",
+    files: {
+      regular: "https://fonts.gstatic.com/s/suravaram/v23/_gP61R_usiY7SCym4xIAi261Qv9roQ.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/suravaram/v23/_gP61R_usiY7SCym4xIwimSx.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/suravaram/v23/_gP61R_usiY7SCym4xIwimSx.ttf"
   },
   {
-    "family": "Tenali Ramakrishna",
-    "variants": [
+    family: "Tenali Ramakrishna",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v14",
-    "lastModified": "2025-09-02",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/tenaliramakrishna/v14/raxgHj6Yt9gAN3LLKs0BZVMo8jmwn1-8KJXqUFFvtA.ttf"
+    version: "v14",
+    lastModified: "2025-09-02",
+    files: {
+      regular: "https://fonts.gstatic.com/s/tenaliramakrishna/v14/raxgHj6Yt9gAN3LLKs0BZVMo8jmwn1-8KJXqUFFvtA.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/tenaliramakrishna/v14/raxgHj6Yt9gAN3LLKs0BZVMo8jmwn1-MKZ_u.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/tenaliramakrishna/v14/raxgHj6Yt9gAN3LLKs0BZVMo8jmwn1-MKZ_u.ttf"
   },
   {
-    "family": "Timmana",
-    "variants": [
+    family: "Timmana",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "telugu"
     ],
-    "version": "v14",
-    "lastModified": "2025-09-16",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/timmana/v14/6xKvdShfL9yK-rvpCmvbKHwJUOM.ttf"
+    version: "v14",
+    lastModified: "2025-09-16",
+    files: {
+      regular: "https://fonts.gstatic.com/s/timmana/v14/6xKvdShfL9yK-rvpCmvbKHwJUOM.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/timmana/v14/6xKvdShfL9yK-rvpOmrRLA.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/timmana/v14/6xKvdShfL9yK-rvpOmrRLA.ttf"
   },
   {
-    "family": "Tiro Telugu",
-    "variants": [
+    family: "Tiro Telugu",
+    variants: [
       "regular",
       "italic"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "telugu"
     ],
-    "version": "v7",
-    "lastModified": "2025-05-30",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/tirotelugu/v7/aFTQ7PxlZWk2EPiSymjXdKSNQqn0X0BO.ttf",
-      "italic": "https://fonts.gstatic.com/s/tirotelugu/v7/aFTS7PxlZWk2EPiSymjXdJSPSK3WWlBOoas.ttf"
+    version: "v7",
+    lastModified: "2025-05-30",
+    files: {
+      regular: "https://fonts.gstatic.com/s/tirotelugu/v7/aFTQ7PxlZWk2EPiSymjXdKSNQqn0X0BO.ttf",
+      italic: "https://fonts.gstatic.com/s/tirotelugu/v7/aFTS7PxlZWk2EPiSymjXdJSPSK3WWlBOoas.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/tirotelugu/v7/aFTQ7PxlZWk2EPiSymjXdJSMSK0.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/tirotelugu/v7/aFTQ7PxlZWk2EPiSymjXdJSMSK0.ttf"
   }
 ];
 

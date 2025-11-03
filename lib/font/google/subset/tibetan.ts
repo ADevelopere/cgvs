@@ -3,26 +3,26 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Jomolhari",
-    "variants": [
+    family: "Jomolhari",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "tibetan"
     ],
-    "version": "v21",
-    "lastModified": "2025-09-10",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/jomolhari/v21/EvONzA1M1Iw_CBd2hsQCF1IZKq5INg.ttf"
+    version: "v21",
+    lastModified: "2025-09-10",
+    files: {
+      regular: "https://fonts.gstatic.com/s/jomolhari/v21/EvONzA1M1Iw_CBd2hsQCF1IZKq5INg.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/jomolhari/v21/EvONzA1M1Iw_CBd2hsQyFlgd.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/jomolhari/v21/EvONzA1M1Iw_CBd2hsQyFlgd.ttf"
   },
   {
-    "family": "Noto Serif Tibetan",
-    "variants": [
+    family: "Noto Serif Tibetan",
+    variants: [
       "100",
       "200",
       "300",
@@ -33,14 +33,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "tibetan"
     ],
-    "version": "v24",
-    "lastModified": "2025-09-05",
-    "files": {
+    version: "v24",
+    lastModified: "2025-09-05",
+    files: {
       "100": "https://fonts.gstatic.com/s/notoseriftibetan/v24/gokGH7nwAEdtF9N45n0Vaz7O-pk0wsvxHeDXMfqguoCmIrYdPS7rdSy_32c.ttf",
       "200": "https://fonts.gstatic.com/s/notoseriftibetan/v24/gokGH7nwAEdtF9N45n0Vaz7O-pk0wsvxHeDXMfqguoCmIjYcPS7rdSy_32c.ttf",
       "300": "https://fonts.gstatic.com/s/notoseriftibetan/v24/gokGH7nwAEdtF9N45n0Vaz7O-pk0wsvxHeDXMfqguoCmIugcPS7rdSy_32c.ttf",
@@ -49,29 +49,29 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notoseriftibetan/v24/gokGH7nwAEdtF9N45n0Vaz7O-pk0wsvxHeDXMfqguoCmIlEbPS7rdSy_32c.ttf",
       "800": "https://fonts.gstatic.com/s/notoseriftibetan/v24/gokGH7nwAEdtF9N45n0Vaz7O-pk0wsvxHeDXMfqguoCmIjYbPS7rdSy_32c.ttf",
       "900": "https://fonts.gstatic.com/s/notoseriftibetan/v24/gokGH7nwAEdtF9N45n0Vaz7O-pk0wsvxHeDXMfqguoCmIh8bPS7rdSy_32c.ttf",
-      "regular": "https://fonts.gstatic.com/s/notoseriftibetan/v24/gokGH7nwAEdtF9N45n0Vaz7O-pk0wsvxHeDXMfqguoCmIrYcPS7rdSy_32c.ttf"
+      regular: "https://fonts.gstatic.com/s/notoseriftibetan/v24/gokGH7nwAEdtF9N45n0Vaz7O-pk0wsvxHeDXMfqguoCmIrYcPS7rdSy_32c.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notoseriftibetan/v24/gokGH7nwAEdtF9N45n0Vaz7O-pk0wsvxHeDXMfqguoCmIrYcDS_hcQ.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notoseriftibetan/v24/gokGH7nwAEdtF9N45n0Vaz7O-pk0wsvxHeDXMfqguoCmIrYcDS_hcQ.ttf"
   },
   {
-    "family": "Uchen",
-    "variants": [
+    family: "Uchen",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "tibetan"
     ],
-    "version": "v11",
-    "lastModified": "2025-09-16",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/uchen/v11/nKKZ-GokGZ1baIaSEQGodLxA.ttf"
+    version: "v11",
+    lastModified: "2025-09-16",
+    files: {
+      regular: "https://fonts.gstatic.com/s/uchen/v11/nKKZ-GokGZ1baIaSEQGodLxA.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/uchen/v11/nKKZ-GokGZ1baLaTGwU.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/uchen/v11/nKKZ-GokGZ1baLaTGwU.ttf"
   }
 ];
 

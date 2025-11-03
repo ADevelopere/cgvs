@@ -3,8 +3,8 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Akatab",
-    "variants": [
+    family: "Akatab",
+    variants: [
       "regular",
       "500",
       "600",
@@ -12,47 +12,47 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "tifinagh"
     ],
-    "version": "v9",
-    "lastModified": "2025-09-10",
-    "files": {
+    version: "v9",
+    lastModified: "2025-09-10",
+    files: {
       "500": "https://fonts.gstatic.com/s/akatab/v9/VuJzdNrK3Z7gqJE3rKXdPKNiaRpFvg.ttf",
       "600": "https://fonts.gstatic.com/s/akatab/v9/VuJzdNrK3Z7gqJE3gKLdPKNiaRpFvg.ttf",
       "700": "https://fonts.gstatic.com/s/akatab/v9/VuJzdNrK3Z7gqJE35KPdPKNiaRpFvg.ttf",
       "800": "https://fonts.gstatic.com/s/akatab/v9/VuJzdNrK3Z7gqJE3-KDdPKNiaRpFvg.ttf",
       "900": "https://fonts.gstatic.com/s/akatab/v9/VuJzdNrK3Z7gqJE33KHdPKNiaRpFvg.ttf",
-      "regular": "https://fonts.gstatic.com/s/akatab/v9/VuJwdNrK3Z7gqJEPWIz5NIh-YA.ttf"
+      regular: "https://fonts.gstatic.com/s/akatab/v9/VuJwdNrK3Z7gqJEPWIz5NIh-YA.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/akatab/v9/VuJwdNrK3Z7gqJE_WYb9.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/akatab/v9/VuJwdNrK3Z7gqJE_WYb9.ttf"
   },
   {
-    "family": "Noto Sans Tifinagh",
-    "variants": [
+    family: "Noto Sans Tifinagh",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "tifinagh"
     ],
-    "version": "v21",
-    "lastModified": "2025-09-10",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosanstifinagh/v21/I_uzMoCduATTei9eI8dawkHIwvmhCvbn6rnEcXfs4Q.ttf"
+    version: "v21",
+    lastModified: "2025-09-10",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosanstifinagh/v21/I_uzMoCduATTei9eI8dawkHIwvmhCvbn6rnEcXfs4Q.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanstifinagh/v21/I_uzMoCduATTei9eI8dawkHIwvmhCvbX67PA.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanstifinagh/v21/I_uzMoCduATTei9eI8dawkHIwvmhCvbX67PA.ttf"
   },
   {
-    "family": "Tirra",
-    "variants": [
+    family: "Tirra",
+    variants: [
       "regular",
       "500",
       "600",
@@ -60,24 +60,24 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "tifinagh"
     ],
-    "version": "v2",
-    "lastModified": "2025-08-26",
-    "files": {
+    version: "v2",
+    lastModified: "2025-08-26",
+    files: {
       "500": "https://fonts.gstatic.com/s/tirra/v2/WBLmrEnNakREGosx9SXVcWHALdio.ttf",
       "600": "https://fonts.gstatic.com/s/tirra/v2/WBLmrEnNakREGosd8iXVcWHALdio.ttf",
       "700": "https://fonts.gstatic.com/s/tirra/v2/WBLmrEnNakREGot58yXVcWHALdio.ttf",
       "800": "https://fonts.gstatic.com/s/tirra/v2/WBLmrEnNakREGotl8CXVcWHALdio.ttf",
       "900": "https://fonts.gstatic.com/s/tirra/v2/WBLmrEnNakREGotB8SXVcWHALdio.ttf",
-      "regular": "https://fonts.gstatic.com/s/tirra/v2/WBLrrEnNakREGrPF3AHdWn3J.ttf"
+      regular: "https://fonts.gstatic.com/s/tirra/v2/WBLrrEnNakREGrPF3AHdWn3J.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/tirra/v2/WBLrrEnNakREGoPE1gU.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/tirra/v2/WBLrrEnNakREGoPE1gU.ttf"
   }
 ];
 

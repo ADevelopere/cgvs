@@ -3,11 +3,11 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Kablammo",
-    "variants": [
+    family: "Kablammo",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "cyrillic",
       "cyrillic-ext",
       "emoji",
@@ -15,64 +15,64 @@ const data: GoogleFontItem[] = [
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v4",
-    "lastModified": "2025-09-11",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/kablammo/v4/bWtm7fHPcgrhC-J3lcXhcQTY5Ixs6Au9YgCjjx0Rf4YDKw.ttf"
+    version: "v4",
+    lastModified: "2025-09-11",
+    files: {
+      regular: "https://fonts.gstatic.com/s/kablammo/v4/bWtm7fHPcgrhC-J3lcXhcQTY5Ixs6Au9YgCjjx0Rf4YDKw.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/kablammo/v4/bWtm7fHPcgrhC-J3lcXhcQTY5Ixs6Au9YgCTjhcV.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/kablammo/v4/bWtm7fHPcgrhC-J3lcXhcQTY5Ixs6Au9YgCTjhcV.ttf"
   },
   {
-    "family": "Noto Color Emoji",
-    "variants": [
+    family: "Noto Color Emoji",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "emoji"
     ],
-    "version": "v36",
-    "lastModified": "2025-09-06",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notocoloremoji/v36/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFab5s79iz64w.ttf"
+    version: "v36",
+    lastModified: "2025-09-06",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notocoloremoji/v36/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFab5s79iz64w.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notocoloremoji/v36/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFWb9m6w.ttf",
-    "colorCapabilities": [
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notocoloremoji/v36/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFWb9m6w.ttf",
+    colorCapabilities: [
       "COLRv1",
       "SVG"
     ]
   },
   {
-    "family": "Noto Emoji",
-    "variants": [
+    family: "Noto Emoji",
+    variants: [
       "300",
       "regular",
       "500",
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "emoji"
     ],
-    "version": "v61",
-    "lastModified": "2025-09-17",
-    "files": {
+    version: "v61",
+    lastModified: "2025-09-17",
+    files: {
       "300": "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob_10jwvS-FGJCMY.ttf",
       "500": "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob-Z0jwvS-FGJCMY.ttf",
       "600": "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob911TwvS-FGJCMY.ttf",
       "700": "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob9M1TwvS-FGJCMY.ttf",
-      "regular": "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob-r0jwvS-FGJCMY.ttf"
+      regular: "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob-r0jwvS-FGJCMY.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob-r0gwuQeU.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob-r0gwuQeU.ttf"
   },
   {
-    "family": "Playpen Sans",
-    "variants": [
+    family: "Playpen Sans",
+    variants: [
       "100",
       "200",
       "300",
@@ -82,7 +82,7 @@ const data: GoogleFontItem[] = [
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "cyrillic",
       "cyrillic-ext",
       "emoji",
@@ -92,9 +92,9 @@ const data: GoogleFontItem[] = [
       "math",
       "vietnamese"
     ],
-    "version": "v22",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v22",
+    lastModified: "2025-09-16",
+    files: {
       "100": "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IvRgunQ9Ffmme0w.ttf",
       "200": "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4InRhunQ9Ffmme0w.ttf",
       "300": "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IqphunQ9Ffmme0w.ttf",
@@ -102,15 +102,15 @@ const data: GoogleFontItem[] = [
       "600": "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IipmunQ9Ffmme0w.ttf",
       "700": "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IhNmunQ9Ffmme0w.ttf",
       "800": "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4InRmunQ9Ffmme0w.ttf",
-      "regular": "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IvRhunQ9Ffmme0w.ttf"
+      regular: "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IvRhunQ9Ffmme0w.ttf"
     },
-    "category": "handwriting",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IvRhinU3EQ.ttf"
+    category: "handwriting",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IvRhinU3EQ.ttf"
   },
   {
-    "family": "Playpen Sans Arabic",
-    "variants": [
+    family: "Playpen Sans Arabic",
+    variants: [
       "100",
       "200",
       "300",
@@ -120,16 +120,16 @@ const data: GoogleFontItem[] = [
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "arabic",
       "emoji",
       "latin",
       "latin-ext",
       "math"
     ],
-    "version": "v8",
-    "lastModified": "2025-09-10",
-    "files": {
+    version: "v8",
+    lastModified: "2025-09-10",
+    files: {
       "100": "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-ZBobPcBO1L0EHE.ttf",
       "200": "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-bBoLPcBO1L0EHE.ttf",
       "300": "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-YfoLPcBO1L0EHE.ttf",
@@ -137,15 +137,15 @@ const data: GoogleFontItem[] = [
       "600": "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-afp7PcBO1L0EHE.ttf",
       "700": "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-amp7PcBO1L0EHE.ttf",
       "800": "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-bBp7PcBO1L0EHE.ttf",
-      "regular": "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-ZBoLPcBO1L0EHE.ttf"
+      regular: "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-ZBoLPcBO1L0EHE.ttf"
     },
-    "category": "handwriting",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-ZBoIPdDuk.ttf"
+    category: "handwriting",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-ZBoIPdDuk.ttf"
   },
   {
-    "family": "Playpen Sans Deva",
-    "variants": [
+    family: "Playpen Sans Deva",
+    variants: [
       "100",
       "200",
       "300",
@@ -155,15 +155,15 @@ const data: GoogleFontItem[] = [
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "devanagari",
       "emoji",
       "latin",
       "latin-ext"
     ],
-    "version": "v4",
-    "lastModified": "2025-09-10",
-    "files": {
+    version: "v4",
+    lastModified: "2025-09-10",
+    files: {
       "100": "https://fonts.gstatic.com/s/playpensansdeva/v4/vm8fdQj0UUbMxObnsO17RZ7pPBuJge10OmPLCiz-HCrQ0xgUG_5NygdkiQ.ttf",
       "200": "https://fonts.gstatic.com/s/playpensansdeva/v4/vm8fdQj0UUbMxObnsO17RZ7pPBuJge10OmPLCiz-HCrQUxkUG_5NygdkiQ.ttf",
       "300": "https://fonts.gstatic.com/s/playpensansdeva/v4/vm8fdQj0UUbMxObnsO17RZ7pPBuJge10OmPLCiz-HCrQjRkUG_5NygdkiQ.ttf",
@@ -171,15 +171,15 @@ const data: GoogleFontItem[] = [
       "600": "https://fonts.gstatic.com/s/playpensansdeva/v4/vm8fdQj0UUbMxObnsO17RZ7pPBuJge10OmPLCiz-HCrQDR4UG_5NygdkiQ.ttf",
       "700": "https://fonts.gstatic.com/s/playpensansdeva/v4/vm8fdQj0UUbMxObnsO17RZ7pPBuJge10OmPLCiz-HCrQNB4UG_5NygdkiQ.ttf",
       "800": "https://fonts.gstatic.com/s/playpensansdeva/v4/vm8fdQj0UUbMxObnsO17RZ7pPBuJge10OmPLCiz-HCrQUx4UG_5NygdkiQ.ttf",
-      "regular": "https://fonts.gstatic.com/s/playpensansdeva/v4/vm8fdQj0UUbMxObnsO17RZ7pPBuJge10OmPLCiz-HCrQ0xkUG_5NygdkiQ.ttf"
+      regular: "https://fonts.gstatic.com/s/playpensansdeva/v4/vm8fdQj0UUbMxObnsO17RZ7pPBuJge10OmPLCiz-HCrQ0xkUG_5NygdkiQ.ttf"
     },
-    "category": "handwriting",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/playpensansdeva/v4/vm8fdQj0UUbMxObnsO17RZ7pPBuJge10OmPLCiz-HCrQ0xkkGvRJ.ttf"
+    category: "handwriting",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/playpensansdeva/v4/vm8fdQj0UUbMxObnsO17RZ7pPBuJge10OmPLCiz-HCrQ0xkkGvRJ.ttf"
   },
   {
-    "family": "Playpen Sans Hebrew",
-    "variants": [
+    family: "Playpen Sans Hebrew",
+    variants: [
       "100",
       "200",
       "300",
@@ -189,16 +189,16 @@ const data: GoogleFontItem[] = [
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "emoji",
       "hebrew",
       "latin",
       "latin-ext",
       "math"
     ],
-    "version": "v8",
-    "lastModified": "2025-09-11",
-    "files": {
+    version: "v8",
+    lastModified: "2025-09-11",
+    files: {
       "100": "https://fonts.gstatic.com/s/playpensanshebrew/v8/lJws-okuj29wT-AN6RvLx8QqjkKhL7eAjoL9jK7L4vstDnnp5pC63VFfsRss.ttf",
       "200": "https://fonts.gstatic.com/s/playpensanshebrew/v8/lJws-okuj29wT-AN6RvLx8QqjkKhL7eAjoL9jK7L4vstDnlp55C63VFfsRss.ttf",
       "300": "https://fonts.gstatic.com/s/playpensanshebrew/v8/lJws-okuj29wT-AN6RvLx8QqjkKhL7eAjoL9jK7L4vstDnm355C63VFfsRss.ttf",
@@ -206,15 +206,15 @@ const data: GoogleFontItem[] = [
       "600": "https://fonts.gstatic.com/s/playpensanshebrew/v8/lJws-okuj29wT-AN6RvLx8QqjkKhL7eAjoL9jK7L4vstDnk34JC63VFfsRss.ttf",
       "700": "https://fonts.gstatic.com/s/playpensanshebrew/v8/lJws-okuj29wT-AN6RvLx8QqjkKhL7eAjoL9jK7L4vstDnkO4JC63VFfsRss.ttf",
       "800": "https://fonts.gstatic.com/s/playpensanshebrew/v8/lJws-okuj29wT-AN6RvLx8QqjkKhL7eAjoL9jK7L4vstDnlp4JC63VFfsRss.ttf",
-      "regular": "https://fonts.gstatic.com/s/playpensanshebrew/v8/lJws-okuj29wT-AN6RvLx8QqjkKhL7eAjoL9jK7L4vstDnnp55C63VFfsRss.ttf"
+      regular: "https://fonts.gstatic.com/s/playpensanshebrew/v8/lJws-okuj29wT-AN6RvLx8QqjkKhL7eAjoL9jK7L4vstDnnp55C63VFfsRss.ttf"
     },
-    "category": "handwriting",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/playpensanshebrew/v8/lJws-okuj29wT-AN6RvLx8QqjkKhL7eAjoL9jK7L4vstDnnp56C711U.ttf"
+    category: "handwriting",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/playpensanshebrew/v8/lJws-okuj29wT-AN6RvLx8QqjkKhL7eAjoL9jK7L4vstDnnp56C711U.ttf"
   },
   {
-    "family": "Playpen Sans Thai",
-    "variants": [
+    family: "Playpen Sans Thai",
+    variants: [
       "100",
       "200",
       "300",
@@ -224,16 +224,16 @@ const data: GoogleFontItem[] = [
       "700",
       "800"
     ],
-    "subsets": [
+    subsets: [
       "emoji",
       "latin",
       "latin-ext",
       "math",
       "thai"
     ],
-    "version": "v8",
-    "lastModified": "2025-09-10",
-    "files": {
+    version: "v8",
+    lastModified: "2025-09-10",
+    files: {
       "100": "https://fonts.gstatic.com/s/playpensansthai/v8/VdG3AYIdG5kSgHwmKT9wYu2rs0cBsu-N7E_aclWp2hxLghGPoxxAISLTzA.ttf",
       "200": "https://fonts.gstatic.com/s/playpensansthai/v8/VdG3AYIdG5kSgHwmKT9wYu2rs0cBsu-N7E_aclWp2hxLAhCPoxxAISLTzA.ttf",
       "300": "https://fonts.gstatic.com/s/playpensansthai/v8/VdG3AYIdG5kSgHwmKT9wYu2rs0cBsu-N7E_aclWp2hxL3BCPoxxAISLTzA.ttf",
@@ -241,11 +241,11 @@ const data: GoogleFontItem[] = [
       "600": "https://fonts.gstatic.com/s/playpensansthai/v8/VdG3AYIdG5kSgHwmKT9wYu2rs0cBsu-N7E_aclWp2hxLXBePoxxAISLTzA.ttf",
       "700": "https://fonts.gstatic.com/s/playpensansthai/v8/VdG3AYIdG5kSgHwmKT9wYu2rs0cBsu-N7E_aclWp2hxLZRePoxxAISLTzA.ttf",
       "800": "https://fonts.gstatic.com/s/playpensansthai/v8/VdG3AYIdG5kSgHwmKT9wYu2rs0cBsu-N7E_aclWp2hxLAhePoxxAISLTzA.ttf",
-      "regular": "https://fonts.gstatic.com/s/playpensansthai/v8/VdG3AYIdG5kSgHwmKT9wYu2rs0cBsu-N7E_aclWp2hxLghCPoxxAISLTzA.ttf"
+      regular: "https://fonts.gstatic.com/s/playpensansthai/v8/VdG3AYIdG5kSgHwmKT9wYu2rs0cBsu-N7E_aclWp2hxLghCPoxxAISLTzA.ttf"
     },
-    "category": "handwriting",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/playpensansthai/v8/VdG3AYIdG5kSgHwmKT9wYu2rs0cBsu-N7E_aclWp2hxLghC_ohZE.ttf"
+    category: "handwriting",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/playpensansthai/v8/VdG3AYIdG5kSgHwmKT9wYu2rs0cBsu-N7E_aclWp2hxLghC_ohZE.ttf"
   }
 ];
 

@@ -70,6 +70,7 @@ export interface GoogleFontItem {
 
   /** A URL string pointing to a menu subset of the font. */
   menu: string;
+  colorCapabilities?: string[];
 }
 
 /**

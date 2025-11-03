@@ -3,23 +3,23 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Deseret",
-    "variants": [
+    family: "Noto Sans Deseret",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "deseret",
       "latin",
       "latin-ext"
     ],
-    "version": "v18",
-    "lastModified": "2025-09-16",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosansdeseret/v18/MwQsbgPp1eKH6QsAVuFb9AZM6MMr2Vq9ZnJSZtQG.ttf"
+    version: "v18",
+    lastModified: "2025-09-16",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosansdeseret/v18/MwQsbgPp1eKH6QsAVuFb9AZM6MMr2Vq9ZnJSZtQG.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansdeseret/v18/MwQsbgPp1eKH6QsAVuFb9AZM6MMr2Wq8bHY.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansdeseret/v18/MwQsbgPp1eKH6QsAVuFb9AZM6MMr2Wq8bHY.ttf"
   }
 ];
 

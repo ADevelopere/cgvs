@@ -3,48 +3,48 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Abyssinica SIL",
-    "variants": [
+    family: "Abyssinica SIL",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "ethiopic",
       "latin",
       "latin-ext"
     ],
-    "version": "v9",
-    "lastModified": "2025-09-10",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/abyssinicasil/v9/oY1H8ezOqK7iI3rK_45WKoc8J6UZBFOVAXuI.ttf"
+    version: "v9",
+    lastModified: "2025-09-10",
+    files: {
+      regular: "https://fonts.gstatic.com/s/abyssinicasil/v9/oY1H8ezOqK7iI3rK_45WKoc8J6UZBFOVAXuI.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/abyssinicasil/v9/oY1H8ezOqK7iI3rK_45WKoc8J5UYDlc.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/abyssinicasil/v9/oY1H8ezOqK7iI3rK_45WKoc8J5UYDlc.ttf"
   },
   {
-    "family": "Agbalumo",
-    "variants": [
+    family: "Agbalumo",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "cyrillic-ext",
       "ethiopic",
       "latin",
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v6",
-    "lastModified": "2025-06-25",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/agbalumo/v6/55xvey5uMdT2N37KZcMFirl08KDJ.ttf"
+    version: "v6",
+    lastModified: "2025-06-25",
+    files: {
+      regular: "https://fonts.gstatic.com/s/agbalumo/v6/55xvey5uMdT2N37KZcMFirl08KDJ.ttf"
     },
-    "category": "display",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/agbalumo/v6/55xvey5uMdT2N37KZfMEgL0.ttf"
+    category: "display",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/agbalumo/v6/55xvey5uMdT2N37KZfMEgL0.ttf"
   },
   {
-    "family": "Menbere",
-    "variants": [
+    family: "Menbere",
+    variants: [
       "100",
       "200",
       "300",
@@ -53,30 +53,30 @@ const data: GoogleFontItem[] = [
       "600",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "ethiopic",
       "latin",
       "latin-ext",
       "vietnamese"
     ],
-    "version": "v1",
-    "lastModified": "2025-06-25",
-    "files": {
+    version: "v1",
+    lastModified: "2025-06-25",
+    files: {
       "100": "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdI_9qn1UnpeWOQ5.ttf",
       "200": "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdK_96n1UnpeWOQ5.ttf",
       "300": "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdJh96n1UnpeWOQ5.ttf",
       "500": "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdIN96n1UnpeWOQ5.ttf",
       "600": "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdLh8Kn1UnpeWOQ5.ttf",
       "700": "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdLY8Kn1UnpeWOQ5.ttf",
-      "regular": "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdI_96n1UnpeWOQ5.ttf"
+      regular: "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdI_96n1UnpeWOQ5.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdI_95n0WH4.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdI_95n0WH4.ttf"
   },
   {
-    "family": "Noto Sans Ethiopic",
-    "variants": [
+    family: "Noto Sans Ethiopic",
+    variants: [
       "100",
       "200",
       "300",
@@ -87,14 +87,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "ethiopic",
       "latin",
       "latin-ext"
     ],
-    "version": "v50",
-    "lastModified": "2025-09-16",
-    "files": {
+    version: "v50",
+    lastModified: "2025-09-16",
+    files: {
       "100": "https://fonts.gstatic.com/s/notosansethiopic/v50/7cHPv50vjIepfJVOZZgcpQ5B9FBTH9KGNfhSTgtoow1KVnIvyBoMSzUMacb-T35OKqDjwmfeaY9u.ttf",
       "200": "https://fonts.gstatic.com/s/notosansethiopic/v50/7cHPv50vjIepfJVOZZgcpQ5B9FBTH9KGNfhSTgtoow1KVnIvyBoMSzUMacb-T37OK6DjwmfeaY9u.ttf",
       "300": "https://fonts.gstatic.com/s/notosansethiopic/v50/7cHPv50vjIepfJVOZZgcpQ5B9FBTH9KGNfhSTgtoow1KVnIvyBoMSzUMacb-T34QK6DjwmfeaY9u.ttf",
@@ -103,15 +103,15 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notosansethiopic/v50/7cHPv50vjIepfJVOZZgcpQ5B9FBTH9KGNfhSTgtoow1KVnIvyBoMSzUMacb-T36pLKDjwmfeaY9u.ttf",
       "800": "https://fonts.gstatic.com/s/notosansethiopic/v50/7cHPv50vjIepfJVOZZgcpQ5B9FBTH9KGNfhSTgtoow1KVnIvyBoMSzUMacb-T37OLKDjwmfeaY9u.ttf",
       "900": "https://fonts.gstatic.com/s/notosansethiopic/v50/7cHPv50vjIepfJVOZZgcpQ5B9FBTH9KGNfhSTgtoow1KVnIvyBoMSzUMacb-T37nLKDjwmfeaY9u.ttf",
-      "regular": "https://fonts.gstatic.com/s/notosansethiopic/v50/7cHPv50vjIepfJVOZZgcpQ5B9FBTH9KGNfhSTgtoow1KVnIvyBoMSzUMacb-T35OK6DjwmfeaY9u.ttf"
+      regular: "https://fonts.gstatic.com/s/notosansethiopic/v50/7cHPv50vjIepfJVOZZgcpQ5B9FBTH9KGNfhSTgtoow1KVnIvyBoMSzUMacb-T35OK6DjwmfeaY9u.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosansethiopic/v50/7cHPv50vjIepfJVOZZgcpQ5B9FBTH9KGNfhSTgtoow1KVnIvyBoMSzUMacb-T35OK5DiyGM.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosansethiopic/v50/7cHPv50vjIepfJVOZZgcpQ5B9FBTH9KGNfhSTgtoow1KVnIvyBoMSzUMacb-T35OK5DiyGM.ttf"
   },
   {
-    "family": "Noto Serif Ethiopic",
-    "variants": [
+    family: "Noto Serif Ethiopic",
+    variants: [
       "100",
       "200",
       "300",
@@ -122,14 +122,14 @@ const data: GoogleFontItem[] = [
       "800",
       "900"
     ],
-    "subsets": [
+    subsets: [
       "ethiopic",
       "latin",
       "latin-ext"
     ],
-    "version": "v32",
-    "lastModified": "2025-09-11",
-    "files": {
+    version: "v32",
+    lastModified: "2025-09-11",
+    files: {
       "100": "https://fonts.gstatic.com/s/notoserifethiopic/v32/V8mjoR7-XjwJ8_Au3Ti5tXj5Rd83frpWLK4d-taxqWw2HMWjDxBAg5S_0QsrggxCzSQjkaO9UVLyiw.ttf",
       "200": "https://fonts.gstatic.com/s/notoserifethiopic/v32/V8mjoR7-XjwJ8_Au3Ti5tXj5Rd83frpWLK4d-taxqWw2HMWjDxBAg5S_0QsrggxCTSUjkaO9UVLyiw.ttf",
       "300": "https://fonts.gstatic.com/s/notoserifethiopic/v32/V8mjoR7-XjwJ8_Au3Ti5tXj5Rd83frpWLK4d-taxqWw2HMWjDxBAg5S_0QsrggxCkyUjkaO9UVLyiw.ttf",
@@ -138,11 +138,11 @@ const data: GoogleFontItem[] = [
       "700": "https://fonts.gstatic.com/s/notoserifethiopic/v32/V8mjoR7-XjwJ8_Au3Ti5tXj5Rd83frpWLK4d-taxqWw2HMWjDxBAg5S_0QsrggxCKiIjkaO9UVLyiw.ttf",
       "800": "https://fonts.gstatic.com/s/notoserifethiopic/v32/V8mjoR7-XjwJ8_Au3Ti5tXj5Rd83frpWLK4d-taxqWw2HMWjDxBAg5S_0QsrggxCTSIjkaO9UVLyiw.ttf",
       "900": "https://fonts.gstatic.com/s/notoserifethiopic/v32/V8mjoR7-XjwJ8_Au3Ti5tXj5Rd83frpWLK4d-taxqWw2HMWjDxBAg5S_0QsrggxCZCIjkaO9UVLyiw.ttf",
-      "regular": "https://fonts.gstatic.com/s/notoserifethiopic/v32/V8mjoR7-XjwJ8_Au3Ti5tXj5Rd83frpWLK4d-taxqWw2HMWjDxBAg5S_0QsrggxCzSUjkaO9UVLyiw.ttf"
+      regular: "https://fonts.gstatic.com/s/notoserifethiopic/v32/V8mjoR7-XjwJ8_Au3Ti5tXj5Rd83frpWLK4d-taxqWw2HMWjDxBAg5S_0QsrggxCzSUjkaO9UVLyiw.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notoserifethiopic/v32/V8mjoR7-XjwJ8_Au3Ti5tXj5Rd83frpWLK4d-taxqWw2HMWjDxBAg5S_0QsrggxCzSUTkKm5.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notoserifethiopic/v32/V8mjoR7-XjwJ8_Au3Ti5tXj5Rd83frpWLK4d-taxqWw2HMWjDxBAg5S_0QsrggxCzSUTkKm5.ttf"
   }
 ];
 

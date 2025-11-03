@@ -3,45 +3,45 @@ import { GoogleFontItem } from '../types';
 
 const data: GoogleFontItem[] = [
   {
-    "family": "Noto Sans Tai Viet",
-    "variants": [
+    family: "Noto Sans Tai Viet",
+    variants: [
       "regular"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "tai-viet"
     ],
-    "version": "v20",
-    "lastModified": "2025-09-16",
-    "files": {
-      "regular": "https://fonts.gstatic.com/s/notosanstaiviet/v20/8QIUdj3HhN_lv4jf9vsE-9GMOLsaSPZr644fWsRO9w.ttf"
+    version: "v20",
+    lastModified: "2025-09-16",
+    files: {
+      regular: "https://fonts.gstatic.com/s/notosanstaiviet/v20/8QIUdj3HhN_lv4jf9vsE-9GMOLsaSPZr644fWsRO9w.ttf"
     },
-    "category": "sans-serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/notosanstaiviet/v20/8QIUdj3HhN_lv4jf9vsE-9GMOLsaSPZb6oQb.ttf"
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/notosanstaiviet/v20/8QIUdj3HhN_lv4jf9vsE-9GMOLsaSPZb6oQb.ttf"
   },
   {
-    "family": "Tai Heritage Pro",
-    "variants": [
+    family: "Tai Heritage Pro",
+    variants: [
       "regular",
       "700"
     ],
-    "subsets": [
+    subsets: [
       "latin",
       "latin-ext",
       "tai-viet",
       "vietnamese"
     ],
-    "version": "v9",
-    "lastModified": "2025-09-08",
-    "files": {
+    version: "v9",
+    lastModified: "2025-09-08",
+    files: {
       "700": "https://fonts.gstatic.com/s/taiheritagepro/v9/sZlYdQid-zgaNiNIYcUzJMU3IYyNmMB9NNRFMuhjCXY.ttf",
-      "regular": "https://fonts.gstatic.com/s/taiheritagepro/v9/sZlfdQid-zgaNiNIYcUzJMU3IYyNoHxSENxuLuE.ttf"
+      regular: "https://fonts.gstatic.com/s/taiheritagepro/v9/sZlfdQid-zgaNiNIYcUzJMU3IYyNoHxSENxuLuE.ttf"
     },
-    "category": "serif",
-    "kind": "webfonts#webfont",
-    "menu": "https://fonts.gstatic.com/s/taiheritagepro/v9/sZlfdQid-zgaNiNIYcUzJMU3IYyNkH1YFA.ttf"
+    category: "serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/taiheritagepro/v9/sZlfdQid-zgaNiNIYcUzJMU3IYyNkH1YFA.ttf"
   }
 ];
 
