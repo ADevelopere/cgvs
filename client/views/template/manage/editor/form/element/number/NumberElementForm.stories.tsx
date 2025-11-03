@@ -6,6 +6,7 @@ import type { NumberElementFormState, NumberElementFormErrors } from "./types";
 import { UpdateBaseElementFn } from "../base";
 import { UpdateTextPropsFn } from "../textProps";
 import {
+  AppLanguage,
   ElementAlignment,
   ElementOverflow,
 } from "@/client/graphql/generated/gql/graphql";
@@ -27,7 +28,7 @@ const defaultState: NumberElementFormState = {
     positionY: 100,
     width: 150,
     height: 40,
-    alignment: ElementAlignment.Baseline,
+    alignment: ElementAlignment.Center,
     renderOrder: 1,
     templateId: 1,
   },
@@ -72,8 +73,7 @@ export const Default: Story = {
     updateDataSource: dataSource =>
       logger.info("Data source updated:", dataSource),
     updateMapping: mapping => logger.info("Mapping updated:", mapping),
-    templateId: 1,
-    locale: "en",
+    language: AppLanguage.Ar,
     numberVariables: mockNumberVariables,
     selfHostedFonts: mockSelfHostedFonts,
     onSubmit: () => logger.info("Form submitted"),
@@ -117,8 +117,7 @@ export const WithErrors: Story = {
     updateDataSource: dataSource =>
       logger.info("Data source updated:", dataSource),
     updateMapping: mapping => logger.info("Mapping updated:", mapping),
-    templateId: 1,
-    locale: "en",
+    language: AppLanguage.Ar,
     numberVariables: mockNumberVariables,
     selfHostedFonts: mockSelfHostedFonts,
     onSubmit: () => logger.info("Form submitted"),
@@ -145,8 +144,7 @@ export const Submitting: Story = {
     updateDataSource: dataSource =>
       logger.info("Data source updated:", dataSource),
     updateMapping: mapping => logger.info("Mapping updated:", mapping),
-    templateId: 1,
-    locale: "en",
+    language: AppLanguage.Ar,
     numberVariables: mockNumberVariables,
     selfHostedFonts: mockSelfHostedFonts,
     onSubmit: () => logger.info("Form submitted"),
@@ -179,8 +177,7 @@ export const MultipleLocales: Story = {
     updateDataSource: dataSource =>
       logger.info("Data source updated:", dataSource),
     updateMapping: mapping => logger.info("Mapping updated:", mapping),
-    templateId: 1,
-    locale: "en",
+    language: AppLanguage.En,
     numberVariables: mockNumberVariables,
     selfHostedFonts: mockSelfHostedFonts,
     onSubmit: () => logger.info("Form submitted"),

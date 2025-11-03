@@ -3,7 +3,6 @@ import { Box, Grid, Paper, Typography } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import type {
   NumberElementFormErrors,
-  UpdateDataSourceFn,
   UpdateMappingFn,
   NumberElementFormState,
 } from "./types";
@@ -12,6 +11,7 @@ import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../component/ActionButtons";
 import {
   Font,
+  NumberDataSourceInput,
   TemplateNumberVariable,
 } from "@/client/graphql/generated/gql/graphql";
 import { TemplateNumberVariableSelector } from "../variableSelector";
@@ -24,10 +24,9 @@ interface NumberElementFormProps {
   errors: NumberElementFormErrors;
   updateBaseElement: UpdateBaseElementFn;
   updateTextProps: UpdateTextPropsFn;
-  updateDataSource: UpdateDataSourceFn;
+  updateDataSource: (dataSource: NumberDataSourceInput) => void;
   updateMapping: UpdateMappingFn;
-  templateId: number;
-  locale: string;
+  language: string;
   numberVariables: TemplateNumberVariable[];
   selfHostedFonts: Font[];
   onSubmit: () => void;
@@ -43,7 +42,7 @@ export const NumberElementForm: FC<NumberElementFormProps> = ({
   updateTextProps,
   updateDataSource,
   updateMapping,
-  locale,
+  language,
   numberVariables,
   selfHostedFonts,
   onSubmit,
@@ -70,8 +69,8 @@ export const NumberElementForm: FC<NumberElementFormProps> = ({
                   updateDataSource({ variableId: variableId ?? 0 })
                 }
                 numberVariables={numberVariables}
-                error={errors.dataSource.variableId}
-                disabled={isSubmitting}
+                error={errors.dataSource?.variableId}
+                disabled={isSubmitting || numberVariables.length === 0}
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -91,7 +90,7 @@ export const NumberElementForm: FC<NumberElementFormProps> = ({
             <Paper sx={{ p: 3, height: "100%" }}>
               <TextPropsForm
                 textProps={state.textProps}
-                language={locale}
+                language={language}
                 selfHostedFonts={selfHostedFonts}
                 onTextPropsChange={updateTextProps}
                 errors={errors.textProps}

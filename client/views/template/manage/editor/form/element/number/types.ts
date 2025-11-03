@@ -1,13 +1,10 @@
-import type {
-  NumberDataSource,
-  NumberDataSourceInput,
-  NumberElementInput,
-  NumberElementSpecPropsInput,
-} from "@/client/graphql/generated/gql/graphql";
+import type * as GQL from "@/client/graphql/generated/gql/graphql";
 import {
+  Action,
   FormErrors,
-  ValidateFieldFn,
+  UpdateStateFn,
   UpdateStateWithElementIdFn,
+  ValidateFieldFn,
 } from "../../types";
 import { TextPropsFormErrors } from "../textProps";
 import { BaseElementFormErrors } from "../base";
@@ -16,23 +13,32 @@ import { BaseElementFormErrors } from "../base";
 // WORKING STATE TYPES
 // ============================================================================
 
-// Complete number element working state
-export type NumberElementFormState = NumberElementInput;
+export type NumberDataSourceFormState = {
+  dataSource: GQL.NumberDataSourceInput;
+};
 
-export type SanitizedNumberPropsFormState = NumberElementSpecPropsInput;
+// Complete number element working state
+export type NumberElementFormState = GQL.NumberElementInput;
+
+export type SanitizedNumberPropsFormState = GQL.NumberElementSpecPropsInput;
 
 // ============================================================================
 // MODULAR ERROR TYPES
 // ============================================================================
 
-export type DataSourceFormErrors = FormErrors<NumberDataSourceInput>;
-export type MappingFormErrors = { [key: string]: string };
-export type NumberPropsFormErrors = FormErrors<NumberElementSpecPropsInput>;
+export type NumberDataSourceFieldErrors =
+  | FormErrors<GQL.NumberDataSourceInput>
+  | undefined;
 
-export type NumberElementFormErrors = {
+export type NumberDataSourceFormErrors = {
+  dataSource: NumberDataSourceFieldErrors;
+};
+export type MappingFormErrors = { [key: string]: string };
+export type NumberPropsFormErrors = FormErrors<GQL.NumberElementSpecPropsInput>;
+
+export type NumberElementFormErrors = NumberDataSourceFormErrors & {
   base: BaseElementFormErrors;
   textProps: TextPropsFormErrors;
-  dataSource: DataSourceFormErrors;
   mapping: MappingFormErrors;
 };
 
@@ -40,26 +46,35 @@ export type NumberElementFormErrors = {
 // SPECIFIC UPDATE FUNCTION TYPES
 // ============================================================================
 
-export type UpdateDataSourceFn = (dataSource: NumberDataSourceInput) => void;
+export type UpdateDataSourceFn = UpdateStateFn<NumberDataSourceFormState>;
 export type UpdateMappingFn = (mapping: Record<string, string>) => void;
 
-export type UpdateNumberDataSourceWithElementIdFn = (
-  elementId: number,
-  dataSource: NumberDataSourceInput
-) => void;
+export type UpdateNumberDataSourceWithElementIdFn =
+  UpdateStateWithElementIdFn<NumberDataSourceFormState>;
 
-export type NumberElementSpecPropsValidateFn =
-  ValidateFieldFn<NumberElementSpecPropsInput>;
-export type ValidateNumberPropsFieldFn =
-  ValidateFieldFn<NumberElementSpecPropsInput>;
+export type NumberDataSourceUpdateAction = Action<NumberDataSourceFormState>;
+
+export type NumberElementSpecPropsValidateFn = ValidateFieldFn<
+  GQL.NumberElementSpecPropsInput,
+  string | undefined
+>;
+export type ValidateNumberPropsFieldFn = ValidateFieldFn<
+  GQL.NumberElementSpecPropsInput,
+  string | undefined
+>;
 export type UpdateNumberPropsWithElementIdFn =
-  UpdateStateWithElementIdFn<NumberElementSpecPropsInput>;
+  UpdateStateWithElementIdFn<GQL.NumberElementSpecPropsInput>;
+
+export type ValidateNumberDataSourceFn = ValidateFieldFn<
+  NumberDataSourceFormState,
+  NumberDataSourceFormErrors
+>;
 
 // ============================================================================
 // SANITIZED STATE TYPES
 // ============================================================================
 
-export type SanitizedNumberDataSourceFormState = NumberDataSourceInput;
+export type SanitizedNumberDataSourceFormState = GQL.NumberDataSourceInput;
 
 // ============================================================================
 // CONVERSION UTILITIES
@@ -69,8 +84,8 @@ export type SanitizedNumberDataSourceFormState = NumberDataSourceInput;
  * Convert NumberDataSource (query type) to NumberDataSourceInput (input type)
  */
 export const numberDataSourceToInput = (
-  numberDataSource: NumberDataSource
-): NumberDataSourceInput => {
+  numberDataSource: GQL.NumberDataSource
+): GQL.NumberDataSourceInput => {
   return {
     variableId: numberDataSource.numberVariableId ?? 0,
   };

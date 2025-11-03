@@ -2,7 +2,6 @@ import React, { type FC } from "react";
 import { Box, Grid, Paper } from "@mui/material";
 import type {
   DateElementFormErrors,
-  UpdateDateDataSourceFn,
   DateElementFormState,
   UpdateDatePropsFn,
 } from "./types";

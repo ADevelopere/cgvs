@@ -1,24 +1,23 @@
-import { NumberDataSourceInput } from "@/client/graphql/generated/gql/graphql";
 import {
-  DataSourceFormErrors,
   MappingFormErrors,
   NumberElementSpecPropsValidateFn,
+  ValidateNumberDataSourceFn,
 } from "./types";
 
 /**
  * Validate NumberDataSourceInput
  * NUMBER elements only have one data source type: TEMPLATE_NUMBER_VARIABLE
  */
-export const validateNumberDataSource = (
-  dataSource: NumberDataSourceInput
-): DataSourceFormErrors => {
-  const errors: DataSourceFormErrors = {};
-
-  if (!dataSource.variableId || dataSource.variableId <= 0) {
-    errors.variableId = "Template number variable is required";
-  }
-
-  return errors;
+export const validateNumberDataSource = (): ValidateNumberDataSourceFn => {
+  const validate: ValidateNumberDataSourceFn = ({ value: source }) => {
+    if (!source.variableId || source.variableId <= 0) {
+      return {
+        dataSource: { variableId: "Template number variable is required" },
+      };
+    }
+    return undefined;
+  };
+  return validate;
 };
 
 /**
@@ -30,22 +29,22 @@ const validateMapping = (
 ): MappingFormErrors => {
   const errors: MappingFormErrors = {};
 
-  Object.entries(mapping).forEach(([locale, value]) => {
-    const decimalPlaces = parseInt(value, 10);
-    if (isNaN(decimalPlaces) || decimalPlaces < 0) {
+  for (const [locale, value] of Object.entries(mapping)) {
+    const decimalPlaces = Number.parseInt(value, 10);
+    if (Number.isNaN(decimalPlaces) || decimalPlaces < 0) {
       errors[locale] = "Decimal places must be a non-negative number";
     }
-  });
+  }
 
   return errors;
 };
 
 export const validateNumberElementSpecProps = () => {
   const validate: NumberElementSpecPropsValidateFn = ({ key, value }) => {
-    switch (key) {
-      case "mapping":
-        return JSON.stringify(validateMapping(value));
+    if (key === "mapping") {
+      return JSON.stringify(validateMapping(value));
     }
+    return undefined;
   };
 
   return validate;
