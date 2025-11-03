@@ -32,7 +32,6 @@ export const Default: Story = {
       language: mockTemplateConfig.language,
     },
     errors: {},
-    updateError: null,
     updater: mockUpdater,
   },
 };
@@ -47,7 +46,6 @@ export const ArabicLocale: Story = {
       language: GQL.AppLanguage.Ar,
     },
     errors: {},
-    updateError: null,
     updater: mockUpdater,
   },
 };
@@ -62,7 +60,6 @@ export const PortraitDimensions: Story = {
       language: mockTemplateConfig.language,
     },
     errors: {},
-    updateError: null,
     updater: mockUpdater,
   },
 };
@@ -77,7 +74,6 @@ export const SquareDimensions: Story = {
       language: mockTemplateConfig.language,
     },
     errors: {},
-    updateError: null,
     updater: mockUpdater,
   },
 };
@@ -96,7 +92,6 @@ export const Updating: Story = {
       language: mockTemplateConfig.language,
     },
     errors: {},
-    updateError: null,
     updater: mockUpdater,
   },
 };
@@ -115,7 +110,6 @@ export const UpdateError: Story = {
       language: mockTemplateConfig.language,
     },
     errors: {},
-    updateError: "Failed to update template configuration.",
     updater: mockUpdater,
   },
 };
@@ -132,7 +126,6 @@ export const ValidationErrorWidth: Story = {
     errors: {
       width: "Value must be greater than 0",
     },
-    updateError: null,
     updater: mockUpdater,
   },
 };
@@ -149,7 +142,6 @@ export const ValidationErrorHeight: Story = {
     errors: {
       height: "Value must be less than or equal to 10000",
     },
-    updateError: null,
     updater: mockUpdater,
   },
 };
@@ -168,7 +160,6 @@ export const ArabicLanguage: Story = {
       language: GQL.AppLanguage.Ar,
     },
     errors: {},
-    updateError: null,
     updater: mockUpdater,
   },
 };
@@ -183,7 +174,6 @@ export const EnglishLanguage: Story = {
       language: GQL.AppLanguage.En,
     },
     errors: {},
-    updateError: null,
     updater: mockUpdater,
   },
 };
@@ -202,7 +192,6 @@ export const MinimumDimensions: Story = {
       language: mockTemplateConfig.language,
     },
     errors: {},
-    updateError: null,
     updater: mockUpdater,
   },
 };
@@ -217,7 +206,6 @@ export const MaximumDimensions: Story = {
       language: mockTemplateConfig.language,
     },
     errors: {},
-    updateError: null,
     updater: mockUpdater,
   },
 };

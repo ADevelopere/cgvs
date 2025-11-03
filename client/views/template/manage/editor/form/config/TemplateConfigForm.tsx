@@ -7,7 +7,6 @@ import {
   TemplateConfigFormUpdateFn,
 } from "./types";
 import { useAppTranslation } from "@/client/locale";
-import logger from "@/client/lib/logger";
 
 interface TemplateConfigFormProps {
   state: TemplateConfigFormState;
@@ -23,8 +22,6 @@ export const TemplateConfigForm: React.FC<TemplateConfigFormProps> = ({
   disabled,
 }) => {
   const { templateConfigTranslations: strings } = useAppTranslation();
-  logger.info("Rendering TemplateConfigForm with state:", state);
-  logger.info("Errors:", errors);
   return (
     <Stack direction={"column"} spacing={4} sx={{ paddingY: 2, }}>
       {/* width field */}
