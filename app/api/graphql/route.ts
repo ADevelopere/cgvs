@@ -46,7 +46,7 @@ const server = new ApolloServer({
   cache: new ApolloCacheAdapter(),
 });
 
-const handler = startServerAndCreateNextHandler(server, {
+const handler = startServerAndCreateNextHandler<NextRequest>(server, {
   context: createGraphQLContext,
 });
 
