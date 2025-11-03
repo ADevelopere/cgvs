@@ -5,6 +5,7 @@ import { useMutation } from "@apollo/client/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import * as Documents from "../../glqDocuments/element";
 import { mapFontRefInputToFontRef } from "./useCertificateElementMutation";
+import { hasTextProps } from "../../form/hooks/useTextPropsState";
 
 export const extractVariableIdFromTextDataSourceInput = (
   dataSource: GQL.TextDataSourceInput
@@ -156,3 +157,4 @@ export const useTextElementMutation = (existingElement: GQL.TextElement) => {
     [createTextElementMutation, updateTextElementMutation]
   );
 };
+

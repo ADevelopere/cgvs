@@ -922,7 +922,7 @@ type Mutation {
   updateDateElementDataSource(input: DateDataSourceStandaloneInput!): DateDataSourceUpdateResponse
   updateDateElementSpecProps(input: DateElementSpecPropsStandaloneInput!): DateElementSpecPropsUpdateResponse
   updateDirectoryPermissions(input: DirectoryPermissionsUpdateInput!): FileOperationResult
-  updateElementCommonProperties(input: CertificateElementBaseUpdateInput!): CertificateElementBase
+  updateElementCommonProperties(input: CertificateElementBaseUpdateInput!): UpdateElementBaseResponse
   updateElementTextProps(input: TextPropsUpdateInput!): ElementWithTextProps
   updateElementsRenderOrder(updates: [ElementOrderUpdateInput!]!): Boolean
   updateFont(input: FontUpdateInput!): Font!
@@ -1802,6 +1802,10 @@ input TextPropsUpdateInput {
   fontSize: Int!
   id: Int!
   overflow: ElementOverflow!
+}
+
+type UpdateElementBaseResponse {
+  base: CertificateElementBase!
 }
 
 input UploadSignedUrlGenerateInput {

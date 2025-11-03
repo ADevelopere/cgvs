@@ -95,7 +95,7 @@ export function useNumberPropsState(
   );
 
   // Use generic hook
-  const validator: ValidateNumberPropsFieldFn = validateNumberElementSpecProps();
+  const validator: ValidateNumberPropsFieldFn = validateNumberProps();
 
   const { getState, updateFn, pushUpdate, errors } = useElementState({
     templateId,
@@ -103,6 +103,7 @@ export function useNumberPropsState(
     validator,
     extractInitialState: extractNumberPropsState,
     mutationFn,
+    stateNamespace: "numberProps",
   });
 
   return {

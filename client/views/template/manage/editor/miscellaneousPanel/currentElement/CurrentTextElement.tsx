@@ -31,9 +31,10 @@ export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
   }, [fontsData?.fonts]);
 
   const { textPropsState, updateTextProps, textPropsErrors } = useTextProps({
-    elements,
     elementId: element.base.id,
   });
+
+  
   const { baseElementState, updateBaseElementState, baseElementErrors } =
     useBaseElement({
       elements,

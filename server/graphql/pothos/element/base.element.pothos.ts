@@ -95,6 +95,17 @@ export const CertificateElementBaseObject = gqlSchemaBuilder
     }),
   });
 
+export const UpdateElemenetBaseResponseObject = gqlSchemaBuilder
+  .objectRef<Types.CertificateElementInterface>("UpdateElementBaseResponse")
+  .implement({
+    fields: t => ({
+      base: t.expose("base", {
+        type: CertificateElementBaseObject,
+        nullable: false,
+      }),
+    }),
+  });
+
 export const CertificateElementInterfaceObjectRef =
   gqlSchemaBuilder.loadableInterfaceRef<
     Types.CertificateElementInterface,

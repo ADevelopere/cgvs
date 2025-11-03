@@ -124,6 +124,7 @@ export function useBaseElementState(
     validator,
     extractInitialState: extractBaseState,
     mutationFn,
+    stateNamespace: "baseElement",
   });
 
   return {
@@ -155,11 +156,11 @@ export const useBaseElement = (params: UseBaseElementParams) => {
   const baseElementState = React.useMemo(() => {
     return baseElementStates.get(params.elementId) ?? initBaseElementState(params.elementId);
   }, [baseElementStates, params.elementId, initBaseElementState]);
+  
   const pushBaseElementUpdate = React.useCallback(async () => {
     await pushBaseElementStateUpdate(params.elementId);
   }, [params.elementId, pushBaseElementStateUpdate]);
 
-  const baseElementErrors = baseElementStateErrors.get(params.elementId) || {};
 
 
   const updateBaseElementState = React.useCallback(
@@ -168,6 +169,8 @@ export const useBaseElement = (params: UseBaseElementParams) => {
     },
     [params.elementId, updateBaseElementStateFn]
   );
+
+  const baseElementErrors = baseElementStateErrors.get(params.elementId) || {};
 
 
   return {
