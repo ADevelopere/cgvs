@@ -9,6 +9,12 @@ import React from "react";
 import { FontFamily, getFontByFamily, GoogleFontItem } from "@/lib/font/google";
 import WebFont from "webfontloader";
 import { ElementAlignment } from "@/client/graphql/generated/gql/graphql";
+import { useTextDataSource } from "../form/hooks";
+import { useCertificateElementContext } from "../CertificateElementContext";
+import {
+  useAppTranslation,
+  useAppTranslationForLanguage,
+} from "@/client/locale";
 
 export type TextElementNodeData = {
   // templateId: number;
@@ -118,9 +124,54 @@ const getFlexAlignment = (alignment: ElementAlignment): React.CSSProperties => {
   }
 };
 
+// random verification code generator, using random
+const dumpVerificationCode = () => {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let code = "";
+  for (let i = 0; i < 10; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    code += chars[randomIndex];
+  }
+  return code;
+};
+
+const studentEmailPreview = "example@email.com";
+
 export const TextElementNode = ({ data }: TextElementNodeProps) => {
   const { elementId } = data;
   const { textPropsState } = useTextProps({ elementId });
+  const { textDataSourceState: source } = useTextDataSource({ elementId });
+  const {
+    config: {
+      state: { language },
+    },
+  } = useCertificateElementContext();
+  const {
+    certificateElementsTranslations: { textElement },
+  } = useAppTranslationForLanguage(language);
+
+  const text = React.useMemo(() => {
+    if (source.static) {
+      return source.static.value;
+    }
+    if (source.certificateField) {
+      if (
+        source.certificateField.field ===
+        GQL.CertificateTextField.VerificationCode
+      ) {
+        return dumpVerificationCode();
+      }
+      return `{{${source.certificateField.field}}}`;
+    }
+    if (source.studentField) {
+      if (source.studentField.field === GQL.StudentTextField.StudentEmail) {
+        return studentEmailPreview;
+      }
+    }
+    return textElement.textPreviewValue;
+  }, [source]);
+  
   logger.log(
     "[TextElementNode] textPropsState",
     JSON.stringify({ elementId, textPropsState })
@@ -159,8 +210,6 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
     }
   }, [textPropsState.fontRef.google?.identifier]);
 
-
-
   const style: React.CSSProperties = React.useMemo(() => {
     return {
       fontSize: textPropsState.fontSize,
@@ -184,14 +233,14 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
       ...getFlexAlignment(baseElementState.alignment),
     };
   }, [textPropsState, baseElementState, fontFamily]);
-  
+
   if (!textPropsState || !baseElementState) {
     return <div>Loading...</div>;
   }
   return (
     <div style={style}>
       <Handle type="target" position={Position.Top} />
-      {"testingtestingtestingtestingtestingtestingtestingtesting"}
+      {text}
       <Handle type="source" position={Position.Bottom} />
     </div>
   );

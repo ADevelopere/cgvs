@@ -13,6 +13,7 @@ import {
   Font,
   TemplateSelectVariable,
   TemplateTextVariable,
+  TextDataSourceInput,
 } from "@/client/graphql/generated/gql/graphql";
 import { UpdateBaseElementFn } from "../base";
 import { UpdateTextPropsFn } from "../textProps";
@@ -22,9 +23,8 @@ interface TextElementFormProps {
   errors: TextElementFormErrors;
   updateBaseElement: UpdateBaseElementFn;
   updateTextProps: UpdateTextPropsFn;
-  updateDataSource: UpdateTextDataSourceFn;
-  templateId: number;
-  locale: string;
+  updateDataSource: (dataSource: TextDataSourceInput) => void;
+  language: string;
   textVariables: TemplateTextVariable[];
   selectVariables: TemplateSelectVariable[];
   selfHostedFonts: Font[];
@@ -40,7 +40,7 @@ export const TextElementForm: FC<TextElementFormProps> = ({
   updateBaseElement,
   updateTextProps,
   updateDataSource,
-  locale,
+  language,
   textVariables,
   selectVariables,
   selfHostedFonts,
@@ -59,7 +59,7 @@ export const TextElementForm: FC<TextElementFormProps> = ({
             dataSource={state.dataSource}
             textVariables={textVariables}
             selectVariables={selectVariables}
-            onDataSourceChange={updateDataSource}
+            updateDataSource={updateDataSource}
             errors={errors.dataSource}
             disabled={isSubmitting}
             showSelector={true}
@@ -72,7 +72,7 @@ export const TextElementForm: FC<TextElementFormProps> = ({
             <Paper sx={{ p: 3, height: "100%" }}>
               <TextPropsForm
                 textProps={state.textProps}
-                language={locale}
+                language={language}
                 selfHostedFonts={selfHostedFonts}
                 onTextPropsChange={updateTextProps}
                 errors={errors.textProps}

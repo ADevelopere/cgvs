@@ -1,9 +1,11 @@
-import type {
-  TextDataSource,
-  TextDataSourceInput,
-  TextElementInput,
-} from "@/client/graphql/generated/gql/graphql";
-import { FormErrors } from "../../types";
+import type * as GQL from "@/client/graphql/generated/gql/graphql";
+import {
+  Action,
+  FormErrors,
+  UpdateStateFn,
+  UpdateStateWithElementIdFn,
+  ValidateFieldFn,
+} from "../../types";
 import { TextPropsFormErrors } from "../textProps";
 import { BaseElementFormErrors } from "../base";
 
@@ -12,8 +14,10 @@ import { BaseElementFormErrors } from "../base";
 // ============================================================================
 
 // Complete text element working state
-export type TextElementFormState = TextElementInput;
-
+export type TextElementFormState = GQL.TextElementInput;
+export type TextDataSourceFormState = {
+  dataSource: GQL.TextDataSourceInput;
+};
 // ============================================================================
 // TYPE-SAFE UPDATE FUNCTIONS
 // ============================================================================
@@ -21,31 +25,34 @@ export type TextElementFormState = TextElementInput;
 // ============================================================================
 // MODULAR ERROR TYPES
 // ============================================================================
+export type TextDataSourceFieldErrors = FormErrors<GQL.TextDataSourceInput> | undefined
+export type TextDataSourceFormErrors = {
+  dataSource: TextDataSourceFieldErrors
+};
 
-export type TextDataSourceFormErrors = FormErrors<TextDataSourceInput>;
-
-export type TextElementFormErrors = {
+export type TextElementFormErrors = TextDataSourceFormErrors & {
   base: BaseElementFormErrors;
   textProps: TextPropsFormErrors;
-  dataSource: TextDataSourceFormErrors;
 };
 
 // ============================================================================
 // SPECIFIC UPDATE FUNCTION TYPES
 // ============================================================================
 
-export type UpdateTextDataSourceFn = (dataSource: TextDataSourceInput) => void;
+export type UpdateTextDataSourceFn = UpdateStateFn<TextDataSourceFormState>;
+export type UpdateTextDataSourceWithElementIdFn =
+  UpdateStateWithElementIdFn<TextDataSourceFormState>;
 
-export type UpdateTextDataSourceWithElementIdFn = (
-  elementId: number,
-  dataSource: TextDataSourceInput
-) => void;
+export type TextDataSourceUpdateAction = Action<TextDataSourceFormState>;
 
 // ============================================================================
 // SANITIZED STATE TYPES
 // ============================================================================
 
-export type SanitizedTextDataSourceFormState = TextDataSourceInput;
+export type validateTextDataSourceFn = ValidateFieldFn<
+  TextDataSourceFormState,
+  TextDataSourceFormErrors
+>;
 
 // ============================================================================
 // CONVERSION UTILITIES
@@ -53,8 +60,8 @@ export type SanitizedTextDataSourceFormState = TextDataSourceInput;
 
 // Convert working state to GraphQL input
 export const textDataSourceToInput = (
-  state: TextDataSource
-): TextDataSourceInput => {
+  state: GQL.TextDataSource
+): GQL.TextDataSourceInput => {
   switch (state.__typename) {
     case "TextDataSourceStatic":
       return { static: { value: state.value ?? "" } };
@@ -73,4 +80,37 @@ export const textDataSourceToInput = (
     default:
       throw new Error(`Unknown TextDataSource type: ${state.__typename}`);
   }
+};
+
+export const textDataSourceActionInputToInput = (
+  action: TextDataSourceUpdateAction
+): GQL.TextDataSourceInput => {
+  const { value: source } = action;
+
+  if (source.static) {
+    return { static: { value: source.static.value ?? "" } };
+  }
+  if (source.certificateField) {
+    return { certificateField: { field: source.certificateField.field } };
+  }
+  if (source.studentField) {
+    return { studentField: { field: source.studentField.field } };
+  }
+
+  if (source.templateTextVariable) {
+    return {
+      templateTextVariable: {
+        variableId: source.templateTextVariable.variableId ?? 0,
+      },
+    };
+  }
+  if (source.templateSelectVariable) {
+    return {
+      templateSelectVariable: {
+        variableId: source.templateSelectVariable.variableId ?? 0,
+      },
+    };
+  }
+
+  throw new Error(`Unknown TextDataSource key`);
 };

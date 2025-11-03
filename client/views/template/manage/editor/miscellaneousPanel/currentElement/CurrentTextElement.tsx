@@ -1,13 +1,17 @@
 import React from "react";
 import { TextElement } from "@/client/graphql/generated/gql/graphql";
-import { useTextProps } from "../../form/hooks/useTextPropsState";
-import { useBaseElement } from "../../form/hooks/useBaseElementState";
 import { Stack } from "@mui/material";
 import { BaseCertificateElementForm } from "../../form/element/base";
 import { TextPropsForm } from "../../form/element/textProps";
 import { useQuery } from "@apollo/client/react";
 import { fontsQueryDocument } from "@/client/views/font/hooks";
 import { DataSourceForm } from "../../form/element/text";
+import {
+  useBaseElement,
+  useTextProps,
+  useTextDataSource,
+} from "../../form/hooks";
+import { useCertificateElementContext } from "../../CertificateElementContext";
 
 export type CurrentTextElementProps = {
   element: TextElement;
@@ -34,10 +38,27 @@ export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
     useBaseElement({
       elementId: element.base.id,
     });
+
+  const {
+    textDataSourceState,
+    updateTextDataSource,
+    textDataSourceErrors,
+  } = useTextDataSource({
+    elementId: element.base.id,
+  });
+
+  const { textVariables, selectVariables } = useCertificateElementContext();
+
   return (
     <Stack>
-      <DataSourceForm 
-      
+      <DataSourceForm
+        dataSource={textDataSourceState}
+        textVariables={textVariables}
+        selectVariables={selectVariables}
+        updateDataSource={updateTextDataSource}
+        errors={textDataSourceErrors}
+        disabled={false}
+        showSelector={true}
       />
       <BaseCertificateElementForm
         baseProps={baseElementState}

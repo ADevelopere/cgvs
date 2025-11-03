@@ -5,15 +5,13 @@ import { useElementState } from "./useElementState";
 import { validateTextPropsField } from "../element/textProps/textPropsValidator";
 import { useAppTranslation } from "@/client/locale";
 import {
-  SanitizedTextPropsFormState,
+  TextPropsFormState,
   TextPropsFormErrors,
   UpdateTextPropsWithElementIdFn,
   ValidateTextPropsFieldFn,
 } from "../element/textProps";
 import { Action } from "../types";
-import {
-  useCertificateElementContext,
-} from "@/client/views/template/manage/editor/CertificateElementContext";
+import { useCertificateElementContext } from "@/client/views/template/manage/editor/CertificateElementContext";
 import logger from "@/client/lib/logger";
 import { useMutation } from "@apollo/client/react";
 import { updateElementTextPropsMutationDocument } from "../../glqDocuments";
@@ -24,10 +22,10 @@ export type UseTextPropsStateParams = {
 };
 
 export type UseTextPropsStateReturn = {
-  textPropsStates: Map<number, SanitizedTextPropsFormState>;
+  textPropsStates: Map<number, TextPropsFormState>;
   updateTextPropsStateFn: UpdateTextPropsWithElementIdFn;
   pushTextPropsStateUpdate: (elementId: number) => Promise<void>;
-  initTextPropsState: (elementId: number) => SanitizedTextPropsFormState;
+  initTextPropsState: (elementId: number) => TextPropsFormState;
   textPropsStateErrors: Map<number, TextPropsFormErrors>;
 };
 
@@ -76,7 +74,7 @@ export function hasTextProps(
  */
 function extractTextPropsState(
   element: GQL.CertificateElementUnion
-): SanitizedTextPropsFormState | null {
+): TextPropsFormState | null {
   if (!hasTextProps(element) || !element.textProps) {
     return null;
   }
@@ -94,7 +92,7 @@ function extractTextPropsState(
  */
 function toUpdateInput(
   textPropsId: number,
-  state: SanitizedTextPropsFormState
+  state: TextPropsFormState
 ): GQL.TextPropsUpdateInput {
   return {
     id: textPropsId,
@@ -112,8 +110,10 @@ export function useTextPropsState(
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
 
-  const [updateTextPropsMutation] = useMutation(updateElementTextPropsMutationDocument)
-     
+  const [updateTextPropsMutation] = useMutation(
+    updateElementTextPropsMutationDocument
+  );
+
   // Get textPropsId from element - we need to track this per elementId
   // Store mapping of elementId -> textPropsId
   const textPropsIdMapRef = React.useRef<Map<number, number>>(new Map());
@@ -123,7 +123,11 @@ export function useTextPropsState(
     const map = new Map<number, number>();
     if (elements) {
       for (const element of elements) {
-        if (hasTextProps(element) && element.textProps?.id && element.base?.id) {
+        if (
+          hasTextProps(element) &&
+          element.textProps?.id &&
+          element.base?.id
+        ) {
           map.set(element.base.id, element.textProps.id);
         }
       }
@@ -133,7 +137,7 @@ export function useTextPropsState(
 
   // Mutation function
   const mutationFn = React.useCallback(
-    async (elementId: number, state: SanitizedTextPropsFormState) => {
+    async (elementId: number, state: TextPropsFormState) => {
       try {
         const textPropsId = textPropsIdMapRef.current.get(elementId);
         if (!textPropsId) {

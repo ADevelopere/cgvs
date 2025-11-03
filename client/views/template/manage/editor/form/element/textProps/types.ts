@@ -14,8 +14,6 @@ export type TextPropsFormErrors = FormErrors<Graphql.TextPropsInput>;
 
 export type TextPropsFormState = Graphql.TextPropsInput;
 
-export type SanitizedTextPropsFormState = TextPropsFormState;
-
 export type UpdateTextPropsFn = UpdateStateFn<Graphql.TextPropsInput>;
 
 export type UpdateTextPropsWithElementIdFn =
@@ -23,4 +21,4 @@ export type UpdateTextPropsWithElementIdFn =
 
 export type UpdateFontRefFn = (fontRef: Graphql.FontReferenceInput) => void;
 
-export type ValidateTextPropsFieldFn = ValidateFieldFn<TextPropsFormState>;
+export type ValidateTextPropsFieldFn = ValidateFieldFn<TextPropsFormState, TextPropsFormErrors>;

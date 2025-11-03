@@ -2,7 +2,7 @@ import * as AR from "@/client/locale/ar";
 import * as EN from "@/client/locale/en";
 
 import * as Components from "./components";
-import { AppLanguage } from "@/lib/enum";
+import { AppLanguage } from "../graphql/generated/gql/graphql";
 
 export type Translations = {
   headerTranslations: Components.HeaderTranslations;

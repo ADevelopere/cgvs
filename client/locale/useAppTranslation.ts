@@ -1,7 +1,7 @@
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import translations from "@/client/locale/translations";
-import { AppLanguage } from "@/lib/enum";
 import { useMemo } from "react";
+import { AppLanguage } from "../graphql/generated/gql/graphql";
 
 export const useAppTranslation = () => {
   const { language } = useAppTheme();
@@ -11,7 +11,21 @@ export const useAppTranslation = () => {
       return translations[language];
     }
     // Fallback to default language (guaranteed to exist)
-    return translations[AppLanguage.default];
+    return translations[AppLanguage.Ar];
+  }, [language]);
+
+  return ts;
+};
+
+
+export const useAppTranslationForLanguage = (language: AppLanguage) => {
+  const ts = useMemo(() => {
+    // Check if language exists in translations
+    if (language in translations) {
+      return translations[language];
+    }
+    // Fallback to default language (guaranteed to exist)
+    return translations[AppLanguage.Ar];
   }, [language]);
 
   return ts;

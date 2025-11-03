@@ -1,41 +1,50 @@
-import type { TextDataSourceInput } from "@/client/graphql/generated/gql/graphql";
-import type { TextDataSourceFormErrors } from "./types";
+import type {
+  TextDataSourceFormErrors,
+  validateTextDataSourceFn,
+} from "./types";
 
-export const validateTextDataSource = (
-  dataSource: TextDataSourceInput
-): TextDataSourceFormErrors => {
-  const errors: TextDataSourceFormErrors = {};
+export const validateTextDataSource = () => {
+  const validator: validateTextDataSourceFn = ({
+    value: source,
+  }): TextDataSourceFormErrors => {
+    if (source.static?.value.trim().length === 0) {
+      return { dataSource: { static: "Static value is required" } };
+    }
+    if (source.certificateField && !source.certificateField.field) {
+      return {
+        dataSource: { certificateField: "Certificate field is required" },
+      };
+    }
 
-  if (dataSource.static) {
-    if (
-      !dataSource.static.value ||
-      dataSource.static.value.trim().length === 0
-    ) {
-      errors.static = "Static value is required";
+    if (source.studentField && !source.studentField.field) {
+      return { dataSource: { studentField: "Student field is required" } };
     }
-  } else if (dataSource.studentField) {
-    if (!dataSource.studentField.field) {
-      errors.studentField = "Student field is required";
-    }
-  } else if (dataSource.certificateField) {
-    if (!dataSource.certificateField.field) {
-      errors.certificateField = "Certificate field is required";
-    }
-  } else if (dataSource.templateTextVariable) {
-    if (
-      !dataSource.templateTextVariable.variableId ||
-      dataSource.templateTextVariable.variableId <= 0
-    ) {
-      errors.templateTextVariable = "Template text variable is required";
-    }
-  } else if (dataSource.templateSelectVariable) {
-    if (
-      !dataSource.templateSelectVariable.variableId ||
-      dataSource.templateSelectVariable.variableId <= 0
-    ) {
-      errors.templateSelectVariable = "Template select variable is required";
-    }
-  }
 
-  return errors;
+    if (
+      source.templateTextVariable &&
+      !source.templateTextVariable.variableId
+    ) {
+      return {
+        dataSource: {
+          templateTextVariable: "Template text variable is required",
+        },
+      };
+    }
+    if (
+      source.templateSelectVariable &&
+      !source.templateSelectVariable.variableId
+    ) {
+      return {
+        dataSource: {
+          templateSelectVariable: "Template select variable is required",
+        },
+      };
+    }
+
+    return {
+      dataSource: undefined,
+    }
+  };
+
+  return validator;
 };

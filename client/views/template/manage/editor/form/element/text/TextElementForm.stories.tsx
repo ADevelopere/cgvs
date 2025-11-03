@@ -8,6 +8,7 @@ import {
 } from "../story.util";
 import type { TextElementFormErrors, TextElementFormState } from "./types";
 import {
+  AppLanguage,
   ElementAlignment,
   ElementOverflow,
   StudentTextField,
@@ -30,7 +31,7 @@ const defaultState: TextElementFormState = {
     positionY: 100,
     width: 200,
     height: 50,
-    alignment: ElementAlignment.Baseline,
+    alignment: ElementAlignment.Center,
     renderOrder: 1,
     templateId: 1,
   },
@@ -61,8 +62,7 @@ export const Default: Story = {
       logger.log("Text props updated:", key, value),
     updateDataSource: dataSource =>
       logger.log("Data source updated:", dataSource),
-    templateId: 1,
-    locale: "en",
+    language: AppLanguage.Ar,
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
     selfHostedFonts: mockSelfHostedFonts,
@@ -88,8 +88,7 @@ export const WithStudentField: Story = {
       logger.log("Text props updated:", key, value),
     updateDataSource: dataSource =>
       logger.log("Data source updated:", dataSource),
-    templateId: 1,
-    locale: "en",
+    language: AppLanguage.En,
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
     selfHostedFonts: mockSelfHostedFonts,
@@ -110,8 +109,7 @@ export const Submitting: Story = {
       logger.log("Text props updated:", key, value),
     updateDataSource: dataSource =>
       logger.log("Data source updated:", dataSource),
-    templateId: 1,
-    locale: "en",
+    language: AppLanguage.En,
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
     selfHostedFonts: mockSelfHostedFonts,
