@@ -15,7 +15,6 @@ const config: CodegenConfig = {
         fragmentMasking: false,
       },
       config: {
-        withHooks: true,
         dedupeFragments: true,
         onlyOperationTypes: false,
         enumsAsTypes: false,
