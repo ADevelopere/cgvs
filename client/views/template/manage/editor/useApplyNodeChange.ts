@@ -157,7 +157,9 @@ export const useApplyNodeChange = () => {
             // Update with isDragging=false to add to history
             updateElementPosition(elementId, x, y, false);
             // Clear dragging flag after position is updated
-            setIsDragging(false);
+            setTimeout(() => {
+              setIsDragging(false);
+            }, 300);
           });
         }
 
@@ -207,7 +209,9 @@ export const useApplyNodeChange = () => {
             // Update with isResizing=false to add to history
             updateElementSize(elementId, width, height, false);
             // Clear resizing flag after size is updated
-            setIsResizing(false);
+            setTimeout(() => {
+              setIsResizing(false);
+            }, 300);
           });
         }
       } catch {

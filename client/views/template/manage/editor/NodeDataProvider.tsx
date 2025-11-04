@@ -5,7 +5,6 @@ import { UseTemplateConfigStateReturn } from "./form/config/useTemplateConfigSta
 import { useNodesState, Node } from "@xyflow/react";
 import { TextElementNodeData } from "./nodeRenderer/TextElementNode";
 import { useEditorStore } from "./useEditorStore";
-import { BaseCertificateElementFormState } from "./form/element/base/types";
 
 export type NodeDataContextType = {
   nodes: Node[];
@@ -55,17 +54,13 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
   const [containerNode, setContainerNode] = React.useState<Node>({
     id: "container",
     type: "container",
-    data: {},
+    data: {
+      width: container.width,
+      height: container.height,
+    },
     position: { x: 0, y: 0 },
     draggable: false,
     selectable: false,
-    style: {
-      width: container.width,
-      height: container.height,
-      border: "2px solid #000000",
-      boxSizing: "border-box",
-      backgroundColor: "transparent",
-    },
   });
 
   const [elementNodes, setElementNodes] = React.useState<Node[]>([]);
@@ -78,31 +73,29 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
     number | undefined
   >(undefined);
 
-
+  const [isDragging, setIsDragging] = React.useState<boolean>(false);
+  const [isResizing, setIsResizing] = React.useState<boolean>(false);
 
   // Update container node when container data changes
   React.useEffect(() => {
     const node: Node = {
       id: "container",
       type: "container",
-      data: {},
+      data: {
+        width: container.width,
+        height: container.height,
+      },
       position: { x: 0, y: 0 },
       draggable: false,
       selectable: false,
-      style: {
-        width: container.width,
-        height: container.height,
-        border: "2px solid #000000",
-        boxSizing: "border-box",
-        backgroundColor: "transparent",
-      },
     };
     setContainerNode(node);
   }, [container]);
 
   // Create nodes from base states ONLY on external changes (not during drag)
   React.useEffect(() => {
-    const elementNodes: Node[] = elements
+    if (isDragging || isResizing) return;
+    const nodes: Node[] = elements
       .map((element) => {
         // Use external base state
         const activeBaseInputState = bases.baseElementStates.get(
@@ -134,8 +127,12 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
       })
       .filter((node) => node !== undefined);
 
+    setElementNodes(nodes);
+  }, [elements, bases.baseElementStates, isDragging, isResizing]);
+
+  React.useEffect(() => {
     setNodes([containerNode, ...elementNodes]);
-  }, [elements, bases.baseElementStates, containerNode, setNodes]);
+  }, [containerNode, elementNodes]);
 
   const addToHistory = useEditorStore(state => state.addToHistory);
   const undoFromStore = useEditorStore(state => state.undo);
@@ -222,14 +219,6 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
     },
     [bases.updateBaseElementStateFn, bases.baseElementStates, addToHistory]
   );
-
-  const setIsDragging = React.useCallback((isDragging: boolean) => {
-    // No-op: ReactFlow handles visual state
-  }, []);
-
-  const setIsResizing = React.useCallback((isResizing: boolean) => {
-    // No-op: ReactFlow handles visual state
-  }, []);
 
   const undo = React.useCallback(() => {
     const changes = undoFromStore();
