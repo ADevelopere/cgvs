@@ -54,7 +54,6 @@ const defaultErrors: NumberElementFormErrors = {
   textProps: {},
   dataSource: {},
   numberProps: {},
-  mapping: {},
 };
 
 export const Default: Story = {
@@ -100,11 +99,12 @@ export const WithErrors: Story = {
       dataSource: {
         variableId: "Template number variable is required",
       },
-      mapping: {
-        ar: "Decimal places must be a non-negative number",
-        en: "Decimal places must be a non-negative number",
+      numberProps: {
+        mapping: {
+          ar: "Decimal places must be a non-negative number",
+          en: "Decimal places must be a non-negative number",
+        },
       },
-      numberProps: {}
     },
     updateBaseElement: (({ key, value }) =>
       logger.info("Base element updated:", {

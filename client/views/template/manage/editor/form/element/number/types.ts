@@ -17,9 +17,7 @@ export type NumberDataSourceFormState = {
   dataSource: GQL.NumberDataSourceInput;
 };
 
-export type NumberPropsFormState = {
-  numberProps: GQL.NumberElementSpecPropsInput;
-};
+export type NumberPropsFormState = GQL.NumberElementSpecPropsInput;
 
 // Complete number element working state
 export type NumberElementFormState = GQL.NumberElementInput;
@@ -28,27 +26,24 @@ export type NumberElementFormState = GQL.NumberElementInput;
 // MODULAR ERROR TYPES
 // ============================================================================
 
-export type NumberDataSourceFieldErrors =
-  | FormErrors<GQL.NumberDataSourceInput>
-  | undefined;
+export type NumberDataSourceFieldErrors = FormErrors<GQL.NumberDataSourceInput>;
 
 export type NumberDataSourceFormErrors = {
   dataSource: NumberDataSourceFieldErrors;
 };
 
-export type NumberPropsFieldErrors =
-  | FormErrors<Omit<GQL.NumberElementSpecPropsInput, "mapping">>
-export type MappingFormErrors = { [key: string]: string };
+export type NumberMappingFormErrors = { [key: string]: string };
 
-export type NumberPropsFormErrors = {
-  numberProps: NumberPropsFieldErrors;
-  mapping: MappingFormErrors;
+export type NumberPropsFormErrors = FormErrors<
+  Omit<GQL.NumberElementSpecPropsInput, "mapping">
+> & {
+  mapping?: NumberMappingFormErrors;
 };
 
-
-export type NumberElementFormErrors = NumberDataSourceFormErrors & NumberPropsFormErrors& {
+export type NumberElementFormErrors = NumberDataSourceFormErrors & {
   base: BaseElementFormErrors;
   textProps: TextPropsFormErrors;
+  numberProps: NumberPropsFormErrors;
 };
 
 // ============================================================================
@@ -63,11 +58,8 @@ export type UpdateNumberDataSourceWithElementIdFn =
 export type NumberDataSourceUpdateAction = Action<NumberDataSourceFormState>;
 
 export type UpdateNumberPropsFn = UpdateStateFn<NumberPropsFormState>;
-
 export type UpdateNumberPropsWithElementIdFn =
   UpdateStateWithElementIdFn<NumberPropsFormState>;
-
-export type NumberPropsUpdateAction = Action<NumberPropsFormState>;
 
 export type ValidateNumberDataSourceFn = ValidateFieldFn<
   NumberDataSourceFormState,
@@ -76,14 +68,8 @@ export type ValidateNumberDataSourceFn = ValidateFieldFn<
 
 export type ValidateNumberPropsFn = ValidateFieldFn<
   NumberPropsFormState,
-  NumberPropsFormErrors
+  string | NumberMappingFormErrors | undefined
 >;
-
-// ============================================================================
-// SANITIZED STATE TYPES
-// ============================================================================
-
-export type SanitizedNumberDataSourceFormState = GQL.NumberDataSourceInput;
 
 // ============================================================================
 // CONVERSION UTILITIES
