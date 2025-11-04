@@ -10,6 +10,8 @@ import {
   NumberPropsFormState,
   NumberPropsFormErrors,
   UpdateNumberPropsWithElementIdFn,
+  NumberMappingFormErrors,
+  UpdateNumberPropsFn,
 } from "../element/number";
 import { validateNumberProps } from "../element/number/numberValidators";
 import { useCertificateElementContext } from "../../CertificateElementContext";
@@ -38,9 +40,7 @@ function extractNumberPropsState(
   }
 
   return {
-    numberProps: {
-      mapping: element.numberProps.mapping ?? {},
-    },
+    mapping: element.numberProps.mapping ?? {},
   };
 }
 
@@ -54,7 +54,7 @@ function toUpdateInput(
   return {
     elementId: elementId,
     numberProps: {
-      mapping: state.numberProps.mapping,
+      mapping: state.mapping,
     },
   };
 }
@@ -100,7 +100,11 @@ export function useNumberPropsState(
   // Use generic hook
   const validator = validateNumberProps();
 
-  const { states, updateFn, pushUpdate, initState, errors } = useElementState({
+  const { states, updateFn, pushUpdate, initState, errors } = useElementState<
+    NumberPropsFormState,
+    NumberPropsFormErrors,
+    string | NumberMappingFormErrors | undefined
+  >({
     templateId,
     elements,
     validator,
@@ -134,19 +138,16 @@ export const useNumberProps = (params: UseNumberPropsParams) => {
   } = useCertificateElementContext();
 
   // Get state or initialize if not present (only initialize once)
-  const { numberProps } = React.useMemo(() => {
+  const numberProps: NumberPropsFormState = React.useMemo(() => {
     return (
       numberPropsStates.get(params.elementId) ??
       initNumberPropsState(params.elementId)
     );
   }, [numberPropsStates, params.elementId, initNumberPropsState]);
 
-  const updateNumberProps = React.useCallback(
-    (numberProps: GQL.NumberElementSpecPropsInput) => {
-      updateNumberPropsStateFn(params.elementId, {
-        key: "numberProps",
-        value: numberProps,
-      });
+  const updateNumberProps: UpdateNumberPropsFn = React.useCallback(
+    action => {
+      updateNumberPropsStateFn(params.elementId, action);
     },
     [params.elementId, updateNumberPropsStateFn]
   );
@@ -155,12 +156,8 @@ export const useNumberProps = (params: UseNumberPropsParams) => {
     await pushNumberPropsStateUpdate(params.elementId);
   }, [params.elementId, pushNumberPropsStateUpdate]);
 
-  const { numberProps: errors } = React.useMemo(() => {
-    return (
-      numberPropsStateErrors.get(params.elementId) || {
-        numberProps: {},
-      }
-    );
+  const errors: NumberPropsFormErrors = React.useMemo(() => {
+    return numberPropsStateErrors.get(params.elementId) ?? {};
   }, [numberPropsStateErrors, params.elementId]);
 
   return {
@@ -170,4 +167,3 @@ export const useNumberProps = (params: UseNumberPropsParams) => {
     numberPropsErrors: errors,
   };
 };
-

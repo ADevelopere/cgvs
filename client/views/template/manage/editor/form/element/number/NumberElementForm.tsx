@@ -1,10 +1,7 @@
 import React, { type FC } from "react";
 import { Box, Grid, Paper, Typography } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
-import type {
-  NumberElementFormErrors,
-  NumberElementFormState,
-} from "./types";
+import type { NumberElementFormErrors, NumberElementFormState } from "./types";
 import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../component/ActionButtons";
@@ -76,7 +73,7 @@ export const NumberElementForm: FC<NumberElementFormProps> = ({
               <NumberMappingInput
                 value={state.numberProps.mapping}
                 onChange={updateMapping}
-                errors={errors.mapping}
+                errors={errors.numberProps.mapping}
                 disabled={isSubmitting}
               />
             </Grid>

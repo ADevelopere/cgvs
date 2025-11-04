@@ -9,12 +9,12 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import { useAppTranslation } from "@/client/locale";
-import { MappingFormErrors } from "./types";
+import { NumberMappingFormErrors } from "./types";
 
 export type NumberMappingInputProps = {
   value: Record<string, string>;
   onChange: (mapping: Record<string, string>) => void;
-  errors?: MappingFormErrors;
+  errors?: NumberMappingFormErrors;
   disabled?: boolean;
 };
 

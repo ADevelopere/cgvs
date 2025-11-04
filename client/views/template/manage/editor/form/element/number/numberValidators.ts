@@ -1,8 +1,7 @@
 import {
-  MappingFormErrors,
+  NumberMappingFormErrors,
   ValidateNumberDataSourceFn,
   ValidateNumberPropsFn,
-  NumberPropsFormErrors,
 } from "./types";
 
 /**
@@ -27,8 +26,8 @@ export const validateNumberDataSource = (): ValidateNumberDataSourceFn => {
  */
 const validateMapping = (
   mapping: Record<string, string>
-): MappingFormErrors => {
-  const errors: MappingFormErrors = {};
+): NumberMappingFormErrors => {
+  const errors: NumberMappingFormErrors = {};
 
   for (const [locale, value] of Object.entries(mapping)) {
     const decimalPlaces = Number.parseInt(value, 10);
@@ -41,16 +40,11 @@ const validateMapping = (
 };
 
 export const validateNumberProps = (): ValidateNumberPropsFn => {
-  const validate: ValidateNumberPropsFn = ({ value: numberProps }) => {
-    const errors: NumberPropsFormErrors = { numberProps: {}, mapping: {} };
-
-    const mappingErrors = validateMapping(numberProps.mapping);
-    if (Object.keys(mappingErrors).length > 0) {
-      if (errors.numberProps)
-        errors.mapping = mappingErrors;
+  const validate: ValidateNumberPropsFn = ({ key, value }) => {
+    if (key === "mapping") {
+      return validateMapping(value);
     }
-
-    return errors;
+    return undefined;
   };
 
   return validate;
