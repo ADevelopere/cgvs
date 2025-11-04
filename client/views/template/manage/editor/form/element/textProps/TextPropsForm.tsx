@@ -27,7 +27,6 @@ import {
   TextPropsFormState,
 } from "./types";
 import { SketchPicker } from "react-color";
-import logger from "@/client/lib/logger";
 
 interface TextPropsFormProps {
   textProps: TextPropsFormState;

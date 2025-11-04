@@ -464,7 +464,9 @@ class GcpAdapter implements StorageService {
           const updatedFile = { ...dbFile, path: newPath };
           fileEntity = await StorageDbRepository.updateFile(updatedFile);
         }
-      } catch {}
+      } catch {
+        // Ignore DB update errors
+      }
 
       const [metadata] = await destFile.getMetadata();
       const bucketFile = StorageUtils.blobToFileInfo(metadata, gcpBaseUrl);
@@ -536,7 +538,9 @@ class GcpAdapter implements StorageService {
       // Delete from database
       try {
         await StorageDbRepository.deleteFile(path);
-      } catch {}
+      } catch {
+        // Ignore DB deletion errors
+      }
 
       return {
         success: true,

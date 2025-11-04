@@ -1,9 +1,8 @@
-/* eslint-disable no-console */
 import { LogEntry, LogLevel, LoggerConfig } from "./types";
 
 class ClientLogger {
-  private config: LoggerConfig;
-  private sessionId: string;
+  private readonly config: LoggerConfig;
+  private readonly sessionId: string;
   private sequenceNumber: number;
 
   constructor() {
@@ -55,10 +54,26 @@ class ClientLogger {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`;
   }
 
-  private async sendToAPI(level: LogLevel, message: string): Promise<void> {
+  private serializeForAPI(...args: unknown[]): string {
+    // Convert args to a string for API logging only
+    return args
+      .map((arg) => {
+        if (typeof arg === "string") return arg;
+        if (arg instanceof Error) return `${arg.name}: ${arg.message}`;
+        try {
+          return JSON.stringify(arg);
+        } catch {
+          return String(arg);
+        }
+      })
+      .join(" ");
+  }
+
+  private async sendToAPI(level: LogLevel, ...args: unknown[]): Promise<void> {
     if (!this.config.enabled) return;
 
     try {
+      const message = this.serializeForAPI(...args);
       const logEntry: LogEntry = {
         sessionId: this.sessionId,
         level,
@@ -82,31 +97,10 @@ class ClientLogger {
   private logToConsole(level: LogLevel, ...args: unknown[]): void {
     if (!this.config.enabled) return;
 
-    const message = args
-      .map(arg => {
-        if (arg === null) return "null";
-        if (arg === undefined) return "undefined";
-        if (typeof arg === "object") {
-          // Handle Error objects specially
-          if (arg instanceof Error) {
-            return `${arg.name}: ${arg.message} || ""}`;
-          }
-          // Try to stringify with error handling for circular references
-          try {
-            return JSON.stringify(arg, null, 2);
-          } catch {
-            // Fallback for circular references or other issues
-            return String(arg);
-          }
-        }
-        return String(arg);
-      })
-      .join(" ");
-
     const timestamp = this.formatTimestamp();
     const color = this.getColorCode(level);
 
-    // Console output with colors
+    // Console output with colors - let browser handle formatting naturally
     const consoleArgs = [
       `%c[${timestamp}] [${level.toUpperCase()}]`,
       `color: ${color}; font-weight: bold;`,
@@ -131,8 +125,8 @@ class ClientLogger {
         break;
     }
 
-    // Send to API
-    this.sendToAPI(level, message);
+    // Send to API (in background, don't await)
+    void this.sendToAPI(level, ...args);
   }
 
   public log(...args: unknown[]): void {

@@ -66,7 +66,7 @@ export const NumberMappingInput = ({
         {strings.numberElement.mappingDescription}
       </Typography>
 
-      {entries.map(([locale, decimalPlaces], index) => (
+      {entries.map(([locale, decimalPlaces]) => (
         <Grid container spacing={2} key={locale} sx={{ mb: 2 }}>
           <Grid size={{ xs: 12, sm: 5 }}>
             <TextField

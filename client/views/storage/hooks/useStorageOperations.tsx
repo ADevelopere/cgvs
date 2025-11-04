@@ -160,9 +160,9 @@ export const useStorageOperations = (): StorageOperations => {
           },
         });
 
-        if (result.data?.deleteStorageItems) {
-          const { successCount, failureCount, failures } =
-            result.data?.deleteStorageItems;
+        const deleteResult = result.data?.deleteStorageItems;
+        if (deleteResult) {
+          const { successCount, failureCount, failures } = deleteResult;
 
           const safeSuccessCount = successCount ?? 0;
           const safeFailureCount = failureCount ?? 0;
@@ -221,9 +221,9 @@ export const useStorageOperations = (): StorageOperations => {
           },
         });
 
-        if (result.data?.moveStorageItems) {
-          const { successCount, failureCount, failures } =
-            result.data?.moveStorageItems;
+        const moveResult = result.data?.moveStorageItems;
+        if (moveResult) {
+          const { successCount, failureCount, failures } = moveResult;
 
           const safeSuccessCount = successCount ?? 0;
           const safeFailureCount = failureCount ?? 0;
@@ -282,9 +282,9 @@ export const useStorageOperations = (): StorageOperations => {
           },
         });
 
-        if (result.data?.copyStorageItems) {
-          const { successCount, failureCount, failures } =
-            result.data?.copyStorageItems;
+        const copyResult = result.data?.copyStorageItems;
+        if (copyResult) {
+          const { successCount, failureCount, failures } = copyResult;
 
           const safeSuccessCount = successCount ?? 0;
           const safeFailureCount = failureCount ?? 0;

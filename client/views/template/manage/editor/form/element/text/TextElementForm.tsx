@@ -3,7 +3,6 @@ import { Box, Grid, Paper } from "@mui/material";
 import type {
   TextElementFormErrors,
   TextElementFormState,
-  UpdateTextDataSourceFn,
 } from "./types";
 import { DataSourceForm } from "./TextDataSourceForm";
 import { TextPropsForm } from "../textProps/TextPropsForm";

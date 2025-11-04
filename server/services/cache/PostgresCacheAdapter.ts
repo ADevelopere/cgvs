@@ -122,26 +122,29 @@ export class PostgresCacheAdapter implements ICacheService {
               results.push(0);
               break;
 
-            case "zadd":
+            case "zadd": {
               // For rate limiting: add new entry
               const [key, score, member] = cmd.args as [string, number, string];
               const expiresAt = new Date(score + 3600000); // 1 hour from score
               await CacheDbRepository.set(key, member, expiresAt);
               results.push(1);
               break;
+            }
 
-            case "zcard":
+            case "zcard": {
               // For rate limiting: count entries
               const entry = await CacheDbRepository.get(cmd.args[0] as string);
               results.push(entry ? 1 : 0);
               break;
+            }
 
-            case "expire":
+            case "expire": {
               // Set expiration
               const [expKey, expSeconds] = cmd.args as [string, number];
               await this.expire(expKey, expSeconds);
               results.push(1);
               break;
+            }
 
             default:
               logger.warn(`Unsupported pipeline command: ${cmd.command}`);

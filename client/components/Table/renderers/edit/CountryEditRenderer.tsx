@@ -63,7 +63,6 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
       inputValue,
       value,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = useCallback(

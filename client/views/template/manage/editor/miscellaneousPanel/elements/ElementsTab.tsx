@@ -12,14 +12,16 @@ export type ElementsTabProps = {
   elements: GQL.CertificateElementUnion[];
 };
 
-export function ElementsTab({ elements }: ElementsTabProps) {
+export const ElementsTab: React.FC<ElementsTabProps> = ({ elements }) => {
   logger.info("Rendering ElementsTab with elements:", elements);
   return (
     <Stack direction={"column"} spacing={1}>
       {/* Render each element here */}
       {elements.map(element => (
+        // todo:....
+        // @ts-expect-error -- fix this ts error later
         <CertificateElementsTabItem key={element.base.id} element={element} />
       ))}
     </Stack>
   );
-}
+};

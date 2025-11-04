@@ -64,19 +64,19 @@ type CertificateElementContextType = {
 export const CertificateElementContext =
   React.createContext<CertificateElementContextType | null>(null);
 
-export type CertificateElemenetProviderProps = {
+export type CertificateElementProviderProps = {
   elements: GQL.CertificateElementUnion[];
   templateId?: number;
-  tempalteConfig: GQL.TemplateConfig;
+  templateConfig: GQL.TemplateConfig;
   variables: GQL.TemplateVariable[];
   children: React.ReactNode;
 };
 
-export const CertificateElemenetProvider: React.FC<
-  CertificateElemenetProviderProps
+export const CertificateElementProvider: React.FC<
+  CertificateElementProviderProps
 > = ({ children, ...props }) => {
   const { elements, templateId } = props;
-  const config = useTemplateConfigState({ config: props.tempalteConfig });
+  const config = useTemplateConfigState({ config: props.templateConfig });
   const textProps = useTextPropsState({ elements, templateId });
   const bases = useBaseElementState({ elements, templateId });
   const textDataSource = useTextDataSourceState({ elements, templateId });
@@ -163,7 +163,7 @@ export const useCertificateElementContext = () => {
   const context = React.useContext(CertificateElementContext);
   if (!context) {
     throw new Error(
-      "useCertificateElementContext must be used within a CertificateElemenetProvider"
+      "useCertificateElementContext must be used within a CertificateElementProvider"
     );
   }
   return context;

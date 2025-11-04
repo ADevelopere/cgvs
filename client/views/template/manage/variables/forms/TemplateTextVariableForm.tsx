@@ -96,7 +96,9 @@ const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
       } else {
         await onCreate(state);
       }
-    } catch {}
+    } catch {
+      // error is handled in parent
+    }
   }, [state, editingVariableID, onCreate, onUpdate]);
 
   const isDifferentFromOriginal = useCallback((): boolean => {

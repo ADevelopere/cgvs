@@ -1,6 +1,6 @@
 import { NodeTypes, Node } from "@xyflow/react";
-import BackgroundImageNode from "../nodeRendere/BackgroundImageNode";
-import { TextElementNode } from "../nodeRendere/TextElementNode";
+import BackgroundImageNode from "../nodeRenderer/BackgroundImageNode";
+import { TextElementNode } from "../nodeRenderer/TextElementNode";
 // import { ContainerNode } from "../nodeRendere/ContainerNode";
 
 export const nodeTypes: NodeTypes = {
