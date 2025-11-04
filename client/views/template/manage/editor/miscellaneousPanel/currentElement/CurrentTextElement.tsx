@@ -1,6 +1,7 @@
 import React from "react";
 import { TextElement } from "@/client/graphql/generated/gql/graphql";
-import { Stack } from "@mui/material";
+import { Stack, Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { BaseCertificateElementForm } from "../../form/element/base";
 import { TextPropsForm } from "../../form/element/textProps";
 import { useQuery } from "@apollo/client/react";
@@ -51,27 +52,50 @@ export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
 
   return (
     <Stack>
-      <DataSourceForm
-        dataSource={textDataSourceState}
-        textVariables={textVariables}
-        selectVariables={selectVariables}
-        updateDataSource={updateTextDataSource}
-        errors={textDataSourceErrors}
-        disabled={false}
-        showSelector={true}
-      />
-      <BaseCertificateElementForm
-        baseProps={baseElementState}
-        onFieldChange={updateBaseElementState}
-        errors={baseElementErrors}
-      />
-      <TextPropsForm
-        textProps={textPropsState}
-        onTextPropsChange={updateTextProps}
-        errors={textPropsErrors}
-        selfHostedFonts={fonts}
-        language="ar"
-      />
+      <Accordion defaultExpanded>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Data source</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <DataSourceForm
+            dataSource={textDataSourceState}
+            textVariables={textVariables}
+            selectVariables={selectVariables}
+            updateDataSource={updateTextDataSource}
+            errors={textDataSourceErrors}
+            disabled={false}
+            showSelector={true}
+          />
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Base properties</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <BaseCertificateElementForm
+            baseProps={baseElementState}
+            onFieldChange={updateBaseElementState}
+            errors={baseElementErrors}
+          />
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Text properties</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <TextPropsForm
+            textProps={textPropsState}
+            onTextPropsChange={updateTextProps}
+            errors={textPropsErrors}
+            selfHostedFonts={fonts}
+            language="ar"
+          />
+        </AccordionDetails>
+      </Accordion>
     </Stack>
   );
 };

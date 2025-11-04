@@ -11,6 +11,7 @@ import {
   TextDataSourceFormErrors,
   UpdateTextDataSourceWithElementIdFn,
   textDataSourceToInput,
+  TextDataSourceFieldErrors,
 } from "../element/text/types";
 import { useElementState } from "./useElementState";
 import { useCertificateElementContext } from "../../CertificateElementContext";
@@ -110,7 +111,7 @@ export function useTextDataSourceState(
   const { states, updateFn, pushUpdate, initState, errors } = useElementState<
     TextDataSourceFormState,
     TextDataSourceFormErrors,
-    TextDataSourceFormErrors
+    TextDataSourceFieldErrors
   >({
     templateId,
     elements,
@@ -166,12 +167,8 @@ export const useTextDataSource = (params: UseTextDataSourceParams) => {
     await pushTextDataSourceStateUpdate(params.elementId);
   }, [params.elementId, pushTextDataSourceStateUpdate]);
 
-  const { dataSource: errors } = React.useMemo(() => {
-    return (
-      textDataSourceStateErrors.get(params.elementId) || {
-        dataSource: {},
-      }
-    );
+  const errors: TextDataSourceFormErrors = React.useMemo(() => {
+    return textDataSourceStateErrors.get(params.elementId) || {};
   }, [textDataSourceStateErrors, params.elementId]);
 
   return {

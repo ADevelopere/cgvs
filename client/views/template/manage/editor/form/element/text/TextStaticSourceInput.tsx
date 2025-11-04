@@ -1,6 +1,7 @@
 import React, { type FC } from "react";
 import { TextField } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
+import logger from "@/client/lib/logger";
 
 interface StaticSourceInputProps {
   value: string;
@@ -15,6 +16,7 @@ export const TextStaticSourceInput: FC<StaticSourceInputProps> = ({
   error,
   disabled,
 }) => {
+  logger.info("[TextStaticSourceInput] error:", error);
   const { certificateElementsTranslations: strings } = useAppTranslation();
 
   return (
@@ -27,6 +29,7 @@ export const TextStaticSourceInput: FC<StaticSourceInputProps> = ({
       error={!!error}
       helperText={error}
       disabled={disabled}
+      color={error ? "error" : "primary"}
     />
   );
 };
