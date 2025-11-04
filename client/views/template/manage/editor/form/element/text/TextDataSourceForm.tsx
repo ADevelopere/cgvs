@@ -1,6 +1,6 @@
 import React, { useMemo, type FC } from "react";
 import { Box, Stack } from "@mui/material";
-import type { TextDataSourceFieldErrors } from "./types";
+import type {  TextDataSourceFormErrors } from "./types";
 import { DataSourceSelector } from "./TextDataSourceSelector";
 import { TextStaticSourceInput } from "./TextStaticSourceInput";
 import { StudentFieldSelector } from "./StudentTextFieldSelector";
@@ -17,13 +17,14 @@ import {
   TextDataSourceInput,
   TextDataSourceType,
 } from "@/client/graphql/generated/gql/graphql";
+import logger from "@/client/lib/logger";
 
 interface DataSourceFormProps {
   dataSource: TextDataSourceInput;
   textVariables: TemplateTextVariable[];
   selectVariables: TemplateSelectVariable[];
   updateDataSource: (dataSource: TextDataSourceInput) => void;
-  errors: TextDataSourceFieldErrors;
+  errors: TextDataSourceFormErrors;
   disabled?: boolean;
   showSelector: boolean;
 }
@@ -37,15 +38,16 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
   disabled,
   showSelector,
 }) => {
+  logger.info("[DataSourceForm], errors:", errors);
+  logger.info("[DataSourceForm], dataSource:", dataSource);
   const selectedType: TextDataSourceType = useMemo(() => {
-    if (dataSource.certificateField?.field)
+    if (dataSource.certificateField)
       return TextDataSourceType.CertificateTextField;
-    if (dataSource.static?.value) return TextDataSourceType.Static;
-    if (dataSource.studentField?.field)
-      return TextDataSourceType.StudentTextField;
-    if (dataSource.templateTextVariable?.variableId)
+    if (dataSource.static) return TextDataSourceType.Static;
+    if (dataSource.studentField) return TextDataSourceType.StudentTextField;
+    if (dataSource.templateTextVariable)
       return TextDataSourceType.TemplateTextVariable;
-    if (dataSource.templateSelectVariable?.variableId)
+    if (dataSource.templateSelectVariable)
       return TextDataSourceType.TemplateSelectVariable;
     throw new Error("Invalid data source type");
   }, [dataSource]);
@@ -86,7 +88,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
           <TextStaticSourceInput
             value={dataSource.static?.value || ""}
             onChange={value => updateDataSource({ static: { value } })}
-            error={errors.static}
+            error={errors.dataSource?.static}
             disabled={disabled}
           />
         );
@@ -98,7 +100,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
               dataSource.studentField?.field || StudentTextField.StudentName
             }
             onChange={field => updateDataSource({ studentField: { field } })}
-            error={errors.studentField}
+            error={errors.dataSource?.studentField}
             disabled={disabled}
           />
         );
@@ -113,7 +115,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
             onChange={field =>
               updateDataSource({ certificateField: { field } })
             }
-            error={errors.certificateField}
+            error={errors.dataSource?.certificateField}
             disabled={disabled}
           />
         );
@@ -126,7 +128,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
             onChange={variableId =>
               updateDataSource({ templateTextVariable: { variableId } })
             }
-            error={errors.templateTextVariable}
+            error={errors.dataSource?.templateTextVariable}
             disabled={disabled}
           />
         );
@@ -141,7 +143,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
                 templateSelectVariable: { variableId },
               })
             }
-            error={errors.templateSelectVariable}
+            error={errors.dataSource?.templateSelectVariable}
             disabled={disabled}
           />
         );

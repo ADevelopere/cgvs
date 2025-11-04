@@ -249,14 +249,6 @@ export function useElementState<T, E, VR>(
     (elementId: number, action: Action<T>) => {
       const { key, value } = action;
 
-      logger.log(
-        "useElementState: updateFn called",
-        JSON.stringify({
-          elementId,
-          action,
-        })
-      );
-
       // Get current state
       const currentState = getStateForUpdate(elementId);
 
@@ -270,6 +262,10 @@ export function useElementState<T, E, VR>(
         ...currentErrors,
         [key]: error,
       } as E
+
+      logger.info(
+        `useElementState: Update element ${elementId}, error`, error
+      );
       errorsRef.current.set(elementId, newErrors);
       setErrorsMap(new Map(errorsRef.current));
 

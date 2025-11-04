@@ -1,5 +1,6 @@
 import type {
   DateDataSourceFieldErrors,
+  DateDataSourceFormErrors,
   ValidateDateDataSourceFn,
   ValidateDatePropsFn,
 } from "./types";
@@ -11,7 +12,7 @@ import type {
 export const validateDateDataSource = (): ValidateDateDataSourceFn => {
   const validate: ValidateDateDataSourceFn = ({
     value: source,
-  }): DateDataSourceFieldErrors => {
+  }): DateDataSourceFormErrors => {
     if (source.static && !source.static.value?.trim()) {
       return { static: "Static date value is required" };
     }

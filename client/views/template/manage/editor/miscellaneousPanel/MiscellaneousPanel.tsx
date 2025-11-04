@@ -38,6 +38,7 @@ export const MiscellaneousPanel: React.FC<MiscellaneousPanelProps> = ({
         height: "100%",
         display: "flex",
         flexDirection: "column",
+        overflow: "hidden",
       }}
     >
       <TabContext value={currntMiscellaneousPanelTab}>
@@ -98,14 +99,26 @@ export const MiscellaneousPanel: React.FC<MiscellaneousPanelProps> = ({
         </Box>
         <TabPanel
           value="config"
-          sx={{ flexGrow: 1, p: 1, width: "100%", height: "100%" }}
+          sx={{
+            flexGrow: 1,
+            p: 1,
+            width: "100%",
+            height: "100%",
+            overflowY: "auto",
+          }}
         >
           <TemplateConfigAutoUpdateForm />
         </TabPanel>
-        <TabPanel value="elements" sx={{ flexGrow: 1, p: 1 }}>
+        <TabPanel
+          value="elements"
+          sx={{ flexGrow: 1, p: 1, overflowY: "auto" }}
+        >
           <ElementsTab elements={elements} />
         </TabPanel>
-        <TabPanel value="currentElement" sx={{ flexGrow: 1, p: 1 }}>
+        <TabPanel
+          value="currentElement"
+          sx={{ flexGrow: 1, p: 1, overflowY: "auto" }}
+        >
           <CertificateElementCurrentItemSettings elements={elements} />
         </TabPanel>
       </TabContext>

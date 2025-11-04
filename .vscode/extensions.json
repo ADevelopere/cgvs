@@ -4,6 +4,7 @@
     "ms-vscode.vscode-typescript-next",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
+    // "oven.bun-vscode",
     // "usernamehw.errorlens",
     // GraphQL
     // "graphql.vscode-graphql",
@@ -31,6 +32,12 @@
     // "jestrunner.jestrunner",
     // "orta.vscode-jest",
 
-    "zainchen.json"
+    // JSON
+    // "zainchen.json",
+
+    // spell checker
+    // "streetsidesoftware.code-spell-checker",
+    // git
+    // "ldez.ignore-files"
   ]
 }

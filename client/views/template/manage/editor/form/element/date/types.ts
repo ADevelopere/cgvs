@@ -27,7 +27,7 @@ export type DatePropsFormState = GQL.DateElementSpecPropsInput;
 
 export type DateDataSourceFieldErrors = FormErrors<GQL.DateDataSourceInput>;
 export type DateDataSourceFormErrors = {
-  dataSource: DateDataSourceFieldErrors;
+  dataSource?: DateDataSourceFieldErrors;
 };
 
 export type DatePropsFormErrors = FormErrors<GQL.DateElementSpecPropsInput>;
@@ -56,7 +56,7 @@ export type UpdateDatePropsWithElementIdFn =
 
 export type ValidateDateDataSourceFn = ValidateFieldFn<
   DateDataSourceFormState,
-  DateDataSourceFieldErrors
+  DateDataSourceFormErrors
 >;
 
 export type ValidateDatePropsFn = ValidateFieldFn<
