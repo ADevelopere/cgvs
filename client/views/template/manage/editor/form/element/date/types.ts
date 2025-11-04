@@ -56,7 +56,7 @@ export type UpdateDatePropsWithElementIdFn =
 
 export type ValidateDateDataSourceFn = ValidateFieldFn<
   DateDataSourceFormState,
-  DateDataSourceFormErrors
+  DateDataSourceFieldErrors
 >;
 
 export type ValidateDatePropsFn = ValidateFieldFn<

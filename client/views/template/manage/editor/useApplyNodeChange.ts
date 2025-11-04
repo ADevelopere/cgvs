@@ -28,6 +28,8 @@ export const useApplyNodeChange = () => {
     containerHeight,
     setHelperLineHorizontal,
     setHelperLineVertical,
+    setIsDragging,
+    setIsResizing,
   } = useNodeData();
   const { setCurrentElementId } = useEditorStore();
 
@@ -121,6 +123,11 @@ export const useApplyNodeChange = () => {
   const handlePositionChange = useCallback(
     (change: NodePositionChange, nodes: Node[]): NodePositionChange => {
       try {
+        // Set dragging flag when drag starts
+        if (change.type === "position" && change.dragging) {
+          setIsDragging(true);
+        }
+
         // Apply boundary constraints during drag
         const constrainedChange = applyBoundaryConstraints(change, nodes);
 
@@ -137,6 +144,8 @@ export const useApplyNodeChange = () => {
             // Use queueMicrotask for better performance than setTimeout
             queueMicrotask(() => {
               updateElementPosition(elementId, x, y);
+              // Clear dragging flag after position is updated
+              setIsDragging(false);
             });
           }
         }
@@ -146,7 +155,7 @@ export const useApplyNodeChange = () => {
         return change;
       }
     },
-    [applyBoundaryConstraints, updateElementPosition]
+    [applyBoundaryConstraints, updateElementPosition, setIsDragging]
   );
 
   /**
@@ -156,6 +165,11 @@ export const useApplyNodeChange = () => {
   const handleDimensionChange = useCallback(
     (change: NodeDimensionChange): NodeDimensionChange => {
       try {
+        // Set resizing flag when resize starts
+        if (change.type === "dimensions" && change.resizing) {
+          setIsResizing(true);
+        }
+
         if (
           change.type === "dimensions" &&
           !change.resizing &&
@@ -168,6 +182,8 @@ export const useApplyNodeChange = () => {
             // Use queueMicrotask for better performance than setTimeout
             queueMicrotask(() => {
               updateElementSize(elementId, width, height);
+              // Clear resizing flag after size is updated
+              setIsResizing(false);
             });
           }
         }
@@ -178,7 +194,7 @@ export const useApplyNodeChange = () => {
 
       return change;
     },
-    [updateElementSize]
+    [updateElementSize, setIsResizing]
   );
 
   /**
