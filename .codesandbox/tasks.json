@@ -17,7 +17,7 @@
     "dev": {
       "name": "dev",
       "command": "bun dev",
-      "runAtStart": true
+      "runAtStart": false
     },
     "debug": {
       "name": "debug",
