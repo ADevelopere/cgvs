@@ -8,6 +8,7 @@ export type NodeDataContextType = {
   elementsNodeData: ElementNodeData[];
   containerData: ContainerNodeData;
   updateElementPosition: (elementId: number, x: number, y: number) => void;
+  updateElementSize: (elementId: number, width: number, height: number) => void;
 };
 
 const NodeDataContext = React.createContext<NodeDataContextType | null>(
@@ -44,6 +45,7 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
         positionY: base.positionY,
         width: base.width,
         height: base.height,
+        
       };
     });
   }, [elements, bases.baseElementStates]);
@@ -62,13 +64,28 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
     [bases.updateBaseElementStateFn]
   );
 
+  const updateElementSize = React.useCallback(
+    (elementId: number, width: number, height: number) => {
+      bases.updateBaseElementStateFn(elementId, {
+        key: "width",
+        value: width,
+      });
+      bases.updateBaseElementStateFn(elementId, {
+        key: "height",
+        value: height,
+      });
+    },
+    [bases.updateBaseElementStateFn]
+  );
+
   const value = React.useMemo(
     () => ({
       elementsNodeData,
       containerData,
       updateElementPosition,
+      updateElementSize,
     }),
-    [elementsNodeData, containerData, updateElementPosition]
+    [elementsNodeData, containerData, updateElementPosition, updateElementSize]
   );
 
   return (
