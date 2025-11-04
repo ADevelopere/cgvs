@@ -30,9 +30,10 @@ const Flow: React.FC<FlowEditorProps> = ({ template, nodes, setNodes }) => {
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => {
-      setNodes((nodes) => applyNodeChanges(changes, nodes));
+      const updatedNodes = applyNodeChanges(changes, nodes);
+      setNodes(updatedNodes);
     },
-    [setNodes, applyNodeChanges]
+    [nodes, setNodes, applyNodeChanges]
   );
 
   return (

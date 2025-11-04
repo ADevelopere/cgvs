@@ -15,6 +15,7 @@ import {
   UpdateBaseElementFn,
 } from "../element/base";
 import { useCertificateElementContext } from "../../CertificateElementContext";
+import { useNodesStore } from "../../useNodesStore";
 
 export type UseBaseElementStateParams = {
   templateId?: number;
@@ -79,6 +80,7 @@ export function useBaseElementState(
   const { templateId, elements } = params;
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
+  const updateBaseNodeData = useNodesStore((state) => state.updateBaseNodeData);
 
   const [updateElementCommonPropertiesMutation] = useMutation(
     updateElementCommonPropertiesMutationDocument
@@ -132,9 +134,30 @@ export function useBaseElementState(
     stateNamespace: "baseElement",
   });
 
+  // Enhanced update function that also updates the nodes store
+  const updateBaseElementStateWithNodes: UpdateBaseElementWithElementIdFn = React.useCallback(
+    (elementId, action) => {
+      // Update the base state
+      updateFn(elementId, action);
+
+      // Update the nodes store if templateId is available
+      if (templateId) {
+        const { key, value } = action;
+        
+        // Map form state keys to node data properties
+        if (key === "positionX" || key === "positionY" || key === "width" || key === "height") {
+          updateBaseNodeData(templateId, elementId, {
+            [key]: value as number,
+          });
+        }
+      }
+    },
+    [updateFn, updateBaseNodeData, templateId]
+  );
+
   return {
     baseElementStates: states,
-    updateBaseElementStateFn: updateFn,
+    updateBaseElementStateFn: updateBaseElementStateWithNodes,
     pushBaseElementStateUpdate: pushUpdate,
     initBaseElementState: initState,
     baseElementStateErrors: errors,

@@ -11,6 +11,7 @@ import {
   TemplateConfigUpdateAction,
 } from "./types";
 import { useTemplateConfigFormValidateFn } from "./templateConfigValidator";
+import { useNodesStore } from "../../useNodesStore";
 
 const updateDebounceDelayMs = 10000; // 10 seconds
 
@@ -31,6 +32,7 @@ export function useTemplateConfigState(
   const { config } = params;
   const { templateConfigTranslations: strings } = useAppTranslation();
   const notifications = useNotifications();
+  const updateContainerNode = useNodesStore((state) => state.updateContainerNode);
 
   const [updateTemplateConfigMutation] = useMutation(
     updateTemplateConfigMutationDocument
@@ -100,6 +102,13 @@ export function useTemplateConfigState(
       const newState = { ...state, [key]: value };
       setState(newState);
 
+      // Update container node in the store immediately
+      if ((key === "width" || key === "height") && config.templateId) {
+        updateContainerNode(config.templateId, {
+          [key]: value as number,
+        });
+      }
+
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
       }
@@ -115,7 +124,7 @@ export function useTemplateConfigState(
         });
       }, updateDebounceDelayMs);
     },
-    [validateAction, state, errors, mutationFn]
+    [validateAction, state, errors, mutationFn, updateContainerNode, config.templateId]
   );
 
   // Cleanup on unmount

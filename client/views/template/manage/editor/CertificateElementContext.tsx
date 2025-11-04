@@ -132,10 +132,18 @@ export const CertificateElementProvider: React.FC<
     ]
   );
 
+  // Get templateId with fallback
+  const actualTemplateId = templateId ?? props.templateConfig.templateId ?? 0;
+
   return (
     <CertificateElementContext.Provider value={value}>
       <ReactFlowProvider>
-        <NodeDataProvider elements={elements} bases={bases} config={config}>
+        <NodeDataProvider
+          templateId={actualTemplateId}
+          elements={elements}
+          bases={bases}
+          config={config}
+        >
           {children}
         </NodeDataProvider>
       </ReactFlowProvider>

@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useAuth } from "@/client/contexts/AuthContext";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { useRouter } from "next/navigation";
 
 interface ProtectedRouteProps {
@@ -49,7 +49,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         }}
       >
         <CircularProgress size={48} />
-        <Typography>Checking authentication...</Typography>
       </Box>
     );
   }

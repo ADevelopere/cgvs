@@ -2,14 +2,17 @@ import * as GQL from "@/client/graphql/generated/gql/graphql";
 import React from "react";
 import { UseBaseElementStateReturn } from "./form/hooks";
 import { UseTemplateConfigStateReturn } from "./form/config/useTemplateConfigState";
-import { useNodesState, Node } from "@xyflow/react";
-import { TextElementNodeData } from "./nodeRenderer/TextElementNode";
+import { Node } from "@xyflow/react";
 import { useEditorStore } from "./useEditorStore";
-import {logger} from "@/client/lib/logger";
+import { logger } from "@/client/lib/logger";
+import { useNodesStore } from "./useNodesStore";
+import { useLazyQuery } from "@apollo/client/react";
+import { elementsByTemplateIdQueryDocument } from "./glqDocuments";
 
 export type NodeDataContextType = {
+  templateId: number;
   nodes: Node[];
-  setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
+  setNodes: (nodes: Node[]) => void;
   updateElementPosition: (
     elementId: number,
     x: number,
@@ -39,34 +42,25 @@ export type NodeDataContextType = {
 const NodeDataContext = React.createContext<NodeDataContextType | null>(null);
 
 export type NodeDataProps = {
+  templateId: number;
   elements: GQL.CertificateElementUnion[];
   bases: UseBaseElementStateReturn;
   config: UseTemplateConfigStateReturn;
   children: React.ReactNode;
 };
+
 export const NodeDataProvider: React.FC<NodeDataProps> = ({
-  elements,
+  templateId,
   bases,
   config: { state: container },
   children,
 }) => {
-  const [nodes, setNodes] = useNodesState<Node>([]);
+  // Get nodes from the store
+  const nodes = useNodesStore(state => state.getNodes(templateId));
+  const setNodesInStore = useNodesStore(state => state.setNodes);
+  const initializeNodes = useNodesStore(state => state.initializeNodes);
 
-  const [containerNode, setContainerNode] = React.useState<Node>({
-    id: "container",
-    type: "container",
-    data: {
-      width: container.width,
-      height: container.height,
-    },
-    position: { x: 0, y: 0 },
-    draggable: false,
-    selectable: false,
-  });
-
-  const [elementNodes, setElementNodes] = React.useState<Node[]>([]);
-
-  // Helper line state
+  // Helper line state (kept local as it's UI-only)
   const [helperLineHorizontal, setHelperLineHorizontal] = React.useState<
     number | undefined
   >(undefined);
@@ -74,67 +68,63 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
     number | undefined
   >(undefined);
 
-  const [isDragging, setIsDragging] = React.useState<boolean>(false);
-  const [isResizing, setIsResizing] = React.useState<boolean>(false);
+  // Drag/resize state for future use or optimization
+  const [, setIsDragging] = React.useState<boolean>(false);
+  const [, setIsResizing] = React.useState<boolean>(false);
 
-  // Update container node when container data changes
+  const [fetchElementsByTemplateId] = useLazyQuery(
+    elementsByTemplateIdQueryDocument
+  );
+
+  // Initialize nodes once when component mounts or templateId changes
   React.useEffect(() => {
-    const node: Node = {
-      id: "container",
-      type: "container",
-      data: {
-        width: container.width,
-        height: container.height,
-      },
-      position: { x: 0, y: 0 },
-      draggable: false,
-      selectable: false,
-    };
-    setContainerNode(node);
-  }, [container]);
+    let canceled = false;
+    const load = async () => {
+      if (nodes.length === 0) {
+        try {
+          const result = await fetchElementsByTemplateId({
+            variables: { templateId },
+          });
+          if (result.error) {
+            logger.error("NodeDataProvider: Error fetching elements", {
+              templateId,
+              error: result.error,
+            });
+            return;
+          }
 
-  // Create nodes from base states ONLY on external changes (not during drag)
-  React.useEffect(() => {
-    if (isDragging || isResizing) return;
-    logger.debug("NodeDataProvider: Updating element nodes from bases");
-    const nodes: Node[] = elements
-      .map((element) => {
-        // Use external base state
-        const activeBaseInputState = bases.baseElementStates.get(
-          element.base.id
-        );
-        const base = activeBaseInputState ?? element.base;
-
-        // Create node based on element type
-        if (element.base.type === GQL.ElementType.Text) {
-          const data: TextElementNodeData = {
-            elementId: element.base.id,
-          };
-
-          const node: Node<TextElementNodeData> = {
-            id: element.base.id.toString(),
-            type: "text",
-            position: {
-              x: base.positionX,
-              y: base.positionY,
-            },
-            width: base.width,
-            height: base.height,
-            data: data,
-            connectable: false,
-            resizing: true,
-          };
-          return node;
+          const elements = result.data?.elementsByTemplateId || [];
+          logger.debug("NodeDataProvider: Initializing nodes in store", {
+            templateId,
+            elementCount: elements.length,
+          });
+          if (!canceled) {
+            initializeNodes(templateId, elements, {
+              width: container.width,
+              height: container.height,
+            });
+          }
+        } catch (error) {
+          logger.error("NodeDataProvider: Error fetching elements", {
+            templateId,
+            error,
+          });
         }
-      })
-      .filter((node) => node !== undefined);
+      }
+    };
+    void load();
+    return () => {
+      canceled = true;
+    };
+  }, [templateId, nodes.length, fetchElementsByTemplateId, initializeNodes, container.width, container.height]);
 
-    setElementNodes(nodes);
-  }, [elements, bases.baseElementStates, isDragging, isResizing]);
-
-  React.useEffect(() => {
-    setNodes([containerNode, ...elementNodes]);
-  }, [containerNode, elementNodes]);
+  // Wrapper for setNodes that uses the store
+  const setNodes = React.useCallback(
+    (newNodes: Node[]) => {
+      setNodesInStore(templateId, newNodes);
+    },
+    [templateId, setNodesInStore]
+  );
 
   const addToHistory = useEditorStore(state => state.addToHistory);
   const undoFromStore = useEditorStore(state => state.undo);
@@ -168,8 +158,7 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
         addToHistory(changes);
       }
 
-      // Update external base state immediately
-      // ReactFlow handles visual updates via applyNodeChanges
+      // Update base state which will update the store via the enhanced updateFn
       bases.updateBaseElementStateFn(elementId, {
         key: "positionX",
         value: x,
@@ -183,7 +172,12 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
   );
 
   const updateElementSize = React.useCallback(
-    (elementId: number, width: number, height: number, isResizing: boolean = false) => {
+    (
+      elementId: number,
+      width: number,
+      height: number,
+      isResizing: boolean = false
+    ) => {
       // Get old values for undo/redo
       const oldBase = bases.baseElementStates.get(elementId);
       if (!oldBase) return;
@@ -208,8 +202,7 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
         addToHistory(changes);
       }
 
-      // Update external base state immediately
-      // ReactFlow handles visual updates via applyNodeChanges
+      // Update base state which will update the store via the enhanced updateFn
       bases.updateBaseElementStateFn(elementId, {
         key: "width",
         value: width,
@@ -226,7 +219,7 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
     const changes = undoFromStore();
     if (!changes) return;
 
-    // Apply undo changes
+    // Apply undo changes - updates both base state and nodes store
     changes.forEach(change => {
       bases.updateBaseElementStateFn(change.elementId, {
         key: change.property,
@@ -239,7 +232,7 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
     const changes = redoFromStore();
     if (!changes) return;
 
-    // Apply redo changes
+    // Apply redo changes - updates both base state and nodes store
     changes.forEach(change => {
       bases.updateBaseElementStateFn(change.elementId, {
         key: change.property,
@@ -250,6 +243,7 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
 
   const value = React.useMemo(
     () => ({
+      templateId,
       nodes,
       setNodes,
       updateElementPosition,
@@ -268,6 +262,7 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
       canRedo,
     }),
     [
+      templateId,
       nodes,
       setNodes,
       updateElementPosition,
