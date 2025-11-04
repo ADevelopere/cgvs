@@ -11,9 +11,9 @@ import {
   DatePropsFormState,
   DatePropsFormErrors,
   UpdateDatePropsWithElementIdFn,
+  UpdateDatePropsFn,
 } from "../element/date";
 import { useCertificateElementContext } from "../../CertificateElementContext";
-import { Action } from "../types";
 
 export type UseDatePropsStateParams = {
   templateId?: number;
@@ -144,15 +144,15 @@ export const useDateProps = (params: UseDatePropsParams) => {
   } = useCertificateElementContext();
 
   // Get state or initialize if not present (only initialize once)
-  const dateProps = React.useMemo(() => {
+  const dateProps: DatePropsFormState = React.useMemo(() => {
     return (
       datePropsStates.get(params.elementId) ??
       initDatePropsState(params.elementId)
     );
   }, [datePropsStates, params.elementId, initDatePropsState]);
 
-  const updateDateProps = React.useCallback(
-    (action: Action<GQL.DateElementSpecPropsInput>) => {
+  const updateDateProps: UpdateDatePropsFn = React.useCallback(
+    action => {
       updateDatePropsStateFn(params.elementId, action);
     },
     [params.elementId, updateDatePropsStateFn]
@@ -162,7 +162,7 @@ export const useDateProps = (params: UseDatePropsParams) => {
     await pushDatePropsStateUpdate(params.elementId);
   }, [params.elementId, pushDatePropsStateUpdate]);
 
-  const errors = React.useMemo(() => {
+  const errors: DatePropsFormErrors = React.useMemo(() => {
     return datePropsStateErrors.get(params.elementId) || {};
   }, [datePropsStateErrors, params.elementId]);
 

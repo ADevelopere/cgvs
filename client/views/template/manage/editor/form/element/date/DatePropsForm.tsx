@@ -16,14 +16,14 @@ import {
   DateTransformationType,
 } from "@/client/graphql/generated/gql/graphql";
 import type {
-  DatePropsState,
-  UpdateDatePropsFieldsFn,
+  DatePropsFormState,
+  UpdateDatePropsFn,
   DatePropsFormErrors
 } from "./types";
 
 interface DatePropsFormProps {
-  dateProps: DatePropsState;
-  onUpdate: UpdateDatePropsFieldsFn;
+  dateProps: DatePropsFormState;
+  onUpdate: UpdateDatePropsFn;
   errors: DatePropsFormErrors;
   disabled?: boolean;
 }

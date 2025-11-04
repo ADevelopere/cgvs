@@ -11,6 +11,7 @@ import {
   ImagePropsFormState,
   ImagePropsFormErrors,
   UpdateImagePropsWithElementIdFn,
+  UpdateImagePropsFn,
 } from "../element/image";
 import { useCertificateElementContext } from "../../CertificateElementContext";
 
@@ -38,9 +39,7 @@ function extractImagePropsState(
   }
 
   return {
-    imageProps: {
-      fit: element.imageProps.fit as GQL.ElementImageFit,
-    },
+    fit: element.imageProps.fit as GQL.ElementImageFit,
   };
 }
 
@@ -54,7 +53,7 @@ function toUpdateInput(
   return {
     elementId: elementId,
     imageProps: {
-      fit: state.imageProps.fit,
+      fit: state.fit,
     },
   };
 }
@@ -100,7 +99,11 @@ export function useImagePropsState(
   // Use generic hook
   const validator = validateImageProps();
 
-  const { states, updateFn, pushUpdate, initState, errors } = useElementState({
+  const { states, updateFn, pushUpdate, initState, errors } = useElementState<
+    ImagePropsFormState,
+    ImagePropsFormErrors,
+    string | undefined
+  >({
     templateId,
     elements,
     validator,
@@ -134,19 +137,16 @@ export const useImageProps = (params: UseImagePropsParams) => {
   } = useCertificateElementContext();
 
   // Get state or initialize if not present (only initialize once)
-  const { imageProps } = React.useMemo(() => {
+  const imageProps: ImagePropsFormState = React.useMemo(() => {
     return (
       imagePropsStates.get(params.elementId) ??
       initImagePropsState(params.elementId)
     );
   }, [imagePropsStates, params.elementId, initImagePropsState]);
 
-  const updateImageProps = React.useCallback(
-    (imageProps: GQL.ImageElementSpecPropsInput) => {
-      updateImagePropsStateFn(params.elementId, {
-        key: "imageProps",
-        value: imageProps,
-      });
+  const updateImageProps: UpdateImagePropsFn = React.useCallback(
+    action => {
+      updateImagePropsStateFn(params.elementId, action);
     },
     [params.elementId, updateImagePropsStateFn]
   );
@@ -155,12 +155,8 @@ export const useImageProps = (params: UseImagePropsParams) => {
     await pushImagePropsStateUpdate(params.elementId);
   }, [params.elementId, pushImagePropsStateUpdate]);
 
-  const { imageProps: errors } = React.useMemo(() => {
-    return (
-      imagePropsStateErrors.get(params.elementId) || {
-        imageProps: {},
-      }
-    );
+  const errors: ImagePropsFormErrors = React.useMemo(() => {
+    return imagePropsStateErrors.get(params.elementId) || {};
   }, [imagePropsStateErrors, params.elementId]);
 
   return {
