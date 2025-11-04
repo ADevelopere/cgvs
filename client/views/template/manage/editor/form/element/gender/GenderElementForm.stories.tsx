@@ -26,7 +26,7 @@ const mockState: GenderElementFormState = {
     positionY: 100,
     width: 200,
     height: 50,
-    alignment: ElementAlignment.Start,
+    alignment: ElementAlignment.TopStart,
     renderOrder: 0,
   },
   textProps: {
@@ -67,7 +67,7 @@ export const WithErrors: Story = {
         positionY: 0,
         width: 0,
         height: 0,
-        alignment: ElementAlignment.Start,
+        alignment: ElementAlignment.CenterStart,
         renderOrder: 0,
       },
       textProps: {

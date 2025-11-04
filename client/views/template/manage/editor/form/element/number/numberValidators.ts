@@ -15,7 +15,7 @@ export const validateNumberDataSource = (): ValidateNumberDataSourceFn => {
         dataSource: { variableId: "Template number variable is required" },
       };
     }
-    return undefined;
+    return { dataSource: {} };
   };
   return validate;
 };
