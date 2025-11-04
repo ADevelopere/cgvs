@@ -21,4 +21,4 @@ export type UpdateTextPropsWithElementIdFn =
 
 export type UpdateFontRefFn = (fontRef: Graphql.FontReferenceInput) => void;
 
-export type ValidateTextPropsFieldFn = ValidateFieldFn<TextPropsFormState, TextPropsFormErrors>;
+export type ValidateTextPropsFieldFn = ValidateFieldFn<TextPropsFormState, string | undefined>;

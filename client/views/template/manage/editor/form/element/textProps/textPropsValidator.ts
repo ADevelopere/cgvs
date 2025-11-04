@@ -11,7 +11,7 @@ export const validateTextPropsField = () => {
   const validate: ValidateTextPropsFieldFn = ({ key, value }) => {
     switch (key) {
       case "color": {
-        const colorValue = value as string;
+        const colorValue = value;
         if (!colorValue) return "Color is required";
         if (!/^#[0-9A-Fa-f]{6}$/.test(colorValue))
           return "Invalid color format";
@@ -19,17 +19,17 @@ export const validateTextPropsField = () => {
       }
 
       case "fontSize": {
-        const sizeValue = value as number;
+        const sizeValue = value;
         if (sizeValue <= 0) return "Font size must be positive";
         if (sizeValue > 1000) return "Font size cannot exceed 1000";
         return undefined;
       }
 
       case "overflow":
-        return !value ? "Overflow is required" : undefined;
+        return value ? undefined : "Overflow is required";
 
       case "fontRef":
-        return validateFontReference(value as FontReferenceInput);
+        return validateFontReference(value);
 
       default:
         return undefined;
