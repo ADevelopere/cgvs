@@ -59,7 +59,7 @@ export const TextElementForm: FC<TextElementFormProps> = ({
             textVariables={textVariables}
             selectVariables={selectVariables}
             updateDataSource={updateDataSource}
-            errors={errors.dataSource}
+            errors={errors}
             disabled={isSubmitting}
             showSelector={true}
           />

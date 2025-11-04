@@ -1,5 +1,6 @@
 import {
   integer,
+  decimal,
   pgTable,
   serial,
   timestamp,
@@ -16,10 +17,10 @@ export const certificateElement = pgTable("certificate_element", {
 
   templateId: integer("template_id").notNull(),
   // Shared element properties
-  positionX: integer("position_x").notNull(),
-  positionY: integer("position_y").notNull(),
-  width: integer("width").notNull(),
-  height: integer("height").notNull(),
+  positionX: decimal("position_x").notNull(),
+  positionY: decimal("position_y").notNull(),
+  width: decimal("width").notNull(),
+  height: decimal("height").notNull(),
   alignment: elementAlignmentEnum("alignment"),
   hidden: boolean("hidden").default(false),
   renderOrder: integer("render_order").notNull(), // Lower values render first

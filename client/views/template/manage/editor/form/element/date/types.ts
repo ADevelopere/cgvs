@@ -25,7 +25,7 @@ export type DatePropsFormState = GQL.DateElementSpecPropsInput;
 // MODULAR ERROR TYPES
 // ============================================================================
 
-export type DateDataSourceFieldErrors = FormErrors<GQL.DateDataSourceInput>;
+export type DateDataSourceFieldErrors = FormErrors<GQL.DateDataSourceInput> | undefined;
 export type DateDataSourceFormErrors = {
   dataSource?: DateDataSourceFieldErrors;
 };

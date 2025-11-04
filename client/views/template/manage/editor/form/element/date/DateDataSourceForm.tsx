@@ -68,7 +68,7 @@ export const DateDataSourceForm: FC<DateDataSourceFormProps> = ({
           <DateStaticSourceInput
             value={dataSource.static?.value || ""}
             onChange={value => onDataSourceChange({ static: { value } })}
-            error={errors.static}
+            error={errors?.static}
             disabled={disabled}
           />
         );
@@ -80,7 +80,7 @@ export const DateDataSourceForm: FC<DateDataSourceFormProps> = ({
               dataSource.studentField?.field || GQL.StudentDateField.DateOfBirth
             }
             onChange={field => onDataSourceChange({ studentField: { field } })}
-            error={errors.studentField}
+            error={errors?.studentField}
             disabled={disabled}
           />
         );
@@ -95,7 +95,7 @@ export const DateDataSourceForm: FC<DateDataSourceFormProps> = ({
             onChange={field =>
               onDataSourceChange({ certificateField: { field } })
             }
-            error={errors.certificateField}
+            error={errors?.certificateField}
             disabled={disabled}
           />
         );
@@ -108,7 +108,7 @@ export const DateDataSourceForm: FC<DateDataSourceFormProps> = ({
             onChange={variableId =>
               onDataSourceChange({ templateVariable: { variableId } })
             }
-            error={errors.templateVariable}
+            error={errors?.templateVariable}
             disabled={disabled}
           />
         );

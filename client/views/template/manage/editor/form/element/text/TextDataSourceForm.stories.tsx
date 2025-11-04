@@ -90,7 +90,7 @@ export const WithErrors: Story = {
     selectVariables: mockSelectVariables,
     updateDataSource: dataSource =>
       logger.log("Data source changed:", dataSource),
-    errors: { static: "Value is required" },
+    errors: { dataSource: { static: "Value is required" } },
     disabled: false,
     showSelector: true,
   },

@@ -1,12 +1,14 @@
 "use client";
 
 import React from "react";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography, IconButton } from "@mui/material";
+import { Refresh as RefreshIcon } from "@mui/icons-material";
 import CertificateReactFlowEditor from "./ReactFlowEditor";
 import EditorPaneViewController from "@/client/components/editorPane/EditorPaneViewController";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import { useQuery } from "@apollo/client/react";
+import { ApolloClient } from "@apollo/client";
+import { useQuery, useApolloClient } from "@apollo/client/react";
 import {
   elementsByTemplateIdQueryDocument,
   templateConfigByTemplateIdQueryDocument,
@@ -16,6 +18,7 @@ import { MiscellaneousPanel } from "./miscellaneousPanel/MiscellaneousPanel";
 import { useAppTranslation } from "@/client/locale";
 import { CertificateElementProvider } from "@/client/views/template/manage/editor/CertificateElementContext";
 import { templateVariablesByTemplateIdQueryDocument } from "../variables/hooks/templateVariable.documents";
+
 
 function AddNodePane() {
   return (
@@ -56,6 +59,32 @@ const FloatingLoadingIndicator: React.FC<{ loading: boolean }> = ({
     </Box>
   );
 };
+
+/**
+ * Evicts the cache for template-related queries to refresh data.
+ */
+ const refresh = (
+  apolloClient: ApolloClient,
+  templateId: number,
+): void => {
+  apolloClient.cache.evict({
+    id: "ROOT_QUERY",
+    fieldName: "templateConfigByTemplateId",
+    args: { templateId },
+  });
+  apolloClient.cache.evict({
+    id: "ROOT_QUERY",
+    fieldName: "elementsByTemplateId",
+    args: { templateId },
+  });
+  apolloClient.cache.evict({
+    id: "ROOT_QUERY",
+    fieldName: "templateVariablesByTemplateId",
+    args: { templateId },
+  });
+  apolloClient.cache.gc();
+};
+
 
 export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
   const {
@@ -108,6 +137,13 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
       fetchPolicy: "cache-first",
     }
   );
+
+  const apolloClient = useApolloClient();
+  // function to evict cache for all quries with same query vars used above
+  const refreshData = React.useCallback(() => {
+    refresh(apolloClient, template.id);
+  }, [apolloClient, template.id]);
+
 
   const variables: GQL.TemplateVariable[] = React.useMemo(
     () => variablesData?.templateVariablesByTemplateId || [],
@@ -174,7 +210,8 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
           }
           thirdPane={{
             title: (
-              <Typography
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography
                 variant="h6"
                 sx={{
                   px: 2,
@@ -182,6 +219,15 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
               >
                 {strings.miscellaneousPane}
               </Typography>
+              <IconButton
+                onClick={refreshData}
+                size="small"
+                sx={{ ml: 1 }}
+                title="Refresh Data"
+              >
+                <RefreshIcon />
+              </IconButton>
+              </Box>
             ),
             content: <MiscellaneousPanel elements={elements} />,
             buttonTooltip: "Toggle Miscellaneous Panel",
