@@ -3,8 +3,7 @@ import { useQuery } from "@apollo/client/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { elementsByTemplateIdQueryDocument } from "../../glqDocuments/element/element.documents";
 import { Action, ValidateFieldFn } from "../types";
-import { logger } from "@/client/lib/logger";
-
+import logger from "@/client/lib/logger";
 // Persistent state cache at module level - survives remounts
 // Key format: "templateId:namespace:elementId"
 const persistentStateCache = new Map<string, unknown>();
@@ -223,10 +222,6 @@ export function useElementState<T, E, VR>(
       statesRef.current.set(elementId, freshState);
       setInPersistentCache(elementId, freshState);
       setStatesMap(new Map(statesRef.current));
-
-      logger.info(
-        `useElementState: Reset state for element ${elementId} from server data`
-      );
     },
     [setInPersistentCache]
   );
@@ -263,9 +258,6 @@ export function useElementState<T, E, VR>(
         [key]: error,
       } as E
 
-      logger.info(
-        `useElementState: Update element ${elementId}, error`, error
-      );
       errorsRef.current.set(elementId, newErrors);
       setErrorsMap(new Map(errorsRef.current));
 

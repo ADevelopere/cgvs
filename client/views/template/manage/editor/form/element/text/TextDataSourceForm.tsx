@@ -17,7 +17,6 @@ import {
   TextDataSourceInput,
   TextDataSourceType,
 } from "@/client/graphql/generated/gql/graphql";
-import logger from "@/client/lib/logger";
 
 interface DataSourceFormProps {
   dataSource: TextDataSourceInput;
@@ -38,8 +37,6 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
   disabled,
   showSelector,
 }) => {
-  logger.info("[DataSourceForm], errors:", errors);
-  logger.info("[DataSourceForm], dataSource:", dataSource);
   const selectedType: TextDataSourceType = useMemo(() => {
     if (dataSource.certificateField)
       return TextDataSourceType.CertificateTextField;
