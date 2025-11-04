@@ -1,37 +1,40 @@
-import type { ValidateQRCodePropsFn, QRCodePropsFormErrors } from "./types";
+import type { ValidateQRCodePropsFn } from "./types";
 
 /**
  * Field-level validation for QR code-specific properties
  */
 export const validateQRCodeProps = (): ValidateQRCodePropsFn => {
-  const validate: ValidateQRCodePropsFn = ({ value: qrCodeProps }) => {
-    const errors: QRCodePropsFormErrors = { qrCodeProps: {} };
+  const validate: ValidateQRCodePropsFn = ({
+    key,
+    value,
+  }): string | undefined => {
+    switch (key) {
+      case "foregroundColor":
+        if (!value) {
+          return "Foreground color is required";
+        } else if (!/^#[0-9A-Fa-f]{6}$/.test(value)) {
+          return "Invalid hex color format (e.g., #000000)";
+        }
+        break;
 
-    if (!qrCodeProps.foregroundColor) {
-      errors.qrCodeProps.foregroundColor = "Foreground color is required";
-    } else if (!/^#[0-9A-Fa-f]{6}$/.test(qrCodeProps.foregroundColor)) {
-      if (errors.qrCodeProps)
-        errors.qrCodeProps.foregroundColor =
-          "Invalid hex color format (e.g., #000000)";
+      case "backgroundColor":
+        if (!value) {
+          return "Background color is required";
+        } else if (!/^#[0-9A-Fa-f]{6}$/.test(value)) {
+          return "Invalid hex color format (e.g., #FFFFFF)";
+        }
+        break;
+      case "errorCorrection":
+        if (!value) {
+          return "Error correction level is required";
+        }
+        break;
+      default:
+        break;
     }
 
-    if (!qrCodeProps.backgroundColor) {
-      errors.qrCodeProps.backgroundColor = "Background color is required";
-    } else if (!/^#[0-9A-Fa-f]{6}$/.test(qrCodeProps.backgroundColor)) {
-      if (errors.qrCodeProps)
-        errors.qrCodeProps.backgroundColor =
-          "Invalid hex color format (e.g., #FFFFFF)";
-    }
-
-    if (!qrCodeProps.errorCorrection) {
-      errors.qrCodeProps.errorCorrection = "Error correction level is required";
-    }
-
-    if (Object.keys(errors.qrCodeProps ?? {}).length === 0) {
-      return undefined;
-    }
-
-    return errors;
+    return undefined;
   };
+
   return validate;
 };

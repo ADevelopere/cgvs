@@ -4,7 +4,7 @@ import { QrCodeElementForm } from "./QrCodeElementForm";
 import type {
   QrCodeElementFormErrors,
   QrCodeElementFormState,
-  UpdateQrCodePropsFn,
+  UpdateQRCodePropsFn,
 } from "./types";
 import { UpdateBaseElementFn } from "../base";
 import {
@@ -32,7 +32,7 @@ const defaultState: QrCodeElementFormState = {
     positionY: 100,
     width: 150,
     height: 150,
-    alignment: ElementAlignment.Baseline,
+    alignment: ElementAlignment.Center,
     renderOrder: 1,
     templateId: 1,
   },
@@ -61,7 +61,7 @@ export const Default: Story = {
       logger.info("QR code props updated:", {
         key,
         value,
-      })) satisfies UpdateQrCodePropsFn,
+      })) satisfies UpdateQRCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -89,7 +89,7 @@ export const LowErrorCorrection: Story = {
       logger.info("QR code props updated:", {
         key,
         value,
-      })) satisfies UpdateQrCodePropsFn,
+      })) satisfies UpdateQRCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -117,7 +117,7 @@ export const HighErrorCorrection: Story = {
       logger.info("QR code props updated:", {
         key,
         value,
-      })) satisfies UpdateQrCodePropsFn,
+      })) satisfies UpdateQRCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -150,7 +150,7 @@ export const CustomColorsBlueBrand: Story = {
       logger.info("QR code props updated:", {
         key,
         value,
-      })) satisfies UpdateQrCodePropsFn,
+      })) satisfies UpdateQRCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -183,7 +183,7 @@ export const DarkTheme: Story = {
       logger.info("QR code props updated:", {
         key,
         value,
-      })) satisfies UpdateQrCodePropsFn,
+      })) satisfies UpdateQRCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -216,7 +216,7 @@ export const GreenBrand: Story = {
       logger.info("QR code props updated:", {
         key,
         value,
-      })) satisfies UpdateQrCodePropsFn,
+      })) satisfies UpdateQRCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -250,7 +250,7 @@ export const WithBaseErrors: Story = {
       logger.info("QR code props updated:", {
         key,
         value,
-      })) satisfies UpdateQrCodePropsFn,
+      })) satisfies UpdateQRCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -284,7 +284,7 @@ export const WithQrCodePropsErrors: Story = {
       logger.info("QR code props updated:", {
         key,
         value,
-      })) satisfies UpdateQrCodePropsFn,
+      })) satisfies UpdateQRCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -330,7 +330,7 @@ export const AllFieldsWithErrors: Story = {
       logger.info("QR code props updated:", {
         key,
         value,
-      })) satisfies UpdateQrCodePropsFn,
+      })) satisfies UpdateQRCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -351,7 +351,7 @@ export const Submitting: Story = {
       logger.info("QR code props updated:", {
         key,
         value,
-      })) satisfies UpdateQrCodePropsFn,
+      })) satisfies UpdateQRCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: true,
@@ -369,7 +369,7 @@ export const UpdateMode: Story = {
         positionY: 50,
         width: 100,
         height: 100,
-        alignment: ElementAlignment.End,
+        alignment: ElementAlignment.TopEnd,
         renderOrder: 10,
         templateId: 1,
       },
@@ -389,7 +389,7 @@ export const UpdateMode: Story = {
       logger.info("QR code props updated:", {
         key,
         value,
-      })) satisfies UpdateQrCodePropsFn,
+      })) satisfies UpdateQRCodePropsFn,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,

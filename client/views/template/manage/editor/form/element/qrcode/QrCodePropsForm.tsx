@@ -1,19 +1,19 @@
 "use client";
 
 import React from "react";
-import * as MUI from "@mui/material";
+import * as Mui from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import { QrCodeErrorCorrection } from "@/client/graphql/generated/gql/graphql";
 import {
-  QrCodePropsState,
-  QrCodePropsFormErrors,
-  QrCodePropsFormUpdateFn,
+  QRCodePropsFormState,
+  QRCodePropsFormErrors,
+  UpdateQRCodePropsFn,
 } from "./types";
 
 export interface QrCodePropsFormProps {
-  qrCodeProps: QrCodePropsState;
-  errors: QrCodePropsFormErrors;
-  updateQrCodeProps: QrCodePropsFormUpdateFn;
+  qrCodeProps: QRCodePropsFormState;
+  errors: QRCodePropsFormErrors;
+  updateQrCodeProps: UpdateQRCodePropsFn;
   disabled?: boolean;
 }
 
@@ -53,10 +53,10 @@ export const QrCodePropsForm: React.FC<QrCodePropsFormProps> = ({
   ];
 
   return (
-    <MUI.Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    <Mui.Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       {/* Foreground Color */}
-      <MUI.Box>
-        <MUI.TextField
+      <Mui.Box>
+        <Mui.TextField
           fullWidth
           label={strings.qrCodeElement.foregroundColorLabel}
           placeholder="#000000"
@@ -71,28 +71,30 @@ export const QrCodePropsForm: React.FC<QrCodePropsFormProps> = ({
           }
           disabled={disabled}
           required
-          InputProps={{
-            startAdornment: (
-              <MUI.InputAdornment position="start">
-                <MUI.Box
-                  sx={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: 1,
-                    backgroundColor: qrCodeProps.foregroundColor || "#000000",
-                    border: "1px solid",
-                    borderColor: "divider",
-                  }}
-                />
-              </MUI.InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <Mui.InputAdornment position="start">
+                  <Mui.Box
+                    sx={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: 1,
+                      backgroundColor: qrCodeProps.foregroundColor || "#000000",
+                      border: "1px solid",
+                      borderColor: "divider",
+                    }}
+                  />
+                </Mui.InputAdornment>
+              ),
+            },
           }}
         />
-      </MUI.Box>
+      </Mui.Box>
 
       {/* Background Color */}
-      <MUI.Box>
-        <MUI.TextField
+      <Mui.Box>
+        <Mui.TextField
           fullWidth
           label={strings.qrCodeElement.backgroundColorLabel}
           placeholder="#FFFFFF"
@@ -107,37 +109,39 @@ export const QrCodePropsForm: React.FC<QrCodePropsFormProps> = ({
           }
           disabled={disabled}
           required
-          InputProps={{
-            startAdornment: (
-              <MUI.InputAdornment position="start">
-                <MUI.Box
-                  sx={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: 1,
-                    backgroundColor: qrCodeProps.backgroundColor || "#FFFFFF",
-                    border: "1px solid",
-                    borderColor: "divider",
-                  }}
-                />
-              </MUI.InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <Mui.InputAdornment position="start">
+                  <Mui.Box
+                    sx={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: 1,
+                      backgroundColor: qrCodeProps.backgroundColor || "#FFFFFF",
+                      border: "1px solid",
+                      borderColor: "divider",
+                    }}
+                  />
+                </Mui.InputAdornment>
+              ),
+            },
           }}
         />
-      </MUI.Box>
+      </Mui.Box>
 
       {/* Error Correction Level */}
-      <MUI.FormControl
+      <Mui.FormControl
         error={Boolean(errors.errorCorrection)}
         disabled={disabled}
       >
-        <MUI.FormLabel required>
+        <Mui.FormLabel required>
           {strings.qrCodeElement.errorCorrectionLabel}
-        </MUI.FormLabel>
-        <MUI.FormHelperText sx={{ mt: 0.5, mb: 1 }}>
+        </Mui.FormLabel>
+        <Mui.FormHelperText sx={{ mt: 0.5, mb: 1 }}>
           {strings.qrCodeElement.errorCorrectionHelper}
-        </MUI.FormHelperText>
-        <MUI.RadioGroup
+        </Mui.FormHelperText>
+        <Mui.RadioGroup
           value={qrCodeProps.errorCorrection}
           onChange={e =>
             updateQrCodeProps({
@@ -148,7 +152,7 @@ export const QrCodePropsForm: React.FC<QrCodePropsFormProps> = ({
           sx={{ mt: 1 }}
         >
           {errorCorrectionOptions.map(option => (
-            <MUI.Box
+            <Mui.Box
               key={option.value}
               sx={{
                 border: 1,
@@ -173,34 +177,34 @@ export const QrCodePropsForm: React.FC<QrCodePropsFormProps> = ({
                 },
               }}
             >
-              <MUI.FormControlLabel
+              <Mui.FormControlLabel
                 value={option.value}
-                control={<MUI.Radio />}
+                control={<Mui.Radio />}
                 label={
-                  <MUI.Box>
-                    <MUI.Typography variant="body1" fontWeight="medium">
+                  <Mui.Box>
+                    <Mui.Typography variant="body1" fontWeight="medium">
                       {option.label}
-                    </MUI.Typography>
-                    <MUI.Typography variant="body2" color="text.secondary">
+                    </Mui.Typography>
+                    <Mui.Typography variant="body2" color="text.secondary">
                       {option.description}
-                    </MUI.Typography>
-                  </MUI.Box>
+                    </Mui.Typography>
+                  </Mui.Box>
                 }
               />
-            </MUI.Box>
+            </Mui.Box>
           ))}
-        </MUI.RadioGroup>
+        </Mui.RadioGroup>
         {errors.errorCorrection && (
-          <MUI.FormHelperText error>
+          <Mui.FormHelperText error>
             {errors.errorCorrection}
-          </MUI.FormHelperText>
+          </Mui.FormHelperText>
         )}
-      </MUI.FormControl>
+      </Mui.FormControl>
 
       {/* Info Message */}
-      <MUI.Alert severity="info" sx={{ mt: 1 }}>
+      <Mui.Alert severity="info" sx={{ mt: 1 }}>
         {strings.qrCodeElement.dataSourceInfo}
-      </MUI.Alert>
-    </MUI.Box>
+      </Mui.Alert>
+    </Mui.Box>
   );
 };
