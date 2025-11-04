@@ -123,13 +123,26 @@ export const useApplyNodeChange = () => {
   const handlePositionChange = useCallback(
     (change: NodePositionChange, nodes: Node[]): NodePositionChange => {
       try {
-        // Set dragging flag when drag starts
-        if (change.type === "position" && change.dragging) {
-          setIsDragging(true);
-        }
-
         // Apply boundary constraints during drag
         const constrainedChange = applyBoundaryConstraints(change, nodes);
+
+        const elementId = Number.parseInt(constrainedChange.id, 10);
+        if (Number.isNaN(elementId)) {
+          return constrainedChange;
+        }
+
+        // Update position during drag (with isDragging flag)
+        if (
+          constrainedChange.type === "position" &&
+          constrainedChange.dragging &&
+          constrainedChange.position
+        ) {
+          const x = constrainedChange.position.x;
+          const y = constrainedChange.position.y;
+          setIsDragging(true);
+          // Update with isDragging=true for visual feedback
+          updateElementPosition(elementId, x, y, true);
+        }
 
         // Update element position when drag ends
         if (
@@ -137,17 +150,15 @@ export const useApplyNodeChange = () => {
           !constrainedChange.dragging &&
           constrainedChange.position
         ) {
-          const elementId = Number.parseInt(constrainedChange.id, 10);
-          if (!Number.isNaN(elementId)) {
-            const x = constrainedChange.position.x;
-            const y = constrainedChange.position.y;
-            // Use queueMicrotask for better performance than setTimeout
-            queueMicrotask(() => {
-              updateElementPosition(elementId, x, y);
-              // Clear dragging flag after position is updated
-              setIsDragging(false);
-            });
-          }
+          const x = constrainedChange.position.x;
+          const y = constrainedChange.position.y;
+          // Use queueMicrotask for better performance than setTimeout
+          queueMicrotask(() => {
+            // Update with isDragging=false to add to history
+            updateElementPosition(elementId, x, y, false);
+            // Clear dragging flag after position is updated
+            setIsDragging(false);
+          });
         }
 
         return constrainedChange;
@@ -165,27 +176,39 @@ export const useApplyNodeChange = () => {
   const handleDimensionChange = useCallback(
     (change: NodeDimensionChange): NodeDimensionChange => {
       try {
-        // Set resizing flag when resize starts
-        if (change.type === "dimensions" && change.resizing) {
-          setIsResizing(true);
+        const elementId = Number.parseInt(change.id, 10);
+        if (Number.isNaN(elementId)) {
+          return change;
         }
 
+        // Update size during resize (with isResizing flag)
+        if (
+          change.type === "dimensions" &&
+          change.resizing &&
+          change.dimensions
+        ) {
+          const width = change.dimensions.width;
+          const height = change.dimensions.height;
+          setIsResizing(true);
+          // Update with isResizing=true for visual feedback
+          updateElementSize(elementId, width, height, true);
+        }
+
+        // Update size when resize ends
         if (
           change.type === "dimensions" &&
           !change.resizing &&
           change.dimensions
         ) {
-          const elementId = Number.parseInt(change.id, 10);
-          if (!Number.isNaN(elementId)) {
-            const width = change.dimensions.width;
-            const height = change.dimensions.height;
-            // Use queueMicrotask for better performance than setTimeout
-            queueMicrotask(() => {
-              updateElementSize(elementId, width, height);
-              // Clear resizing flag after size is updated
-              setIsResizing(false);
-            });
-          }
+          const width = change.dimensions.width;
+          const height = change.dimensions.height;
+          // Use queueMicrotask for better performance than setTimeout
+          queueMicrotask(() => {
+            // Update with isResizing=false to add to history
+            updateElementSize(elementId, width, height, false);
+            // Clear resizing flag after size is updated
+            setIsResizing(false);
+          });
         }
       } catch {
         // If dimension change fails, return unchanged

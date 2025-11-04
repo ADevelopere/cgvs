@@ -9,8 +9,18 @@ import { BaseCertificateElementFormState } from "./form/element/base/types";
 
 export type NodeDataContextType = {
   nodes: Node[];
-  updateElementPosition: (elementId: number, x: number, y: number) => void;
-  updateElementSize: (elementId: number, width: number, height: number) => void;
+  updateElementPosition: (
+    elementId: number,
+    x: number,
+    y: number,
+    isDragging?: boolean
+  ) => void;
+  updateElementSize: (
+    elementId: number,
+    width: number,
+    height: number,
+    isResizing?: boolean
+  ) => void;
   containerWidth: number;
   containerHeight: number;
   helperLineHorizontal: number | undefined;
@@ -41,15 +51,11 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
 }) => {
   const [nodes, setNodes] = useNodesState<Node>([]);
 
-  // Visual base states - used for rendering nodes during drag/resize
-  // Using the same type as baseElementStates for compatibility
-  const [visualBaseStates, setVisualBaseStates] = React.useState<
-    Map<number, BaseCertificateElementFormState>
-  >(new Map());
-
-  // Flags to prevent external updates during user interactions
-  const isDraggingRef = React.useRef(false);
-  const isResizingRef = React.useRef(false);
+  // Single dragging/resizing node state - only for the node currently being interacted with
+  const [draggingNodeState, setDraggingNodeState] = React.useState<{
+    elementId: number;
+    state: BaseCertificateElementFormState;
+  } | null>(null);
 
   const [containerNode, setContainerNode] = React.useState<Node>({
     id: "container",
@@ -77,15 +83,29 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
     number | undefined
   >(undefined);
 
-  // Sync external base state changes to visual base states (only when not dragging/resizing)
+  // Clear dragging node state when external base states change (external update happened)
   React.useEffect(() => {
-    if (isDraggingRef.current || isResizingRef.current) {
-      return; // Skip external updates during user interactions
-    }
+    // If we have a dragging node and external state changed, clear it
+    // This handles the case where drag ended and external state was updated
+    if (draggingNodeState) {
+      const externalState = bases.baseElementStates.get(
+        draggingNodeState.elementId
+      );
+      if (externalState) {
+        // Check if external state matches our dragging state (drag completed)
+        const matches =
+          externalState.positionX === draggingNodeState.state.positionX &&
+          externalState.positionY === draggingNodeState.state.positionY &&
+          externalState.width === draggingNodeState.state.width &&
+          externalState.height === draggingNodeState.state.height;
 
-    // Copy external base states to visual base states
-    setVisualBaseStates(new Map(bases.baseElementStates));
-  }, [bases.baseElementStates]);
+        if (matches) {
+          // External state synced, clear dragging state
+          setDraggingNodeState(null);
+        }
+      }
+    }
+  }, [bases.baseElementStates, draggingNodeState]);
 
   // Update container node when container data changes
   React.useEffect(() => {
@@ -107,13 +127,22 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
     setContainerNode(node);
   }, [container]);
 
-  // Create nodes from visual base states
+  // Create nodes from base states (with override for dragging node)
   React.useEffect(() => {
-    const nodes: Node[] = elements
-      .map(element => {
-        // Use visual base state for rendering
-        const visualBase = visualBaseStates.get(element.base.id);
-        const base = visualBase ?? element.base;
+    const elementNodes: Node[] = elements
+      .map((element) => {
+        // Check if this is the dragging node
+        const isDraggingThisNode =
+          draggingNodeState?.elementId === element.base.id;
+
+        // Use dragging state if available, otherwise use external base state
+        const activeBaseInputState = bases.baseElementStates.get(
+          element.base.id
+        );
+        const externalBase = activeBaseInputState ?? element.base;
+        const base = isDraggingThisNode
+          ? draggingNodeState.state
+          : externalBase;
 
         // Create node based on element type
         if (element.base.type === GQL.ElementType.Text) {
@@ -137,14 +166,10 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
           return node;
         }
       })
-      .filter(node => node !== undefined);
+      .filter((node) => node !== undefined);
 
-    setElementNodes(nodes);
-  }, [elements, visualBaseStates, setElementNodes]);
-
-  React.useEffect(() => {
     setNodes([containerNode, ...elementNodes]);
-  }, [containerNode, elementNodes, setNodes]);
+  }, [elements, bases.baseElementStates, draggingNodeState, containerNode, setNodes]);
 
   const addToHistory = useEditorStore(state => state.addToHistory);
   const undoFromStore = useEditorStore(state => state.undo);
@@ -153,9 +178,9 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
   const canRedo = useEditorStore(state => state.canRedo());
 
   const updateElementPosition = React.useCallback(
-    (elementId: number, x: number, y: number) => {
+    (elementId: number, x: number, y: number, isDragging: boolean = false) => {
       // Get old values for undo/redo
-      const oldBase = visualBaseStates.get(elementId);
+      const oldBase = bases.baseElementStates.get(elementId);
       if (!oldBase) return;
 
       const changes = [
@@ -173,20 +198,20 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
         },
       ];
 
-      // Add to history for undo/redo
-      addToHistory(changes);
+      // Add to history only when drag ends
+      if (!isDragging) {
+        addToHistory(changes);
+      }
 
-      // Update visual base state immediately for smooth rendering
-      setVisualBaseStates(prev => {
-        const next = new Map(prev);
-        const base = next.get(elementId);
-        if (base) {
-          next.set(elementId, { ...base, positionX: x, positionY: y });
-        }
-        return next;
-      });
+      if (isDragging) {
+        // During drag: Update dragging node state for smooth visual feedback
+        setDraggingNodeState({
+          elementId,
+          state: { ...oldBase, positionX: x, positionY: y },
+        });
+      }
 
-      // Sync to external base state (will be reflected when drag ends)
+      // Always update external base state immediately
       bases.updateBaseElementStateFn(elementId, {
         key: "positionX",
         value: x,
@@ -196,13 +221,13 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
         value: y,
       });
     },
-    [bases.updateBaseElementStateFn, visualBaseStates, addToHistory]
+    [bases.updateBaseElementStateFn, bases.baseElementStates, addToHistory]
   );
 
   const updateElementSize = React.useCallback(
-    (elementId: number, width: number, height: number) => {
+    (elementId: number, width: number, height: number, isResizing: boolean = false) => {
       // Get old values for undo/redo
-      const oldBase = visualBaseStates.get(elementId);
+      const oldBase = bases.baseElementStates.get(elementId);
       if (!oldBase) return;
 
       const changes = [
@@ -220,20 +245,20 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
         },
       ];
 
-      // Add to history for undo/redo
-      addToHistory(changes);
+      // Add to history only when resize ends
+      if (!isResizing) {
+        addToHistory(changes);
+      }
 
-      // Update visual base state immediately for smooth rendering
-      setVisualBaseStates(prev => {
-        const next = new Map(prev);
-        const base = next.get(elementId);
-        if (base) {
-          next.set(elementId, { ...base, width, height });
-        }
-        return next;
-      });
+      if (isResizing) {
+        // During resize: Update dragging node state for smooth visual feedback
+        setDraggingNodeState({
+          elementId,
+          state: { ...oldBase, width, height },
+        });
+      }
 
-      // Sync to external base state (will be reflected when resize ends)
+      // Always update external base state immediately
       bases.updateBaseElementStateFn(elementId, {
         key: "width",
         value: width,
@@ -243,15 +268,21 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
         value: height,
       });
     },
-    [bases.updateBaseElementStateFn, visualBaseStates, addToHistory]
+    [bases.updateBaseElementStateFn, bases.baseElementStates, addToHistory]
   );
 
   const setIsDragging = React.useCallback((isDragging: boolean) => {
-    isDraggingRef.current = isDragging;
+    // Clear dragging node state when drag ends
+    if (!isDragging) {
+      setDraggingNodeState(null);
+    }
   }, []);
 
   const setIsResizing = React.useCallback((isResizing: boolean) => {
-    isResizingRef.current = isResizing;
+    // Clear dragging node state when resize ends
+    if (!isResizing) {
+      setDraggingNodeState(null);
+    }
   }, []);
 
   const undo = React.useCallback(() => {
