@@ -16,7 +16,10 @@ export type Action<T> = {
 
 export type UpdateStateFn<T> = (action: Action<T>) => void;
 
-// export type UpdateStateFn<T> = <K extends keyof T>(key: K, value: T[K]) => void;
+/**
+ * export type UpdateStateFn<T> = <K extends keyof T>(key: K, value: T[K]) => void;
+ * E: return type of the validation function, typically string | undefined
+ */
 export type ValidateFieldFn<T, E> = (action: Action<T>) => E | undefined;
 
 // ============================================================================

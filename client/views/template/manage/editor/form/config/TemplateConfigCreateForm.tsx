@@ -1,13 +1,14 @@
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import React from "react";
 import { TemplateConfigFormErrors, TemplateConfigFormUpdateFn } from "./types";
-import { useTemplateConfigMutation } from "./useTemplateConfigMutation";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { TemplateConfigForm } from "./TemplateConfigForm";
 import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale/useAppTranslation";
 import { useTemplateConfigFormValidateFn } from "./templateConfigValidator";
 import { TemplateConfigTranslations } from "@/client/locale";
+import { createTemplateConfigMutationDocument } from "../../glqDocuments";
+import { useMutation } from "@apollo/client/react";
 
 export type TemplateConfigCreateFormProps = {
   template: GQL.Template;
@@ -83,7 +84,9 @@ export const TemplateConfigCreateForm: React.FC<
   TemplateConfigCreateFormProps
 > = ({ template }) => {
   const { templateConfigTranslations: strings } = useAppTranslation();
-  const { createTemplateConfigMutation } = useTemplateConfigMutation();
+  const [createTemplateConfigMutation] = useMutation(
+    createTemplateConfigMutationDocument
+  );
   const [state, setState] = React.useState<GQL.TemplateConfigCreateInput>({
     width: 800,
     height: 600,

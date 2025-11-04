@@ -21,30 +21,22 @@ export type DateDataSourceFormState = {
   dataSource: GQL.DateDataSourceInput;
 };
 
-export type DatePropsFormState = {
-  dateProps: GQL.DateElementSpecPropsInput;
-};
-
+export type DatePropsFormState = GQL.DateElementSpecPropsInput;
 // ============================================================================
 // MODULAR ERROR TYPES
 // ============================================================================
 
-export type DateDataSourceFieldErrors =
-  | FormErrors<GQL.DateDataSourceInput>
+export type DateDataSourceFieldErrors = FormErrors<GQL.DateDataSourceInput>;
 export type DateDataSourceFormErrors = {
   dataSource: DateDataSourceFieldErrors;
 };
 
-export type DatePropsFieldErrors =
-  | FormErrors<GQL.DateElementSpecPropsInput>
+export type DatePropsFormErrors = FormErrors<GQL.DateElementSpecPropsInput>;
 
-export type DatePropsFormErrors = {
-  dateProps: DatePropsFieldErrors;
-};
-
-export type DateElementFormErrors = DateDataSourceFormErrors & DatePropsFormErrors & {
+export type DateElementFormErrors = DateDataSourceFormErrors & {
   base: BaseElementFormErrors;
   textProps: TextPropsFormErrors;
+  dateProps: DatePropsFormErrors;
 };
 
 // ============================================================================
@@ -58,7 +50,8 @@ export type UpdateDateDataSourceWithElementIdFn =
 
 export type DateDataSourceUpdateAction = Action<DateDataSourceFormState>;
 
-export type UpdateDatePropsFieldsFn = UpdateStateFn<GQL.DateElementSpecPropsInput>;
+export type UpdateDatePropsFieldsFn =
+  UpdateStateFn<GQL.DateElementSpecPropsInput>;
 export type UpdateDatePropsFn = UpdateStateFn<DatePropsFormState>;
 
 export type UpdateDatePropsWithElementIdFn =
@@ -73,12 +66,12 @@ export type ValidateDatePropsFieldFn = ValidateFieldFn<
 
 export type ValidateDateDataSourceFn = ValidateFieldFn<
   DateDataSourceFormState,
-  DateDataSourceFormErrors
+  DateDataSourceFieldErrors
 >;
 
 export type ValidateDatePropsFn = ValidateFieldFn<
   DatePropsFormState,
-  DatePropsFormErrors
+  string | undefined
 >;
 
 // ============================================================================

@@ -3,8 +3,8 @@ import { Stack, TextField } from "@mui/material";
 import { LanguageSelector } from "@/client/components";
 import {
   TemplateConfigFormErrors,
-  TemplateConfigFormState,
   TemplateConfigFormUpdateFn,
+  TemplateConfigFormState
 } from "./types";
 import { useAppTranslation } from "@/client/locale";
 
@@ -42,7 +42,7 @@ export const TemplateConfigForm: React.FC<TemplateConfigFormProps> = ({
           type="number"
           value={state.width ?? ""}
           onChange={e =>
-            updateFn({ key: "width", value: parseInt(e.target.value, 10) })
+            updateFn({ key: "width", value: Number.parseInt(e.target.value, 10) })
           }
           error={!!errors.width}
           color={errors.width ? "error" : "primary"}
@@ -56,7 +56,7 @@ export const TemplateConfigForm: React.FC<TemplateConfigFormProps> = ({
           type="number"
           value={state.height ?? ""}
           onChange={e =>
-            updateFn({ key: "height", value: parseInt(e.target.value, 10) })
+            updateFn({ key: "height", value: Number.parseInt(e.target.value, 10) })
           }
           error={!!errors.height}
           helperText={errors.height}

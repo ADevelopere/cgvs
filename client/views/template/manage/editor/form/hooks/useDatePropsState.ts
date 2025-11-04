@@ -13,6 +13,7 @@ import {
   UpdateDatePropsWithElementIdFn,
 } from "../element/date";
 import { useCertificateElementContext } from "../../CertificateElementContext";
+import { Action } from "../types";
 
 export type UseDatePropsStateParams = {
   templateId?: number;
@@ -38,13 +39,11 @@ function extractDatePropsState(
   }
 
   return {
-    dateProps: {
-      calendarType:
-        (element.dateProps.calendarType as GQL.CalendarType) ?? undefined,
-      format: element.dateProps.format ?? "",
-      offsetDays: element.dateProps.offsetDays ?? 0,
-      transformation: element.dateProps.transformation ?? undefined,
-    },
+    calendarType:
+      (element.dateProps.calendarType as GQL.CalendarType) ?? undefined,
+    format: element.dateProps.format ?? "",
+    offsetDays: element.dateProps.offsetDays ?? 0,
+    transformation: element.dateProps.transformation ?? undefined,
   };
 }
 
@@ -58,10 +57,10 @@ function toUpdateInput(
   return {
     elementId: elementId,
     dateProps: {
-      calendarType: state.dateProps.calendarType,
-      format: state.dateProps.format,
-      offsetDays: state.dateProps.offsetDays,
-      transformation: state.dateProps.transformation,
+      calendarType: state.calendarType,
+      format: state.format,
+      offsetDays: state.offsetDays,
+      transformation: state.transformation,
     },
   };
 }
@@ -107,7 +106,11 @@ export function useDatePropsState(
   // Use generic hook
   const validator = validateDateProps();
 
-  const { states, updateFn, pushUpdate, initState, errors } = useElementState({
+  const { states, updateFn, pushUpdate, initState, errors } = useElementState<
+    DatePropsFormState,
+    DatePropsFormErrors,
+    string | undefined
+  >({
     templateId,
     elements,
     validator,
@@ -141,7 +144,7 @@ export const useDateProps = (params: UseDatePropsParams) => {
   } = useCertificateElementContext();
 
   // Get state or initialize if not present (only initialize once)
-  const { dateProps } = React.useMemo(() => {
+  const dateProps = React.useMemo(() => {
     return (
       datePropsStates.get(params.elementId) ??
       initDatePropsState(params.elementId)
@@ -149,11 +152,8 @@ export const useDateProps = (params: UseDatePropsParams) => {
   }, [datePropsStates, params.elementId, initDatePropsState]);
 
   const updateDateProps = React.useCallback(
-    (dateProps: GQL.DateElementSpecPropsInput) => {
-      updateDatePropsStateFn(params.elementId, {
-        key: "dateProps",
-        value: dateProps,
-      });
+    (action: Action<GQL.DateElementSpecPropsInput>) => {
+      updateDatePropsStateFn(params.elementId, action);
     },
     [params.elementId, updateDatePropsStateFn]
   );
@@ -162,12 +162,8 @@ export const useDateProps = (params: UseDatePropsParams) => {
     await pushDatePropsStateUpdate(params.elementId);
   }, [params.elementId, pushDatePropsStateUpdate]);
 
-  const { dateProps: errors } = React.useMemo(() => {
-    return (
-      datePropsStateErrors.get(params.elementId) || {
-        dateProps: {},
-      }
-    );
+  const errors = React.useMemo(() => {
+    return datePropsStateErrors.get(params.elementId) || {};
   }, [datePropsStateErrors, params.elementId]);
 
   return {
@@ -177,4 +173,3 @@ export const useDateProps = (params: UseDatePropsParams) => {
     datePropsErrors: errors,
   };
 };
-

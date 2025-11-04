@@ -1,23 +1,21 @@
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { Action, FormErrors, UpdateStateFn, ValidateFieldFn } from "../types";
 
-export type TemplateConfigFormState =
-  | GQL.TemplateConfigCreateInput
-  | GQL.TemplateConfigUpdateInput;
+type State = GQL.TemplateConfigCreateInput | GQL.TemplateConfigUpdateInput;
 
-type SanitizedTemplateConfigFormState = Omit<
-  TemplateConfigFormState,
+export type TemplateConfigFormState = Omit<
+  State,
   "id"
   //  | "templateId"
 >;
 
-export type TemplateConfigUpdateAction = Action<SanitizedTemplateConfigFormState>;
+export type TemplateConfigUpdateAction = Action<TemplateConfigFormState>;
 
-export type TemplateConfigFormErrors =
-  FormErrors<SanitizedTemplateConfigFormState>;
+export type TemplateConfigFormErrors = FormErrors<TemplateConfigFormState>;
 
-export type TemplateConfigFormUpdateFn =
-  UpdateStateFn<SanitizedTemplateConfigFormState>;
+export type TemplateConfigFormUpdateFn = UpdateStateFn<TemplateConfigFormState>;
 
-export type TemplateConfigFormValidateFn =
-  ValidateFieldFn<SanitizedTemplateConfigFormState>;
+export type TemplateConfigFormValidateFn = ValidateFieldFn<
+  TemplateConfigFormState,
+  string | undefined
+>;
