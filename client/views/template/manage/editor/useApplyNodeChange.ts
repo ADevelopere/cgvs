@@ -159,7 +159,7 @@ export const useApplyNodeChange = () => {
             // Clear dragging flag after position is updated
             setTimeout(() => {
               setIsDragging(false);
-            }, 300);
+            }, 30);
           });
         }
 
@@ -211,7 +211,7 @@ export const useApplyNodeChange = () => {
             // Clear resizing flag after size is updated
             setTimeout(() => {
               setIsResizing(false);
-            }, 300);
+            }, 30);
           });
         }
       } catch {

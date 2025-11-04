@@ -5,6 +5,7 @@ import { UseTemplateConfigStateReturn } from "./form/config/useTemplateConfigSta
 import { useNodesState, Node } from "@xyflow/react";
 import { TextElementNodeData } from "./nodeRenderer/TextElementNode";
 import { useEditorStore } from "./useEditorStore";
+import {logger} from "@/client/lib/logger";
 
 export type NodeDataContextType = {
   nodes: Node[];
@@ -95,6 +96,7 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
   // Create nodes from base states ONLY on external changes (not during drag)
   React.useEffect(() => {
     if (isDragging || isResizing) return;
+    logger.debug("NodeDataProvider: Updating element nodes from bases");
     const nodes: Node[] = elements
       .map((element) => {
         // Use external base state

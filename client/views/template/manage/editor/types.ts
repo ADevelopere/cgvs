@@ -2,13 +2,16 @@ import { ElementType, Template } from "@/client/graphql/generated/gql/graphql";
 import { Node } from "@xyflow/react";
 import { Dispatch, SetStateAction } from "react";
 
-export type ElementNodeData = {
-  id: number;
-  type: ElementType;
+export type ElementBaseNodeData = {
   positionX: number;
   positionY: number;
   width: number;
   height: number;
+};
+
+export type ElementNodeData = ElementBaseNodeData & {
+  id: number;
+  type: ElementType;
 };
 
 export type ContainerNodeData = {
