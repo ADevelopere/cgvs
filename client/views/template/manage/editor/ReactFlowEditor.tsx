@@ -131,13 +131,7 @@ export type CertificateReactFlowEditorProps = {
 const CertificateReactFlowEditor: React.FC<CertificateReactFlowEditorProps> = ({
   template,
 }) => {
-  const { nodes } = useNodeData();
-  const [localNodes, setLocalNodes] = React.useState(nodes);
-
-  // Sync nodes from context to local state
-  React.useEffect(() => {
-    setLocalNodes(nodes);
-  }, [nodes]);
+  const { nodes, setNodes } = useNodeData();
 
   return (
     <Box
@@ -151,7 +145,7 @@ const CertificateReactFlowEditor: React.FC<CertificateReactFlowEditorProps> = ({
         width: "-webkit-fill-available",
       }}
     >
-      <Flow template={template} nodes={localNodes} setNodes={setLocalNodes} />
+      <Flow template={template} nodes={nodes} setNodes={setNodes} />
     </Box>
   );
 };
