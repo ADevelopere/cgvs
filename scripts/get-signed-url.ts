@@ -18,9 +18,12 @@ import { generateUploadSignedUrlMutationDocument } from "@/client/views/storage/
 import { testLogger } from "@/lib/testlogger";
 import { extToMime } from "@/utils/storage.utils";
 
+const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+const GRAPHQL_PATH = process.env.GRAPHQL_PATH || "/api/graphql";
+const graphqlEndpoint = `${NEXT_PUBLIC_BASE_URL.replace(/\/+$/, "")}${GRAPHQL_PATH}`;
 // GraphQL client setup
 const httpLink = new HttpLink({
-  uri: process.env.GRAPHQL_ENDPOINT || "http://localhost:3000/api/graphql",
+  uri: graphqlEndpoint,
   credentials: "include",
 });
 

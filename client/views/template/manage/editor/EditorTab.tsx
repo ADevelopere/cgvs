@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Box, CircularProgress, Typography } from "@mui/material";
-import CertificateReactFlowEditor, { ElementNodeData } from "./ReactFlowEditor";
+import CertificateReactFlowEditor from "./ReactFlowEditor";
 import EditorPaneViewController from "@/client/components/editorPane/EditorPaneViewController";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
@@ -105,17 +105,6 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
     return elementsList;
   }, [elementsApolloLoading, elementsData?.elementsByTemplateId]);
 
-  const elementsNodeData: ElementNodeData[] = React.useMemo(() => {
-    return elements.map((el) => ({
-      id: el.base.id,
-      type: el.base.type,
-      positionX: el.base.positionX,
-      positionY: el.base.positionY,
-      width: el.base.width,
-      height: el.base.height,
-    }));
-  }, [elements]);
-
   // template variables
 
   const { data: variablesData } = useQuery(
@@ -187,7 +176,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
           middlePane={
             <CertificateReactFlowEditor
               template={template}
-              elements={elementsNodeData}
+              elements={elements}
             />
           }
           thirdPane={{

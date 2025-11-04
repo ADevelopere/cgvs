@@ -42,19 +42,25 @@ import {
   useQRCodePropsState,
   UseQRCodePropsStateReturn,
 } from "./form/hooks/useQRCodePropsState";
+import { NodeDataProvider } from "./NodeDataProvider";
 
 type CertificateElementContextType = {
+  // common
   bases: UseBaseElementStateReturn;
   textProps: UseTextPropsStateReturn;
+  // data sources
   textDataSource: UseTextDataSourceStateReturn;
   dateDataSource: UseDateDataSourceStateReturn;
   numberDataSource: UseNumberDataSourceStateReturn;
+  // props
   dateProps: UseDatePropsStateReturn;
   countryProps: UseCountryPropsStateReturn;
   imageProps: UseImagePropsStateReturn;
   numberProps: UseNumberPropsStateReturn;
   qrCodeProps: UseQRCodePropsStateReturn;
+  // config
   config: UseTemplateConfigStateReturn;
+  // Variables
   textVariables: GQL.TemplateTextVariable[];
   selectVariables: GQL.TemplateSelectVariable[];
   dateVariables: GQL.TemplateDateVariable[];
@@ -154,7 +160,9 @@ export const CertificateElementProvider: React.FC<
 
   return (
     <CertificateElementContext.Provider value={value}>
-      {children}
+      <NodeDataProvider elements={elements} bases={bases} config={config}>
+        {children}
+      </NodeDataProvider>
     </CertificateElementContext.Provider>
   );
 };

@@ -12,7 +12,7 @@ import {
   useNodesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import React, { useCallback,  useState } from "react";
+import React, { useCallback, useState } from "react";
 import "./other/EditorTab.module.css";
 import { Box } from "@mui/material";
 import DownloadImage from "./download/DownloadImage";
@@ -24,7 +24,7 @@ import { getTemplateImageUrl } from "../../utils/template.utils";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { TextElementNodeData } from "./nodeRenderer/TextElementNode";
 import { useEditorStore } from "./useEditorStore";
-import { useCertificateElementContext } from "./CertificateElementContext";
+import { useNodeData } from "./NodeDataProvider";
 
 const panOnDrag = [1, 2];
 
@@ -291,24 +291,14 @@ function FlowDebug() {
 
 export type CertificateReactFlowEditorProps = {
   template: GQL.Template;
-  elements: ElementNodeData[];
+  elements: GQL.CertificateElementUnion[];
 };
 
 const CertificateReactFlowEditor: React.FC<CertificateReactFlowEditorProps> = ({
   template,
-  elements,
 }) => {
-  // state used in config settings form
-  const {
-    config: { state: configUpdateState },
-  } = useCertificateElementContext();
+  const { elementsNodeData, containerData } = useNodeData();
 
-  const containerData: ContainerNodeData = React.useMemo(() => {
-    return {
-      width: configUpdateState.width,
-      height: configUpdateState.height,
-    };
-  }, [configUpdateState.width, configUpdateState.height]);
   return (
     <Box
       sx={{
@@ -324,7 +314,7 @@ const CertificateReactFlowEditor: React.FC<CertificateReactFlowEditorProps> = ({
       <ReactFlowProvider>
         <Flow
           template={template}
-          elements={elements}
+          elements={elementsNodeData}
           container={containerData}
         />
       </ReactFlowProvider>

@@ -28,13 +28,18 @@ import {
 import { fontsQueryDocument } from "@/client/views/font/hooks/font.documents";
 import { templateVariablesByTemplateIdQueryDocument } from "@/client/views/template/manage/variables/hooks/templateVariable.documents";
 import {
-  createTextElementMutationDocument,
   updateTextElementMutationDocument,
 } from "@/client/views/template/manage/editor/glqDocuments";
+import { useElementCreateMutations } from "@/client/views/template/manage/editor/form/hooks";
 
 const TEST_TEMPLATE_ID = 1;
 
 export default function TestElementsPage() {
+    const {createTextElementMutation} =  useElementCreateMutations()
+
+  const [updateTextElementMutation] = useMutation(
+    updateTextElementMutationDocument
+  );
   // Query fonts with variables from store
   const {
     data: fontsData,
@@ -148,14 +153,6 @@ export default function TestElementsPage() {
       setIsSubmitting(false);
     }
   };
-
-  const [createTextElementMutation] = useMutation(
-    createTextElementMutationDocument
-  );
-
-  const [updateTextElementMutation] = useMutation(
-    updateTextElementMutationDocument
-  );
 
   // Handler for Update button
   const handleUpdateElementClick = (element: GQL.CertificateElementUnion) => {

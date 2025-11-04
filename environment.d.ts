@@ -40,6 +40,7 @@ declare global {
       // GraphQL Configuration
       GRAPHQL_ENCRYPTION_KEY: string;
       NEXT_PUBLIC_ENABLE_BINARY_GRAPHQL?: string;
+      GRAPHQL_PATH?: string;
 
       // Environment
       NODE_ENV: "development" | "production" | "test";
