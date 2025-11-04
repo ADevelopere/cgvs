@@ -151,7 +151,7 @@ export const useCountryProps = (params: UseCountryPropsParams) => {
   } = useCertificateElementContext();
 
   // Get state or initialize if not present (only initialize once)
-  const countryProps = React.useMemo(() => {
+  const countryProps: CountryPropsFormState = React.useMemo(() => {
     return (
       countryPropsStates.get(params.elementId) ??
       initCountryPropsState(params.elementId)
@@ -169,7 +169,7 @@ export const useCountryProps = (params: UseCountryPropsParams) => {
     await pushCountryPropsStateUpdate(params.elementId);
   }, [params.elementId, pushCountryPropsStateUpdate]);
 
-  const errors = React.useMemo(() => {
+  const errors: CountryPropsFormErrors = React.useMemo(() => {
     return countryPropsStateErrors.get(params.elementId) || {};
   }, [countryPropsStateErrors, params.elementId]);
 

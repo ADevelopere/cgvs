@@ -13,7 +13,6 @@ import { BaseElementFormErrors } from "../base";
 // WORKING STATE TYPES
 // ============================================================================
 
-export type DatePropsState = GQL.DateElementSpecPropsInput;
 // Complete date element working state
 export type DateElementFormState = GQL.DateElementInput;
 
@@ -50,19 +49,10 @@ export type UpdateDateDataSourceWithElementIdFn =
 
 export type DateDataSourceUpdateAction = Action<DateDataSourceFormState>;
 
-export type UpdateDatePropsFieldsFn =
-  UpdateStateFn<GQL.DateElementSpecPropsInput>;
 export type UpdateDatePropsFn = UpdateStateFn<DatePropsFormState>;
 
 export type UpdateDatePropsWithElementIdFn =
   UpdateStateWithElementIdFn<DatePropsFormState>;
-
-export type DatePropsUpdateAction = Action<DatePropsFormState>;
-
-export type ValidateDatePropsFieldFn = ValidateFieldFn<
-  GQL.DateElementSpecPropsInput,
-  string | undefined
->;
 
 export type ValidateDateDataSourceFn = ValidateFieldFn<
   DateDataSourceFormState,

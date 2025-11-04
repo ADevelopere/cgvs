@@ -12,12 +12,12 @@ import {
   ElementImageFit,
   ImageElementSpecPropsInput,
 } from "@/client/graphql/generated/gql/graphql";
-import { UpdateImagePropsFieldsFn, ImagePropsFieldErrors } from "./types";
+import { ImagePropsFormErrors, UpdateImagePropsFn } from "./types";
 
 export interface ImagePropsFormProps {
   imageProps: ImageElementSpecPropsInput;
-  errors: ImagePropsFieldErrors;
-  updateImageProps: UpdateImagePropsFieldsFn;
+  errors: ImagePropsFormErrors;
+  updateImageProps: UpdateImagePropsFn;
   disabled?: boolean;
 }
 

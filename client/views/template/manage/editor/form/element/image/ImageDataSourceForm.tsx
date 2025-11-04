@@ -10,8 +10,8 @@ import {
 import FilePickerDialog from "@/client/views/storage/dialogs/FilePickerDialog";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import type { FileType } from "@/client/graphql/generated/gql/graphql";
-import { ImageDataSourceInput, DataSourceFormErrors } from "./types";
+import type { FileType, ImageDataSourceInput } from "@/client/graphql/generated/gql/graphql";
+import { DataSourceFormErrors } from "./types";
 
 export interface ImageDataSourceFormProps {
   dataSource: ImageDataSourceInput;

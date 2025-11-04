@@ -11,14 +11,14 @@ import {
   ImageElementFormErrors,
   ImageElementFormState,
   UpdateImageDataSourceFn,
-  UpdateImagePropsFieldsFn,
+  UpdateImagePropsFn,
 } from "./types";
 
 export interface ImageElementFormProps {
   state: ImageElementFormState;
   errors: ImageElementFormErrors;
   updateBaseElement: UpdateBaseElementFn;
-  updateImageProps: UpdateImagePropsFieldsFn;
+  updateImageProps: UpdateImagePropsFn;
   updateDataSource: UpdateImageDataSourceFn;
   onSubmit: () => void;
   onCancel: () => void;

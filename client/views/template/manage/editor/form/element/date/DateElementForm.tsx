@@ -3,7 +3,7 @@ import { Box, Grid, Paper } from "@mui/material";
 import type {
   DateElementFormErrors,
   DateElementFormState,
-  UpdateDatePropsFieldsFn,
+  UpdateDatePropsFn,
 } from "./types";
 import { DateDataSourceForm } from "./DateDataSourceForm";
 import { DatePropsForm } from "./DatePropsForm";
@@ -23,7 +23,7 @@ interface DateElementFormProps {
   errors: DateElementFormErrors;
   updateBaseElement: UpdateBaseElementFn;
   updateTextProps: UpdateTextPropsFn;
-  updateDateProps: UpdateDatePropsFieldsFn;
+  updateDateProps: UpdateDatePropsFn;
   updateDataSource: (dataSource: DateDataSourceInput) => void;
   language: string;
   dateVariables: TemplateDateVariable[];
