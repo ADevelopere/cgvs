@@ -1,53 +1,97 @@
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import { ContainerNodeData, ElementNodeData } from "./types";
 import React from "react";
 import { UseBaseElementStateReturn } from "./form/hooks";
 import { UseTemplateConfigStateReturn } from "./form/config/useTemplateConfigState";
+import { useNodesState, Node } from "@xyflow/react";
+import { TextElementNodeData } from "./nodeRenderer/TextElementNode";
 
 export type NodeDataContextType = {
-  elementsNodeData: ElementNodeData[];
-  containerData: ContainerNodeData;
+  nodes: Node[];
   updateElementPosition: (elementId: number, x: number, y: number) => void;
   updateElementSize: (elementId: number, width: number, height: number) => void;
 };
 
-const NodeDataContext = React.createContext<NodeDataContextType | null>(
-  null
-);
+const NodeDataContext = React.createContext<NodeDataContextType | null>(null);
 
 export type NodeDataProps = {
   elements: GQL.CertificateElementUnion[];
   bases: UseBaseElementStateReturn;
-  config: UseTemplateConfigStateReturn
+  config: UseTemplateConfigStateReturn;
   children: React.ReactNode;
 };
 export const NodeDataProvider: React.FC<NodeDataProps> = ({
   elements,
   bases,
-  config: { state: configUpdateState }, 
+  config: { state: container },
   children,
 }) => {
-  const containerData: ContainerNodeData = React.useMemo(() => {
-    return {
-      width: configUpdateState.width,
-      height: configUpdateState.height,
+  const [nodes, setNodes] = useNodesState<Node>([]);
+
+  const [containerNode, setContainerNode] = React.useState<Node>({
+    id: "container-node",
+    type: "container",
+    data: {},
+    position: { x: 0, y: 0 },
+  });
+  const [elementNodes, setElementNodes] = React.useState<Node[]>([]);
+
+  // Update container node when container data changes
+  React.useEffect(() => {
+    const node: Node = {
+      id: "container-node",
+      type: "container",
+      data: {},
+      position: { x: 0, y: 0 },
+      draggable: false,
+      selectable: false,
+      style: {
+        width: container.width,
+        height: container.height,
+        border: "2px solid #000000",
+        boxSizing: "border-box",
+        backgroundColor: "transparent",
+      },
     };
-  }, [configUpdateState.width, configUpdateState.height]);
-  
-  const elementsNodeData: ElementNodeData[] = React.useMemo(() => {
-    return elements.map(el => {
-      const activeBaseInputState = bases.baseElementStates.get(el.base.id);
-      const base = activeBaseInputState ?? el.base;
-      return {
-        id: el.base.id,
-        type: el.base.type,
-        positionX: base.positionX,
-        positionY: base.positionY,
-        width: base.width,
-        height: base.height,
-        
-      };
-    });
+    setContainerNode(node);
+    setNodes([node, ...elementNodes]);
+  }, [container, setNodes]);
+
+  // Update element nodes when elements change
+  React.useEffect(() => {
+    const nodes: Node[] = elements
+      .map(element => {
+        // get active base state
+        const activeBaseInputState = bases.baseElementStates.get(
+          element.base.id
+        );
+        const base = activeBaseInputState ?? element.base;
+        // create node based on element type
+        // text element
+        if (element.base.type === GQL.ElementType.Text) {
+          // text element node data
+          const data: TextElementNodeData = {
+            elementId: element.base.id,
+          };
+          // node
+          const node: Node<TextElementNodeData> = {
+            id: element.base.id.toString(),
+            type: "text",
+            position: {
+              x: base.positionX,
+              y: base.positionY,
+            },
+            width: base.width,
+            height: base.height,
+            data: data,
+            connectable: false,
+            resizing: true,
+          };
+          return node;
+        }
+      })
+      .filter(node => node !== undefined);
+    setElementNodes(nodes);
+    setNodes([containerNode, ...nodes]);
   }, [elements, bases.baseElementStates]);
 
   const updateElementPosition = React.useCallback(
@@ -80,12 +124,11 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
 
   const value = React.useMemo(
     () => ({
-      elementsNodeData,
-      containerData,
+      nodes,
       updateElementPosition,
       updateElementSize,
     }),
-    [elementsNodeData, containerData, updateElementPosition, updateElementSize]
+    [nodes, updateElementPosition, updateElementSize]
   );
 
   return (

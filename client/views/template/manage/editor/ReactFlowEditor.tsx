@@ -21,89 +21,19 @@ import { nodeTypes } from "./other/constants";
 import { useAppTheme } from "@/client/contexts";
 import { getTemplateImageUrl } from "../../utils/template.utils";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import { TextElementNodeData } from "./nodeRenderer/TextElementNode";
 import { useEditorStore } from "./useEditorStore";
 import { useNodeData } from "./NodeDataProvider";
 import { FlowEditorProps } from "./types";
 
 const panOnDrag = [1, 2];
 
-const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
-  const [nodes, setNodes] = useNodesState<Node>([]);
-  const [elementNodes, setElementNodes] = useState<Node[]>([]);
-  const [containerNode, setContainerNode] = useState<Node>({
-    id: "container-node",
-    type: "container",
-    data: {},
-    position: { x: 0, y: 0 },
-    width: container.width,
-    height: container.height,
-    draggable: false,
-    selectable: false,
-    style: {
-      width: container.width,
-      height: container.height,
-      border: "2px solid #000000",
-      boxSizing: "border-box",
-      backgroundColor: "transparent",
-    },
-  });
+
+const Flow: React.FC<FlowEditorProps> = ({ template, nodes }) => {
+
   const { theme } = useAppTheme();
   // const { x, y, zoom } = useViewport();
   const { setCurrentElementId } = useEditorStore();
   const { updateElementPosition, updateElementSize } = useNodeData();
-
-  // Update container node when container data changes
-  React.useEffect(() => {
-    if (container) {
-      const containerNode: Node = {
-        id: "container-node",
-        type: "container",
-        data: {},
-        position: { x: 0, y: 0 },
-        draggable: false,
-        selectable: false,
-        style: {
-          width: container.width,
-          height: container.height,
-          border: "2px solid #000000",
-          boxSizing: "border-box",
-          backgroundColor: "transparent",
-        },
-      };
-      setContainerNode(containerNode);
-      setNodes([containerNode, ...elementNodes]);
-    }
-  }, [container, setNodes]);
-
-  // Update element nodes when elements change
-  React.useEffect(() => {
-    const nodes: Node[] = elements
-      .map(element => {
-        if (element.type === GQL.ElementType.Text) {
-          const data: TextElementNodeData = {
-            elementId: element.id,
-          };
-          const node: Node<TextElementNodeData> = {
-            id: element.id.toString(),
-            type: "text",
-            position: {
-              x: element.positionX,
-              y: element.positionY,
-            },
-            width: element.width,
-            height: element.height,
-            data: data,
-            connectable: false,
-            resizing: true,
-          };
-          return node;
-        }
-      })
-      .filter(node => node !== undefined);
-    setElementNodes(nodes);
-    setNodes([containerNode, ...nodes]);
-  }, [elements, setNodes]);
 
   const [helperLineHorizontal, setHelperLineHorizontal] = useState<
     number | undefined
@@ -175,7 +105,11 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
           }
         }
 
-        if (change.type === "dimensions" && !change.resizing && change.dimensions) {
+        if (
+          change.type === "dimensions" &&
+          !change.resizing &&
+          change.dimensions
+        ) {
           const elementId = Number.parseInt(change.id, 10);
           if (!Number.isNaN(elementId)) {
             const width = change.dimensions.width;
@@ -195,7 +129,13 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
 
       return applyNodeChanges(changes, nodes);
     },
-    [container.width, container.height, setCurrentElementId, updateElementPosition, updateElementSize]
+    [
+      container.width,
+      container.height,
+      setCurrentElementId,
+      updateElementPosition,
+      updateElementSize,
+    ]
   );
 
   const onNodesChange: OnNodesChange = useCallback(
@@ -301,7 +241,7 @@ export type CertificateReactFlowEditorProps = {
 const CertificateReactFlowEditor: React.FC<CertificateReactFlowEditorProps> = ({
   template,
 }) => {
-  const { elementsNodeData, containerData } = useNodeData();
+  const { nodes } = useNodeData();
 
   return (
     <Box
@@ -315,11 +255,7 @@ const CertificateReactFlowEditor: React.FC<CertificateReactFlowEditorProps> = ({
         width: "-webkit-fill-available",
       }}
     >
-        <Flow
-          template={template}
-          elements={elementsNodeData}
-          container={containerData}
-        />
+      <Flow template={template} nodes={nodes} />
     </Box>
   );
 };
