@@ -63,7 +63,7 @@ export namespace DateElementUtils {
       base: input.base,
       textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
         input.textProps
-      )!,
+      ),
       dataSource: mapDateDataSourceGraphqlToInput(input.dataSource),
       dateProps: input.dateProps,
     };
@@ -80,7 +80,7 @@ export namespace DateElementUtils {
       base: input.base,
       textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
         input.textProps
-      )!,
+      ),
       dataSource: mapDateDataSourceGraphqlToInput(input.dataSource),
       dateProps: input.dateProps,
     };
@@ -111,11 +111,11 @@ export namespace DateElementUtils {
   const checkOffsetDays = (offsetDays?: number | null): void => {
     if (offsetDays === undefined || offsetDays === null) return;
     if (!Number.isFinite(offsetDays)) {
-      throw new Error("Offset days must be a finite number");
+      throw new TypeError("Offset days must be a finite number");
     }
     // Allow negative offsets (for dates in the past)
     if (!Number.isInteger(offsetDays)) {
-      throw new Error("Offset days must be an integer");
+      throw new TypeError("Offset days must be an integer");
     }
   };
 
@@ -133,7 +133,7 @@ export namespace DateElementUtils {
 
     // Check for common date format tokens (moment.js / date-fns style)
     // YYYY, MM, DD, HH, mm, ss, etc.
-    const validTokens = /^[YMDHhmsaAZzTWwEedDo\s\-\/:.,']+$/;
+    const validTokens = /^[YMDHhmsaAZzTWwEedDo\s\-/:.,']+$/;
 
     if (!validTokens.test(format)) {
       throw new Error(
@@ -212,8 +212,8 @@ export namespace DateElementUtils {
 
     // Validate ISO 8601 date format or basic date format
     const date = new Date(value);
-    if (isNaN(date.getTime())) {
-      throw new Error(
+    if (Number.isNaN(date.getTime())) {
+      throw new TypeError(
         "Invalid static date value. Use ISO 8601 format (e.g., 2024-01-15 or 2024-01-15T10:30:00Z)"
       );
     }
@@ -344,11 +344,9 @@ export namespace DateElementUtils {
   export const extractVariableIdFromDataSource = (
     dataSource: ElType.DateDataSourceInput
   ): number | null => {
-    switch (dataSource.type) {
-      case ElType.DateDataSourceType.TEMPLATE_DATE_VARIABLE:
-        return dataSource.variableId;
-      default:
-        return null;
+    if (dataSource.type === ElType.DateDataSourceType.TEMPLATE_DATE_VARIABLE) {
+      return dataSource.variableId;
     }
+    return null;
   };
 }

@@ -7,7 +7,7 @@ import { logger } from "@/client/lib/logger";
 
 // Persistent state cache at module level - survives remounts
 // Key format: "templateId:namespace:elementId"
-const persistentStateCache = new Map<string, any>();
+const persistentStateCache = new Map<string, unknown>();
  
 const updateDebounceDelayMs = 10000; // 10 seconds
 
@@ -50,7 +50,7 @@ export function useElementState<T, E, VR>(
   // Helper to generate cache key
   const getCacheKey = React.useCallback(
     (elementId: number) =>
-      `${templateId ?? "notpl"}:${stateNamespace}:${elementId}`,
+      `${templateId ?? "noTpl"}:${stateNamespace}:${elementId}`,
     [templateId, stateNamespace]
   );
 
@@ -58,7 +58,7 @@ export function useElementState<T, E, VR>(
   const getFromPersistentCache = React.useCallback(
     (elementId: number): T | undefined => {
       const key = getCacheKey(elementId);
-      return persistentStateCache.get(key);
+      return persistentStateCache.get(key) as T | undefined;
     },
     [getCacheKey]
   );

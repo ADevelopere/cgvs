@@ -1,6 +1,6 @@
-/* eslint-disable no-console */
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
+import { writeFile, mkdir } from "node:fs/promises";
+import { join } from "node:path";
+import { format } from "node:util";
 
 type LogLevel = "log" | "info" | "warn" | "error" | "debug";
 
@@ -58,18 +58,8 @@ export abstract class BaseLogger {
   protected logToConsole(level: LogLevel, ...args: unknown[]): void {
     if (!this.enabled) return;
 
-    const message = args
-      .map(arg =>
-        typeof arg === "object"
-          ? JSON.stringify(
-              arg,
-              (_, value) =>
-                typeof value === "bigint" ? value.toString() : value,
-              2
-            )
-          : String(arg)
-      )
-      .join(" ");
+    // Use Node's util.format to handle all types automatically
+    const message = format(...args);
 
     const timestamp = this.formatTimestamp();
 

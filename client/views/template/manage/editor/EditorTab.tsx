@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import CertificateReactFlowEditor, {
-  ContainerNodeData,
   ElementNodeData,
 } from "./ReactFlowEditor";
 import EditorPaneViewController from "@/client/components/editorPane/EditorPaneViewController";
@@ -19,8 +18,7 @@ import { MiscellaneousPanel } from "./miscellaneousPanel/MiscellaneousPanel";
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/client/lib/logger";
 import {
-  CertificateElemenetProvider,
-  useCertificateElementContext,
+  CertificateElementProvider,
 } from "@/client/views/template/manage/editor/CertificateElementContext";
 import { templateVariablesByTemplateIdQueryDocument } from "../variables/hooks/templateVariable.documents";
 
@@ -43,6 +41,26 @@ export type EditorTabProps = {
   template: Template;
 };
 
+const FloatingLoadingIndicator: React.FC<{ loading: boolean }> = ({ loading }) => {
+  return (
+    <Box
+      sx={{
+        position: "absolute",
+        top: 16,
+        right: 16,
+        zIndex: 1000,
+        backgroundColor: "rgba(255, 255, 255, 0.8)",
+        padding: "8px 12px",
+        borderRadius: "4px",
+        boxShadow: 3,
+      }}
+    >
+      {loading ? <CircularProgress size={24} /> : null}
+    </Box>
+  );
+};
+  
+
 export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
   const {
     templateEditorTranslations: { templateEditorPane: strings },
@@ -60,7 +78,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
     fetchPolicy: "cache-and-network",
   });
 
-  const tempalteConfig: GQL.TemplateConfig | null | undefined =
+  const templateConfig: GQL.TemplateConfig | null | undefined =
     React.useMemo(() => {
       const config = configData?.templateConfigByTemplateId;
       setConfigLoading(configApolloLoading);
@@ -85,9 +103,9 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
   }, [elementsData?.elementsByTemplateId]);
 
   const elements: GQL.CertificateElementUnion[] = React.useMemo(() => {
-    const elems = elementsData?.elementsByTemplateId || [];
+    const elementsList = elementsData?.elementsByTemplateId || [];
     setElementsLoading(elementsApolloLoading);
-    return elems;
+    return elementsList;
   }, [elementsApolloLoading, elementsData?.elementsByTemplateId]);
 
   const elementsNodeData: ElementNodeData[] = React.useMemo(() => {
@@ -132,11 +150,11 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
   //   );
   // }
 
-  if (!configLoading && !tempalteConfig) {
+  if (!configLoading && !templateConfig) {
     return <TemplateConfigCreateForm template={template} />;
   }
 
-  if (configError || !tempalteConfig) {
+  if (configError || !templateConfig) {
     return <div>Error loading template config: {configError?.message}</div>;
   }
 
@@ -145,10 +163,11 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
   }
 
   return (
-    <CertificateElemenetProvider
+<>
+    <CertificateElementProvider
       templateId={template.id}
       elements={elements}
-      tempalteConfig={tempalteConfig}
+      templateConfig={templateConfig}
       variables={variables}
     >
       <EditorPaneViewController
@@ -192,6 +211,8 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
         }}
         storageKey="templateManagementEditor"
       />
-    </CertificateElemenetProvider>
+    </CertificateElementProvider>
+    <FloatingLoadingIndicator loading={configLoading || elementsLoading} />
+    </>
   );
 };

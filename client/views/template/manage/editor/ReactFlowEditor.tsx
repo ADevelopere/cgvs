@@ -6,14 +6,13 @@ import {
   Background,
   Node,
   ReactFlowProvider,
-  useViewport,
   NodeChange,
   applyNodeChanges,
   OnNodesChange,
   useNodesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback,  useState } from "react";
 import "./other/EditorTab.module.css";
 import { Box } from "@mui/material";
 import DownloadImage from "./download/DownloadImage";
@@ -21,10 +20,9 @@ import { getHelperLines } from "./other/utils";
 import HelperLines from "./other/HelperLines";
 import { nodeTypes } from "./other/constants";
 import { useAppTheme } from "@/client/contexts";
-import logger from "@/client/lib/logger";
 import { getTemplateImageUrl } from "../../utils/template.utils";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import { TextElementNodeData } from "./nodeRendere/TextElementNode";
+import { TextElementNodeData } from "./nodeRenderer/TextElementNode";
 import { useEditorStore } from "./useEditorStore";
 import { useCertificateElementContext } from "./CertificateElementContext";
 
@@ -71,7 +69,7 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
     },
   });
   const { theme } = useAppTheme();
-  const { x, y, zoom } = useViewport();
+  // const { x, y, zoom } = useViewport();
   const { setCurrentElementId } = useEditorStore();
 
   // Update container node when container data changes
