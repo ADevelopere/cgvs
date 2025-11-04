@@ -5,7 +5,6 @@ import {
   Controls,
   Background,
   Node,
-  ReactFlowProvider,
   NodeChange,
   applyNodeChanges,
   OnNodesChange,
@@ -52,7 +51,7 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
   const { theme } = useAppTheme();
   // const { x, y, zoom } = useViewport();
   const { setCurrentElementId } = useEditorStore();
-  const { updateElementPosition } = useNodeData();
+  const { updateElementPosition, updateElementSize } = useNodeData();
 
   // Update container node when container data changes
   React.useEffect(() => {
@@ -96,6 +95,7 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
             height: element.height,
             data: data,
             connectable: false,
+            resizing: true,
           };
           return node;
         }
@@ -167,11 +167,22 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
         if (change.type === "position" && !change.dragging && change.position) {
           const elementId = Number.parseInt(change.id, 10);
           if (!Number.isNaN(elementId)) {
-            updateElementPosition(
-              elementId,
-              change.position.x,
-              change.position.y
-            );
+            const x = change.position.x;
+            const y = change.position.y;
+            setTimeout(() => {
+              updateElementPosition(elementId, x, y);
+            }, 0);
+          }
+        }
+
+        if (change.type === "dimensions" && !change.resizing && change.dimensions) {
+          const elementId = Number.parseInt(change.id, 10);
+          if (!Number.isNaN(elementId)) {
+            const width = change.dimensions.width;
+            const height = change.dimensions.height;
+            setTimeout(() => {
+              updateElementSize(elementId, width, height);
+            }, 0);
           }
         }
 
@@ -184,7 +195,7 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
 
       return applyNodeChanges(changes, nodes);
     },
-    [container.width, container.height, setCurrentElementId, updateElementPosition]
+    [container.width, container.height, setCurrentElementId, updateElementPosition, updateElementSize]
   );
 
   const onNodesChange: OnNodesChange = useCallback(
@@ -304,13 +315,11 @@ const CertificateReactFlowEditor: React.FC<CertificateReactFlowEditorProps> = ({
         width: "-webkit-fill-available",
       }}
     >
-      <ReactFlowProvider>
         <Flow
           template={template}
           elements={elementsNodeData}
           container={containerData}
         />
-      </ReactFlowProvider>
     </Box>
   );
 };

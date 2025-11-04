@@ -7,11 +7,12 @@ import {
 } from "./form/config/useTemplateConfigState";
 import * as ElState from "./form/hooks";
 import { NodeDataProvider } from "./NodeDataProvider";
+import { ReactFlowProvider } from "@xyflow/react";
 
 type CertificateElementContextType = {
   // common
-  bases:  ElState.UseBaseElementStateReturn;
-  textProps:  ElState.UseTextPropsStateReturn;
+  bases: ElState.UseBaseElementStateReturn;
+  textProps: ElState.UseTextPropsStateReturn;
   // data sources
   textDataSource: ElState.UseTextDataSourceStateReturn;
   dateDataSource: ElState.UseDateDataSourceStateReturn;
@@ -47,8 +48,8 @@ export const CertificateElementProvider: React.FC<
 > = ({ children, ...props }) => {
   const { elements, templateId } = props;
   const config = useTemplateConfigState({ config: props.templateConfig });
-  const textProps = ElState. useTextPropsState({ elements, templateId });
-  const bases =  ElState.useBaseElementState({ elements, templateId });
+  const textProps = ElState.useTextPropsState({ elements, templateId });
+  const bases = ElState.useBaseElementState({ elements, templateId });
   const textDataSource = ElState.useTextDataSourceState({
     elements,
     templateId,
@@ -133,9 +134,11 @@ export const CertificateElementProvider: React.FC<
 
   return (
     <CertificateElementContext.Provider value={value}>
-      <NodeDataProvider elements={elements} bases={bases} config={config}>
-        {children}
-      </NodeDataProvider>
+      <ReactFlowProvider>
+        <NodeDataProvider elements={elements} bases={bases} config={config}>
+          {children}
+        </NodeDataProvider>
+      </ReactFlowProvider>
     </CertificateElementContext.Provider>
   );
 };
