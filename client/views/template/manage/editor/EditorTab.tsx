@@ -2,9 +2,7 @@
 
 import React from "react";
 import { Box, CircularProgress, Typography } from "@mui/material";
-import CertificateReactFlowEditor, {
-  ElementNodeData,
-} from "./ReactFlowEditor";
+import CertificateReactFlowEditor, { ElementNodeData } from "./ReactFlowEditor";
 import EditorPaneViewController from "@/client/components/editorPane/EditorPaneViewController";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
@@ -17,9 +15,7 @@ import { TemplateConfigCreateForm } from "./form/config/TemplateConfigCreateForm
 import { MiscellaneousPanel } from "./miscellaneousPanel/MiscellaneousPanel";
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/client/lib/logger";
-import {
-  CertificateElementProvider,
-} from "@/client/views/template/manage/editor/CertificateElementContext";
+import { CertificateElementProvider } from "@/client/views/template/manage/editor/CertificateElementContext";
 import { templateVariablesByTemplateIdQueryDocument } from "../variables/hooks/templateVariable.documents";
 
 function AddNodePane() {
@@ -41,7 +37,9 @@ export type EditorTabProps = {
   template: Template;
 };
 
-const FloatingLoadingIndicator: React.FC<{ loading: boolean }> = ({ loading }) => {
+const FloatingLoadingIndicator: React.FC<{ loading: boolean }> = ({
+  loading,
+}) => {
   return (
     <Box
       sx={{
@@ -59,7 +57,6 @@ const FloatingLoadingIndicator: React.FC<{ loading: boolean }> = ({ loading }) =
     </Box>
   );
 };
-  
 
 export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
   const {
@@ -109,7 +106,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
   }, [elementsApolloLoading, elementsData?.elementsByTemplateId]);
 
   const elementsNodeData: ElementNodeData[] = React.useMemo(() => {
-    return elements.map(el => ({
+    return elements.map((el) => ({
       id: el.base.id,
       type: el.base.type,
       positionX: el.base.positionX,
@@ -130,31 +127,16 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
     }
   );
 
-  const variables: GQL.TemplateVariable[] =React. useMemo(
+  const variables: GQL.TemplateVariable[] = React.useMemo(
     () => variablesData?.templateVariablesByTemplateId || [],
     [variablesData]
   );
-
-  // if (configLoading || elementsLoading) {
-  //   return (
-  //     <div
-  //       style={{
-  //         display: "flex",
-  //         justifyContent: "center",
-  //         alignItems: "center",
-  //         height: "100%",
-  //       }}
-  //     >
-  //       <CircularProgress size={24} />
-  //     </div>
-  //   );
-  // }
 
   if (!configLoading && !templateConfig) {
     return <TemplateConfigCreateForm template={template} />;
   }
 
-  if (configError || !templateConfig) {
+  if ((configError || !templateConfig) && !configLoading) {
     return <div>Error loading template config: {configError?.message}</div>;
   }
 
@@ -162,57 +144,72 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
     return <div>Error loading elements: {elementsError.message}</div>;
   }
 
+  if (!templateConfig) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+        }}
+      >
+        <CircularProgress size={24} />
+      </div>
+    );
+  }
+
   return (
-<>
-    <CertificateElementProvider
-      templateId={template.id}
-      elements={elements}
-      templateConfig={templateConfig}
-      variables={variables}
-    >
-      <EditorPaneViewController
-        firstPane={{
-          title: (
-            <Typography
-              variant="h6"
-              sx={{
-                px: 2,
-              }}
-            >
-              {strings.addNodePane}
-            </Typography>
-          ),
-          content: <AddNodePane />,
-          buttonTooltip: "Toggle Add Node Panel",
-          buttonDisabled: false,
-          showCollapseButtonInHeader: true,
-        }}
-        middlePane={
-          <CertificateReactFlowEditor
-            template={template}
-            elements={elementsNodeData}
-          />
-        }
-        thirdPane={{
-          title: (
-            <Typography
-              variant="h6"
-              sx={{
-                px: 2,
-              }}
-            >
-              {strings.miscellaneousPane}
-            </Typography>
-          ),
-          content: <MiscellaneousPanel elements={elements} />,
-          buttonTooltip: "Toggle Miscellaneous Panel",
-          buttonDisabled: false,
-          showCollapseButtonInHeader: true,
-        }}
-        storageKey="templateManagementEditor"
-      />
-    </CertificateElementProvider>
-    <FloatingLoadingIndicator loading={configLoading || elementsLoading} />
+    <>
+      <CertificateElementProvider
+        templateId={template.id}
+        elements={elements}
+        templateConfig={templateConfig}
+        variables={variables}
+      >
+        <EditorPaneViewController
+          firstPane={{
+            title: (
+              <Typography
+                variant="h6"
+                sx={{
+                  px: 2,
+                }}
+              >
+                {strings.addNodePane}
+              </Typography>
+            ),
+            content: <AddNodePane />,
+            buttonTooltip: "Toggle Add Node Panel",
+            buttonDisabled: false,
+            showCollapseButtonInHeader: true,
+          }}
+          middlePane={
+            <CertificateReactFlowEditor
+              template={template}
+              elements={elementsNodeData}
+            />
+          }
+          thirdPane={{
+            title: (
+              <Typography
+                variant="h6"
+                sx={{
+                  px: 2,
+                }}
+              >
+                {strings.miscellaneousPane}
+              </Typography>
+            ),
+            content: <MiscellaneousPanel elements={elements} />,
+            buttonTooltip: "Toggle Miscellaneous Panel",
+            buttonDisabled: false,
+            showCollapseButtonInHeader: true,
+          }}
+          storageKey="templateManagementEditor"
+        />
+      </CertificateElementProvider>
+      <FloatingLoadingIndicator loading={configLoading || elementsLoading} />
     </>
   );
 };

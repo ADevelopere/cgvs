@@ -7,8 +7,7 @@ import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale/useAppTranslation";
 import { useTemplateConfigFormValidateFn } from "./templateConfigValidator";
 import { TemplateConfigTranslations } from "@/client/locale";
-import { createTemplateConfigMutationDocument } from "../../glqDocuments";
-import { useMutation } from "@apollo/client/react";
+import { useTemplateConfigMutation } from "./useTemplateConfigMutation";
 
 export type TemplateConfigCreateFormProps = {
   template: GQL.Template;
@@ -84,9 +83,7 @@ export const TemplateConfigCreateForm: React.FC<
   TemplateConfigCreateFormProps
 > = ({ template }) => {
   const { templateConfigTranslations: strings } = useAppTranslation();
-  const [createTemplateConfigMutation] = useMutation(
-    createTemplateConfigMutationDocument
-  );
+  const { createTemplateConfigMutation } = useTemplateConfigMutation();
   const [state, setState] = React.useState<GQL.TemplateConfigCreateInput>({
     width: 800,
     height: 600,
@@ -99,16 +96,16 @@ export const TemplateConfigCreateForm: React.FC<
   const [createError, setCreateError] = React.useState<string | null>(null);
   const validateAction = useTemplateConfigFormValidateFn(strings);
 
-  const updater: TemplateConfigFormUpdateFn = action => {
+  const updater: TemplateConfigFormUpdateFn = (action) => {
     const { key, value } = action;
     const errorMessage = validateAction(action);
 
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
       [key]: errorMessage,
     }));
 
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       [key]: value,
     }));
