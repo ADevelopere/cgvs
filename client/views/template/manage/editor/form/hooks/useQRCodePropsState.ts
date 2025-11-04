@@ -11,6 +11,7 @@ import {
   QRCodePropsFormState,
   QRCodePropsFormErrors,
   UpdateQRCodePropsWithElementIdFn,
+  UpdateQRCodePropsFn,
 } from "../element/qrcode";
 import { useCertificateElementContext } from "../../CertificateElementContext";
 
@@ -38,13 +39,11 @@ function extractQRCodePropsState(
   }
 
   return {
-    qrCodeProps: {
-      backgroundColor: element.qrCodeProps.backgroundColor ?? "#FFFFFF",
-      foregroundColor: element.qrCodeProps.foregroundColor ?? "#000000",
-      errorCorrection:
-        (element.qrCodeProps.errorCorrection as GQL.QrCodeErrorCorrection) ??
-        GQL.QrCodeErrorCorrection.L,
-    },
+    backgroundColor: element.qrCodeProps.backgroundColor ?? "#FFFFFF",
+    foregroundColor: element.qrCodeProps.foregroundColor ?? "#000000",
+    errorCorrection:
+      (element.qrCodeProps.errorCorrection as GQL.QrCodeErrorCorrection) ??
+      GQL.QrCodeErrorCorrection.L,
   };
 }
 
@@ -57,7 +56,7 @@ function toUpdateInput(
 ): GQL.QrCodeElementSpecPropsStandaloneUpdateInput {
   return {
     elementId: elementId,
-    qrCodeProps: state.qrCodeProps,
+    qrCodeProps: state,
   };
 }
 
@@ -103,7 +102,11 @@ export function useQRCodePropsState(
   );
 
   // Use generic hook
-  const { states, updateFn, pushUpdate, initState, errors } = useElementState({
+  const { states, updateFn, pushUpdate, initState, errors } = useElementState<
+    QRCodePropsFormState,
+    QRCodePropsFormErrors,
+    string | undefined
+  >({
     templateId,
     elements,
     validator,
@@ -137,19 +140,16 @@ export const useQRCodeProps = (params: UseQRCodePropsParams) => {
   } = useCertificateElementContext();
 
   // Get state or initialize if not present (only initialize once)
-  const { qrCodeProps } = React.useMemo(() => {
+  const qrCodeProps: QRCodePropsFormState = React.useMemo(() => {
     return (
       qrCodePropsStates.get(params.elementId) ??
       initQRCodePropsState(params.elementId)
     );
   }, [qrCodePropsStates, params.elementId, initQRCodePropsState]);
 
-  const updateQRCodeProps = React.useCallback(
-    (qrCodeProps: GQL.QrCodeElementSpecPropsInput) => {
-      updateQRCodePropsStateFn(params.elementId, {
-        key: "qrCodeProps",
-        value: qrCodeProps,
-      });
+  const updateQRCodeProps: UpdateQRCodePropsFn = React.useCallback(
+    action => {
+      updateQRCodePropsStateFn(params.elementId, action);
     },
     [params.elementId, updateQRCodePropsStateFn]
   );
@@ -158,12 +158,8 @@ export const useQRCodeProps = (params: UseQRCodePropsParams) => {
     await pushQRCodePropsStateUpdate(params.elementId);
   }, [params.elementId, pushQRCodePropsStateUpdate]);
 
-  const { qrCodeProps: errors } = React.useMemo(() => {
-    return (
-      qrCodePropsStateErrors.get(params.elementId) || {
-        qrCodeProps: {},
-      }
-    );
+  const errors: QRCodePropsFormErrors = React.useMemo(() => {
+    return qrCodePropsStateErrors.get(params.elementId) || {};
   }, [qrCodePropsStateErrors, params.elementId]);
 
   return {
