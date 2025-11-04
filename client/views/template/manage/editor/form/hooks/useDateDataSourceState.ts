@@ -11,6 +11,7 @@ import {
   DateDataSourceFormErrors,
   UpdateDateDataSourceWithElementIdFn,
   dateDataSourceToInput,
+  DateDataSourceFieldErrors,
 } from "../element/date/types";
 import { useElementState } from "./useElementState";
 import { useCertificateElementContext } from "../../CertificateElementContext";
@@ -107,7 +108,11 @@ export function useDateDataSourceState(
 
   const validator = validateDateDataSource();
 
-  const { states, updateFn, pushUpdate, initState, errors } = useElementState({
+  const { states, updateFn, pushUpdate, initState, errors } = useElementState<
+    DateDataSourceFormState,
+    DateDataSourceFormErrors,
+    DateDataSourceFieldErrors
+  >({
     templateId,
     elements,
     validator,
@@ -177,4 +182,3 @@ export const useDateDataSource = (params: UseDateDataSourceParams) => {
     dateDataSourceErrors: errors,
   };
 };
-

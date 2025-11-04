@@ -5,7 +5,6 @@ import {
   ValidateFieldFn,
   UpdateStateWithElementIdFn,
   FormErrors,
-  Action,
   UpdateStateFn,
 } from "../../types";
 
@@ -15,25 +14,19 @@ import {
 
 export type CountryElementFormState = GQL.CountryElementInput;
 
-export type CountryPropsFormState = {
-  countryProps: GQL.CountryElementCountryPropsInput;
-};
+export type CountryPropsFormState = GQL.CountryElementCountryPropsInput;
 
 // ============================================================================
 // ERROR TYPES
 // ============================================================================
 
-export type CountryPropsFieldErrors =
-  | FormErrors<GQL.CountryElementCountryPropsInput>
-  | undefined;
+export type CountryPropsFormErrors =
+  FormErrors<GQL.CountryElementCountryPropsInput>;
 
-export type CountryPropsFormErrors = {
-  countryProps: CountryPropsFieldErrors;
-};
-
-export type CountryElementFormErrors = CountryPropsFormErrors & {
+export type CountryElementFormErrors = {
   base: BaseElementFormErrors;
   textProps: TextPropsFormErrors;
+  countryProps: CountryPropsFormErrors;
 };
 
 // ============================================================================
@@ -45,9 +38,7 @@ export type UpdateCountryPropsFn = UpdateStateFn<CountryPropsFormState>;
 export type UpdateCountryPropsWithElementIdFn =
   UpdateStateWithElementIdFn<CountryPropsFormState>;
 
-export type CountryPropsUpdateAction = Action<CountryPropsFormState>;
-
 export type ValidateCountryPropsFn = ValidateFieldFn<
   CountryPropsFormState,
-  CountryPropsFormErrors
+  string | undefined
 >;

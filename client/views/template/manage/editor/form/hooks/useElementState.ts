@@ -11,10 +11,10 @@ const persistentStateCache = new Map<string, any>();
  
 const updateDebounceDelayMs = 10000; // 10 seconds
 
-export type UseElementStateParams<T, E> = {
+export type UseElementStateParams<T, VR> = {
   templateId?: number;
   elements?: GQL.CertificateElementUnion[];
-  validator: ValidateFieldFn<T, E>;
+  validator: ValidateFieldFn<T, VR>;
   extractInitialState: (element: GQL.CertificateElementUnion) => T | null;
   mutationFn: (elementId: number, state: T) => Promise<void>;
   stateNamespace: string; // e.g., "textProps", "baseElement", "dateProps"
@@ -30,8 +30,13 @@ export type UseElementStateReturn<T, E> = {
   getState: (elementId: number) => T | undefined;
 };
 
-export function useElementState<T, E>(
-  params: UseElementStateParams<T, E>
+/**
+ * T: state type
+ * E: error type
+ * VR: validation result type
+ */
+export function useElementState<T, E, VR>(
+  params: UseElementStateParams<T, VR>
 ): UseElementStateReturn<T, E> {
   const {
     templateId,

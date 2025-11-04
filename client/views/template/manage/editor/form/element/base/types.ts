@@ -6,7 +6,7 @@ import {
   UpdateStateWithElementIdFn,
 } from "../../types";
 
-export type SanitizedBaseElementFormState = Omit<
+type SanitizedBaseElementFormState = Omit<
   CertificateElementBaseInput,
   "templateId"
 >;
@@ -17,7 +17,7 @@ export type BaseElementFormErrors = FormErrors<BaseCertificateElementFormState>;
 
 
 export type ValidateBaseElementFieldFn =
-  ValidateFieldFn<BaseCertificateElementFormState, BaseElementFormErrors>;
+  ValidateFieldFn<BaseCertificateElementFormState, string | undefined>;
 
 // ============================================================================
 // SPECIFIC UPDATE FUNCTION TYPES

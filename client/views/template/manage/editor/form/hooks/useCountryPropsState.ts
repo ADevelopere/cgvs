@@ -11,6 +11,7 @@ import {
   CountryPropsFormState,
   CountryPropsFormErrors,
   UpdateCountryPropsWithElementIdFn,
+  UpdateCountryPropsFn,
 } from "../element/country";
 import { useCertificateElementContext } from "../../CertificateElementContext";
 
@@ -38,10 +39,8 @@ function extractCountryPropsState(
   }
 
   return {
-    countryProps: {
-      representation:
-        element.countryProps.representation as GQL.CountryRepresentation,
-    },
+    representation: element.countryProps
+      .representation as GQL.CountryRepresentation,
   };
 }
 
@@ -55,7 +54,7 @@ function toUpdateInput(
   return {
     elementId: elementId,
     countryProps: {
-      representation: state.countryProps.representation,
+      representation: state.representation,
     },
   };
 }
@@ -114,7 +113,11 @@ export function useCountryPropsState(
   );
 
   // Use generic hook
-  const { states, updateFn, pushUpdate, initState, errors } = useElementState({
+  const { states, updateFn, pushUpdate, initState, errors } = useElementState<
+    CountryPropsFormState,
+    CountryPropsFormErrors,
+    string | undefined
+  >({
     templateId,
     elements,
     validator,
@@ -148,19 +151,16 @@ export const useCountryProps = (params: UseCountryPropsParams) => {
   } = useCertificateElementContext();
 
   // Get state or initialize if not present (only initialize once)
-  const { countryProps } = React.useMemo(() => {
+  const countryProps = React.useMemo(() => {
     return (
       countryPropsStates.get(params.elementId) ??
       initCountryPropsState(params.elementId)
     );
   }, [countryPropsStates, params.elementId, initCountryPropsState]);
 
-  const updateCountryProps = React.useCallback(
-    (countryProps: GQL.CountryElementCountryPropsInput) => {
-      updateCountryPropsStateFn(params.elementId, {
-        key: "countryProps",
-        value: countryProps,
-      });
+  const updateCountryProps: UpdateCountryPropsFn = React.useCallback(
+    action => {
+      updateCountryPropsStateFn(params.elementId, action);
     },
     [params.elementId, updateCountryPropsStateFn]
   );
@@ -169,12 +169,8 @@ export const useCountryProps = (params: UseCountryPropsParams) => {
     await pushCountryPropsStateUpdate(params.elementId);
   }, [params.elementId, pushCountryPropsStateUpdate]);
 
-  const { countryProps: errors } = React.useMemo(() => {
-    return (
-      countryPropsStateErrors.get(params.elementId) || {
-        countryProps: {},
-      }
-    );
+  const errors = React.useMemo(() => {
+    return countryPropsStateErrors.get(params.elementId) || {};
   }, [countryPropsStateErrors, params.elementId]);
 
   return {
@@ -184,4 +180,3 @@ export const useCountryProps = (params: UseCountryPropsParams) => {
     countryPropsErrors: errors,
   };
 };
-
