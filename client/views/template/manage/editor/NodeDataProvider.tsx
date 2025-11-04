@@ -1,5 +1,5 @@
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import { ContainerNodeData, ElementNodeData } from "./ReactFlowEditor";
+import { ContainerNodeData, ElementNodeData } from "./types";
 import React from "react";
 import { UseBaseElementStateReturn } from "./form/hooks";
 import { UseTemplateConfigStateReturn } from "./form/config/useTemplateConfigState";
@@ -7,6 +7,7 @@ import { UseTemplateConfigStateReturn } from "./form/config/useTemplateConfigSta
 export type NodeDataContextType = {
   elementsNodeData: ElementNodeData[];
   containerData: ContainerNodeData;
+  updateElementPosition: (elementId: number, x: number, y: number) => void;
 };
 
 const NodeDataContext = React.createContext<NodeDataContextType | null>(
@@ -32,7 +33,6 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
     };
   }, [configUpdateState.width, configUpdateState.height]);
   
-  // Potentially add some context or state management here in the future
   const elementsNodeData: ElementNodeData[] = React.useMemo(() => {
     return elements.map(el => {
       const activeBaseInputState = bases.baseElementStates.get(el.base.id);
@@ -47,12 +47,28 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
       };
     });
   }, [elements, bases.baseElementStates]);
+
+  const updateElementPosition = React.useCallback(
+    (elementId: number, x: number, y: number) => {
+      bases.updateBaseElementStateFn(elementId, {
+        key: "positionX",
+        value: x,
+      });
+      bases.updateBaseElementStateFn(elementId, {
+        key: "positionY",
+        value: y,
+      });
+    },
+    [bases.updateBaseElementStateFn]
+  );
+
   const value = React.useMemo(
     () => ({
       elementsNodeData,
       containerData,
+      updateElementPosition,
     }),
-    [elementsNodeData, containerData]
+    [elementsNodeData, containerData, updateElementPosition]
   );
 
   return (

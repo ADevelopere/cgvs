@@ -1,63 +1,27 @@
 "use client";
 import React from "react";
-import {
-  useTextPropsState,
-  UseTextPropsStateReturn,
-} from "@/client/views/template/manage/editor/form/hooks/useTextPropsState";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import { useBaseElementState, UseBaseElementStateReturn } from "./form/hooks";
 import {
   useTemplateConfigState,
   UseTemplateConfigStateReturn,
 } from "./form/config/useTemplateConfigState";
-import {
-  useTextDataSourceState,
-  UseTextDataSourceStateReturn,
-} from "./form/hooks/useTextDataSourceState";
-import {
-  useDateDataSourceState,
-  UseDateDataSourceStateReturn,
-} from "./form/hooks/useDateDataSourceState";
-import {
-  useNumberDataSourceState,
-  UseNumberDataSourceStateReturn,
-} from "./form/hooks/useNumberDataSourceState";
-import {
-  useDatePropsState,
-  UseDatePropsStateReturn,
-} from "./form/hooks/useDatePropsState";
-import {
-  useCountryPropsState,
-  UseCountryPropsStateReturn,
-} from "./form/hooks/useCountryPropsState";
-import {
-  useImagePropsState,
-  UseImagePropsStateReturn,
-} from "./form/hooks/useImagePropsState";
-import {
-  useNumberPropsState,
-  UseNumberPropsStateReturn,
-} from "./form/hooks/useNumberPropsState";
-import {
-  useQRCodePropsState,
-  UseQRCodePropsStateReturn,
-} from "./form/hooks/useQRCodePropsState";
+import * as ElState from "./form/hooks";
 import { NodeDataProvider } from "./NodeDataProvider";
 
 type CertificateElementContextType = {
   // common
-  bases: UseBaseElementStateReturn;
-  textProps: UseTextPropsStateReturn;
+  bases:  ElState.UseBaseElementStateReturn;
+  textProps:  ElState.UseTextPropsStateReturn;
   // data sources
-  textDataSource: UseTextDataSourceStateReturn;
-  dateDataSource: UseDateDataSourceStateReturn;
-  numberDataSource: UseNumberDataSourceStateReturn;
+  textDataSource: ElState.UseTextDataSourceStateReturn;
+  dateDataSource: ElState.UseDateDataSourceStateReturn;
+  numberDataSource: ElState.UseNumberDataSourceStateReturn;
   // props
-  dateProps: UseDatePropsStateReturn;
-  countryProps: UseCountryPropsStateReturn;
-  imageProps: UseImagePropsStateReturn;
-  numberProps: UseNumberPropsStateReturn;
-  qrCodeProps: UseQRCodePropsStateReturn;
+  dateProps: ElState.UseDatePropsStateReturn;
+  countryProps: ElState.UseCountryPropsStateReturn;
+  imageProps: ElState.UseImagePropsStateReturn;
+  numberProps: ElState.UseNumberPropsStateReturn;
+  qrCodeProps: ElState.UseQRCodePropsStateReturn;
   // config
   config: UseTemplateConfigStateReturn;
   // Variables
@@ -83,16 +47,25 @@ export const CertificateElementProvider: React.FC<
 > = ({ children, ...props }) => {
   const { elements, templateId } = props;
   const config = useTemplateConfigState({ config: props.templateConfig });
-  const textProps = useTextPropsState({ elements, templateId });
-  const bases = useBaseElementState({ elements, templateId });
-  const textDataSource = useTextDataSourceState({ elements, templateId });
-  const dateDataSource = useDateDataSourceState({ elements, templateId });
-  const numberDataSource = useNumberDataSourceState({ elements, templateId });
-  const dateProps = useDatePropsState({ elements, templateId });
-  const countryProps = useCountryPropsState({ elements, templateId });
-  const imageProps = useImagePropsState({ elements, templateId });
-  const numberProps = useNumberPropsState({ elements, templateId });
-  const qrCodeProps = useQRCodePropsState({ elements, templateId });
+  const textProps = ElState. useTextPropsState({ elements, templateId });
+  const bases =  ElState.useBaseElementState({ elements, templateId });
+  const textDataSource = ElState.useTextDataSourceState({
+    elements,
+    templateId,
+  });
+  const dateDataSource = ElState.useDateDataSourceState({
+    elements,
+    templateId,
+  });
+  const numberDataSource = ElState.useNumberDataSourceState({
+    elements,
+    templateId,
+  });
+  const dateProps = ElState.useDatePropsState({ elements, templateId });
+  const countryProps = ElState.useCountryPropsState({ elements, templateId });
+  const imageProps = ElState.useImagePropsState({ elements, templateId });
+  const numberProps = ElState.useNumberPropsState({ elements, templateId });
+  const qrCodeProps = ElState.useQRCodePropsState({ elements, templateId });
 
   const { textVariables, selectVariables, dateVariables, numberVariables } =
     React.useMemo(() => {

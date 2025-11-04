@@ -25,28 +25,9 @@ import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { TextElementNodeData } from "./nodeRenderer/TextElementNode";
 import { useEditorStore } from "./useEditorStore";
 import { useNodeData } from "./NodeDataProvider";
+import { FlowEditorProps } from "./types";
 
 const panOnDrag = [1, 2];
-
-export type ElementNodeData = {
-  id: number;
-  type: GQL.ElementType;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
-};
-
-export type ContainerNodeData = {
-  width: number;
-  height: number;
-};
-
-type FlowEditorProps = {
-  template: GQL.Template;
-  elements: ElementNodeData[];
-  container: ContainerNodeData;
-};
 
 const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
   const [nodes, setNodes] = useNodesState<Node>([]);
@@ -71,6 +52,7 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
   const { theme } = useAppTheme();
   // const { x, y, zoom } = useViewport();
   const { setCurrentElementId } = useEditorStore();
+  const { updateElementPosition } = useNodeData();
 
   // Update container node when container data changes
   React.useEffect(() => {
@@ -182,6 +164,17 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
           }
         }
 
+        if (change.type === "position" && !change.dragging && change.position) {
+          const elementId = Number.parseInt(change.id, 10);
+          if (!Number.isNaN(elementId)) {
+            updateElementPosition(
+              elementId,
+              change.position.x,
+              change.position.y
+            );
+          }
+        }
+
         if (change.type === "select" && change.selected) {
           const idNum = Number.parseInt(change.id, 10);
           // Defer state update to avoid updating during render
@@ -191,7 +184,7 @@ const Flow: React.FC<FlowEditorProps> = ({ template, elements, container }) => {
 
       return applyNodeChanges(changes, nodes);
     },
-    [container.width, container.height, setCurrentElementId]
+    [container.width, container.height, setCurrentElementId, updateElementPosition]
   );
 
   const onNodesChange: OnNodesChange = useCallback(

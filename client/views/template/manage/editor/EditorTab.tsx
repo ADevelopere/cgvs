@@ -14,7 +14,6 @@ import {
 import { TemplateConfigCreateForm } from "./form/config/TemplateConfigCreateForm";
 import { MiscellaneousPanel } from "./miscellaneousPanel/MiscellaneousPanel";
 import { useAppTranslation } from "@/client/locale";
-import logger from "@/client/lib/logger";
 import { CertificateElementProvider } from "@/client/views/template/manage/editor/CertificateElementContext";
 import { templateVariablesByTemplateIdQueryDocument } from "../variables/hooks/templateVariable.documents";
 
@@ -92,12 +91,6 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
     variables: { templateId: template.id },
     fetchPolicy: "cache-first",
   });
-
-  React.useEffect(() => {
-    logger.info("EditorTab: Loaded elements", {
-      elements: elementsData?.elementsByTemplateId,
-    });
-  }, [elementsData?.elementsByTemplateId]);
 
   const elements: GQL.CertificateElementUnion[] = React.useMemo(() => {
     const elementsList = elementsData?.elementsByTemplateId || [];
