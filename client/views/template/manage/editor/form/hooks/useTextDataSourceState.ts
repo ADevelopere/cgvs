@@ -107,7 +107,11 @@ export function useTextDataSourceState(
 
   const validator = validateTextDataSource();
 
-  const { states, updateFn, pushUpdate, initState, errors } = useElementState({
+  const { states, updateFn, pushUpdate, initState, errors } = useElementState<
+    TextDataSourceFormState,
+    TextDataSourceFormErrors,
+    TextDataSourceFormErrors
+  >({
     templateId,
     elements,
     validator,
@@ -150,7 +154,10 @@ export const useTextDataSource = (params: UseTextDataSourceParams) => {
 
   const updateTextDataSource = React.useCallback(
     (dataSource: GQL.TextDataSourceInput) => {
-      updateTextDataSourceStateFn(params.elementId, {key: "dataSource", value: dataSource});
+      updateTextDataSourceStateFn(params.elementId, {
+        key: "dataSource",
+        value: dataSource,
+      });
     },
     [params.elementId, updateTextDataSourceStateFn]
   );

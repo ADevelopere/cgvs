@@ -1,6 +1,5 @@
 import React from "react";
 import { useMutation } from "@apollo/client/react";
-import { useNotifications } from "@toolpad/core/useNotifications";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { updateNumberElementDataSourceMutationDocument } from "../../glqDocuments/element/number.documents";
 import { validateNumberDataSource } from "../element/number/numberValidators";
@@ -14,6 +13,7 @@ import {
 } from "../element/number/types";
 import { useElementState } from "./useElementState";
 import { useCertificateElementContext } from "../../CertificateElementContext";
+import { useNotifications } from "@toolpad/core/useNotifications";
 
 export type UseNumberDataSourceStateParams = {
   templateId?: number;
@@ -107,7 +107,11 @@ export function useNumberDataSourceState(
 
   const validator = validateNumberDataSource();
 
-  const { states, updateFn, pushUpdate, initState, errors } = useElementState({
+  const { states, updateFn, pushUpdate, initState, errors } = useElementState<
+  NumberDataSourceFormState, 
+  NumberDataSourceFormErrors,
+  NumberDataSourceFormErrors
+  >({
     templateId,
     elements,
     validator,
