@@ -170,7 +170,11 @@ export function useTextPropsState(
   // Use generic hook
   const validator: ValidateTextPropsFieldFn = validateTextPropsField();
 
-  const { states, updateFn, pushUpdate, initState, errors } = useElementState({
+  const { states, updateFn, pushUpdate, initState, errors } = useElementState<
+    TextPropsFormState,
+    TextPropsFormErrors,
+    string | undefined
+  >({
     templateId,
     elements,
     validator,
