@@ -9,6 +9,12 @@ export type NodeDataContextType = {
   nodes: Node[];
   updateElementPosition: (elementId: number, x: number, y: number) => void;
   updateElementSize: (elementId: number, width: number, height: number) => void;
+  containerWidth: number;
+  containerHeight: number;
+  helperLineHorizontal: number | undefined;
+  helperLineVertical: number | undefined;
+  setHelperLineHorizontal: (value: number | undefined) => void;
+  setHelperLineVertical: (value: number | undefined) => void;
 };
 
 const NodeDataContext = React.createContext<NodeDataContextType | null>(null);
@@ -34,6 +40,14 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
     position: { x: 0, y: 0 },
   });
   const [elementNodes, setElementNodes] = React.useState<Node[]>([]);
+
+  // Helper line state
+  const [helperLineHorizontal, setHelperLineHorizontal] = React.useState<
+    number | undefined
+  >(undefined);
+  const [helperLineVertical, setHelperLineVertical] = React.useState<
+    number | undefined
+  >(undefined);
 
   // Update container node when container data changes
   React.useEffect(() => {
@@ -127,8 +141,22 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
       nodes,
       updateElementPosition,
       updateElementSize,
+      containerWidth: container.width,
+      containerHeight: container.height,
+      helperLineHorizontal,
+      helperLineVertical,
+      setHelperLineHorizontal,
+      setHelperLineVertical,
     }),
-    [nodes, updateElementPosition, updateElementSize]
+    [
+      nodes,
+      updateElementPosition,
+      updateElementSize,
+      container.width,
+      container.height,
+      helperLineHorizontal,
+      helperLineVertical,
+    ]
   );
 
   return (
