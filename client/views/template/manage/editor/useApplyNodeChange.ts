@@ -31,6 +31,13 @@ export const useApplyNodeChange = () => {
   } = useNodeData();
   const { setCurrentElementId } = useEditorStore();
 
+  // Use refs to batch state updates and avoid re-renders during drag
+  const helperLinesRef = useRef<{
+    horizontal: number | undefined;
+    vertical: number | undefined;
+  }>({ horizontal: undefined, vertical: undefined });
+  const updateHelperLinesTimeoutRef = useRef<number | null>(null);
+
   /**
    * Apply helper lines for snapping during drag
    * Complexity: ~8
@@ -127,9 +134,10 @@ export const useApplyNodeChange = () => {
           if (!Number.isNaN(elementId)) {
             const x = constrainedChange.position.x;
             const y = constrainedChange.position.y;
-            setTimeout(() => {
+            // Use queueMicrotask for better performance than setTimeout
+            queueMicrotask(() => {
               updateElementPosition(elementId, x, y);
-            }, 0);
+            });
           }
         }
 
@@ -157,9 +165,10 @@ export const useApplyNodeChange = () => {
           if (!Number.isNaN(elementId)) {
             const width = change.dimensions.width;
             const height = change.dimensions.height;
-            setTimeout(() => {
+            // Use queueMicrotask for better performance than setTimeout
+            queueMicrotask(() => {
               updateElementSize(elementId, width, height);
-            }, 0);
+            });
           }
         }
       } catch {
@@ -182,7 +191,8 @@ export const useApplyNodeChange = () => {
         if (change.type === "select" && change.selected) {
           const idNum = Number.parseInt(change.id, 10);
           if (!Number.isNaN(idNum)) {
-            setTimeout(() => setCurrentElementId(idNum), 0);
+            // Use queueMicrotask for better performance than setTimeout
+            queueMicrotask(() => setCurrentElementId(idNum));
           }
         }
       } catch {
@@ -230,12 +240,6 @@ export const useApplyNodeChange = () => {
   const applyNodeChanges = useCallback(
     (changes: NodeChange[], nodes: Node[]): Node[] => {
       try {
-        // Defer helper line state updates to avoid setState during render
-        setTimeout(() => {
-          setHelperLineHorizontal(undefined);
-          setHelperLineVertical(undefined);
-        }, 0);
-
         // Handle single position change for helper lines
         if (changes.length === 1 && changes[0].type === "position") {
           const firstChange = changes[0];
@@ -250,11 +254,33 @@ export const useApplyNodeChange = () => {
               firstChange.position.y = helperLines.snapPosition.y;
             }
 
-            // Defer helper line state updates to avoid setState during render
-            setTimeout(() => {
+            // Update ref immediately for synchronous access
+            helperLinesRef.current = {
+              horizontal: helperLines.horizontal,
+              vertical: helperLines.vertical,
+            };
+
+            // Batch state updates using requestAnimationFrame for better performance
+            if (updateHelperLinesTimeoutRef.current) {
+              cancelAnimationFrame(updateHelperLinesTimeoutRef.current);
+            }
+            updateHelperLinesTimeoutRef.current = requestAnimationFrame(() => {
               setHelperLineHorizontal(helperLines.horizontal);
               setHelperLineVertical(helperLines.vertical);
-            }, 0);
+            });
+          } else {
+            // Clear helper lines when not dragging
+            helperLinesRef.current = {
+              horizontal: undefined,
+              vertical: undefined,
+            };
+            if (updateHelperLinesTimeoutRef.current) {
+              cancelAnimationFrame(updateHelperLinesTimeoutRef.current);
+            }
+            updateHelperLinesTimeoutRef.current = requestAnimationFrame(() => {
+              setHelperLineHorizontal(undefined);
+              setHelperLineVertical(undefined);
+            });
           }
         }
 

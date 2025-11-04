@@ -1,5 +1,4 @@
 import type {
-  DateDataSourceFieldErrors,
   DateDataSourceFormErrors,
   ValidateDateDataSourceFn,
   ValidateDatePropsFn,
