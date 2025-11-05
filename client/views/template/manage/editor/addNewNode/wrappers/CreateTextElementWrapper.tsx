@@ -9,14 +9,12 @@ import { fontsQueryDocument } from "@/client/views/font/hooks/font.documents";
 import { validateBaseElementField } from "../../form/element/base/cretElementBaseValidator";
 import { validateTextPropsField } from "../../form/element/textProps/textPropsValidator";
 import { validateTextDataSource } from "../../form/element/text/textValidators";
-import type {
-  TextElementFormState,
-  TextElementFormErrors,
-} from "../../form/element/text/types";
+import type { TextElementFormState, TextElementFormErrors } from "../../form/element/text/types";
 import type { UpdateBaseElementFn } from "../../form/element/base";
 import type { UpdateTextPropsFn } from "../../form/element/textProps";
 import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale/useAppTranslation";
+import { useNodesStore } from "../../useNodesStore";
 
 // ============================================================================
 // PROPS INTERFACE
@@ -29,7 +27,7 @@ interface CreateTextElementWrapperProps {
   initialCertificateField?: GQL.CertificateTextField;
   initialTemplateTextVariable?: { variableId: number };
   initialTemplateSelectVariable?: { variableId: number };
-  // 
+  //
   initialElementName: string;
 
   // Dialog mode (for compact layout)
@@ -41,9 +39,7 @@ interface CreateTextElementWrapperProps {
 // COMPONENT
 // ============================================================================
 
-export const CreateTextElementWrapper: React.FC<
-  CreateTextElementWrapperProps
-> = ({
+export const CreateTextElementWrapper: React.FC<CreateTextElementWrapperProps> = ({
   templateId,
   initialStudentField,
   initialCertificateField,
@@ -53,11 +49,12 @@ export const CreateTextElementWrapper: React.FC<
   open,
   onClose,
 }) => {
-    const { templateEditorTranslations: {addNodePanel: t} } = useAppTranslation();
-  
+  const {
+    templateEditorTranslations: { addNodePanel: t },
+  } = useAppTranslation();
+
   // Get context data
-  const { textVariables, selectVariables, config } =
-    useCertificateElementStates();
+  const { textVariables, selectVariables, config } = useCertificateElementStates();
   const language = config.state.language;
 
   // Query fonts
@@ -96,12 +93,7 @@ export const CreateTextElementWrapper: React.FC<
     }
     // Default to static value
     return { static: { value: "Sample Text" } };
-  }, [
-    initialStudentField,
-    initialCertificateField,
-    initialTemplateTextVariable,
-    initialTemplateSelectVariable,
-  ]);
+  }, [initialStudentField, initialCertificateField, initialTemplateTextVariable, initialTemplateSelectVariable]);
 
   const getInitialState = useCallback((): TextElementFormState => {
     if (!templateId) {
@@ -141,6 +133,7 @@ export const CreateTextElementWrapper: React.FC<
     textProps: {},
     dataSource: undefined,
   });
+  const [mutationError, setMutationError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const baseValidator = validateBaseElementField();
@@ -190,22 +183,19 @@ export const CreateTextElementWrapper: React.FC<
     }));
   }, []);
 
-  const updateDataSource = useCallback(
-    (dataSource: GQL.TextDataSourceInput) => {
-      setState(prev => ({
-        ...prev,
-        dataSource,
-      }));
+  const updateDataSource = useCallback((dataSource: GQL.TextDataSourceInput) => {
+    setState(prev => ({
+      ...prev,
+      dataSource,
+    }));
 
-      const error = dataSourceValidator({ key: "dataSource", value: dataSource });
-      
-      setErrors(prev => ({
-        ...prev,
-        dataSource: error,
-      }));
-    },
-    []
-  );
+    const error = dataSourceValidator({ key: "dataSource", value: dataSource });
+
+    setErrors(prev => ({
+      ...prev,
+      dataSource: error,
+    }));
+  }, []);
 
   const hasError = useMemo(() => {
     return (
@@ -214,6 +204,8 @@ export const CreateTextElementWrapper: React.FC<
       errors.dataSource !== undefined
     );
   }, [errors]);
+
+  const { addTextNode } = useNodesStore();
 
   // SUBMISSION
   // ============================================================================
@@ -227,11 +219,24 @@ export const CreateTextElementWrapper: React.FC<
     setIsSubmitting(true);
 
     try {
-      await createTextElementMutation({
+      const result = await createTextElementMutation({
         variables: {
           input: state,
         },
       });
+
+      if (result.error) {
+        setMutationError(result.error.message);
+        return;
+      }
+
+      const element: GQL.TextElement | null | undefined = result.data?.createTextElement;
+      if (!element) {
+        setMutationError(t.failedToCreateElement);
+        return;
+      }
+
+      addTextNode(element);
 
       logger.info("Text element created successfully");
 
@@ -289,6 +294,7 @@ export const CreateTextElementWrapper: React.FC<
       onCancel={handleCancel}
       isSubmitting={isSubmitting}
       submitLabel={t.create}
+      generalFormError={mutationError}
     />
   );
 

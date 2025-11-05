@@ -35,6 +35,8 @@ export type AddNodePanelTranslations = {
   createImageElement: string;
   createQrCodeElement: string;
 
+  failedToCreateElement: string;
+
   items: {
     [key: string]: string;
     student: string;

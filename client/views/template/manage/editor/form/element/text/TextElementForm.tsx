@@ -1,9 +1,6 @@
 import React, { type FC } from "react";
-import { Box, Grid, Paper } from "@mui/material";
-import type {
-  TextElementFormErrors,
-  TextElementFormState,
-} from "./types";
+import { Box, Grid, Paper, Typography } from "@mui/material";
+import type { TextElementFormErrors, TextElementFormState } from "./types";
 import { DataSourceForm } from "./TextDataSourceForm";
 import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
@@ -31,6 +28,7 @@ interface TextElementFormProps {
   onCancel: () => void;
   isSubmitting: boolean;
   submitLabel: string;
+  generalFormError?: string | null;
 }
 
 export const TextElementForm: FC<TextElementFormProps> = ({
@@ -47,6 +45,7 @@ export const TextElementForm: FC<TextElementFormProps> = ({
   onCancel,
   isSubmitting,
   submitLabel,
+  generalFormError,
 }) => {
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
@@ -93,13 +92,15 @@ export const TextElementForm: FC<TextElementFormProps> = ({
         </Grid>
       </Box>
 
+      {/* generalFormError */}
+      {generalFormError && (
+        <Typography color="error" sx={{ mt: 1 }}>
+          {generalFormError}
+        </Typography>
+      )}
+
       {/* Row 3: Action Buttons (Fixed) */}
-      <ActionButtons
-        onSubmit={onSubmit}
-        onCancel={onCancel}
-        isSubmitting={isSubmitting}
-        submitLabel={submitLabel}
-      />
+      <ActionButtons onSubmit={onSubmit} onCancel={onCancel} isSubmitting={isSubmitting} submitLabel={submitLabel} />
     </Box>
   );
 };

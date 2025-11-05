@@ -33,6 +33,8 @@ export interface UseNodesStoreReturn {
   // Add a new node
   addNode: (node: Node) => void;
 
+  addTextNode: (textElement: GQL.TextElement) => void;
+
   // Delete a node by id
   deleteNode: (nodeId: string) => void;
 
@@ -392,6 +394,13 @@ export function useNodesStore(): UseNodesStoreReturn {
     []
   );
 
+  const addTextNode = React.useCallback((textElement: GQL.TextElement) => {
+    const textNode = createTextNode(textElement);
+    if (textNode) {
+      setNodesState((prev) => [...prev, textNode]);
+    } 
+  }, []);
+
   return {
     nodes,
     loading,
@@ -400,6 +409,7 @@ export function useNodesStore(): UseNodesStoreReturn {
     setNodes,
     clearNodes,
     addNode,
+    addTextNode,
     deleteNode,
     updateBaseNodeData,
     updateTextNodeData,
