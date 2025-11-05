@@ -14,6 +14,7 @@ import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { CreateTextElementWrapper } from "./wrappers/CreateTextElementWrapper";
 import { CreateDateElementWrapper } from "./wrappers/CreateDateElementWrapper";
 import { CreateGenderElementWrapper } from "./wrappers/CreateGenderElementWrapper";
+import { CreateCountryElementWrapper } from "./wrappers/CreateCountryElementWrapper";
 
 export type StudentOptionsPanelProps = {
   compact: boolean;
@@ -36,7 +37,12 @@ type StudentGenderFieldinput = {
   type: GQL.ElementType.Gender;
 };
 
-type Input = StudentTextFieldinput | StudentDateFieldinput | StudentGenderFieldinput;
+type StudentCountryFieldinput = {
+  type: GQL.ElementType.Country;
+  representation?: GQL.CountryRepresentation;
+};
+
+type Input = StudentTextFieldinput | StudentDateFieldinput | StudentGenderFieldinput | StudentCountryFieldinput;
 
 type DialogType = GQL.ElementType;
 
@@ -108,8 +114,22 @@ export const StudentOptionsPanel: React.FC<StudentOptionsPanelProps> = ({ compac
           type: GQL.ElementType.Gender,
         },
       },
-      { label: t.studentOptions.nationality, icon: <FlagIcon /> },
-      { label: t.studentOptions.country, icon: <PublicIcon /> },
+      {
+        label: t.studentOptions.nationality,
+        icon: <FlagIcon />,
+        input: {
+          type: GQL.ElementType.Country,
+          representation: GQL.CountryRepresentation.Nationality,
+        },
+      },
+      {
+        label: t.studentOptions.country,
+        icon: <PublicIcon />,
+        input: {
+          type: GQL.ElementType.Country,
+          representation: GQL.CountryRepresentation.CountryName,
+        },
+      },
     ],
     [t]
   );
@@ -158,6 +178,17 @@ export const StudentOptionsPanel: React.FC<StudentOptionsPanelProps> = ({ compac
           templateId={templateId}
           initialElementName={selectedOption.label}
           open={dialogType === GQL.ElementType.Gender}
+          onClose={handleCloseDialog}
+        />
+      )}
+
+      {/* Country element creation dialog for country-backed student fields */}
+      {dialogType === GQL.ElementType.Country && selectedOption?.input?.type === GQL.ElementType.Country && (
+        <CreateCountryElementWrapper
+          templateId={templateId}
+          initialRepresentation={selectedOption.input.representation}
+          initialElementName={selectedOption.label}
+          open={dialogType === GQL.ElementType.Country}
           onClose={handleCloseDialog}
         />
       )}
