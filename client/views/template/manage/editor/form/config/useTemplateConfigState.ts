@@ -11,7 +11,7 @@ import {
   TemplateConfigUpdateAction,
 } from "./types";
 import { useTemplateConfigFormValidateFn } from "./templateConfigValidator";
-import { useNodesStore } from "../../useNodesStore";
+import { useNodesStore } from "../../NodesStoreProvider";
 
 const updateDebounceDelayMs = 10000; // 10 seconds
 

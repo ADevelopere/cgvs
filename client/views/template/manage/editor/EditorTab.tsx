@@ -160,8 +160,8 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
 
   return (
     <>
-      <CertificateElementProvider templateId={template.id}>
-        <NodesStoreProvider templateId={template.id}>
+      <NodesStoreProvider templateId={template.id}>
+        <CertificateElementProvider templateId={template.id}>
           <ReactFlowProvider>
             <EditorPaneViewController
               firstPane={{
@@ -215,9 +215,11 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
               storageKey="templateManagementEditor"
             />
           </ReactFlowProvider>
-          <FloatingLoadingIndicator loading={configLoading || elementsLoading} />
-        </NodesStoreProvider>
-      </CertificateElementProvider>
+          <FloatingLoadingIndicator
+            loading={configLoading || elementsLoading}
+          />
+        </CertificateElementProvider>
+      </NodesStoreProvider>
     </>
   );
 };

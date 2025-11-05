@@ -15,7 +15,7 @@ import {
   UpdateBaseElementFn,
 } from "../element/base";
 import { useCertificateElementStates } from "../../CertificateElementContext";
-import { useNodesStore } from "../../useNodesStore";
+import { useNodesStore } from "../../NodesStoreProvider";
 
 export type UseBaseElementStateParams = {
   templateId?: number;

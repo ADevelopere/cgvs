@@ -11,6 +11,7 @@ import {
   templateConfigByTemplateIdQueryDocument,
 } from "./glqDocuments";
 import React from "react";
+import { isAbortError } from "@/client/utils/errorUtils";
 
 /**
  * Return type for the useNodesStore hook
@@ -124,7 +125,7 @@ function initializeNodesFromData(
   const containerNode = createContainerNode(containerConfig);
 
   const elementNodes: Node[] = elements
-    .map((element) => {
+    .map(element => {
       if (element.base.type === GQL.ElementType.Text) {
         return createTextNode(element);
       }
@@ -229,11 +230,13 @@ export const NodesStoreProvider: React.FC<{
           nodeCount: initializedNodes.length,
         });
       } catch (err) {
-        logger.error("NodesStoreProvider: Error initializing nodes", {
-          error: err,
-        });
-        setError(err instanceof Error ? err : new Error(String(err)));
-        setLoading(false);
+        if (!isAbortError(err)) {
+          logger.error("NodesStoreProvider: Error initializing nodes", {
+            error: err,
+          });
+          setError(err instanceof Error ? err : new Error(String(err)));
+          setLoading(false);
+        }
       }
     };
 
@@ -262,21 +265,21 @@ export const NodesStoreProvider: React.FC<{
 
   // Action: Add a node
   const addNode = React.useCallback((node: Node) => {
-    setNodesState((prev) => [...prev, node]);
+    setNodesState(prev => [...prev, node]);
   }, []);
 
   // Action: Delete a node
   const deleteNode = React.useCallback((nodeId: string) => {
-    setNodesState((prev) => prev.filter((n) => n.id !== nodeId));
+    setNodesState(prev => prev.filter(n => n.id !== nodeId));
   }, []);
 
   // Action: Update base node data
   const updateBaseNodeData = React.useCallback(
     (elementId: number, updates: Partial<ElementBaseNodeData>) => {
-      setNodesState((prev) => {
+      setNodesState(prev => {
         const nodeId = elementId.toString();
 
-        return prev.map((node) => {
+        return prev.map(node => {
           if (node.id !== nodeId) {
             return node;
           }
@@ -314,10 +317,10 @@ export const NodesStoreProvider: React.FC<{
   // Action: Update text node data
   const updateTextNodeData = React.useCallback(
     (elementId: number, updates: Partial<TextElementNodeData>) => {
-      setNodesState((prev) => {
+      setNodesState(prev => {
         const nodeId = elementId.toString();
 
-        return prev.map((node) => {
+        return prev.map(node => {
           if (node.id !== nodeId || node.type !== "text") {
             return node;
           }
@@ -338,8 +341,8 @@ export const NodesStoreProvider: React.FC<{
   // Action: Update container node
   const updateContainerNode = React.useCallback(
     (updates: Partial<ContainerNodeData>) => {
-      setNodesState((prev) => {
-        return prev.map((node) => {
+      setNodesState(prev => {
+        return prev.map(node => {
           if (node.id !== "container") {
             return node;
           }
@@ -360,8 +363,8 @@ export const NodesStoreProvider: React.FC<{
   // Action: Update a single node
   const updateNode = React.useCallback(
     (nodeId: string, updates: Partial<Node>) => {
-      setNodesState((prev) => {
-        return prev.map((node) => {
+      setNodesState(prev => {
+        return prev.map(node => {
           if (node.id !== nodeId) {
             return node;
           }
@@ -379,10 +382,10 @@ export const NodesStoreProvider: React.FC<{
   // Action: Batch update nodes
   const batchUpdateNodes = React.useCallback(
     (updates: Array<{ nodeId: string; updates: Partial<Node> }>) => {
-      setNodesState((prev) => {
-        const updateMap = new Map(updates.map((u) => [u.nodeId, u.updates]));
+      setNodesState(prev => {
+        const updateMap = new Map(updates.map(u => [u.nodeId, u.updates]));
 
-        return prev.map((node) => {
+        return prev.map(node => {
           const nodeUpdates = updateMap.get(node.id);
           if (!nodeUpdates) {
             return node;

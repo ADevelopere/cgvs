@@ -3,6 +3,8 @@ import tseslint from 'typescript-eslint';
 
 export default [
   eslint.configs.recommended,
+  // Use recommended rules WITHOUT type-aware linting for fast performance
+  // Run `~/.bun/bin/bun tsc` separately for type checking
   ...tseslint.configs.recommended,
   {
     rules: {
