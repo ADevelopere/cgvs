@@ -17,11 +17,9 @@ const enTemplateEditorPane: TemplateEditorPaneTranslations = {
   addNodePane: "Add Node",
 };
 
-export const enTemplateEditor: TemplateEditorTranslations = {
-  templateEditorPane: enTemplateEditorPane,
-  miscellaneousPanel: enMiscellaneousPanel,
-  addNodePanel: {
-    items: {
+const enAddNodePanel: AddNodePanelTranslations = {
+  create: "Create",
+   items: {
       student: "Student",
       certificate: "Certificate",
       variable: "Variable",
@@ -48,5 +46,10 @@ export const enTemplateEditor: TemplateEditorTranslations = {
       date: "Date variable",
       number: "Number variable",
     },
-  } as AddNodePanelTranslations,
+};
+
+export const enTemplateEditor: TemplateEditorTranslations = {
+  templateEditorPane: enTemplateEditorPane,
+  miscellaneousPanel: enMiscellaneousPanel,
+  addNodePanel: enAddNodePanel,
 };

@@ -16,6 +16,7 @@ import type {
 import type { UpdateBaseElementFn } from "../../form/element/base";
 import type { UpdateTextPropsFn } from "../../form/element/textProps";
 import { logger } from "@/client/lib/logger";
+import { useAppTranslation } from "@/client/locale/useAppTranslation";
 
 // ============================================================================
 // PROPS INTERFACE
@@ -28,6 +29,8 @@ interface CreateTextElementWrapperProps {
   initialCertificateField?: GQL.CertificateTextField;
   initialTemplateTextVariable?: { variableId: number };
   initialTemplateSelectVariable?: { variableId: number };
+  // 
+  initialElementName: string;
 
   // Dialog mode (for compact layout)
   open?: boolean;
@@ -46,9 +49,12 @@ export const CreateTextElementWrapper: React.FC<
   initialCertificateField,
   initialTemplateTextVariable,
   initialTemplateSelectVariable,
+  initialElementName,
   open,
   onClose,
 }) => {
+    const { templateEditorTranslations: {addNodePanel: t} } = useAppTranslation();
+  
   // Get context data
   const { textVariables, selectVariables, config } =
     useCertificateElementStates();
@@ -104,7 +110,7 @@ export const CreateTextElementWrapper: React.FC<
 
     return {
       base: {
-        name: "New Text Element",
+        name: initialElementName,
         description: "",
         positionX: 100,
         positionY: 100,
@@ -282,7 +288,7 @@ export const CreateTextElementWrapper: React.FC<
       onSubmit={handleSubmit}
       onCancel={handleCancel}
       isSubmitting={isSubmitting}
-      submitLabel="Create Element"
+      submitLabel={t.create}
     />
   );
 
@@ -296,6 +302,5 @@ export const CreateTextElementWrapper: React.FC<
     );
   }
 
-  // Otherwise render form directly
-  return formContent;
+  return null;
 };

@@ -26,6 +26,8 @@ export type TemplateEditorTranslations = {
 export type AddNodePanelTranslations = {
   [key: string]: string | object;
 
+  create: string;
+
   items: {
     [key: string]: string;
     student: string;

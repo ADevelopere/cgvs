@@ -11,11 +11,12 @@ import { VariableOptionsPanel } from "./VariableOptionsPanel";
 
 type AddNodePanelProps = {
   compact: boolean;
+  templateId: number;
 };
 
 type FirstColumnItemKey = "student" | "certificate" | "variable" | "image";
 
-export const AddNodePanel: React.FC<AddNodePanelProps> = ({ compact }) => {
+export const AddNodePanel: React.FC<AddNodePanelProps> = ({ compact, templateId }) => {
   const { templateEditorTranslations: t } = useAppTranslation();
   const [dialogFor, setDialogFor] = useState<FirstColumnItemKey | null>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -44,7 +45,7 @@ export const AddNodePanel: React.FC<AddNodePanelProps> = ({ compact }) => {
   const renderOptions = (key: FirstColumnItemKey | null) => {
     switch (key) {
       case "student":
-        return <StudentOptionsPanel compact={compact} style={{ maxWidth: 300 }} />;
+        return <StudentOptionsPanel compact={compact} style={{ maxWidth: 300 }} templateId={templateId} />;
       case "certificate":
         return <CertificateOptionsPanel compact={compact} style={{ maxWidth: 300 }} />;
       case "variable":

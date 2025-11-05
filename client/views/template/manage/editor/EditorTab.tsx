@@ -8,10 +8,7 @@ import EditorPaneViewController from "@/client/components/editorPane/EditorPaneV
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { ApolloClient } from "@apollo/client";
-import {
-  elementsByTemplateIdQueryDocument,
-  templateConfigByTemplateIdQueryDocument,
-} from "./glqDocuments";
+import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "./glqDocuments";
 import { TemplateConfigCreateForm } from "./form/config/TemplateConfigCreateForm";
 import { MiscellaneousPanel } from "./miscellaneousPanel/MiscellaneousPanel";
 import { useAppTranslation } from "@/client/locale";
@@ -24,9 +21,7 @@ export type EditorTabProps = {
   template: Template;
 };
 
-const FloatingLoadingIndicator: React.FC<{ loading: boolean }> = ({
-  loading,
-}) => {
+const FloatingLoadingIndicator: React.FC<{ loading: boolean }> = ({ loading }) => {
   return (
     <Box
       sx={{
@@ -34,11 +29,11 @@ const FloatingLoadingIndicator: React.FC<{ loading: boolean }> = ({
         bottom: 16,
         right: 16,
         zIndex: 1000,
-        backgroundColor:loading?  "background.paper" : "transparent",
-        padding: loading? "8px 12px" : 0,
-        borderRadius: loading? "4px" : 0,
-        boxShadow: loading? 3 : 0,
-        display: loading? "flex" : "none",
+        backgroundColor: loading ? "background.paper" : "transparent",
+        padding: loading ? "8px 12px" : 0,
+        borderRadius: loading ? "4px" : 0,
+        boxShadow: loading ? 3 : 0,
+        display: loading ? "flex" : "none",
         alignItems: "center",
         justifyContent: "center",
       }}
@@ -87,12 +82,11 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
     fetchPolicy: "cache-and-network",
   });
 
-  const templateConfig: GQL.TemplateConfig | null | undefined =
-    React.useMemo(() => {
-      const config = configData?.templateConfigByTemplateId;
-      setConfigLoading(configApolloLoading);
-      return config;
-    }, [configApolloLoading, configData?.templateConfigByTemplateId]);
+  const templateConfig: GQL.TemplateConfig | null | undefined = React.useMemo(() => {
+    const config = configData?.templateConfigByTemplateId;
+    setConfigLoading(configApolloLoading);
+    return config;
+  }, [configApolloLoading, configData?.templateConfigByTemplateId]);
 
   // =========== Elements =============
 
@@ -162,7 +156,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
                   {strings.addNodePane}
                 </Typography>
               ),
-              content: ({collapsed}) => (<AddNodePanel compact={collapsed} />),
+              content: ({ collapsed }) => <AddNodePanel compact={collapsed} templateId={template.id} />,
               buttonTooltip: "Toggle Add Node Panel",
               buttonDisabled: false,
               showCollapseButtonInHeader: true,
@@ -180,12 +174,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
                   >
                     {strings.miscellaneousPane}
                   </Typography>
-                  <IconButton
-                    onClick={refreshData}
-                    size="small"
-                    sx={{ ml: 1 }}
-                    title="Refresh Data"
-                  >
+                  <IconButton onClick={refreshData} size="small" sx={{ ml: 1 }} title="Refresh Data">
                     <RefreshIcon />
                   </IconButton>
                 </Box>
@@ -198,9 +187,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
             }}
             storageKey="templateManagementEditor"
           />
-          <FloatingLoadingIndicator
-            loading={configLoading || elementsLoading}
-          />
+          <FloatingLoadingIndicator loading={configLoading || elementsLoading} />
         </CertificateElementProvider>
       </NodesStoreProvider>
     </>
