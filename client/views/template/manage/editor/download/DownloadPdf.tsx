@@ -1,5 +1,6 @@
 import { Panel } from "@xyflow/react";
 import { PDFDocument, PDFFont, StandardFonts, rgb } from "pdf-lib";
+import fontkit from "@pdf-lib/fontkit";
 import { useTheme } from "@mui/material/styles";
 import React from "react";
 import logger from "@/client/lib/logger";
@@ -214,6 +215,9 @@ export const DownloadPdf: React.FC = () => {
 
     try {
       const pdfDoc = await PDFDocument.create();
+      
+      // Register fontkit for custom font embedding
+      pdfDoc.registerFontkit(fontkit);
 
       // Collect font families
       const fontFamilies = collectFontFamilies(elements);
