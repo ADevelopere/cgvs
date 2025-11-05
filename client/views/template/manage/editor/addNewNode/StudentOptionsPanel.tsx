@@ -12,6 +12,7 @@ import {
 } from "@mui/icons-material";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { CreateTextElementWrapper } from "./wrappers/CreateTextElementWrapper";
+import { CreateDateElementWrapper } from "./wrappers/CreateDateElementWrapper";
 
 export type StudentOptionsPanelProps = {
   compact: boolean;
@@ -19,27 +20,49 @@ export type StudentOptionsPanelProps = {
   templateId: number;
 };
 
+type StudentTextFieldinput = {
+  type: GQL.ElementType.Text;
+  textField: GQL.StudentTextField;
+};
+
+type StudentDateFieldinput = {
+  type: GQL.ElementType.Date;
+  dateField: GQL.StudentDateField;
+  transformation?: GQL.DateTransformationType;
+};
+
+type Input = StudentTextFieldinput | StudentDateFieldinput;
+
 export type StudentOptionItem = {
   label: string;
   icon: React.ReactNode;
   // optional: if provided, clicking this option will open the text element
   // creation flow with this student field pre-selected
-  studentField?: GQL.StudentTextField;
+  input?: Input;
 };
 
 export const StudentOptionsPanel: React.FC<StudentOptionsPanelProps> = ({ compact, style, templateId }) => {
-  const { templateEditorTranslations: {addNodePanel: t} } = useAppTranslation();
+  const {
+    templateEditorTranslations: { addNodePanel: t },
+  } = useAppTranslation();
 
   const [openTextDialog, setOpenTextDialog] = useState(false);
   const [selectedOption, setSelectedOption] = useState<StudentOptionItem | undefined>(undefined);
 
+  const [openDateDialog, setOpenDateDialog] = useState(false);
+
   const handleOpenForField = useCallback((option: StudentOptionItem) => {
     setSelectedOption(option);
-    setOpenTextDialog(true);
+    if (option.input?.type === GQL.ElementType.Text) {
+      setOpenTextDialog(true);
+    } else if (option.input?.type === GQL.ElementType.Date) {
+      setOpenDateDialog(true);
+    }
   }, []);
 
   const handleCloseDialog = useCallback(() => {
     setOpenTextDialog(false);
+    setOpenDateDialog(false);
     setSelectedOption(undefined);
   }, []);
 
@@ -48,15 +71,36 @@ export const StudentOptionsPanel: React.FC<StudentOptionsPanelProps> = ({ compac
       {
         label: t.studentOptions.name,
         icon: <PersonIcon />,
-        studentField: GQL.StudentTextField.StudentName,
+        input: {
+          type: GQL.ElementType.Text,
+          textField: GQL.StudentTextField.StudentName,
+        },
       },
       {
         label: t.studentOptions.email,
         icon: <EmailIcon />,
-        studentField: GQL.StudentTextField.StudentEmail,
+        input: {
+          type: GQL.ElementType.Text,
+          textField: GQL.StudentTextField.StudentEmail,
+        },
       },
-      { label: t.studentOptions.dateOfBirth, icon: <CakeIcon /> },
-      { label: t.studentOptions.age, icon: <CalendarTodayIcon /> },
+      {
+        label: t.studentOptions.dateOfBirth,
+        icon: <CakeIcon />,
+        input: {
+          type: GQL.ElementType.Date,
+          dateField: GQL.StudentDateField.DateOfBirth,
+        },
+      },
+      {
+        label: t.studentOptions.age,
+        icon: <CalendarTodayIcon />,
+        input: {
+          type: GQL.ElementType.Date,
+          dateField: GQL.StudentDateField.DateOfBirth,
+          transformation: GQL.DateTransformationType.AgeCalculation,
+        },
+      },
       { label: t.studentOptions.gender, icon: <WcIcon /> },
       { label: t.studentOptions.nationality, icon: <FlagIcon /> },
       { label: t.studentOptions.country, icon: <PublicIcon /> },
@@ -74,20 +118,31 @@ export const StudentOptionsPanel: React.FC<StudentOptionsPanelProps> = ({ compac
             variant="outlined"
             startIcon={opt.icon}
             onClick={() => handleOpenForField(opt)}
-            // only name/email (text fields) are supported for now
-            disabled={!opt.studentField}
+            disabled={!opt.input}
           >
             {opt.label}
           </Button>
         ))}
       </Stack>
       {/* Text element creation dialog for text-backed student fields (name/email) */}
-      {openTextDialog && selectedOption && (
+      {openTextDialog && selectedOption?.input?.type === GQL.ElementType.Text && (
         <CreateTextElementWrapper
           templateId={templateId}
-          initialStudentField={selectedOption.studentField}
+          initialStudentField={selectedOption.input.textField}
           initialElementName={selectedOption.label}
           open={openTextDialog}
+          onClose={handleCloseDialog}
+        />
+      )}
+
+      {/* Date element creation dialog for date-backed student fields (DOB/age) */}
+      {openDateDialog && selectedOption?.input?.type === GQL.ElementType.Date && (
+        <CreateDateElementWrapper
+          templateId={templateId}
+          initialStudentField={selectedOption.input.dateField}
+          initialTransformation={selectedOption.input.transformation}
+          initialElementName={selectedOption.label}
+          open={openDateDialog}
           onClose={handleCloseDialog}
         />
       )}
