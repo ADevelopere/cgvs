@@ -162,7 +162,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
                   {strings.addNodePane}
                 </Typography>
               ),
-              content: <AddNodePanel compact={false} />,
+              content: <AddNodePanel compact={true} />,
               buttonTooltip: "Toggle Add Node Panel",
               buttonDisabled: false,
               showCollapseButtonInHeader: true,
