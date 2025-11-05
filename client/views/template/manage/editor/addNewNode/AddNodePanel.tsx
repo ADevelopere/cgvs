@@ -53,47 +53,55 @@ export const AddNodePanel: React.FC<AddNodePanelProps> = ({ compact }) => {
         return null;
     }
   };
+  const itemWidth = compact ? 40 : 60;
 
   return (
     <Stack direction="column" sx={{ width: "100%" }}>
       {items.map(item => {
         const IconCmp = item.Icon;
         const showInlineOptions = !compact && item.key !== "image";
-        const itemWidth = compact ? 40 : 60;
         return (
-          <Box key={item.key} sx={{ width: "100%" }} id={item.key}>
+          <Box key={item.key} sx={{ width: "100%" }}>
             <Box
               sx={{
                 display: "flex",
                 flexDirection: "row",
-                alignItems: "stretch",
                 width: "100%",
+                justifyContent: "center",
+                overflow: "hidden",
               }}
             >
               <ButtonBase
-                onClick={event => handleItemClick(event.currentTarget, item.key)}
+                onClick={event => handleItemClick(event, item.key)}
                 sx={{
-                  width: itemWidth, 
+                  width: itemWidth,
                   flexShrink: 0,
                   py: 0,
-                  px: 1,
-                  borderInlineEnd: "1px solid",
+                  borderInlineEnd: !compact ? "1px solid" : "none",
                   borderColor: "divider",
+                  minHeight: 64,
+                  minWidth: itemWidth,
                 }}
               >
-                <Stack direction="column" alignItems="center" spacing={0.5} sx={{ width: "100%" }}>
+                <Stack
+                  direction="column"
+                  alignItems="center"
+                  spacing={0.5}
+                  sx={{ width: "100%" }}
+                  justifyContent={"center"}
+                >
                   <IconCmp sx={{ fontSize: 32 }} />
-                  {!compact && (
-                    <Typography variant="caption" component="span">
-                      {item.label}
-                    </Typography>
-                  )}
+                  <Typography variant="caption" component="span">
+                    {item.label}
+                  </Typography>
                 </Stack>
               </ButtonBase>
 
-              <Box sx={{ flexGrow: 1, minHeight: 40, px: 2, maxWidth: 300 }}>
-                {showInlineOptions ? renderOptions(item.key) : null}
-              </Box>
+              {compact ? null : (
+                <Box sx={{ flexGrow: 1, p: 1, maxHeight: 300, overflowY: "auto" }}>
+                  {showInlineOptions ? renderOptions(item.key) : null}
+                </Box>
+              )}
             </Box>
 
             <Divider />
@@ -105,10 +113,21 @@ export const AddNodePanel: React.FC<AddNodePanelProps> = ({ compact }) => {
         open={dialogFor !== null}
         onClose={() => setDialogFor(null)}
         anchorEl={anchorEl}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        transformOrigin={{ vertical: "top", horizontal: "left" }}
+        anchorOrigin={{ vertical: "center", horizontal: "left" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Box>{dialogFor && <Box>{renderOptions(dialogFor)}</Box>}</Box>
+        <Box
+          sx={{
+            p: 2,
+            maxWidth: 300,
+            bgcolor: "background.paper",
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: 1,
+          }}
+        >
+          {dialogFor && <Box>{renderOptions(dialogFor)}</Box>}
+        </Box>
       </Popover>
     </Stack>
   );

@@ -314,6 +314,7 @@ const EditorPane: FC<EditorPaneProps> = ({
     () => ({
       display: "flex",
       flex: 1,
+      width: "100%",
       height: "100%",
       position: "absolute",
       outline: "none",
@@ -330,6 +331,11 @@ const EditorPane: FC<EditorPaneProps> = ({
   // Memoized pane styles
   const getPaneStyle = useCallback(
     (index: number, paneProps?: PaneProps): CSSProperties => ({
+      // width: orientation === "vertical" ? `${paneState.sizes[index]}px` : "100%",
+      // height:
+      //   orientation === "horizontal" ? `${paneState.sizes[index]}px` : "100%",
+      width: "100%",
+      height: "100%",
       flexBasis:
         paneState.sizes[index] > 0 ? `${paneState.sizes[index]}px` : "0px",
       flexGrow: 0,

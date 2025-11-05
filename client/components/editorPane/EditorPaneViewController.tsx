@@ -8,6 +8,17 @@ import EditorPane from "./EditorPane";
 import { getEditorPaneStore } from "./editorPaneStoreManager";
 import { useEditorPaneLayout } from "./useEditorPaneLayout";
 
+type PaneProps = {
+  /**
+   * Whether the pane is visible
+   */
+  visible: boolean;
+  /**
+   * Whether the pane is collapsed
+   */
+  collapsed: boolean;
+};
+
 export type PaneConfig = {
   /**
    * Pane header title content
@@ -16,7 +27,7 @@ export type PaneConfig = {
   /**
    * Pane content
    */
-  content: React.ReactNode;
+  content: React.ReactNode | ((props: PaneProps) => React.ReactNode);
   /**
    * Disable the pane button
    */
@@ -29,6 +40,10 @@ export type PaneConfig = {
    * Show the collapse button in the pane header
    */
   showCollapseButtonInHeader?: boolean;
+  /**
+   * Minimum ratio of the pane when resizing
+   */
+  minRatio: number;
 };
 
 type EditorPaneViewControllerProps = {
@@ -86,6 +101,31 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
   // Read current state from store
   const paneState = store.getState();
 
+  /**
+   * Renders a pane, supporting both static ReactNode and callback function patterns.
+   * When content is a function, it receives current state (visible, collapsed).
+   *
+   * @param content - ReactNode or callback function
+   * @param paneType - Which pane is being rendered ('first' or 'third')
+   * @returns Rendered pane content
+   */
+  const renderPaneContent = useCallback(
+    (
+      content: React.ReactNode | ((props: PaneProps) => React.ReactNode),
+      paneType: "first" | "third"
+    ): React.ReactNode => {
+      if (typeof content === "function") {
+        const props: PaneProps = {
+          visible: paneState.visibility[paneType],
+          collapsed: paneState.collapsed[paneType],
+        };
+        return content(props);
+      }
+      return content;
+    },
+    [paneState.visibility, paneState.collapsed]
+  );
+
   // Header button handlers - toggle collapse state
   const handleFirstPaneCollapse = useCallback(() => {
     calculator.handleCollapseToggle("first");
@@ -141,10 +181,7 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
               {/* First pane visibility button */}
               <Tooltip title={firstPane.buttonTooltip}>
                 <span>
-                  <IconButton
-                    onClick={handleFirstPaneVisibility}
-                    disabled={firstPane.buttonDisabled}
-                  >
+                  <IconButton onClick={handleFirstPaneVisibility} disabled={firstPane.buttonDisabled}>
                     <PanelLeft />
                   </IconButton>
                 </span>
@@ -152,10 +189,7 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
               {/* Third pane visibility button */}
               <Tooltip title={thirdPane.buttonTooltip}>
                 <span>
-                  <IconButton
-                    onClick={handleThirdPaneVisibility}
-                    disabled={thirdPane.buttonDisabled}
-                  >
+                  <IconButton onClick={handleThirdPaneVisibility} disabled={thirdPane.buttonDisabled}>
                     <PanelRight />
                   </IconButton>
                 </span>
@@ -170,13 +204,14 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
         sx={{
           flex: 1,
           position: "relative",
-          minHeight: `calc(100vh - 203px)`,
+          width: "100%",
+          height: "100%",
         }}
       >
         <EditorPane
           orientation="vertical"
           firstPane={{
-            visible: paneState.visibility.first,
+            visible: true,
             collapsed: paneState.collapsed.first,
             minRatio: 0.2,
           }}
@@ -218,10 +253,7 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
               {firstPane.showCollapseButtonInHeader && (
                 <Box sx={{ flexShrink: 0 }}>
                   <Tooltip title={firstPane.buttonTooltip}>
-                    <IconButton
-                      onClick={handleFirstPaneCollapse}
-                      disabled={firstPane.buttonDisabled}
-                    >
+                    <IconButton onClick={handleFirstPaneCollapse} disabled={firstPane.buttonDisabled}>
                       <PanelLeft />
                     </IconButton>
                   </Tooltip>
@@ -251,13 +283,14 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
               sx={{
                 flex: 1,
                 overflow: "auto",
-                opacity: paneState.collapsed.first ? 0 : 1,
-                maxHeight: paneState.collapsed.first ? 0 : "100%",
-                transition:
-                  "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-height 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+                opacity: !paneState.visibility.first ? 0 : 1,
+                maxHeight: !paneState.visibility.first ? 0 : "100%",
+                transition: "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-height 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+                width: "100%",
+                height: "100%",
               }}
             >
-              {firstPane.content}
+              {renderPaneContent(firstPane.content, "first")}
             </Box>
           </Box>
 
@@ -293,8 +326,8 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
-                  opacity: paneState.collapsed.third ? 0 : 1,
-                  maxWidth: paneState.collapsed.third ? 0 : "100%",
+                  opacity: !paneState.visibility.third ? 0 : 1,
+                  maxWidth: !paneState.visibility.third ? 0 : "100%",
                   transition:
                     "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
@@ -305,10 +338,7 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
               {thirdPane.showCollapseButtonInHeader && (
                 <Box sx={{ flexShrink: 0 }}>
                   <Tooltip title={thirdPane.buttonTooltip}>
-                    <IconButton
-                      onClick={handleThirdPaneCollapse}
-                      disabled={thirdPane.buttonDisabled}
-                    >
+                    <IconButton onClick={handleThirdPaneCollapse} disabled={thirdPane.buttonDisabled}>
                       <PanelRight />
                     </IconButton>
                   </Tooltip>
@@ -322,11 +352,10 @@ const EditorPaneViewController: React.FC<EditorPaneViewControllerProps> = ({
                 overflow: "auto",
                 opacity: paneState.collapsed.third ? 0 : 1,
                 maxHeight: paneState.collapsed.third ? 0 : "100%",
-                transition:
-                  "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-height 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+                transition: "opacity 300ms cubic-bezier(0.4, 0, 0.2, 1), max-height 300ms cubic-bezier(0.4, 0, 0.2, 1)",
               }}
             >
-              {thirdPane.content}
+              {renderPaneContent(thirdPane.content, "third")}
             </Box>
           </Box>
         </EditorPane>

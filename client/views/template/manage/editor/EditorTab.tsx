@@ -162,10 +162,11 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
                   {strings.addNodePane}
                 </Typography>
               ),
-              content: <AddNodePanel compact={true} />,
+              content: ({collapsed}) => (<AddNodePanel compact={collapsed} />),
               buttonTooltip: "Toggle Add Node Panel",
               buttonDisabled: false,
               showCollapseButtonInHeader: true,
+              minRatio: 0.15,
             }}
             middlePane={<CertificateReactFlowEditor />}
             thirdPane={{
@@ -193,6 +194,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
               buttonTooltip: "Toggle Miscellaneous Panel",
               buttonDisabled: false,
               showCollapseButtonInHeader: true,
+              minRatio: 0.15,
             }}
             storageKey="templateManagementEditor"
           />
