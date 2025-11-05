@@ -23,6 +23,7 @@ interface BaseCertificateElementFormProps {
   onFieldChange: UpdateBaseElementFn;
   errors: BaseElementFormErrors;
   disabled?: boolean;
+  showTitle?: boolean;
 }
 type AlignmentOption = {
   label: string;
@@ -31,7 +32,7 @@ type AlignmentOption = {
 
 export const BaseCertificateElementForm: FC<
   BaseCertificateElementFormProps
-> = ({ baseProps, onFieldChange, errors, disabled }) => {
+> = ({ baseProps, onFieldChange, errors, disabled, showTitle = true }) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
 
   const alignments: AlignmentOption[] = React.useMemo(
@@ -87,12 +88,14 @@ export const BaseCertificateElementForm: FC<
     ],
     [strings]
   );
-
+  
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
-        {strings.baseElement.basePropertiesTitle}
-      </Typography>
+      {showTitle && (
+        <Typography variant="h6" gutterBottom>
+          {strings.baseElement.basePropertiesTitle}
+        </Typography>
+      )}
 
       <Grid container spacing={2}>
         {/* Name */}

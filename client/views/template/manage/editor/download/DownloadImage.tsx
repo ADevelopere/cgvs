@@ -7,7 +7,6 @@ import { CircularProgress } from "@mui/material";
 import { ClientCanvasGenerator } from "@/client/views/template/manage/preview";
 import type { ClientCanvasGeneratorRef } from "@/client/views/template/manage/preview";
 
-
 export const DownloadImage: React.FC = () => {
   const theme = useTheme();
   const { templateId } = useNodeData();
@@ -26,7 +25,7 @@ export const DownloadImage: React.FC = () => {
     }
   }, []);
 
-  const onClick = () => {
+  const onClick = React.useCallback(() => {
     if (!templateId) {
       logger.error("Template ID not found");
       return;
@@ -34,7 +33,7 @@ export const DownloadImage: React.FC = () => {
     if (isGenerating) return;
     setIsGenerating(true);
     setShowGenerator(true);
-  };
+  }, [templateId, isGenerating]);
 
   return (
     <>
@@ -86,6 +85,6 @@ export const DownloadImage: React.FC = () => {
       )}
     </>
   );
-}
+};
 
 export default DownloadImage;

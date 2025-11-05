@@ -60,7 +60,7 @@ export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>{strings.textElement.dataSourceLabel}</Typography>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails sx={{ backgroundColor: "background.default", pt: 2 }}>
           <DataSourceForm
             dataSource={textDataSourceState}
             textVariables={textVariables}
@@ -76,12 +76,13 @@ export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>{strings.baseElement.basePropertiesTitle}</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
+        </AccordionSummary >
+        <AccordionDetails sx={{ backgroundColor: "background.default", pt: 2 }}>
           <BaseCertificateElementForm
             baseProps={baseElementState}
             onFieldChange={updateBaseElementState}
             errors={baseElementErrors}
+            showTitle={false}
           />
         </AccordionDetails>
       </Accordion>
@@ -90,13 +91,14 @@ export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>{strings.textProps.textPropertiesTitle}</Typography>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails sx={{ backgroundColor: "background.default", pt: 2 }}>
           <TextPropsForm
             textProps={textPropsState}
             onTextPropsChange={updateTextProps}
             errors={textPropsErrors}
             selfHostedFonts={fonts}
             language={templateConfig.language}
+            showTitle={false}
           />
         </AccordionDetails>
       </Accordion>

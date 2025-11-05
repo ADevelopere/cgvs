@@ -35,6 +35,7 @@ interface TextPropsFormProps {
   onTextPropsChange: UpdateTextPropsFn;
   errors: TextPropsFormErrors;
   disabled?: boolean;
+  showTitle?: boolean;
 }
 
 export const TextPropsForm: FC<TextPropsFormProps> = ({
@@ -44,6 +45,7 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
   onTextPropsChange,
   errors,
   disabled,
+  showTitle = true,
 }) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
 
@@ -59,9 +61,11 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
-        {strings.textProps.textPropertiesTitle}
-      </Typography>
+      {showTitle && (
+        <Typography variant="h6" gutterBottom>
+          {strings.textProps.textPropertiesTitle}
+        </Typography>
+      )}
 
       <Grid container spacing={2}>
         {/* Font Reference */}
