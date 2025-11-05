@@ -21,6 +21,7 @@ export const createNumberElementMutationDocument: TypedDocumentNode<
         type
         updatedAt
         width
+        hidden
       }
       numberProps {
         elementId
@@ -72,6 +73,7 @@ export const updateNumberElementMutationDocument: TypedDocumentNode<
         type
         updatedAt
         width
+        hidden
       }
       numberDataSource {
         numberVariableId

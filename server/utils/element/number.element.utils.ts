@@ -27,9 +27,7 @@ export namespace NumberElementUtils {
    * Map GraphQL NumberDataSource input to repository NumberDataSource input
    * Note: NUMBER has only one data source variant, so no isOneOf pattern needed
    */
-  export const mapNumberDataSourceGraphqlToInput = (
-    input: NumberDataSourceInputGraphql
-  ): NumberDataSourceInput => {
+  export const mapNumberDataSourceGraphqlToInput = (input: NumberDataSourceInputGraphql): NumberDataSourceInput => {
     return {
       type: NumberDataSourceType.TEMPLATE_NUMBER_VARIABLE,
       variableId: input.variableId,
@@ -48,14 +46,10 @@ export namespace NumberElementUtils {
   /**
    * Map GraphQL NumberElement create input to repository NumberElement create input
    */
-  export const mapNumberElementCreateGraphqlToInput = (
-    input: NumberElementInputGraphql
-  ): NumberElementInput => {
+  export const mapNumberElementCreateGraphqlToInput = (input: NumberElementInputGraphql): NumberElementInput => {
     return {
       base: input.base,
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
-        input.textProps
-      )!,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps)!,
       numberProps: input.numberProps,
       dataSource: mapNumberDataSourceGraphqlToInput(input.dataSource),
     };
@@ -70,9 +64,7 @@ export namespace NumberElementUtils {
     return {
       id: input.id,
       base: input.base,
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
-        input.textProps
-      )!,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps)!,
       numberProps: input.numberProps,
       dataSource: mapNumberDataSourceGraphqlToInput(input.dataSource),
     };
@@ -85,20 +77,13 @@ export namespace NumberElementUtils {
    * Validate number data source
    * NUMBER elements only support TEMPLATE_NUMBER_VARIABLE
    */
-  const validateDataSource = async (
-    dataSource: NumberDataSourceInput
-  ): Promise<void> => {
+  const validateDataSource = async (dataSource: NumberDataSourceInput): Promise<void> => {
     if (dataSource.type !== NumberDataSourceType.TEMPLATE_NUMBER_VARIABLE) {
-      throw new Error(
-        `Invalid number data source type: ${dataSource.type}. Must be TEMPLATE_NUMBER_VARIABLE`
-      );
+      throw new Error(`Invalid number data source type: ${dataSource.type}. Must be TEMPLATE_NUMBER_VARIABLE`);
     }
 
     // Validate template variable exists
-    await ElementRepository.checkTemplateVariableId(
-      dataSource.variableId,
-      TemplateVariableType.NUMBER
-    );
+    await ElementRepository.checkTemplateVariableId(dataSource.variableId, TemplateVariableType.NUMBER);
   };
 
   // ============================================================================
@@ -109,11 +94,9 @@ export namespace NumberElementUtils {
    * Validate breakpoint mapping
    * Validates format, ranges, and display values
    */
-  const validateMapping = (mapping: Record<string, string>): void => {
-    // Check mapping is not empty
-    const keys = Object.keys(mapping);
-    if (keys.length === 0) {
-      throw new Error("Mapping cannot be empty");
+  const validateMapping = (mapping?: Record<string, string> | null): void => {
+    if (!mapping) {
+      return;
     }
 
     // Validate each breakpoint rule
@@ -138,15 +121,11 @@ export namespace NumberElementUtils {
     const trimmedKey = key.trim();
 
     // Check for range format "X-Y" or single number "X"
-    const rangeMatch = trimmedKey.match(
-      /^(-?\d+(?:\.\d+)?)-(-?\d+(?:\.\d+)?)$/
-    );
+    const rangeMatch = trimmedKey.match(/^(-?\d+(?:\.\d+)?)-(-?\d+(?:\.\d+)?)$/);
     const singleMatch = trimmedKey.match(/^-?\d+(?:\.\d+)?$/);
 
     if (!rangeMatch && !singleMatch) {
-      throw new Error(
-        `Invalid breakpoint format: "${key}". Use "X-Y" for ranges or "X" for single values`
-      );
+      throw new Error(`Invalid breakpoint format: "${key}". Use "X-Y" for ranges or "X" for single values`);
     }
 
     // Validate range if it's a range format
@@ -162,9 +141,7 @@ export namespace NumberElementUtils {
 
       // Check range order
       if (start >= end) {
-        throw new Error(
-          `Invalid range "${key}": start (${start}) must be less than end (${end})`
-        );
+        throw new Error(`Invalid range "${key}": start (${start}) must be less than end (${end})`);
       }
     } else if (singleMatch) {
       const value = parseFloat(trimmedKey);
@@ -187,16 +164,12 @@ export namespace NumberElementUtils {
    * Validate no overlapping ranges
    * Checks that ranges don't overlap with each other
    */
-  const validateNoOverlappingRanges = (
-    mapping: Record<string, string>
-  ): void => {
+  const validateNoOverlappingRanges = (mapping: Record<string, string>): void => {
     const ranges: Array<{ start: number; end: number; key: string }> = [];
 
     for (const key of Object.keys(mapping)) {
       const trimmedKey = key.trim();
-      const rangeMatch = trimmedKey.match(
-        /^(-?\d+(?:\.\d+)?)-(-?\d+(?:\.\d+)?)$/
-      );
+      const rangeMatch = trimmedKey.match(/^(-?\d+(?:\.\d+)?)-(-?\d+(?:\.\d+)?)$/);
       const singleMatch = trimmedKey.match(/^-?\d+(?:\.\d+)?$/);
 
       if (rangeMatch) {
@@ -230,9 +203,7 @@ export namespace NumberElementUtils {
           (range2.start <= range1.end && range1.end <= range2.end);
 
         if (overlaps) {
-          throw new Error(
-            `Overlapping breakpoint ranges: "${range1.key}" and "${range2.key}"`
-          );
+          throw new Error(`Overlapping breakpoint ranges: "${range1.key}" and "${range2.key}"`);
         }
       }
     }
@@ -245,18 +216,9 @@ export namespace NumberElementUtils {
   /**
    * Validate all fields for NUMBER element (create/update)
    */
-  export const validateInput = async (
-    input: NumberElementInput
-  ): Promise<void> => {
-    if (
-      !input.base ||
-      !input.textProps ||
-      !input.numberProps ||
-      !input.dataSource
-    ) {
-      throw new Error(
-        "NumberElementInput must include base, textProps, numberProps, and dataSource"
-      );
+  export const validateInput = async (input: NumberElementInput): Promise<void> => {
+    if (!input.base || !input.textProps || !input.numberProps || !input.dataSource) {
+      throw new Error("NumberElementInput must include base, textProps, numberProps, and dataSource");
     }
 
     // Validate base element properties
@@ -279,9 +241,7 @@ export namespace NumberElementUtils {
   /**
    * Convert input data source format to output format
    */
-  export const convertInputDataSourceToOutput = (
-    input: NumberDataSourceInput
-  ): NumberDataSource => {
+  export const convertInputDataSourceToOutput = (input: NumberDataSourceInput): NumberDataSource => {
     return {
       type: input.type,
       numberVariableId: input.variableId,
@@ -291,9 +251,7 @@ export namespace NumberElementUtils {
   /**
    * Extract variableId from number data source (inline in repository)
    */
-  export const extractVariableIdFromDataSource = (
-    dataSource: NumberDataSourceInput
-  ): number | null => {
+  export const extractVariableIdFromDataSource = (dataSource: NumberDataSourceInput): number | null => {
     switch (dataSource.type) {
       case NumberDataSourceType.TEMPLATE_NUMBER_VARIABLE:
         return dataSource.variableId;

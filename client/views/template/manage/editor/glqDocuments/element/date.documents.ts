@@ -21,6 +21,7 @@ export const createDateElementMutationDocument: TypedDocumentNode<
         type
         updatedAt
         width
+        hidden
       }
       dateDataSource {
         ... on DateDataSourceCertificateField {
@@ -86,6 +87,7 @@ export const updateDateElementMutationDocument: TypedDocumentNode<
         type
         updatedAt
         width
+        hidden
       }
       dateDataSource {
         ... on DateDataSourceCertificateField {

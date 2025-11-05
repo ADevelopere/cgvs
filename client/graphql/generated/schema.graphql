@@ -991,7 +991,7 @@ input NumberElementInput {
 }
 
 input NumberElementSpecPropsInput {
-  mapping: StringMap!
+  mapping: StringMap
 }
 
 input NumberElementSpecPropsStandaloneUpdateInput {

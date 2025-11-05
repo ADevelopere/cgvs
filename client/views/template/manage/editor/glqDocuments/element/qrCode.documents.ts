@@ -21,6 +21,7 @@ export const createQRCodeElementMutationDocument: TypedDocumentNode<
         type
         updatedAt
         width
+        hidden
       }
       qrCodeProps {
         backgroundColor
@@ -52,6 +53,7 @@ export const updateQRCodeElementMutationDocument: TypedDocumentNode<
         type
         updatedAt
         width
+        hidden
       }
       qrCodeProps {
         backgroundColor

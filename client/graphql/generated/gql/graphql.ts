@@ -1390,7 +1390,7 @@ export type NumberElementInput = {
 };
 
 export type NumberElementSpecPropsInput = {
-  mapping: Scalars['StringMap']['input'];
+  mapping?: InputMaybe<Scalars['StringMap']['input']>;
 };
 
 export type NumberElementSpecPropsStandaloneUpdateInput = {

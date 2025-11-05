@@ -21,6 +21,7 @@ export const createCountryElementMutationDocument: TypedDocumentNode<
         type
         updatedAt
         width
+        hidden
       }
       countryProps {
         representation
@@ -65,6 +66,7 @@ export const updateCountryElementMutationDocument: TypedDocumentNode<
         type
         updatedAt
         width
+        hidden
       }
       countryProps {
         representation

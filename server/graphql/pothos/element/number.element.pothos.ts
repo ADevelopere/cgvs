@@ -54,7 +54,7 @@ export const NumberElementSpecPropsInputObject = gqlSchemaBuilder
   .inputRef<Types.NumberElementSpecPropsInput>("NumberElementSpecPropsInput")
   .implement({
     fields: t => ({
-      mapping: t.field({ type: "StringMap", required: true }),
+      mapping: t.field({ type: "StringMap", required: false }),
     }),
   });
 

@@ -31,9 +31,12 @@ export const AddNodePanel: React.FC<AddNodePanelProps> = ({ compact, templateId 
     [t]
   );
 
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
+
   const handleItemClick = (event: React.MouseEvent<HTMLElement>, key: FirstColumnItemKey) => {
     if (key === "image") {
-      return; // no-op for now
+      setImageDialogOpen(true);
+      return;
     }
 
     if (compact) {

@@ -11,7 +11,7 @@ export const numberElement = pgTable("number_element", {
   textPropsId: integer("text_props_id")
     .notNull()
     .references(() => elementTextProps.id, { onDelete: "restrict" }),
-  mapping: jsonb("mapping").$type<Record<string, string>>().notNull(), // Breakpoint-to-text rules
+  mapping: jsonb("mapping").$type<Record<string, string>>(), // Breakpoint-to-text rules
   numberDataSource: jsonb("number_data_source")
     .$type<NumberDataSource>()
     .notNull(),

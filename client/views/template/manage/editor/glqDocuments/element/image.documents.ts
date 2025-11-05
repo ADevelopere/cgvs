@@ -21,6 +21,7 @@ export const createImageElementMutationDocument: TypedDocumentNode<
         type
         updatedAt
         width
+        hidden
       }
       imageDataSource {
         ... on ImageDataSourceStorageFile {
@@ -57,6 +58,7 @@ export const updateImageElementMutationDocument: TypedDocumentNode<
         type
         updatedAt
         width
+        hidden
       }
       imageDataSource {
         ... on ImageDataSourceStorageFile {

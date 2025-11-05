@@ -170,7 +170,7 @@ CREATE TABLE "image_element" (
 CREATE TABLE "number_element" (
 	"element_id" integer PRIMARY KEY NOT NULL,
 	"text_props_id" integer NOT NULL,
-	"mapping" jsonb NOT NULL,
+	"mapping" jsonb,
 	"number_data_source" jsonb NOT NULL,
 	"variable_id" integer NOT NULL
 );

@@ -1,5 +1,5 @@
 {
-  "id": "b60efca8-f1b3-49af-80df-9a5b9a255d76",
+  "id": "033c0abd-4d37-4bd1-b3da-353492f2ce6b",
   "prevId": "a03697e8-0c3c-4c86-8680-1a949f474bf6",
   "version": "7",
   "dialect": "postgresql",
@@ -1039,7 +1039,7 @@
           "name": "mapping",
           "type": "jsonb",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "number_data_source": {
           "name": "number_data_source",

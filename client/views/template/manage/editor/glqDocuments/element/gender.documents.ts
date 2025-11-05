@@ -21,6 +21,7 @@ export const createGenderElementMutationDocument: TypedDocumentNode<
         type
         updatedAt
         width
+        hidden
       }
       textProps {
         color
@@ -62,6 +63,7 @@ export const updateGenderElementMutationDocument: TypedDocumentNode<
         type
         updatedAt
         width
+        hidden
       }
       textProps {
         color
