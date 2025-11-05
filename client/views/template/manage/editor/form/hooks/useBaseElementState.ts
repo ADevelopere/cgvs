@@ -14,7 +14,7 @@ import {
   ValidateBaseElementFieldFn,
   UpdateBaseElementFn,
 } from "../element/base";
-import { useCertificateElementContext } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../CertificateElementContext";
 import { useNodesStore } from "../../useNodesStore";
 
 export type UseBaseElementStateParams = {
@@ -80,7 +80,7 @@ export function useBaseElementState(
   const { templateId, elements } = params;
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
-  const updateBaseNodeData = useNodesStore((state) => state.updateBaseNodeData);
+  const {updateBaseNodeData} = useNodesStore();
 
   const [updateElementCommonPropertiesMutation] = useMutation(
     updateElementCommonPropertiesMutationDocument
@@ -175,7 +175,7 @@ export const useBaseElement = (params: UseBaseElementParams) => {
       initBaseElementState,
       baseElementStateErrors,
     },
-  } = useCertificateElementContext();
+  } = useCertificateElementStates();
 
   // Get state or initialize if not present (only initialize once)
   const baseElementState: BaseCertificateElementFormState =

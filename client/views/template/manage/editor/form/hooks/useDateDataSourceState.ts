@@ -14,7 +14,7 @@ import {
   DateDataSourceFieldErrors,
 } from "../element/date/types";
 import { useElementState } from "./useElementState";
-import { useCertificateElementContext } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../CertificateElementContext";
 
 export type UseDateDataSourceStateParams = {
   templateId?: number;
@@ -143,7 +143,7 @@ export const useDateDataSource = (params: UseDateDataSourceParams) => {
       initDateDataSourceState,
       dateDataSourceStateErrors,
     },
-  } = useCertificateElementContext();
+  } = useCertificateElementStates();
 
   // Get state or initialize if not present (only initialize once)
   const { dataSource } = React.useMemo(() => {

@@ -12,7 +12,7 @@ import {
   useTextProps,
   useTextDataSource,
 } from "../../form/hooks";
-import { useCertificateElementContext } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../CertificateElementContext";
 
 export type CurrentTextElementProps = {
   element: TextElement;
@@ -48,7 +48,7 @@ export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
     elementId: element.base.id,
   });
 
-  const { textVariables, selectVariables } = useCertificateElementContext();
+  const { textVariables, selectVariables } = useCertificateElementStates();
 
   return (
     <Stack>

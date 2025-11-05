@@ -37,7 +37,6 @@ export const CertificateElementContext =
 
 export type CertificateElementProviderProps = {
   elements: GQL.CertificateElementUnion[];
-  templateId?: number;
   templateConfig: GQL.TemplateConfig;
   variables: GQL.TemplateVariable[];
   children: React.ReactNode;
@@ -46,27 +45,24 @@ export type CertificateElementProviderProps = {
 export const CertificateElementProvider: React.FC<
   CertificateElementProviderProps
 > = ({ children, ...props }) => {
-  const { elements, templateId } = props;
+  const { elements } = props;
   const config = useTemplateConfigState({ config: props.templateConfig });
-  const textProps = ElState.useTextPropsState({ elements, templateId });
-  const bases = ElState.useBaseElementState({ elements, templateId });
+  const textProps = ElState.useTextPropsState({ elements });
+  const bases = ElState.useBaseElementState({ elements });
   const textDataSource = ElState.useTextDataSourceState({
     elements,
-    templateId,
   });
   const dateDataSource = ElState.useDateDataSourceState({
     elements,
-    templateId,
   });
   const numberDataSource = ElState.useNumberDataSourceState({
     elements,
-    templateId,
   });
-  const dateProps = ElState.useDatePropsState({ elements, templateId });
-  const countryProps = ElState.useCountryPropsState({ elements, templateId });
-  const imageProps = ElState.useImagePropsState({ elements, templateId });
-  const numberProps = ElState.useNumberPropsState({ elements, templateId });
-  const qrCodeProps = ElState.useQRCodePropsState({ elements, templateId });
+  const dateProps = ElState.useDatePropsState({ elements });
+  const countryProps = ElState.useCountryPropsState({ elements });
+  const imageProps = ElState.useImagePropsState({ elements });
+  const numberProps = ElState.useNumberPropsState({ elements });
+  const qrCodeProps = ElState.useQRCodePropsState({ elements });
 
   const { textVariables, selectVariables, dateVariables, numberVariables } =
     React.useMemo(() => {
@@ -132,18 +128,10 @@ export const CertificateElementProvider: React.FC<
     ]
   );
 
-  // Get templateId with fallback
-  const actualTemplateId = templateId ?? props.templateConfig.templateId ?? 0;
-
   return (
     <CertificateElementContext.Provider value={value}>
       <ReactFlowProvider>
-        <NodeDataProvider
-          templateId={actualTemplateId}
-          elements={elements}
-          bases={bases}
-          config={config}
-        >
+        <NodeDataProvider bases={bases} config={config}>
           {children}
         </NodeDataProvider>
       </ReactFlowProvider>
@@ -151,7 +139,7 @@ export const CertificateElementProvider: React.FC<
   );
 };
 
-export const useCertificateElementContext = () => {
+export const useCertificateElementStates = () => {
   const context = React.useContext(CertificateElementContext);
   if (!context) {
     throw new Error(

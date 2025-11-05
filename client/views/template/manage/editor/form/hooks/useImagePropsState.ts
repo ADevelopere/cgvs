@@ -13,7 +13,7 @@ import {
   UpdateImagePropsWithElementIdFn,
   UpdateImagePropsFn,
 } from "../element/image";
-import { useCertificateElementContext } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../CertificateElementContext";
 
 export type UseImagePropsStateParams = {
   templateId?: number;
@@ -134,7 +134,7 @@ export const useImageProps = (params: UseImagePropsParams) => {
       initImagePropsState,
       imagePropsStateErrors,
     },
-  } = useCertificateElementContext();
+  } = useCertificateElementStates();
 
   // Get state or initialize if not present (only initialize once)
   const imageProps: ImagePropsFormState = React.useMemo(() => {

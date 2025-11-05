@@ -1,4 +1,3 @@
-import * as GQL from "@/client/graphql/generated/gql/graphql";
 import React from "react";
 import { UseBaseElementStateReturn } from "./form/hooks";
 import { UseTemplateConfigStateReturn } from "./form/config/useTemplateConfigState";
@@ -6,11 +5,9 @@ import { Node } from "@xyflow/react";
 import { useEditorStore } from "./useEditorStore";
 import { logger } from "@/client/lib/logger";
 import { useNodesStore } from "./useNodesStore";
-import { useLazyQuery } from "@apollo/client/react";
-import { elementsByTemplateIdQueryDocument } from "./glqDocuments";
 
 export type NodeDataContextType = {
-  templateId: number;
+  templateId: number | null;
   nodes: Node[];
   setNodes: (nodes: Node[]) => void;
   updateElementPosition: (
@@ -42,23 +39,24 @@ export type NodeDataContextType = {
 const NodeDataContext = React.createContext<NodeDataContextType | null>(null);
 
 export type NodeDataProps = {
-  templateId: number;
-  elements: GQL.CertificateElementUnion[];
   bases: UseBaseElementStateReturn;
   config: UseTemplateConfigStateReturn;
   children: React.ReactNode;
 };
 
 export const NodeDataProvider: React.FC<NodeDataProps> = ({
-  templateId,
   bases,
   config: { state: container },
   children,
 }) => {
-  // Get nodes from the store - they're exposed as state so components re-render on updates
-  const nodes = useNodesStore((state) => state.nodes);
-  const setNodesInStore = useNodesStore((state) => state.setNodes);
-  const initializeNodes = useNodesStore((state) => state.initializeNodes);
+  // Use the nodes hook - it automatically fetches data and initializes nodes
+  const {
+    nodes,
+    setNodes: setNodesInStore,
+    templateId,
+    loading: nodesLoading,
+    error: nodesError,
+  } = useNodesStore();
 
   // Helper line state (kept local as it's UI-only)
   const [helperLineHorizontal, setHelperLineHorizontal] = React.useState<
@@ -72,53 +70,26 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
   const [, setIsDragging] = React.useState<boolean>(false);
   const [, setIsResizing] = React.useState<boolean>(false);
 
-  const [fetchElementsByTemplateId] = useLazyQuery(
-    elementsByTemplateIdQueryDocument
-  );
-
-  // Initialize nodes once when component mounts or templateId changes
+  // Log loading/error states
   React.useEffect(() => {
-    let canceled = false;
-    const load = async () => {
-      if (nodes.length === 0) {
-        try {
-          const result = await fetchElementsByTemplateId({
-            variables: { templateId },
-          });
-          if (result.error) {
-            logger.error("NodeDataProvider: Error fetching elements", {
-              templateId,
-              error: result.error,
-            });
-            return;
-          }
+    if (nodesLoading) {
+      logger.debug("NodeDataProvider: Loading nodes...", { templateId });
+    }
+    if (nodesError) {
+      logger.error("NodeDataProvider: Error loading nodes", {
+        templateId,
+        error: nodesError,
+      });
+    }
+    if (!nodesLoading && !nodesError && nodes.length > 0) {
+      logger.debug("NodeDataProvider: Nodes loaded successfully", {
+        templateId,
+        nodeCount: nodes.length,
+      });
+    }
+  }, [nodesLoading, nodesError, nodes.length, templateId]);
 
-          const elements = result.data?.elementsByTemplateId || [];
-          logger.debug("NodeDataProvider: Initializing nodes in store", {
-            templateId,
-            elementCount: elements.length,
-          });
-          if (!canceled) {
-            initializeNodes(elements, {
-              width: container.width,
-              height: container.height,
-            });
-          }
-        } catch (error) {
-          logger.error("NodeDataProvider: Error fetching elements", {
-            templateId,
-            error,
-          });
-        }
-      }
-    };
-    void load();
-    return () => {
-      canceled = true;
-    };
-  }, [templateId, nodes.length, fetchElementsByTemplateId, initializeNodes, container.width, container.height]);
-
-  // Wrapper for setNodes that uses the store
+  // Wrapper for setNodes
   const setNodes = React.useCallback(
     (newNodes: Node[]) => {
       setNodesInStore(newNodes);

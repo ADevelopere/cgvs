@@ -14,7 +14,7 @@ import {
   UpdateNumberPropsFn,
 } from "../element/number";
 import { validateNumberProps } from "../element/number/numberValidators";
-import { useCertificateElementContext } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../CertificateElementContext";
 
 export type UseNumberPropsStateParams = {
   templateId?: number;
@@ -135,7 +135,7 @@ export const useNumberProps = (params: UseNumberPropsParams) => {
       initNumberPropsState,
       numberPropsStateErrors,
     },
-  } = useCertificateElementContext();
+  } = useCertificateElementStates();
 
   // Get state or initialize if not present (only initialize once)
   const numberProps: NumberPropsFormState = React.useMemo(() => {

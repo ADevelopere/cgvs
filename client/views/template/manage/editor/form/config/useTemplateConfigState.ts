@@ -32,7 +32,7 @@ export function useTemplateConfigState(
   const { config } = params;
   const { templateConfigTranslations: strings } = useAppTranslation();
   const notifications = useNotifications();
-  const updateContainerNode = useNodesStore((state) => state.updateContainerNode);
+  const {updateContainerNode} = useNodesStore();
 
   const [updateTemplateConfigMutation] = useMutation(
     updateTemplateConfigMutationDocument

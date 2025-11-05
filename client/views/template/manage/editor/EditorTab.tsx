@@ -180,7 +180,6 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
   return (
     <>
       <CertificateElementProvider
-        templateId={template.id}
         elements={elements}
         templateConfig={templateConfig}
         variables={variables}

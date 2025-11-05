@@ -13,7 +13,7 @@ import {
   UpdateCountryPropsWithElementIdFn,
   UpdateCountryPropsFn,
 } from "../element/country";
-import { useCertificateElementContext } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../CertificateElementContext";
 
 export type UseCountryPropsStateParams = {
   templateId?: number;
@@ -148,7 +148,7 @@ export const useCountryProps = (params: UseCountryPropsParams) => {
       initCountryPropsState,
       countryPropsStateErrors,
     },
-  } = useCertificateElementContext();
+  } = useCertificateElementStates();
 
   // Get state or initialize if not present (only initialize once)
   const countryProps: CountryPropsFormState = React.useMemo(() => {

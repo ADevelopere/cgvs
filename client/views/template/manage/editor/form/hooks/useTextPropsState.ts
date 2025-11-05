@@ -11,7 +11,7 @@ import {
   ValidateTextPropsFieldFn,
 } from "../element/textProps";
 import { Action } from "../types";
-import { useCertificateElementContext } from "@/client/views/template/manage/editor/CertificateElementContext";
+import { useCertificateElementStates } from "@/client/views/template/manage/editor/CertificateElementContext";
 import logger from "@/client/lib/logger";
 import { useMutation } from "@apollo/client/react";
 import { updateElementTextPropsMutationDocument } from "../../glqDocuments";
@@ -205,7 +205,7 @@ export const useTextProps = (params: UseTextPropsParams) => {
       initTextPropsState,
       textPropsStateErrors,
     },
-  } = useCertificateElementContext();
+  } = useCertificateElementStates();
 
   // Get state or initialize if not present (only initialize once)
   const textPropsState = React.useMemo(() => {

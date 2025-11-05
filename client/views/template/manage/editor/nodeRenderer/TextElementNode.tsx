@@ -9,7 +9,7 @@ import { FontFamily, getFontByFamily, GoogleFontItem } from "@/lib/font/google";
 import WebFont from "webfontloader";
 import { ElementAlignment } from "@/client/graphql/generated/gql/graphql";
 import { useTextDataSource } from "../form/hooks";
-import { useCertificateElementContext } from "../CertificateElementContext";
+import { useCertificateElementStates } from "../CertificateElementContext";
 import {
   useAppTranslationForLanguage,
 } from "@/client/locale";
@@ -144,7 +144,7 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
     config: {
       state: { language },
     },
-  } = useCertificateElementContext();
+  } = useCertificateElementStates();
   
   const {
     certificateElementsTranslations: { textElement },

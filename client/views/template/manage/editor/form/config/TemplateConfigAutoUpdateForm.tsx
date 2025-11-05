@@ -4,7 +4,7 @@ import { TemplateConfigFormErrors, TemplateConfigFormUpdateFn } from "./types";
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import { TemplateConfigForm } from "./TemplateConfigForm";
 import { useAppTranslation } from "@/client/locale";
-import { useCertificateElementContext } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../CertificateElementContext";
 
 export type TemplateConfigAutoUpdateFormInternalProps = {
   updating: boolean;
@@ -68,7 +68,7 @@ export const TemplateConfigAutoUpdateFormContent: React.FC<
 export const TemplateConfigAutoUpdateForm: React.FC = () => {
   const {
     config: { state, updateFn, errors, updating },
-  } = useCertificateElementContext();
+  } = useCertificateElementStates();
 
   return (
     <TemplateConfigAutoUpdateFormContent

@@ -1,27 +1,28 @@
-import { create } from "zustand";
 import { Node } from "@xyflow/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { TextElementNodeData } from "./nodeRenderer/TextElementNode";
 import { ContainerNodeData, ElementBaseNodeData } from "./types";
 import { logger } from "@/client/lib/logger";
+import { useParams } from "next/navigation";
+import { useQuery } from "@apollo/client/react";
+import {
+  elementsByTemplateIdQueryDocument,
+  templateConfigByTemplateIdQueryDocument,
+} from "./glqDocuments";
+import React from "react";
 
 /**
- * Node store state
+ * Return type for the useNodesStore hook
  */
-interface NodesStoreState {
-  // Current nodes array - exposed as state for reactivity
+export interface UseNodesStoreReturn {
+  // Current nodes array - reactive state
   nodes: Node[];
-}
-
-/**
- * Node store actions
- */
-interface NodesStoreActions {
-  // Initialize nodes
-  initializeNodes: (
-    elements: GQL.CertificateElementUnion[],
-    containerConfig: { width: number; height: number }
-  ) => void;
+  // Loading state
+  loading: boolean;
+  // Error state
+  error: Error | null;
+  // Template ID from URL
+  templateId: number | null;
 
   // Set all nodes
   setNodes: (nodes: Node[]) => void;
@@ -54,10 +55,10 @@ interface NodesStoreActions {
   updateNode: (nodeId: string, updates: Partial<Node>) => void;
 
   // Batch update multiple nodes
-  batchUpdateNodes: (updates: Array<{ nodeId: string; updates: Partial<Node> }>) => void;
+  batchUpdateNodes: (
+    updates: Array<{ nodeId: string; updates: Partial<Node> }>
+  ) => void;
 }
-
-type NodesStore = NodesStoreState & NodesStoreActions;
 
 /**
  * Create a text element node from a CertificateElementUnion
@@ -104,133 +105,203 @@ function createContainerNode(config: { width: number; height: number }): Node<Co
 }
 
 /**
- * Zustand store for managing ReactFlow nodes
+ * Initialize nodes from elements and config
+ */
+function initializeNodesFromData(
+  elements: GQL.CertificateElementUnion[],
+  containerConfig: { width: number; height: number }
+): Node[] {
+  logger.debug("useNodesStore: Initializing nodes", {
+    elementCount: elements.length,
+  });
+
+  const containerNode = createContainerNode(containerConfig);
+
+  const elementNodes: Node[] = elements
+    .map((element) => {
+      if (element.base.type === GQL.ElementType.Text) {
+        return createTextNode(element);
+      }
+      // Add other element types here as needed
+      return null;
+    })
+    .filter((node): node is Node<TextElementNodeData> => node !== null);
+
+  return [containerNode, ...elementNodes];
+}
+
+/**
+ * React hook for managing ReactFlow nodes
+ * Automatically fetches data from URL params and initializes nodes
  * Nodes are exposed as state for automatic re-renders
  */
-export const useNodesStore = create<NodesStore>((set) => ({
-  nodes: [],
+export function useNodesStore(): UseNodesStoreReturn {
+  // Get templateId from Next.js URL params
+  const pathParams = useParams<{ id: string }>();
+  const templateId = React.useMemo(() => {
+    const id = pathParams?.id;
+    return id ? Number.parseInt(id, 10) : null;
+  }, [pathParams?.id]);
 
-  initializeNodes: (elements, containerConfig) => {
-    logger.debug("useNodesStore: Initializing nodes", {
-      elementCount: elements.length,
+  // Fetch elements
+  const {
+    data: elementsData,
+    loading: elementsLoading,
+    error: elementsError,
+  } = useQuery(elementsByTemplateIdQueryDocument, {
+    variables: { templateId: templateId ?? 0 },
+    skip: !templateId,
+    fetchPolicy: "cache-first",
+  });
+
+  // Fetch config
+  const {
+    data: configData,
+    loading: configLoading,
+    error: configError,
+  } = useQuery(templateConfigByTemplateIdQueryDocument, {
+    variables: { templateId: templateId ?? 0 },
+    skip: !templateId,
+    fetchPolicy: "cache-first",
+  });
+
+  // Local state for nodes
+  const [nodes, setNodesState] = React.useState<Node[]>([]);
+
+  // Initialize nodes when data is loaded
+  React.useEffect(() => {
+    if (!elementsData?.elementsByTemplateId || !configData?.templateConfigByTemplateId) {
+      return;
+    }
+
+    const elements = elementsData.elementsByTemplateId;
+    const config = configData.templateConfigByTemplateId;
+
+    const initializedNodes = initializeNodesFromData(elements, {
+      width: config.width,
+      height: config.height,
     });
 
-    const containerNode = createContainerNode(containerConfig);
-    
-    const elementNodes: Node[] = elements
-      .map((element) => {
-        if (element.base.type === GQL.ElementType.Text) {
-          return createTextNode(element);
-        }
-        // Add other element types here as needed
-        return null;
-      })
-      .filter((node): node is Node<TextElementNodeData> => node !== null);
+    setNodesState(initializedNodes);
+  }, [elementsData, configData]);
 
-    const allNodes = [containerNode, ...elementNodes];
+  // Combine loading states
+  const loading = elementsLoading || configLoading;
+  
+  // Combine errors
+  const error = elementsError || configError || null;
 
-    set({ nodes: allNodes });
-  },
+  // Action: Set all nodes
+  const setNodes = React.useCallback((newNodes: Node[]) => {
+    setNodesState(newNodes);
+  }, []);
 
-  setNodes: (nodes) => {
-    set({ nodes });
-  },
+  // Action: Clear all nodes
+  const clearNodes = React.useCallback(() => {
+    setNodesState([]);
+  }, []);
 
-  clearNodes: () => {
-    set({ nodes: [] });
-  },
+  // Action: Add a node
+  const addNode = React.useCallback((node: Node) => {
+    setNodesState((prev) => [...prev, node]);
+  }, []);
 
-  addNode: (node) => {
-    set((state) => ({ nodes: [...state.nodes, node] }));
-  },
+  // Action: Delete a node
+  const deleteNode = React.useCallback((nodeId: string) => {
+    setNodesState((prev) => prev.filter((n) => n.id !== nodeId));
+  }, []);
 
-  deleteNode: (nodeId) => {
-    set((state) => ({
-      nodes: state.nodes.filter((n) => n.id !== nodeId),
-    }));
-  },
+  // Action: Update base node data
+  const updateBaseNodeData = React.useCallback(
+    (elementId: number, updates: Partial<ElementBaseNodeData>) => {
+      setNodesState((prev) => {
+        const nodeId = elementId.toString();
 
-  updateBaseNodeData: (elementId, updates) => {
-    set((state) => {
-      const nodeId = elementId.toString();
+        return prev.map((node) => {
+          if (node.id !== nodeId) {
+            return node;
+          }
 
-      const updatedNodes = state.nodes.map((node) => {
-        if (node.id !== nodeId) {
-          return node;
-        }
+          const nodeUpdates: Partial<Node> = {};
 
-        const nodeUpdates: Partial<Node> = {};
+          if (
+            updates.positionX !== undefined ||
+            updates.positionY !== undefined
+          ) {
+            nodeUpdates.position = {
+              x: updates.positionX ?? node.position.x,
+              y: updates.positionY ?? node.position.y,
+            };
+          }
 
-        if (updates.positionX !== undefined || updates.positionY !== undefined) {
-          nodeUpdates.position = {
-            x: updates.positionX ?? node.position.x,
-            y: updates.positionY ?? node.position.y,
+          if (updates.width !== undefined) {
+            nodeUpdates.width = updates.width;
+          }
+
+          if (updates.height !== undefined) {
+            nodeUpdates.height = updates.height;
+          }
+
+          return {
+            ...node,
+            ...nodeUpdates,
           };
-        }
-
-        if (updates.width !== undefined) {
-          nodeUpdates.width = updates.width;
-        }
-
-        if (updates.height !== undefined) {
-          nodeUpdates.height = updates.height;
-        }
-
-        return {
-          ...node,
-          ...nodeUpdates,
-        };
+        });
       });
+    },
+    []
+  );
 
-      return { nodes: updatedNodes };
-    });
-  },
+  // Action: Update text node data
+  const updateTextNodeData = React.useCallback(
+    (elementId: number, updates: Partial<TextElementNodeData>) => {
+      setNodesState((prev) => {
+        const nodeId = elementId.toString();
 
-  updateTextNodeData: (elementId, updates) => {
-    set((state) => {
-      const nodeId = elementId.toString();
+        return prev.map((node) => {
+          if (node.id !== nodeId || node.type !== "text") {
+            return node;
+          }
 
-      const updatedNodes = state.nodes.map((node) => {
-        if (node.id !== nodeId || node.type !== "text") {
-          return node;
-        }
-
-        return {
-          ...node,
-          data: {
-            ...node.data,
-            ...updates,
-          } as TextElementNodeData,
-        };
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              ...updates,
+            } as TextElementNodeData,
+          };
+        });
       });
+    },
+    []
+  );
 
-      return { nodes: updatedNodes };
-    });
-  },
+  // Action: Update container node
+  const updateContainerNode = React.useCallback(
+    (updates: Partial<ContainerNodeData>) => {
+      setNodesState((prev) => {
+        return prev.map((node) => {
+          if (node.id !== "container") {
+            return node;
+          }
 
-  updateContainerNode: (updates) => {
-    set((state) => {
-      const updatedNodes = state.nodes.map((node) => {
-        if (node.id !== "container") {
-          return node;
-        }
-
-        return {
-          ...node,
-          data: {
-            ...node.data,
-            ...updates,
-          } as ContainerNodeData,
-        };
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              ...updates,
+            } as ContainerNodeData,
+          };
+        });
       });
+    },
+    []
+  );
 
-      return { nodes: updatedNodes };
-    });
-  },
-
-  updateNode: (nodeId, updates) => {
-    set((state) => {
-      const updatedNodes = state.nodes.map((node) => {
+  // Action: Update a single node
+  const updateNode = React.useCallback((nodeId: string, updates: Partial<Node>) => {
+    setNodesState((prev) => {
+      return prev.map((node) => {
         if (node.id !== nodeId) {
           return node;
         }
@@ -240,28 +311,44 @@ export const useNodesStore = create<NodesStore>((set) => ({
           ...updates,
         };
       });
-
-      return { nodes: updatedNodes };
     });
-  },
+  }, []);
 
-  batchUpdateNodes: (updates) => {
-    set((state) => {
-      const updateMap = new Map(updates.map((u) => [u.nodeId, u.updates]));
+  // Action: Batch update nodes
+  const batchUpdateNodes = React.useCallback(
+    (updates: Array<{ nodeId: string; updates: Partial<Node> }>) => {
+      setNodesState((prev) => {
+        const updateMap = new Map(updates.map((u) => [u.nodeId, u.updates]));
 
-      const updatedNodes = state.nodes.map((node) => {
-        const nodeUpdates = updateMap.get(node.id);
-        if (!nodeUpdates) {
-          return node;
-        }
+        return prev.map((node) => {
+          const nodeUpdates = updateMap.get(node.id);
+          if (!nodeUpdates) {
+            return node;
+          }
 
-        return {
-          ...node,
-          ...nodeUpdates,
-        };
+          return {
+            ...node,
+            ...nodeUpdates,
+          };
+        });
       });
+    },
+    []
+  );
 
-      return { nodes: updatedNodes };
-    });
-  },
-}));
+  return {
+    nodes,
+    loading,
+    error,
+    templateId,
+    setNodes,
+    clearNodes,
+    addNode,
+    deleteNode,
+    updateBaseNodeData,
+    updateTextNodeData,
+    updateContainerNode,
+    updateNode,
+    batchUpdateNodes,
+  };
+}

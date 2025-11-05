@@ -13,7 +13,7 @@ import {
   UpdateQRCodePropsWithElementIdFn,
   UpdateQRCodePropsFn,
 } from "../element/qrcode";
-import { useCertificateElementContext } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../CertificateElementContext";
 
 export type UseQRCodePropsStateParams = {
   templateId?: number;
@@ -137,7 +137,7 @@ export const useQRCodeProps = (params: UseQRCodePropsParams) => {
       initQRCodePropsState,
       qrCodePropsStateErrors,
     },
-  } = useCertificateElementContext();
+  } = useCertificateElementStates();
 
   // Get state or initialize if not present (only initialize once)
   const qrCodeProps: QRCodePropsFormState = React.useMemo(() => {

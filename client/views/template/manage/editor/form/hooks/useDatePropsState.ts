@@ -13,7 +13,7 @@ import {
   UpdateDatePropsWithElementIdFn,
   UpdateDatePropsFn,
 } from "../element/date";
-import { useCertificateElementContext } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../CertificateElementContext";
 
 export type UseDatePropsStateParams = {
   templateId?: number;
@@ -141,7 +141,7 @@ export const useDateProps = (params: UseDatePropsParams) => {
       initDatePropsState,
       datePropsStateErrors,
     },
-  } = useCertificateElementContext();
+  } = useCertificateElementStates();
 
   // Get state or initialize if not present (only initialize once)
   const dateProps: DatePropsFormState = React.useMemo(() => {

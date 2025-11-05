@@ -12,7 +12,7 @@ import {
   numberDataSourceToInput,
 } from "../element/number/types";
 import { useElementState } from "./useElementState";
-import { useCertificateElementContext } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../CertificateElementContext";
 import { useNotifications } from "@toolpad/core/useNotifications";
 
 export type UseNumberDataSourceStateParams = {
@@ -142,7 +142,7 @@ export const useNumberDataSource = (params: UseNumberDataSourceParams) => {
       initNumberDataSourceState,
       numberDataSourceStateErrors,
     },
-  } = useCertificateElementContext();
+  } = useCertificateElementStates();
 
   // Get state or initialize if not present (only initialize once)
   const { dataSource } = React.useMemo(() => {

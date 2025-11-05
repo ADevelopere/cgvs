@@ -14,7 +14,7 @@ import {
   TextDataSourceFieldErrors,
 } from "../element/text/types";
 import { useElementState } from "./useElementState";
-import { useCertificateElementContext } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../CertificateElementContext";
 
 export type UseTextDataSourceStateParams = {
   templateId?: number;
@@ -143,7 +143,7 @@ export const useTextDataSource = (params: UseTextDataSourceParams) => {
       initTextDataSourceState,
       textDataSourceStateErrors,
     },
-  } = useCertificateElementContext();
+  } = useCertificateElementStates();
 
   // Get state or initialize if not present (only initialize once)
   const { dataSource } = React.useMemo(() => {

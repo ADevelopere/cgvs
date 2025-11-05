@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { TextElementForm } from "../../form/element/text/TextElementForm";
-import { useCertificateElementContext } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../CertificateElementContext";
 import { useElementCreateMutations } from "../../form/hooks/useElementCreateMutations";
 import { fontsQueryDocument } from "@/client/views/font/hooks/font.documents";
 import { validateBaseElementField } from "../../form/element/base/cretElementBaseValidator";
@@ -51,7 +51,7 @@ export const CreateTextElementWrapper: React.FC<
 }) => {
   // Get context data
   const { textVariables, selectVariables, config } =
-    useCertificateElementContext();
+    useCertificateElementStates();
   const language = config.state.language;
 
   // Query fonts
