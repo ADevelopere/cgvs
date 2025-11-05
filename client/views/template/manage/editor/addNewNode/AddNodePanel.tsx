@@ -8,6 +8,7 @@ import { useAppTranslation } from "@/client/locale";
 import { StudentOptionsPanel } from "./StudentOptionsPanel";
 import { CertificateOptionsPanel } from "./CertificateOptionsPanel";
 import { VariableOptionsPanel } from "./VariableOptionsPanel";
+import { CreateImageElementWrapper } from "./wrappers/CreateImageElementWrapper";
 
 type AddNodePanelProps = {
   compact: boolean;
@@ -60,80 +61,88 @@ export const AddNodePanel: React.FC<AddNodePanelProps> = ({ compact, templateId 
   const itemWidth = compact ? 40 : 60;
 
   return (
-    <Stack direction="column" sx={{ width: "100%" }}>
-      {items.map(item => {
-        const IconCmp = item.Icon;
-        const showInlineOptions = !compact && item.key !== "image";
-        return (
-          <Box key={item.key} sx={{ width: "100%" }}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-                justifyContent: "center",
-                overflow: "hidden",
-              }}
-            >
-              <ButtonBase
-                onClick={event => handleItemClick(event, item.key)}
+    <>
+      <Stack direction="column" sx={{ width: "100%" }}>
+        {items.map(item => {
+          const IconCmp = item.Icon;
+          const showInlineOptions = !compact && item.key !== "image";
+          return (
+            <Box key={item.key} sx={{ width: "100%" }}>
+              <Box
                 sx={{
-                  width: itemWidth,
-                  flexShrink: 0,
-                  py: 0,
-                  borderInlineEnd: !compact ? "1px solid" : "none",
-                  borderColor: "divider",
-                  minHeight: 64,
-                  minWidth: itemWidth,
+                  display: "flex",
+                  flexDirection: "row",
+                  width: "100%",
+                  justifyContent: "center",
+                  overflow: "hidden",
                 }}
               >
-                <Stack
-                  direction="column"
-                  alignItems="center"
-                  spacing={0.5}
-                  sx={{ width: "100%" }}
-                  justifyContent={"center"}
+                <ButtonBase
+                  onClick={event => handleItemClick(event, item.key)}
+                  sx={{
+                    width: itemWidth,
+                    flexShrink: 0,
+                    py: 0,
+                    borderInlineEnd: !compact ? "1px solid" : "none",
+                    borderColor: "divider",
+                    minHeight: 64,
+                    minWidth: itemWidth,
+                  }}
                 >
-                  <IconCmp sx={{ fontSize: 32 }} />
-                  <Typography variant="caption" component="span">
-                    {item.label}
-                  </Typography>
-                </Stack>
-              </ButtonBase>
+                  <Stack
+                    direction="column"
+                    alignItems="center"
+                    spacing={0.5}
+                    sx={{ width: "100%" }}
+                    justifyContent={"center"}
+                  >
+                    <IconCmp sx={{ fontSize: 32 }} />
+                    <Typography variant="caption" component="span">
+                      {item.label}
+                    </Typography>
+                  </Stack>
+                </ButtonBase>
 
-              {compact ? null : (
-                <Box sx={{ flexGrow: 1, p: 1, maxHeight: 300, overflowY: "auto" }}>
-                  {showInlineOptions ? renderOptions(item.key) : null}
-                </Box>
-              )}
+                {compact ? null : (
+                  <Box sx={{ flexGrow: 1, p: 1, maxHeight: 300, overflowY: "auto" }}>
+                    {showInlineOptions ? renderOptions(item.key) : null}
+                  </Box>
+                )}
+              </Box>
+
+              <Divider />
             </Box>
+          );
+        })}
 
-            <Divider />
-          </Box>
-        );
-      })}
-
-      <Popover
-        open={dialogFor !== null}
-        onClose={() => setDialogFor(null)}
-        anchorEl={anchorEl}
-        anchorOrigin={{ vertical: "center", horizontal: "left" }}
-        transformOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Box
-          sx={{
-            p: 2,
-            maxWidth: 300,
-            bgcolor: "background.paper",
-            border: "1px solid",
-            borderColor: "divider",
-            borderRadius: 1,
-          }}
+        <Popover
+          open={dialogFor !== null}
+          onClose={() => setDialogFor(null)}
+          anchorEl={anchorEl}
+          anchorOrigin={{ vertical: "center", horizontal: "left" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          {dialogFor && <Box>{renderOptions(dialogFor)}</Box>}
-        </Box>
-      </Popover>
-    </Stack>
+          <Box
+            sx={{
+              p: 2,
+              maxWidth: 300,
+              bgcolor: "background.paper",
+              border: "1px solid",
+              borderColor: "divider",
+              borderRadius: 1,
+            }}
+          >
+            {dialogFor && <Box>{renderOptions(dialogFor)}</Box>}
+          </Box>
+        </Popover>
+      </Stack>
+      <CreateImageElementWrapper
+        templateId={templateId}
+        initialElementName={t.addNodePanel.items.image}
+        open={imageDialogOpen}
+        onClose={() => setImageDialogOpen(false)}
+      />
+    </>
   );
 };
 
