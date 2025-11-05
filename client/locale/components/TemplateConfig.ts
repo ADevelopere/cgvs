@@ -15,8 +15,11 @@ export type TemplateConfigTranslations = {
   // Error Messages
   failedToCreateTemplateConfiguration: string;
   failedToUpdateTemplateConfiguration: string;
+  valueIsRequired: string;
 
   // Validation Errors
   valueMustBeGreaterThanZero: string;
   valueMustBeLessThanOrEqualTo10000: string;
+  valueIsTooSmall: string;
+  valueIsTooLarge: string;
 };

@@ -60,6 +60,16 @@ export function useTemplateConfigState(
   const debounceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
   const validateAction = useTemplateConfigFormValidateFn(strings);
 
+  // Refs for dependencies to stabilize callbacks
+  const stateRef = React.useRef(state);
+  stateRef.current = state;
+  const errorsRef = React.useRef(errors);
+  errorsRef.current = errors;
+  const validateActionRef = React.useRef(validateAction);
+  validateActionRef.current = validateAction;
+  const updateContainerNodeRef = React.useRef(updateContainerNode);
+  updateContainerNodeRef.current = updateContainerNode;
+
   const mutationFn = React.useCallback(
     async (updateState: GQL.TemplateConfigUpdateInput) => {
       setUpdating(true);
@@ -93,12 +103,20 @@ export function useTemplateConfigState(
     ]
   );
 
+  const mutationFnRef = React.useRef(mutationFn);
+  mutationFnRef.current = mutationFn;
+
   const updateFn: TemplateConfigFormUpdateFn = React.useCallback(
     (action: TemplateConfigUpdateAction) => {
       const { key, value } = action;
 
-      const errorMessage = validateAction(action);
+      // Get current state
+      const currentState = stateRef.current;
 
+      // Validate
+      const errorMessage = validateActionRef.current(action);
+
+      // Update errors
       setErrors(prev => {
         const newErrors = { ...prev };
         if (errorMessage) {
@@ -109,56 +127,70 @@ export function useTemplateConfigState(
         return newErrors;
       });
 
-      const newState = { ...state, [key]: value };
+      // Update state
+      const newState = { ...currentState, [key]: value };
       setState(newState);
 
       // Update container node in the store immediately
       if (key === "width" || key === "height") {
-        updateContainerNode({
+        updateContainerNodeRef.current({
           [key]: value as number,
         });
       }
 
+      // Clear existing debounce timer
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
       }
 
-      const hasErrors = Object.values(errors).some(e => e !== undefined);
-      if (errorMessage || hasErrors) {
+      // Don't schedule update if there's an error
+      if (errorMessage) {
         return;
       }
 
+      // Set new debounce timer
       debounceTimerRef.current = setTimeout(() => {
-        mutationFn(newState).catch(err => {
+        mutationFnRef.current(newState).catch(err => {
           logger.error("Debounced mutation failed", { err });
         });
       }, updateDebounceDelayMs);
     },
-    [validateAction, state, errors, mutationFn, updateContainerNode, config?.templateId]
+    [] // No dependencies - use refs instead
   );
 
   // Cleanup on unmount
   React.useEffect(() => {
     if(!config) return;
-    const latestState = state;
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
-      const hasChanged =
-        latestState.width !== config.width ||
-        latestState.height !== config.height ||
-        latestState.language !== config.language;
+    // Capture the current ref values when effect runs
+    const configSnapshot = config;
+    const stateSnapshot = stateRef;
+    const errorsSnapshot = errorsRef;
+    const mutationFnOnUnmount = mutationFnRef.current;
+    const timerRef = debounceTimerRef;
 
-      const hasErrors = Object.values(errors).some(e => e !== undefined);
+    return () => {
+      // Clear timer
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+
+      const latestState = stateSnapshot.current;
+      const latestErrors = errorsSnapshot.current;
+
+      const hasChanged =
+        latestState.width !== configSnapshot.width ||
+        latestState.height !== configSnapshot.height ||
+        latestState.language !== configSnapshot.language;
+
+      const hasErrors = Object.values(latestErrors).some(e => e !== undefined);
 
       if (hasChanged && !hasErrors) {
-        mutationFn(latestState).catch(err => {
+        mutationFnOnUnmount(latestState).catch(err => {
           logger.error("Save on unmount failed", { err });
         });
       }
     };
-  }, [state, config, errors, mutationFn]);
+  }, [config]); // Only depend on config
 
   return {
     state,
