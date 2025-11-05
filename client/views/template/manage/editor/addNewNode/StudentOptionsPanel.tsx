@@ -13,6 +13,7 @@ import {
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { CreateTextElementWrapper } from "./wrappers/CreateTextElementWrapper";
 import { CreateDateElementWrapper } from "./wrappers/CreateDateElementWrapper";
+import { CreateGenderElementWrapper } from "./wrappers/CreateGenderElementWrapper";
 
 export type StudentOptionsPanelProps = {
   compact: boolean;
@@ -31,7 +32,13 @@ type StudentDateFieldinput = {
   transformation?: GQL.DateTransformationType;
 };
 
-type Input = StudentTextFieldinput | StudentDateFieldinput;
+type StudentGenderFieldinput = {
+  type: GQL.ElementType.Gender;
+};
+
+type Input = StudentTextFieldinput | StudentDateFieldinput | StudentGenderFieldinput;
+
+type DialogType = GQL.ElementType;
 
 export type StudentOptionItem = {
   label: string;
@@ -46,23 +53,16 @@ export const StudentOptionsPanel: React.FC<StudentOptionsPanelProps> = ({ compac
     templateEditorTranslations: { addNodePanel: t },
   } = useAppTranslation();
 
-  const [openTextDialog, setOpenTextDialog] = useState(false);
   const [selectedOption, setSelectedOption] = useState<StudentOptionItem | undefined>(undefined);
-
-  const [openDateDialog, setOpenDateDialog] = useState(false);
+  const [dialogType, setDialogType] = useState<DialogType | undefined>(undefined);
 
   const handleOpenForField = useCallback((option: StudentOptionItem) => {
     setSelectedOption(option);
-    if (option.input?.type === GQL.ElementType.Text) {
-      setOpenTextDialog(true);
-    } else if (option.input?.type === GQL.ElementType.Date) {
-      setOpenDateDialog(true);
-    }
+    setDialogType(option.input?.type);
   }, []);
 
   const handleCloseDialog = useCallback(() => {
-    setOpenTextDialog(false);
-    setOpenDateDialog(false);
+    setDialogType(undefined);
     setSelectedOption(undefined);
   }, []);
 
@@ -101,7 +101,13 @@ export const StudentOptionsPanel: React.FC<StudentOptionsPanelProps> = ({ compac
           transformation: GQL.DateTransformationType.AgeCalculation,
         },
       },
-      { label: t.studentOptions.gender, icon: <WcIcon /> },
+      {
+        label: t.studentOptions.gender,
+        icon: <WcIcon />,
+        input: {
+          type: GQL.ElementType.Gender,
+        },
+      },
       { label: t.studentOptions.nationality, icon: <FlagIcon /> },
       { label: t.studentOptions.country, icon: <PublicIcon /> },
     ],
@@ -125,24 +131,33 @@ export const StudentOptionsPanel: React.FC<StudentOptionsPanelProps> = ({ compac
         ))}
       </Stack>
       {/* Text element creation dialog for text-backed student fields (name/email) */}
-      {openTextDialog && selectedOption?.input?.type === GQL.ElementType.Text && (
+      {dialogType === GQL.ElementType.Text && selectedOption?.input?.type === GQL.ElementType.Text && (
         <CreateTextElementWrapper
           templateId={templateId}
           initialStudentField={selectedOption.input.textField}
           initialElementName={selectedOption.label}
-          open={openTextDialog}
+          open={dialogType === GQL.ElementType.Text}
           onClose={handleCloseDialog}
         />
       )}
 
       {/* Date element creation dialog for date-backed student fields (DOB/age) */}
-      {openDateDialog && selectedOption?.input?.type === GQL.ElementType.Date && (
+      {dialogType === GQL.ElementType.Date && selectedOption?.input?.type === GQL.ElementType.Date && (
         <CreateDateElementWrapper
           templateId={templateId}
           initialStudentField={selectedOption.input.dateField}
           initialTransformation={selectedOption.input.transformation}
           initialElementName={selectedOption.label}
-          open={openDateDialog}
+          open={dialogType === GQL.ElementType.Date}
+          onClose={handleCloseDialog}
+        />
+      )}
+      {/* Gender element creation dialog for gender-backed student fields */}
+      {dialogType === GQL.ElementType.Gender && selectedOption?.input?.type === GQL.ElementType.Gender && (
+        <CreateGenderElementWrapper
+          templateId={templateId}
+          initialElementName={selectedOption.label}
+          open={dialogType === GQL.ElementType.Gender}
           onClose={handleCloseDialog}
         />
       )}

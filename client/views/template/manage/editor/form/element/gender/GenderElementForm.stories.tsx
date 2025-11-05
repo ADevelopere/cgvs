@@ -28,6 +28,7 @@ const mockState: GenderElementFormState = {
     height: 50,
     alignment: ElementAlignment.TopStart,
     renderOrder: 0,
+    templateId: 1,
   },
   textProps: {
     fontRef: { google: { identifier: "Roboto" } },
@@ -69,6 +70,7 @@ export const WithErrors: Story = {
         height: 0,
         alignment: ElementAlignment.CenterStart,
         renderOrder: 0,
+        templateId: 1,
       },
       textProps: {
         fontRef: { google: { identifier: "" } },
