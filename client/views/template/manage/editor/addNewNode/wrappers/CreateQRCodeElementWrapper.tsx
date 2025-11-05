@@ -208,7 +208,7 @@ export const CreateQRCodeElementWrapper: React.FC<
   if (open !== undefined) {
     return (
       <Dialog open={open} onClose={handleCancel} maxWidth="lg" fullWidth>
-        <DialogTitle>Create QR Code Element</DialogTitle>
+        <DialogTitle>{t.createQrCodeElement}</DialogTitle>
         <DialogContent>{formContent}</DialogContent>
       </Dialog>
     );

@@ -2,7 +2,7 @@ import {
   TemplateEditorTranslations,
   MiscellaneousPanelTranslations,
   TemplateEditorPaneTranslations,
-  AddNodePanelTranslations
+  AddNodePanelTranslations,
 } from "../components";
 
 const enMiscellaneousPanel: MiscellaneousPanelTranslations = {
@@ -19,33 +19,43 @@ const enTemplateEditorPane: TemplateEditorPaneTranslations = {
 
 const enAddNodePanel: AddNodePanelTranslations = {
   create: "Create",
-   items: {
-      student: "Student",
-      certificate: "Certificate",
-      variable: "Variable",
-      image: "Image",
-    },
-    studentOptions: {
-      title: "Student fields",
-      name: "Student name",
-      email: "Student email",
-      dateOfBirth: "Date of birth",
-      age: "Age",
-      gender: "Gender",
-      nationality: "Nationality",
-      country: "Country",
-    },
-    certificateOptions: {
-      title: "Certificate fields",
-      verificationCode: "Verification code",
-      qrCode: "QR code",
-    },
-    variableOptions: {
-      title: "Variables",
-      text: "Text variable",
-      date: "Date variable",
-      number: "Number variable",
-    },
+
+  createTextElement: "Create Text Element",
+  createDateElement: "Create Date Element",
+  createNumberElement: "Create Number Element",
+  createCountryElement: "Create Country Element",
+  createGenderElement: "Create Gender Element",
+  createImageElement: "Create Image Element",
+  createQrCodeElement: "Create QR Code Element",
+
+  items: {
+    student: "Student",
+    certificate: "Certificate",
+    variable: "Variable",
+    image: "Image",
+  },
+  studentOptions: {
+    title: "Student fields",
+    name: "Student name",
+    email: "Student email",
+    dateOfBirth: "Date of birth",
+    age: "Age",
+    gender: "Gender",
+    nationality: "Nationality",
+    country: "Country",
+  },
+  certificateOptions: {
+    title: "Certificate fields",
+    verificationCode: "Verification code",
+    qrCode: "QR code",
+  },
+  variableOptions: {
+    title: "Variables",
+    text: "Text variable",
+    date: "Date variable",
+    number: "Number variable",
+    select: "Select variable",
+  },
 };
 
 export const enTemplateEditor: TemplateEditorTranslations = {

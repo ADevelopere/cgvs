@@ -296,7 +296,7 @@ export const CreateTextElementWrapper: React.FC<
   if (open !== undefined) {
     return (
       <Dialog open={open} onClose={handleCancel} maxWidth="lg" fullWidth>
-        <DialogTitle>Create Text Element</DialogTitle>
+        <DialogTitle>{t.createTextElement}</DialogTitle>
         <DialogContent>{formContent}</DialogContent>
       </Dialog>
     );

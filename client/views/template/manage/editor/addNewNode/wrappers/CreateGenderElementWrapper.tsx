@@ -228,7 +228,7 @@ export const CreateGenderElementWrapper: React.FC<
   if (open !== undefined) {
     return (
       <Dialog open={open} onClose={handleCancel} maxWidth="lg" fullWidth>
-        <DialogTitle>Create Gender Element</DialogTitle>
+        <DialogTitle>{t.createGenderElement}</DialogTitle>
         <DialogContent>{formContent}</DialogContent>
       </Dialog>
     );

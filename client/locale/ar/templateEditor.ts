@@ -19,6 +19,15 @@ const templateEditorPane: TemplateEditorPaneTranslations = {
 
 const addNodePanel: AddNodePanelTranslations = {
   create: "إنشاء",
+
+  createTextElement: "إنشاء عنصر نصي",
+  createDateElement: "إنشاء عنصر تاريخ",
+  createNumberElement: "إنشاء عنصر رقمي",
+  createCountryElement: "إنشاء عنصر دولة",
+  createGenderElement: "إنشاء عنصر جنس",
+  createImageElement: "إنشاء عنصر صورة",
+  createQrCodeElement: "إنشاء عنصر رمز QR",
+
   items: {
     student: "الطالب",
     certificate: "الشهادة",
@@ -45,6 +54,7 @@ const addNodePanel: AddNodePanelTranslations = {
     text: "متغير نصي",
     date: "متغير تاريخ",
     number: "متغير رقمي",
+    select: "متغير اختيار",
   },
 };
 

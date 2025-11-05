@@ -302,7 +302,7 @@ export const CreateNumberElementWrapper: React.FC<
   if (open !== undefined) {
     return (
       <Dialog open={open} onClose={handleCancel} maxWidth="lg" fullWidth>
-        <DialogTitle>Create Number Element</DialogTitle>
+        <DialogTitle>{t.createNumberElement}</DialogTitle>
         <DialogContent>{formContent}</DialogContent>
       </Dialog>
     );

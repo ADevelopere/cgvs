@@ -27,6 +27,13 @@ export type AddNodePanelTranslations = {
   [key: string]: string | object;
 
   create: string;
+  createTextElement: string;
+  createDateElement: string;
+  createNumberElement: string;
+  createCountryElement: string;
+  createGenderElement: string;
+  createImageElement: string;
+  createQrCodeElement: string;
 
   items: {
     [key: string]: string;
@@ -61,5 +68,6 @@ export type AddNodePanelTranslations = {
     text: string;
     date: string;
     number: string;
+    select: string;
   };
 };

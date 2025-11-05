@@ -320,7 +320,7 @@ export const CreateDateElementWrapper: React.FC<
   if (open !== undefined) {
     return (
       <Dialog open={open} onClose={handleCancel} maxWidth="lg" fullWidth>
-        <DialogTitle>Create Date Element</DialogTitle>
+        <DialogTitle>{t.createDateElement}</DialogTitle>
         <DialogContent>{formContent}</DialogContent>
       </Dialog>
     );

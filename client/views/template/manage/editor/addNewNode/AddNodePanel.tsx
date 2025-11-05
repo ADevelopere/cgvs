@@ -47,9 +47,9 @@ export const AddNodePanel: React.FC<AddNodePanelProps> = ({ compact, templateId 
       case "student":
         return <StudentOptionsPanel compact={compact} style={{ maxWidth: 300 }} templateId={templateId} />;
       case "certificate":
-        return <CertificateOptionsPanel compact={compact} style={{ maxWidth: 300 }} />;
+        return <CertificateOptionsPanel compact={compact} style={{ maxWidth: 300 }} templateId={templateId} />;
       case "variable":
-        return <VariableOptionsPanel compact={compact} style={{ maxWidth: 300 }} />;
+        return <VariableOptionsPanel compact={compact} style={{ maxWidth: 300 }} templateId={templateId} />;
       default:
         return null;
     }

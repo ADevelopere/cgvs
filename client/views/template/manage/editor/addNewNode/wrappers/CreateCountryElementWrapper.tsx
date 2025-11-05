@@ -9,10 +9,7 @@ import { fontsQueryDocument } from "@/client/views/font/hooks/font.documents";
 import { validateBaseElementField } from "../../form/element/base/cretElementBaseValidator";
 import { validateTextPropsField } from "../../form/element/textProps/textPropsValidator";
 import { validateCountryElementCountryProps } from "../../form/element/country/countryValidators";
-import type {
-  CountryElementFormState,
-  CountryElementFormErrors,
-} from "../../form/element/country/types";
+import type { CountryElementFormState, CountryElementFormErrors } from "../../form/element/country/types";
 import type { UpdateBaseElementFn } from "../../form/element/base";
 import type { UpdateTextPropsFn } from "../../form/element/textProps";
 import { logger } from "@/client/lib/logger";
@@ -26,7 +23,7 @@ interface CreateCountryElementWrapperProps {
   templateId: number;
   // Pre-configured representation
   initialRepresentation?: GQL.CountryRepresentation;
-  // 
+  //
   initialElementName: string;
 
   // Dialog mode (for compact layout)
@@ -38,17 +35,18 @@ interface CreateCountryElementWrapperProps {
 // COMPONENT
 // ============================================================================
 
-export const CreateCountryElementWrapper: React.FC<
-  CreateCountryElementWrapperProps
-> = ({
+export const CreateCountryElementWrapper: React.FC<CreateCountryElementWrapperProps> = ({
   templateId,
   initialRepresentation,
   initialElementName,
   open,
   onClose,
 }) => {
-    const { templateEditorTranslations: {addNodePanel: t}, certificateElementsTranslations } = useAppTranslation();
-  
+  const {
+    templateEditorTranslations: { addNodePanel: t },
+    certificateElementsTranslations,
+  } = useAppTranslation();
+
   // Get context data
   const { config } = useCertificateElementStates();
   const language = config.state.language;
@@ -158,28 +156,31 @@ export const CreateCountryElementWrapper: React.FC<
     }));
   }, []);
 
-  const updateRepresentation = useCallback((representation: GQL.CountryRepresentation) => {
-    setState(prev => ({
-      ...prev,
-      countryProps: {
-        ...prev.countryProps,
-        representation,
-      },
-    }));
+  const updateRepresentation = useCallback(
+    (representation: GQL.CountryRepresentation) => {
+      setState(prev => ({
+        ...prev,
+        countryProps: {
+          ...prev.countryProps,
+          representation,
+        },
+      }));
 
-    const error = countryPropsValidator({
-      key: "representation",
-      value: representation,
-    });
+      const error = countryPropsValidator({
+        key: "representation",
+        value: representation,
+      });
 
-    setErrors(prev => ({
-      ...prev,
-      countryProps: {
-        ...prev.countryProps,
-        representation: error,
-      },
-    }));
-  }, [countryPropsValidator]);
+      setErrors(prev => ({
+        ...prev,
+        countryProps: {
+          ...prev.countryProps,
+          representation: error,
+        },
+      }));
+    },
+    [countryPropsValidator]
+  );
 
   const hasError = useMemo(() => {
     return (
@@ -268,7 +269,7 @@ export const CreateCountryElementWrapper: React.FC<
   if (open !== undefined) {
     return (
       <Dialog open={open} onClose={handleCancel} maxWidth="lg" fullWidth>
-        <DialogTitle>Create Country Element</DialogTitle>
+        <DialogTitle>{t.createCountryElement}</DialogTitle>
         <DialogContent>{formContent}</DialogContent>
       </Dialog>
     );
