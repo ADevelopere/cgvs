@@ -11,7 +11,7 @@ import {
   TemplateConfigUpdateAction,
 } from "./types";
 import { useTemplateConfigFormValidateFn } from "./templateConfigValidator";
-import { useNodesStore } from "../../NodesStoreProvider";
+import { useNodesState } from "../../NodesStateProvider";
 
 const updateDebounceDelayMs = 10000; // 10 seconds
 
@@ -32,7 +32,7 @@ export function useTemplateConfigState(
   const { config } = params;
   const { templateConfigTranslations: strings } = useAppTranslation();
   const notifications = useNotifications();
-  const {updateContainerNode} = useNodesStore();
+  const {updateContainerNode} = useNodesState();
 
   const [updateTemplateConfigMutation] = useMutation(
     updateTemplateConfigMutationDocument
@@ -58,6 +58,7 @@ export function useTemplateConfigState(
   const [errors, setErrors] = React.useState<TemplateConfigFormErrors>({});
   const [updating, setUpdating] = React.useState(false);
   const debounceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+  const pendingUpdateRef = React.useRef<GQL.TemplateConfigUpdateInput | null>(null);
   const validateAction = useTemplateConfigFormValidateFn(strings);
 
   // Refs for dependencies to stabilize callbacks
@@ -69,6 +70,8 @@ export function useTemplateConfigState(
   validateActionRef.current = validateAction;
   const updateContainerNodeRef = React.useRef(updateContainerNode);
   updateContainerNodeRef.current = updateContainerNode;
+  const configRef = React.useRef(config);
+  configRef.current = config;
 
   const mutationFn = React.useCallback(
     async (updateState: GQL.TemplateConfigUpdateInput) => {
@@ -138,6 +141,9 @@ export function useTemplateConfigState(
         });
       }
 
+      // Store pending update
+      pendingUpdateRef.current = newState;
+
       // Clear existing debounce timer
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
@@ -150,9 +156,13 @@ export function useTemplateConfigState(
 
       // Set new debounce timer
       debounceTimerRef.current = setTimeout(() => {
-        mutationFnRef.current(newState).catch(err => {
-          logger.error("Debounced mutation failed", { err });
-        });
+        const pendingState = pendingUpdateRef.current;
+        if (pendingState) {
+          mutationFnRef.current(pendingState).catch(err => {
+            logger.error("Debounced mutation failed", { err });
+          });
+          pendingUpdateRef.current = null;
+        }
       }, updateDebounceDelayMs);
     },
     [] // No dependencies - use refs instead
@@ -160,13 +170,10 @@ export function useTemplateConfigState(
 
   // Cleanup on unmount
   React.useEffect(() => {
-    if(!config) return;
     // Capture the current ref values when effect runs
-    const configSnapshot = config;
-    const stateSnapshot = stateRef;
-    const errorsSnapshot = errorsRef;
-    const mutationFnOnUnmount = mutationFnRef.current;
     const timerRef = debounceTimerRef;
+    const pendingUpdateRefSnapshot = pendingUpdateRef;
+    const mutationFnOnUnmount = mutationFnRef.current;
 
     return () => {
       // Clear timer
@@ -174,23 +181,15 @@ export function useTemplateConfigState(
         clearTimeout(timerRef.current);
       }
 
-      const latestState = stateSnapshot.current;
-      const latestErrors = errorsSnapshot.current;
-
-      const hasChanged =
-        latestState.width !== configSnapshot.width ||
-        latestState.height !== configSnapshot.height ||
-        latestState.language !== configSnapshot.language;
-
-      const hasErrors = Object.values(latestErrors).some(e => e !== undefined);
-
-      if (hasChanged && !hasErrors) {
-        mutationFnOnUnmount(latestState).catch(err => {
+      // Save pending update if exists
+      const pendingState = pendingUpdateRefSnapshot.current;
+      if (pendingState) {
+        mutationFnOnUnmount(pendingState).catch(err => {
           logger.error("Save on unmount failed", { err });
         });
       }
     };
-  }, [config]); // Only depend on config
+  }, []); // Empty dependency array - only run on mount/unmount
 
   return {
     state,

@@ -209,7 +209,7 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
       padding: "10px",
       border: "1px solid #eee",
       borderRadius: "5px",
-      backgroundColor: "white",
+      backgroundColor: "transparent",
       width: baseElementState.width,
       height: baseElementState.height,
       overflow: "hidden",

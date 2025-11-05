@@ -24,8 +24,7 @@ export const useApplyNodeChange = () => {
   const {
     updateElementPosition,
     updateElementSize,
-    containerWidth,
-    containerHeight,
+    config: { width: containerWidth, height: containerHeight },
     setHelperLineHorizontal,
     setHelperLineVertical,
     setIsDragging,

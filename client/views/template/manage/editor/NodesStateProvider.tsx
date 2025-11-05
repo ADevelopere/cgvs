@@ -60,6 +60,8 @@ export interface UseNodesStoreReturn {
   batchUpdateNodes: (
     updates: Array<{ nodeId: string; updates: Partial<Node> }>
   ) => void;
+
+  nodesInitialized: boolean;
 }
 
 /**
@@ -170,6 +172,8 @@ export const NodesStoreProvider: React.FC<{
     }
   );
 
+  const [initialized, setInitialized] = React.useState(false);
+
   // Single useEffect to initialize nodes on mount
   React.useEffect(() => {
     if (!templateId) {
@@ -241,6 +245,7 @@ export const NodesStoreProvider: React.FC<{
     };
 
     initializeNodes();
+    setInitialized(true);
     // Only run on mount or when templateId changes
   }, [templateId]);
 
@@ -416,6 +421,7 @@ export const NodesStoreProvider: React.FC<{
       updateContainerNode,
       updateNode,
       batchUpdateNodes,
+      nodesInitialized: initialized,
     }),
     [
       nodes,
@@ -431,6 +437,7 @@ export const NodesStoreProvider: React.FC<{
       updateContainerNode,
       updateNode,
       batchUpdateNodes,
+      initialized,
     ]
   );
 
@@ -445,7 +452,7 @@ export const NodesStoreProvider: React.FC<{
  * Hook to access the nodes store from any component
  * Must be used within NodesStoreProvider
  */
-export function useNodesStore(): UseNodesStoreReturn {
+export function useNodesState(): UseNodesStoreReturn {
   const context = React.useContext(NodesStoreContext);
 
   if (!context) {

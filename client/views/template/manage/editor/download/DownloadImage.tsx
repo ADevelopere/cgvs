@@ -6,8 +6,8 @@ import {
 } from "@xyflow/react"; // Simplified imports
 import { toPng } from "html-to-image";
 import { useTheme } from "@mui/material/styles";
-import { useEffect, useState } from "react";
 import logger from "@/client/lib/logger";
+import { TemplateConfig } from "@/server/types";
 
 function downloadImage(dataUrl: string) {
   const a = document.createElement("a");
@@ -16,27 +16,12 @@ function downloadImage(dataUrl: string) {
   a.click();
 }
 
-// A4 landscape dimensions in pixels (297mm × 210mm at 96 DPI)
-const A4_WIDTH = 1123; // 297mm * 96px/25.4mm
-const A4_HEIGHT = 794; // 210mm * 96px/25.4mm
-function DownloadImage({ imageUrl }: { imageUrl: string }) {
-  const [dimensions, setDimensions] = useState({
-    width: A4_WIDTH,
-    height: A4_HEIGHT,
-  });
+export type DownloadImageProps = {
+  config: TemplateConfig;
+};
 
-  useEffect(() => {
-    if (imageUrl) {
-      const img = new Image();
-      img.src = imageUrl;
-      img.onload = () => {
-        setDimensions({
-          width: img.width,
-          height: img.height,
-        });
-      };
-    }
-  }, [imageUrl]);
+export const DownloadImage: React.FC<DownloadImageProps> = ({  config }) => {
+  const { width, height } = config
 
   const { getNodes } = useReactFlow(); // Use getNodes from the hook
   const theme = useTheme();
@@ -49,8 +34,8 @@ function DownloadImage({ imageUrl }: { imageUrl: string }) {
     const nodesBounds = getNodesBounds(allNodes);
     const _viewport = getViewportForBounds(
       nodesBounds,
-      dimensions.width,
-      dimensions.height,
+      width,
+      height,
       0.5,
       2,
       0
@@ -80,11 +65,11 @@ function DownloadImage({ imageUrl }: { imageUrl: string }) {
 
     toPng(element, {
       backgroundColor: theme.palette.background.paper,
-      width: dimensions.width,
-      height: dimensions.height,
+      width: width,
+      height: height,
       style: {
-        width: `${dimensions.width}px`,
-        height: `${dimensions.height}px`,
+        width: `${width}px`,
+        height: `${height}px`,
       },
       filter: node => {
         // Filter out any problematic elements

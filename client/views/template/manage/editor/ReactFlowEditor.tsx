@@ -5,31 +5,30 @@ import {
   Controls,
   Background,
   OnNodesChange,
+  ReactFlowProvider,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import React, { useCallback } from "react";
 import "./other/EditorTab.module.css";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import DownloadImage from "./download/DownloadImage";
 import HelperLines from "./other/HelperLines";
 import { nodeTypes } from "./other/constants";
 import { useAppTheme } from "@/client/contexts";
-import { getTemplateImageUrl } from "../../utils/template.utils";
-import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { useNodeData } from "./NodeDataProvider";
 import { FlowEditorProps } from "./types";
 import { useApplyNodeChange } from "./useApplyNodeChange";
+import { useNodesState } from "./NodesStateProvider";
 
 const panOnDrag = [1, 2];
 
-
-const Flow: React.FC<FlowEditorProps> = ({ template, nodes, setNodes }) => {
+const Flow: React.FC<FlowEditorProps> = ({ nodes, setNodes, config }) => {
   const { theme } = useAppTheme();
   const { helperLineHorizontal, helperLineVertical } = useNodeData();
   const { applyNodeChanges } = useApplyNodeChange();
 
   const onNodesChange: OnNodesChange = useCallback(
-    (changes) => {
+    changes => {
       const updatedNodes = applyNodeChanges(changes, nodes);
       setNodes(updatedNodes);
     },
@@ -68,7 +67,7 @@ const Flow: React.FC<FlowEditorProps> = ({ template, nodes, setNodes }) => {
           padding: 0, // Remove padding
           minZoom: -1000, // Ensure it doesn't zoom out too much when fitting
           maxZoom: 1000, // Ensure it doesn't zoom in too much when fitting
-          nodes: [{ id: "node-1" }],
+          nodes: [{ id: "container" }],
         }}
         // Add theme-aware styling
         style={{
@@ -104,7 +103,7 @@ const Flow: React.FC<FlowEditorProps> = ({ template, nodes, setNodes }) => {
             justifyContent: "space-between",
           }}
         >
-          <DownloadImage imageUrl={getTemplateImageUrl(template, true)} />
+          <DownloadImage config={config} />
           {/* <DownloadPdf /> */}
         </Box>
       </ReactFlow>
@@ -124,30 +123,31 @@ function FlowDebug() {
   );
 }
 
-export type CertificateReactFlowEditorProps = {
-  template: GQL.Template;
-  elements: GQL.CertificateElementUnion[];
-};
 
-const CertificateReactFlowEditor: React.FC<CertificateReactFlowEditorProps> = ({
-  template,
-}) => {
-  const { nodes, setNodes } = useNodeData();
+const CertificateReactFlowEditor: React.FC = () => {
+  const { nodes, setNodes, config } = useNodeData();
+  const { nodesInitialized } = useNodesState();
+
+  if (!nodesInitialized) {
+    return <CircularProgress />;
+  }
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 2,
-        height: "-webkit-fill-available",
-        width: "-webkit-fill-available",
-      }}
-    >
-      <Flow template={template} nodes={nodes} setNodes={setNodes} />
-    </Box>
+    <ReactFlowProvider>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 2,
+          height: "-webkit-fill-available",
+          width: "-webkit-fill-available",
+        }}
+      >
+        <Flow config={config} nodes={nodes} setNodes={setNodes} />
+      </Box>
+    </ReactFlowProvider>
   );
 };
 

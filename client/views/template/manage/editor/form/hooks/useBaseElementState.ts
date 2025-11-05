@@ -15,7 +15,7 @@ import {
   UpdateBaseElementFn,
 } from "../element/base";
 import { useCertificateElementStates } from "../../CertificateElementContext";
-import { useNodesStore } from "../../NodesStoreProvider";
+import { useNodesState } from "../../NodesStateProvider";
 
 export type UseBaseElementStateParams = {
   templateId?: number;
@@ -80,7 +80,7 @@ export function useBaseElementState(
   const { templateId, elements } = params;
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
-  const {updateBaseNodeData} = useNodesStore();
+  const {updateBaseNodeData} = useNodesState();
 
   const [updateElementCommonPropertiesMutation] = useMutation(
     updateElementCommonPropertiesMutationDocument

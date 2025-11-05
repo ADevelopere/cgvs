@@ -2,8 +2,9 @@ import React from "react";
 import { Node } from "@xyflow/react";
 import { useEditorStore } from "./useEditorStore";
 import { logger } from "@/client/lib/logger";
-import { useNodesStore } from "./NodesStoreProvider";
+import { useNodesState } from "./NodesStateProvider";
 import { useCertificateElementStates } from "./CertificateElementContext";
+import { TemplateConfigUpdateInput } from "@/client/graphql/generated/gql/graphql";
 
 /**
  * Return type for useNodeData hook
@@ -26,8 +27,7 @@ export interface UseNodeDataReturn {
     height: number,
     isResizing?: boolean
   ) => void;
-  containerWidth: number;
-  containerHeight: number;
+  config: TemplateConfigUpdateInput;
   helperLineHorizontal: number | undefined;
   helperLineVertical: number | undefined;
   setHelperLineHorizontal: (value: number | undefined) => void;
@@ -56,8 +56,6 @@ export interface UseNodeDataReturn {
 export function useNodeData(): UseNodeDataReturn {
   // Get bases and config from certificate element context
   const { bases, config } = useCertificateElementStates();
-  const containerWidth = config.state.width;
-  const containerHeight = config.state.height;
 
   // Use the nodes hook - it automatically fetches data and initializes nodes
   const {
@@ -68,7 +66,7 @@ export function useNodeData(): UseNodeDataReturn {
     error: nodesError,
     updateBaseNodeData: updateBaseNodeDataFromStore,
     updateContainerNode: updateContainerNodeFromStore,
-  } = useNodesStore();
+  } = useNodesState();
 
   // Helper line state (kept local as it's UI-only)
   const [helperLineHorizontal, setHelperLineHorizontal] = React.useState<
@@ -232,8 +230,7 @@ export function useNodeData(): UseNodeDataReturn {
     setNodes,
     updateElementPosition,
     updateElementSize,
-    containerWidth,
-    containerHeight,
+    config: config.state,
     helperLineHorizontal,
     helperLineVertical,
     setHelperLineHorizontal,

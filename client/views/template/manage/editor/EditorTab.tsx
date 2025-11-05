@@ -16,8 +16,7 @@ import { TemplateConfigCreateForm } from "./form/config/TemplateConfigCreateForm
 import { MiscellaneousPanel } from "./miscellaneousPanel/MiscellaneousPanel";
 import { useAppTranslation } from "@/client/locale";
 import { useQuery, useApolloClient } from "@apollo/client/react";
-import { ReactFlowProvider } from "@xyflow/react";
-import { NodesStoreProvider } from "./NodesStoreProvider";
+import { NodesStoreProvider } from "./NodesStateProvider";
 import { CertificateElementProvider } from "./CertificateElementContext";
 
 function AddNodePane() {
@@ -162,59 +161,52 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
     <>
       <NodesStoreProvider templateId={template.id}>
         <CertificateElementProvider templateId={template.id}>
-          <ReactFlowProvider>
-            <EditorPaneViewController
-              firstPane={{
-                title: (
+          <EditorPaneViewController
+            firstPane={{
+              title: (
+                <Typography
+                  variant="h6"
+                  sx={{
+                    px: 2,
+                  }}
+                >
+                  {strings.addNodePane}
+                </Typography>
+              ),
+              content: <AddNodePane />,
+              buttonTooltip: "Toggle Add Node Panel",
+              buttonDisabled: false,
+              showCollapseButtonInHeader: true,
+            }}
+            middlePane={<CertificateReactFlowEditor />}
+            thirdPane={{
+              title: (
+                <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Typography
                     variant="h6"
                     sx={{
                       px: 2,
                     }}
                   >
-                    {strings.addNodePane}
+                    {strings.miscellaneousPane}
                   </Typography>
-                ),
-                content: <AddNodePane />,
-                buttonTooltip: "Toggle Add Node Panel",
-                buttonDisabled: false,
-                showCollapseButtonInHeader: true,
-              }}
-              middlePane={
-                <CertificateReactFlowEditor
-                  template={template}
-                  elements={elements}
-                />
-              }
-              thirdPane={{
-                title: (
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        px: 2,
-                      }}
-                    >
-                      {strings.miscellaneousPane}
-                    </Typography>
-                    <IconButton
-                      onClick={refreshData}
-                      size="small"
-                      sx={{ ml: 1 }}
-                      title="Refresh Data"
-                    >
-                      <RefreshIcon />
-                    </IconButton>
-                  </Box>
-                ),
-                content: <MiscellaneousPanel elements={elements} />,
-                buttonTooltip: "Toggle Miscellaneous Panel",
-                buttonDisabled: false,
-                showCollapseButtonInHeader: true,
-              }}
-              storageKey="templateManagementEditor"
-            />
-          </ReactFlowProvider>
+                  <IconButton
+                    onClick={refreshData}
+                    size="small"
+                    sx={{ ml: 1 }}
+                    title="Refresh Data"
+                  >
+                    <RefreshIcon />
+                  </IconButton>
+                </Box>
+              ),
+              content: <MiscellaneousPanel elements={elements} />,
+              buttonTooltip: "Toggle Miscellaneous Panel",
+              buttonDisabled: false,
+              showCollapseButtonInHeader: true,
+            }}
+            storageKey="templateManagementEditor"
+          />
           <FloatingLoadingIndicator
             loading={configLoading || elementsLoading}
           />
