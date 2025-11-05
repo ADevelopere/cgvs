@@ -18,21 +18,7 @@ import { useAppTranslation } from "@/client/locale";
 import { useQuery, useApolloClient } from "@apollo/client/react";
 import { NodesStoreProvider } from "./NodesStateProvider";
 import { CertificateElementProvider } from "./CertificateElementContext";
-
-function AddNodePane() {
-  return (
-    <Box
-      sx={{
-        minHeight: "100%",
-        display: "flex",
-        px: 1,
-      }}
-      id="add-node-panel"
-    >
-      {/* Add Node Panel Content */}
-    </Box>
-  );
-}
+import AddNodePanel from "./addNewNode/AddNodePanel";
 
 export type EditorTabProps = {
   template: Template;
@@ -176,7 +162,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
                   {strings.addNodePane}
                 </Typography>
               ),
-              content: <AddNodePane />,
+              content: <AddNodePanel compact={false} />,
               buttonTooltip: "Toggle Add Node Panel",
               buttonDisabled: false,
               showCollapseButtonInHeader: true,

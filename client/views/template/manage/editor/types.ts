@@ -1,6 +1,5 @@
 import {
   ElementType,
-  TemplateConfig,
 } from "@/client/graphql/generated/gql/graphql";
 import { Node } from "@xyflow/react";
 
@@ -23,6 +22,5 @@ export type ContainerNodeData = {
 
 export type FlowEditorProps = {
   nodes: Node[];
-  config: TemplateConfig;
   setNodes: (nodes: Node[]) => void;
 };

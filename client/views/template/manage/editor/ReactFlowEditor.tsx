@@ -22,7 +22,7 @@ import { useNodesState } from "./NodesStateProvider";
 
 const panOnDrag = [1, 2];
 
-const Flow: React.FC<FlowEditorProps> = ({ nodes, setNodes, config }) => {
+const Flow: React.FC<FlowEditorProps> = ({ nodes, setNodes }) => {
   const { theme } = useAppTheme();
   const { helperLineHorizontal, helperLineVertical } = useNodeData();
   const { applyNodeChanges } = useApplyNodeChange();
@@ -103,7 +103,7 @@ const Flow: React.FC<FlowEditorProps> = ({ nodes, setNodes, config }) => {
             justifyContent: "space-between",
           }}
         >
-          <DownloadImage config={config} />
+          <DownloadImage />
           {/* <DownloadPdf /> */}
         </Box>
       </ReactFlow>
@@ -125,7 +125,7 @@ function FlowDebug() {
 
 
 const CertificateReactFlowEditor: React.FC = () => {
-  const { nodes, setNodes, config } = useNodeData();
+  const { nodes, setNodes } = useNodeData();
   const { nodesInitialized } = useNodesState();
 
   if (!nodesInitialized) {
@@ -145,7 +145,7 @@ const CertificateReactFlowEditor: React.FC = () => {
           width: "-webkit-fill-available",
         }}
       >
-        <Flow config={config} nodes={nodes} setNodes={setNodes} />
+        <Flow nodes={nodes} setNodes={setNodes} />
       </Box>
     </ReactFlowProvider>
   );
