@@ -1,13 +1,10 @@
-import {
-  Panel,
-  useReactFlow,
-  getNodesBounds,
-  getViewportForBounds,
-} from "@xyflow/react"; // Simplified imports
+import { Panel } from "@xyflow/react";
 import { toPng } from "html-to-image";
 import { useTheme } from "@mui/material/styles";
 import logger from "@/client/lib/logger";
-import { TemplateConfig } from "@/server/types";
+import {
+  TemplateConfig,
+} from "@/client/graphql/generated/gql/graphql";
 
 function downloadImage(dataUrl: string) {
   const a = document.createElement("a");
@@ -21,26 +18,10 @@ export type DownloadImageProps = {
 };
 
 export const DownloadImage: React.FC<DownloadImageProps> = ({  config }) => {
-  const { width, height } = config
-
-  const { getNodes } = useReactFlow(); // Use getNodes from the hook
+  const { width, height } = config;
   const theme = useTheme();
 
   const onClick = () => {
-    const allNodes = getNodes(); // Get the array of Node objects
-
-    // Pass the Node array directly to getNodesBounds
-    // Remove the second argument (params object)
-    const nodesBounds = getNodesBounds(allNodes);
-    const _viewport = getViewportForBounds(
-      nodesBounds,
-      width,
-      height,
-      0.5,
-      2,
-      0
-    );
-
     const element: HTMLElement = document.querySelector(
       ".react-flow__viewport"
     ) as HTMLElement;
@@ -49,18 +30,30 @@ export const DownloadImage: React.FC<DownloadImageProps> = ({  config }) => {
       return;
     }
 
-    // Apply inline styles to nodes before capture
-    const nodes = element.querySelectorAll<HTMLElement>(".react-flow__node");
-    nodes.forEach(node => {
-      // Type inference works here
-      Object.assign(node.style, {
-        position: "absolute",
-        userSelect: "none",
-        pointerEvents: "all",
-        transformOrigin: "0 0",
-        boxSizing: "border-box",
-        minWidth: "150px",
-      });
+    // Store original styles to restore later
+    const originalStyles = new Map<HTMLElement, string>();
+
+    // Apply export-ready styles to text element nodes
+    const textNodes = element.querySelectorAll<HTMLElement>('.react-flow__node[data-id^="text-"]');
+    textNodes.forEach(node => {
+      const nodeContent = node.firstChild as HTMLElement;
+      if (nodeContent) {
+        // Store original border style
+        originalStyles.set(nodeContent, nodeContent.style.cssText);
+        // Remove border and adjust styling for export
+        Object.assign(nodeContent.style, {
+          border: "none",
+          borderRadius: "0",
+          padding: "0",
+        });
+      }
+    });
+
+    // Hide handles for export
+    const handles = element.querySelectorAll<HTMLElement>(".react-flow__handle");
+    handles.forEach(handle => {
+      originalStyles.set(handle, handle.style.display);
+      handle.style.display = "none";
     });
 
     toPng(element, {
@@ -70,24 +63,55 @@ export const DownloadImage: React.FC<DownloadImageProps> = ({  config }) => {
       style: {
         width: `${width}px`,
         height: `${height}px`,
+        transform: "none",
       },
       filter: node => {
-        // Filter out any problematic elements
+        // Filter out UI controls and buttons
         const exclusions = [
           "download-btn",
           "react-flow__minimap",
           "react-flow__controls",
+          "react-flow__panel",
+          "react-flow__attribution",
         ];
         return !exclusions.some(
           className => node.classList && node.classList.contains(className)
         );
       },
-      skipFonts: true, // Skip font loading to avoid CORS issues
-      pixelRatio: 2, // Increase quality
-      cacheBust: true, // Avoid caching issues
+      skipFonts: false, // Load fonts for better quality
+      pixelRatio: 2, // High quality output
+      cacheBust: true,
     })
-      .then(downloadImage)
+      .then(dataUrl => {
+        // Restore original styles
+        textNodes.forEach(node => {
+          const nodeContent = node.firstChild as HTMLElement;
+          if (nodeContent && originalStyles.has(nodeContent)) {
+            nodeContent.style.cssText = originalStyles.get(nodeContent) || "";
+          }
+        });
+        handles.forEach(handle => {
+          if (originalStyles.has(handle)) {
+            handle.style.display = originalStyles.get(handle) || "";
+          }
+        });
+        
+        downloadImage(dataUrl);
+      })
       .catch(error => {
+        // Restore original styles on error
+        textNodes.forEach(node => {
+          const nodeContent = node.firstChild as HTMLElement;
+          if (nodeContent && originalStyles.has(nodeContent)) {
+            nodeContent.style.cssText = originalStyles.get(nodeContent) || "";
+          }
+        });
+        handles.forEach(handle => {
+          if (originalStyles.has(handle)) {
+            handle.style.display = originalStyles.get(handle) || "";
+          }
+        });
+        
         logger.error("Error generating image:", error);
       });
   };
