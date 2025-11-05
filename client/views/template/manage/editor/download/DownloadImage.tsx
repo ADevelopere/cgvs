@@ -2,137 +2,136 @@ import { Panel } from "@xyflow/react";
 import { toPng } from "html-to-image";
 import { useTheme } from "@mui/material/styles";
 import logger from "@/client/lib/logger";
-import {
-  TemplateConfig,
-} from "@/client/graphql/generated/gql/graphql";
+import * as GQL from "@/client/graphql/generated/gql/graphql";
+import { useLazyQuery } from "@apollo/client/react";
+import { elementsByTemplateIdQueryDocument } from "../glqDocuments/element/element.documents";
+import React from "react";
+import { CertificateRenderer } from "../renderer/CertificateRenderer";
+import { useNodeData } from "../NodeDataProvider";
+import { CircularProgress } from "@mui/material";
 
 function downloadImage(dataUrl: string) {
   const a = document.createElement("a");
-  a.setAttribute("download", "reactflow.png");
+  a.setAttribute("download", "certificate.png");
   a.setAttribute("href", dataUrl);
   a.click();
 }
 
 export type DownloadImageProps = {
-  config: TemplateConfig;
+  config: GQL.TemplateConfig;
 };
 
-export const DownloadImage: React.FC<DownloadImageProps> = ({  config }) => {
+export const DownloadImage: React.FC<DownloadImageProps> = ({ config }) => {
   const { width, height } = config;
   const theme = useTheme();
+  const { templateId } = useNodeData();
+  const [isGenerating, setIsGenerating] = React.useState(false);
+  const [showRenderer, setShowRenderer] = React.useState(false);
+  const rendererRef = React.useRef<HTMLDivElement>(null);
 
-  const onClick = () => {
-    const element: HTMLElement = document.querySelector(
-      ".react-flow__viewport"
-    ) as HTMLElement;
-    if (!element) {
-      logger.error("Viewport element not found");
+  const [fetchElements, { data, loading }] = useLazyQuery(
+    elementsByTemplateIdQueryDocument,
+    {
+      fetchPolicy: "network-only", // Always fetch fresh data
+    }
+  );
+
+  const handleRendererReady = React.useCallback(() => {
+    // Called when fonts are loaded and renderer is ready
+    if (!rendererRef.current) {
+      logger.error("Renderer container not found");
+      setIsGenerating(false);
+      setShowRenderer(false);
       return;
     }
 
-    // Store original styles to restore later
-    const originalStyles = new Map<HTMLElement, string>();
+    // Small delay to ensure rendering is complete
+    setTimeout(() => {
+      if (!rendererRef.current) return;
 
-    // Apply export-ready styles to text element nodes
-    const textNodes = element.querySelectorAll<HTMLElement>('.react-flow__node[data-id^="text-"]');
-    textNodes.forEach(node => {
-      const nodeContent = node.firstChild as HTMLElement;
-      if (nodeContent) {
-        // Store original border style
-        originalStyles.set(nodeContent, nodeContent.style.cssText);
-        // Remove border and adjust styling for export
-        Object.assign(nodeContent.style, {
-          border: "none",
-          borderRadius: "0",
-          padding: "0",
-        });
-      }
-    });
-
-    // Hide handles for export
-    const handles = element.querySelectorAll<HTMLElement>(".react-flow__handle");
-    handles.forEach(handle => {
-      originalStyles.set(handle, handle.style.display);
-      handle.style.display = "none";
-    });
-
-    toPng(element, {
-      backgroundColor: theme.palette.background.paper,
-      width: width,
-      height: height,
-      style: {
-        width: `${width}px`,
-        height: `${height}px`,
-        transform: "none",
-      },
-      filter: node => {
-        // Filter out UI controls and buttons
-        const exclusions = [
-          "download-btn",
-          "react-flow__minimap",
-          "react-flow__controls",
-          "react-flow__panel",
-          "react-flow__attribution",
-        ];
-        return !exclusions.some(
-          className => node.classList && node.classList.contains(className)
-        );
-      },
-      skipFonts: false, // Load fonts for better quality
-      pixelRatio: 2, // High quality output
-      cacheBust: true,
-    })
-      .then(dataUrl => {
-        // Restore original styles
-        textNodes.forEach(node => {
-          const nodeContent = node.firstChild as HTMLElement;
-          if (nodeContent && originalStyles.has(nodeContent)) {
-            nodeContent.style.cssText = originalStyles.get(nodeContent) || "";
-          }
-        });
-        handles.forEach(handle => {
-          if (originalStyles.has(handle)) {
-            handle.style.display = originalStyles.get(handle) || "";
-          }
-        });
-        
-        downloadImage(dataUrl);
+      toPng(rendererRef.current, {
+        backgroundColor: "white",
+        width: width,
+        height: height,
+        pixelRatio: 2, // High quality output
+        cacheBust: true,
       })
-      .catch(error => {
-        // Restore original styles on error
-        textNodes.forEach(node => {
-          const nodeContent = node.firstChild as HTMLElement;
-          if (nodeContent && originalStyles.has(nodeContent)) {
-            nodeContent.style.cssText = originalStyles.get(nodeContent) || "";
-          }
+        .then(dataUrl => {
+          downloadImage(dataUrl);
+          setIsGenerating(false);
+          setShowRenderer(false);
+        })
+        .catch(error => {
+          logger.error("Error generating image:", error);
+          setIsGenerating(false);
+          setShowRenderer(false);
         });
-        handles.forEach(handle => {
-          if (originalStyles.has(handle)) {
-            handle.style.display = originalStyles.get(handle) || "";
-          }
-        });
-        
-        logger.error("Error generating image:", error);
-      });
+    }, 100);
+  }, [width, height]);
+
+  const onClick = () => {
+    if (!templateId) {
+      logger.error("Template ID not found");
+      return;
+    }
+
+    if (isGenerating) {
+      return; // Prevent multiple clicks
+    }
+
+    setIsGenerating(true);
+    setShowRenderer(true);
+
+    // Fetch fresh data from GraphQL
+    fetchElements({
+      variables: { templateId },
+    });
   };
 
   return (
-    <Panel position="top-right">
-      <button
-        className="download-btn xy-theme__button"
-        onClick={onClick}
-        style={{
-          padding: "8px 16px",
-          backgroundColor: theme.palette.primary.main,
-          color: theme.palette.primary.contrastText,
-          border: "none",
-          borderRadius: theme.shape.borderRadius,
-          cursor: "pointer",
-        }}
-      >
-        Download Image
-      </button>
-    </Panel>
+    <>
+      <Panel position="top-right">
+        <button
+          className="download-btn xy-theme__button"
+          onClick={onClick}
+          disabled={isGenerating || loading}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText,
+            border: "none",
+            borderRadius: theme.shape.borderRadius,
+            cursor: isGenerating || loading ? "not-allowed" : "pointer",
+            opacity: isGenerating || loading ? 0.6 : 1,
+          }}
+        >
+          {isGenerating || loading ? (
+            <CircularProgress size={16} color="inherit" />
+          ) : (
+            "Download Image"
+          )}
+        </button>
+      </Panel>
+
+      {/* Hidden renderer - only shown during image generation */}
+      {showRenderer && data?.elementsByTemplateId && (
+        <div
+          ref={rendererRef}
+          style={{
+            position: "fixed",
+            left: "-9999px",
+            top: "-9999px",
+            visibility: "hidden",
+          }}
+        >
+          <CertificateRenderer
+            elements={data.elementsByTemplateId}
+            config={config}
+            onReady={handleRendererReady}
+          />
+        </div>
+      )}
+    </>
   );
 }
 
