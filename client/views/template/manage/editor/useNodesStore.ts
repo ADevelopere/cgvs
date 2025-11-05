@@ -4,7 +4,7 @@ import { TextElementNodeData } from "./nodeRenderer/TextElementNode";
 import { ContainerNodeData, ElementBaseNodeData } from "./types";
 import { logger } from "@/client/lib/logger";
 import { useParams } from "next/navigation";
-import { useQuery } from "@apollo/client/react";
+import { useLazyQuery } from "@apollo/client/react";
 import {
   elementsByTemplateIdQueryDocument,
   templateConfigByTemplateIdQueryDocument,
@@ -132,7 +132,7 @@ function initializeNodesFromData(
 
 /**
  * React hook for managing ReactFlow nodes
- * Automatically fetches data from URL params and initializes nodes
+ * Uses lazy queries to fetch data on mount
  * Nodes are exposed as state for automatic re-renders
  */
 export function useNodesStore(): UseNodesStoreReturn {
@@ -143,53 +143,109 @@ export function useNodesStore(): UseNodesStoreReturn {
     return id ? Number.parseInt(id, 10) : null;
   }, [pathParams?.id]);
 
-  // Fetch elements
-  const {
-    data: elementsData,
-    loading: elementsLoading,
-    error: elementsError,
-  } = useQuery(elementsByTemplateIdQueryDocument, {
-    variables: { templateId: templateId ?? 0 },
-    skip: !templateId,
-    fetchPolicy: "cache-first",
-  });
-
-  // Fetch config
-  const {
-    data: configData,
-    loading: configLoading,
-    error: configError,
-  } = useQuery(templateConfigByTemplateIdQueryDocument, {
-    variables: { templateId: templateId ?? 0 },
-    skip: !templateId,
-    fetchPolicy: "cache-first",
-  });
-
   // Local state for nodes
   const [nodes, setNodesState] = React.useState<Node[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<Error | null>(null);
 
-  // Initialize nodes when data is loaded
+  // Track if initialization has been done for this templateId
+  const initializedRef = React.useRef<number | null>(null);
+
+  // Setup lazy queries
+  const [fetchElements, { error: elementsError }] = useLazyQuery(
+    elementsByTemplateIdQueryDocument,
+    {
+      fetchPolicy: "cache-first",
+    }
+  );
+
+  const [fetchConfig, { error: configError }] = useLazyQuery(
+    templateConfigByTemplateIdQueryDocument,
+    {
+      fetchPolicy: "cache-first",
+    }
+  );
+
+  // Single useEffect to initialize nodes on mount
   React.useEffect(() => {
-    if (!elementsData?.elementsByTemplateId || !configData?.templateConfigByTemplateId) {
+    if (!templateId) {
+      setLoading(false);
       return;
     }
 
-    const elements = elementsData.elementsByTemplateId;
-    const config = configData.templateConfigByTemplateId;
+    // Skip if already initialized for this templateId
+    if (initializedRef.current === templateId) {
+      return;
+    }
 
-    const initializedNodes = initializeNodesFromData(elements, {
-      width: config.width,
-      height: config.height,
-    });
+    const initializeNodes = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-    setNodesState(initializedNodes);
-  }, [elementsData, configData]);
+        logger.debug("useNodesStore: Fetching data for template", { templateId });
 
-  // Combine loading states
-  const loading = elementsLoading || configLoading;
-  
-  // Combine errors
-  const error = elementsError || configError || null;
+        // Fetch both queries
+        const [elementsResult, configResult] = await Promise.all([
+          fetchElements({ variables: { templateId } }),
+          fetchConfig({ variables: { templateId } }),
+        ]);
+
+        // Check for errors
+        if (elementsResult.error || configResult.error) {
+          const errorMsg = elementsResult.error?.message || configResult.error?.message || "Unknown error";
+          setError(new Error(errorMsg));
+          setLoading(false);
+          return;
+        }
+
+        // Check for data
+        const elements = elementsResult.data?.elementsByTemplateId;
+        const config = configResult.data?.templateConfigByTemplateId;
+
+        if (!elements || !config) {
+          logger.warn("useNodesStore: Missing data", {
+            hasElements: !!elements,
+            hasConfig: !!config,
+          });
+          setLoading(false);
+          return;
+        }
+
+        // Initialize nodes
+        const initializedNodes = initializeNodesFromData(elements, {
+          width: config.width,
+          height: config.height,
+        });
+
+        setNodesState(initializedNodes);
+        setLoading(false);
+
+        // Mark as initialized
+        initializedRef.current = templateId;
+
+        logger.debug("useNodesStore: Nodes initialized successfully", {
+          templateId,
+          nodeCount: initializedNodes.length,
+        });
+      } catch (err) {
+        logger.error("useNodesStore: Error initializing nodes", { error: err });
+        setError(err instanceof Error ? err : new Error(String(err)));
+        setLoading(false);
+      }
+    };
+
+    initializeNodes();
+    // Only run when templateId changes
+  }, [templateId]);
+
+  // Update error state if queries have errors
+  React.useEffect(() => {
+    if (elementsError || configError) {
+      const errorMsg = elementsError?.message || configError?.message || "Query error";
+      setError(new Error(errorMsg));
+    }
+  }, [elementsError, configError]);
 
   // Action: Set all nodes
   const setNodes = React.useCallback((newNodes: Node[]) => {

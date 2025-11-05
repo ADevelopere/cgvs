@@ -1,14 +1,18 @@
 import React from "react";
-import { UseBaseElementStateReturn } from "./form/hooks";
-import { UseTemplateConfigStateReturn } from "./form/config/useTemplateConfigState";
 import { Node } from "@xyflow/react";
 import { useEditorStore } from "./useEditorStore";
 import { logger } from "@/client/lib/logger";
 import { useNodesStore } from "./useNodesStore";
+import { useCertificateElementStates } from "./CertificateElementContext";
 
-export type NodeDataContextType = {
+/**
+ * Return type for useNodeData hook
+ */
+export interface UseNodeDataReturn {
   templateId: number | null;
   nodes: Node[];
+  loading: boolean;
+  error: Error | null;
   setNodes: (nodes: Node[]) => void;
   updateElementPosition: (
     elementId: number,
@@ -34,21 +38,27 @@ export type NodeDataContextType = {
   redo: () => void;
   canUndo: boolean;
   canRedo: boolean;
-};
+  // Node update actions
+  updateBaseNodeData: (
+    elementId: number,
+    updates: Partial<import("./types").ElementBaseNodeData>
+  ) => void;
+  updateContainerNode: (
+    updates: Partial<import("./types").ContainerNodeData>
+  ) => void;
+}
 
-const NodeDataContext = React.createContext<NodeDataContextType | null>(null);
+/**
+ * Hook for managing ReactFlow nodes and editor state
+ * Automatically fetches data from URL params and initializes nodes
+ * Gets bases and config from useCertificateElementStates
+ */
+export function useNodeData(): UseNodeDataReturn {
+  // Get bases and config from certificate element context
+  const { bases, config } = useCertificateElementStates();
+  const containerWidth = config.state.width;
+  const containerHeight = config.state.height;
 
-export type NodeDataProps = {
-  bases: UseBaseElementStateReturn;
-  config: UseTemplateConfigStateReturn;
-  children: React.ReactNode;
-};
-
-export const NodeDataProvider: React.FC<NodeDataProps> = ({
-  bases,
-  config: { state: container },
-  children,
-}) => {
   // Use the nodes hook - it automatically fetches data and initializes nodes
   const {
     nodes,
@@ -56,6 +66,8 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
     templateId,
     loading: nodesLoading,
     error: nodesError,
+    updateBaseNodeData: updateBaseNodeDataFromStore,
+    updateContainerNode: updateContainerNodeFromStore,
   } = useNodesStore();
 
   // Helper line state (kept local as it's UI-only)
@@ -212,56 +224,27 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
     });
   }, [redoFromStore, bases.updateBaseElementStateFn]);
 
-  const value = React.useMemo(
-    () => ({
-      templateId,
-      nodes,
-      setNodes,
-      updateElementPosition,
-      updateElementSize,
-      containerWidth: container.width,
-      containerHeight: container.height,
-      helperLineHorizontal,
-      helperLineVertical,
-      setHelperLineHorizontal,
-      setHelperLineVertical,
-      setIsDragging,
-      setIsResizing,
-      undo,
-      redo,
-      canUndo,
-      canRedo,
-    }),
-    [
-      templateId,
-      nodes,
-      setNodes,
-      updateElementPosition,
-      updateElementSize,
-      container.width,
-      container.height,
-      helperLineHorizontal,
-      helperLineVertical,
-      setIsDragging,
-      setIsResizing,
-      undo,
-      redo,
-      canUndo,
-      canRedo,
-    ]
-  );
-
-  return (
-    <NodeDataContext.Provider value={value}>
-      {children}
-    </NodeDataContext.Provider>
-  );
-};
-
-export const useNodeData = (): NodeDataContextType => {
-  const context = React.useContext(NodeDataContext);
-  if (!context) {
-    throw new Error("useNodeData must be used within a NodeData");
-  }
-  return context;
-};
+  return {
+    templateId,
+    nodes,
+    loading: nodesLoading,
+    error: nodesError,
+    setNodes,
+    updateElementPosition,
+    updateElementSize,
+    containerWidth,
+    containerHeight,
+    helperLineHorizontal,
+    helperLineVertical,
+    setHelperLineHorizontal,
+    setHelperLineVertical,
+    setIsDragging,
+    setIsResizing,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    updateBaseNodeData: updateBaseNodeDataFromStore,
+    updateContainerNode: updateContainerNodeFromStore,
+  };
+}

@@ -16,7 +16,7 @@ import { useNodesStore } from "../../useNodesStore";
 const updateDebounceDelayMs = 10000; // 10 seconds
 
 export type UseTemplateConfigStateParams = {
-  config: GQL.TemplateConfig;
+  config?: GQL.TemplateConfig | null;
 };
 
 export type UseTemplateConfigStateReturn = {
@@ -38,11 +38,21 @@ export function useTemplateConfigState(
     updateTemplateConfigMutationDocument
   );
 
-  const [state, setState] = React.useState<GQL.TemplateConfigUpdateInput>({
-    id: config.id,
-    width: config.width,
-    height: config.height,
-    language: config.language,
+  const [state, setState] = React.useState<GQL.TemplateConfigUpdateInput>(() => {
+    if(config){
+      return {
+        id: config.id,
+        width: config.width,
+        height: config.height,
+        language: config.language,
+      };
+    }
+    return {
+      id: 0,
+      width: 0,
+      height: 0,
+      language: GQL.AppLanguage.Ar,
+    };
   });
 
   const [errors, setErrors] = React.useState<TemplateConfigFormErrors>({});
@@ -124,11 +134,12 @@ export function useTemplateConfigState(
         });
       }, updateDebounceDelayMs);
     },
-    [validateAction, state, errors, mutationFn, updateContainerNode, config.templateId]
+    [validateAction, state, errors, mutationFn, updateContainerNode, config?.templateId]
   );
 
   // Cleanup on unmount
   React.useEffect(() => {
+    if(!config) return;
     const latestState = state;
     return () => {
       if (debounceTimerRef.current) {

@@ -6,10 +6,18 @@ import {
   UseTemplateConfigStateReturn,
 } from "./form/config/useTemplateConfigState";
 import * as ElState from "./form/hooks";
-import { NodeDataProvider } from "./NodeDataProvider";
-import { ReactFlowProvider } from "@xyflow/react";
+import {
+  elementsByTemplateIdQueryDocument,
+  templateConfigByTemplateIdQueryDocument,
+} from "./glqDocuments";
+import { useQuery } from "@apollo/client/react";
+import { templateVariablesByTemplateIdQueryDocument } from "../variables/hooks/templateVariable.documents";
+import { useParams } from "next/navigation";
 
-type CertificateElementContextType = {
+/**
+ * Return type for useCertificateElementStates hook
+ */
+export interface UseCertificateElementStatesReturn {
   // common
   bases: ElState.UseBaseElementStateReturn;
   textProps: ElState.UseTextPropsStateReturn;
@@ -30,40 +38,80 @@ type CertificateElementContextType = {
   selectVariables: GQL.TemplateSelectVariable[];
   dateVariables: GQL.TemplateDateVariable[];
   numberVariables: GQL.TemplateNumberVariable[];
-};
+}
 
-export const CertificateElementContext =
-  React.createContext<CertificateElementContextType | null>(null);
+/**
+ * Hook for managing certificate element states
+ * Provides all element states, props, and data sources
+ */
+export function useCertificateElementStates(): UseCertificateElementStatesReturn {
+  // Internal state for elements, config, and variables
+    // Get templateId from Next.js URL params
+    const pathParams = useParams<{ id: string }>();
+    const templateId = React.useMemo(() => {
+      const id = pathParams?.id;
+      return id ? Number.parseInt(id, 10) : null;
+    }, [pathParams?.id]);
 
-export type CertificateElementProviderProps = {
-  elements: GQL.CertificateElementUnion[];
-  templateConfig: GQL.TemplateConfig;
-  variables: GQL.TemplateVariable[];
-  children: React.ReactNode;
-};
+    // ========== Template Config ==========
+    const {
+      data: configData,
+      loading: configApolloLoading,
+    } = useQuery(templateConfigByTemplateIdQueryDocument, {
+      variables: { templateId: templateId ?? 0 },
+      skip: !templateId,
+      fetchPolicy: "cache-and-network",
+    });
+  
+    const templateConfig: GQL.TemplateConfig | null | undefined =
+      React.useMemo(() => {
+        const config = configData?.templateConfigByTemplateId;
+        return config;
+      }, [configApolloLoading, configData?.templateConfigByTemplateId]);
+  
+    // =========== Elements =============
+  
+    const {
+      data: elementsData,
+      loading: elementsApolloLoading,
+    } = useQuery(elementsByTemplateIdQueryDocument, {
+      variables: { templateId: templateId ?? 0 },
+      skip: !templateId,
+      fetchPolicy: "cache-first",
+    });
+  
+    const elements: GQL.CertificateElementUnion[] = React.useMemo(() => {
+      const elementsList = elementsData?.elementsByTemplateId || [];
+      return elementsList;
+    }, [elementsApolloLoading, elementsData?.elementsByTemplateId]);
 
-export const CertificateElementProvider: React.FC<
-  CertificateElementProviderProps
-> = ({ children, ...props }) => {
-  const { elements } = props;
-  const config = useTemplateConfigState({ config: props.templateConfig });
+      const { data: variablesData } = useQuery(
+    templateVariablesByTemplateIdQueryDocument,
+    {
+      variables: { templateId: templateId ?? 0 },
+      skip: !templateId,
+      fetchPolicy: "cache-first",
+    }
+  );
+
+    const variables: GQL.TemplateVariable[] = React.useMemo(
+    () => variablesData?.templateVariablesByTemplateId || [],
+    [variablesData]
+  );
+
+  const config = useTemplateConfigState({ config: templateConfig});
   const textProps = ElState.useTextPropsState({ elements });
   const bases = ElState.useBaseElementState({ elements });
-  const textDataSource = ElState.useTextDataSourceState({
-    elements,
-  });
-  const dateDataSource = ElState.useDateDataSourceState({
-    elements,
-  });
-  const numberDataSource = ElState.useNumberDataSourceState({
-    elements,
-  });
+  const textDataSource = ElState.useTextDataSourceState({ elements });
+  const dateDataSource = ElState.useDateDataSourceState({ elements });
+  const numberDataSource = ElState.useNumberDataSourceState({ elements });
   const dateProps = ElState.useDatePropsState({ elements });
   const countryProps = ElState.useCountryPropsState({ elements });
   const imageProps = ElState.useImagePropsState({ elements });
   const numberProps = ElState.useNumberPropsState({ elements });
   const qrCodeProps = ElState.useQRCodePropsState({ elements });
 
+  // Process variables by type
   const { textVariables, selectVariables, dateVariables, numberVariables } =
     React.useMemo(() => {
       const textVariables: GQL.TemplateTextVariable[] = [];
@@ -71,7 +119,7 @@ export const CertificateElementProvider: React.FC<
       const dateVariables: GQL.TemplateDateVariable[] = [];
       const numberVariables: GQL.TemplateNumberVariable[] = [];
 
-      for (const variable of props.variables) {
+      for (const variable of variables) {
         switch (variable.type) {
           case GQL.TemplateVariableType.Text:
             textVariables.push(variable);
@@ -89,62 +137,23 @@ export const CertificateElementProvider: React.FC<
       }
 
       return { textVariables, selectVariables, dateVariables, numberVariables };
-    }, [props.variables]);
+    }, [variables]);
 
-  const value = React.useMemo(
-    () => ({
-      textProps,
-      bases,
-      config,
-      textDataSource,
-      dateDataSource,
-      numberDataSource,
-      dateProps,
-      countryProps,
-      imageProps,
-      numberProps,
-      qrCodeProps,
-      textVariables,
-      selectVariables,
-      dateVariables,
-      numberVariables,
-    }),
-    [
-      textProps,
-      bases,
-      config,
-      textDataSource,
-      dateDataSource,
-      numberDataSource,
-      dateProps,
-      countryProps,
-      imageProps,
-      numberProps,
-      qrCodeProps,
-      textVariables,
-      selectVariables,
-      dateVariables,
-      numberVariables,
-    ]
-  );
-
-  return (
-    <CertificateElementContext.Provider value={value}>
-      <ReactFlowProvider>
-        <NodeDataProvider bases={bases} config={config}>
-          {children}
-        </NodeDataProvider>
-      </ReactFlowProvider>
-    </CertificateElementContext.Provider>
-  );
-};
-
-export const useCertificateElementStates = () => {
-  const context = React.useContext(CertificateElementContext);
-  if (!context) {
-    throw new Error(
-      "useCertificateElementContext must be used within a CertificateElementProvider"
-    );
-  }
-  return context;
-};
+  return {
+    textProps,
+    bases,
+    config,
+    textDataSource,
+    dateDataSource,
+    numberDataSource,
+    dateProps,
+    countryProps,
+    imageProps,
+    numberProps,
+    qrCodeProps,
+    textVariables,
+    selectVariables,
+    dateVariables,
+    numberVariables,
+  };
+}

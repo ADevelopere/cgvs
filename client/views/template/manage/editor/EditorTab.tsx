@@ -8,7 +8,6 @@ import EditorPaneViewController from "@/client/components/editorPane/EditorPaneV
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { ApolloClient } from "@apollo/client";
-import { useQuery, useApolloClient } from "@apollo/client/react";
 import {
   elementsByTemplateIdQueryDocument,
   templateConfigByTemplateIdQueryDocument,
@@ -16,9 +15,8 @@ import {
 import { TemplateConfigCreateForm } from "./form/config/TemplateConfigCreateForm";
 import { MiscellaneousPanel } from "./miscellaneousPanel/MiscellaneousPanel";
 import { useAppTranslation } from "@/client/locale";
-import { CertificateElementProvider } from "@/client/views/template/manage/editor/CertificateElementContext";
-import { templateVariablesByTemplateIdQueryDocument } from "../variables/hooks/templateVariable.documents";
-
+import { useQuery, useApolloClient } from "@apollo/client/react";
+import { ReactFlowProvider } from "@xyflow/react";
 
 function AddNodePane() {
   return (
@@ -63,10 +61,7 @@ const FloatingLoadingIndicator: React.FC<{ loading: boolean }> = ({
 /**
  * Evicts the cache for template-related queries to refresh data.
  */
- const refresh = (
-  apolloClient: ApolloClient,
-  templateId: number,
-): void => {
+const refresh = (apolloClient: ApolloClient, templateId: number): void => {
   apolloClient.cache.evict({
     id: "ROOT_QUERY",
     fieldName: "templateConfigByTemplateId",
@@ -84,7 +79,6 @@ const FloatingLoadingIndicator: React.FC<{ loading: boolean }> = ({
   });
   apolloClient.cache.gc();
 };
-
 
 export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
   const {
@@ -129,26 +123,11 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
 
   // template variables
 
-  const { data: variablesData } = useQuery(
-    templateVariablesByTemplateIdQueryDocument,
-    {
-      variables: { templateId: template.id },
-      skip: !template.id,
-      fetchPolicy: "cache-first",
-    }
-  );
-
   const apolloClient = useApolloClient();
   // function to evict cache for all quries with same query vars used above
   const refreshData = React.useCallback(() => {
     refresh(apolloClient, template.id);
   }, [apolloClient, template.id]);
-
-
-  const variables: GQL.TemplateVariable[] = React.useMemo(
-    () => variablesData?.templateVariablesByTemplateId || [],
-    [variablesData]
-  );
 
   if (!configLoading && !templateConfig) {
     return <TemplateConfigCreateForm template={template} />;
@@ -179,11 +158,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
 
   return (
     <>
-      <CertificateElementProvider
-        elements={elements}
-        templateConfig={templateConfig}
-        variables={variables}
-      >
+      <ReactFlowProvider>
         <EditorPaneViewController
           firstPane={{
             title: (
@@ -211,21 +186,21 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
             title: (
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Typography
-                variant="h6"
-                sx={{
-                  px: 2,
-                }}
-              >
-                {strings.miscellaneousPane}
-              </Typography>
-              <IconButton
-                onClick={refreshData}
-                size="small"
-                sx={{ ml: 1 }}
-                title="Refresh Data"
-              >
-                <RefreshIcon />
-              </IconButton>
+                  variant="h6"
+                  sx={{
+                    px: 2,
+                  }}
+                >
+                  {strings.miscellaneousPane}
+                </Typography>
+                <IconButton
+                  onClick={refreshData}
+                  size="small"
+                  sx={{ ml: 1 }}
+                  title="Refresh Data"
+                >
+                  <RefreshIcon />
+                </IconButton>
               </Box>
             ),
             content: <MiscellaneousPanel elements={elements} />,
@@ -235,7 +210,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
           }}
           storageKey="templateManagementEditor"
         />
-      </CertificateElementProvider>
+      </ReactFlowProvider>
       <FloatingLoadingIndicator loading={configLoading || elementsLoading} />
     </>
   );
