@@ -16,6 +16,7 @@ import {
 export interface ClientCanvasGeneratorProps {
   templateId: number;
   onExport?: (dataUrl: string) => void;
+  onReady?: () => void;
 }
 
 export type ClientCanvasGeneratorRef = {
@@ -38,12 +39,13 @@ function collectFontFamilies(elements: GQL.CertificateElementUnion[]): string[] 
 }
 
 function CanvasInner(
-  { elements, config, onExport }: { elements: GQL.CertificateElementUnion[]; config: GQL.TemplateConfig; onExport?: (d: string) => void },
+  { elements, config, onExport, onReady }: { elements: GQL.CertificateElementUnion[]; config: GQL.TemplateConfig; onExport?: (d: string) => void; onReady?: () => void },
   ref: React.Ref<ClientCanvasGeneratorRef>
 ) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const { fontsLoaded, families } = React.useContext(FontContext);
   const { metricsReady, getFont } = useOpentypeMetrics(families);
+  const didReady = React.useRef(false);
 
   const draw = React.useCallback(() => {
     const canvas = canvasRef.current;
@@ -100,8 +102,13 @@ function CanvasInner(
   }, [elements, config, fontsLoaded, metricsReady, getFont]);
 
   React.useEffect(() => {
+    if (!fontsLoaded || !metricsReady) return;
     draw();
-  }, [draw]);
+    if (!didReady.current) {
+      didReady.current = true;
+      onReady?.();
+    }
+  }, [draw, fontsLoaded, metricsReady, onReady]);
 
   const download = React.useCallback(() => {
     const canvas = canvasRef.current;
@@ -128,10 +135,10 @@ function CanvasInner(
   );
 }
 
-const CanvasInnerWithRef = React.forwardRef<ClientCanvasGeneratorRef, { elements: GQL.CertificateElementUnion[]; config: GQL.TemplateConfig; onExport?: (d: string) => void }>(CanvasInner);
+const CanvasInnerWithRef = React.forwardRef<ClientCanvasGeneratorRef, { elements: GQL.CertificateElementUnion[]; config: GQL.TemplateConfig; onExport?: (d: string) => void; onReady?: () => void }>(CanvasInner);
 
 export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, ClientCanvasGeneratorProps>(
-  ({ templateId, onExport }, ref) => {
+  ({ templateId, onExport, onReady }, ref) => {
     const { data: configData, error: configError } = useQuery(
       templateConfigByTemplateIdQueryDocument,
       { variables: { templateId }, fetchPolicy: "cache-first" }
@@ -157,7 +164,7 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
 
     return (
       <FontProvider families={families}>
-        <CanvasInnerWithRef ref={ref} elements={elements} config={config} onExport={onExport} />
+        <CanvasInnerWithRef ref={ref} elements={elements} config={config} onExport={onExport} onReady={onReady} />
       </FontProvider>
     );
   }

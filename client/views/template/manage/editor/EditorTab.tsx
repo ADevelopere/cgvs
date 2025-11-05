@@ -45,13 +45,16 @@ const FloatingLoadingIndicator: React.FC<{ loading: boolean }> = ({
     <Box
       sx={{
         position: "absolute",
-        top: 16,
+        bottom: 16,
         right: 16,
         zIndex: 1000,
-        backgroundColor: "rgba(255, 255, 255, 0.8)",
-        padding: "8px 12px",
-        borderRadius: "4px",
-        boxShadow: 3,
+        backgroundColor:loading?  "background.paper" : "transparent",
+        padding: loading? "8px 12px" : 0,
+        borderRadius: loading? "4px" : 0,
+        boxShadow: loading? 3 : 0,
+        display: loading? "flex" : "none",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       {loading ? <CircularProgress size={24} /> : null}
@@ -200,7 +203,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
                   </IconButton>
                 </Box>
               ),
-              content: <MiscellaneousPanel elements={elements} />,
+              content: <MiscellaneousPanel elements={elements} templateConfig={templateConfig} />,
               buttonTooltip: "Toggle Miscellaneous Panel",
               buttonDisabled: false,
               showCollapseButtonInHeader: true,

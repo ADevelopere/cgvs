@@ -2,6 +2,7 @@ import {
   CertificateElementUnion,
   ElementType,
   TextElement,
+  TemplateConfig,
 } from "@/client/graphql/generated/gql/graphql";
 import { Stack, Typography } from "@mui/material";
 import { CertificateElementIcon } from "../elements/ElementIcon";
@@ -11,11 +12,12 @@ import React from "react";
 
 export type CertificateElementCurrentItemSettingsProps = {
   elements: CertificateElementUnion[];
+  templateConfig: TemplateConfig;
 };
 
 export const CertificateElementCurrentItemSettings: React.FC<
   CertificateElementCurrentItemSettingsProps
-> = ({ elements }) => {
+> = ({ elements, templateConfig }) => {
   const { currentElementId } = useEditorStore();
 
   const currentElement = React.useMemo(() => {
@@ -31,12 +33,13 @@ export const CertificateElementCurrentItemSettings: React.FC<
         return (
           <CurrentTextElement
             element={currentElement as TextElement}
+            templateConfig={templateConfig}
           />
         );
       default:
         return null;
     }
-  }, [currentElement, elements]);
+  }, [currentElement, elements, templateConfig]);
 
   if (!currentElement) {
     return <Typography variant="body2">No element selected.</Typography>;

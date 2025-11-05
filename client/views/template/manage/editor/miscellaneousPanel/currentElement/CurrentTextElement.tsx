@@ -1,5 +1,5 @@
 import React from "react";
-import { TextElement } from "@/client/graphql/generated/gql/graphql";
+import { TemplateConfig, TextElement,  } from "@/client/graphql/generated/gql/graphql";
 import { Stack, Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { BaseCertificateElementForm } from "../../form/element/base";
@@ -13,14 +13,18 @@ import {
   useTextDataSource,
 } from "../../form/hooks";
 import { useCertificateElementStates } from "../../CertificateElementContext";
+import { useAppTranslation } from "@/client/locale";
 
 export type CurrentTextElementProps = {
   element: TextElement;
+  templateConfig: TemplateConfig
 };
 
 export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
   element,
+  templateConfig,
 }) => {
+  const { certificateElementsTranslations: strings } = useAppTranslation();
   const {
     data: fontsData,
     loading: _fontsLoading,
@@ -54,7 +58,7 @@ export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
     <Stack>
       <Accordion defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Data source</Typography>
+          <Typography>{strings.textElement.dataSourceLabel}</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <DataSourceForm
@@ -71,7 +75,7 @@ export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
 
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Base properties</Typography>
+          <Typography>{strings.baseElement.basePropertiesTitle}</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <BaseCertificateElementForm
@@ -84,7 +88,7 @@ export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
 
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Text properties</Typography>
+          <Typography>{strings.textProps.textPropertiesTitle}</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <TextPropsForm
@@ -92,7 +96,7 @@ export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
             onTextPropsChange={updateTextProps}
             errors={textPropsErrors}
             selfHostedFonts={fonts}
-            language="ar"
+            language={templateConfig.language}
           />
         </AccordionDetails>
       </Accordion>

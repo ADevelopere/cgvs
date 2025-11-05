@@ -13,10 +13,12 @@ import { CertificateElementCurrentItemSettings } from "./currentElement/CurrentE
 
 export type MiscellaneousPanelProps = {
   elements: GQL.CertificateElementUnion[];
+  templateConfig: GQL.TemplateConfig
 };
 
 export const MiscellaneousPanel: React.FC<MiscellaneousPanelProps> = ({
   elements,
+  templateConfig,
 }) => {
   const {
     templateEditorTranslations: { miscellaneousPanel: strings },
@@ -119,7 +121,7 @@ export const MiscellaneousPanel: React.FC<MiscellaneousPanelProps> = ({
           value="currentElement"
           sx={{ flexGrow: 1, p: 1, overflowY: "auto" }}
         >
-          <CertificateElementCurrentItemSettings elements={elements} />
+          <CertificateElementCurrentItemSettings elements={elements} templateConfig={templateConfig} />
         </TabPanel>
       </TabContext>
     </Box>
