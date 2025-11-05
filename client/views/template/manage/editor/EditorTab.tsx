@@ -17,6 +17,8 @@ import { MiscellaneousPanel } from "./miscellaneousPanel/MiscellaneousPanel";
 import { useAppTranslation } from "@/client/locale";
 import { useQuery, useApolloClient } from "@apollo/client/react";
 import { ReactFlowProvider } from "@xyflow/react";
+import { NodesStoreProvider } from "./NodesStoreProvider";
+import { CertificateElementProvider } from "./CertificateElementContext";
 
 function AddNodePane() {
   return (
@@ -158,60 +160,64 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
 
   return (
     <>
-      <ReactFlowProvider>
-        <EditorPaneViewController
-          firstPane={{
-            title: (
-              <Typography
-                variant="h6"
-                sx={{
-                  px: 2,
-                }}
-              >
-                {strings.addNodePane}
-              </Typography>
-            ),
-            content: <AddNodePane />,
-            buttonTooltip: "Toggle Add Node Panel",
-            buttonDisabled: false,
-            showCollapseButtonInHeader: true,
-          }}
-          middlePane={
-            <CertificateReactFlowEditor
-              template={template}
-              elements={elements}
+      <CertificateElementProvider templateId={template.id}>
+        <NodesStoreProvider templateId={template.id}>
+          <ReactFlowProvider>
+            <EditorPaneViewController
+              firstPane={{
+                title: (
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      px: 2,
+                    }}
+                  >
+                    {strings.addNodePane}
+                  </Typography>
+                ),
+                content: <AddNodePane />,
+                buttonTooltip: "Toggle Add Node Panel",
+                buttonDisabled: false,
+                showCollapseButtonInHeader: true,
+              }}
+              middlePane={
+                <CertificateReactFlowEditor
+                  template={template}
+                  elements={elements}
+                />
+              }
+              thirdPane={{
+                title: (
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        px: 2,
+                      }}
+                    >
+                      {strings.miscellaneousPane}
+                    </Typography>
+                    <IconButton
+                      onClick={refreshData}
+                      size="small"
+                      sx={{ ml: 1 }}
+                      title="Refresh Data"
+                    >
+                      <RefreshIcon />
+                    </IconButton>
+                  </Box>
+                ),
+                content: <MiscellaneousPanel elements={elements} />,
+                buttonTooltip: "Toggle Miscellaneous Panel",
+                buttonDisabled: false,
+                showCollapseButtonInHeader: true,
+              }}
+              storageKey="templateManagementEditor"
             />
-          }
-          thirdPane={{
-            title: (
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    px: 2,
-                  }}
-                >
-                  {strings.miscellaneousPane}
-                </Typography>
-                <IconButton
-                  onClick={refreshData}
-                  size="small"
-                  sx={{ ml: 1 }}
-                  title="Refresh Data"
-                >
-                  <RefreshIcon />
-                </IconButton>
-              </Box>
-            ),
-            content: <MiscellaneousPanel elements={elements} />,
-            buttonTooltip: "Toggle Miscellaneous Panel",
-            buttonDisabled: false,
-            showCollapseButtonInHeader: true,
-          }}
-          storageKey="templateManagementEditor"
-        />
-      </ReactFlowProvider>
-      <FloatingLoadingIndicator loading={configLoading || elementsLoading} />
+          </ReactFlowProvider>
+          <FloatingLoadingIndicator loading={configLoading || elementsLoading} />
+        </NodesStoreProvider>
+      </CertificateElementProvider>
     </>
   );
 };

@@ -2,7 +2,7 @@ import React from "react";
 import { Node } from "@xyflow/react";
 import { useEditorStore } from "./useEditorStore";
 import { logger } from "@/client/lib/logger";
-import { useNodesStore } from "./useNodesStore";
+import { useNodesStore } from "./NodesStoreProvider";
 import { useCertificateElementStates } from "./CertificateElementContext";
 
 /**

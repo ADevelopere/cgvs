@@ -12,12 +12,11 @@ import {
 } from "./glqDocuments";
 import { useQuery } from "@apollo/client/react";
 import { templateVariablesByTemplateIdQueryDocument } from "../variables/hooks/templateVariable.documents";
-import { useParams } from "next/navigation";
 
 /**
- * Return type for useCertificateElementStates hook
+ * Context value type
  */
-export interface UseCertificateElementStatesReturn {
+export interface CertificateElementContextValue {
   // common
   bases: ElState.UseBaseElementStateReturn;
   textProps: ElState.UseTextPropsStateReturn;
@@ -41,60 +40,56 @@ export interface UseCertificateElementStatesReturn {
 }
 
 /**
- * Hook for managing certificate element states
- * Provides all element states, props, and data sources
+ * Context for certificate element states
  */
-export function useCertificateElementStates(): UseCertificateElementStatesReturn {
-  // Internal state for elements, config, and variables
-    // Get templateId from Next.js URL params
-    const pathParams = useParams<{ id: string }>();
-    const templateId = React.useMemo(() => {
-      const id = pathParams?.id;
-      return id ? Number.parseInt(id, 10) : null;
-    }, [pathParams?.id]);
+const CertificateElementContext = React.createContext<CertificateElementContextValue | null>(null);
 
-    // ========== Template Config ==========
-    const {
-      data: configData,
-      loading: configApolloLoading,
-    } = useQuery(templateConfigByTemplateIdQueryDocument, {
-      variables: { templateId: templateId ?? 0 },
-      skip: !templateId,
-      fetchPolicy: "cache-and-network",
-    });
-  
-    const templateConfig: GQL.TemplateConfig | null | undefined =
-      React.useMemo(() => {
-        const config = configData?.templateConfigByTemplateId;
-        return config;
-      }, [configApolloLoading, configData?.templateConfigByTemplateId]);
-  
-    // =========== Elements =============
-  
-    const {
-      data: elementsData,
-      loading: elementsApolloLoading,
-    } = useQuery(elementsByTemplateIdQueryDocument, {
-      variables: { templateId: templateId ?? 0 },
-      skip: !templateId,
-      fetchPolicy: "cache-first",
-    });
-  
-    const elements: GQL.CertificateElementUnion[] = React.useMemo(() => {
-      const elementsList = elementsData?.elementsByTemplateId || [];
-      return elementsList;
-    }, [elementsApolloLoading, elementsData?.elementsByTemplateId]);
+/**
+ * Provider component for certificate element states
+ */
+export const CertificateElementProvider: React.FC<{
+  templateId: number;
+  children: React.ReactNode;
+}> = ({ templateId, children }) => {
+  // ========== Template Config ==========
+  const {
+    data: configData,
+    loading: configApolloLoading,
+  } = useQuery(templateConfigByTemplateIdQueryDocument, {
+    variables: { templateId },
+    fetchPolicy: "cache-and-network",
+  });
 
-      const { data: variablesData } = useQuery(
+  const templateConfig: GQL.TemplateConfig | null | undefined =
+    React.useMemo(() => {
+      const config = configData?.templateConfigByTemplateId;
+      return config;
+    }, [configApolloLoading, configData?.templateConfigByTemplateId]);
+
+  // =========== Elements =============
+  const {
+    data: elementsData,
+    loading: elementsApolloLoading,
+  } = useQuery(elementsByTemplateIdQueryDocument, {
+    variables: { templateId },
+    fetchPolicy: "cache-first",
+  });
+
+  const elements: GQL.CertificateElementUnion[] = React.useMemo(() => {
+    const elementsList = elementsData?.elementsByTemplateId || [];
+    return elementsList;
+  }, [elementsApolloLoading, elementsData?.elementsByTemplateId]);
+
+  // =========== Variables =============
+  const { data: variablesData } = useQuery(
     templateVariablesByTemplateIdQueryDocument,
     {
-      variables: { templateId: templateId ?? 0 },
-      skip: !templateId,
+      variables: { templateId },
       fetchPolicy: "cache-first",
     }
   );
 
-    const variables: GQL.TemplateVariable[] = React.useMemo(
+  const variables: GQL.TemplateVariable[] = React.useMemo(
     () => variablesData?.templateVariablesByTemplateId || [],
     [variablesData]
   );
@@ -139,21 +134,62 @@ export function useCertificateElementStates(): UseCertificateElementStatesReturn
       return { textVariables, selectVariables, dateVariables, numberVariables };
     }, [variables]);
 
-  return {
-    textProps,
-    bases,
-    config,
-    textDataSource,
-    dateDataSource,
-    numberDataSource,
-    dateProps,
-    countryProps,
-    imageProps,
-    numberProps,
-    qrCodeProps,
-    textVariables,
-    selectVariables,
-    dateVariables,
-    numberVariables,
-  };
+  const value: CertificateElementContextValue = React.useMemo(
+    () => ({
+      textProps,
+      bases,
+      config,
+      textDataSource,
+      dateDataSource,
+      numberDataSource,
+      dateProps,
+      countryProps,
+      imageProps,
+      numberProps,
+      qrCodeProps,
+      textVariables,
+      selectVariables,
+      dateVariables,
+      numberVariables,
+    }),
+    [
+      textProps,
+      bases,
+      config,
+      textDataSource,
+      dateDataSource,
+      numberDataSource,
+      dateProps,
+      countryProps,
+      imageProps,
+      numberProps,
+      qrCodeProps,
+      textVariables,
+      selectVariables,
+      dateVariables,
+      numberVariables,
+    ]
+  );
+
+  return (
+    <CertificateElementContext.Provider value={value}>
+      {children}
+    </CertificateElementContext.Provider>
+  );
+};
+
+/**
+ * Hook to access certificate element states
+ * Must be used within CertificateElementProvider
+ */
+export function useCertificateElementStates(): CertificateElementContextValue {
+  const context = React.useContext(CertificateElementContext);
+
+  if (!context) {
+    throw new Error(
+      "useCertificateElementStates must be used within CertificateElementProvider"
+    );
+  }
+
+  return context;
 }
