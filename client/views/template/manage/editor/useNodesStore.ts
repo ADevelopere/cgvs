@@ -6,67 +6,55 @@ import { ContainerNodeData, ElementBaseNodeData } from "./types";
 import { logger } from "@/client/lib/logger";
 
 /**
- * Node store state - keyed by templateId for lifecycle management
+ * Node store state
  */
 interface NodesStoreState {
-  // Map of templateId -> nodes array
-  nodesByTemplate: Map<number, Node[]>;
+  // Current nodes array - exposed as state for reactivity
+  nodes: Node[];
 }
 
 /**
  * Node store actions
  */
 interface NodesStoreActions {
-  // Initialize nodes for a template
+  // Initialize nodes
   initializeNodes: (
-    templateId: number,
     elements: GQL.CertificateElementUnion[],
     containerConfig: { width: number; height: number }
   ) => void;
 
-  // Get nodes for a template
-  getNodes: (templateId: number) => Node[];
+  // Set all nodes
+  setNodes: (nodes: Node[]) => void;
 
-  // Set all nodes for a template
-  setNodes: (templateId: number, nodes: Node[]) => void;
-
-  // Clear all nodes for a template
-  clearNodes: (templateId: number) => void;
+  // Clear all nodes
+  clearNodes: () => void;
 
   // Add a new node
-  addNode: (templateId: number, node: Node) => void;
+  addNode: (node: Node) => void;
 
   // Delete a node by id
-  deleteNode: (templateId: number, nodeId: string) => void;
+  deleteNode: (nodeId: string) => void;
 
   // Update base node data (position, size, etc.)
   updateBaseNodeData: (
-    templateId: number,
     elementId: number,
     updates: Partial<ElementBaseNodeData>
   ) => void;
 
   // Update text node data
   updateTextNodeData: (
-    templateId: number,
     elementId: number,
     updates: Partial<TextElementNodeData>
   ) => void;
 
   // Update container node
-  updateContainerNode: (
-    templateId: number,
-    updates: Partial<ContainerNodeData>
-  ) => void;
+  updateContainerNode: (updates: Partial<ContainerNodeData>) => void;
 
   // Update a single node directly (for ReactFlow integration)
-  updateNode: (templateId: number, nodeId: string, updates: Partial<Node>) => void;
+  updateNode: (nodeId: string, updates: Partial<Node>) => void;
 
   // Batch update multiple nodes
-  batchUpdateNodes: (
-    templateId: number,
-    updates: Array<{ nodeId: string; updates: Partial<Node> }>
-  ) => void;
+  batchUpdateNodes: (updates: Array<{ nodeId: string; updates: Partial<Node> }>) => void;
 }
 
 type NodesStore = NodesStoreState & NodesStoreActions;
@@ -117,14 +105,13 @@ function createContainerNode(config: { width: number; height: number }): Node<Co
 
 /**
  * Zustand store for managing ReactFlow nodes
- * Lifecycle is per template ID
+ * Nodes are exposed as state for automatic re-renders
  */
-export const useNodesStore = create<NodesStore>((set, get) => ({
-  nodesByTemplate: new Map(),
+export const useNodesStore = create<NodesStore>((set) => ({
+  nodes: [],
 
-  initializeNodes: (templateId, elements, containerConfig) => {
+  initializeNodes: (elements, containerConfig) => {
     logger.debug("useNodesStore: Initializing nodes", {
-      templateId,
       elementCount: elements.length,
     });
 
@@ -142,61 +129,32 @@ export const useNodesStore = create<NodesStore>((set, get) => ({
 
     const allNodes = [containerNode, ...elementNodes];
 
-    set((state) => {
-      const newMap = new Map(state.nodesByTemplate);
-      newMap.set(templateId, allNodes);
-      return { nodesByTemplate: newMap };
-    });
+    set({ nodes: allNodes });
   },
 
-  getNodes: (templateId) => {
-    const nodes = get().nodesByTemplate.get(templateId);
-    return nodes ?? [];
+  setNodes: (nodes) => {
+    set({ nodes });
   },
 
-  setNodes: (templateId, nodes) => {
-    set((state) => {
-      const newMap = new Map(state.nodesByTemplate);
-      newMap.set(templateId, nodes);
-      return { nodesByTemplate: newMap };
-    });
+  clearNodes: () => {
+    set({ nodes: [] });
   },
 
-  clearNodes: (templateId) => {
-    set((state) => {
-      const newMap = new Map(state.nodesByTemplate);
-      newMap.delete(templateId);
-      return { nodesByTemplate: newMap };
-    });
+  addNode: (node) => {
+    set((state) => ({ nodes: [...state.nodes, node] }));
   },
 
-  addNode: (templateId, node) => {
-    set((state) => {
-      const nodes = state.nodesByTemplate.get(templateId) ?? [];
-      const newMap = new Map(state.nodesByTemplate);
-      newMap.set(templateId, [...nodes, node]);
-      return { nodesByTemplate: newMap };
-    });
+  deleteNode: (nodeId) => {
+    set((state) => ({
+      nodes: state.nodes.filter((n) => n.id !== nodeId),
+    }));
   },
 
-  deleteNode: (templateId, nodeId) => {
+  updateBaseNodeData: (elementId, updates) => {
     set((state) => {
-      const nodes = state.nodesByTemplate.get(templateId) ?? [];
-      const newMap = new Map(state.nodesByTemplate);
-      newMap.set(
-        templateId,
-        nodes.filter((n) => n.id !== nodeId)
-      );
-      return { nodesByTemplate: newMap };
-    });
-  },
-
-  updateBaseNodeData: (templateId, elementId, updates) => {
-    set((state) => {
-      const nodes = state.nodesByTemplate.get(templateId) ?? [];
       const nodeId = elementId.toString();
 
-      const updatedNodes = nodes.map((node) => {
+      const updatedNodes = state.nodes.map((node) => {
         if (node.id !== nodeId) {
           return node;
         }
@@ -224,18 +182,15 @@ export const useNodesStore = create<NodesStore>((set, get) => ({
         };
       });
 
-      const newMap = new Map(state.nodesByTemplate);
-      newMap.set(templateId, updatedNodes);
-      return { nodesByTemplate: newMap };
+      return { nodes: updatedNodes };
     });
   },
 
-  updateTextNodeData: (templateId, elementId, updates) => {
+  updateTextNodeData: (elementId, updates) => {
     set((state) => {
-      const nodes = state.nodesByTemplate.get(templateId) ?? [];
       const nodeId = elementId.toString();
 
-      const updatedNodes = nodes.map((node) => {
+      const updatedNodes = state.nodes.map((node) => {
         if (node.id !== nodeId || node.type !== "text") {
           return node;
         }
@@ -249,17 +204,13 @@ export const useNodesStore = create<NodesStore>((set, get) => ({
         };
       });
 
-      const newMap = new Map(state.nodesByTemplate);
-      newMap.set(templateId, updatedNodes);
-      return { nodesByTemplate: newMap };
+      return { nodes: updatedNodes };
     });
   },
 
-  updateContainerNode: (templateId, updates) => {
+  updateContainerNode: (updates) => {
     set((state) => {
-      const nodes = state.nodesByTemplate.get(templateId) ?? [];
-
-      const updatedNodes = nodes.map((node) => {
+      const updatedNodes = state.nodes.map((node) => {
         if (node.id !== "container") {
           return node;
         }
@@ -273,17 +224,13 @@ export const useNodesStore = create<NodesStore>((set, get) => ({
         };
       });
 
-      const newMap = new Map(state.nodesByTemplate);
-      newMap.set(templateId, updatedNodes);
-      return { nodesByTemplate: newMap };
+      return { nodes: updatedNodes };
     });
   },
 
-  updateNode: (templateId, nodeId, updates) => {
+  updateNode: (nodeId, updates) => {
     set((state) => {
-      const nodes = state.nodesByTemplate.get(templateId) ?? [];
-
-      const updatedNodes = nodes.map((node) => {
+      const updatedNodes = state.nodes.map((node) => {
         if (node.id !== nodeId) {
           return node;
         }
@@ -294,18 +241,15 @@ export const useNodesStore = create<NodesStore>((set, get) => ({
         };
       });
 
-      const newMap = new Map(state.nodesByTemplate);
-      newMap.set(templateId, updatedNodes);
-      return { nodesByTemplate: newMap };
+      return { nodes: updatedNodes };
     });
   },
 
-  batchUpdateNodes: (templateId, updates) => {
+  batchUpdateNodes: (updates) => {
     set((state) => {
-      const nodes = state.nodesByTemplate.get(templateId) ?? [];
       const updateMap = new Map(updates.map((u) => [u.nodeId, u.updates]));
 
-      const updatedNodes = nodes.map((node) => {
+      const updatedNodes = state.nodes.map((node) => {
         const nodeUpdates = updateMap.get(node.id);
         if (!nodeUpdates) {
           return node;
@@ -317,9 +261,7 @@ export const useNodesStore = create<NodesStore>((set, get) => ({
         };
       });
 
-      const newMap = new Map(state.nodesByTemplate);
-      newMap.set(templateId, updatedNodes);
-      return { nodesByTemplate: newMap };
+      return { nodes: updatedNodes };
     });
   },
 }));

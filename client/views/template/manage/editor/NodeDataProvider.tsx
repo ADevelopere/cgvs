@@ -55,10 +55,10 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
   config: { state: container },
   children,
 }) => {
-  // Get nodes from the store
-  const nodes = useNodesStore(state => state.getNodes(templateId));
-  const setNodesInStore = useNodesStore(state => state.setNodes);
-  const initializeNodes = useNodesStore(state => state.initializeNodes);
+  // Get nodes from the store - they're exposed as state so components re-render on updates
+  const nodes = useNodesStore((state) => state.nodes);
+  const setNodesInStore = useNodesStore((state) => state.setNodes);
+  const initializeNodes = useNodesStore((state) => state.initializeNodes);
 
   // Helper line state (kept local as it's UI-only)
   const [helperLineHorizontal, setHelperLineHorizontal] = React.useState<
@@ -99,7 +99,7 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
             elementCount: elements.length,
           });
           if (!canceled) {
-            initializeNodes(templateId, elements, {
+            initializeNodes(elements, {
               width: container.width,
               height: container.height,
             });
@@ -121,9 +121,9 @@ export const NodeDataProvider: React.FC<NodeDataProps> = ({
   // Wrapper for setNodes that uses the store
   const setNodes = React.useCallback(
     (newNodes: Node[]) => {
-      setNodesInStore(templateId, newNodes);
+      setNodesInStore(newNodes);
     },
-    [templateId, setNodesInStore]
+    [setNodesInStore]
   );
 
   const addToHistory = useEditorStore(state => state.addToHistory);

@@ -103,8 +103,8 @@ export function useTemplateConfigState(
       setState(newState);
 
       // Update container node in the store immediately
-      if ((key === "width" || key === "height") && config.templateId) {
-        updateContainerNode(config.templateId, {
+      if (key === "width" || key === "height") {
+        updateContainerNode({
           [key]: value as number,
         });
       }

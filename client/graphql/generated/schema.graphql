@@ -35,43 +35,43 @@ type CertificateElementBase {
   alignment: ElementAlignment!
   createdAt: DateTime!
   description: String
-  height: Int!
+  height: Float!
   hidden: Boolean
   id: Int!
   name: String!
-  positionX: Int!
-  positionY: Int!
+  positionX: Float!
+  positionY: Float!
   renderOrder: Int!
   templateId: Int!
   type: ElementType!
   updatedAt: DateTime!
-  width: Int!
+  width: Float!
 }
 
 input CertificateElementBaseInput {
   alignment: ElementAlignment!
   description: String!
-  height: Int!
+  height: Float!
   hidden: Boolean
   name: String!
-  positionX: Int!
-  positionY: Int!
+  positionX: Float!
+  positionY: Float!
   renderOrder: Int!
   templateId: Int!
-  width: Int!
+  width: Float!
 }
 
 input CertificateElementBaseUpdateInput {
   alignment: ElementAlignment!
   description: String!
-  height: Int!
+  height: Float!
   hidden: Boolean
   id: Int!
   name: String!
-  positionX: Int!
-  positionY: Int!
+  positionX: Float!
+  positionY: Float!
   renderOrder: Int!
-  width: Int!
+  width: Float!
 }
 
 union CertificateElementUnion = CountryElement | DateElement | GenderElement | ImageElement | NumberElement | QRCodeElement | TextElement

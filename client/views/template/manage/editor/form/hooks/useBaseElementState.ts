@@ -140,19 +140,17 @@ export function useBaseElementState(
       // Update the base state
       updateFn(elementId, action);
 
-      // Update the nodes store if templateId is available
-      if (templateId) {
-        const { key, value } = action;
-        
-        // Map form state keys to node data properties
-        if (key === "positionX" || key === "positionY" || key === "width" || key === "height") {
-          updateBaseNodeData(templateId, elementId, {
-            [key]: value as number,
-          });
-        }
+      // Update the nodes store
+      const { key, value } = action;
+      
+      // Map form state keys to node data properties
+      if (key === "positionX" || key === "positionY" || key === "width" || key === "height") {
+        updateBaseNodeData(elementId, {
+          [key]: value as number,
+        });
       }
     },
-    [updateFn, updateBaseNodeData, templateId]
+    [updateFn, updateBaseNodeData]
   );
 
   return {

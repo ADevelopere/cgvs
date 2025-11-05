@@ -68,43 +68,43 @@ export type CertificateElementBase = {
   alignment: ElementAlignment;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
-  height: Scalars['Int']['output'];
+  height: Scalars['Float']['output'];
   hidden?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
-  positionX: Scalars['Int']['output'];
-  positionY: Scalars['Int']['output'];
+  positionX: Scalars['Float']['output'];
+  positionY: Scalars['Float']['output'];
   renderOrder: Scalars['Int']['output'];
   templateId: Scalars['Int']['output'];
   type: ElementType;
   updatedAt: Scalars['DateTime']['output'];
-  width: Scalars['Int']['output'];
+  width: Scalars['Float']['output'];
 };
 
 export type CertificateElementBaseInput = {
   alignment: ElementAlignment;
   description: Scalars['String']['input'];
-  height: Scalars['Int']['input'];
+  height: Scalars['Float']['input'];
   hidden?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
-  positionX: Scalars['Int']['input'];
-  positionY: Scalars['Int']['input'];
+  positionX: Scalars['Float']['input'];
+  positionY: Scalars['Float']['input'];
   renderOrder: Scalars['Int']['input'];
   templateId: Scalars['Int']['input'];
-  width: Scalars['Int']['input'];
+  width: Scalars['Float']['input'];
 };
 
 export type CertificateElementBaseUpdateInput = {
   alignment: ElementAlignment;
   description: Scalars['String']['input'];
-  height: Scalars['Int']['input'];
+  height: Scalars['Float']['input'];
   hidden?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['Int']['input'];
   name: Scalars['String']['input'];
-  positionX: Scalars['Int']['input'];
-  positionY: Scalars['Int']['input'];
+  positionX: Scalars['Float']['input'];
+  positionY: Scalars['Float']['input'];
   renderOrder: Scalars['Int']['input'];
-  width: Scalars['Int']['input'];
+  width: Scalars['Float']['input'];
 };
 
 export type CertificateElementUnion = CountryElement | DateElement | GenderElement | ImageElement | NumberElement | QrCodeElement | TextElement;
