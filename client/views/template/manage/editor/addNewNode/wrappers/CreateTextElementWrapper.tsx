@@ -14,7 +14,7 @@ import type { UpdateBaseElementFn } from "../../form/element/base";
 import type { UpdateTextPropsFn } from "../../form/element/textProps";
 import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale/useAppTranslation";
-import { useNodesStore } from "../../useNodesStore";
+import { useNodesState } from "../../NodesStateProvider";
 
 // ============================================================================
 // PROPS INTERFACE
@@ -205,7 +205,7 @@ export const CreateTextElementWrapper: React.FC<CreateTextElementWrapperProps> =
     );
   }, [errors]);
 
-  const { addTextNode } = useNodesStore();
+  const { addTextNode } = useNodesState();
 
   // SUBMISSION
   // ============================================================================

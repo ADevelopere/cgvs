@@ -19,6 +19,7 @@ import { useNodeData } from "./NodeDataProvider";
 import { FlowEditorProps } from "./types";
 import { useApplyNodeChange } from "./useApplyNodeChange";
 import { useNodesState } from "./NodesStateProvider";
+import DownloadPdf from "./download/DownloadPdf";
 
 const panOnDrag = [1, 2];
 
@@ -104,7 +105,7 @@ const Flow: React.FC<FlowEditorProps> = ({ nodes, setNodes }) => {
           }}
         >
           <DownloadImage />
-          {/* <DownloadPdf /> */}
+          <DownloadPdf />
         </Box>
       </ReactFlow>
     </Box>

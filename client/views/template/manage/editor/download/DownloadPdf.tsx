@@ -1,20 +1,24 @@
-import { Panel, useReactFlow } from "@xyflow/react";
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { Panel } from "@xyflow/react";
+import { PDFDocument, PDFFont, StandardFonts, rgb } from "pdf-lib";
 import { useTheme } from "@mui/material/styles";
-import { useEffect, useState } from "react";
+import React from "react";
 import logger from "@/client/lib/logger";
-
-// Function to convert image URL to bytes
-async function imageUrlToBytes(url: string): Promise<Uint8Array> {
-  const response = await fetch(url);
-  const blob = await response.blob();
-  return new Uint8Array(await blob.arrayBuffer());
-}
+import { useNodeData } from "../NodeDataProvider";
+import { CircularProgress } from "@mui/material";
+import { useQuery } from "@apollo/client/react";
+import * as GQL from "@/client/graphql/generated/gql/graphql";
+import {
+  elementsByTemplateIdQueryDocument,
+  templateConfigByTemplateIdQueryDocument,
+} from "../glqDocuments";
+import { resolveTextContent } from "../imageRenderer/textResolvers";
+import { FontFamily, getFontByFamily } from "@/lib/font/google";
+import { ElementAlignment } from "@/client/graphql/generated/gql/graphql";
 
 // Function to trigger PDF download
 async function downloadPdf(
   pdfBytes: Uint8Array,
-  filename: string = "reactflow.pdf"
+  filename: string = "certificate.pdf"
 ) {
   const blob = new Blob([pdfBytes.buffer as ArrayBuffer], {
     type: "application/pdf",
@@ -28,34 +32,177 @@ async function downloadPdf(
   URL.revokeObjectURL(link.href);
 }
 
-const A4_WIDTH_PT = 11.69 * 72;
-const A4_HEIGHT_PT = 8.27 * 72;
-
-function DownloadPdf({ imageUrl }: { imageUrl: string }) {
-  const [dimensions, setDimensions] = useState({
-    width: A4_WIDTH_PT,
-    height: A4_HEIGHT_PT,
-  });
-
-  useEffect(() => {
-    if (imageUrl) {
-      const img = new Image();
-      img.src = imageUrl;
-      img.onload = () => {
-        setDimensions({
-          width: img.width,
-          height: img.height,
-        });
-      };
+// Collect unique font families from text elements
+function collectFontFamilies(
+  elements: GQL.CertificateElementUnion[]
+): FontFamily[] {
+  const families = new Set<FontFamily>();
+  for (const el of elements) {
+    if (el.__typename === "TextElement") {
+      const ref = el.textProps.fontRef;
+      if (ref.__typename === "FontReferenceGoogle" && ref.identifier) {
+        families.add(ref.identifier as FontFamily);
+      } else {
+        families.add(FontFamily.ROBOTO);
+      }
     }
-  }, [imageUrl]);
+  }
+  return Array.from(families);
+}
 
+// Fetch font file and return as Uint8Array
+async function fetchFontBytes(url: string): Promise<Uint8Array> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch font: ${response.statusText}`);
+  }
+  const blob = await response.blob();
+  return new Uint8Array(await blob.arrayBuffer());
+}
+
+// Embed fonts in PDF document
+async function embedFontsForPdf(
+  pdfDoc: PDFDocument,
+  fontFamilies: FontFamily[]
+): Promise<Map<FontFamily, PDFFont>> {
+  const fontMap = new Map<FontFamily, PDFFont>();
+  const fallbackFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+  // Always add Roboto as fallback
+  if (!fontFamilies.includes(FontFamily.ROBOTO)) {
+    fontFamilies.push(FontFamily.ROBOTO);
+  }
+
+  for (const family of fontFamilies) {
+    try {
+      const fontItem = getFontByFamily(family);
+      if (!fontItem) {
+        logger.warn(`Font family "${family}" not found, using fallback`);
+        fontMap.set(family, fallbackFont);
+        continue;
+      }
+
+      // Get font URL (prioritize "regular" variant)
+      const fontUrl =
+        fontItem.files.regular || Object.values(fontItem.files)[0];
+      if (!fontUrl) {
+        logger.warn(`No font file found for family "${family}", using fallback`);
+        fontMap.set(family, fallbackFont);
+        continue;
+      }
+
+      // Fetch and embed font
+      const fontBytes = await fetchFontBytes(fontUrl);
+      const embeddedFont = await pdfDoc.embedFont(fontBytes);
+      fontMap.set(family, embeddedFont);
+    } catch (error) {
+      logger.error(`Error embedding font "${family}":`, error);
+      fontMap.set(family, fallbackFont);
+    }
+  }
+
+  return fontMap;
+}
+
+// Convert hex color to RGB
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  // Remove # if present
+  const cleanHex = hex.startsWith("#") ? hex.slice(1) : hex;
+  
+  // Handle 3-character hex codes
+  if (cleanHex.length === 3) {
+    const r = parseInt(cleanHex[0] + cleanHex[0], 16) / 255;
+    const g = parseInt(cleanHex[1] + cleanHex[1], 16) / 255;
+    const b = parseInt(cleanHex[2] + cleanHex[2], 16) / 255;
+    return { r, g, b };
+  }
+  
+  // Handle 6-character hex codes
+  const r = parseInt(cleanHex.slice(0, 2), 16) / 255;
+  const g = parseInt(cleanHex.slice(2, 4), 16) / 255;
+  const b = parseInt(cleanHex.slice(4, 6), 16) / 255;
+  return { r, g, b };
+}
+
+// Calculate text X position based on alignment
+function getTextXPosition(
+  x: number,
+  width: number,
+  textWidth: number,
+  alignment: ElementAlignment
+): number {
+  switch (alignment) {
+    case ElementAlignment.TopCenter:
+    case ElementAlignment.Center:
+    case ElementAlignment.BottomCenter:
+      return x + (width - textWidth) / 2;
+    case ElementAlignment.TopEnd:
+    case ElementAlignment.CenterEnd:
+    case ElementAlignment.BottomEnd:
+    case ElementAlignment.BaselineEnd:
+      return x + width - textWidth;
+    case ElementAlignment.TopStart:
+    case ElementAlignment.CenterStart:
+    case ElementAlignment.BottomStart:
+    case ElementAlignment.BaselineStart:
+    case ElementAlignment.BaselineCenter:
+    default:
+      return x;
+  }
+}
+
+export const DownloadPdf: React.FC = () => {
   const theme = useTheme();
-  const { getNodes, getEdges } = useReactFlow();
+  const { templateId } = useNodeData();
+  const [isGenerating, setIsGenerating] = React.useState(false);
 
-  const onClick = async () => {
-    const nodes = getNodes();
-    const _edges = getEdges();
+  const { data: configData, error: configError, loading: configLoading } =
+    useQuery(templateConfigByTemplateIdQueryDocument, {
+      variables: { templateId: templateId! },
+      skip: !templateId,
+      fetchPolicy: "cache-first",
+    });
+
+  const { data: elementsData, error: elementsError, loading: elementsLoading } =
+    useQuery(elementsByTemplateIdQueryDocument, {
+      variables: { templateId: templateId! },
+      skip: !templateId,
+      fetchPolicy: "cache-first",
+    });
+
+  const isDataReady =
+    !configLoading &&
+    !elementsLoading &&
+    !!configData?.templateConfigByTemplateId &&
+    !!elementsData?.elementsByTemplateId;
+
+  const onClick = React.useCallback(async () => {
+    if (!templateId) {
+      logger.error("Template ID not found");
+      return;
+    }
+
+    if (isGenerating || !isDataReady) return;
+
+    if (configError) {
+      logger.error("DownloadPdf: config query error", { error: configError });
+      return;
+    }
+
+    if (elementsError) {
+      logger.error("DownloadPdf: elements query error", {
+        error: elementsError,
+      });
+      return;
+    }
+
+    const config = configData?.templateConfigByTemplateId;
+    const elements = elementsData?.elementsByTemplateId;
+
+    if (!config || !elements) {
+      logger.error("DownloadPdf: Missing config or elements");
+      return;
+    }
 
     const password = prompt("Enter a password to protect the PDF:");
     if (!password) {
@@ -63,108 +210,145 @@ function DownloadPdf({ imageUrl }: { imageUrl: string }) {
       return;
     }
 
+    setIsGenerating(true);
+
     try {
       const pdfDoc = await PDFDocument.create();
-      const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-      const arabicFont = await pdfDoc.embedFont(StandardFonts.Helvetica); // Fallback for now
 
-      const page = pdfDoc.addPage([dimensions.width, dimensions.height]);
-      const { width: _width, height } = page.getSize();
+      // Collect font families
+      const fontFamilies = collectFontFamilies(elements);
+      const fontMap = await embedFontsForPdf(pdfDoc, fontFamilies);
 
-      // Handle background image
-      if (imageUrl) {
-        try {
-          const imageBytes = await imageUrlToBytes(imageUrl);
-          let pdfImage;
-          if (imageUrl.toLowerCase().endsWith(".png")) {
-            pdfImage = await pdfDoc.embedPng(imageBytes);
-          } else {
-            pdfImage = await pdfDoc.embedJpg(imageBytes);
-          }
+      // Convert pixels to points (1 point = 0.75 pixels)
+      const pageWidth = config.width * 0.75;
+      const pageHeight = config.height * 0.75;
 
-          page.drawImage(pdfImage, {
-            x: 0,
-            y: 0,
-            width: dimensions.width,
-            height: dimensions.height,
-          });
-        } catch (error) {
-          logger.error("Error embedding background image:", error);
-        }
-      }
+      const page = pdfDoc.addPage([pageWidth, pageHeight]);
+      const { height } = page.getSize();
 
-      // Draw nodes
-      nodes.forEach(node => {
-        if (node.type === "image") return;
+      // Filter and sort text elements
+      const textElements = elements
+        .filter((e): e is GQL.TextElement => e.__typename === "TextElement")
+        .slice()
+        .sort((a, b) => a.base.renderOrder - b.base.renderOrder);
 
-        const { position, data, type } = node;
+      // Draw text elements
+      for (const el of textElements) {
+        if (el.base.hidden) continue;
+
+        const text = resolveTextContent(
+          el.textDataSource,
+          config.language,
+          "Text"
+        );
+
+        const family =
+          el.textProps.fontRef.__typename === "FontReferenceGoogle" &&
+          el.textProps.fontRef.identifier
+            ? (el.textProps.fontRef.identifier as FontFamily)
+            : FontFamily.ROBOTO;
+
+        const font = fontMap.get(family) || fontMap.get(FontFamily.ROBOTO)!;
+        const fontSize = el.textProps.fontSize;
+        const color = el.textProps.color || "#000000";
+        const { r, g, b } = hexToRgb(color);
 
         // Calculate Y position (PDF coordinates start from bottom-left)
-        const pdfY = height - position.y - 20;
+        const pdfY = height - el.base.positionY * 0.75 - fontSize;
 
-        if (type === "text") {
-          // Handle text test nodes
-          const text = data.text as string;
-          const fontSize = (data.fontSize as number) ?? 12;
-          const color = (data.color as string) ?? "#000000";
+        // Calculate text width for alignment
+        const textWidth = font.widthOfTextAtSize(text, fontSize);
+        const x = getTextXPosition(
+          el.base.positionX * 0.75,
+          el.base.width * 0.75,
+          textWidth,
+          el.base.alignment
+        );
 
-          // Convert hex color to RGB
-          const r = parseInt(color.slice(1, 3), 16) / 255;
-          const g = parseInt(color.slice(3, 5), 16) / 255;
-          const b = parseInt(color.slice(5, 7), 16) / 255;
-
-          // Split text by newlines to handle multiline text
-          const lines = text.split("\n");
-          lines.forEach((line, index) => {
-            page.drawText(line, {
-              x: position.x,
-              y: pdfY - index * fontSize, // Offset each line by font size
-              size: fontSize,
-              font: arabicFont,
-              color: rgb(r, g, b),
-            });
-          });
-        } else {
-          // Handle regular nodes
-          const label: string = (data.label as string) ?? "Node";
-          page.drawText(label, {
-            x: position.x,
-            y: pdfY,
-            size: 12,
-            font: helveticaFont,
-            color: rgb(0, 0, 0),
-          });
+        // Handle text overflow (simple truncation for now)
+        let displayText = text;
+        if (textWidth > el.base.width * 0.75) {
+          // Truncate text to fit width
+          let truncated = "";
+          for (let i = 0; i < text.length; i++) {
+            const testText = truncated + text[i];
+            const testWidth = font.widthOfTextAtSize(testText, fontSize);
+            if (testWidth > el.base.width * 0.75) break;
+            truncated = testText;
+          }
+          displayText = truncated;
         }
-      });
 
-      const pdfBytes = await pdfDoc.save();
+        page.drawText(displayText, {
+          x,
+          y: pdfY,
+          size: fontSize,
+          font,
+          color: rgb(r, g, b),
+        });
+      }
+
+      // Save PDF (with password protection if supported)
+      const saveOptions: Parameters<typeof pdfDoc.save>[0] = {
+        useObjectStreams: false,
+      };
+
+      // Try to add password protection (pdf-lib v1.17+ supports this)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const saveOptionsWithPassword = saveOptions as any;
+      if (password) {
+        saveOptionsWithPassword.userPassword = password;
+        saveOptionsWithPassword.ownerPassword = password;
+      }
+
+      const pdfBytes = await pdfDoc.save(saveOptionsWithPassword);
+
       await downloadPdf(
         pdfBytes,
-        `${imageUrl.split("/").pop() || "flow"}_protected.pdf`
+        `certificate-${templateId}_protected.pdf`
       );
+
+      logger.info("PDF generated successfully");
     } catch (error) {
       logger.error("Error generating PDF:", error);
+    } finally {
+      setIsGenerating(false);
     }
-  };
+  }, [
+    templateId,
+    isGenerating,
+    isDataReady,
+    configData,
+    elementsData,
+    configError,
+    elementsError,
+  ]);
 
   return (
-    <Panel position="top-right">
+    <Panel position="top-left">
       <button
         className="download-btn xy-theme__button"
         onClick={onClick}
+        disabled={isGenerating || !isDataReady}
         style={{
           padding: "8px 16px",
           backgroundColor: theme.palette.primary.main,
           color: theme.palette.primary.contrastText,
           border: "none",
           borderRadius: theme.shape.borderRadius,
-          cursor: "pointer",
+          cursor:
+            isGenerating || !isDataReady ? "not-allowed" : "pointer",
+          opacity: isGenerating || !isDataReady ? 0.6 : 1,
         }}
       >
-        Download Protected PDF
+        {isGenerating ? (
+          <CircularProgress size={16} color="inherit" />
+        ) : (
+          "Download Protected PDF"
+        )}
       </button>
     </Panel>
   );
-}
+};
 
 export default DownloadPdf;

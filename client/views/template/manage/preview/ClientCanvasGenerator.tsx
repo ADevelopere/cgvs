@@ -7,7 +7,7 @@ import logger from "@/client/lib/logger";
 import { FontProvider, FontContext } from "./FontContext";
 import { useOpentypeMetrics } from "./useOpentypeMetrics";
 import { layoutResizeDown, layoutTruncate, layoutWrap, drawLayout } from "./textLayout";
-import { resolveTextContent } from "../editor/renderer/textResolvers";
+import { resolveTextContent } from "../editor/imageRenderer/textResolvers";
 import {
   elementsByTemplateIdQueryDocument,
   templateConfigByTemplateIdQueryDocument,

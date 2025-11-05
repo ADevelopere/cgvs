@@ -38,6 +38,9 @@ export interface UseNodesStoreReturn {
   // Delete a node by id
   deleteNode: (nodeId: string) => void;
 
+  addTextNode: (textElement: GQL.TextElement) => void;
+
+
   // Update base node data (position, size, etc.)
   updateBaseNodeData: (
     elementId: number,
@@ -406,6 +409,13 @@ export const NodesStoreProvider: React.FC<{
     []
   );
 
+  const addTextNode = React.useCallback((textElement: GQL.TextElement) => {
+    const textNode = createTextNode(textElement);
+    if (textNode) {
+      setNodesState((prev) => [...prev, textNode]);
+    } 
+  }, []);
+
   const value: UseNodesStoreReturn = React.useMemo(
     () => ({
       nodes,
@@ -415,6 +425,7 @@ export const NodesStoreProvider: React.FC<{
       setNodes,
       clearNodes,
       addNode,
+      addTextNode, 
       deleteNode,
       updateBaseNodeData,
       updateTextNodeData,
@@ -430,6 +441,7 @@ export const NodesStoreProvider: React.FC<{
       templateId,
       setNodes,
       clearNodes,
+      addTextNode, 
       addNode,
       deleteNode,
       updateBaseNodeData,
