@@ -75,6 +75,8 @@ export const PdfmeStoreProvider: React.FC<{
   // Track last elements to detect actual changes
   const lastElementsRef = React.useRef<string>("");
 
+  const {bases, textProps, textDataSource} = useCertificateElementStates();
+
   // Convert element states to PDFMe template whenever they change
   React.useEffect(() => {
     // Don't update if the change came from PDFMe itself
@@ -100,7 +102,10 @@ export const PdfmeStoreProvider: React.FC<{
       // Convert elements to PDFMe template
       const newTemplate = TemplateConverter.toPdfmeTemplate(
         elements,
-        config.state
+        config.state,
+        bases,
+        textProps,
+        textDataSource
       );
 
       setTemplate(newTemplate);

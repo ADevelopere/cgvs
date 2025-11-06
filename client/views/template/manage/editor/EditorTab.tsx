@@ -16,9 +16,11 @@ import { useQuery, useApolloClient } from "@apollo/client/react";
 import { NodesStoreProvider } from "./NodesStateProvider";
 import { CertificateElementProvider } from "./CertificateElementContext";
 import { PdfmeStoreProvider } from "./PdfmeStoreProvider";
-import { PdfmeEditorWrapper } from "./PdfmeEditorWrapper";
+// import { PdfmeEditorWrapper } from "./PdfmeEditorWrapper";
 import AddNodePanel from "./addNewNode/AddNodePanel";
-import { EditorToggle, EditorType } from "./components/EditorToggle";
+import {
+  //  EditorToggle,
+   EditorType } from "./components/EditorToggle";
 
 export type EditorTabProps = {
   template: Template;
@@ -74,7 +76,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
   } = useAppTranslation();
   const [configLoading, setConfigLoading] = React.useState(true);
   const [elementsLoading, setElementsLoading] = React.useState(true);
-  const [activeEditor, setActiveEditor] = React.useState<EditorType>("reactflow");
+  const [activeEditor] = React.useState<EditorType>("reactflow");
 
   // ========== Template Config ==========
   const {
@@ -149,10 +151,10 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
       <NodesStoreProvider templateId={template.id}>
         <CertificateElementProvider templateId={template.id}>
           <PdfmeStoreProvider templateId={template.id}>
-            <EditorToggle
+            {/* <EditorToggle
               activeEditor={activeEditor}
               onToggle={setActiveEditor}
-            />
+            /> */}
             <EditorPaneViewController
               firstPane={{
                 title: (
@@ -174,7 +176,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
               middlePane={
                 <>
                   {activeEditor === "reactflow" && <CertificateReactFlowEditor />}
-                  {activeEditor === "pdfme" && <PdfmeEditorWrapper />}
+                  {/* {activeEditor === "pdfme" && <PdfmeEditorWrapper />} */}
                 </>
               }
               thirdPane={{

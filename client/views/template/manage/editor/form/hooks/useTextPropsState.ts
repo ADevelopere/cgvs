@@ -196,7 +196,18 @@ export type UseTextPropsParams = {
   elementId: number;
 };
 
-export const useTextProps = (params: UseTextPropsParams) => {
+export type UseTextPropsReturn = {
+  textPropsState: TextPropsFormState;
+  updateTextProps: (action: Action<GQL.TextPropsInput>) => void;
+  pushTextPropsUpdate: () => Promise<void>;
+  textPropsErrors: TextPropsFormErrors;
+};
+
+export type TextPropsHook = (
+  params: UseTextPropsParams
+) => UseTextPropsReturn;
+
+export const useTextProps: TextPropsHook = (params) => {
   const {
     textProps: {
       textPropsStates,
@@ -209,10 +220,7 @@ export const useTextProps = (params: UseTextPropsParams) => {
 
   // Get state or initialize if not present (only initialize once)
   const textPropsState = React.useMemo(() => {
-    return (
-      textPropsStates.get(params.elementId) ??
-      initTextPropsState(params.elementId)
-    );
+    return textPropsStates.get(params.elementId) ?? initTextPropsState(params.elementId);
   }, [textPropsStates, params.elementId, initTextPropsState]);
 
   const updateTextProps = React.useCallback(

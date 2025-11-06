@@ -166,7 +166,16 @@ export type UseBaseElementParams = {
   elementId: number;
 };
 
-export const useBaseElement = (params: UseBaseElementParams) => {
+export type BaseElementHookReturn = {
+  baseElementState: BaseCertificateElementFormState;
+  updateBaseElementState: UpdateBaseElementFn;
+  pushBaseElementUpdate: () => Promise<void>;
+  baseElementErrors: BaseElementFormErrors;
+};
+
+export type BaseElementHook = (params: UseBaseElementParams) => BaseElementHookReturn;
+
+export const useBaseElement = (params: UseBaseElementParams): BaseElementHookReturn => {
   const {
     bases: {
       baseElementStates,
@@ -178,13 +187,9 @@ export const useBaseElement = (params: UseBaseElementParams) => {
   } = useCertificateElementStates();
 
   // Get state or initialize if not present (only initialize once)
-  const baseElementState: BaseCertificateElementFormState =
-    React.useMemo(() => {
-      return (
-        baseElementStates.get(params.elementId) ??
-        initBaseElementState(params.elementId)
-      );
-    }, [baseElementStates, params.elementId, initBaseElementState]);
+  const baseElementState: BaseCertificateElementFormState = React.useMemo(() => {
+    return baseElementStates.get(params.elementId) ?? initBaseElementState(params.elementId);
+  }, [baseElementStates, params.elementId, initBaseElementState]);
 
   const pushBaseElementUpdate = React.useCallback(async () => {
     await pushBaseElementStateUpdate(params.elementId);

@@ -1,14 +1,28 @@
 import type { Template, Schema } from "@pdfme/common";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { logger } from "@/client/lib/logger";
+import { FontFamily } from "@/lib/font/google";
+import { UseBaseElementStateReturn, UseTextPropsStateReturn, UseTextDataSourceStateReturn } from "../form/hooks";
+
+const dumpVerificationCode = () => {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let code = "";
+  for (let i = 0; i < 10; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    code += chars[randomIndex];
+  }
+  return code;
+};
+
+const studentEmailPreview = "example@email.com";
 
 /**
  * Service for converting between CGVS element data and PDFMe template format
- * 
+ *
  * Currently supports:
  * - Text elements (position, size, font, color, alignment)
  * - Text content display (read-only in PDFMe)
- * 
+ *
  * Limitations:
  * - Text content editing in PDFMe is not synced back (would require textDataSource updates)
  * - Only text elements supported (Image, QRCode, etc. not yet implemented)
@@ -19,7 +33,10 @@ export class TemplateConverter {
    */
   static toPdfmeTemplate(
     elements: GQL.CertificateElementUnion[],
-    config: GQL.TemplateConfig
+    config: GQL.TemplateConfig,
+    bases: UseBaseElementStateReturn,
+    textProps: UseTextPropsStateReturn,
+    textDataSource: UseTextDataSourceStateReturn
   ): Template {
     logger.debug("TemplateConverter: Converting to PDFMe template", {
       elementCount: elements.length,
@@ -33,7 +50,8 @@ export class TemplateConverter {
     for (const element of elements) {
       // Only process text elements for now
       if (element.base.type === GQL.ElementType.Text) {
-        const schema = this.textElementToSchema(element as GQL.TextElement);
+        logger.debug("TemplateConverter: Processing text element", { elementId: element.base.id });
+        const schema = this.textElementToSchema(element.base.id, bases, textProps, textDataSource);
         if (schema) {
           schemas.push(schema);
         }
@@ -68,13 +86,20 @@ export class TemplateConverter {
    * Convert a text element to PDFMe schema
    */
   private static textElementToSchema(
-    element: GQL.TextElement
+    elementId: number,
+    bases: UseBaseElementStateReturn,
+    textProps: UseTextPropsStateReturn,
+    textDataSource: UseTextDataSourceStateReturn
   ): Schema | null {
     try {
-      const { base, textProps, textDataSource } = element;
-
+      const base = bases.baseElementStates.get(elementId) ?? bases.initBaseElementState(elementId);
+      const textPropsState = textProps.textPropsStates.get(elementId) ?? textProps.initTextPropsState(elementId);
+      const source =
+        textDataSource.textDataSourceStates.get(elementId)?.dataSource ??
+        textDataSource.initTextDataSourceState(elementId).dataSource;
+      logger.debug("TemplateConverter: Converting text element", elementId, base, textPropsState, source);
       // Get text content from data source
-      const content = this.getTextContent(textDataSource);
+      const content = this.getTextContent(source);
 
       // Convert alignment
       const alignment = this.convertAlignment(base.alignment);
@@ -90,30 +115,28 @@ export class TemplateConverter {
         width: base.width,
         height: base.height,
         alignment,
-        fontSize: textProps.fontSize,
-        fontColor: textProps.color,
+        fontSize: textPropsState.fontSize,
+        fontColor: textPropsState.color,
         // Store element ID for reverse mapping
-        name: base.id.toString(),
+        id: elementId, 
+        name: base.name,
         // Store render order for sorting
         renderOrder: base.renderOrder,
       };
 
       // Add font name if available
-      if (textProps.fontRef) {
-        schema.fontName = this.convertFontRef(textProps.fontRef);
+      if (textPropsState.fontRef) {
+        schema.fontName = this.convertFontRef(textPropsState.fontRef);
       }
 
       logger.debug("TemplateConverter: Text schema created", {
-        elementId: base.id,
+        elementId: elementId,
         content: content.substring(0, 50),
       });
 
       return schema;
     } catch (error) {
-      logger.error("TemplateConverter: Failed to convert text element", {
-        elementId: element.base.id,
-        error,
-      });
+      logger.error("TemplateConverter: Failed to convert text element", elementId, error);
       return null;
     }
   }
@@ -121,37 +144,52 @@ export class TemplateConverter {
   /**
    * Get text content from data source
    */
-  private static getTextContent(dataSource: GQL.TextDataSource): string {
-    if ("value" in dataSource && dataSource.value) {
-      return dataSource.value;
-    }
+  private static getTextContent(source: GQL.TextDataSourceInput): string {
+    // if ("value" in dataSource && dataSource.value) {
+    //   return dataSource.value;
+    // }
 
-    // For non-static data sources, return placeholder
-    if ("certificateField" in dataSource && dataSource.certificateField) {
-      return `{${dataSource.certificateField}}`;
-    }
+    // // For non-static data sources, return placeholder
+    // if ("certificateField" in dataSource && dataSource.certificateField) {
+    //   return `{${dataSource.certificateField}}`;
+    // }
 
-    if ("studentField" in dataSource && dataSource.studentField) {
-      return `{${dataSource.studentField}}`;
-    }
+    // if ("studentField" in dataSource && dataSource.studentField) {
+    //   return `{${dataSource.studentField}}`;
+    // }
 
-    if ("textVariableId" in dataSource && dataSource.textVariableId) {
-      return `{Variable ${dataSource.textVariableId}}`;
-    }
+    // if ("textVariableId" in dataSource && dataSource.textVariableId) {
+    //   return `{Variable ${dataSource.textVariableId}}`;
+    // }
 
-    if ("selectVariableId" in dataSource && dataSource.selectVariableId) {
-      return `{Variable ${dataSource.selectVariableId}}`;
-    }
+    // if ("selectVariableId" in dataSource && dataSource.selectVariableId) {
+    //   return `{Variable ${dataSource.selectVariableId}}`;
+    // }
 
+    // return "";
+
+    if (source.static) {
+      return source.static.value;
+    }
+    if (source.certificateField) {
+      if (source.certificateField.field === GQL.CertificateTextField.VerificationCode) {
+        return dumpVerificationCode();
+      }
+      return `{{${source.certificateField.field}}}`;
+    }
+    if (source.studentField) {
+      if (source.studentField.field === GQL.StudentTextField.StudentEmail) {
+        return studentEmailPreview;
+      }
+    }
+    // return textElement.textPreviewValue;
     return "";
   }
 
   /**
    * Convert CGVS alignment to PDFMe alignment
    */
-  private static convertAlignment(
-    alignment: GQL.ElementAlignment
-  ): "left" | "center" | "right" {
+  private static convertAlignment(alignment: GQL.ElementAlignment): "left" | "center" | "right" {
     switch (alignment) {
       case GQL.ElementAlignment.CenterStart:
       case GQL.ElementAlignment.BottomStart:
@@ -174,19 +212,18 @@ export class TemplateConverter {
   /**
    * Convert font reference to font name
    */
-  private static convertFontRef(fontRef: GQL.FontReference): string {
-    // Handle Google fonts
-    if ("identifier" in fontRef && fontRef.identifier) {
-      return fontRef.identifier;
+  private static convertFontRef(fontRef: GQL.FontReferenceInput): string {
+    if (fontRef.google?.identifier) {
+      const identifier = fontRef.google.identifier as FontFamily;
+      if (identifier) {
+        return identifier;
+      } else {
+        return FontFamily.ROBOTO;
+      }
+    } else {
+      // TODO: Add support for self-hosted fonts
+      return FontFamily.ROBOTO;
     }
-
-    // Handle self-hosted fonts
-    if ("fontId" in fontRef && fontRef.fontId) {
-      // TODO: Implement proper font mapping for self-hosted fonts
-      return `font-${fontRef.fontId}`;
-    }
-
-    return "sans-serif";
   }
 
   /**
@@ -209,13 +246,13 @@ export class TemplateConverter {
 
     for (const schema of schemas) {
       // Get element ID from schema name
-      const elementId = parseInt(schema.name || "0", 10);
+      const elementId = schema.id as number;
       if (isNaN(elementId) || elementId === 0) {
         continue;
       }
 
       // Find corresponding element
-      const element = currentElements.find((e) => e.base.id === elementId);
+      const element = currentElements.find(e => e.base.id === elementId);
       if (!element) {
         logger.warn("TemplateConverter: Element not found for schema", {
           elementId,
@@ -240,10 +277,7 @@ export class TemplateConverter {
       if (schema.width !== undefined && schema.width !== element.base.width) {
         update.width = schema.width;
       }
-      if (
-        schema.height !== undefined &&
-        schema.height !== element.base.height
-      ) {
+      if (schema.height !== undefined && schema.height !== element.base.height) {
         update.height = schema.height;
       }
 

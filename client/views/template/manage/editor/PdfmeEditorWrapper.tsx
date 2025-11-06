@@ -3,7 +3,7 @@
 import React from "react";
 import { Designer } from "@pdfme/ui";
 import type { Template } from "@pdfme/common";
-import { text } from "@pdfme/schemas";
+import { image, text } from "@pdfme/schemas";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import { usePdfmeStore } from "./PdfmeStoreProvider";
 import { useCertificateElementStates } from "./CertificateElementContext";
@@ -65,7 +65,11 @@ export const PdfmeEditorWrapper: React.FC = () => {
         template,
         plugins: {
           text,
+          image
         },
+        options: {
+          lang: "ar",
+        }
       });
 
       // Register onChange callback for upstream sync (PDFMe → State)

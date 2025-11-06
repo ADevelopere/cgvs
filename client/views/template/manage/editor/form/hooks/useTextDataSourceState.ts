@@ -134,7 +134,16 @@ export type UseTextDataSourceParams = {
   elementId: number;
 };
 
-export const useTextDataSource = (params: UseTextDataSourceParams) => {
+export type TextDataSourceHook = (
+  params: UseTextDataSourceParams
+) => {
+  textDataSourceState: GQL.TextDataSourceInput;
+  updateTextDataSource: (dataSource: GQL.TextDataSourceInput) => void;
+  pushTextDataSourceUpdate: () => Promise<void>;
+  textDataSourceErrors: TextDataSourceFormErrors;
+};
+
+export const useTextDataSource: TextDataSourceHook = (params) => {
   const {
     textDataSource: {
       textDataSourceStates,

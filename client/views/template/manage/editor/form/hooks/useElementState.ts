@@ -8,7 +8,7 @@ import logger from "@/client/lib/logger";
 // Key format: "templateId:namespace:elementId"
 const persistentStateCache = new Map<string, unknown>();
  
-const updateDebounceDelayMs = 10000; // 10 seconds
+const updateDebounceDelayMs = 200; // 10 seconds
 
 export type UseElementStateParams<T, VR> = {
   templateId?: number;

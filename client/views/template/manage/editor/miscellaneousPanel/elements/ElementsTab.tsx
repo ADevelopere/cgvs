@@ -4,7 +4,6 @@
 // hide/show a node
 // change node order (drag and drop)
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import logger from "@/client/lib/logger";
 import { Stack } from "@mui/material";
 import { CertificateElementsTabItem } from "./CertificateElementsTabItem";
 
@@ -13,7 +12,6 @@ export type ElementsTabProps = {
 };
 
 export const ElementsTab: React.FC<ElementsTabProps> = ({ elements }) => {
-  logger.info("Rendering ElementsTab with elements:", elements);
   return (
     <Stack direction={"column"} spacing={1}>
       {/* Render each element here */}
