@@ -15,7 +15,10 @@ import { useAppTranslation } from "@/client/locale";
 import { useQuery, useApolloClient } from "@apollo/client/react";
 import { NodesStoreProvider } from "./NodesStateProvider";
 import { CertificateElementProvider } from "./CertificateElementContext";
+import { PdfmeStoreProvider } from "./PdfmeStoreProvider";
+import { PdfmeEditorWrapper } from "./PdfmeEditorWrapper";
 import AddNodePanel from "./addNewNode/AddNodePanel";
+import { EditorToggle, EditorType } from "./components/EditorToggle";
 
 export type EditorTabProps = {
   template: Template;
@@ -71,6 +74,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
   } = useAppTranslation();
   const [configLoading, setConfigLoading] = React.useState(true);
   const [elementsLoading, setElementsLoading] = React.useState(true);
+  const [activeEditor, setActiveEditor] = React.useState<EditorType>("reactflow");
 
   // ========== Template Config ==========
   const {
@@ -144,50 +148,61 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
     <>
       <NodesStoreProvider templateId={template.id}>
         <CertificateElementProvider templateId={template.id}>
-          <EditorPaneViewController
-            firstPane={{
-              title: (
-                <Typography
-                  variant="h6"
-                  sx={{
-                    px: 2,
-                  }}
-                >
-                  {strings.addNodePane}
-                </Typography>
-              ),
-              content: ({ collapsed }) => <AddNodePanel compact={collapsed} templateId={template.id} />,
-              buttonTooltip: "Toggle Add Node Panel",
-              buttonDisabled: false,
-              showCollapseButtonInHeader: true,
-              minRatio: 0.15,
-            }}
-            middlePane={<CertificateReactFlowEditor />}
-            thirdPane={{
-              title: (
-                <Box sx={{ display: "flex", alignItems: "center" }}>
+          <PdfmeStoreProvider templateId={template.id}>
+            <EditorToggle
+              activeEditor={activeEditor}
+              onToggle={setActiveEditor}
+            />
+            <EditorPaneViewController
+              firstPane={{
+                title: (
                   <Typography
                     variant="h6"
                     sx={{
                       px: 2,
                     }}
                   >
-                    {strings.miscellaneousPane}
+                    {strings.addNodePane}
                   </Typography>
-                  <IconButton onClick={refreshData} size="small" sx={{ ml: 1 }} title="Refresh Data">
-                    <RefreshIcon />
-                  </IconButton>
-                </Box>
-              ),
-              content: <MiscellaneousPanel elements={elements} templateConfig={templateConfig} />,
-              buttonTooltip: "Toggle Miscellaneous Panel",
-              buttonDisabled: false,
-              showCollapseButtonInHeader: true,
-              minRatio: 0.15,
-            }}
-            storageKey="templateManagementEditor"
-          />
-          <FloatingLoadingIndicator loading={configLoading || elementsLoading} />
+                ),
+                content: ({ collapsed }) => <AddNodePanel compact={collapsed} templateId={template.id} />,
+                buttonTooltip: "Toggle Add Node Panel",
+                buttonDisabled: false,
+                showCollapseButtonInHeader: true,
+                minRatio: 0.15,
+              }}
+              middlePane={
+                <>
+                  {activeEditor === "reactflow" && <CertificateReactFlowEditor />}
+                  {activeEditor === "pdfme" && <PdfmeEditorWrapper />}
+                </>
+              }
+              thirdPane={{
+                title: (
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        px: 2,
+                      }}
+                    >
+                      {strings.miscellaneousPane}
+                    </Typography>
+                    <IconButton onClick={refreshData} size="small" sx={{ ml: 1 }} title="Refresh Data">
+                      <RefreshIcon />
+                    </IconButton>
+                  </Box>
+                ),
+                content: <MiscellaneousPanel elements={elements} templateConfig={templateConfig} />,
+                buttonTooltip: "Toggle Miscellaneous Panel",
+                buttonDisabled: false,
+                showCollapseButtonInHeader: true,
+                minRatio: 0.15,
+              }}
+              storageKey="templateManagementEditor"
+            />
+            <FloatingLoadingIndicator loading={configLoading || elementsLoading} />
+          </PdfmeStoreProvider>
         </CertificateElementProvider>
       </NodesStoreProvider>
     </>
