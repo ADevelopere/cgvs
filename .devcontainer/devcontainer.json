@@ -16,14 +16,6 @@
 			"userUid": "1001",
 			"userGid": "1001"
 		},
-		"ghcr.io/devcontainers/features/git:1": {
-			"ppa": true,
-			"version": "latest"
-		},
-		"ghcr.io/devcontainers/features/git-lfs:1": {
-			"autoPull": true,
-			"version": "latest"
-		},
 		"ghcr.io/devcontainers/features/node:1": {
 			"nodeGypDependencies": true,
 			"installYarnUsingApt": false,
