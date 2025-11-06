@@ -18,16 +18,17 @@
     // },
     "ghcr.io/devcontainers/features/sshd:1": {
       "version": "latest"
+    },
+    // This is the new, recommended way to add Postgres
+    "ghcr.io/devcontainers/features/postgresql": {
+      "version": "latest",
+      "password": "postgres",
+      "database": "cgvs"
     }
   },
   // Commands to run after the container is created (runs once)
   "postCreateCommand": {
     "install-bun": "bash /workspaces/${localWorkspaceFolderBasename}/scripts/install_bun.sh",
-    "install-ohmyzsh": "bash /workspaces/${localWorkspaceFolderBasename}/scripts/install_ohmyzsh.sh",
-    "setup-postgres": "sudo service postgresql start && sudo -u postgres psql -c \"ALTER USER postgres WITH PASSWORD 'postgres';\" && sudo -u postgres psql -c \"CREATE DATABASE cgvs OWNER postgres;\""
-  },
-  // Commands to run every time the container starts
-  "postStartCommand": {
-    "start-postgres": "sudo service postgresql start"
+    "install-ohmyzsh": "bash /workspaces/${localWorkspaceFolderBasename}/scripts/install_ohmyzsh.sh"
   }
 }

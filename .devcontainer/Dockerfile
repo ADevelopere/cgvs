@@ -11,7 +11,6 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
   fzf \
   openssl \
   xxd \
-  postgresql \
   libglib2.0-0 \
   libnss3 \
   libatk-bridge2.0-0 \
