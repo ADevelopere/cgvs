@@ -18,6 +18,29 @@ export const ElementOrderUpdateInputObject = gqlSchemaBuilder
     }),
   });
 
+export const ElementMoveInputObject = gqlSchemaBuilder.inputRef<Types.ElementMoveInput>("ElementMoveInput").implement({
+  fields: t => ({
+    elementId: t.int({ required: true }),
+    newRenderOrder: t.int({ required: true }),
+  }),
+});
+
+export const IncreaseElementOrderInputObject = gqlSchemaBuilder
+  .inputRef<Types.IncreaseElementOrderInput>("IncreaseElementOrderInput")
+  .implement({
+    fields: t => ({
+      elementId: t.int({ required: true }),
+    }),
+  });
+
+export const DecreaseElementOrderInputObject = gqlSchemaBuilder
+  .inputRef<Types.DecreaseElementOrderInput>("DecreaseElementOrderInput")
+  .implement({
+    fields: t => ({
+      elementId: t.int({ required: true }),
+    }),
+  });
+
 // ============================================================================
 // Input Field Helpers (to reduce duplication across element types)
 // ============================================================================

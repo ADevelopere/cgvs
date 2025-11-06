@@ -37,3 +37,10 @@ export type IncreaseElementOrderInput = {
 export type DecreaseElementOrderInput = {
   elementId: number;
 };
+
+export type ElementMoveInput = {
+  /** The ID of the element being moved */
+  elementId: number;
+  /** The new render order (position) for the element */
+  newRenderOrder: number;
+};

@@ -64,16 +64,44 @@ gqlSchemaBuilder.mutationFields(t => ({
     },
   }),
 
-  updateElementsRenderOrder: t.field({
+  moveElement: t.field({
     type: "Boolean",
     args: {
-      updates: t.arg({
-        type: [ElementPothos.ElementOrderUpdateInputObject],
+      input: t.arg({
+        type: ElementPothos.ElementMoveInputObject,
         required: true,
       }),
     },
     resolve: async (_, args) => {
-      await ElementRepository.updateRenderOrder(args.updates);
+      await ElementRepository.moveElement(args.input);
+      return true;
+    },
+  }),
+
+  increaseElementOrder: t.field({
+    type: "Boolean",
+    args: {
+      input: t.arg({
+        type: ElementPothos.IncreaseElementOrderInputObject,
+        required: true,
+      }),
+    },
+    resolve: async (_, args) => {
+      await ElementRepository.increaseElementOrder(args.input);
+      return true;
+    },
+  }),
+
+  decreaseElementOrder: t.field({
+    type: "Boolean",
+    args: {
+      input: t.arg({
+        type: ElementPothos.DecreaseElementOrderInputObject,
+        required: true,
+      }),
+    },
+    resolve: async (_, args) => {
+      await ElementRepository.decreaseElementOrder(args.input);
       return true;
     },
   }),

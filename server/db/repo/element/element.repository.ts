@@ -1,5 +1,5 @@
 import { db } from "@/server/db/drizzleDb";
-import { eq, inArray, asc, max, and, gt, lt } from "drizzle-orm";
+import { eq, inArray, asc, max, and, gt, lt, sql, lte, gte } from "drizzle-orm";
 import { font, certificateElement, templateVariableBases } from "@/server/db/schema";
 import {
   TextElementRepository,
@@ -20,6 +20,7 @@ import {
   CertificateElementEntityInput,
   IncreaseElementOrderInput,
   DecreaseElementOrderInput,
+  ElementMoveInput,
 } from "@/server/types/element";
 import logger from "@/server/lib/logger";
 import { TemplateRepository } from "../template.repository";
@@ -306,30 +307,8 @@ export namespace ElementRepository {
   };
 
   // ============================================================================
-  // Batch Operations
+  // Mutations
   // ============================================================================
-
-  /**
-   * Update render order for multiple elements in a single transaction
-   */
-  export const updateRenderOrder = async (updates: ElementOrderUpdateInput[]): Promise<void> => {
-    if (updates.length === 0) return;
-
-    // Execute all updates in a transaction
-    await db.transaction(async tx => {
-      for (const update of updates) {
-        await tx
-          .update(certificateElement)
-          .set({
-            renderOrder: update.renderOrder,
-            updatedAt: new Date(),
-          })
-          .where(eq(certificateElement.id, update.id));
-      }
-    });
-
-    logger.info(`Updated render order for ${updates.length} element(s)`);
-  };
 
   export const createInternal = async (input: CertificateElementEntityInput): Promise<CertificateElementEntity> => {
     const newOrder = (await findMaxOrderInTemplate(input.templateId)) + 1;
@@ -338,90 +317,115 @@ export namespace ElementRepository {
     return newBaseElement;
   };
 
-  export const increaseElementOrder = async (input: IncreaseElementOrderInput): Promise<CertificateElementEntity[]> => {
-    const baseElement = await findByIdOrThrow(input.elementId);
+  /**
+   * Updates the render order of a single element based on a drag-and-drop action,
+   * validates the new position, and returns all affected elements.
+   * This will shift other elements within the same template to accommodate the new order.
+   *
+   * @param input - The element to move and its new render order.
+   * @returns A promise that resolves to an array of all elements with updated orders.
+   */
+  export const moveElement = async (input: ElementMoveInput): Promise<CertificateElementEntity[]> => {
+    const { elementId, newRenderOrder } = input;
 
-    const currentOrder = baseElement.renderOrder;
-    // find element with the next order
-    const [nextElement] = await db
-      .select()
-      .from(certificateElement)
-      .where(
-        and(eq(certificateElement.templateId, baseElement.templateId), gt(certificateElement.renderOrder, currentOrder))
-      )
-      .orderBy(certificateElement.renderOrder)
-      .limit(1);
+    const updatedElements = await db.transaction(async tx => {
+      // 1. Get the element being moved to find its current order and templateId
+      const elementToMove = await findByIdOrThrow(elementId);
+      const oldRenderOrder = elementToMove.renderOrder;
+      const templateId = elementToMove.templateId;
 
-    if (!nextElement) {
-      throw new Error(`[increaseElementOrder] No next element found for element ID ${input.elementId}`);
-    }
+      // If order hasn't changed, do nothing.
+      if (oldRenderOrder === newRenderOrder) {
+        return [];
+      }
 
-    if (nextElement) {
-      // update the next element's order
-      const [updatedElement1] = await db
+      // 2. Validate the new render order
+      const maxOrder = await findMaxOrderInTemplate(templateId);
+      if (newRenderOrder < 1 || newRenderOrder > maxOrder) {
+        throw new Error(`Invalid new render order: ${newRenderOrder}. Must be between 1 and ${maxOrder}.`);
+      }
+
+      let affectedSiblings: CertificateElementEntity[] = [];
+
+      // 3. Shift the affected elements
+      if (oldRenderOrder < newRenderOrder) {
+        // Moved DOWN the list (e.g., from 2 to 5)
+        // Decrement the order of elements between the old and new position
+        affectedSiblings = await tx
+          .update(certificateElement)
+          .set({
+            renderOrder: sql`${certificateElement.renderOrder} - 1`,
+            updatedAt: new Date(),
+          })
+          .where(
+            and(
+              eq(certificateElement.templateId, templateId),
+              gt(certificateElement.renderOrder, oldRenderOrder),
+              lte(certificateElement.renderOrder, newRenderOrder)
+            )
+          )
+          .returning();
+      } else {
+        // Moved UP the list (e.g., from 5 to 2)
+        // Increment the order of elements between the new and old position
+        affectedSiblings = await tx
+          .update(certificateElement)
+          .set({
+            renderOrder: sql`${certificateElement.renderOrder} + 1`,
+            updatedAt: new Date(),
+          })
+          .where(
+            and(
+              eq(certificateElement.templateId, templateId),
+              lt(certificateElement.renderOrder, oldRenderOrder),
+              gte(certificateElement.renderOrder, newRenderOrder)
+            )
+          )
+          .returning();
+      }
+
+      // 4. Update the moved element's order
+      const [movedElement] = await tx
         .update(certificateElement)
         .set({
-          renderOrder: currentOrder,
+          renderOrder: newRenderOrder,
+          updatedAt: new Date(),
         })
-        .where(eq(certificateElement.id, nextElement.id))
+        .where(eq(certificateElement.id, elementId))
         .returning();
 
-      // update the current element's order
-      const [updatedElement2] = await db
-        .update(certificateElement)
-        .set({
-          renderOrder: currentOrder + 1,
-        })
-        .where(eq(certificateElement.id, input.elementId))
-        .returning();
+      return [...affectedSiblings, movedElement];
+    });
 
-      return [updatedElement1, updatedElement2];
-    }
+    logger.info(
+      `Moved element ID ${elementId} to render order ${newRenderOrder}. Affected ${updatedElements.length} element(s).`
+    );
 
-    return [];
+    return updatedElements;
   };
 
-  export const decreaseElementOrder = async (input: DecreaseElementOrderInput): Promise<CertificateElementEntity[]> => {
-    const baseElement = await findByIdOrThrow(input.elementId);
-    const currentOrder = baseElement.renderOrder;
-    if (currentOrder === 1) {
-      throw new Error(`[decreaseElementOrder] Cannot decrease the order of the first element`);
+  /**
+   * Increase the render order of an element (move it down the list).
+   */
+  export const increaseElementOrder = async (input: IncreaseElementOrderInput): Promise<void> => {
+    const { elementId } = input;
+    const element = await findByIdOrThrow(elementId);
+    const maxOrder = await findMaxOrderInTemplate(element.templateId);
+
+    if (element.renderOrder < maxOrder) {
+      await moveElement({ elementId, newRenderOrder: element.renderOrder + 1 });
     }
+  };
 
-    // find element with the previous order
-    const [previousElement] = await db
-      .select()
-      .from(certificateElement)
-      .where(
-        and(eq(certificateElement.templateId, baseElement.templateId), lt(certificateElement.renderOrder, currentOrder))
-      )
-      .orderBy(certificateElement.renderOrder)
-      .limit(1);
+  /**
+   * Decrease the render order of an element (move it up the list).
+   */
+  export const decreaseElementOrder = async (input: DecreaseElementOrderInput): Promise<void> => {
+    const { elementId } = input;
+    const element = await findByIdOrThrow(elementId);
 
-    if (!previousElement) {
-      throw new Error(`[decreaseElementOrder] No previous element found for element ID ${input.elementId}`);
+    if (element.renderOrder > 1) {
+      await moveElement({ elementId, newRenderOrder: element.renderOrder - 1 });
     }
-    if (previousElement) {
-      // update the previous element's order
-      const [updatedElement1] = await db
-        .update(certificateElement)
-        .set({
-          renderOrder: currentOrder,
-        })
-        .where(eq(certificateElement.id, previousElement.id))
-        .returning();
-
-      // update the current element's order
-      const [updatedElement2] = await db
-        .update(certificateElement)
-        .set({
-          renderOrder: currentOrder - 1,
-        })
-        .where(eq(certificateElement.id, input.elementId))
-        .returning();
-
-      return [updatedElement1, updatedElement2];
-    }
-    return [];
   };
 }

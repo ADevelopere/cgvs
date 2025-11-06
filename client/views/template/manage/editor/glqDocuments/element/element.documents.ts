@@ -243,15 +243,6 @@ export const certificateElementFragment: TypedDocumentNode<GQL.CertificateElemen
   }
 `;
 
-export const updateElementsRenderOrderMutationDocument: TypedDocumentNode<
-  GQL.UpdateElementsRenderOrderMutation,
-  GQL.UpdateElementsRenderOrderMutationVariables
-> = gql`
-  mutation updateElementsRenderOrder($updates: [ElementOrderUpdateInput!]!) {
-    updateElementsRenderOrder(updates: $updates)
-  }
-`;
-
 export const deleteElementMutationDocument: TypedDocumentNode<
   GQL.DeleteElementMutation,
   GQL.DeleteElementMutationVariables

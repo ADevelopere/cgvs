@@ -495,6 +495,10 @@ enum DateTransformationType {
   AGE_CALCULATION
 }
 
+input DecreaseElementOrderInput {
+  elementId: Int!
+}
+
 type DirectoryInfo implements StorageObject {
   createdAt: DateTime
   fileCount: Int
@@ -551,6 +555,11 @@ enum ElementImageFit {
   CONTAIN
   COVER
   FILL
+}
+
+input ElementMoveInput {
+  elementId: Int!
+  newRenderOrder: Int!
 }
 
 input ElementOrderUpdateInput {
@@ -873,6 +882,10 @@ input ImageElementUpdateInput {
   imageProps: ImageElementSpecPropsInput!
 }
 
+input IncreaseElementOrderInput {
+  elementId: Int!
+}
+
 """A type representing arbitrary JSON values"""
 scalar JSON
 
@@ -908,6 +921,7 @@ type Mutation {
   createTemplateSelectVariable(input: TemplateSelectVariableCreateInput!): TemplateSelectVariable
   createTemplateTextVariable(input: TemplateTextVariableCreateInput!): TemplateTextVariable
   createTextElement(input: TextElementInput!): TextElement
+  decreaseElementOrder(input: DecreaseElementOrderInput!): Boolean
   deleteElement(id: Int!): Boolean
   deleteElements(ids: [Int!]!): Boolean
   deleteFile(path: String!): FileOperationResult
@@ -921,8 +935,10 @@ type Mutation {
   deleteTemplateRecipientGroup(id: Int!): TemplateRecipientGroup
   deleteTemplateVariable(id: Int!): TemplateVariable
   generateUploadSignedUrl(input: UploadSignedUrlGenerateInput!): String
+  increaseElementOrder(input: IncreaseElementOrderInput!): Boolean
   login(input: LoginInput!): LoginResponse
   logout: Boolean
+  moveElement(input: ElementMoveInput!): Boolean
   moveStorageItems(input: StorageItemsMoveInput!): BulkOperationResult
   partiallyUpdateStudent(input: PartialStudentUpdateInput!): Student
   refreshToken: RefreshTokenResponse
@@ -941,7 +957,6 @@ type Mutation {
   updateDirectoryPermissions(input: DirectoryPermissionsUpdateInput!): FileOperationResult
   updateElementCommonProperties(input: CertificateElementBaseUpdateInput!): UpdateElementBaseResponse
   updateElementTextProps(input: TextPropsUpdateInput!): ElementWithTextProps
-  updateElementsRenderOrder(updates: [ElementOrderUpdateInput!]!): Boolean
   updateFont(input: FontUpdateInput!): Font!
   updateGenderElement(input: GenderElementUpdateInput!): GenderElement
   updateImageElement(input: ImageElementUpdateInput!): ImageElement
