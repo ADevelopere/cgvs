@@ -1,11 +1,6 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq, inArray, asc } from "drizzle-orm";
-import {
-  font,
-  certificateElement,
-  storageFiles,
-  templateVariableBases,
-} from "@/server/db/schema";
+import { font, certificateElement, templateVariableBases } from "@/server/db/schema";
 import {
   TextElementRepository,
   CountryElementRepository,
@@ -27,6 +22,7 @@ import logger from "@/server/lib/logger";
 import { TemplateRepository } from "../template.repository";
 import { TemplateVariableType } from "@/server/types";
 import { CommonElementUtils } from "@/server/utils";
+import { getStorageService } from "@/server/storage/storage.service";
 
 /**
  * Master repository for certificate elements
@@ -62,14 +58,8 @@ export namespace ElementRepository {
    * Find element by ID
    * @returns Element or null if not found
    */
-  export const findById = async (
-    id: number
-  ): Promise<CertificateElementEntity | null> => {
-    const result = await db
-      .select()
-      .from(certificateElement)
-      .where(eq(certificateElement.id, id))
-      .limit(1);
+  export const findById = async (id: number): Promise<CertificateElementEntity | null> => {
+    const result = await db.select().from(certificateElement).where(eq(certificateElement.id, id)).limit(1);
     return result[0] || null;
   };
 
@@ -77,9 +67,7 @@ export namespace ElementRepository {
    * Find element by ID or throw error
    * @throws Error if element not found
    */
-  export const findByIdOrThrow = async (
-    id: number
-  ): Promise<CertificateElementEntity> => {
+  export const findByIdOrThrow = async (id: number): Promise<CertificateElementEntity> => {
     const element = await findById(id);
     if (!element) {
       throw new Error(`Element with ID ${id} does not exist.`);
@@ -92,9 +80,7 @@ export namespace ElementRepository {
    * Validates that template exists first
    * @throws Error if template doesn't exist
    */
-  export const findByTemplateId = async (
-    templateId: number
-  ): Promise<CertificateElementEntity[]> => {
+  export const findByTemplateId = async (templateId: number): Promise<CertificateElementEntity[]> => {
     // Validate template exists first
     await validateTemplateId(templateId);
 
@@ -113,15 +99,10 @@ export namespace ElementRepository {
    * Load elements by IDs (for Pothos dataloader)
    * Maintains order and returns Error for missing elements
    */
-  export const loadByIds = async (
-    ids: number[]
-  ): Promise<CertificateElementInterface[]> => {
+  export const loadByIds = async (ids: number[]): Promise<CertificateElementInterface[]> => {
     if (ids.length === 0) return [];
 
-    const elements = await db
-      .select()
-      .from(certificateElement)
-      .where(inArray(certificateElement.id, ids));
+    const elements = await db.select().from(certificateElement).where(inArray(certificateElement.id, ids));
 
     // Map to maintain order, return Error for missing
     return ids.map(id => {
@@ -161,48 +142,44 @@ export namespace ElementRepository {
     }
 
     // Map over the original templateIds to preserve order
-    const allGroupPromises = templateIds.map(
-      async (id): Promise<CertificateElementUnion[] | Error> => {
-        // <-- Inner promise type changed
-        const groupBaseElements = elementsByTemplateId.get(id) || [];
+    const allGroupPromises = templateIds.map(async (id): Promise<CertificateElementUnion[] | Error> => {
+      // <-- Inner promise type changed
+      const groupBaseElements = elementsByTemplateId.get(id) || [];
 
-        try {
-          // This will now try to resolve all elements.
-          // If *any* promise rejects, the .catch() block will handle it.
-          const groupResultPromises = groupBaseElements.map(
-            async (base): Promise<CertificateElementUnion> => {
-              // <-- No | Error here
-              switch (base.type) {
-                case ElementType.COUNTRY:
-                  return await CountryElementRepository.loadByBase(base);
-                case ElementType.DATE:
-                  return await DateElementRepository.loadByBase(base);
-                case ElementType.GENDER:
-                  return await GenderElementRepository.loadByBase(base);
-                case ElementType.IMAGE:
-                  return await ImageElementRepository.loadByBase(base);
-                case ElementType.NUMBER:
-                  return await NumberElementRepository.loadByBase(base);
-                case ElementType.QR_CODE:
-                  return await QRCodeElementRepository.loadByBase(base);
-                case ElementType.TEXT:
-                  return await TextElementRepository.loadByBase(base);
-              }
-              // Throw an error instead of returning it
-              // This will cause the Promise.all() to reject
-              throw new Error(`Element type ${base.type} not implemented yet`);
-            }
-          );
+      try {
+        // This will now try to resolve all elements.
+        // If *any* promise rejects, the .catch() block will handle it.
+        const groupResultPromises = groupBaseElements.map(async (base): Promise<CertificateElementUnion> => {
+          // <-- No | Error here
+          switch (base.type) {
+            case ElementType.COUNTRY:
+              return await CountryElementRepository.loadByBase(base);
+            case ElementType.DATE:
+              return await DateElementRepository.loadByBase(base);
+            case ElementType.GENDER:
+              return await GenderElementRepository.loadByBase(base);
+            case ElementType.IMAGE:
+              return await ImageElementRepository.loadByBase(base);
+            case ElementType.NUMBER:
+              return await NumberElementRepository.loadByBase(base);
+            case ElementType.QR_CODE:
+              return await QRCodeElementRepository.loadByBase(base);
+            case ElementType.TEXT:
+              return await TextElementRepository.loadByBase(base);
+          }
+          // Throw an error instead of returning it
+          // This will cause the Promise.all() to reject
+          throw new Error(`Element type ${base.type} not implemented yet`);
+        });
 
-          // Wait for all elements in *this* group to be processed
-          return await Promise.all(groupResultPromises);
-        } catch (error) {
-          // If any element fails (e.g., "not implemented"),
-          // catch it and return a single Error for this entire group.
-          return error instanceof Error ? error : new Error(String(error));
-        }
+        // Wait for all elements in *this* group to be processed
+        return await Promise.all(groupResultPromises);
+      } catch (error) {
+        // If any element fails (e.g., "not implemented"),
+        // catch it and return a single Error for this entire group.
+        return error instanceof Error ? error : new Error(String(error));
       }
-    );
+    });
 
     // Wait for all the *group* promises to resolve
     return await Promise.all(allGroupPromises);
@@ -228,9 +205,7 @@ export namespace ElementRepository {
    * Validate that a template exists before creating elements
    * @throws Error if template doesn't exist
    */
-  export const validateTemplateId = async (
-    templateId: number
-  ): Promise<void> => {
+  export const validateTemplateId = async (templateId: number): Promise<void> => {
     const exists = await TemplateRepository.existsById(templateId);
     if (!exists) {
       throw new Error(`Template with ID ${templateId} does not exist.`);
@@ -246,11 +221,7 @@ export namespace ElementRepository {
    * @throws Error if font doesn't exist
    */
   export const validateFontId = async (fontId: number): Promise<void> => {
-    const result = await db
-      .select({ id: font.id })
-      .from(font)
-      .where(eq(font.id, fontId))
-      .limit(1);
+    const result = await db.select({ id: font.id }).from(font).where(eq(font.id, fontId)).limit(1);
 
     if (result.length === 0) {
       throw new Error(`Font with ID ${fontId} does not exist.`);
@@ -261,10 +232,7 @@ export namespace ElementRepository {
    * Validate template variable exists by ID
    * @throws Error if variable doesn't exist
    */
-  export const checkTemplateVariableId = async (
-    variableId: number,
-    type: TemplateVariableType
-  ): Promise<void> => {
+  export const checkTemplateVariableId = async (variableId: number, type: TemplateVariableType): Promise<void> => {
     const variable = await db
       .select({
         id: templateVariableBases.id,
@@ -275,15 +243,11 @@ export namespace ElementRepository {
       .limit(1);
 
     if (variable.length === 0) {
-      throw new Error(
-        `Template variable with ID ${variableId} does not exist.`
-      );
+      throw new Error(`Template variable with ID ${variableId} does not exist.`);
     }
 
     if (variable[0].type !== type) {
-      throw new Error(
-        `Template variable with ID ${variableId} is not of type ${type}.`
-      );
+      throw new Error(`Template variable with ID ${variableId} is not of type ${type}.`);
     }
   };
 
@@ -291,17 +255,11 @@ export namespace ElementRepository {
    * Validate storage file exists by ID
    * @throws Error if file doesn't exist
    */
-  export const validateStorageFileId = async (
-    fileId: number
-  ): Promise<void> => {
-    const result = await db
-      .select({ id: storageFiles.id })
-      .from(storageFiles)
-      .where(eq(storageFiles.id, BigInt(fileId)))
-      .limit(1);
-
-    if (result.length === 0) {
-      throw new Error(`Storage file with ID ${fileId} does not exist.`);
+  export const validateStorageFilePath = async (filePath: string): Promise<void> => {
+    const storageService = await getStorageService();
+    const exists = await storageService.fileExists(filePath);
+    if (!exists) {
+      throw new Error(`Storage file with path ${filePath} does not exist.`);
     }
   };
 
@@ -322,9 +280,7 @@ export namespace ElementRepository {
 
     await db.delete(certificateElement).where(eq(certificateElement.id, id));
 
-    logger.info(
-      `Element deleted: ${element.name} (ID: ${id}, Type: ${element.type})`
-    );
+    logger.info(`Element deleted: ${element.name} (ID: ${id}, Type: ${element.type})`);
   };
 
   /**
@@ -333,9 +289,7 @@ export namespace ElementRepository {
   export const deleteByIds = async (ids: number[]): Promise<void> => {
     if (ids.length === 0) return;
 
-    await db
-      .delete(certificateElement)
-      .where(inArray(certificateElement.id, ids));
+    await db.delete(certificateElement).where(inArray(certificateElement.id, ids));
 
     logger.info(`Deleted ${ids.length} element(s)`);
   };
@@ -347,9 +301,7 @@ export namespace ElementRepository {
   /**
    * Update render order for multiple elements in a single transaction
    */
-  export const updateRenderOrder = async (
-    updates: ElementOrderUpdateInput[]
-  ): Promise<void> => {
+  export const updateRenderOrder = async (updates: ElementOrderUpdateInput[]): Promise<void> => {
     if (updates.length === 0) return;
 
     // Execute all updates in a transaction

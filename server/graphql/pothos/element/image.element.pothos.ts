@@ -28,12 +28,12 @@ export const ImageDataSourceStorageFileObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: ImageDataSourceTypePothosEnum }),
-      storageFileId: t.exposeInt("storageFileId"),
+      storageFilePath: t.exposeString("storageFilePath"),
       imageUrl: t.string({
         nullable: true,
         resolve: async image => {
-          if (image.storageFileId) {
-            const imageFileInfo = await (await getStorageService()).fileInfoByDbFileId(BigInt(image.storageFileId));
+          if (image.storageFilePath) {
+            const imageFileInfo = await (await getStorageService()).fileInfoByPath(image.storageFilePath);
             return imageFileInfo?.url;
           }
           return null;
@@ -64,7 +64,8 @@ export const ImageDataSourceStorageFileInputObject = gqlSchemaBuilder
   .inputRef<Types.ImageDataSourceStorageFileInputGraphql>("ImageDataSourceStorageFileInput")
   .implement({
     fields: t => ({
-      storageFileId: t.int({ required: true }),
+      path: t.string({ required: true }),
+      url: t.string({ required: true }),
     }),
   });
 
@@ -158,7 +159,6 @@ export const ImageElementSpecPropsObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       elementId: t.exposeInt("elementId"),
-      storageFileId: t.exposeInt("storageFileId"),
       fit: t.expose("fit", { type: ElementImageFitPothosEnum }),
     }),
   });

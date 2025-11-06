@@ -9,6 +9,7 @@ import { useLazyQuery } from "@apollo/client/react";
 import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "./glqDocuments";
 import React from "react";
 import { isAbortError } from "@/client/utils/errorUtils";
+import { ImageElementNodeData } from "./nodeRenderer/ImageNode";
 
 /**
  * Return type for the useNodesStore hook
@@ -84,8 +85,10 @@ function createTextNode(element: GQL.TextElement): Node<TextElementNodeData> | n
 }
 
 function createImageNode(element: GQL.ImageElement): Node | null {
-  const data = {
+  const data: ImageElementNodeData = {
     elementId: element.base.id,
+    width: element.base.width,
+    height: element.base.height,
   };
 
   return {
@@ -144,7 +147,7 @@ function initializeNodesFromData(
       // Add other element types here as needed
       return null;
     })
-    .filter((node): node is Node<TextElementNodeData> => node !== null);
+    .filter((node) => node !== null);
 
   return [containerNode, ...elementNodes];
 }

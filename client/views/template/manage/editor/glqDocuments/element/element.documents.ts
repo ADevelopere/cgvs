@@ -107,7 +107,7 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
       ... on ImageElement {
         imageDataSource {
           ... on ImageDataSourceStorageFile {
-            storageFileId
+            storageFilePath
             type
             imageUrl
           }
@@ -115,7 +115,6 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
         imageProps {
           elementId
           fit
-          storageFileId
         }
       }
       ... on NumberElement {

@@ -38,7 +38,8 @@ export namespace ImageElementUtils {
     }
     return {
       type: ImageDataSourceType.STORAGE_FILE,
-      storageFileId: input.storageFile.storageFileId,
+      storageFilePath: input.storageFile.path,
+      url: input.storageFile.url,
     };
   };
 
@@ -115,7 +116,7 @@ export namespace ImageElementUtils {
     }
 
     // Validate storage file exists
-    await ElementRepository.validateStorageFileId(dataSource.storageFileId);
+    await ElementRepository.validateStorageFilePath(dataSource.storageFilePath);
   };
 
   /**
@@ -178,7 +179,7 @@ export namespace ImageElementUtils {
   ): ImageDataSource => {
     return {
       type: input.type,
-      storageFileId: input.storageFileId,
+      storageFilePath: input.storageFilePath,
     };
   };
 }

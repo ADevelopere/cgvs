@@ -13,7 +13,7 @@ export const imageElement = pgTable("image_element", {
     .$type<ImageDataSource>()
     .notNull(),
   // Mirrored from data_source.storageFileId
-  storageFileId: bigint("storage_file_id", { mode: "number" })
+  storageFileId: bigint("storage_file_id", { mode: "bigint" })
     .notNull()
     .references(() => storageFiles.id, { onDelete: "restrict" }),
 });

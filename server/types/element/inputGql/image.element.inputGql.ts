@@ -9,7 +9,8 @@ import {
 
 // GraphQL input types (used in Pothos isOneOf definitions)
 export type ImageDataSourceStorageFileInputGraphql = {
-  storageFileId: number;
+  path: string;
+  url: string;
 };
 
 export type ImageDataSourceInputGraphql = {

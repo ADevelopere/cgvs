@@ -18,6 +18,7 @@ import {
 import { ImageElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
 import { ElementRepository } from ".";
+import { getStorageService } from "@/server/storage/storage.service";
 
 /**
  * Repository for IMAGE element operations
@@ -37,16 +38,12 @@ export namespace ImageElementRepository {
    * 4. Insert into image_element
    * 5. Return full output
    */
-  export const create = async (
-    input: ImageElementInput
-  ): Promise<ImageElementOutput> => {
+  export const create = async (input: ImageElementInput): Promise<ImageElementOutput> => {
     // 1. Validate input
     await ImageElementUtils.validateInput(input);
 
     // 2. Convert input dataSource to output format and extract storageFileId
-    const newDataSource = ImageElementUtils.convertInputDataSourceToOutput(
-      input.dataSource
-    );
+    const newDataSource = ImageElementUtils.convertInputDataSourceToOutput(input.dataSource);
 
     const baseInput: CertificateElementEntityInput = {
       ...input.base,
@@ -54,11 +51,14 @@ export namespace ImageElementRepository {
     };
 
     // 3. Insert into certificate_element (base table)
-    const [baseElement] = await db
-      .insert(certificateElement)
-      .values(baseInput)
-      .returning();
+    const [baseElement] = await db.insert(certificateElement).values(baseInput).returning();
 
+    const storageService = await getStorageService();
+    const file = await storageService.fileInfoByPath(input.dataSource.storageFilePath);
+    const storageFileId = file?.dbId;
+    if (!storageFileId) {
+      throw new Error(`Storage file not found at path: ${input.dataSource.storageFilePath}`);
+    }
     // 4. Insert into image_element (type-specific table)
     const [newImageElement] = await db
       .insert(imageElement)
@@ -66,13 +66,11 @@ export namespace ImageElementRepository {
         elementId: baseElement.id,
         fit: input.imageProps.fit,
         imageDataSource: newDataSource,
-        storageFileId: newDataSource.storageFileId,
+        storageFileId: storageFileId,
       })
       .returning();
 
-    logger.info(
-      `IMAGE element created: ${baseElement.name} (ID: ${baseElement.id})`
-    );
+    logger.info(`IMAGE element created: ${baseElement.name} (ID: ${baseElement.id})`);
 
     // 5. Return full output
     return {
@@ -99,34 +97,25 @@ export namespace ImageElementRepository {
    * 4. Update image_element (type-specific table)
    * 5. Return updated element
    */
-  export const update = async (
-    input: ImageElementUpdateInput
-  ): Promise<ImageElementOutput> => {
+  export const update = async (input: ImageElementUpdateInput): Promise<ImageElementOutput> => {
     // 1. Load existing element
     const existing = await loadByIdOrThrow(input.id);
 
     // 2. Validate type
     if (existing.base.type !== ElementType.IMAGE) {
-      throw new Error(
-        `Element ${input.id} is ${existing.base.type}, not IMAGE. Use correct repository.`
-      );
+      throw new Error(`Element ${input.id} is ${existing.base.type}, not IMAGE. Use correct repository.`);
     }
 
     // 3. Validate update input
     await ImageElementUtils.validateInput(input);
 
     // 4. Update certificate_element (base table)
-    const updatedBaseElement = await ElementRepository.updateBaseElement(
-      { ...input.base, id: input.id },
-      true
-    );
+    const updatedBaseElement = await ElementRepository.updateBaseElement({ ...input.base, id: input.id }, true);
 
     // 5. Update image_element (type-specific table)
     const updatedImageElement = await updateImageElementSpecific(input);
 
-    logger.info(
-      `IMAGE element updated: ${updatedBaseElement.name} (ID: ${input.id})`
-    );
+    logger.info(`IMAGE element updated: ${updatedBaseElement.name} (ID: ${input.id})`);
 
     // 6. Return updated element
     return {
@@ -148,17 +137,12 @@ export namespace ImageElementRepository {
    * Load IMAGE element by ID with all joined data
    * Joins: certificate_element + image_element
    */
-  export const loadById = async (
-    id: number
-  ): Promise<ImageElementOutput | null> => {
+  export const loadById = async (id: number): Promise<ImageElementOutput | null> => {
     // Join both tables
     const result = await db
       .select()
       .from(certificateElement)
-      .innerJoin(
-        imageElement,
-        eq(imageElement.elementId, certificateElement.id)
-      )
+      .innerJoin(imageElement, eq(imageElement.elementId, certificateElement.id))
       .where(eq(certificateElement.id, id))
       .limit(1);
 
@@ -178,18 +162,11 @@ export namespace ImageElementRepository {
     };
   };
 
-  export const loadByBase = async (
-    base: CertificateElementEntity
-  ): Promise<ImageElementOutput> => {
+  export const loadByBase = async (base: CertificateElementEntity): Promise<ImageElementOutput> => {
     // Join both tables
-    const result = await db
-      .select()
-      .from(imageElement)
-      .where(eq(imageElement.elementId, base.id))
-      .limit(1);
+    const result = await db.select().from(imageElement).where(eq(imageElement.elementId, base.id)).limit(1);
 
-    if (result.length === 0)
-      throw new Error(`IMAGE element with base ID ${base.id} does not exist.`);
+    if (result.length === 0) throw new Error(`IMAGE element with base ID ${base.id} does not exist.`);
 
     const row = result[0];
 
@@ -208,9 +185,7 @@ export namespace ImageElementRepository {
   /**
    * Load IMAGE element by ID or throw error
    */
-  export const loadByIdOrThrow = async (
-    id: number
-  ): Promise<ImageElementOutput> => {
+  export const loadByIdOrThrow = async (id: number): Promise<ImageElementOutput> => {
     const element = await loadById(id);
     if (!element) {
       throw new Error(`IMAGE element with ID ${id} does not exist.`);
@@ -222,9 +197,7 @@ export namespace ImageElementRepository {
    * Load IMAGE elements by IDs for Pothos dataloader
    * Returns array with ImageElementOutput or Error per ID
    */
-  export const loadByIds = async (
-    ids: number[]
-  ): Promise<(ImageElementOutput | Error)[]> => {
+  export const loadByIds = async (ids: number[]): Promise<(ImageElementOutput | Error)[]> => {
     if (ids.length === 0) return [];
 
     // Load all elements
@@ -238,9 +211,7 @@ export namespace ImageElementRepository {
 
       // Validate element type
       if (element.base.type !== ElementType.IMAGE) {
-        return new Error(
-          `Element ${element.base.id} is ${element.base.type}, not IMAGE`
-        );
+        return new Error(`Element ${element.base.id} is ${element.base.type}, not IMAGE`);
       }
 
       return element;
@@ -255,14 +226,8 @@ export namespace ImageElementRepository {
    * Find image element entity by elementId
    * Returns entity from image_element table only
    */
-  export const findById = async (
-    id: number
-  ): Promise<ImageElementEntity | null> => {
-    const imageEl = await db
-      .select()
-      .from(imageElement)
-      .where(eq(imageElement.elementId, id))
-      .limit(1);
+  export const findById = async (id: number): Promise<ImageElementEntity | null> => {
+    const imageEl = await db.select().from(imageElement).where(eq(imageElement.elementId, id)).limit(1);
 
     if (imageEl.length === 0) return null;
     return imageEl[0];
@@ -271,9 +236,7 @@ export namespace ImageElementRepository {
   /**
    * Find image element entity by elementId or throw error
    */
-  export const findByIdOrThrow = async (
-    id: number
-  ): Promise<ImageElementEntity> => {
+  export const findByIdOrThrow = async (id: number): Promise<ImageElementEntity> => {
     const imageEl = await findById(id);
     if (!imageEl) {
       throw new Error(`Image element with ID ${id} does not exist.`);
@@ -289,17 +252,18 @@ export namespace ImageElementRepository {
    * Update image_element (type-specific table)
    * Returns updated entity
    */
-  const updateImageElementSpecific = async (
-    input: ImageElementUpdateInput
-  ): Promise<ImageElementEntity> => {
-    const newDataSource = ImageElementUtils.convertInputDataSourceToOutput(
-      input.dataSource
-    );
-
+  const updateImageElementSpecific = async (input: ImageElementUpdateInput): Promise<ImageElementEntity> => {
+    const newDataSource = ImageElementUtils.convertInputDataSourceToOutput(input.dataSource);
+    const storageService = await getStorageService();
+    const file = await storageService.fileInfoByPath(input.dataSource.storageFilePath);
+    const storageFileId = file?.dbId;
+    if (!storageFileId) {
+      throw new Error(`Storage file not found at path: ${input.dataSource.storageFilePath}`);
+    }
     const imageUpdates: Partial<typeof imageElement.$inferInsert> = {
       fit: input.imageProps.fit,
       imageDataSource: newDataSource,
-      storageFileId: newDataSource.storageFileId,
+      storageFileId: storageFileId,
     };
 
     const [updated] = await db
@@ -331,9 +295,7 @@ export namespace ImageElementRepository {
       .where(eq(imageElement.elementId, input.elementId))
       .returning();
 
-    logger.info(
-      `IMAGE element specProps updated: (ID: ${input.elementId})`
-    );
+    logger.info(`IMAGE element specProps updated: (ID: ${input.elementId})`);
 
     return {
       elementId: input.elementId,
@@ -356,23 +318,24 @@ export namespace ImageElementRepository {
     await findByIdOrThrow(input.elementId);
 
     // 2. Convert and validate data source
-    const newDataSource = ImageElementUtils.convertInputDataSourceToOutput(
-      input.dataSource
-    );
-
+    const newDataSource = ImageElementUtils.convertInputDataSourceToOutput(input.dataSource);
+    const storageService = await getStorageService();
+    const file = await storageService.fileInfoByPath(input.dataSource.storageFilePath);
+    const storageFileId = file?.dbId;
+    if (!storageFileId) {
+      throw new Error(`Storage file not found at path: ${input.dataSource.storageFilePath}`);
+    }
     // 3. Update image_element (type-specific table)
     const [updatedImageElement] = await db
       .update(imageElement)
       .set({
         imageDataSource: newDataSource,
-        storageFileId: newDataSource.storageFileId,
+        storageFileId: storageFileId,
       })
       .where(eq(imageElement.elementId, input.elementId))
       .returning();
 
-    logger.info(
-      `IMAGE element dataSource updated: (ID: ${input.elementId})`
-    );
+    logger.info(`IMAGE element dataSource updated: (ID: ${input.elementId})`);
 
     return {
       elementId: input.elementId,

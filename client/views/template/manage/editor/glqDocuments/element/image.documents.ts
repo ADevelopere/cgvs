@@ -25,7 +25,7 @@ export const createImageElementMutationDocument: TypedDocumentNode<
       }
       imageDataSource {
         ... on ImageDataSourceStorageFile {
-          storageFileId
+          storageFilePath
           type
           imageUrl
         }
@@ -33,7 +33,6 @@ export const createImageElementMutationDocument: TypedDocumentNode<
       imageProps {
         elementId
         fit
-        storageFileId
       }
     }
   }
@@ -63,7 +62,7 @@ export const updateImageElementMutationDocument: TypedDocumentNode<
       }
       imageDataSource {
         ... on ImageDataSourceStorageFile {
-          storageFileId
+          storageFilePath
           type
           imageUrl
         }
@@ -71,7 +70,6 @@ export const updateImageElementMutationDocument: TypedDocumentNode<
       imageProps {
         elementId
         fit
-        storageFileId
       }
     }
   }
@@ -89,7 +87,6 @@ export const updateImageElementSpecPropsMutationDocument: TypedDocumentNode<
       imageProps {
         elementId
         fit
-        storageFileId
       }
     }
   }
@@ -106,7 +103,7 @@ export const updateImageElementDataSourceMutationDocument: TypedDocumentNode<
       elementId
       imageDataSource {
         ... on ImageDataSourceStorageFile {
-          storageFileId
+          storageFilePath
           type
           imageUrl
         }

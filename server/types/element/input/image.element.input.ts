@@ -7,7 +7,8 @@ import { imageElement } from "@/server/db/schema";
 // ============================================================================
 export type ImageDataSourceInput = {
   type: ImageDataSourceType.STORAGE_FILE;
-  storageFileId: number;
+  storageFilePath: string;
+  url: string;
 };
 
 // ============================================================================

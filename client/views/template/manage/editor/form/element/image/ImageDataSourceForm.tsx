@@ -2,11 +2,7 @@
 
 import React, { useState } from "react";
 import * as Mui from "@mui/material";
-import {
-  Image as ImageIcon,
-  CloudUpload as UploadIcon,
-  Close as CloseIcon,
-} from "@mui/icons-material";
+import { Image as ImageIcon, CloudUpload as UploadIcon, Close as CloseIcon } from "@mui/icons-material";
 import FilePickerDialog from "@/client/views/storage/dialogs/FilePickerDialog";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
@@ -29,28 +25,16 @@ export const ImageDataSourceForm: React.FC<ImageDataSourceFormProps> = ({
   const { certificateElementsTranslations: strings } = useAppTranslation();
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<{
-    id: number;
     name: string;
     path: string;
     url: string;
   } | null>(null);
 
   // Determine if a file is currently selected
-  const hasFile =
-    dataSource.storageFile && dataSource.storageFile.storageFileId > 0;
+  const hasFile = dataSource.storageFile && dataSource.storageFile.path;
 
   const handleFileSelect = (file: Graphql.FileInfo) => {
-    // TODO: Use file.dbId once GraphQL types are updated
-    // For now, we'll use a placeholder approach
-    const fileId = (file as unknown as { dbId?: number }).dbId || -1;
-
-    if (fileId === -1) {
-      // File doesn't have a database ID - this shouldn't happen for stored files
-      return;
-    }
-
     setSelectedFile({
-      id: fileId,
       name: file.name ?? file.path.split("/").pop() ?? "",
       path: file.path,
       url: file.url,
@@ -58,7 +42,8 @@ export const ImageDataSourceForm: React.FC<ImageDataSourceFormProps> = ({
 
     updateDataSource({
       storageFile: {
-        storageFileId: fileId,
+        path: file.path,
+        url: file.url,
       },
     });
     setIsPickerOpen(false);
@@ -68,16 +53,15 @@ export const ImageDataSourceForm: React.FC<ImageDataSourceFormProps> = ({
     setSelectedFile(null);
     updateDataSource({
       storageFile: {
-        storageFileId: -1,
+        path: "",
+        url: "",
       },
     });
   };
 
   return (
     <Mui.Box>
-      <Mui.FormLabel required>
-        {strings.imageElement.dataSourceLabel}
-      </Mui.FormLabel>
+      <Mui.FormLabel required>{strings.imageElement.dataSourceLabel}</Mui.FormLabel>
       <Mui.Box sx={{ mt: 1 }}>
         {hasFile && selectedFile ? (
           // Show selected file
@@ -105,30 +89,16 @@ export const ImageDataSourceForm: React.FC<ImageDataSourceFormProps> = ({
                     <Mui.Typography variant="body2" fontWeight="medium" noWrap>
                       {selectedFile.name}
                     </Mui.Typography>
-                    <Mui.Typography
-                      variant="caption"
-                      color="text.secondary"
-                      noWrap
-                    >
+                    <Mui.Typography variant="caption" color="text.secondary" noWrap>
                       {selectedFile.path}
                     </Mui.Typography>
                   </Mui.Box>
                 </Mui.Box>
                 <Mui.Box sx={{ display: "flex", gap: 1 }}>
-                  <Mui.Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() => setIsPickerOpen(true)}
-                    disabled={disabled}
-                  >
+                  <Mui.Button variant="outlined" size="small" onClick={() => setIsPickerOpen(true)} disabled={disabled}>
                     {strings.imageElement.changeFile}
                   </Mui.Button>
-                  <Mui.IconButton
-                    size="small"
-                    onClick={handleClear}
-                    disabled={disabled}
-                    color="error"
-                  >
+                  <Mui.IconButton size="small" onClick={handleClear} disabled={disabled} color="error">
                     <CloseIcon />
                   </Mui.IconButton>
                 </Mui.Box>
@@ -153,9 +123,7 @@ export const ImageDataSourceForm: React.FC<ImageDataSourceFormProps> = ({
           </Mui.Button>
         )}
 
-        {errors.storageFile && (
-          <Mui.FormHelperText error>{errors.storageFile}</Mui.FormHelperText>
-        )}
+        {errors.storageFile && <Mui.FormHelperText error>{errors.storageFile}</Mui.FormHelperText>}
       </Mui.Box>
 
       {/* File Picker Dialog */}

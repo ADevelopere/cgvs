@@ -821,12 +821,13 @@ type ImageDataSourceStandaloneUpdateResponse {
 
 type ImageDataSourceStorageFile {
   imageUrl: String
-  storageFileId: Int
+  storageFilePath: String
   type: ImageDataSourceType
 }
 
 input ImageDataSourceStorageFileInput {
-  storageFileId: Int!
+  path: String!
+  url: String!
 }
 
 enum ImageDataSourceType {
@@ -849,7 +850,6 @@ input ImageElementInput {
 type ImageElementSpecProps {
   elementId: Int
   fit: ElementImageFit
-  storageFileId: Int
 }
 
 input ImageElementSpecPropsInput {

@@ -3,9 +3,13 @@
 import React, { useEffect } from "react";
 import { NodeProps } from "@xyflow/react";
 import { useImageProps } from "../form/hooks/useImagePropsState";
+import { useImageDataSource } from "../form/hooks";
+import logger from "@/client/lib/logger";
 
 export type ImageElementNodeData = {
   elementId: number;
+  width: number;
+  height: number;
 };
 
 
@@ -14,31 +18,27 @@ type ImageNodeProps = NodeProps & {
 };
 
 
-const ImageNode: React.FC<ImageNodeProps> = ({ data: { elementId } }) => {
-  const {imagePropsState} = useImageProps({ elementId });
+const ImageNode: React.FC<ImageNodeProps> = ({ data: { elementId, width, height } }) => {
+  logger.debug("Rendering ImageNode", { elementId, width, height });
+  const { imageDataSourceState: source } = useImageDataSource({ elementId });
+  const {imagePropsState} = useImageProps({elementId});
+  const imageUrl = source.storageFile.url;
+  logger.debug("ImageNode source", { imageUrl, source });
 
   useEffect(() => {
-    if (imageUrl) {
       const img = new Image();
       img.src = imageUrl;
-      img.onload = () => {
-        setDimensions({
-          width: img.width,
-          height: img.height,
-        });
-      };
-    }
   }, [imageUrl]);
-
+  
   return (
     <div
       style={{
-        height: `${dimensions.height}px`,
-        minHeight: `${dimensions.height}px`,
-        width: `${dimensions.width}px`,
-        minWidth: `${dimensions.width}px`,
+        height: `${height}px`,
+        minHeight: `${height}px`,
+        width: `${width}px`,
+        minWidth: `${width}px`,
         backgroundImage: `url(${imageUrl})`,
-        backgroundSize: "cover",
+        backgroundSize: `${imagePropsState?.fit || "contain"}`,
         backgroundPosition: "center",
       }}
     ></div>

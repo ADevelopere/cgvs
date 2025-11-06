@@ -21,7 +21,7 @@ export enum ImageDataSourceType {
 
 export type ImageDataSource = {
   type: ImageDataSourceType.STORAGE_FILE;
-  storageFileId: number;
+  storageFilePath: string;
 };
 
 // ============================================================================
