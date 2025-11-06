@@ -36,7 +36,7 @@ export namespace TextElementRepository {
     const newDataSource = TextElementUtils.convertInputDataSourceToOutput(input.dataSource);
     const variableId = TextElementUtils.extractVariableIdFromDataSource(input.dataSource);
 
-    const baseInput: ElType.CertificateElementEntityInput = {
+    const baseInput: ElType.CertificateElementEntityCreateInput = {
       ...input.base,
       type: ElType.ElementType.TEXT,
     };

@@ -41,7 +41,7 @@ export namespace NumberElementRepository {
       throw new Error("NUMBER element data source must include a variableId (TEMPLATE_NUMBER_VARIABLE)");
     }
 
-    const baseInput: ElType.CertificateElementEntityInput = {
+    const baseInput: ElType.CertificateElementEntityCreateInput = {
       ...input.base,
       type: ElType.ElementType.NUMBER,
     };

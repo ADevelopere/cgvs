@@ -1,10 +1,4 @@
-import { ImageDataSourceInput } from "@/client/graphql/generated/gql/graphql";
-import {
-  DataSourceFormErrors,
-  ValidateImagePropsFn,
-  ValidateImageDataSourceFn,
-  ImageDataSourceFieldErrors,
-} from "./types";
+import { ValidateImagePropsFn, ValidateImageDataSourceFn, ImageDataSourceFieldErrors } from "./types";
 
 // ============================================================================
 // Data Source Validation
@@ -17,7 +11,7 @@ import {
 export const validateImageDataSource = (): ValidateImageDataSourceFn => {
   const validate: ValidateImageDataSourceFn = ({ value: source }): ImageDataSourceFieldErrors => {
     if (source.storageFile) {
-      if (!source.storageFile.storageFileId || source.storageFile.storageFileId <= 0) {
+      if (!source.storageFile.path || !source.storageFile.url) {
         return { storageFile: "Please select an image file" };
       }
     } else {

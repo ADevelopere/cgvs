@@ -23,7 +23,8 @@ export const Default: Story = {
   args: {
     dataSource: {
       storageFile: {
-        storageFileId: -1,
+        path: "",
+        url: "",
       },
     },
     errors: {},
@@ -39,7 +40,8 @@ export const WithFileSelected: Story = {
   args: {
     dataSource: {
       storageFile: {
-        storageFileId: 123,
+        path: "",
+        url: "",
       },
     },
     errors: {},
@@ -55,11 +57,14 @@ export const WithError: Story = {
   args: {
     dataSource: {
       storageFile: {
-        storageFileId: -1,
+        path: "",
+        url: "",
       },
     },
     errors: {
-      storageFile: "Please select an image file",
+      dataSource: {
+        storageFile: "Please select an image file",
+      },
     },
     updateDataSource: (dataSource: ImageDataSourceInput) => {
       logger.info("Data source updated:", dataSource);
@@ -73,7 +78,8 @@ export const Disabled: Story = {
   args: {
     dataSource: {
       storageFile: {
-        storageFileId: 123,
+        path: "",
+        url: "",
       },
     },
     errors: {},

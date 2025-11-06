@@ -83,27 +83,25 @@ export type CertificateElementBase = {
 
 export type CertificateElementBaseInput = {
   alignment: ElementAlignment;
-  description: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
   height: Scalars['Float']['input'];
   hidden?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   positionX: Scalars['Float']['input'];
   positionY: Scalars['Float']['input'];
-  renderOrder: Scalars['Int']['input'];
   templateId: Scalars['Int']['input'];
   width: Scalars['Float']['input'];
 };
 
 export type CertificateElementBaseUpdateInput = {
   alignment: ElementAlignment;
-  description: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
   height: Scalars['Float']['input'];
   hidden?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['Int']['input'];
   name: Scalars['String']['input'];
   positionX: Scalars['Float']['input'];
   positionY: Scalars['Float']['input'];
-  renderOrder: Scalars['Int']['input'];
   width: Scalars['Float']['input'];
 };
 

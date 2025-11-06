@@ -35,7 +35,7 @@ export namespace DateElementRepository {
 
     const variableId = DateElementUtils.extractVariableIdFromDataSource(input.dataSource);
 
-    const baseInput: ElType.CertificateElementEntityInput = {
+    const baseInput: ElType.CertificateElementEntityCreateInput = {
       ...input.base,
       type: ElType.ElementType.DATE,
     };

@@ -10,6 +10,7 @@ import type { UpdateBaseElementFn } from "../../form/element/base";
 import type { UpdateImagePropsFn } from "../../form/element/image/types";
 import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale/useAppTranslation";
+import { useNodesState } from "../../NodesStateProvider";
 
 // ============================================================================
 // PROPS INTERFACE
@@ -35,7 +36,6 @@ interface CreateImageElementWrapperProps {
 
 export const CreateImageElementWrapper: React.FC<CreateImageElementWrapperProps> = ({
   templateId,
-  initialStorageFileId,
   initialFit,
   initialElementName,
   open,
@@ -60,26 +60,24 @@ export const CreateImageElementWrapper: React.FC<CreateImageElementWrapperProps>
     return {
       base: {
         name: initialElementName,
-        description: "",
         positionX: 100,
         positionY: 100,
         width: 300,
         height: 300,
         alignment: GQL.ElementAlignment.Center,
-        renderOrder: 1,
         templateId,
-        hidden: false,
       },
       imageProps: {
         fit: initialFit || GQL.ElementImageFit.Contain,
       },
       dataSource: {
         storageFile: {
-          storageFileId: initialStorageFileId || -1,
+          path: "",
+          url: "",
         },
       },
     };
-  }, [templateId, initialElementName, initialFit, initialStorageFileId]);
+  }, [templateId, initialElementName, initialFit]);
 
   const [state, setState] = useState<ImageElementFormState>(getInitialState);
   const [errors, setErrors] = useState<ImageElementFormErrors>({
@@ -87,6 +85,8 @@ export const CreateImageElementWrapper: React.FC<CreateImageElementWrapperProps>
     imageProps: {},
     dataSource: {},
   });
+  const [mutationError, setMutationError] = useState<string | null>(null);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const baseValidator = validateBaseElementField();
@@ -135,13 +135,14 @@ export const CreateImageElementWrapper: React.FC<CreateImageElementWrapperProps>
     }));
   }, []);
 
+  const checkImageDataSource = validateImageDataSource();
+
   const updateDataSource = useCallback((dataSource: GQL.ImageDataSourceInput) => {
     setState(prev => ({
       ...prev,
       dataSource,
     }));
-
-    const dataSourceErrors = validateImageDataSource(dataSource);
+    const dataSourceErrors = checkImageDataSource({ key: "dataSource", value: dataSource });
 
     setErrors(prev => ({
       ...prev,
@@ -153,12 +154,14 @@ export const CreateImageElementWrapper: React.FC<CreateImageElementWrapperProps>
     return (
       Object.values(errors.base).some(error => error !== undefined) ||
       Object.values(errors.imageProps).some(error => error !== undefined) ||
-      Object.values(errors.dataSource).some(error => error !== undefined)
+      (errors.dataSource !== undefined && Object.keys(errors.dataSource).length > 0)
     );
   }, [errors]);
 
   // SUBMISSION
   // ============================================================================
+
+  const { addImageNode } = useNodesState();
 
   const handleSubmit = useCallback(async () => {
     if (hasError) {
@@ -169,11 +172,23 @@ export const CreateImageElementWrapper: React.FC<CreateImageElementWrapperProps>
     setIsSubmitting(true);
 
     try {
-      await createImageElementMutation({
+      const result = await createImageElementMutation({
         variables: {
           input: state,
         },
       });
+
+      if (result.error) {
+        setMutationError(result.error.message);
+        return;
+      }
+
+      const element: GQL.ImageElement | undefined | null = result.data?.createImageElement;
+      if (!element) {
+        setMutationError(t.failedToCreateElement);
+        return;
+      }
+      addImageNode(element);
 
       logger.info("Image element created successfully");
 
@@ -227,6 +242,7 @@ export const CreateImageElementWrapper: React.FC<CreateImageElementWrapperProps>
       onCancel={handleCancel}
       isSubmitting={isSubmitting}
       submitLabel={t.create}
+      generalFormError={mutationError}
     />
   );
 

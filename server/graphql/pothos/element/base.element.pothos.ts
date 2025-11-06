@@ -52,14 +52,13 @@ export const createBaseElementInputFields = <Types extends SchemaTypes>(
   t: InputFieldBuilder<Types, "InputObject">
 ) => ({
   name: t.string({ required: true }),
-  description: t.string({ required: true }),
+  description: t.string({ required: false }),
   positionX: t.float({ required: true }),
   positionY: t.float({ required: true }),
   width: t.float({ required: true }),
   height: t.float({ required: true }),
   alignment: t.field({ type: ElementAlignmentPothosEnum, required: true }),
   hidden: t.boolean({ required: false }),
-  renderOrder: t.int({ required: true }),
 });
 
 export const CertificateElementBaseInputObject = gqlSchemaBuilder

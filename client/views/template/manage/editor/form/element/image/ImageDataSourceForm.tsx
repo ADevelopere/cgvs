@@ -7,11 +7,11 @@ import FilePickerDialog from "@/client/views/storage/dialogs/FilePickerDialog";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import type { FileType, ImageDataSourceInput } from "@/client/graphql/generated/gql/graphql";
-import { DataSourceFormErrors } from "./types";
+import { ImageDataSourceFormErrors } from "./types";
 
 export interface ImageDataSourceFormProps {
   dataSource: ImageDataSourceInput;
-  errors: DataSourceFormErrors;
+  errors: ImageDataSourceFormErrors;
   updateDataSource: (dataSource: ImageDataSourceInput) => void;
   disabled?: boolean;
 }
@@ -123,7 +123,9 @@ export const ImageDataSourceForm: React.FC<ImageDataSourceFormProps> = ({
           </Mui.Button>
         )}
 
-        {errors.storageFile && <Mui.FormHelperText error>{errors.storageFile}</Mui.FormHelperText>}
+        {errors.dataSource?.storageFile && (
+          <Mui.FormHelperText error>{errors.dataSource.storageFile}</Mui.FormHelperText>
+        )}
       </Mui.Box>
 
       {/* File Picker Dialog */}

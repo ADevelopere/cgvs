@@ -43,9 +43,8 @@ export type ImagePropsFormErrors = FormErrors<GQL.ImageElementSpecPropsInput>;
 
 export type DataSourceFormErrors = FormErrors<GQL.ImageDataSourceInput>;
 
-export type ImageElementFormErrors = ImagePropsFormErrors & {
+export type ImageElementFormErrors = ImageDataSourceFormErrors & {
   base: BaseElementFormErrors;
-  dataSource: ImageDataSourceFormErrors;
   imageProps: ImagePropsFormErrors;
 };
 

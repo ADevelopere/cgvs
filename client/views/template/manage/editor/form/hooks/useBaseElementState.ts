@@ -33,21 +33,18 @@ export type UseBaseElementStateReturn = {
 /**
  * Extract base state from element
  */
-function extractBaseState(element: GQL.CertificateElementUnion): BaseCertificateElementFormState | null {
-  if (!element.base?.templateId) {
-    return null;
-  }
-
+export function extractBaseStateInputFromElement(
+  element: GQL.CertificateElementUnion
+): BaseCertificateElementFormState {
   return {
-    alignment: element.base.alignment,
-    description: element.base.description ?? "",
-    height: element.base.height,
-    hidden: element.base.hidden ?? false,
     name: element.base.name,
+    description: element.base.description,
+    alignment: element.base.alignment,
+    width: element.base.width,
+    height: element.base.height,
     positionX: element.base.positionX,
     positionY: element.base.positionY,
-    renderOrder: element.base.renderOrder,
-    width: element.base.width,
+    hidden: element.base.hidden,
   };
 }
 
@@ -67,7 +64,6 @@ function toUpdateInput(
     name: state.name,
     positionX: state.positionX,
     positionY: state.positionY,
-    renderOrder: state.renderOrder,
     width: state.width,
   };
 }
@@ -122,7 +118,7 @@ export function useBaseElementState(params: UseBaseElementStateParams): UseBaseE
     templateId,
     elements,
     validator,
-    extractInitialState: extractBaseState,
+    extractInitialState: extractBaseStateInputFromElement,
     mutationFn,
     stateNamespace: "baseElement",
   });

@@ -72,9 +72,7 @@ export const CreateGenderElementWrapper: React.FC<CreateGenderElementWrapperProp
         width: 200,
         height: 50,
         alignment: GQL.ElementAlignment.Center,
-        renderOrder: 1,
         templateId,
-        hidden: false,
       },
       textProps: {
         fontRef: {

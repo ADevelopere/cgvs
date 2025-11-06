@@ -241,7 +241,7 @@ The $WRAP$ function (3.3.1) must therefore always return a $string$ to support t
 | $BOTTOM\_CENTER$ | $y_{bottom} + h_{block} - h_{font}$                | $x_{start} + (w_{box} - w_{line}) / 2$ | Line-by-line |
 | $BOTTOM\_END$    | $y_{bottom} + h_{block} - h_{font}$                | $x_{end} - w_{line}$                   | Line-by-line |
 
-_$w_{line}$ is $font.widthOfTextAtSize(line, finalSize)$ and must be re-calculated for each line._
+_$w_{line}$ is $font.widthOfTextAtSize(line, finalSize)$ and must be re-calculated for each line.\_
 _$BASELINE...$ alignments would require $el.positionY$ to be treated as the baseline, not the box top._
 
 #### Rendering Loop (Pseudo-code):

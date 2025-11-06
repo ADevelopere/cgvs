@@ -37,6 +37,7 @@ export interface UseNodesStoreReturn {
   deleteNode: (nodeId: string) => void;
 
   addTextNode: (textElement: GQL.TextElement) => void;
+  addImageNode: (imageElement: GQL.ImageElement) => void;
 
   // Update base node data (position, size, etc.)
   updateBaseNodeData: (elementId: number, updates: Partial<ElementBaseNodeData>) => void;
@@ -398,6 +399,13 @@ export const NodesStoreProvider: React.FC<{
     }
   }, []);
 
+  const addImageNode = React.useCallback((imageElement: GQL.ImageElement) => {
+    const imageNode = createImageNode(imageElement);
+    if (imageNode) {
+      setNodesState(prev => [...prev, imageNode]);
+    }
+  }, []);
+
   const value: UseNodesStoreReturn = React.useMemo(
     () => ({
       nodes,
@@ -408,6 +416,7 @@ export const NodesStoreProvider: React.FC<{
       clearNodes,
       addNode,
       addTextNode,
+      addImageNode,
       deleteNode,
       updateBaseNodeData,
       updateTextNodeData,

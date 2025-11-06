@@ -12,12 +12,11 @@ import {
 } from "@/server/db/repo";
 import {
   CertificateElementEntity,
-  ElementOrderUpdateInput,
   CertificateElementBaseUpdateInput,
   CertificateElementInterface,
   CertificateElementUnion,
   ElementType,
-  CertificateElementEntityInput,
+  CertificateElementEntityCreateInput,
   IncreaseElementOrderInput,
   DecreaseElementOrderInput,
   ElementMoveInput,
@@ -310,9 +309,17 @@ export namespace ElementRepository {
   // Mutations
   // ============================================================================
 
-  export const createInternal = async (input: CertificateElementEntityInput): Promise<CertificateElementEntity> => {
+  export const createInternal = async (
+    input: CertificateElementEntityCreateInput
+  ): Promise<CertificateElementEntity> => {
     const newOrder = (await findMaxOrderInTemplate(input.templateId)) + 1;
-    const [newBaseElement] = await db.insert(certificateElement).values(input).returning();
+    const [newBaseElement] = await db
+      .insert(certificateElement)
+      .values({
+        ...input,
+        renderOrder: newOrder,
+      })
+      .returning();
 
     return newBaseElement;
   };

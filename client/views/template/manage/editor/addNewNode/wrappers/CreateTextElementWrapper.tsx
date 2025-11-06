@@ -109,9 +109,7 @@ export const CreateTextElementWrapper: React.FC<CreateTextElementWrapperProps> =
         width: 200,
         height: 50,
         alignment: GQL.ElementAlignment.Center,
-        renderOrder: 1,
         templateId,
-        hidden: false,
       },
       textProps: {
         fontRef: {

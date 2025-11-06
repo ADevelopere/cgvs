@@ -50,27 +50,25 @@ type CertificateElementBase {
 
 input CertificateElementBaseInput {
   alignment: ElementAlignment!
-  description: String!
+  description: String
   height: Float!
   hidden: Boolean
   name: String!
   positionX: Float!
   positionY: Float!
-  renderOrder: Int!
   templateId: Int!
   width: Float!
 }
 
 input CertificateElementBaseUpdateInput {
   alignment: ElementAlignment!
-  description: String!
+  description: String
   height: Float!
   hidden: Boolean
   id: Int!
   name: String!
   positionX: Float!
   positionY: Float!
-  renderOrder: Int!
   width: Float!
 }
 

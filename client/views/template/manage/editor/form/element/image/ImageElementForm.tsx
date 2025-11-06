@@ -19,6 +19,7 @@ export interface ImageElementFormProps {
   onCancel: () => void;
   isSubmitting: boolean;
   submitLabel: string;
+  generalFormError?: string | null;
 }
 
 export const ImageElementForm: React.FC<ImageElementFormProps> = ({
@@ -31,6 +32,7 @@ export const ImageElementForm: React.FC<ImageElementFormProps> = ({
   onCancel,
   isSubmitting,
   submitLabel,
+  generalFormError,
 }) => {
   return (
     <Mui.Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
@@ -40,7 +42,7 @@ export const ImageElementForm: React.FC<ImageElementFormProps> = ({
         <Mui.Paper sx={{ p: 3, mb: 2 }}>
           <ImageDataSourceForm
             dataSource={state.dataSource}
-            errors={errors.dataSource}
+            errors={errors}
             updateDataSource={updateDataSource}
             disabled={isSubmitting}
           />
@@ -71,6 +73,13 @@ export const ImageElementForm: React.FC<ImageElementFormProps> = ({
           </Mui.Grid>
         </Mui.Grid>
       </Mui.Box>
+
+      {/* generalFormError */}
+      {generalFormError && (
+        <Mui.Typography color="error" sx={{ mt: 1 }}>
+          {generalFormError}
+        </Mui.Typography>
+      )}
 
       {/* Row 3: Action Buttons (Fixed) */}
       <ActionButtons onSubmit={onSubmit} onCancel={onCancel} isSubmitting={isSubmitting} submitLabel={submitLabel} />

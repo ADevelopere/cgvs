@@ -7,7 +7,7 @@ import {
   GenderElementOutput,
   ElementType,
   ElementTextPropsEntity,
-  CertificateElementEntityInput,
+  CertificateElementEntityCreateInput,
   CertificateElementEntity,
 } from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
@@ -40,7 +40,7 @@ export namespace GenderElementRepository {
     // 2. Create TextProps
     const newTextProps = await TextPropsRepository.create(input.textProps);
 
-    const baseInput: CertificateElementEntityInput = {
+    const baseInput: CertificateElementEntityCreateInput = {
       ...input.base,
       type: ElementType.GENDER,
     };

@@ -7,7 +7,7 @@ import {
   ImageElementOutput,
   ElementType,
   ImageElementEntity,
-  CertificateElementEntityInput,
+  CertificateElementEntityCreateInput,
   ElementImageFit,
   CertificateElementEntity,
   ImageElementSpecPropsStandaloneUpdateInput,
@@ -45,7 +45,7 @@ export namespace ImageElementRepository {
     // 2. Convert input dataSource to output format and extract storageFileId
     const newDataSource = ImageElementUtils.convertInputDataSourceToOutput(input.dataSource);
 
-    const baseInput: CertificateElementEntityInput = {
+    const baseInput: CertificateElementEntityCreateInput = {
       ...input.base,
       type: ElementType.IMAGE,
     };

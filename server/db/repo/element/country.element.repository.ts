@@ -32,7 +32,7 @@ export namespace CountryElementRepository {
     // 2. Create TextProps
     const newTextProps = await TextPropsRepository.create(input.textProps);
 
-    const baseInput: ElTypes.CertificateElementEntityInput = {
+    const baseInput: ElTypes.CertificateElementEntityCreateInput = {
       ...input.base,
       type: ElTypes.ElementType.COUNTRY,
     };

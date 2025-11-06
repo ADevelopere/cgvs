@@ -59,9 +59,7 @@ export const CreateQRCodeElementWrapper: React.FC<CreateQRCodeElementWrapperProp
         width: 200,
         height: 200,
         alignment: GQL.ElementAlignment.Center,
-        renderOrder: 1,
         templateId,
-        hidden: false,
       },
       qrCodeProps: {
         foregroundColor: "#000000",

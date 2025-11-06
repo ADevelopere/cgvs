@@ -8,8 +8,8 @@ export type CertificateElementsTabItemProps = {
   toggleElementHidden: (id: number) => void;
   deleteElement: (id: number) => void;
   manageElement: (id: number) => void;
-  increaseOrder?: () => void;
-  decreaseOrder?: () => void;
+  increaseOrder: () => void;
+  decreaseOrder: () => void;
 };
 
 export const CertificateElementsTabItem: React.FC<CertificateElementsTabItemProps> = ({

@@ -7,7 +7,7 @@ import {
   QRCodeElementOutput,
   ElementType,
   QRCodeElementEntity,
-  CertificateElementEntityInput,
+  CertificateElementEntityCreateInput,
   QRCodeErrorCorrection,
   CertificateElementEntity,
   QRCodeElementSpecPropsStandaloneUpdateInput,
@@ -38,7 +38,7 @@ export namespace QRCodeElementRepository {
     // 1. Validate input
     await QRCodeElementUtils.validateInput(input);
 
-    const baseInput: CertificateElementEntityInput = {
+    const baseInput: CertificateElementEntityCreateInput = {
       ...input.base,
       type: ElementType.QR_CODE,
     };
