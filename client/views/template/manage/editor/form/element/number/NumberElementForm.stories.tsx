@@ -25,7 +25,7 @@ const defaultState: NumberElementFormState = {
     width: 150,
     height: 40,
     alignment: ElementAlignment.Center,
-    renderOrder: 1,
+    zIndex: 1,
     templateId: 1,
   },
   textProps: {

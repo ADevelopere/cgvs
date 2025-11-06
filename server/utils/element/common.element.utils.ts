@@ -182,7 +182,7 @@ export namespace CommonElementUtils {
 
   /**
    * Validate base element properties for creation
-   * Validates: templateId, name, dimensions, position, renderOrder
+   * Validates: templateId, name, dimensions, position, zIndex
    * Note: description doesn't need validation
    */
   export const checkBaseInput = async (
@@ -206,7 +206,7 @@ export namespace CommonElementUtils {
     if (posError) throw new Error(posError);
 
     // Render order validation
-    const orderError = await ElementUtils.validateRenderOrder(input.renderOrder);
+    const orderError = await ElementUtils.validateZIndex(input.zIndex);
     if (orderError) throw new Error(orderError);
   };
 }

@@ -22,7 +22,7 @@
 //               name: "",
 //               positionX: 0,
 //               positionY: 0,
-//               renderOrder: variables.input.newRenderOrder,
+//               zIndex: variables.input.newZIndex,
 //               templateId: 0,
 //               type: GQL.ElementType.Text,
 //               updatedAt: new Date().toISOString(),

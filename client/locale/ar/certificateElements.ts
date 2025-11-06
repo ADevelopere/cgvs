@@ -231,9 +231,9 @@ export const certificateElements: CertificateElementsTranslations = {
     alignmentBaselineEnd: "خط الأساس اليسار",
 
     // Render order
-    renderOrderLabel: "ترتيب العرض",
-    renderOrderPlaceholder: "أدخل ترتيب العرض",
-    renderOrderRequired: "ترتيب العرض مطلوب",
+    zIndexLabel: "ترتيب العرض",
+    zIndexPlaceholder: "أدخل ترتيب العرض",
+    zIndexRequired: "ترتيب العرض مطلوب",
   },
 
   textProps: {

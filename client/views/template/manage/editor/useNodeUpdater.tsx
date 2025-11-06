@@ -52,9 +52,6 @@ export function useFlowUpdater(): UseFlowUpdaterReturn {
 
   // Log loading/error states
   React.useEffect(() => {
-    if (nodesLoading) {
-      logger.debug("NodeDataProvider: Loading nodes...", { templateId });
-    }
     if (nodesError) {
       logger.error("NodeDataProvider: Error loading nodes", {
         templateId,
@@ -67,7 +64,7 @@ export function useFlowUpdater(): UseFlowUpdaterReturn {
         nodeCount: nodes.length,
       });
     }
-  }, [nodesLoading, nodesError, nodes.length, templateId]);
+  }, [nodesError, nodes.length, templateId]);
 
   const addToHistory = useEditorStore(state => state.addToHistory);
   const undoFromStore = useEditorStore(state => state.undo);

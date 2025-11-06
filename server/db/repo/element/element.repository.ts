@@ -79,7 +79,7 @@ export namespace ElementRepository {
   };
 
   /**
-   * Find all elements for a template, ordered by renderOrder
+   * Find all elements for a template, ordered by zIndex
    * Validates that template exists first
    * @throws Error if template doesn't exist
    */
@@ -91,12 +91,12 @@ export namespace ElementRepository {
       .select()
       .from(certificateElement)
       .where(eq(certificateElement.templateId, templateId))
-      .orderBy(asc(certificateElement.renderOrder));
+      .orderBy(asc(certificateElement.zIndex));
   };
 
   export const findMaxOrderInTemplate = async (templateId: number): Promise<number> => {
     const [{ maxOrder }] = await db
-      .select({ maxOrder: max(certificateElement.renderOrder) })
+      .select({ maxOrder: max(certificateElement.zIndex) })
       .from(certificateElement)
       .where(eq(certificateElement.templateId, templateId));
     return maxOrder ?? 0;
@@ -142,7 +142,7 @@ export namespace ElementRepository {
       .select()
       .from(certificateElement)
       .where(inArray(certificateElement.templateId, templateIds))
-      .orderBy(asc(certificateElement.renderOrder));
+      .orderBy(asc(certificateElement.zIndex));
 
     const elementsByTemplateId = new Map<number, CertificateElementEntity[]>();
     for (const base of baseElements) {
@@ -317,7 +317,7 @@ export namespace ElementRepository {
       .insert(certificateElement)
       .values({
         ...input,
-        renderOrder: newOrder,
+        zIndex: newOrder,
       })
       .returning();
 
@@ -333,42 +333,42 @@ export namespace ElementRepository {
    * @returns A promise that resolves to an array of all elements with updated orders.
    */
   export const moveElement = async (input: ElementMoveInput): Promise<CertificateElementInterface[]> => {
-    const { elementId, newRenderOrder } = input;
+    const { elementId, newZIndex } = input;
 
     const updatedElements = await db.transaction(async tx => {
       // 1. Get the element being moved to find its current order and templateId
       const elementToMove = await findByIdOrThrow(elementId);
-      const oldRenderOrder = elementToMove.renderOrder;
+      const oldZIndex = elementToMove.zIndex;
       const templateId = elementToMove.templateId;
 
       // If order hasn't changed, do nothing.
-      if (oldRenderOrder === newRenderOrder) {
+      if (oldZIndex === newZIndex) {
         return [];
       }
 
       // 2. Validate the new render order
       const maxOrder = await findMaxOrderInTemplate(templateId);
-      if (newRenderOrder < 1 || newRenderOrder > maxOrder) {
-        throw new Error(`Invalid new render order: ${newRenderOrder}. Must be between 1 and ${maxOrder}.`);
+      if (newZIndex < 1 || newZIndex > maxOrder) {
+        throw new Error(`Invalid new render order: ${newZIndex}. Must be between 1 and ${maxOrder}.`);
       }
 
       let affectedSiblings: CertificateElementEntity[] = [];
 
       // 3. Shift the affected elements
-      if (oldRenderOrder < newRenderOrder) {
+      if (oldZIndex < newZIndex) {
         // Moved DOWN the list (e.g., from 2 to 5)
         // Decrement the order of elements between the old and new position
         affectedSiblings = await tx
           .update(certificateElement)
           .set({
-            renderOrder: sql`${certificateElement.renderOrder} - 1`,
+            zIndex: sql`${certificateElement.zIndex} - 1`,
             updatedAt: new Date(),
           })
           .where(
             and(
               eq(certificateElement.templateId, templateId),
-              gt(certificateElement.renderOrder, oldRenderOrder),
-              lte(certificateElement.renderOrder, newRenderOrder)
+              gt(certificateElement.zIndex, oldZIndex),
+              lte(certificateElement.zIndex, newZIndex)
             )
           )
           .returning();
@@ -378,14 +378,14 @@ export namespace ElementRepository {
         affectedSiblings = await tx
           .update(certificateElement)
           .set({
-            renderOrder: sql`${certificateElement.renderOrder} + 1`,
+            zIndex: sql`${certificateElement.zIndex} + 1`,
             updatedAt: new Date(),
           })
           .where(
             and(
               eq(certificateElement.templateId, templateId),
-              lt(certificateElement.renderOrder, oldRenderOrder),
-              gte(certificateElement.renderOrder, newRenderOrder)
+              lt(certificateElement.zIndex, oldZIndex),
+              gte(certificateElement.zIndex, newZIndex)
             )
           )
           .returning();
@@ -395,7 +395,7 @@ export namespace ElementRepository {
       const [movedElement] = await tx
         .update(certificateElement)
         .set({
-          renderOrder: newRenderOrder,
+          zIndex: newZIndex,
           updatedAt: new Date(),
         })
         .where(eq(certificateElement.id, elementId))
@@ -405,7 +405,7 @@ export namespace ElementRepository {
     });
 
     logger.info(
-      `Moved element ID ${elementId} to render order ${newRenderOrder}. Affected ${updatedElements.length} element(s).`
+      `Moved element ID ${elementId} to render order ${newZIndex}. Affected ${updatedElements.length} element(s).`
     );
 
     return updatedElements.map(el => ({ base: el }));
@@ -421,8 +421,8 @@ export namespace ElementRepository {
     const element = await findByIdOrThrow(elementId);
     const maxOrder = await findMaxOrderInTemplate(element.templateId);
 
-    if (element.renderOrder < maxOrder) {
-      return await moveElement({ elementId, newRenderOrder: element.renderOrder + 1 });
+    if (element.zIndex < maxOrder) {
+      return await moveElement({ elementId, newZIndex: element.zIndex + 1 });
     }
     return [];
   };
@@ -436,8 +436,8 @@ export namespace ElementRepository {
     const { elementId } = input;
     const element = await findByIdOrThrow(elementId);
 
-    if (element.renderOrder > 1) {
-      return await moveElement({ elementId, newRenderOrder: element.renderOrder - 1 });
+    if (element.zIndex > 1) {
+      return await moveElement({ elementId, newZIndex: element.zIndex - 1 });
     }
     return [];
   };

@@ -78,7 +78,7 @@ export const CreateCountryElementWrapper: React.FC<CreateCountryElementWrapperPr
         width: 200,
         height: 50,
         alignment: GQL.ElementAlignment.Center,
-        renderOrder: 1,
+        zIndex: 1,
         templateId,
         hidden: false,
       },

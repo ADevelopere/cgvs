@@ -376,7 +376,7 @@ const elements = await db
   .select()
   .from(certificateElement)
   .where(eq(certificateElement.templateId, templateId))
-  .orderBy(asc(certificateElement.renderOrder));
+  .orderBy(asc(certificateElement.zIndex));
 
 // With font relation
 const elementsWithFont = await db

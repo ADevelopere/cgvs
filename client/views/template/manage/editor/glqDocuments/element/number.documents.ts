@@ -17,7 +17,7 @@ export const createNumberElementMutationDocument: TypedDocumentNode<
         name
         positionX
         positionY
-        renderOrder
+        zIndex
         type
         updatedAt
         width
@@ -69,7 +69,7 @@ export const updateNumberElementMutationDocument: TypedDocumentNode<
         name
         positionX
         positionY
-        renderOrder
+        zIndex
         type
         updatedAt
         width

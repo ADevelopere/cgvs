@@ -17,7 +17,7 @@ export const textElementByIdQueryDocument: TypedDocumentNode<
         name
         positionX
         positionY
-        renderOrder
+        zIndex
         type
         updatedAt
         width
@@ -86,7 +86,7 @@ export const createTextElementMutationDocument: TypedDocumentNode<
         name
         positionX
         positionY
-        renderOrder
+        zIndex
         type
         updatedAt
         width
@@ -155,7 +155,7 @@ export const updateTextElementMutationDocument: TypedDocumentNode<
         name
         positionX
         positionY
-        renderOrder
+        zIndex
         type
         updatedAt
         width

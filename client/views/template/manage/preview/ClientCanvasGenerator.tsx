@@ -66,7 +66,7 @@ function CanvasInner(
     const textElements = elements
       .filter((e): e is GQL.TextElement => e.__typename === "TextElement")
       .slice()
-      .sort((a, b) => a.base.renderOrder - b.base.renderOrder);
+      .sort((a, b) => a.base.zIndex - b.base.zIndex);
 
     for (const el of textElements) {
       const text = resolveTextContent(el.textDataSource, config.language, "Text");

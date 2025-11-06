@@ -6,6 +6,7 @@ export type ElementBaseNodeData = {
   positionY: number;
   width: number;
   height: number;
+  zIndex: number;
 };
 
 export type ElementNodeData = ElementBaseNodeData & {

@@ -2,11 +2,11 @@ import { certificateElement } from "@/server/db/schema";
 import { ElementAlignment } from "../output";
 
 export type CertificateElementEntityInput = typeof certificateElement.$inferInsert;
-export type CertificateElementEntityCreateInput = Omit<CertificateElementEntityInput, "renderOrder">;
+export type CertificateElementEntityCreateInput = Omit<CertificateElementEntityInput, "zIndex">;
 
 export type CertificateElementBaseInput = Omit<
   CertificateElementEntityInput,
-  "id" | "type" | "createdAt" | "updatedAt" | "renderOrder"
+  "id" | "type" | "createdAt" | "updatedAt" | "zIndex"
 > & {
   alignment: ElementAlignment;
 };
@@ -24,7 +24,7 @@ export type CertificateElementBaseUpdateInput = Omit<CertificateElementBaseInput
 
 export type ElementOrderUpdateInput = {
   id: number;
-  renderOrder: number;
+  zIndex: number;
 };
 
 export type BatchElementOrderUpdateInput = {
@@ -43,5 +43,5 @@ export type ElementMoveInput = {
   /** The ID of the element being moved */
   elementId: number;
   /** The new render order (position) for the element */
-  newRenderOrder: number;
+  newZIndex: number;
 };

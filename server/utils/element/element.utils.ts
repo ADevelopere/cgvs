@@ -70,8 +70,8 @@ export namespace ElementUtils {
    * Validate render order
    * @returns null if valid, error message if invalid
    */
-  export const validateRenderOrder = (renderOrder: number): Promise<string | null> => {
-    if (renderOrder < 0) {
+  export const validateZIndex = (zIndex: number): Promise<string | null> => {
+    if (zIndex < 0) {
       return Promise.resolve("Render order must be greater than or equal to 0.");
     }
     return Promise.resolve(null);

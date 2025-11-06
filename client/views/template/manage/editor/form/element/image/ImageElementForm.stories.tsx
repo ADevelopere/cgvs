@@ -26,7 +26,7 @@ const defaultState: ImageElementFormState = {
     width: 200,
     height: 120,
     alignment: ElementAlignment.Center,
-    renderOrder: 1,
+    zIndex: 1,
     templateId: 1,
   },
   imageProps: {

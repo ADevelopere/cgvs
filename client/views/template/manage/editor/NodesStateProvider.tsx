@@ -57,7 +57,7 @@ export interface UseNodesStoreReturn {
   batchUpdateNodes: (updates: Array<{ nodeId: string; updates: Partial<Node> }>) => void;
 
   // Reorder nodes based on moved elements
-  reorderNodes: (movedElements: Array<{ elementId: number; newRenderOrder: number }>) => void;
+  reorderNodes: (movedElements: Array<{ elementId: number; newZIndex: number }>) => void;
 
   // Hide a node by element ID (removes from visible nodes, stores in hidden)
   hideNode: (elementId: number) => void;
@@ -99,6 +99,7 @@ function createTextNode(element: GQL.TextElement): Node<TextElementNodeData> | n
     connectable: false,
     resizing: true,
     handles: undefined,
+    zIndex: element.base.zIndex,
   };
 }
 
@@ -121,6 +122,7 @@ function createImageNode(element: GQL.ImageElement): Node | null {
     data,
     connectable: false,
     resizing: true,
+    zIndex: element.base.zIndex,
   };
 }
 
@@ -425,10 +427,10 @@ export const NodesProvider: React.FC<{
   }, []);
 
   // Action: Reorder nodes based on moved elements
-  const reorderNodes = React.useCallback((movedElements: Array<{ elementId: number; newRenderOrder: number }>) => {
+  const reorderNodes = React.useCallback((movedElements: Array<{ elementId: number; newZIndex: number }>) => {
     setNodesState(prev => {
       // Create a map of element ID to new render order
-      const orderMap = new Map(movedElements.map(e => [e.elementId.toString(), e.newRenderOrder]));
+      const orderMap = new Map(movedElements.map(e => [e.elementId.toString(), e.newZIndex]));
 
       // Sort nodes: container first, then by render order
       return prev.sort((a, b) => {

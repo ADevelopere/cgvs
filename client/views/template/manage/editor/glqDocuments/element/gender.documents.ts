@@ -17,7 +17,7 @@ export const createGenderElementMutationDocument: TypedDocumentNode<
         name
         positionX
         positionY
-        renderOrder
+        zIndex
         type
         updatedAt
         width
@@ -59,7 +59,7 @@ export const updateGenderElementMutationDocument: TypedDocumentNode<
         name
         positionX
         positionY
-        renderOrder
+        zIndex
         type
         updatedAt
         width

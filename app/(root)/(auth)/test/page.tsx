@@ -102,7 +102,7 @@ export default function TestElementsPage() {
       width: 200,
       height: 50,
       alignment: GQL.ElementAlignment.Center,
-      renderOrder: 1,
+      zIndex: 1,
       templateId: TEST_TEMPLATE_ID,
     },
     textProps: {
@@ -171,7 +171,7 @@ export default function TestElementsPage() {
         name: element.base.name,
         description: element.base?.description ?? "",
         alignment: element.base.alignment,
-        renderOrder: element.base.renderOrder,
+        zIndex: element.base.zIndex,
         positionX: element.base.positionX,
         positionY: element.base.positionY,
         width: element.base.width,
@@ -280,7 +280,7 @@ export default function TestElementsPage() {
                       <TableCell>{updating ? formState.base.positionY : el.base?.positionY}</TableCell>
                       <TableCell>{updating ? formState.base.width : el.base?.width}</TableCell>
                       <TableCell>{updating ? formState.base.height : el.base?.height}</TableCell>
-                      <TableCell>{el.base?.renderOrder}</TableCell>
+                      <TableCell>{el.base?.zIndex}</TableCell>
                       <TableCell>{el.base?.createdAt}</TableCell>
                       <TableCell>{el.base?.updatedAt}</TableCell>
                       <TableCell>

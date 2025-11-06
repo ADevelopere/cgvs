@@ -60,8 +60,8 @@ export class TemplateConverter {
 
     // Sort schemas by render order
     schemas.sort((a, b) => {
-      const orderA = (a as Schema & { renderOrder?: number }).renderOrder ?? 0;
-      const orderB = (b as Schema & { renderOrder?: number }).renderOrder ?? 0;
+      const orderA = (a as Schema & { zIndex?: number }).zIndex ?? 0;
+      const orderB = (b as Schema & { zIndex?: number }).zIndex ?? 0;
       return orderA - orderB;
     });
 
@@ -105,7 +105,7 @@ export class TemplateConverter {
       const alignment = this.convertAlignment(base.alignment);
 
       // Create schema with text content
-      const schema: Schema & { renderOrder?: number } = {
+      const schema: Schema & { zIndex?: number } = {
         type: "text",
         content: content, // Add the actual text content
         position: {
@@ -121,7 +121,7 @@ export class TemplateConverter {
         id: elementId,
         name: base.name,
         // Store render order for sorting
-        renderOrder: base.renderOrder,
+        zIndex: base.zIndex,
       };
 
       // Add font name if available

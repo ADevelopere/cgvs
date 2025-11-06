@@ -27,10 +27,10 @@ export const CertificateRenderer: React.FC<CertificateRendererProps> = ({ elemen
   const [textElements, setTextElements] = React.useState<TextElementData[]>([]);
 
   React.useEffect(() => {
-    // Filter and sort text elements by renderOrder
+    // Filter and sort text elements by zIndex
     const textEls = elements
       .filter((el): el is GQL.TextElement => el.__typename === "TextElement")
-      .sort((a, b) => a.base.renderOrder - b.base.renderOrder);
+      .sort((a, b) => a.base.zIndex - b.base.zIndex);
 
     // Collect unique Google fonts to load
     const uniqueFonts = new Set<FontFamily>();

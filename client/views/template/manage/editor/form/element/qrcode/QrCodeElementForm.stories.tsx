@@ -26,7 +26,7 @@ const defaultState: QrCodeElementFormState = {
     width: 150,
     height: 150,
     alignment: ElementAlignment.Center,
-    renderOrder: 1,
+    zIndex: 1,
     templateId: 1,
   },
   qrCodeProps: {
@@ -363,7 +363,7 @@ export const UpdateMode: Story = {
         width: 100,
         height: 100,
         alignment: ElementAlignment.TopEnd,
-        renderOrder: 10,
+        zIndex: 10,
         templateId: 1,
       },
       qrCodeProps: {

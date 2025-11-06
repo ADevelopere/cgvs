@@ -41,11 +41,11 @@ type CertificateElementBase {
   name: String!
   positionX: Float!
   positionY: Float!
-  renderOrder: Int!
   templateId: Int!
   type: ElementType!
   updatedAt: DateTime!
   width: Float!
+  zIndex: Int!
 }
 
 input CertificateElementBaseInput {
@@ -56,13 +56,13 @@ input CertificateElementBaseInput {
   name: String!
   positionX: Float!
   positionY: Float!
+  templateId: Int!
+  width: Float!
 
   """
   This field is only for UI state management and will not affect server-side data.
   """
-  renderOrder: Int
-  templateId: Int!
-  width: Float!
+  zIndex: Int
 }
 
 input CertificateElementBaseUpdateInput {
@@ -562,12 +562,12 @@ enum ElementImageFit {
 
 input ElementMoveInput {
   elementId: Int!
-  newRenderOrder: Int!
+  newZIndex: Int!
 }
 
 input ElementOrderUpdateInput {
   id: Int!
-  renderOrder: Int!
+  zIndex: Int!
 }
 
 enum ElementOverflow {

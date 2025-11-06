@@ -17,7 +17,7 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
         name
         positionX
         positionY
-        renderOrder
+        zIndex
         type
         updatedAt
         width
@@ -281,7 +281,7 @@ export const updateElementCommonPropertiesMutationDocument: TypedDocumentNode<
         name
         positionX
         positionY
-        renderOrder
+        zIndex
         type
         updatedAt
         width
@@ -331,7 +331,7 @@ export const moveElementMutationDocument: TypedDocumentNode<GQL.MoveElementMutat
           name
           positionX
           positionY
-          renderOrder
+          zIndex
           templateId
           type
           updatedAt
@@ -357,7 +357,7 @@ export const increaseElementOrderMutationDocument: TypedDocumentNode<
         name
         positionX
         positionY
-        renderOrder
+        zIndex
         templateId
         type
         updatedAt
@@ -383,7 +383,7 @@ export const decreaseElementOrderMutationDocument: TypedDocumentNode<
         name
         positionX
         positionY
-        renderOrder
+        zIndex
         templateId
         type
         updatedAt

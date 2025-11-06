@@ -285,7 +285,7 @@ All elements share these base properties:
   width: number;
   height: number;
   alignment: ElementAlignment;
-  renderOrder: number; // Lower renders first
+  zIndex: number; // Lower renders first
 
   // Config (type-specific)
   config: ElementConfig;

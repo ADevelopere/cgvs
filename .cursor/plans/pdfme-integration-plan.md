@@ -307,7 +307,7 @@ const debouncedUpdatePdfme = useMemo(
 | height           | height         | Direct mapping          |
 | alignment        | alignment      | May need conversion     |
 | hidden           | N/A            | Handle in converter     |
-| renderOrder      | N/A            | Handle via schema order |
+| zIndex      | N/A            | Handle via schema order |
 
 ### Text-Specific Properties
 

@@ -17,7 +17,7 @@ export const createImageElementMutationDocument: TypedDocumentNode<
         name
         positionX
         positionY
-        renderOrder
+        zIndex
         type
         updatedAt
         width
@@ -54,7 +54,7 @@ export const updateImageElementMutationDocument: TypedDocumentNode<
         name
         positionX
         positionY
-        renderOrder
+        zIndex
         type
         updatedAt
         width

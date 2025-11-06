@@ -62,7 +62,7 @@ certificate_element {
   // Base properties
   id, name, description, templateId, type
   positionX, positionY, width, height
-  alignment, renderOrder
+  alignment, zIndex
 
   // Complete configuration (source of truth)
   config: JSONB<ElementConfig>

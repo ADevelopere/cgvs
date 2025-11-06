@@ -14,14 +14,14 @@ export const ElementOrderUpdateInputObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       id: t.int({ required: true }),
-      renderOrder: t.int({ required: true }),
+      zIndex: t.int({ required: true }),
     }),
   });
 
 export const ElementMoveInputObject = gqlSchemaBuilder.inputRef<Types.ElementMoveInput>("ElementMoveInput").implement({
   fields: t => ({
     elementId: t.int({ required: true }),
-    newRenderOrder: t.int({ required: true }),
+    newZIndex: t.int({ required: true }),
   }),
 });
 
@@ -66,7 +66,7 @@ export const CertificateElementBaseInputObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       templateId: t.int({ required: true }),
-      renderOrder: t.int({
+      zIndex: t.int({
         required: false,
         description: "This field is only for UI state management and will not affect server-side data.",
       }),
@@ -110,7 +110,7 @@ export const CertificateElementBaseObject = gqlSchemaBuilder
         resolve: element => element.alignment as Types.ElementAlignment,
       }),
       hidden: t.exposeBoolean("hidden"),
-      renderOrder: t.exposeInt("renderOrder", { nullable: false }),
+      zIndex: t.exposeInt("zIndex", { nullable: false }),
       createdAt: t.expose("createdAt", { type: "DateTime", nullable: false }),
       updatedAt: t.expose("updatedAt", { type: "DateTime", nullable: false }),
     }),

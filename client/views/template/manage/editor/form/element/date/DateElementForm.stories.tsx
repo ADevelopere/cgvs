@@ -49,7 +49,7 @@ const defaultState: DateElementFormState = {
     width: 200,
     height: 50,
     alignment: ElementAlignment.Center,
-    renderOrder: 1,
+    zIndex: 1,
     templateId: 1,
   },
   textProps: {

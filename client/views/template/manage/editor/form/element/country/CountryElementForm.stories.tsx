@@ -23,7 +23,7 @@ const defaultState: CountryElementFormState = {
     width: 200,
     height: 50,
     alignment: ElementAlignment.Center,
-    renderOrder: 1,
+    zIndex: 1,
     templateId: 1,
   },
   textProps: {
@@ -86,7 +86,7 @@ export const WithErrors: Story = {
         width: 0,
         height: 0,
         alignment: ElementAlignment.TopCenter,
-        renderOrder: 0,
+        zIndex: 0,
         templateId: 1,
       },
       textProps: {

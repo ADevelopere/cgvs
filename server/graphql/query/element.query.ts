@@ -5,7 +5,7 @@ import * as ElementPothos from "../pothos/element";
 gqlSchemaBuilder.queryFields(t => ({
   /**
    * Get all elements for a template by templateId
-   * Returns elements ordered by renderOrder
+   * Returns elements ordered by zIndex
    */
   elementsByTemplateId: t.loadableList({
     type: ElementPothos.CertificateElementPothosInterface,

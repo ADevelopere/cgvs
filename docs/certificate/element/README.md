@@ -72,7 +72,7 @@ See [Config-Column Sync](./config-column-sync.md) for the critical synchronizati
 
 ### Querying Elements
 
-Elements are queried by `templateId` and returned ordered by `renderOrder`:
+Elements are queried by `templateId` and returned ordered by `zIndex`:
 
 ```typescript
 type CertificateElementsResponse = CertificateElementPothosUnion[];

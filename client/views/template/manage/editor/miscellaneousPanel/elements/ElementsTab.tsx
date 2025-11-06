@@ -12,6 +12,7 @@ import {
 } from "../../glqDocuments/element/element.documents";
 import { extractBaseStateInputFromElement } from "../../form/hooks/useBaseElementState";
 import { useCertificateElementStates } from "../../CertificateElementContext";
+import { useNode } from "../../NodesStateProvider";
 
 export type ElementsTabProps = {
   elements: GQL.CertificateElementUnion[];
@@ -23,10 +24,11 @@ export const ElementsTab: React.FC<ElementsTabProps> = ({ elements }) => {
   const [deleteElementMutation] = useMutation(deleteElementMutationDocument);
   const [updateElementMutation] = useMutation(updateElementCommonPropertiesMutationDocument);
   const { bases: baseElements } = useCertificateElementStates();
+  const { reorderNodes, toggleNodeVisibility } = useNode();
 
-  // Sort elements by renderOrder and sync with local state
+  // Sort elements by zIndex and sync with local state
   useEffect(() => {
-    const sortedElements = [...elements].sort((a, b) => a.base.renderOrder - b.base.renderOrder);
+    const sortedElements = [...elements].sort((a, b) => a.base.zIndex - b.base.zIndex);
     setLocalElements(sortedElements);
   }, [elements]);
 
@@ -38,96 +40,125 @@ export const ElementsTab: React.FC<ElementsTabProps> = ({ elements }) => {
     })
   );
 
-  const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event;
+  const moveElement = React.useCallback(
+    async (elementId: number, newZIndex: number) => {
+      const result = await moveElementMutation({ variables: { input: { elementId, newZIndex } } }).catch(() => {
+        // Revert on error
+        setLocalElements(localElements);
+      });
+      const movedElement = result?.data?.moveElement;
+      if (movedElement) {
+        // Update base element states
+        for (const elem of movedElement) {
+          baseElements.updateBaseElementStateFn(elem.base.id, { key: "zIndex", value: elem.base.zIndex });
+        }
 
-    if (!over || active.id === over.id) {
-      return;
-    }
-
-    const oldIndex = localElements.findIndex(el => el.base.id === active.id);
-    const newIndex = localElements.findIndex(el => el.base.id === over.id);
-
-    if (oldIndex === -1 || newIndex === -1) {
-      return;
-    }
-
-    // Update local state immediately for responsive UI
-    const reorderedElements = arrayMove(localElements, oldIndex, newIndex);
-    setLocalElements(reorderedElements);
-
-    // Call mutation with new renderOrder (1-indexed)
-    const elementId = active.id as number;
-    const newRenderOrder = newIndex + 1;
-
-    const result = await moveElementMutation({ variables: { input: { elementId, newRenderOrder } } }).catch(() => {
-      // Revert on error
-      setLocalElements(localElements);
-    });
-    const movedElement = result?.data?.moveElement;
-    if(movedElement) {
-      for (const elem of reorderedElements) {
-        baseElements.updateBaseElementStateFn(elem.base.id, { key: 'renderOrder', value: elem.base.renderOrder });
+        const movedNodeElements = movedElement.map((elem, index) => ({
+          elementId: elem.base.id,
+          newZIndex: index + 1,
+        }));
+        reorderNodes(movedNodeElements);
       }
-    }
+    },
+    [moveElementMutation, localElements, baseElements, reorderNodes]
+  );
 
-    setLocalElements(reorderedElements);
-  };
+  const handleDragEnd = React.useCallback(
+    async (event: DragEndEvent) => {
+      const { active, over } = event;
 
-  const handleToggleHidden = async (id: number) => {
-    const element = localElements.find(el => el.base.id === id);
-    if (!element) return;
+      if (!over || active.id === over.id) {
+        return;
+      }
 
-    const state = extractBaseStateInputFromElement(element);
-    try {
-      await updateElementMutation({
-        variables: {
-          input: {
-            id,
-            ...state,
-            hidden: !element.base.hidden,
+      const oldIndex = localElements.findIndex(el => el.base.id === active.id);
+      const newIndex = localElements.findIndex(el => el.base.id === over.id);
+
+      if (oldIndex === -1 || newIndex === -1) {
+        return;
+      }
+
+      // Update local state immediately for responsive UI
+      const reorderedElements = arrayMove(localElements, oldIndex, newIndex);
+      setLocalElements(reorderedElements);
+
+      // Call mutation with new zIndex (1-indexed)
+      const elementId = active.id as number;
+      const newZIndex = newIndex + 1;
+
+      await moveElement(elementId, newZIndex);
+      setLocalElements(reorderedElements);
+    },
+    [localElements, moveElement]
+  );
+
+  const handleToggleHidden = React.useCallback(
+    async (id: number) => {
+      const element = localElements.find(el => el.base.id === id);
+      if (!element) return;
+
+      const state = extractBaseStateInputFromElement(element);
+      try {
+        await updateElementMutation({
+          variables: {
+            input: {
+              id,
+              ...state,
+              hidden: !element.base.hidden,
+            },
           },
-        },
-      });
-    } catch (_error) {
-      // Error handling
-    }
-  };
+        });
 
-  const handleDeleteElement = async (id: number) => {
-    try {
-      await deleteElementMutation({
-        variables: {
-          deleteElementId: id,
-        },
-      });
-    } catch (_error) {
-      // Error handling
-    }
-  };
+        // Update node visibility in canvas
+        toggleNodeVisibility(id);
+      } catch (_error) {
+        // Error handling
+      }
+    },
+    [localElements, updateElementMutation, toggleNodeVisibility]
+  );
 
-  const handleManageElement = (id: number) => {
+  const handleDeleteElement = React.useCallback(
+    async (_id: number) => {
+      // try {
+      //   await deleteElementMutation({
+      //     variables: {
+      //       deleteElementId: id,
+      //     },
+      //   });
+      // } catch (_error) {
+      //   // Error handling
+      // }
+    },
+    [deleteElementMutation]
+  );
+
+  const handleManageElement = (_id: number) => {
     // TODO: Implement element management logic
-    console.log("Manage element:", id);
   };
 
-  const handleIncreaseOrder = (id: number) => {
-    const element = localElements.find(el => el.base.id === id);
-    if (!element) return;
+  const handleIncreaseOrder = React.useCallback(
+    async (id: number) => {
+      const element = localElements.find(el => el.base.id === id);
+      if (!element) return;
 
-    const newRenderOrder = element.base.renderOrder - 1;
+      const newZIndex = element.base.zIndex - 1;
+      await moveElement(id, newZIndex);
+    },
+    [localElements, moveElement]
+  );
 
-    moveElementMutation({ variables: { input: { elementId: id, newRenderOrder } } });
-  };
+  const handleDecreaseOrder = React.useCallback(
+    async (id: number) => {
+      const element = localElements.find(el => el.base.id === id);
+      if (!element) return;
 
-  const handleDecreaseOrder = (id: number) => {
-    const element = localElements.find(el => el.base.id === id);
-    if (!element) return;
+      const newZIndex = element.base.zIndex + 1;
 
-    const newRenderOrder = element.base.renderOrder + 1;
-
-    moveElementMutation({ variables: { input: { elementId: id, newRenderOrder } } });
-  };
+      await moveElement(id, newZIndex);
+    },
+    [localElements, moveElement]
+  );
 
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

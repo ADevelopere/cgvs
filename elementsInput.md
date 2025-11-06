@@ -7,7 +7,7 @@ type BaseCertificateElementFormState = {
   name: Scalars["String"]["input"];
   positionX: Scalars["Int"]["input"];
   positionY: Scalars["Int"]["input"];
-  renderOrder: Scalars["Int"]["input"];
+  zIndex: Scalars["Int"]["input"];
   templateId: Scalars["Int"]["input"];
   width: Scalars["Int"]["input"];
 };

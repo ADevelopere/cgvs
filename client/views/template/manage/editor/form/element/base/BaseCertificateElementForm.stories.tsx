@@ -22,7 +22,7 @@ const defaultBaseProps: CertificateElementBaseInput = {
   width: 300,
   height: 50,
   alignment: ElementAlignment.Center,
-  renderOrder: 1,
+  zIndex: 1,
 };
 
 const defaultErrors: BaseElementFormErrors = {};

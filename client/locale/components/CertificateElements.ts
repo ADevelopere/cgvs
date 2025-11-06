@@ -158,9 +158,9 @@ export type BaseElementTranslations = {
   alignmentBaselineEnd: string;
 
   // Render order
-  renderOrderLabel: string;
-  renderOrderPlaceholder: string;
-  renderOrderRequired: string;
+  zIndexLabel: string;
+  zIndexPlaceholder: string;
+  zIndexRequired: string;
 };
 
 export type NumberElementTranslations = {

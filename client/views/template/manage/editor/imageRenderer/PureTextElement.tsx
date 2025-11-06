@@ -26,7 +26,7 @@ export const PureTextElement: React.FC<PureTextElementProps> = ({ base, textProp
     overflow: "hidden",
     textOverflow: textProps.overflow === GQL.ElementOverflow.Ellipse ? "ellipsis" : "clip",
     whiteSpace: "nowrap",
-    zIndex: base.renderOrder,
+    zIndex: base.zIndex,
     ...getFlexAlignment(base.alignment),
   };
 

@@ -45,7 +45,7 @@ export function extractBaseStateInputFromElement(
     positionX: element.base.positionX,
     positionY: element.base.positionY,
     hidden: element.base.hidden,
-    renderOrder: element.base.renderOrder,
+    zIndex: element.base.zIndex,
   };
 }
 

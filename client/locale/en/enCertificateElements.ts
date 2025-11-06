@@ -231,9 +231,9 @@ export const enCertificateElements: CertificateElementsTranslations = {
     alignmentBaselineEnd: "Baseline End",
 
     // Render order
-    renderOrderLabel: "Render Order",
-    renderOrderPlaceholder: "Enter render order",
-    renderOrderRequired: "Render order is required",
+    zIndexLabel: "Render Order",
+    zIndexPlaceholder: "Enter render order",
+    zIndexRequired: "Render order is required",
   },
 
   textProps: {
