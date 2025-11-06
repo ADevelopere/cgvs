@@ -1,0 +1,10 @@
+client/views/template/manage/editor/NodesStateProvider.tsx
+client/views/template/manage/editor/form/hooks/useBaseElementState.ts
+client/views/template/manage/editor/CertificateElementContext.tsx
+client/views/template/manage/editor/NodeDataProvider.tsx
+client/views/template/manage/editor/NodesStateProvider.tsx
+client/views/template/manage/editor/useApplyNodeChange.ts
+client/views/template/manage/editor/useNodesStore.ts
+client/views/template/manage/editor/useEditorStore.ts
+client/views/template/manage/editor/types.ts
+
