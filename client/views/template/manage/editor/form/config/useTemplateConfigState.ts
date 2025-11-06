@@ -7,7 +7,7 @@ import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale";
 import { TemplateConfigFormErrors, TemplateConfigFormUpdateFn, TemplateConfigUpdateAction } from "./types";
 import { useTemplateConfigFormValidateFn } from "./templateConfigValidator";
-import { useNodesState } from "../../NodesStateProvider";
+import { useNode } from "../../NodesStateProvider";
 
 const updateDebounceDelayMs = 10000; // 10 seconds
 
@@ -26,7 +26,7 @@ export function useTemplateConfigState(params: UseTemplateConfigStateParams): Us
   const { config } = params;
   const { templateConfigTranslations: strings } = useAppTranslation();
   const notifications = useNotifications();
-  const { updateContainerNode } = useNodesState();
+  const { updateContainerNode } = useNode();
 
   const [updateTemplateConfigMutation] = useMutation(updateTemplateConfigMutationDocument);
 

@@ -13,7 +13,7 @@ import { TemplateConfigCreateForm } from "./form/config/TemplateConfigCreateForm
 import { MiscellaneousPanel } from "./miscellaneousPanel/MiscellaneousPanel";
 import { useAppTranslation } from "@/client/locale";
 import { useQuery, useApolloClient } from "@apollo/client/react";
-import { NodesStoreProvider } from "./NodesStateProvider";
+import { NodesProvider } from "./NodesStateProvider";
 import { CertificateElementProvider } from "./CertificateElementContext";
 import { PdfmeStoreProvider } from "./PdfmeStoreProvider";
 // import { PdfmeEditorWrapper } from "./PdfmeEditorWrapper";
@@ -149,7 +149,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
 
   return (
     <>
-      <NodesStoreProvider templateId={template.id}>
+      <NodesProvider templateId={template.id}>
         <CertificateElementProvider templateId={template.id}>
           <PdfmeStoreProvider templateId={template.id}>
             {/* <EditorToggle
@@ -207,7 +207,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
             <FloatingLoadingIndicator loading={configLoading || elementsLoading} />
           </PdfmeStoreProvider>
         </CertificateElementProvider>
-      </NodesStoreProvider>
+      </NodesProvider>
     </>
   );
 };

@@ -4,7 +4,7 @@ import fontkit from "@pdf-lib/fontkit";
 import { useTheme } from "@mui/material/styles";
 import React from "react";
 import logger from "@/client/lib/logger";
-import { useNodeData } from "../NodeDataProvider";
+import { useFlowUpdater } from "../useNodeUpdater";
 import { CircularProgress } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
@@ -137,7 +137,7 @@ function getTextXPosition(x: number, width: number, textWidth: number, alignment
 
 export const DownloadPdf: React.FC = () => {
   const theme = useTheme();
-  const { templateId } = useNodeData();
+  const { templateId } = useFlowUpdater();
   const [isGenerating, setIsGenerating] = React.useState(false);
 
   const {

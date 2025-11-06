@@ -15,8 +15,10 @@ import { ImageElementNodeData } from "./nodeRenderer/ImageNode";
  * Return type for the useNodesStore hook
  */
 export interface UseNodesStoreReturn {
-  // Current nodes array - reactive state
+  // Current nodes array - reactive state (visible nodes only)
   nodes: Node[];
+  // Hidden nodes state
+  hiddenNodes: Map<string, Node>;
   // Loading state
   loading: boolean;
   // Error state
@@ -53,6 +55,21 @@ export interface UseNodesStoreReturn {
 
   // Batch update multiple nodes
   batchUpdateNodes: (updates: Array<{ nodeId: string; updates: Partial<Node> }>) => void;
+
+  // Reorder nodes based on moved elements
+  reorderNodes: (movedElements: Array<{ elementId: number; newRenderOrder: number }>) => void;
+
+  // Hide a node by element ID (removes from visible nodes, stores in hidden)
+  hideNode: (elementId: number) => void;
+
+  // Show a hidden node by element ID (restores to visible nodes)
+  showNode: (elementId: number) => void;
+
+  // Toggle node visibility
+  toggleNodeVisibility: (elementId: number) => void;
+
+  // Check if a node is hidden
+  isNodeHidden: (elementId: number) => boolean;
 
   nodesInitialized: boolean;
 }
@@ -162,12 +179,13 @@ const NodesStoreContext = React.createContext<UseNodesStoreReturn | null>(null);
  * Provider component that manages the nodes store
  * Place this at the top of your component tree
  */
-export const NodesStoreProvider: React.FC<{
+export const NodesProvider: React.FC<{
   templateId: number;
   children: React.ReactNode;
 }> = ({ templateId, children }) => {
   // Local state for nodes
   const [nodes, setNodesState] = React.useState<Node[]>([]);
+  const [hiddenNodes, setHiddenNodes] = React.useState<Map<string, Node>>(new Map());
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<Error | null>(null);
 
@@ -406,9 +424,101 @@ export const NodesStoreProvider: React.FC<{
     }
   }, []);
 
+  // Action: Reorder nodes based on moved elements
+  const reorderNodes = React.useCallback((movedElements: Array<{ elementId: number; newRenderOrder: number }>) => {
+    setNodesState(prev => {
+      // Create a map of element ID to new render order
+      const orderMap = new Map(movedElements.map(e => [e.elementId.toString(), e.newRenderOrder]));
+
+      // Sort nodes: container first, then by render order
+      return prev.sort((a, b) => {
+        // Container node always first
+        if (a.id === "container") return -1;
+        if (b.id === "container") return 1;
+
+        // Get render order from the map or keep current position
+        const aOrder = orderMap.get(a.id);
+        const bOrder = orderMap.get(b.id);
+
+        // If both have new orders, compare them
+        if (aOrder !== undefined && bOrder !== undefined) {
+          return aOrder - bOrder;
+        }
+
+        // If only one has a new order, it's hard to determine
+        // Keep original order
+        return 0;
+      });
+    });
+  }, []);
+
+  // Action: Hide a node
+  const hideNode = React.useCallback((elementId: number) => {
+    const nodeId = elementId.toString();
+
+    setNodesState(prev => {
+      const nodeToHide = prev.find(n => n.id === nodeId);
+      if (!nodeToHide) {
+        logger.warn("NodesStoreProvider: Cannot hide node - not found", { elementId });
+        return prev;
+      }
+
+      // Store in hidden nodes
+      setHiddenNodes(hidden => new Map(hidden).set(nodeId, nodeToHide));
+
+      // Remove from visible nodes
+      return prev.filter(n => n.id !== nodeId);
+    });
+  }, []);
+
+  // Action: Show a hidden node
+  const showNode = React.useCallback((elementId: number) => {
+    const nodeId = elementId.toString();
+
+    setHiddenNodes(prev => {
+      const nodeToShow = prev.get(nodeId);
+      if (!nodeToShow) {
+        logger.warn("NodesStoreProvider: Cannot show node - not in hidden nodes", { elementId });
+        return prev;
+      }
+
+      // Add back to visible nodes
+      setNodesState(nodes => [...nodes, nodeToShow]);
+
+      // Remove from hidden nodes
+      const newHidden = new Map(prev);
+      newHidden.delete(nodeId);
+      return newHidden;
+    });
+  }, []);
+
+  // Action: Toggle node visibility
+  const toggleNodeVisibility = React.useCallback(
+    (elementId: number) => {
+      const nodeId = elementId.toString();
+      const isHidden = hiddenNodes.has(nodeId);
+
+      if (isHidden) {
+        showNode(elementId);
+      } else {
+        hideNode(elementId);
+      }
+    },
+    [hiddenNodes, showNode, hideNode]
+  );
+
+  // Utility: Check if a node is hidden
+  const isNodeHidden = React.useCallback(
+    (elementId: number) => {
+      return hiddenNodes.has(elementId.toString());
+    },
+    [hiddenNodes]
+  );
+
   const value: UseNodesStoreReturn = React.useMemo(
     () => ({
       nodes,
+      hiddenNodes,
       loading,
       error,
       templateId,
@@ -423,10 +533,16 @@ export const NodesStoreProvider: React.FC<{
       updateContainerNode,
       updateNode,
       batchUpdateNodes,
+      reorderNodes,
+      hideNode,
+      showNode,
+      toggleNodeVisibility,
+      isNodeHidden,
       nodesInitialized: initialized,
     }),
     [
       nodes,
+      hiddenNodes,
       loading,
       error,
       templateId,
@@ -440,6 +556,11 @@ export const NodesStoreProvider: React.FC<{
       updateContainerNode,
       updateNode,
       batchUpdateNodes,
+      reorderNodes,
+      hideNode,
+      showNode,
+      toggleNodeVisibility,
+      isNodeHidden,
       initialized,
     ]
   );
@@ -451,7 +572,7 @@ export const NodesStoreProvider: React.FC<{
  * Hook to access the nodes store from any component
  * Must be used within NodesStoreProvider
  */
-export function useNodesState(): UseNodesStoreReturn {
+export function useNode(): UseNodesStoreReturn {
   const context = React.useContext(NodesStoreContext);
 
   if (!context) {

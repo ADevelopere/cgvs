@@ -1,20 +1,15 @@
 import React from "react";
-import { Node } from "@xyflow/react";
 import { useEditorStore } from "./useEditorStore";
 import { logger } from "@/client/lib/logger";
-import { useNodesState } from "./NodesStateProvider";
+import { useNode } from "./NodesStateProvider";
 import { useCertificateElementStates } from "./CertificateElementContext";
 import { TemplateConfigUpdateInput } from "@/client/graphql/generated/gql/graphql";
 
 /**
  * Return type for useNodeData hook
  */
-export interface UseNodeDataReturn {
+export interface UseFlowUpdaterReturn {
   templateId: number | null;
-  nodes: Node[];
-  loading: boolean;
-  error: Error | null;
-  setNodes: (nodes: Node[]) => void;
   updateElementPosition: (elementId: number, x: number, y: number, isDragging?: boolean) => void;
   updateElementSize: (elementId: number, width: number, height: number, isResizing?: boolean) => void;
   config: TemplateConfigUpdateInput;
@@ -28,9 +23,6 @@ export interface UseNodeDataReturn {
   redo: () => void;
   canUndo: boolean;
   canRedo: boolean;
-  // Node update actions
-  updateBaseNodeData: (elementId: number, updates: Partial<import("./types").ElementBaseNodeData>) => void;
-  updateContainerNode: (updates: Partial<import("./types").ContainerNodeData>) => void;
 }
 
 /**
@@ -38,20 +30,17 @@ export interface UseNodeDataReturn {
  * Automatically fetches data from URL params and initializes nodes
  * Gets bases and config from useCertificateElementStates
  */
-export function useNodeData(): UseNodeDataReturn {
+export function useFlowUpdater(): UseFlowUpdaterReturn {
   // Get bases and config from certificate element context
   const { bases, config } = useCertificateElementStates();
 
   // Use the nodes hook - it automatically fetches data and initializes nodes
   const {
     nodes,
-    setNodes: setNodesInStore,
     templateId,
     loading: nodesLoading,
     error: nodesError,
-    updateBaseNodeData: updateBaseNodeDataFromStore,
-    updateContainerNode: updateContainerNodeFromStore,
-  } = useNodesState();
+  } = useNode();
 
   // Helper line state (kept local as it's UI-only)
   const [helperLineHorizontal, setHelperLineHorizontal] = React.useState<number | undefined>(undefined);
@@ -79,14 +68,6 @@ export function useNodeData(): UseNodeDataReturn {
       });
     }
   }, [nodesLoading, nodesError, nodes.length, templateId]);
-
-  // Wrapper for setNodes
-  const setNodes = React.useCallback(
-    (newNodes: Node[]) => {
-      setNodesInStore(newNodes);
-    },
-    [setNodesInStore]
-  );
 
   const addToHistory = useEditorStore(state => state.addToHistory);
   const undoFromStore = useEditorStore(state => state.undo);
@@ -200,10 +181,6 @@ export function useNodeData(): UseNodeDataReturn {
 
   return {
     templateId,
-    nodes,
-    loading: nodesLoading,
-    error: nodesError,
-    setNodes,
     updateElementPosition,
     updateElementSize,
     config: config.state,
@@ -217,7 +194,5 @@ export function useNodeData(): UseNodeDataReturn {
     redo,
     canUndo,
     canRedo,
-    updateBaseNodeData: updateBaseNodeDataFromStore,
-    updateContainerNode: updateContainerNodeFromStore,
   };
 }

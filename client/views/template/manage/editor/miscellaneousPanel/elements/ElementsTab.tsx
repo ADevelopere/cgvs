@@ -11,6 +11,7 @@ import {
   moveElementMutationDocument,
 } from "../../glqDocuments/element/element.documents";
 import { extractBaseStateInputFromElement } from "../../form/hooks/useBaseElementState";
+import { useCertificateElementStates } from "../../CertificateElementContext";
 
 export type ElementsTabProps = {
   elements: GQL.CertificateElementUnion[];
@@ -21,6 +22,7 @@ export const ElementsTab: React.FC<ElementsTabProps> = ({ elements }) => {
   const [moveElementMutation] = useMutation(moveElementMutationDocument);
   const [deleteElementMutation] = useMutation(deleteElementMutationDocument);
   const [updateElementMutation] = useMutation(updateElementCommonPropertiesMutationDocument);
+  const { bases: baseElements } = useCertificateElementStates();
 
   // Sort elements by renderOrder and sync with local state
   useEffect(() => {
@@ -36,7 +38,7 @@ export const ElementsTab: React.FC<ElementsTabProps> = ({ elements }) => {
     })
   );
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (!over || active.id === over.id) {
@@ -58,10 +60,18 @@ export const ElementsTab: React.FC<ElementsTabProps> = ({ elements }) => {
     const elementId = active.id as number;
     const newRenderOrder = newIndex + 1;
 
-    moveElementMutation({ variables: { input: { elementId, newRenderOrder } } }).catch(() => {
+    const result = await moveElementMutation({ variables: { input: { elementId, newRenderOrder } } }).catch(() => {
       // Revert on error
       setLocalElements(localElements);
     });
+    const movedElement = result?.data?.moveElement;
+    if(movedElement) {
+      for (const elem of reorderedElements) {
+        baseElements.updateBaseElementStateFn(elem.base.id, { key: 'renderOrder', value: elem.base.renderOrder });
+      }
+    }
+
+    setLocalElements(reorderedElements);
   };
 
   const handleToggleHidden = async (id: number) => {

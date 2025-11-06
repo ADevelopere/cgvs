@@ -4,7 +4,7 @@ import fontkit from "@pdf-lib/fontkit";
 import { useTheme } from "@mui/material/styles";
 import React from "react";
 import logger from "@/client/lib/logger";
-import { useNodeData } from "../NodeDataProvider";
+import { useFlowUpdater } from "../useNodeUpdater";
 import { CircularProgress } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
@@ -480,7 +480,7 @@ async function downloadPdf(pdfBytes: Uint8Array, filename: string = "certificate
 
 export const DownloadPdfExperimental: React.FC = () => {
   const theme = useTheme();
-  const { templateId } = useNodeData();
+  const { templateId } = useFlowUpdater();
   const [isGenerating, setIsGenerating] = React.useState(false);
 
   const {

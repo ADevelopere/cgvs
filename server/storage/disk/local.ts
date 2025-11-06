@@ -142,7 +142,40 @@ class LocalAdapter implements StorageService {
       const absolutePath = this.getAbsolutePath(filePath);
       await fs.access(absolutePath);
       const stats = await fs.stat(absolutePath);
-      return stats.isFile();
+      
+      // Check if it's a file
+      if (stats.isFile()) {
+        // Check if file has a database record
+        const dbFile = await StorageDbRepository.fileByPath(filePath);
+        
+        // If file exists on disk but not in DB, create a record
+        if (!dbFile) {
+          try {
+            await StorageDbRepository.createFile(filePath, false);
+            logger.info(`Created database record for existing file: ${filePath}`);
+          } catch (error) {
+            logger.warn(`Failed to create database record for file: ${filePath}`, error);
+          }
+        }
+        
+        return true;
+      }
+      
+      // Check if it's a directory
+      if (stats.isDirectory()) {
+        // Check if directory has a database record
+        const dbDirectory = await StorageDbRepository.directoryByPath(filePath);
+        
+        // If directory exists on disk but not in DB, it's okay - we don't auto-create directory records
+        // unless they have custom permissions
+        if (!dbDirectory) {
+          logger.info(`Directory exists on disk without DB record: ${filePath}`);
+        }
+        
+        return true;
+      }
+      
+      return false;
     } catch (error) {
       logger.error(`Error checking file existence: ${filePath}`, error);
       return false;

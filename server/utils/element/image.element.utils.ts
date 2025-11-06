@@ -99,7 +99,7 @@ export namespace ImageElementUtils {
       throw new Error(`Invalid image data source type: ${dataSource.type}. Must be STORAGE_FILE`);
     }
 
-    // Validate storage file exists
+    // Validate storage file exists,
     await ElementRepository.validateStorageFilePath(dataSource.storageFilePath);
   };
 

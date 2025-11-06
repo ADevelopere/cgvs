@@ -10,7 +10,7 @@ import type { UpdateBaseElementFn } from "../../form/element/base";
 import type { UpdateImagePropsFn } from "../../form/element/image/types";
 import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale/useAppTranslation";
-import { useNodesState } from "../../NodesStateProvider";
+import { useNode } from "../../NodesStateProvider";
 
 // ============================================================================
 // PROPS INTERFACE
@@ -161,7 +161,7 @@ export const CreateImageElementWrapper: React.FC<CreateImageElementWrapperProps>
   // SUBMISSION
   // ============================================================================
 
-  const { addImageNode } = useNodesState();
+  const { addImageNode } = useNode();
 
   const handleSubmit = useCallback(async () => {
     if (hasError) {

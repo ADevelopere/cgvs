@@ -66,6 +66,10 @@ export const CertificateElementBaseInputObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       templateId: t.int({ required: true }),
+      renderOrder: t.int({
+        required: false,
+        description: "This field is only for UI state management and will not affect server-side data.",
+      }),
       ...createBaseElementInputFields(t),
     }),
   });

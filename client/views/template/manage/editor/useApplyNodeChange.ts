@@ -6,7 +6,7 @@ import {
   NodeDimensionChange,
   applyNodeChanges as applyReactFlowNodeChanges,
 } from "@xyflow/react";
-import { useNodeData } from "./NodeDataProvider";
+import { useFlowUpdater } from "./useNodeUpdater";
 import { useEditorStore } from "./useEditorStore";
 import { getHelperLines } from "./other/utils";
 
@@ -29,7 +29,7 @@ export const useApplyNodeChange = () => {
     setHelperLineVertical,
     setIsDragging,
     setIsResizing,
-  } = useNodeData();
+  } = useFlowUpdater();
   const { setCurrentElementId } = useEditorStore();
 
   // Use refs to batch state updates and avoid re-renders during drag

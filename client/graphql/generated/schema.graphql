@@ -56,6 +56,11 @@ input CertificateElementBaseInput {
   name: String!
   positionX: Float!
   positionY: Float!
+
+  """
+  This field is only for UI state management and will not affect server-side data.
+  """
+  renderOrder: Int
   templateId: Int!
   width: Float!
 }

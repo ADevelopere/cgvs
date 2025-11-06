@@ -89,6 +89,8 @@ export type CertificateElementBaseInput = {
   name: Scalars['String']['input'];
   positionX: Scalars['Float']['input'];
   positionY: Scalars['Float']['input'];
+  /** This field is only for UI state management and will not affect server-side data. */
+  renderOrder?: InputMaybe<Scalars['Int']['input']>;
   templateId: Scalars['Int']['input'];
   width: Scalars['Float']['input'];
 };

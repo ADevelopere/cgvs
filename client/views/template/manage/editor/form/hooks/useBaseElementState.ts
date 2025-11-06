@@ -15,7 +15,7 @@ import {
   UpdateBaseElementFn,
 } from "../element/base";
 import { useCertificateElementStates } from "../../CertificateElementContext";
-import { useNodesState } from "../../NodesStateProvider";
+import { useNode } from "../../NodesStateProvider";
 
 export type UseBaseElementStateParams = {
   templateId?: number;
@@ -45,6 +45,7 @@ export function extractBaseStateInputFromElement(
     positionX: element.base.positionX,
     positionY: element.base.positionY,
     hidden: element.base.hidden,
+    renderOrder: element.base.renderOrder,
   };
 }
 
@@ -72,7 +73,7 @@ export function useBaseElementState(params: UseBaseElementStateParams): UseBaseE
   const { templateId, elements } = params;
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
-  const { updateBaseNodeData } = useNodesState();
+  const { updateBaseNodeData } = useNode();
 
   const [updateElementCommonPropertiesMutation] = useMutation(updateElementCommonPropertiesMutationDocument);
 

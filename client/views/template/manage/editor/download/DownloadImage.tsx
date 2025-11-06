@@ -2,14 +2,14 @@ import { Panel } from "@xyflow/react";
 import { useTheme } from "@mui/material/styles";
 import logger from "@/client/lib/logger";
 import React from "react";
-import { useNodeData } from "../NodeDataProvider";
+import { useFlowUpdater } from "../useNodeUpdater";
 import { CircularProgress } from "@mui/material";
 import { ClientCanvasGenerator } from "@/client/views/template/manage/preview";
 import type { ClientCanvasGeneratorRef } from "@/client/views/template/manage/preview";
 
 export const DownloadImage: React.FC = () => {
   const theme = useTheme();
-  const { templateId } = useNodeData();
+  const { templateId } = useFlowUpdater();
   const [isGenerating, setIsGenerating] = React.useState(false);
   const [showGenerator, setShowGenerator] = React.useState(false);
   const generatorRef = React.useRef<ClientCanvasGeneratorRef>(null);
