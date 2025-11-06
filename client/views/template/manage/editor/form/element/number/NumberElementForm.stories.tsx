@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { logger } from "@/client/lib/logger";
+import { logger } from "@/client/lib/console";
 import { NumberElementForm } from "./NumberElementForm";
 import { mockSelfHostedFonts, mockNumberVariables } from "../story.util";
 import type { NumberElementFormState, NumberElementFormErrors } from "./types";

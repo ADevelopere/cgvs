@@ -72,7 +72,7 @@ export function useImagePropsState(params: UseImagePropsStateParams): UseImagePr
         });
       } catch (error) {
         const errorMessage = errorStrings?.updateFailed || "Failed to update image properties";
-        logger.error("useImagePropsState: Mutation failed", {
+        logger.error({ caller: "useImagePropsState" }, "Mutation failed", {
           elementId,
           error,
         });

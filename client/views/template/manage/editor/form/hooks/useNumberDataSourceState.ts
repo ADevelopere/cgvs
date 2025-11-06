@@ -79,7 +79,7 @@ export function useNumberDataSourceState(params: UseNumberDataSourceStateParams)
         });
       } catch (error) {
         const errorMessage = errorStrings?.updateFailed || "Failed to update number data source";
-        logger.error("useNumberDataSourceState: Mutation failed", {
+        logger.error({ caller: "useNumberDataSourceState" }, "Mutation failed", {
           elementId,
           error,
         });

@@ -56,7 +56,7 @@ export const useRecipientVariableDataOperations = () => {
         return false;
       } catch (error) {
         if (!isAbortError(error)) {
-          logger.error("🔍 useRecipientVariableDataOperations: Error updating variable value:", error);
+          logger.error({ caller: "useRecipientVariableDataOperations" }, "🔍 Error updating variable value:", error);
           notifications.show(strings.errorUpdatingValue, {
             severity: "error",
             autoHideDuration: 3000,
@@ -76,7 +76,7 @@ export const useRecipientVariableDataOperations = () => {
       const currentLimit = store.queryParams.limit;
       const newOffset = (newPage - 1) * currentLimit;
 
-      logger.info("🔍 useRecipientVariableDataOperations: onPageChange called with:", {
+      logger.error({ caller: "useRecipientVariableDataOperations" }, "🔍 onPageChange called with:", {
         newPage,
         currentLimit,
         newOffset,
@@ -92,7 +92,7 @@ export const useRecipientVariableDataOperations = () => {
    */
   const onRowsPerPageChange = useCallback(
     (newRowsPerPage: number) => {
-      logger.info("🔍 useRecipientVariableDataOperations: onRowsPerPageChange called with:", {
+      logger.error({ caller: "useRecipientVariableDataOperations" }, "🔍 onRowsPerPageChange called with:", {
         newRowsPerPage,
       });
 
@@ -106,7 +106,7 @@ export const useRecipientVariableDataOperations = () => {
    */
   const setSelectedGroup = useCallback(
     (group: Graphql.TemplateRecipientGroup | null) => {
-      logger.info("🔍 useRecipientVariableDataOperations: setSelectedGroup called with:", group);
+      logger.error({ caller: "useRecipientVariableDataOperations" }, "🔍 setSelectedGroup called with:", group);
       store.setSelectedGroup(group);
     },
     [store]
@@ -116,7 +116,7 @@ export const useRecipientVariableDataOperations = () => {
    * Reset store
    */
   const reset = useCallback(() => {
-    logger.info("🔍 useRecipientVariableDataOperations: reset called");
+    logger.error({ caller: "useRecipientVariableDataOperations" }, "🔍 reset called");
     store.reset();
   }, [store]);
 

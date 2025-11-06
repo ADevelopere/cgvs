@@ -67,7 +67,7 @@ export const useStorageUploadOperations = () => {
 
         const signedUrl = signedUrlRes.data?.generateUploadSignedUrl;
         if (!signedUrl) {
-          logger.error("Failed to get signed URL from response", {
+          logger.error({ caller: "useStorageUploadOperations" }, "Failed to get signed URL from response", {
             fileKey,
             fileName: file.name,
             response: signedUrlRes.data,
@@ -126,7 +126,7 @@ export const useStorageUploadOperations = () => {
         await new Promise<void>((resolve, reject) => {
           loadListener = () => {
             if (!currentXhr || currentXhr.readyState !== XMLHttpRequest.DONE || currentXhr.status === 0) {
-              logger.warn("Upload cancelled or incomplete", {
+              logger.warn({ caller: "useStorageUploadOperations" }, "Upload cancelled or incomplete", {
                 fileKey,
                 fileName: file.name,
                 readyState: currentXhr?.readyState,
@@ -147,19 +147,23 @@ export const useStorageUploadOperations = () => {
               handleSuccess();
               resolve();
             } else {
-              logger.error("🔍 [UPLOAD DEBUG] Upload failed with HTTP error", {
-                fileKey,
-                fileName: file.name,
-                status: currentXhr.status,
-                statusText: currentXhr.statusText,
-                responseText: currentXhr.responseText,
-                responseHeaders: currentXhr.getAllResponseHeaders(),
-                signedUrl: signedUrl.substring(0, 200) + "...",
-                sentContentMd5: contentMd5,
-                sentContentType: contentType,
-                browserFileType: file.type,
-                inferredContentType: contentType,
-              });
+              logger.error(
+                { caller: "useStorageUploadOperations" },
+                "🔍 [UPLOAD DEBUG] Upload failed with HTTP error",
+                {
+                  fileKey,
+                  fileName: file.name,
+                  status: currentXhr.status,
+                  statusText: currentXhr.statusText,
+                  responseText: currentXhr.responseText,
+                  responseHeaders: currentXhr.getAllResponseHeaders(),
+                  signedUrl: signedUrl.substring(0, 200) + "...",
+                  sentContentMd5: contentMd5,
+                  sentContentType: contentType,
+                  browserFileType: file.type,
+                  inferredContentType: contentType,
+                }
+              );
               const errorMsg = translations.uploadFailedWithStatus.replace("%{status}", String(currentXhr.status));
               handleError(errorMsg);
               uploadXhrsRef.current.delete(fileKey);
@@ -167,7 +171,7 @@ export const useStorageUploadOperations = () => {
             }
           };
           errorListener = e => {
-            logger.error("XMLHttpRequest error event", {
+            logger.error({ caller: "useStorageUploadOperations" }, "XMLHttpRequest error event", {
               fileKey,
               fileName: file.name,
               readyState: currentXhr?.readyState,
@@ -181,7 +185,7 @@ export const useStorageUploadOperations = () => {
               errorType: e.type,
               errorTarget: e.target,
             });
-            logger.error("XMLHttpRequest error event", {
+            logger.error({ caller: "useStorageUploadOperations" }, "XMLHttpRequest error event", {
               error: e,
             });
 
@@ -189,11 +193,15 @@ export const useStorageUploadOperations = () => {
             let errorMessage = translations.uploadFailed;
             if (currentXhr?.status === 0) {
               errorMessage = "Network error or CORS issue - check browser console for details";
-              logger.error("Upload failed with status 0 - likely CORS or network issue", {
-                fileKey,
-                fileName: file.name,
-                signedUrl: signedUrl.substring(0, 200) + "...",
-              });
+              logger.error(
+                { caller: "useStorageUploadOperations" },
+                "Upload failed with status 0 - likely CORS or network issue",
+                {
+                  fileKey,
+                  fileName: file.name,
+                  signedUrl: signedUrl.substring(0, 200) + "...",
+                }
+              );
             }
 
             handleError(errorMessage);
@@ -201,7 +209,7 @@ export const useStorageUploadOperations = () => {
             reject(new Error(errorMessage));
           };
           abortListener = () => {
-            logger.warn("XMLHttpRequest abort event", {
+            logger.warn({ caller: "useStorageUploadOperations" }, "XMLHttpRequest abort event", {
               fileKey,
               fileName: file.name,
             });
@@ -211,7 +219,7 @@ export const useStorageUploadOperations = () => {
           };
 
           timeoutListener = () => {
-            logger.error("XMLHttpRequest timeout event", {
+            logger.error({ caller: "useStorageUploadOperations" }, "XMLHttpRequest timeout event", {
               fileKey,
               fileName: file.name,
               timeout: currentXhr?.timeout,
@@ -227,7 +235,7 @@ export const useStorageUploadOperations = () => {
           currentXhr.addEventListener("timeout", timeoutListener);
         });
       } catch (error) {
-        logger.error("Upload failed with exception", {
+        logger.error({ caller: "useStorageUploadOperations" }, "Upload failed with exception", {
           fileKey,
           fileName: file.name,
           error: error instanceof Error ? error.message : String(error),
@@ -275,7 +283,7 @@ export const useStorageUploadOperations = () => {
       if (oversizedFiles.length > 0) {
         const maxMb = (maxAllowedFileSize / 1024 / 1024).toFixed(2);
         const message = `${oversizedFiles.length} file(s) exceed the size limit of ${maxMb}MB and will not be uploaded.`;
-        logger.warn("Files exceed size limit", {
+        logger.warn({ caller: "useStorageUploadOperations" }, "Files exceed size limit", {
           oversizedFiles: oversizedFiles.map(f => ({
             name: f.name,
             size: f.size,
@@ -289,7 +297,7 @@ export const useStorageUploadOperations = () => {
       }
 
       if (validFiles.length === 0) {
-        logger.warn("No valid files to upload");
+        logger.warn({ caller: "useStorageUploadOperations" }, "No valid files to upload");
         return;
       }
 
@@ -346,10 +354,14 @@ export const useStorageUploadOperations = () => {
 
           // Evict cache if any files were successfully uploaded
           if (successCount > 0) {
-            logger.info("Evicting listFiles and directoryChildren caches for target path", {
-              targetPath,
-              params: paramsRef.current,
-            });
+            logger.info(
+              { caller: "useStorageUploadOperations" },
+              "Evicting listFiles and directoryChildren caches for target path",
+              {
+                targetPath,
+                params: paramsRef.current,
+              }
+            );
             // Evict listFiles and directoryChildren caches for target path
             evictListFilesCacheUtil(apolloClient, targetPath, paramsRef.current);
             evictDirectoryChildrenCacheUtil(apolloClient, targetPath);

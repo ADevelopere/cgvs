@@ -37,7 +37,11 @@ export const useRecipientGroupOperations = () => {
           });
           closeCreateDialog();
         } else {
-          logger.error("Error creating template recipient group:", result.error);
+          logger.error(
+            { caller: "useRecipientGroupOperations" },
+            "Error creating template recipient group:",
+            result.error
+          );
           notifications.show(strings.errorCreating || "Failed to create group", {
             severity: "error",
           });
@@ -50,7 +54,7 @@ export const useRecipientGroupOperations = () => {
         const errorMessage =
           gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.errorCreating || "Failed to create group";
 
-        logger.error("Error creating template recipient group:", error);
+        logger.error({ caller: "useRecipientGroupOperations" }, "Error creating template recipient group:", error);
         notifications.show(errorMessage, { severity: "error" });
       }
     },
@@ -73,7 +77,11 @@ export const useRecipientGroupOperations = () => {
           });
           closeSettingsDialog();
         } else {
-          logger.error("Error updating template recipient group:", result.error);
+          logger.error(
+            { caller: "useRecipientGroupOperations" },
+            "Error updating template recipient group:",
+            result.error
+          );
           notifications.show(strings.errorUpdating || "Failed to update group", {
             severity: "error",
           });
@@ -86,7 +94,7 @@ export const useRecipientGroupOperations = () => {
         const errorMessage =
           gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.errorUpdating || "Failed to update group";
 
-        logger.error("Error updating template recipient group:", error);
+        logger.error({ caller: "useRecipientGroupOperations" }, "Error updating template recipient group:", error);
         notifications.show(errorMessage, { severity: "error" });
       }
     },
@@ -109,7 +117,11 @@ export const useRecipientGroupOperations = () => {
           });
           closeDeleteDialog();
         } else {
-          logger.error("Error deleting template recipient group:", result.error);
+          logger.error(
+            { caller: "useRecipientGroupOperations" },
+            "Error deleting template recipient group:",
+            result.error
+          );
           notifications.show(strings.errorDeleting || "Failed to delete group", {
             severity: "error",
           });
@@ -122,7 +134,7 @@ export const useRecipientGroupOperations = () => {
         const errorMessage =
           gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.errorDeleting || "Failed to delete group";
 
-        logger.error("Error deleting template recipient group:", error);
+        logger.error({ caller: "useRecipientGroupOperations" }, "Error deleting template recipient group:", error);
         notifications.show(errorMessage, { severity: "error" });
       }
     },

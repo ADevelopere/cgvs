@@ -77,7 +77,7 @@ export function useTextDataSourceState(params: UseTextDataSourceStateParams): Us
         });
       } catch (error) {
         const errorMessage = errorStrings?.updateFailed || "Failed to update text data source";
-        logger.error("useTextDataSourceState: Mutation failed", {
+        logger.error({ caller: "useTextDataSourceState" }, "Mutation failed", {
           elementId,
           error,
         });

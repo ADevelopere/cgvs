@@ -11,6 +11,10 @@ interface LogEntry {
   sequence: number;
 }
 
+interface BatchLogRequest {
+  logs: LogEntry[];
+}
+
 // const cleanupEnabled = process.env.CLEANUP_OLD_LOGS === "true";
 const cleanupEnabled = false;
 
@@ -89,13 +93,36 @@ async function writeLogEntry(logEntry: LogEntry, logsDir: string): Promise<void>
 
     while (buffer.entries.length > 0 && buffer.entries[0].sequence === buffer.nextSequence) {
       const entry = buffer.entries.shift()!;
-      const logLine = `[${entry.timestamp}] [${entry.level.toUpperCase()}] [${entry.caller || "undefined"}] ${entry.message}\n`;
+      const logLine = `[${entry.timestamp}] [${entry.level.toUpperCase()}] [SEQ:${entry.sequence}] [${entry.caller || "unknown"}] ${entry.message}\n`;
 
       await writeFile(logFilePath, logLine, { flag: "a" });
       buffer.nextSequence++;
     }
   } finally {
     resolveWriteLock!();
+  }
+}
+
+async function writeBatchLogs(logs: LogEntry[], logsDir: string): Promise<void> {
+  // Group logs by sessionId
+  const logsBySession = new Map<string, LogEntry[]>();
+
+  for (const log of logs) {
+    if (!logsBySession.has(log.sessionId)) {
+      logsBySession.set(log.sessionId, []);
+    }
+    logsBySession.get(log.sessionId)!.push(log);
+  }
+
+  // Write each session's logs
+  for (const [sessionId, sessionLogs] of logsBySession) {
+    // Clean up old logs for this session
+    await cleanupOldClientLogs(logsDir, sessionId);
+
+    // Write all logs for this session
+    for (const log of sessionLogs) {
+      await writeLogEntry(log, logsDir);
+    }
   }
 }
 
@@ -106,30 +133,35 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const logEntry: LogEntry = await request.json();
+    const body: BatchLogRequest = await request.json();
 
-    // Validate required fields
-    if (!logEntry.sessionId || !logEntry.level || !logEntry.message || typeof logEntry.sequence !== "number") {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    // Check if this is a batch request
+    if (body.logs && Array.isArray(body.logs)) {
+      // Validate that all entries have required fields
+      for (const logEntry of body.logs) {
+        if (!logEntry.sessionId || !logEntry.level || !logEntry.message || typeof logEntry.sequence !== "number") {
+          return NextResponse.json({ error: "Missing required fields in log entry" }, { status: 400 });
+        }
+      }
+
+      // Create logs directory if it doesn't exist
+      const logsDir = join(process.cwd(), "logs");
+      try {
+        await mkdir(logsDir, { recursive: true });
+      } catch {
+        // Directory might already exist, ignore error
+      }
+
+      // Write batch logs
+      await writeBatchLogs(body.logs, logsDir);
+
+      return NextResponse.json({ success: true, count: body.logs.length });
     }
 
-    // Create logs directory if it doesn't exist
-    const logsDir = join(process.cwd(), "logs");
-    try {
-      await mkdir(logsDir, { recursive: true });
-    } catch {
-      // Directory might already exist, ignore error
-    }
-
-    // Clean up old client log files for this session
-    await cleanupOldClientLogs(logsDir, logEntry.sessionId);
-
-    // Write log entry using buffered writer
-    await writeLogEntry(logEntry, logsDir);
-
-    return NextResponse.json({ success: true });
+    // If not a batch request, return error
+    return NextResponse.json({ error: "Invalid request format. Expected { logs: LogEntry[] }" }, { status: 400 });
   } catch {
     // Use a simple error response without logging to avoid potential issues
-    return NextResponse.json({ error: "Failed to write log" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to write logs" }, { status: 500 });
   }
 }

@@ -77,7 +77,7 @@ export function useImageDataSourceState(params: UseImageDataSourceStateParams): 
         });
       } catch (error) {
         const errorMessage = errorStrings?.updateFailed || "Failed to update image data source";
-        logger.error("useImageDataSourceState: Mutation failed", {
+        logger.error({ caller: "useImageDataSourceState" }, "Mutation failed", {
           elementId,
           error,
         });

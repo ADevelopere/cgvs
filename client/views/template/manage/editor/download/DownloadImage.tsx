@@ -18,7 +18,7 @@ export const DownloadImage: React.FC = () => {
     try {
       generatorRef.current?.download();
     } catch (e) {
-      logger.error("DownloadImage: export failed", { error: e });
+      logger.error({ caller: "DownloadImage" }, "DownloadImage: export failed", { error: e });
     } finally {
       setIsGenerating(false);
       setShowGenerator(false);
@@ -27,7 +27,7 @@ export const DownloadImage: React.FC = () => {
 
   const onClick = React.useCallback(() => {
     if (!templateId) {
-      logger.error("Template ID not found");
+      logger.error({ caller: "DownloadImage" }, "Template ID not found");
       return;
     }
     if (isGenerating) return;

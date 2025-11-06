@@ -123,25 +123,13 @@ export const useUploadDropzone = (options: UseUploadDropzoneOptions): UseUploadD
           onUploadStart?.();
           onFilesSelected?.(files);
 
-          logger.info(`Starting upload of ${files.length} files to ${uploadPath}`);
-
-          logger.info("About to call startUpload", {
-            fileCount: files.length,
-            uploadPath,
-            fileNames: files.map(f => f.name),
-            fileSizes: files.map(f => f.size),
-          });
-
           await startUpload(files, uploadPath, {
             onComplete: () => {
               onUploadComplete?.();
-              logger.info("Upload completed successfully");
             },
           });
-
-          logger.info("startUpload call completed");
         } catch (error) {
-          logger.error("Upload failed:", error);
+          logger.error({ caller: "useUploadDropzone" }, "Upload failed:", error);
         }
       })();
     },
@@ -196,7 +184,7 @@ export const useUploadDropzone = (options: UseUploadDropzoneOptions): UseUploadD
               message = `${file.name}: ${error.message}`;
           }
           errors.push(message);
-          logger.warn("File validation error:", message);
+          logger.warn({ caller: "useUploadDropzone" }, "File validation error:", message);
         });
       });
       onValidationError?.(errors);

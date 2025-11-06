@@ -4,7 +4,6 @@ import { useCallback, useMemo, useRef } from "react";
 import { useApolloClient } from "@apollo/client/react";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
-import logger from "@/client/lib/logger";
 import { useStorageActions } from "./useStorageActions";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
 import { useStorageDataStore } from "../stores/useStorageDataStore";
@@ -88,18 +87,12 @@ export const useStorageOperations = (): StorageOperations => {
   const refresh = useCallback(async () => {
     const currentParams = dataStoreRef.current.params;
 
-    logger.info("Manual refresh - evicting cache", {
-      path: currentParams.path,
-    });
-
     apolloClientRef.current.cache.evict({
       id: "ROOT_QUERY",
       fieldName: "listFiles",
       args: { input: currentParams },
     });
     apolloClientRef.current.cache.gc();
-
-    logger.info("Cache evicted, useQuery will refetch");
   }, []);
 
   // ============================================================================
@@ -378,13 +371,7 @@ export const useStorageOperations = (): StorageOperations => {
   // ============================================================================
 
   const navigateTo = useCallback(async (path: string) => {
-    logger.info("navigateTo called", {
-      fromPath: dataStoreRef.current.params.path,
-      toPath: path,
-    });
-
     if (dataStoreRef.current.params.path === path) {
-      logger.info("Skipping navigation - already at target path", { path });
       return;
     }
 
@@ -395,14 +382,12 @@ export const useStorageOperations = (): StorageOperations => {
     };
 
     actionsRef.current.setParams(newParams);
-    logger.info("Params updated, useQuery will refetch", { newParams });
   }, []);
 
   const goUp = useCallback(async () => {
     const currentPath = dataStoreRef.current.params.path;
 
     if (!currentPath || currentPath === "") {
-      logger.info("Already at root - cannot go up further");
       return;
     }
 

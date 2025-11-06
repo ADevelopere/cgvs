@@ -51,11 +51,11 @@ export const useTemplateCategoryOperations = () => {
             parentTree: [...(parent ? [parent.id, ...parent.parentTree] : [])],
           });
         } else {
-          logger.error("Error creating template category:", result.error);
+          logger.error({ caller: "useTemplateCategoryOperations" }, "Error creating template category:", result.error);
           notifications.show(strings.categoryAddFailed, { severity: "error" });
         }
       } catch (error) {
-        logger.error("Error creating template category:", error);
+        logger.error({ caller: "useTemplateCategoryOperations" }, "Error creating template category:", error);
         notifications.show(strings.categoryAddFailed, { severity: "error" });
       }
     },
@@ -78,13 +78,13 @@ export const useTemplateCategoryOperations = () => {
             severity: "success",
           });
         } else {
-          logger.error("Error updating template category:", result.error);
+          logger.error({ caller: "useTemplateCategoryOperations" }, "Error updating template category:", result.error);
           notifications.show(strings.categoryUpdateFailed, {
             severity: "error",
           });
         }
       } catch (error) {
-        logger.error("Error updating template category:", error);
+        logger.error({ caller: "useTemplateCategoryOperations" }, "Error updating template category:", error);
         notifications.show(strings.categoryUpdateFailed, { severity: "error" });
       }
     },
@@ -111,13 +111,13 @@ export const useTemplateCategoryOperations = () => {
             selectCategory(null);
           }
         } else {
-          logger.error("Error deleting template category:", result.error);
+          logger.error({ caller: "useTemplateCategoryOperations" }, "Error deleting template category:", result.error);
           notifications.show(strings.categoryDeleteFailed, {
             severity: "error",
           });
         }
       } catch (error) {
-        logger.error("Error deleting template category:", error);
+        logger.error({ caller: "useTemplateCategoryOperations" }, "Error deleting template category:", error);
         notifications.show(strings.categoryDeleteFailed, { severity: "error" });
       }
     },
@@ -142,7 +142,7 @@ export const useTemplateCategoryOperations = () => {
           // Directly update the store
           setCurrentTemplateId(result.data.createTemplate.id);
         } else {
-          logger.error("Error creating template:", result.error);
+          logger.error({ caller: "useTemplateCategoryOperations" }, "Error creating template:", result.error);
           notifications.show(strings.templateAddFailed, { severity: "error" });
         }
       } catch (error) {
@@ -152,7 +152,7 @@ export const useTemplateCategoryOperations = () => {
         };
         const errorMessage = gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.templateAddFailed;
 
-        logger.error("Error creating template:", error);
+        logger.error({ caller: "useTemplateCategoryOperations" }, "Error creating template:", error);
         notifications.show(errorMessage, { severity: "error" });
       }
     },
@@ -193,11 +193,11 @@ export const useTemplateCategoryOperations = () => {
             setCurrentTemplateId(null);
           }
         } else {
-          logger.error("Error deleting template:", result.error);
+          logger.error({ caller: "useTemplateCategoryOperations" }, "Error deleting template:", result.error);
           notifications.show(strings.templateDeleteFailed || "Failed to delete template", { severity: "error" });
         }
       } catch (error) {
-        logger.error("Error deleting template:", error);
+        logger.error({ caller: "useTemplateCategoryOperations" }, "Error deleting template:", error);
         notifications.show(strings.templateDeleteFailed || "Failed to delete template", { severity: "error" });
       }
     },
@@ -231,7 +231,7 @@ export const useTemplateCategoryOperations = () => {
             setCurrentTemplateId(null);
           }
         } else {
-          logger.error("Error suspending template:", result.error);
+          logger.error({ caller: "useTemplateCategoryOperations" }, "Error suspending template:", result.error);
           notifications.show(strings.templateMoveToDeletionFailed, {
             severity: "error",
           });
@@ -244,7 +244,7 @@ export const useTemplateCategoryOperations = () => {
         const errorMessage =
           gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.templateMoveToDeletionFailed;
 
-        logger.error("Error suspending template:", error);
+        logger.error({ caller: "useTemplateCategoryOperations" }, "Error suspending template:", error);
         notifications.show(errorMessage, { severity: "error" });
       }
     },
@@ -276,7 +276,7 @@ export const useTemplateCategoryOperations = () => {
           // Directly update the store
           setCurrentTemplateId(result.data.unsuspendTemplate.id);
         } else {
-          logger.error("Error unsuspending template:", result.error);
+          logger.error({ caller: "useTemplateCategoryOperations" }, "Error unsuspending template:", result.error);
           notifications.show(strings.templateRestoreFailed, {
             severity: "error",
           });
@@ -288,7 +288,7 @@ export const useTemplateCategoryOperations = () => {
         };
         const errorMessage = gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.templateRestoreFailed;
 
-        logger.error("Error unsuspending template:", error);
+        logger.error({ caller: "useTemplateCategoryOperations" }, "Error unsuspending template:", error);
         notifications.show(errorMessage, { severity: "error" });
       }
     },

@@ -123,7 +123,7 @@ export function useElementState<T, E, VR>(params: UseElementStateParams<T, VR>):
       if (statesRef.current.has(elementId)) {
         const state = statesRef.current.get(elementId);
         if (state === undefined) {
-          throw new Error(`useElementState: State is undefined for element id ${elementId}`);
+          throw new Error(`State is undefined for element id ${elementId}`);
         }
         return state;
       }
@@ -140,12 +140,12 @@ export function useElementState<T, E, VR>(params: UseElementStateParams<T, VR>):
       // Find element and extract initial state (only if not in cache)
       const element = elementsRef.current.find(el => el.base?.id === elementId);
       if (!element) {
-        throw new Error(`useElementState: Element not found for id ${elementId}`);
+        throw new Error(`Element not found for id ${elementId}`);
       }
 
       const initialState = extractInitialStateRef.current(element);
       if (initialState === undefined || initialState === null) {
-        throw new Error(`useElementState: Failed to extract initial state for element id ${elementId}`);
+        throw new Error(`Failed to extract initial state for element id ${elementId}`);
       }
 
       // Store in both ref and persistent cache
@@ -183,13 +183,16 @@ export function useElementState<T, E, VR>(params: UseElementStateParams<T, VR>):
     (elementId: number) => {
       const element = elementsRef.current.find(el => el.base?.id === elementId);
       if (!element) {
-        logger.warn(`useElementState: Cannot reset - element not found for id ${elementId}`);
+        logger.warn({ caller: "useElementState" }, `Cannot reset - element not found for id ${elementId}`);
         return;
       }
 
       const freshState = extractInitialStateRef.current(element);
       if (freshState === undefined || freshState === null) {
-        logger.warn(`useElementState: Cannot reset - failed to extract state for element id ${elementId}`);
+        logger.warn(
+          { caller: "useElementState" },
+          `Cannot reset - failed to extract state for element id ${elementId}`
+        );
         return;
       }
 
@@ -260,7 +263,7 @@ export function useElementState<T, E, VR>(params: UseElementStateParams<T, VR>):
         const pendingState = pendingUpdatesRef.current.get(elementId);
         if (pendingState) {
           mutationFnRef.current(elementId, pendingState).catch(error => {
-            logger.error("useElementState: Mutation failed, resetting to server state", {
+            logger.error({ caller: "useElementState" }, "Mutation failed, resetting to server state", {
               elementId,
               error,
             });
@@ -293,7 +296,7 @@ export function useElementState<T, E, VR>(params: UseElementStateParams<T, VR>):
           await mutationFnRef.current(elementId, pendingState);
           pendingUpdatesRef.current.delete(elementId);
         } catch (error) {
-          logger.error("useElementState: Push update failed, resetting to server state", {
+          logger.error({ caller: "useElementState" }, "Push update failed, resetting to server state", {
             elementId,
             error,
           });
@@ -323,7 +326,7 @@ export function useElementState<T, E, VR>(params: UseElementStateParams<T, VR>):
       // Save all pending updates
       for (const [elementId, state] of pendingUpdates.entries()) {
         mutationFnOnUnmount(elementId, state).catch(error => {
-          logger.error("useElementState: Failed to save on unmount, resetting to server state", {
+          logger.error({ caller: "useElementState" }, "Failed to save on unmount, resetting to server state", {
             elementId,
             error,
           });

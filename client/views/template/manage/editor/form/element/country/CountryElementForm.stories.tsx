@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { logger } from "@/client/lib/logger";
+import { logger } from "@/client/lib/console";
 import { CountryElementForm } from "./CountryElementForm";
 import { mockSelfHostedFonts } from "../story.util";
 import type { CountryElementFormState, CountryElementFormErrors } from "./types";

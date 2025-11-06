@@ -53,11 +53,11 @@ export const ElementsTab: React.FC<ElementsTabProps> = ({ elements }) => {
           baseElements.updateBaseElementStateFn(elem.base.id, { key: "zIndex", value: elem.base.zIndex });
         }
 
-        const movedNodeElements = movedElement.map((elem, index) => ({
-          elementId: elem.base.id,
-          newZIndex: index + 1,
-        }));
-        reorderNodes(movedNodeElements);
+        // const movedNodeElements = movedElement.map((elem, index) => ({
+        //   elementId: elem.base.id,
+        //   newZIndex: index + 1,
+        // }));
+        // reorderNodes(movedNodeElements);
       }
     },
     [moveElementMutation, localElements, baseElements, reorderNodes]

@@ -3,7 +3,7 @@ import { TemplateConfigAutoUpdateFormContent } from "./TemplateConfigAutoUpdateF
 import { mockTemplateConfig } from "./templateConfigStoryMocks";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { TemplateConfigFormUpdateFn } from "./types";
-import logger from "@/client/lib/logger";
+import { logger } from "@/client/lib/console";
 
 const meta: Meta<typeof TemplateConfigAutoUpdateFormContent> = {
   title: "Template/Editor/Form/Config/TemplateConfigAutoUpdateForm",

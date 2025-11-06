@@ -99,11 +99,6 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   // Handle dialog open/close
   useEffect(() => {
     if (open) {
-      logger.info("FilePickerDialog opened", {
-        allowedContentTypes,
-        allowedFileTypes,
-        title,
-      });
       setCurrentPath("");
       setSelectedFile(null);
       setIsSelecting(false);
@@ -122,10 +117,6 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   // Navigate to a directory
   const navigateToDirectory = useCallback(
     (path: string) => {
-      logger.info("Navigating to directory", {
-        fromPath: currentPath,
-        toPath: path,
-      });
       setCurrentPath(path);
       setSelectedFile(null);
       setQueryVariables({
@@ -162,32 +153,18 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   // Handle file selection
   const handleFileSelect = useCallback(
     async (file: Graphql.FileInfo) => {
-      logger.info("File selection initiated", {
-        fileName: file.name,
-        filePath: file.path,
-        fileSize: file.size,
-        contentType: file.contentType,
-        currentPath,
-      });
-
       setIsSelecting(true);
 
       try {
-        logger.info("Calling onFileSelect callback", { fileName: file.name });
         onFileSelect(file);
-        logger.info("Calling onClose callback after file selection");
         onClose();
-        logger.info("File selection completed successfully", {
-          fileName: file.name,
-        });
       } catch (error) {
-        logger.error("Error during file selection", {
+        logger.error({ caller: "FilePickerDialog" }, "Error during file selection", {
           fileName: file.name,
           error: error instanceof Error ? error.message : "Unknown error",
         });
       } finally {
         setIsSelecting(false);
-        logger.info("File selection process finished", { fileName: file.name });
       }
     },
     [onFileSelect, onClose, currentPath]
@@ -195,18 +172,10 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
 
   // Handle dialog close
   const handleClose = useCallback(() => {
-    logger.info("FilePickerDialog close requested", {
-      loading,
-      isSelecting,
-      currentPath,
-      selectedFile: selectedFile?.name,
-    });
-
     if (!loading && !isSelecting) {
-      logger.info("FilePickerDialog closing");
       onClose();
     } else {
-      logger.warn("FilePickerDialog close blocked", {
+      logger.warn({ caller: "FilePickerDialog" }, "FilePickerDialog close blocked", {
         reason: loading ? "loading" : "selecting",
       });
     }
@@ -227,10 +196,7 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
   const navigateUp = useCallback(() => {
     if (currentPath) {
       const parentPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
-      logger.info("Navigating up one level", {
-        fromPath: currentPath,
-        toPath: parentPath,
-      });
+
       setCurrentPath(parentPath);
       setSelectedFile(null);
       setQueryVariables({
@@ -243,13 +209,12 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
         },
       });
     } else {
-      logger.warn("Cannot navigate up - already at root", { currentPath });
+      logger.warn({ caller: "FilePickerDialog" }, "Cannot navigate up - already at root", { currentPath });
     }
   }, [currentPath, allowedFileTypes, allowedContentTypes]);
 
   // Refresh current directory
   const refreshDirectory = useCallback(() => {
-    logger.info("Refreshing current directory", { currentPath });
     // Evict the cache for this specific query and variables to force refetch
     apolloClient.cache.evict({
       id: "ROOT_QUERY",
@@ -340,11 +305,6 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
                 component="button"
                 variant="body2"
                 onClick={() => {
-                  logger.info("Breadcrumb clicked for navigation", {
-                    segmentName: segment.name,
-                    segmentPath: segment.path,
-                    currentPath,
-                  });
                   navigateToDirectory(segment.path);
                 }}
                 sx={{
@@ -406,11 +366,6 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
                           key={folder.path}
                           hover
                           onClick={() => {
-                            logger.info("Folder clicked for navigation", {
-                              folderName: folder.name,
-                              folderPath: folder.path,
-                              currentPath,
-                            });
                             navigateToDirectory(folder.path);
                           }}
                           sx={{
@@ -476,19 +431,9 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
                         <MUI.Box
                           key={file.path}
                           onClick={() => {
-                            logger.info("File clicked for selection", {
-                              fileName: file.name,
-                              filePath: file.path,
-                              currentPath,
-                            });
                             setSelectedFile(file);
                           }}
                           onDoubleClick={() => {
-                            logger.info("File double-clicked for immediate selection", {
-                              fileName: file.name,
-                              filePath: file.path,
-                              currentPath,
-                            });
                             setSelectedFile(file);
                             handleFileSelect(file);
                           }}
@@ -583,14 +528,9 @@ const FilePickerDialogContent: React.FC<FilePickerDialogProps> = ({
         <MUI.Button
           onClick={() => {
             if (selectedFile) {
-              logger.info("Select button clicked", {
-                fileName: selectedFile.name,
-                filePath: selectedFile.path,
-                currentPath,
-              });
               handleFileSelect(selectedFile);
             } else {
-              logger.warn("Select button clicked but no file selected");
+              logger.warn({ caller: "FilePickerDialog" }, "Select button clicked but no file selected");
             }
           }}
           disabled={!canSelect}

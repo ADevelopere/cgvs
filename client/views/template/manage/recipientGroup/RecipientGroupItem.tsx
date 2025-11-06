@@ -45,7 +45,7 @@ const RecipientGroupItem: React.FC<RecipientGroupItemProps> = ({ group }) => {
   const handleManageClick = useCallback(() => {
     if (!group.id) return;
     // TODO: Navigate to recipient management page with group ID
-    logger.log("Manage group:", group.id);
+    logger.log({ caller: "RecipientGroupItem" }, "Manage group:", group.id);
   }, [group.id]);
 
   return (

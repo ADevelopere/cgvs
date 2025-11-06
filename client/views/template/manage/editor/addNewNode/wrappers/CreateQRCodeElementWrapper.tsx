@@ -137,7 +137,7 @@ export const CreateQRCodeElementWrapper: React.FC<CreateQRCodeElementWrapperProp
 
   const handleSubmit = useCallback(async () => {
     if (hasError) {
-      logger.warn("Validation failed for QR code element creation");
+      logger.warn({ caller: "CreateQRCodeElementWrapper" }, "Validation failed for QR code element creation");
       return;
     }
 
@@ -150,7 +150,7 @@ export const CreateQRCodeElementWrapper: React.FC<CreateQRCodeElementWrapperProp
         },
       });
 
-      logger.info("QR code element created successfully");
+      logger.info({ caller: "CreateQRCodeElementWrapper" }, "QR code element created successfully");
 
       // Reset state
       setState(getInitialState());
@@ -164,7 +164,7 @@ export const CreateQRCodeElementWrapper: React.FC<CreateQRCodeElementWrapperProp
         onClose();
       }
     } catch (error) {
-      logger.error("Failed to create QR code element", error);
+      logger.error({ caller: "CreateQRCodeElementWrapper" }, "Failed to create QR code element", error);
       // Error is automatically handled by Apollo Client
     } finally {
       setIsSubmitting(false);

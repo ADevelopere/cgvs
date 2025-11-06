@@ -216,7 +216,10 @@ export const useStudentOperations = () => {
         .map(clause => {
           const graphqlColumn = mapColumnIdToGraphQLColumn(clause.column);
           if (!graphqlColumn) {
-            logger.warn(`Column ${clause.column} is not sortable in GraphQL schema`);
+            logger.warn(
+              { caller: "useStudentOperations" },
+              `Column ${clause.column} is not sortable in GraphQL schema`
+            );
             return null;
           }
           const result: GQL.StudentsOrderByClause = {
@@ -244,13 +247,17 @@ export const useStudentOperations = () => {
   const syncFiltersToQueryParams = useCallback(
     (currentFilters?: Record<string, FilterClause | null>) => {
       const filtersToUse = currentFilters ?? store.filters;
-      logger.info("🔍 useStudentOperations: syncFiltersToQueryParams called");
-      logger.info("🔍 useStudentOperations: filtersToUse:", filtersToUse);
-      logger.info("🔍 useStudentOperations: store.queryParams.filterArgs at start:", store.queryParams.filterArgs);
+      logger.info({ caller: "useStudentOperations" }, "🔍 syncFiltersToQueryParams called");
+      logger.info({ caller: "useStudentOperations" }, "🔍 filtersToUse:", filtersToUse);
+      logger.info(
+        { caller: "useStudentOperations" },
+        "🔍 store.queryParams.filterArgs at start:",
+        store.queryParams.filterArgs
+      );
 
       // Start with current filterArgs to preserve filters not managed by store.filters
       const currentFilterArgs = { ...store.queryParams.filterArgs };
-      logger.info("🔍 useStudentOperations: currentFilterArgs copy:", currentFilterArgs);
+      logger.info({ caller: "useStudentOperations" }, "🔍 currentFilterArgs copy:", currentFilterArgs);
 
       // Get all columns that currently have filters
       const activeColumns = new Set(
@@ -258,7 +265,7 @@ export const useStudentOperations = () => {
           .filter(f => f !== null)
           .map(f => f!.columnId as keyof GQL.Student)
       );
-      logger.info("🔍 useStudentOperations: activeColumns:", Array.from(activeColumns));
+      logger.info({ caller: "useStudentOperations" }, "🔍 activeColumns:", Array.from(activeColumns));
 
       // Clear all filter keys for columns that are no longer active
       const allPossibleColumns: (keyof GQL.Student)[] = [
@@ -275,17 +282,25 @@ export const useStudentOperations = () => {
         if (!activeColumns.has(columnId)) {
           // Column filter was removed - clear ALL possible filter arg keys for it
           const keysToRemove = getFilterKeysForColumn(columnId);
-          logger.info(`🔍 useStudentOperations: clearing keys for inactive column ${columnId}:`, keysToRemove);
+          logger.info(
+            { caller: "useStudentOperations" },
+            `🔍 clearing keys for inactive column ${columnId}:`,
+            keysToRemove
+          );
           keysToRemove.forEach(key => {
             const hadKey = key in currentFilterArgs;
             delete currentFilterArgs[key];
             if (hadKey) {
-              logger.info(`🔍 useStudentOperations: removed key ${key} from currentFilterArgs`);
+              logger.info({ caller: "useStudentOperations" }, `🔍 removed key ${key} from currentFilterArgs`);
             }
           });
         }
       });
-      logger.info("🔍 useStudentOperations: currentFilterArgs after clearing inactive columns:", currentFilterArgs);
+      logger.info(
+        { caller: "useStudentOperations" },
+        "🔍 currentFilterArgs after clearing inactive columns:",
+        currentFilterArgs
+      );
 
       // Build new filters from active filtersToUse
       const newFilterArgs: Partial<GQL.StudentFilterArgs> = {};
@@ -302,16 +317,16 @@ export const useStudentOperations = () => {
         } else if (columnType === "date") {
           mappedFilter = mapDateFilter(columnId, filterClause.operation as DateFilterOperation, filterClause.value);
         }
-        logger.info(`🔍 useStudentOperations: mapped filter for ${columnId}:`, mappedFilter);
+        logger.info({ caller: "useStudentOperations" }, `🔍 mapped filter for ${columnId}:`, mappedFilter);
         Object.assign(newFilterArgs, mappedFilter);
       });
-      logger.info("🔍 useStudentOperations: newFilterArgs built from active filters:", newFilterArgs);
+      logger.info({ caller: "useStudentOperations" }, "🔍 newFilterArgs built from active filters:", newFilterArgs);
 
       // Merge: start with cleaned currentFilterArgs, override with new filters
       const finalFilterArgs = { ...currentFilterArgs, ...newFilterArgs };
-      logger.info("🔍 useStudentOperations: finalFilterArgs after merge:", finalFilterArgs);
+      logger.info({ caller: "useStudentOperations" }, "🔍 finalFilterArgs after merge:", finalFilterArgs);
 
-      logger.info("🔍 useStudentOperations: calling store.setQueryParams with finalFilterArgs");
+      logger.info({ caller: "useStudentOperations" }, "🔍 calling store.setQueryParams with finalFilterArgs");
       store.setQueryParams({
         filterArgs: finalFilterArgs,
         paginationArgs: {
@@ -321,7 +336,7 @@ export const useStudentOperations = () => {
         // Preserve existing orderBy
         orderBy: store.queryParams.orderBy,
       });
-      logger.info("🔍 useStudentOperations: store.queryParams after setQueryParams:", store.queryParams);
+      logger.info({ caller: "useStudentOperations" }, "🔍 store.queryParams after setQueryParams:", store.queryParams);
     },
     [store]
   );
@@ -360,34 +375,38 @@ export const useStudentOperations = () => {
    */
   const setSearchFilter = useCallback(
     (filterClause: FilterClause | null) => {
-      logger.info("🔍 useStudentOperations: setSearchFilter called with:", filterClause);
-      logger.info("🔍 useStudentOperations: current store.filters before:", store.filters);
-      logger.info("🔍 useStudentOperations: current queryParams.filterArgs before:", store.queryParams.filterArgs);
+      logger.info({ caller: "useStudentOperations" }, "🔍  setSearchFilter called with:", filterClause);
+      logger.info({ caller: "useStudentOperations" }, "🔍  current store.filters before:", store.filters);
+      logger.info(
+        { caller: "useStudentOperations" },
+        "🔍  current queryParams.filterArgs before:",
+        store.queryParams.filterArgs
+      );
 
       if (!filterClause) {
         // Only clear the search filter (name column), not all filters
-        logger.info("🔍 useStudentOperations: Clearing name filter only");
+        logger.info({ caller: "useStudentOperations" }, "🔍  Clearing name filter only");
         store.clearFilter("name");
-        logger.info("🔍 useStudentOperations: store.filters after clearFilter:", store.filters);
+        logger.info({ caller: "useStudentOperations" }, "🔍  store.filters after clearFilter:", store.filters);
 
         // Calculate the new filter state after clearing name filter
         const newFilters = { ...store.filters };
         delete newFilters["name"];
 
         // Sync filters to query parameters
-        logger.info("🔍 useStudentOperations: calling syncFiltersToQueryParams immediately");
+        logger.info({ caller: "useStudentOperations" }, "🔍  calling syncFiltersToQueryParams immediately");
         syncFiltersToQueryParams(newFilters);
       } else {
         // This replaces all other filters, which is the desired behavior for the search bar.
-        logger.info("🔍 useStudentOperations: Setting search filter:", filterClause);
+        logger.info({ caller: "useStudentOperations" }, "🔍  Setting search filter:", filterClause);
         store.setFilters({ [filterClause.columnId]: filterClause });
-        logger.info("🔍 useStudentOperations: store.filters after setFilters:", store.filters);
+        logger.info({ caller: "useStudentOperations" }, "🔍  store.filters after setFilters:", store.filters);
 
         // Calculate the new filter state after setting search filter
         const newFilters = { [filterClause.columnId]: filterClause };
 
         // Sync filters to query parameters
-        logger.info("🔍 useStudentOperations: calling syncFiltersToQueryParams immediately");
+        logger.info({ caller: "useStudentOperations" }, "🔍  calling syncFiltersToQueryParams immediately");
         syncFiltersToQueryParams(newFilters);
       }
     },
@@ -399,15 +418,19 @@ export const useStudentOperations = () => {
    */
   const setColumnFilter = useCallback(
     (filterClause: FilterClause | null, columnId: string) => {
-      logger.info("🔍 useStudentOperations: setColumnFilter called with:", {
+      logger.info({ caller: "useStudentOperations" }, "🔍  setColumnFilter called with:", {
         filterClause,
         columnId,
       });
-      logger.info("🔍 useStudentOperations: current store.filters before:", store.filters);
-      logger.info("🔍 useStudentOperations: current queryParams.filterArgs before:", store.queryParams.filterArgs);
+      logger.info({ caller: "useStudentOperations" }, "🔍  current store.filters before:", store.filters);
+      logger.info(
+        { caller: "useStudentOperations" },
+        "🔍  current queryParams.filterArgs before:",
+        store.queryParams.filterArgs
+      );
 
       store.setColumnFilter(filterClause, columnId);
-      logger.info("🔍 useStudentOperations: store.filters after setColumnFilter:", store.filters);
+      logger.info({ caller: "useStudentOperations" }, "🔍  store.filters after setColumnFilter:", store.filters);
 
       // Calculate the new filter state after the store update
       const newFilters = { ...store.filters };
@@ -418,7 +441,10 @@ export const useStudentOperations = () => {
       }
 
       // Sync filters to query parameters
-      logger.info("🔍 useStudentOperations: calling syncFiltersToQueryParams immediately for setColumnFilter");
+      logger.info(
+        { caller: "useStudentOperations" },
+        "🔍  calling syncFiltersToQueryParams immediately for setColumnFilter"
+      );
       syncFiltersToQueryParams(newFilters);
     },
     [store, syncFiltersToQueryParams]
@@ -429,19 +455,26 @@ export const useStudentOperations = () => {
    */
   const clearFilter = useCallback(
     (columnId: keyof GQL.Student) => {
-      logger.info("🔍 useStudentOperations: clearFilter called with columnId:", columnId);
-      logger.info("🔍 useStudentOperations: current store.filters before:", store.filters);
-      logger.info("🔍 useStudentOperations: current queryParams.filterArgs before:", store.queryParams.filterArgs);
+      logger.info({ caller: "useStudentOperations" }, "🔍  clearFilter called with columnId:", columnId);
+      logger.info({ caller: "useStudentOperations" }, "🔍  current store.filters before:", store.filters);
+      logger.info(
+        { caller: "useStudentOperations" },
+        "🔍  current queryParams.filterArgs before:",
+        store.queryParams.filterArgs
+      );
 
       store.clearFilter(columnId as string);
-      logger.info("🔍 useStudentOperations: store.filters after clearFilter:", store.filters);
+      logger.info({ caller: "useStudentOperations" }, "🔍  store.filters after clearFilter:", store.filters);
 
       // Calculate the new filter state after the store update
       const newFilters = { ...store.filters };
       delete newFilters[columnId as string];
 
       // Sync filters to query parameters
-      logger.info("🔍 useStudentOperations: calling syncFiltersToQueryParams immediately for clearFilter");
+      logger.info(
+        { caller: "useStudentOperations" },
+        "🔍  calling syncFiltersToQueryParams immediately for clearFilter"
+      );
       syncFiltersToQueryParams(newFilters);
     },
     [store, syncFiltersToQueryParams]

@@ -32,21 +32,21 @@ async function ensureFontInternal(family: string): Promise<void> {
     try {
       const fontItem = getFontByFamily(family as FontFamily);
       if (!fontItem) {
-        logger.warn("useOpentypeMetrics: Unknown font family, skipping", { family });
+        logger.warn({ caller: "useOpentypeMetrics" }, "Unknown font family, skipping", { family });
         return;
       }
       const fileUrl = fontItem.files.regular || Object.values(fontItem.files)[0];
       if (!fileUrl) {
-        logger.warn("useOpentypeMetrics: No file URL for family", { family });
+        logger.warn({ caller: "useOpentypeMetrics" }, "No file URL for family", { family });
         return;
       }
       const buffer = await fetchFontBuffer(fileUrl);
       const opentype = await loadOpentype();
       const font: OpentypeFont = opentype.parse(buffer);
       cache.set(family, font);
-      logger.debug("useOpentypeMetrics: Parsed font", { family });
+      logger.debug({ caller: "useOpentypeMetrics" }, "Parsed font", { family });
     } catch (error) {
-      logger.error("useOpentypeMetrics: Failed ensuring font", { family, error });
+      logger.error({ caller: "useOpentypeMetrics" }, "Failed ensuring font", { family, error });
     } finally {
       inflight.delete(family);
     }

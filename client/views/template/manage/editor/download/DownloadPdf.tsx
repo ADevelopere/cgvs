@@ -67,7 +67,7 @@ async function embedFontsForPdf(pdfDoc: PDFDocument, fontFamilies: FontFamily[])
     try {
       const fontItem = getFontByFamily(family);
       if (!fontItem) {
-        logger.warn(`Font family "${family}" not found, using fallback`);
+        logger.warn({ caller: "DownloadPdf" }, `Font family "${family}" not found, using fallback`);
         fontMap.set(family, fallbackFont);
         continue;
       }
@@ -75,7 +75,7 @@ async function embedFontsForPdf(pdfDoc: PDFDocument, fontFamilies: FontFamily[])
       // Get font URL (prioritize "regular" variant)
       const fontUrl = fontItem.files.regular || Object.values(fontItem.files)[0];
       if (!fontUrl) {
-        logger.warn(`No font file found for family "${family}", using fallback`);
+        logger.warn({ caller: "DownloadPdf" }, `No font file found for family "${family}", using fallback`);
         fontMap.set(family, fallbackFont);
         continue;
       }
@@ -85,7 +85,7 @@ async function embedFontsForPdf(pdfDoc: PDFDocument, fontFamilies: FontFamily[])
       const embeddedFont = await pdfDoc.embedFont(fontBytes);
       fontMap.set(family, embeddedFont);
     } catch (error) {
-      logger.error(`Error embedding font "${family}":`, error);
+      logger.error({ caller: "DownloadPdf" }, `Error embedding font "${family}":`, error);
       fontMap.set(family, fallbackFont);
     }
   }
@@ -168,19 +168,19 @@ export const DownloadPdf: React.FC = () => {
 
   const onClick = React.useCallback(async () => {
     if (!templateId) {
-      logger.error("Template ID not found");
+      logger.error({ caller: "DownloadPdf" }, "Template ID not found");
       return;
     }
 
     if (isGenerating || !isDataReady) return;
 
     if (configError) {
-      logger.error("DownloadPdf: config query error", { error: configError });
+      logger.error({ caller: "DownloadPdf" }, "DownloadPdf: config query error", { error: configError });
       return;
     }
 
     if (elementsError) {
-      logger.error("DownloadPdf: elements query error", {
+      logger.error({ caller: "DownloadPdf" }, "DownloadPdf: elements query error", {
         error: elementsError,
       });
       return;
@@ -190,14 +190,14 @@ export const DownloadPdf: React.FC = () => {
     const elements = elementsData?.elementsByTemplateId;
 
     if (!config || !elements) {
-      logger.error("DownloadPdf: Missing config or elements");
+      logger.error({ caller: "DownloadPdf" }, "DownloadPdf: Missing config or elements");
       return;
     }
 
     const password = "123";
     //  prompt("Enter a password to protect the PDF:");
     // if (!password) {
-    //   logger.info("PDF generation cancelled: No password provided.");
+    //   logger.info({caller: "DownloadPdf"}, "PDF generation cancelled: No password provided.");
     //   return;
     // }
 
@@ -289,9 +289,9 @@ export const DownloadPdf: React.FC = () => {
 
       await downloadPdf(pdfBytes, `certificate-${templateId}_protected.pdf`);
 
-      logger.info("PDF generated successfully");
+      logger.info({ caller: "DownloadPdf" }, "PDF generated successfully");
     } catch (error) {
-      logger.error("Error generating PDF:", error);
+      logger.error({ caller: "DownloadPdf" }, "Error generating PDF:", error);
     } finally {
       setIsGenerating(false);
     }

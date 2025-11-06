@@ -210,7 +210,7 @@ export const CreateTextElementWrapper: React.FC<CreateTextElementWrapperProps> =
 
   const handleSubmit = useCallback(async () => {
     if (hasError) {
-      logger.warn("Validation failed for text element creation");
+      logger.warn({ caller: "CreateTextElementWrapper" }, "Validation failed for text element creation");
       return;
     }
 
@@ -236,7 +236,7 @@ export const CreateTextElementWrapper: React.FC<CreateTextElementWrapperProps> =
 
       addTextNode(element);
 
-      logger.info("Text element created successfully");
+      logger.info({ caller: "CreateTextElementWrapper" }, "Text element created successfully");
 
       // Reset state
       setState(getInitialState());
@@ -251,7 +251,7 @@ export const CreateTextElementWrapper: React.FC<CreateTextElementWrapperProps> =
         onClose();
       }
     } catch (error) {
-      logger.error("Failed to create text element", error);
+      logger.error({ caller: "CreateTextElementWrapper" }, "Failed to create text element", error);
       // Error is automatically handled by Apollo Client
     } finally {
       setIsSubmitting(false);

@@ -76,7 +76,7 @@ export function useNumberPropsState(params: UseNumberPropsStateParams): UseNumbe
         });
       } catch (error) {
         const errorMessage = errorStrings?.updateFailed || "Failed to update number properties";
-        logger.error("useNumberPropsState: Mutation failed", {
+        logger.error({ caller: "useNumberPropsState" }, "Mutation failed", {
           elementId,
           error,
         });

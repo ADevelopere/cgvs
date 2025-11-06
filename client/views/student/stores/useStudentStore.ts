@@ -58,15 +58,15 @@ export const useStudentStore = create<StudentStoreState>()(
 
       setQueryParams: params =>
         set(state => {
-          logger.info("🔍 useStudentStore: setQueryParams called with:", params);
-          logger.info("🔍 useStudentStore: current queryParams before:", state.queryParams);
+          logger.info({ caller: "useStudentStore" }, "🔍 useStudentStore: setQueryParams called with:", params);
+          logger.info({ caller: "useStudentStore" }, "🔍 current queryParams before:", state.queryParams);
 
           const newQueryParams = {
             ...state.queryParams,
             ...params,
           };
 
-          logger.info("🔍 useStudentStore: new queryParams after setQueryParams:", newQueryParams);
+          logger.info({ caller: "useStudentStore" }, "🔍 new queryParams after setQueryParams:", newQueryParams);
           return { queryParams: newQueryParams };
         }),
 
@@ -94,36 +94,44 @@ export const useStudentStore = create<StudentStoreState>()(
 
       setColumnFilter: (clause, columnId) =>
         set(state => {
-          logger.info("🔍 useStudentStore: setColumnFilter called with:", {
+          logger.info({ caller: "useStudentStore" }, "🔍 setColumnFilter called with:", {
             clause,
             columnId,
           });
-          logger.info("🔍 useStudentStore: current filters before:", state.filters);
-          logger.info("🔍 useStudentStore: current queryParams.filterArgs before:", state.queryParams.filterArgs);
+          logger.info({ caller: "useStudentStore" }, "🔍 current filters before:", state.filters);
+          logger.info(
+            { caller: "useStudentStore" },
+            "🔍 current queryParams.filterArgs before:",
+            state.queryParams.filterArgs
+          );
 
           const newFilters = { ...state.filters };
           if (clause) {
             newFilters[columnId] = clause;
-            logger.info("🔍 useStudentStore: setting filter for column:", columnId);
+            logger.info({ caller: "useStudentStore" }, "🔍 setting filter for column:", columnId);
           } else {
             delete newFilters[columnId];
-            logger.info("🔍 useStudentStore: removing filter for column:", columnId);
+            logger.info({ caller: "useStudentStore" }, "🔍 removing filter for column:", columnId);
           }
 
-          logger.info("🔍 useStudentStore: new filters after setColumnFilter:", newFilters);
+          logger.info({ caller: "useStudentStore" }, "🔍 new filters after setColumnFilter:", newFilters);
           return { filters: newFilters };
         }),
 
       clearFilter: columnId =>
         set(state => {
-          logger.info("🔍 useStudentStore: clearFilter called with columnId:", columnId);
-          logger.info("🔍 useStudentStore: current filters before:", state.filters);
-          logger.info("🔍 useStudentStore: current queryParams.filterArgs before:", state.queryParams.filterArgs);
+          logger.info({ caller: "useStudentStore" }, "🔍 clearFilter called with columnId:", columnId);
+          logger.info({ caller: "useStudentStore" }, "🔍 current filters before:", state.filters);
+          logger.info(
+            { caller: "useStudentStore" },
+            "🔍 current queryParams.filterArgs before:",
+            state.queryParams.filterArgs
+          );
 
           const newFilters = { ...state.filters };
           delete newFilters[columnId];
 
-          logger.info("🔍 useStudentStore: new filters after clearFilter:", newFilters);
+          logger.info({ caller: "useStudentStore" }, "🔍 new filters after clearFilter:", newFilters);
           return { filters: newFilters };
         }),
 
@@ -136,7 +144,11 @@ export const useStudentStore = create<StudentStoreState>()(
       storage: createJSONStorage(() => sessionStorage),
       // Persist query parameters for restoration
       partialize: state => {
-        logger.info("💾 Persisting student store state:", JSON.stringify(state, null, 2));
+        logger.info(
+          { caller: "useStudentStore" },
+          "💾 Persisting student store state:",
+          JSON.stringify(state, null, 2)
+        );
         const persistedState = {
           queryParams: state.queryParams,
           filters: state.filters,
@@ -149,6 +161,7 @@ export const useStudentStore = create<StudentStoreState>()(
         const typedPersistedState = persistedState as Partial<State>;
 
         logger.info(
+          { caller: "useStudentStore" },
           "🔄 Merging student store state:",
           JSON.stringify(persistedState, null, 2),
           JSON.stringify(currentState, null, 2)
@@ -178,7 +191,7 @@ export const useStudentStore = create<StudentStoreState>()(
           selectedStudents: typedPersistedState?.selectedStudents || currentState.selectedStudents,
         };
 
-        logger.info("✅ Final merged state:", JSON.stringify(mergedState, null, 2));
+        logger.info({ caller: "useStudentStore" }, "✅ Final merged state:", JSON.stringify(mergedState, null, 2));
         return mergedState;
       },
     }

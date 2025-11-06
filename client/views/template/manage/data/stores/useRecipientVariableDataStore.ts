@@ -98,7 +98,11 @@ export const useRecipientVariableDataStore = create<RecipientVariableDataStoreSt
         set(state => {
           const groupId = group?.id || null;
           setPersistedGroupId(groupId);
-          logger.info("🔍 useRecipientVariableDataStore: setSelectedGroup called with:", group);
+          logger.info(
+            { caller: "useRecipientVariableDataStore" },
+            "🔍 useRecipientVariableDataStore: setSelectedGroup called with:",
+            group
+          );
           return {
             selectedGroup: group,
             selectedGroupId: groupId,
@@ -113,7 +117,7 @@ export const useRecipientVariableDataStore = create<RecipientVariableDataStoreSt
       setSelectedGroupId: groupId =>
         set(state => {
           setPersistedGroupId(groupId);
-          logger.info("🔍 useRecipientVariableDataStore: setSelectedGroupId called with:", groupId);
+          logger.info({ caller: "useRecipientVariableDataStore" }, "🔍 setSelectedGroupId called with:", groupId);
           return {
             selectedGroupId: groupId,
             queryParams: {
@@ -131,8 +135,8 @@ export const useRecipientVariableDataStore = create<RecipientVariableDataStoreSt
             ...params,
           };
           setPersistedQueryParams(newParams);
-          logger.info("🔍 useRecipientVariableDataStore: setQueryParams called with:", params);
-          logger.info("🔍 useRecipientVariableDataStore: new queryParams:", newParams);
+          logger.info({ caller: "useRecipientVariableDataStore" }, "🔍 setQueryParams called with:", params);
+          logger.info({ caller: "useRecipientVariableDataStore" }, "🔍 new queryParams:", newParams);
           return { queryParams: newParams };
         }),
 
@@ -144,14 +148,14 @@ export const useRecipientVariableDataStore = create<RecipientVariableDataStoreSt
             offset,
           };
           setPersistedQueryParams(newParams);
-          logger.info("🔍 useRecipientVariableDataStore: setPagination called with:", { limit, offset });
+          logger.info({ caller: "useRecipientVariableDataStore" }, "🔍 setPagination called with:", { limit, offset });
           return { queryParams: newParams };
         }),
 
       reset: () => {
         setPersistedGroupId(null);
         setPersistedQueryParams(initialState.queryParams);
-        logger.info("🔍 useRecipientVariableDataStore: reset called");
+        logger.info({ caller: "useRecipientVariableDataStore" }, "🔍 reset called");
         set(initialState);
       },
     }),
@@ -160,7 +164,11 @@ export const useRecipientVariableDataStore = create<RecipientVariableDataStoreSt
       storage: createJSONStorage(() => sessionStorage),
       // Persist query parameters and group selection for restoration
       partialize: state => {
-        logger.info("💾 Persisting recipient variable data store state:", JSON.stringify(state, null, 2));
+        logger.info(
+          { caller: "useRecipientVariableDataStore" },
+          "💾 Persisting recipient variable data store state:",
+          JSON.stringify(state, null, 2)
+        );
         return {
           selectedGroupId: state.selectedGroupId,
           queryParams: state.queryParams,
@@ -171,6 +179,7 @@ export const useRecipientVariableDataStore = create<RecipientVariableDataStoreSt
         const typedPersistedState = persistedState as Partial<RecipientVariableDataState>;
 
         logger.info(
+          { caller: "useRecipientVariableDataStore" },
           "🔄 Merging recipient variable data store state:",
           JSON.stringify(persistedState, null, 2),
           JSON.stringify(currentState, null, 2)
@@ -190,7 +199,11 @@ export const useRecipientVariableDataStore = create<RecipientVariableDataStoreSt
           queryParams: mergedQueryParams,
         };
 
-        logger.info("✅ Final merged state:", JSON.stringify(mergedState, null, 2));
+        logger.info(
+          { caller: "useRecipientVariableDataStore" },
+          "✅ Final merged state:",
+          JSON.stringify(mergedState, null, 2)
+        );
         return mergedState;
       },
     }

@@ -52,7 +52,7 @@ export const PdfmeEditorWrapper: React.FC = () => {
     }
 
     try {
-      logger.debug("PdfmeEditorWrapper: Creating Designer instance", {
+      logger.debug({ caller: "PdfmeEditorWrapper" }, { caller: "PdfmeEditorWrapper" }, " Creating Designer instance", {
         templateId,
       });
 
@@ -71,7 +71,7 @@ export const PdfmeEditorWrapper: React.FC = () => {
 
       // Register onChange callback for upstream sync (PDFMe → State)
       designerRef.current.onChangeTemplate((newTemplate: Template) => {
-        logger.debug("PdfmeEditorWrapper: Template changed in PDFMe", {
+        logger.debug({ caller: "PdfmeEditorWrapper" }, " Template changed in PDFMe", {
           schemaCount: newTemplate.schemas[0]?.length ?? 0,
         });
 
@@ -110,11 +110,11 @@ export const PdfmeEditorWrapper: React.FC = () => {
             }
           });
 
-          logger.debug("PdfmeEditorWrapper: Applied element updates", {
+          logger.debug({ caller: "PdfmeEditorWrapper" }, " Applied element updates", {
             updateCount: updates.size,
           });
         } catch (error) {
-          logger.error("PdfmeEditorWrapper: Error applying updates", {
+          logger.error({ caller: "PdfmeEditorWrapper" }, " Error applying updates", {
             error,
           });
         } finally {
@@ -125,11 +125,11 @@ export const PdfmeEditorWrapper: React.FC = () => {
         }
       });
 
-      logger.debug("PdfmeEditorWrapper: Designer instance created", {
+      logger.debug({ caller: "PdfmeEditorWrapper" }, " Designer instance created", {
         templateId,
       });
     } catch (error) {
-      logger.error("PdfmeEditorWrapper: Error creating Designer", {
+      logger.error({ caller: "PdfmeEditorWrapper" }, " Error creating Designer", {
         error,
       });
     }
@@ -137,7 +137,7 @@ export const PdfmeEditorWrapper: React.FC = () => {
     // Unmount: Destroy Designer instance
     return () => {
       if (designerRef.current) {
-        logger.debug("PdfmeEditorWrapper: Destroying Designer instance", {
+        logger.debug({ caller: "PdfmeEditorWrapper" }, " Destroying Designer instance", {
           templateId,
         });
         designerRef.current.destroy();
@@ -173,14 +173,14 @@ export const PdfmeEditorWrapper: React.FC = () => {
     }
 
     try {
-      logger.debug("PdfmeEditorWrapper: Updating Designer template", {
+      logger.debug({ caller: "PdfmeEditorWrapper" }, " Updating Designer template", {
         schemaCount: template.schemas[0]?.length ?? 0,
       });
 
       designerRef.current.updateTemplate(template);
       lastTemplateRef.current = template;
     } catch (error) {
-      logger.error("PdfmeEditorWrapper: Error updating Designer template", {
+      logger.error({ caller: "PdfmeEditorWrapper" }, " Error updating Designer template", {
         error,
       });
     }

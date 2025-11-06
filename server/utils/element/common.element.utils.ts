@@ -204,9 +204,5 @@ export namespace CommonElementUtils {
     // Position validation
     const posError = await ElementUtils.validatePosition(input.positionX, input.positionY);
     if (posError) throw new Error(posError);
-
-    // Render order validation
-    const orderError = await ElementUtils.validateZIndex(input.zIndex);
-    if (orderError) throw new Error(orderError);
   };
 }

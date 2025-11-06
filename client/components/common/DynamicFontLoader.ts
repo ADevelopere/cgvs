@@ -25,7 +25,7 @@ const useDynamicFontLoader = ({ fontItem }: { fontItem: GoogleFontItem | null | 
           families: [fontFamily],
         },
         active: () => {
-          logger.info(`Font ${fontItem.family} is active!`);
+          logger.info({ caller: "useDynamicFontLoader" }, `Font ${fontItem.family} is active!`);
           // You can set a state here to update your UI
         },
       });

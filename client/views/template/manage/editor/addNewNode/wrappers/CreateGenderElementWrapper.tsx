@@ -152,7 +152,7 @@ export const CreateGenderElementWrapper: React.FC<CreateGenderElementWrapperProp
 
   const handleSubmit = useCallback(async () => {
     if (hasError) {
-      logger.warn("Validation failed for gender element creation");
+      logger.warn({ caller: "CreateGenderElementWrapper" }, "Validation failed for gender element creation");
       return;
     }
 
@@ -165,7 +165,7 @@ export const CreateGenderElementWrapper: React.FC<CreateGenderElementWrapperProp
         },
       });
 
-      logger.info("Gender element created successfully");
+      logger.info({ caller: "CreateGenderElementWrapper" }, "Gender element created successfully");
 
       // Reset state
       setState(getInitialState());
@@ -179,7 +179,7 @@ export const CreateGenderElementWrapper: React.FC<CreateGenderElementWrapperProp
         onClose();
       }
     } catch (error) {
-      logger.error("Failed to create gender element", error);
+      logger.error({ caller: "CreateGenderElementWrapper" }, "Failed to create gender element", error);
       // Error is automatically handled by Apollo Client
     } finally {
       setIsSubmitting(false);

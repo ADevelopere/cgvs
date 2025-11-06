@@ -11,7 +11,6 @@ import { useTemplateOperations } from "../hooks";
 import { TemplateUtils } from "../utils";
 import { useTemplateUIStore } from "./useTemplateManagementStore";
 import FilePickerDialog from "../../storage/dialogs/FilePickerDialog";
-import logger from "@/client/lib/logger";
 
 type FormDataType = {
   name: string;
@@ -92,14 +91,6 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
 
   const handleFileSelect = React.useCallback(
     (file: FileInfo) => {
-      logger.info("File selected in BasicInfoTab", {
-        fileName: file.name,
-        filePath: file.path,
-        fileUrl: file.url,
-        fileSize: file.size,
-        templateId: template?.id,
-      });
-
       setFormData(prev => ({
         ...prev,
         imageUrl: file.url,
@@ -107,29 +98,17 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
       }));
       setImageLoadError(false);
       setFilePickerOpen(false);
-
-      logger.info("File picker dialog closed after file selection");
     },
     [template?.id]
   );
 
   const handleRemoveImage = React.useCallback((): void => {
-    logger.info("Remove image button clicked in BasicInfoTab", {
-      templateId: template?.id,
-      currentImageUrl: formData.imageUrl,
-      currentImagePath: formData.imagePath,
-    });
-
     setFormData(prev => ({
       ...prev,
       imageUrl: undefined,
       imagePath: undefined,
     }));
     setImageLoadError(false);
-
-    logger.info("Image removed from template", {
-      templateId: template?.id,
-    });
   }, [template?.id, formData.imageUrl, formData.imagePath]);
 
   const handleSave = React.useCallback(async () => {
@@ -275,13 +254,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
                   variant="contained"
                   startIcon={<ImageIcon />}
                   onClick={() => {
-                    logger.info("File picker button clicked in BasicInfoTab", {
-                      templateId: template?.id,
-                      currentImageUrl: formData.imageUrl,
-                      currentImagePath: formData.imagePath,
-                    });
                     setFilePickerOpen(true);
-                    logger.info("File picker dialog opened");
                   }}
                   color="primary"
                 >
@@ -342,9 +315,6 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
       <FilePickerDialog
         open={filePickerOpen}
         onClose={() => {
-          logger.info("File picker dialog closed without file selection", {
-            templateId: template?.id,
-          });
           setFilePickerOpen(false);
         }}
         onFileSelect={handleFileSelect}

@@ -137,7 +137,7 @@ export function useTextPropsState(params: UseTextPropsStateParams): UseTextProps
         });
       } catch (error) {
         const errorMessage = errorStrings?.updateFailed || "Failed to update text properties";
-        logger.error("useTextPropsState: Mutation failed", {
+        logger.error({ caller: "useTextPropsState" }, "Mutation failed", {
           elementId,
           error,
         });

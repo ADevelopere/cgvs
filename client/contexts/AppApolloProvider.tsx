@@ -175,7 +175,7 @@ export const AppApolloProvider: React.FC<{
       setIsChecking(false);
       initialCheckDoneRef.current = true;
       setInitialCheckDone(true);
-      logger.debug("[Connectivity] Initial check completed");
+      logger.debug({ caller: "AppApolloProvider" }, "[Connectivity] Initial check completed");
     }
   }, []); // No dependencies needed
 
@@ -313,13 +313,16 @@ export const AppApolloProvider: React.FC<{
       if (isNetworkError(error)) {
         const wasConnected = isConnectedRef.current;
 
-        logger.warn(`[Error Link] Network error detected. wasConnected=${wasConnected}`);
+        logger.warn(
+          { caller: "AppApolloProvider" },
+          `[Error Link] Network error detected. wasConnected=${wasConnected}`
+        );
 
         setIsConnected(false);
         isConnectedRef.current = false;
 
         if (wasConnected) {
-          logger.info("[Error Link] Connection lost (was previously connected)");
+          logger.info({ caller: "AppApolloProvider" }, "[Error Link] Connection lost (was previously connected)");
         }
 
         notifyIfDisconnected();
@@ -366,38 +369,47 @@ export const AppApolloProvider: React.FC<{
 
   // Automatic reconnection with progressive delays
   useEffect(() => {
-    logger.debug(`[Reconnect Effect] Running. isConnected=${isConnected}, initialCheckDone=${initialCheckDone}`);
+    logger.debug(
+      { caller: "AppApolloProvider" },
+      `[Reconnect Effect] Running. isConnected=${isConnected}, initialCheckDone=${initialCheckDone}`
+    );
 
     // Only attempt reconnection if we're disconnected and initial check is done
     if (isConnected || !initialCheckDone) {
       // Clear any pending reconnection timeout if we're connected
       if (reconnectTimeoutRef.current) {
-        logger.debug("[Reconnect Effect] Clearing timeout (connected or not initialized)");
+        logger.debug(
+          { caller: "AppApolloProvider" },
+          "[Reconnect Effect] Clearing timeout (connected or not initialized)"
+        );
         clearTimeout(reconnectTimeoutRef.current);
         reconnectTimeoutRef.current = null;
       }
       return;
     }
 
-    logger.info("[Reconnect Effect] Starting auto-reconnect sequence");
+    logger.info({ caller: "AppApolloProvider" }, "[Reconnect Effect] Starting auto-reconnect sequence");
 
     // Recursive function to schedule reconnection attempts
     const scheduleReconnect = () => {
       // Get the delay for the current attempt
       const delay = getReconnectionDelay(reconnectAttemptRef.current);
 
-      logger.debug(`[Reconnect] Scheduling attempt #${reconnectAttemptRef.current}, delay=${delay}ms`);
+      logger.debug(
+        { caller: "AppApolloProvider" },
+        `[Reconnect] Scheduling attempt #${reconnectAttemptRef.current}, delay=${delay}ms`
+      );
 
       if (delay === null) {
-        logger.warn("[Reconnect] Max reconnection attempts reached, stopping");
+        logger.warn({ caller: "AppApolloProvider" }, "[Reconnect] Max reconnection attempts reached, stopping");
         return;
       }
 
       // Schedule the reconnection attempt
       reconnectTimeoutRef.current = setTimeout(() => {
-        logger.info(`[Reconnect] Executing attempt #${reconnectAttemptRef.current}`);
+        logger.info({ caller: "AppApolloProvider" }, `[Reconnect] Executing attempt #${reconnectAttemptRef.current}`);
         checkConnectivity().then(connected => {
-          logger.debug(`[Reconnect] Attempt result: connected=${connected}`);
+          logger.debug({ caller: "AppApolloProvider" }, `[Reconnect] Attempt result: connected=${connected}`);
           if (!connected) {
             // Increment attempt counter for next retry
             reconnectAttemptRef.current += 1;
@@ -405,7 +417,7 @@ export const AppApolloProvider: React.FC<{
             scheduleReconnect();
           } else {
             // Reset attempt counter on successful reconnection
-            logger.info("[Reconnect] Successfully reconnected!");
+            logger.info({ caller: "AppApolloProvider" }, "[Reconnect] Successfully reconnected!");
             reconnectAttemptRef.current = 0;
           }
         });
@@ -416,7 +428,7 @@ export const AppApolloProvider: React.FC<{
 
     // Cleanup function
     return () => {
-      logger.debug("[Reconnect Effect] Cleanup running");
+      logger.debug({ caller: "AppApolloProvider" }, "[Reconnect Effect] Cleanup running");
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
         reconnectTimeoutRef.current = null;

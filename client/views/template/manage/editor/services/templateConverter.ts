@@ -38,7 +38,7 @@ export class TemplateConverter {
     textProps: UseTextPropsStateReturn,
     textDataSource: UseTextDataSourceStateReturn
   ): Template {
-    logger.debug("TemplateConverter: Converting to PDFMe template", {
+    logger.debug({ caller: "TemplateConverter" }, { caller: "TemplateConverter" }, " Converting to PDFMe template", {
       elementCount: elements.length,
       configWidth: config.width,
       configHeight: config.height,
@@ -50,7 +50,7 @@ export class TemplateConverter {
     for (const element of elements) {
       // Only process text elements for now
       if (element.base.type === GQL.ElementType.Text) {
-        logger.debug("TemplateConverter: Processing text element", { elementId: element.base.id });
+        logger.debug({ caller: "TemplateConverter" }, " Processing text element", { elementId: element.base.id });
         const schema = this.textElementToSchema(element.base.id, bases, textProps, textDataSource);
         if (schema) {
           schemas.push(schema);
@@ -75,7 +75,7 @@ export class TemplateConverter {
       schemas: [schemas],
     };
 
-    logger.debug("TemplateConverter: Template created", {
+    logger.debug({ caller: "TemplateConverter" }, " Template created", {
       schemaCount: schemas.length,
     });
 
@@ -97,7 +97,14 @@ export class TemplateConverter {
       const source =
         textDataSource.textDataSourceStates.get(elementId)?.dataSource ??
         textDataSource.initTextDataSourceState(elementId).dataSource;
-      logger.debug("TemplateConverter: Converting text element", elementId, base, textPropsState, source);
+      logger.debug(
+        { caller: "TemplateConverter" },
+        " Converting text element",
+        elementId,
+        base,
+        textPropsState,
+        source
+      );
       // Get text content from data source
       const content = this.getTextContent(source);
 
@@ -121,7 +128,7 @@ export class TemplateConverter {
         id: elementId,
         name: base.name,
         // Store render order for sorting
-        zIndex: base.zIndex,
+        zIndex: base.zIndex ?? undefined,
       };
 
       // Add font name if available
@@ -129,14 +136,14 @@ export class TemplateConverter {
         schema.fontName = this.convertFontRef(textPropsState.fontRef);
       }
 
-      logger.debug("TemplateConverter: Text schema created", {
+      logger.debug({ caller: "TemplateConverter" }, " Text schema created", {
         elementId: elementId,
         content: content.substring(0, 50),
       });
 
       return schema;
     } catch (error) {
-      logger.error("TemplateConverter: Failed to convert text element", elementId, error);
+      logger.error({ caller: "TemplateConverter" }, " Failed to convert text element", elementId, error);
       return null;
     }
   }
@@ -236,7 +243,7 @@ export class TemplateConverter {
   ): Map<number, ElementUpdate> {
     const updates = new Map<number, ElementUpdate>();
 
-    logger.debug("TemplateConverter: Extracting element updates", {
+    logger.debug({ caller: "TemplateConverter" }, " Extracting element updates", {
       schemaCount: newTemplate.schemas[0]?.length ?? 0,
       elementCount: currentElements.length,
     });
@@ -254,7 +261,7 @@ export class TemplateConverter {
       // Find corresponding element
       const element = currentElements.find(e => e.base.id === elementId);
       if (!element) {
-        logger.warn("TemplateConverter: Element not found for schema", {
+        logger.warn({ caller: "TemplateConverter" }, " Element not found for schema", {
           elementId,
         });
         continue;
@@ -284,7 +291,7 @@ export class TemplateConverter {
       // Only add to map if there are actual updates
       if (Object.keys(update).length > 0) {
         updates.set(elementId, update);
-        logger.debug("TemplateConverter: Element update detected", {
+        logger.debug({ caller: "TemplateConverter" }, " Element update detected", {
           elementId,
           updates: Object.keys(update),
         });

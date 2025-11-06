@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { logger } from "@/client/lib/logger";
+import { logger } from "@/client/lib/console";
 import { CertificateFieldSelector } from "./CertificateTextFieldSelector";
 import { CertificateTextField } from "@/client/graphql/generated/gql/graphql";
 

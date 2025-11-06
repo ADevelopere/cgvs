@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { logger } from "@/client/lib/logger";
+import { logger } from "@/client/lib/console";
 import { DateElementForm } from "./DateElementForm";
 import { mockSelfHostedFonts } from "../story.util";
 import type { DateElementFormErrors, DateElementFormState, UpdateDatePropsFn } from "./types";

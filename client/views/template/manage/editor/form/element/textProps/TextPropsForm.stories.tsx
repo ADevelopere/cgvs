@@ -2,7 +2,7 @@ import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { TextPropsForm } from "./TextPropsForm";
 import type { TextPropsFormErrors } from "./types";
 import { ElementOverflow, type TextPropsInput } from "@/client/graphql/generated/gql/graphql";
-import { logger } from "@/client/lib/logger";
+import { logger } from "@/client/lib/console";
 import { mockSelfHostedFonts } from "../story.util";
 
 const meta: Meta<typeof TextPropsForm> = {

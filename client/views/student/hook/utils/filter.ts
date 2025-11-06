@@ -188,18 +188,18 @@ export const mapTextFilter = (
 
   // If operation is not configured, return empty params
   if (!config) {
-    logger.warn(`Unsupported text filter operation: ${op}`);
+    logger.warn({ caller: "useStudentOperations" }, `Unsupported text filter operation: ${op}`);
     return filterArgs;
   }
 
   // Validate value type based on operation config
   const requiresBoolean = config.isBooleanOp ?? false;
   if (requiresBoolean && typeof value !== "boolean") {
-    logger.warn(`Operation ${op} requires a boolean value.`);
+    logger.warn({ caller: "useStudentOperations" }, `Operation ${op} requires a boolean value.`);
     return filterArgs;
   }
   if (!requiresBoolean && typeof value !== "string") {
-    logger.warn(`Operation ${op} requires a string value.`);
+    logger.warn({ caller: "useStudentOperations" }, `Operation ${op} requires a string value.`);
     return filterArgs;
   }
 
@@ -208,7 +208,7 @@ export const mapTextFilter = (
     if (op === TextFilterOperation.contains && typeof value === "string") {
       filterArgs.phoneNumber = value; // Raw value, server will add wildcards
     } else if (op !== TextFilterOperation.contains) {
-      logger.warn(`Operation ${op} might not be supported for phoneNumber.`);
+      logger.warn({ caller: "useStudentOperations" }, `Operation ${op} might not be supported for phoneNumber.`);
     }
     return filterArgs; // Return early for phoneNumber
   }
@@ -319,7 +319,7 @@ export const mapDateFilter = (
 
   const fieldName = operationFieldMap[columnId as string]?.[op];
   if (!fieldName) {
-    logger.warn(`Unsupported date filter operation: ${op} for column: ${columnId}`);
+    logger.warn({ caller: "useStudentOperations" }, `Unsupported date filter operation: ${op} for column: ${columnId}`);
     return filterArgs;
   }
 

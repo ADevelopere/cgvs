@@ -36,7 +36,7 @@ export const useFontOperations = (): FontOperations => {
    * Select a font
    */
   const selectFont = useCallback((font: Graphql.Font) => {
-    logger.info("Selecting font:", font.id);
+    logger.info({ caller: "useFontOperations" }, "Selecting font:", font.id);
     storeRef.current.setSelectedFont(font);
     storeRef.current.cancelCreating();
     storeRef.current.cancelEditing();
@@ -76,7 +76,7 @@ export const useFontOperations = (): FontOperations => {
   const createFont = useCallback(
     async (input: Graphql.FontCreateInput): Promise<boolean> => {
       try {
-        logger.info("Creating font:", input);
+        logger.info({ caller: "useFontOperations" }, "Creating font:", input);
 
         const result = await createFontMutation({
           variables: { input },
@@ -97,7 +97,7 @@ export const useFontOperations = (): FontOperations => {
 
         return false;
       } catch (error) {
-        logger.error("Error creating font:", error);
+        logger.error({ caller: "useFontOperations" }, "Error creating font:", error);
         notifications.show(error instanceof Error ? error.message : strings.errorCreatingFont, {
           severity: "error",
           autoHideDuration: 3000,
@@ -114,7 +114,7 @@ export const useFontOperations = (): FontOperations => {
   const updateFont = useCallback(
     async (input: Graphql.FontUpdateInput): Promise<boolean> => {
       try {
-        logger.info("Updating font:", input);
+        logger.info({ caller: "useFontOperations" }, "Updating font:", input);
 
         const result = await updateFontMutation({
           variables: { input },
@@ -132,7 +132,7 @@ export const useFontOperations = (): FontOperations => {
 
         return false;
       } catch (error) {
-        logger.error("Error updating font:", error);
+        logger.error({ caller: "useFontOperations" }, "Error updating font:", error);
         notifications.show(error instanceof Error ? error.message : strings.errorUpdatingFont, {
           severity: "error",
           autoHideDuration: 3000,
@@ -149,7 +149,7 @@ export const useFontOperations = (): FontOperations => {
   const deleteFont = useCallback(
     async (id: number): Promise<boolean> => {
       try {
-        logger.info("Deleting font:", id);
+        logger.info({ caller: "useFontOperations" }, "Deleting font:", id);
 
         const result = await deleteFontMutation({
           variables: { id },
@@ -171,7 +171,7 @@ export const useFontOperations = (): FontOperations => {
 
         return false;
       } catch (error) {
-        logger.error("Error deleting font:", error);
+        logger.error({ caller: "useFontOperations" }, "Error deleting font:", error);
         notifications.show(error instanceof Error ? error.message : strings.errorDeletingFont, {
           severity: "error",
           autoHideDuration: 3000,

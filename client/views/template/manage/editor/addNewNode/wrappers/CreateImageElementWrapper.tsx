@@ -165,7 +165,7 @@ export const CreateImageElementWrapper: React.FC<CreateImageElementWrapperProps>
 
   const handleSubmit = useCallback(async () => {
     if (hasError) {
-      logger.warn("Validation failed for image element creation");
+      logger.warn({ caller: "CreateImageElementWrapper" }, "Validation failed for image element creation");
       return;
     }
 
@@ -190,7 +190,7 @@ export const CreateImageElementWrapper: React.FC<CreateImageElementWrapperProps>
       }
       addImageNode(element);
 
-      logger.info("Image element created successfully");
+      logger.info({ caller: "CreateImageElementWrapper" }, "Image element created successfully");
 
       // Reset state
       setState(getInitialState());
@@ -205,7 +205,7 @@ export const CreateImageElementWrapper: React.FC<CreateImageElementWrapperProps>
         onClose();
       }
     } catch (error) {
-      logger.error("Failed to create image element", error);
+      logger.error({ caller: "CreateImageElementWrapper" }, "Failed to create image element", error);
       // Error is automatically handled by Apollo Client
     } finally {
       setIsSubmitting(false);

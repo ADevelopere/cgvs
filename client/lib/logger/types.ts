@@ -3,6 +3,13 @@ export interface LogEntry {
   level: string;
   message: string;
   timestamp: string;
+  caller: string;
+  sequence: number;
+}
+
+export interface ApiLogOptions {
+  caller: string;
+  level: LogLevel;
   sequence: number;
 }
 
@@ -12,4 +19,5 @@ export interface LoggerConfig {
   enabled: boolean;
   apiEndpoint: string;
   sessionId: string;
+  batchInterval: number; // milliseconds
 }

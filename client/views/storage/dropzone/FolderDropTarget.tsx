@@ -79,16 +79,13 @@ export const FolderDropTarget: React.FC<FolderDropTargetProps> = ({
           onUploadStart?.();
           onFilesDropped?.(files);
 
-          logger.info(`Uploading ${files.length} files to folder: ${folderPath}`);
-
           await startUpload(files, folderPath, {
             onComplete: () => {
               onUploadComplete?.();
-              logger.info("Folder upload completed successfully");
             },
           });
         } catch (error) {
-          logger.error("Folder upload failed:", error);
+          logger.error({ caller: "FolderDropTarget" }, "Folder upload failed:", error);
         }
       })();
     },

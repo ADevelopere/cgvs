@@ -76,7 +76,11 @@ export const useTemplateVariableOperations = () => {
             autoHideDuration: 3000,
           });
         } else {
-          logger.error(`Error creating ${type.toLowerCase()} variable:`, result.error);
+          logger.error(
+            { caller: "useTemplateVariableOperations" },
+            `Error creating ${type.toLowerCase()} variable:`,
+            result.error
+          );
           notifications.show(strings.variableAddFailed, {
             severity: "error",
             autoHideDuration: 3000,
@@ -89,7 +93,11 @@ export const useTemplateVariableOperations = () => {
         };
         const errorMessage = gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.variableAddFailed;
 
-        logger.error(`Error creating ${type.toLowerCase()} variable:`, error);
+        logger.error(
+          { caller: "useTemplateVariableOperations" },
+          `Error creating ${type.toLowerCase()} variable:`,
+          error
+        );
         setOperationError("create", errorMessage);
         notifications.show(errorMessage, {
           severity: "error",
@@ -146,7 +154,11 @@ export const useTemplateVariableOperations = () => {
             autoHideDuration: 3000,
           });
         } else {
-          logger.error(`Error updating ${type.toLowerCase()} variable:`, result.error);
+          logger.error(
+            { caller: "useTemplateVariableOperations" },
+            `Error updating ${type.toLowerCase()} variable:`,
+            result.error
+          );
           notifications.show(strings.variableUpdateFailed, {
             severity: "error",
             autoHideDuration: 3000,
@@ -159,7 +171,11 @@ export const useTemplateVariableOperations = () => {
         };
         const errorMessage = gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.variableUpdateFailed;
 
-        logger.error(`Error updating ${type.toLowerCase()} variable:`, error);
+        logger.error(
+          { caller: "useTemplateVariableOperations" },
+          `Error updating ${type.toLowerCase()} variable:`,
+          error
+        );
         setOperationError("update", errorMessage);
         notifications.show(errorMessage, {
           severity: "error",
@@ -186,7 +202,7 @@ export const useTemplateVariableOperations = () => {
             autoHideDuration: 3000,
           });
         } else {
-          logger.error("Error deleting variable:", result.error);
+          logger.error({ caller: "useTemplateVariableOperations" }, "Error deleting variable:", result.error);
           notifications.show(strings.variableDeleteFailed, {
             severity: "error",
             autoHideDuration: 3000,
@@ -199,7 +215,7 @@ export const useTemplateVariableOperations = () => {
         };
         const errorMessage = gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.variableDeleteFailed;
 
-        logger.error("Error deleting variable:", error);
+        logger.error({ caller: "useTemplateVariableOperations" }, "Error deleting variable:", error);
         setOperationError("delete", errorMessage);
         notifications.show(errorMessage, {
           severity: "error",

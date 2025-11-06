@@ -9,7 +9,6 @@ import DownloadImage from "./download/DownloadImage";
 import HelperLines from "./other/HelperLines";
 import { nodeTypes } from "./other/constants";
 import { useAppTheme } from "@/client/contexts";
-import { useFlowUpdater } from "./useNodeUpdater";
 import { FlowEditorProps } from "./types";
 import { useApplyNodeChange } from "./useApplyNodeChange";
 import { useNode } from "./NodesStateProvider";
@@ -20,7 +19,7 @@ const panOnDrag = [1, 2];
 
 const Flow: React.FC<FlowEditorProps> = ({ nodes, setNodes }) => {
   const { theme } = useAppTheme();
-  const { helperLineHorizontal, helperLineVertical } = useFlowUpdater();
+  const { helperLineHorizontal, helperLineVertical } = useNode();
   const { applyNodeChanges } = useApplyNodeChange();
 
   const onNodesChange: OnNodesChange = useCallback(
@@ -73,6 +72,7 @@ const Flow: React.FC<FlowEditorProps> = ({ nodes, setNodes }) => {
         colorMode={theme.palette.mode}
         //
         onNodesChange={onNodesChange}
+        elevateNodesOnSelect={false}
       >
         <Background
           color={theme.palette.text.disabled}
@@ -118,7 +118,7 @@ function FlowDebug() {
 }
 
 const CertificateReactFlowEditor: React.FC = () => {
-  const { nodesInitialized , setNodes, nodes} = useNode();
+  const { nodesInitialized, setNodes, nodes } = useNode();
 
   if (!nodesInitialized) {
     return <CircularProgress />;

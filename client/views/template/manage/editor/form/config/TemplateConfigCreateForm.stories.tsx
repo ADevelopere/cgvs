@@ -3,7 +3,7 @@ import { TemplateConfigCreateFormContent } from "./TemplateConfigCreateForm";
 import { mockTemplate } from "./templateConfigStoryMocks";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { TemplateConfigFormUpdateFn } from "./types";
-import logger from "@/client/lib/logger";
+import { logger } from "@/client/lib/console";
 
 const meta: Meta<typeof TemplateConfigCreateFormContent> = {
   title: "Template/Editor/Form/Config/TemplateConfigCreateForm",

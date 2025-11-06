@@ -229,7 +229,7 @@ export const CreateDateElementWrapper: React.FC<CreateDateElementWrapperProps> =
 
   const handleSubmit = useCallback(async () => {
     if (hasError) {
-      logger.warn("Validation failed for date element creation");
+      logger.warn({ caller: "CreateDateElementWrapper" }, "Validation failed for date element creation");
       return;
     }
 
@@ -242,7 +242,7 @@ export const CreateDateElementWrapper: React.FC<CreateDateElementWrapperProps> =
         },
       });
 
-      logger.info("Date element created successfully");
+      logger.info({ caller: "CreateDateElementWrapper" }, "Date element created successfully");
 
       // Reset state
       setState(getInitialState());
@@ -258,7 +258,7 @@ export const CreateDateElementWrapper: React.FC<CreateDateElementWrapperProps> =
         onClose();
       }
     } catch (error) {
-      logger.error("Failed to create date element", error);
+      logger.error({ caller: "CreateDateElementWrapper" }, "Failed to create date element", error);
       // Error is automatically handled by Apollo Client
     } finally {
       setIsSubmitting(false);

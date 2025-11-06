@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { logger } from "@/client/lib/logger";
+import { logger } from "@/client/lib/console";
 import { QrCodeElementForm } from "./QrCodeElementForm";
 import type { QrCodeElementFormErrors, QrCodeElementFormState, UpdateQRCodePropsFn } from "./types";
 import { UpdateBaseElementFn } from "../base";

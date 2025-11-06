@@ -168,10 +168,10 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
     });
 
     if (configError) {
-      logger.error("ClientCanvasGenerator: config query error", { error: configError });
+      logger.error({ caller: "ClientCanvasGenerator" }, "config query error", { error: configError });
     }
     if (elementsError) {
-      logger.error("ClientCanvasGenerator: elements query error", { error: elementsError });
+      logger.error({ caller: "ClientCanvasGenerator" }, "elements query error", { error: elementsError });
     }
 
     const config = configData?.templateConfigByTemplateId;

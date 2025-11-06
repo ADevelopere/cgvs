@@ -402,7 +402,7 @@ async function embedFontsForPdf(pdfDoc: PDFDocument, fontFamilies: FontFamily[])
     try {
       const fontItem = getFontByFamily(family);
       if (!fontItem) {
-        logger.warn(`Font family "${family}" not found, using fallback`);
+        logger.error({ caller: "DownloadPdfExperimental" }, `Font family "${family}" not found, using fallback`);
         fontMap.set(family, fallbackFont);
         continue;
       }
@@ -410,7 +410,10 @@ async function embedFontsForPdf(pdfDoc: PDFDocument, fontFamilies: FontFamily[])
       // Get font URL (prioritize "regular" variant)
       const fontUrl = fontItem.files.regular || Object.values(fontItem.files)[0];
       if (!fontUrl) {
-        logger.warn(`No font file found for family "${family}", using fallback`);
+        logger.error(
+          { caller: "DownloadPdfExperimental" },
+          `No font file found for family "${family}", using fallback`
+        );
         fontMap.set(family, fallbackFont);
         continue;
       }
@@ -420,7 +423,7 @@ async function embedFontsForPdf(pdfDoc: PDFDocument, fontFamilies: FontFamily[])
       const embeddedFont = await pdfDoc.embedFont(fontBytes);
       fontMap.set(family, embeddedFont);
     } catch (error) {
-      logger.error(`Error embedding font "${family}":`, error);
+      logger.error({ caller: "DownloadPdfExperimental" }, `Error embedding font "${family}":`, error);
       fontMap.set(family, fallbackFont);
     }
   }
@@ -511,19 +514,21 @@ export const DownloadPdfExperimental: React.FC = () => {
 
   const onClick = React.useCallback(async () => {
     if (!templateId) {
-      logger.error("Template ID not found");
+      logger.error({ caller: "DownloadPdfExperimental" }, "Template ID not found");
       return;
     }
 
     if (isGenerating || !isDataReady) return;
 
     if (configError) {
-      logger.error("DownloadPdfExperimental: config query error", { error: configError });
+      logger.error({ caller: "DownloadPdfExperimental" }, "DownloadPdfExperimental: config query error", {
+        error: configError,
+      });
       return;
     }
 
     if (elementsError) {
-      logger.error("DownloadPdfExperimental: elements query error", {
+      logger.error({ caller: "DownloadPdfExperimental" }, "DownloadPdfExperimental: elements query error", {
         error: elementsError,
       });
       return;
@@ -533,14 +538,14 @@ export const DownloadPdfExperimental: React.FC = () => {
     const elements = elementsData?.elementsByTemplateId;
 
     if (!config || !elements) {
-      logger.error("DownloadPdfExperimental: Missing config or elements");
+      logger.error({ caller: "DownloadPdfExperimental" }, "DownloadPdfExperimental: Missing config or elements");
       return;
     }
 
     const password = "123";
     // prompt("Enter a password to protect the PDF:");
     // if (!password) {
-    //   logger.info("PDF generation cancelled: No password provided.");
+    //   logger.error({caller: "DownloadPdfExperimental"}, "PDF generation cancelled: No password provided.");
     //   return;
     // }
 
@@ -597,9 +602,9 @@ export const DownloadPdfExperimental: React.FC = () => {
 
       await downloadPdf(pdfBytes, `certificate-${templateId}_experimental.pdf`);
 
-      logger.info("PDF generated successfully (experimental)");
+      logger.error({ caller: "DownloadPdfExperimental" }, "PDF generated successfully (experimental)");
     } catch (error) {
-      logger.error("Error generating PDF (experimental):", error);
+      logger.error({ caller: "DownloadPdfExperimental" }, "Error generating PDF (experimental):", error);
     } finally {
       setIsGenerating(false);
     }

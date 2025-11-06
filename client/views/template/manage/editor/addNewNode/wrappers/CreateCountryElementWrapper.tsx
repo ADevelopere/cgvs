@@ -195,7 +195,7 @@ export const CreateCountryElementWrapper: React.FC<CreateCountryElementWrapperPr
 
   const handleSubmit = useCallback(async () => {
     if (hasError) {
-      logger.warn("Validation failed for country element creation");
+      logger.warn({ caller: "CreateCountryElementWrapper" }, "Validation failed for country element creation");
       return;
     }
 
@@ -208,7 +208,7 @@ export const CreateCountryElementWrapper: React.FC<CreateCountryElementWrapperPr
         },
       });
 
-      logger.info("Country element created successfully");
+      logger.info({ caller: "CreateCountryElementWrapper" }, "Country element created successfully");
 
       // Reset state
       setState(getInitialState());
@@ -223,7 +223,7 @@ export const CreateCountryElementWrapper: React.FC<CreateCountryElementWrapperPr
         onClose();
       }
     } catch (error) {
-      logger.error("Failed to create country element", error);
+      logger.error({ caller: "CreateCountryElementWrapper" }, "Failed to create country element", error);
       // Error is automatically handled by Apollo Client
     } finally {
       setIsSubmitting(false);

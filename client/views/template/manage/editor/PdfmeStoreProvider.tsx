@@ -103,12 +103,12 @@ export const PdfmeStoreProvider: React.FC<{
       setInitialized(true);
       lastElementsRef.current = elementsJson;
 
-      logger.debug("PdfmeStoreProvider: Template updated", {
+      logger.debug({ caller: "PdfmeStoreProvider" }, "Template updated", {
         templateId,
         schemaCount: newTemplate.schemas[0]?.length ?? 0,
       });
     } catch (err) {
-      logger.error("PdfmeStoreProvider: Error creating template", {
+      logger.error({ caller: "PdfmeStoreProvider" }, "Error creating template", {
         error: err,
       });
       setError(err instanceof Error ? err : new Error(String(err)));

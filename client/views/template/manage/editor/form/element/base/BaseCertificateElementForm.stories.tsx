@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { BaseCertificateElementForm } from "./BaseCertificateElementForm";
-import { logger } from "@/client/lib/logger";
+import { logger } from "@/client/lib/console";
 import { CertificateElementBaseInput, ElementAlignment } from "@/client/graphql/generated/gql/graphql";
 import { BaseElementFormErrors } from "./types";
 

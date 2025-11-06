@@ -72,6 +72,12 @@ export interface UseNodesStoreReturn {
   isNodeHidden: (elementId: number) => boolean;
 
   nodesInitialized: boolean;
+
+  // Helper line state
+  helperLineHorizontal: number | undefined;
+  helperLineVertical: number | undefined;
+  setHelperLineHorizontal: (value: number | undefined) => void;
+  setHelperLineVertical: (value: number | undefined) => void;
 }
 
 /**
@@ -140,6 +146,7 @@ function createContainerNode(config: { width: number; height: number }): Node<Co
     position: { x: 0, y: 0 },
     draggable: false,
     selectable: false,
+    zIndex: -1,
   };
 }
 
@@ -150,7 +157,7 @@ function initializeNodesFromData(
   elements: GQL.CertificateElementUnion[],
   containerConfig: { width: number; height: number }
 ): Node[] {
-  logger.debug("NodesStoreProvider: Initializing nodes", {
+  logger.debug({ caller: "NodesProvider" }, "Initializing nodes", {
     elementCount: elements.length,
   });
 
@@ -190,6 +197,9 @@ export const NodesProvider: React.FC<{
   const [hiddenNodes, setHiddenNodes] = React.useState<Map<string, Node>>(new Map());
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<Error | null>(null);
+  // Helper line state (kept local as it's UI-only)
+  const [helperLineHorizontal, setHelperLineHorizontal] = React.useState<number | undefined>(undefined);
+  const [helperLineVertical, setHelperLineVertical] = React.useState<number | undefined>(undefined);
 
   // Setup lazy queries
   const [fetchElements, { error: elementsError }] = useLazyQuery(elementsByTemplateIdQueryDocument, {
@@ -214,7 +224,7 @@ export const NodesProvider: React.FC<{
         setLoading(true);
         setError(null);
 
-        logger.debug("NodesStoreProvider: Fetching data for template", {
+        logger.debug({ caller: "NodesProvider" }, "Fetching data for template", {
           templateId,
         });
 
@@ -237,7 +247,7 @@ export const NodesProvider: React.FC<{
         const config = configResult.data?.templateConfigByTemplateId;
 
         if (!elements || !config) {
-          logger.warn("NodesStoreProvider: Missing data", {
+          logger.warn({ caller: "NodesProvider" }, "Missing data", {
             hasElements: !!elements,
             hasConfig: !!config,
           });
@@ -254,13 +264,13 @@ export const NodesProvider: React.FC<{
         setNodesState(initializedNodes);
         setLoading(false);
 
-        logger.debug("NodesStoreProvider: Nodes initialized successfully", {
+        logger.debug({ caller: "NodesProvider" }, "Nodes initialized successfully", {
           templateId,
           nodeCount: initializedNodes.length,
         });
       } catch (err) {
         if (!isAbortError(err)) {
-          logger.error("NodesStoreProvider: Error initializing nodes", {
+          logger.error({ caller: "NodesProvider" }, "Error initializing nodes", {
             error: err,
           });
           setError(err instanceof Error ? err : new Error(String(err)));
@@ -461,7 +471,7 @@ export const NodesProvider: React.FC<{
     setNodesState(prev => {
       const nodeToHide = prev.find(n => n.id === nodeId);
       if (!nodeToHide) {
-        logger.warn("NodesStoreProvider: Cannot hide node - not found", { elementId });
+        logger.warn({ caller: "NodesProvider" }, "Cannot hide node - not found", { elementId });
         return prev;
       }
 
@@ -480,7 +490,7 @@ export const NodesProvider: React.FC<{
     setHiddenNodes(prev => {
       const nodeToShow = prev.get(nodeId);
       if (!nodeToShow) {
-        logger.warn("NodesStoreProvider: Cannot show node - not in hidden nodes", { elementId });
+        logger.warn({ caller: "NodesProvider" }, "Cannot show node - not in hidden nodes", { elementId });
         return prev;
       }
 
@@ -541,6 +551,12 @@ export const NodesProvider: React.FC<{
       toggleNodeVisibility,
       isNodeHidden,
       nodesInitialized: initialized,
+
+      // Helper line state
+      helperLineHorizontal,
+      helperLineVertical,
+      setHelperLineHorizontal,
+      setHelperLineVertical,
     }),
     [
       nodes,
@@ -564,6 +580,12 @@ export const NodesProvider: React.FC<{
       toggleNodeVisibility,
       isNodeHidden,
       initialized,
+
+      // Helper line state
+      helperLineHorizontal,
+      helperLineVertical,
+      setHelperLineHorizontal,
+      setHelperLineVertical,
     ]
   );
 

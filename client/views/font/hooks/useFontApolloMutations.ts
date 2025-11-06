@@ -19,7 +19,7 @@ export const useFontApolloMutations = () => {
    * Evict fonts cache to force refetch
    */
   const evictFontsCache = () => {
-    logger.info("Evicting fonts cache");
+    logger.info({ caller: "useFontApolloMutations" }, "Evicting fonts cache");
 
     // Evict fonts query
     client.cache.evict({
@@ -44,13 +44,13 @@ export const useFontApolloMutations = () => {
     update(cache, { data }) {
       if (!data?.createFont) return;
 
-      logger.info("Font created, updating cache:", data.createFont);
+      logger.info({ caller: "useFontApolloMutations" }, "Font created, updating cache:", data.createFont);
 
       // Evict cache to force refetch
       evictFontsCache();
     },
     onError(error) {
-      logger.error("Create font mutation error:", error);
+      logger.error({ caller: "useFontApolloMutations" }, "Create font mutation error:", error);
     },
   });
 
@@ -59,7 +59,7 @@ export const useFontApolloMutations = () => {
    */
   const [updateMutation] = useMutation(Document.updateFontMutationDocument, {
     optimisticResponse: vars => {
-      logger.info("Optimistic update for font:", vars.input.id);
+      logger.info({ caller: "useFontApolloMutations" }, "Optimistic update for font:", vars.input.id);
 
       try {
         // Read existing font from cache
@@ -94,7 +94,7 @@ export const useFontApolloMutations = () => {
           },
         };
       } catch (error) {
-        logger.error("Error creating optimistic response:", error);
+        logger.error({ caller: "useFontApolloMutations" }, "Error creating optimistic response:", error);
         // Return partial data if cache read fails
         return {
           __typename: "Mutation" as const,
@@ -113,13 +113,13 @@ export const useFontApolloMutations = () => {
     update(cache, { data }) {
       if (!data?.updateFont) return;
 
-      logger.info("Font updated, evicting cache:", data.updateFont);
+      logger.info({ caller: "useFontApolloMutations" }, "Font updated, evicting cache:", data.updateFont);
 
       // Evict fonts list to refetch with updated data
       evictFontsCache();
     },
     onError(error) {
-      logger.error("Update font mutation error:", error);
+      logger.error({ caller: "useFontApolloMutations" }, "Update font mutation error:", error);
     },
   });
 
@@ -130,7 +130,7 @@ export const useFontApolloMutations = () => {
     update(cache, { data }) {
       if (!data?.deleteFont) return;
 
-      logger.info("Font deleted, updating cache:", data.deleteFont);
+      logger.info({ caller: "useFontApolloMutations" }, "Font deleted, updating cache:", data.deleteFont);
 
       // Remove from cache
       cache.evict({
@@ -149,7 +149,7 @@ export const useFontApolloMutations = () => {
       }
     },
     onError(error) {
-      logger.error("Delete font mutation error:", error);
+      logger.error({ caller: "useFontApolloMutations" }, "Delete font mutation error:", error);
     },
   });
 

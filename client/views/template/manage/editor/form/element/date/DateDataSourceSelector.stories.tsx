@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { logger } from "@/client/lib/logger";
+import { logger } from "@/client/lib/console";
 import { DateDataSourceSelector } from "./DateDataSourceSelector";
 import { DateDataSourceType } from "@/client/graphql/generated/gql/graphql";
 

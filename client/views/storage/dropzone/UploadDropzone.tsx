@@ -121,16 +121,13 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
           onUploadStart?.();
           onFilesSelected?.(files);
 
-          logger.info(`Starting upload of ${files.length} files to ${uploadPath}`);
-
           await startUpload(files, uploadPath, {
             onComplete: () => {
               onUploadComplete?.();
-              logger.info("Upload completed successfully");
             },
           });
         } catch (error) {
-          logger.error("Upload failed:", error);
+          logger.error({ caller: "UploadDropzone" }, "Upload failed:", error);
         }
       })();
     },
@@ -188,7 +185,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
             default:
               message = `${file.name}: ${error.message}`;
           }
-          logger.warn("File validation error:", message);
+          logger.warn({ caller: "UploadDropzone" }, "File validation error:", message);
         });
       });
     }

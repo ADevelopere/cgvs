@@ -9,6 +9,8 @@ import {
 import { useFlowUpdater } from "./useNodeUpdater";
 import { useEditorStore } from "./useEditorStore";
 import { getHelperLines } from "./other/utils";
+import { useCertificateElementStates } from "./CertificateElementContext";
+import { useNode } from "./NodesStateProvider";
 
 type HelperLinesResult = {
   horizontal: number | undefined;
@@ -21,16 +23,15 @@ type HelperLinesResult = {
  * Handles position changes, dimension changes, selection changes, and boundary constraints
  */
 export const useApplyNodeChange = () => {
-  const {
-    updateElementPosition,
-    updateElementSize,
-    config: { width: containerWidth, height: containerHeight },
-    setHelperLineHorizontal,
-    setHelperLineVertical,
-    setIsDragging,
-    setIsResizing,
-  } = useFlowUpdater();
+  const { updateElementPosition, updateElementSize } = useFlowUpdater();
   const { setCurrentElementId } = useEditorStore();
+  const { setHelperLineHorizontal, setHelperLineVertical } = useNode();
+
+  const {
+    config: {
+      state: { width: containerWidth, height: containerHeight },
+    },
+  } = useCertificateElementStates();
 
   // Use refs to batch state updates and avoid re-renders during drag
   const helperLinesRef = useRef<{
@@ -131,7 +132,6 @@ export const useApplyNodeChange = () => {
         if (constrainedChange.type === "position" && constrainedChange.dragging && constrainedChange.position) {
           const x = constrainedChange.position.x;
           const y = constrainedChange.position.y;
-          setIsDragging(true);
           // Update with isDragging=true for visual feedback
           updateElementPosition(elementId, x, y, true);
         }
@@ -144,10 +144,6 @@ export const useApplyNodeChange = () => {
           queueMicrotask(() => {
             // Update with isDragging=false to add to history
             updateElementPosition(elementId, x, y, false);
-            // Clear dragging flag after position is updated
-            setTimeout(() => {
-              setIsDragging(false);
-            }, 30);
           });
         }
 
@@ -156,7 +152,7 @@ export const useApplyNodeChange = () => {
         return change;
       }
     },
-    [applyBoundaryConstraints, updateElementPosition, setIsDragging]
+    [applyBoundaryConstraints, updateElementPosition]
   );
 
   /**
@@ -175,7 +171,6 @@ export const useApplyNodeChange = () => {
         if (change.type === "dimensions" && change.resizing && change.dimensions) {
           const width = change.dimensions.width;
           const height = change.dimensions.height;
-          setIsResizing(true);
           // Update with isResizing=true for visual feedback
           updateElementSize(elementId, width, height, true);
         }
@@ -188,10 +183,6 @@ export const useApplyNodeChange = () => {
           queueMicrotask(() => {
             // Update with isResizing=false to add to history
             updateElementSize(elementId, width, height, false);
-            // Clear resizing flag after size is updated
-            setTimeout(() => {
-              setIsResizing(false);
-            }, 30);
           });
         }
       } catch {
@@ -201,7 +192,7 @@ export const useApplyNodeChange = () => {
 
       return change;
     },
-    [updateElementSize, setIsResizing]
+    [updateElementSize]
   );
 
   /**

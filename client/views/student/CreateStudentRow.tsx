@@ -166,7 +166,7 @@ const CreateStudentRow = () => {
 
   const handleNameChange = useCallback(
     (value: string | undefined, errorMessage: string | null) => {
-      logger.info("🔍 CreateStudentRow: handleNameChange called", {
+      logger.info({ caller: "CreateStudentRow" }, { caller: "CreateStudentRow" }, "🔍  handleNameChange called", {
         value,
         errorMessage,
       });
@@ -180,7 +180,7 @@ const CreateStudentRow = () => {
 
       debounceTimer.current = setTimeout(() => {
         if (value === lastFilteredValue.current) {
-          logger.info("🔍 CreateStudentRow: debounce skipped - same value", {
+          logger.info({ caller: "CreateStudentRow" }, "🔍  debounce skipped - same value", {
             value,
           });
           return;
@@ -188,10 +188,10 @@ const CreateStudentRow = () => {
         lastFilteredValue.current = value;
 
         if (!value || value.trim() === "") {
-          logger.info("🔍 CreateStudentRow: debounce - clearing name filter");
+          logger.info({ caller: "CreateStudentRow" }, "🔍  debounce - clearing name filter");
           setSearchFilter(null);
         } else {
-          logger.info("🔍 CreateStudentRow: debounce - setting name filter", {
+          logger.info({ caller: "CreateStudentRow" }, "🔍  debounce - setting name filter", {
             value,
           });
           setSearchFilter({
@@ -247,15 +247,15 @@ const CreateStudentRow = () => {
   const handleCreate = useCallback(async () => {
     if (!isFormValid) return;
 
-    logger.info("🔍 CreateStudentRow: handleCreate called - clearing filters before mutation");
+    logger.info({ caller: "CreateStudentRow" }, "🔍  handleCreate called - clearing filters before mutation");
 
     // Clear debounce timer BEFORE mutation to prevent race condition
     if (debounceTimer.current) {
-      logger.info("🔍 CreateStudentRow: clearing debounce timer");
+      logger.info({ caller: "CreateStudentRow" }, "🔍  clearing debounce timer");
       clearTimeout(debounceTimer.current);
     }
     lastFilteredValue.current = undefined;
-    logger.info("🔍 CreateStudentRow: calling setSearchFilter(null)");
+    logger.info({ caller: "CreateStudentRow" }, "🔍  calling setSearchFilter(null)");
     setSearchFilter(null);
 
     setIsLoading(true);
@@ -263,19 +263,19 @@ const CreateStudentRow = () => {
     setErrorMessage("");
 
     try {
-      logger.info("🔍 CreateStudentRow: calling createStudent mutation");
+      logger.info({ caller: "CreateStudentRow" }, "🔍  calling createStudent mutation");
       await createStudent({
         input: newStudent,
       });
 
-      logger.info("🔍 CreateStudentRow: createStudent mutation successful");
+      logger.info({ caller: "CreateStudentRow" }, "🔍  createStudent mutation successful");
       // Reset form on success
       setNewStudent(initialStudentState);
       setFieldValidity({});
       setIsDirty(false);
       setShowSuccess(true);
     } catch (error) {
-      logger.error("🔍 CreateStudentRow: createStudent mutation failed", error);
+      logger.error({ caller: "CreateStudentRow" }, "🔍  createStudent mutation failed", error);
       setErrorMessage(error instanceof Error ? error.message : "حدث خطأ أثناء إنشاء الطالب");
       setShowError(true);
     } finally {

@@ -72,13 +72,13 @@ export const useFontStore = create<FontStoreState>()(
 
       // Selection actions
       setSelectedFont: font => {
-        logger.info("Setting selected font:", font?.id);
+        logger.info({ caller: "useFontStore" }, "Setting selected font:", font?.id);
         set({ selectedFont: font });
       },
 
       // UI actions
       startCreating: () => {
-        logger.info("Starting font creation");
+        logger.info({ caller: "useFontStore" }, "Starting font creation");
         set({
           isCreating: true,
           isEditing: false,
@@ -87,23 +87,23 @@ export const useFontStore = create<FontStoreState>()(
       },
 
       cancelCreating: () => {
-        logger.info("Canceling font creation");
+        logger.info({ caller: "useFontStore" }, "Canceling font creation");
         set({ isCreating: false });
       },
 
       startEditing: () => {
-        logger.info("Starting font editing");
+        logger.info({ caller: "useFontStore" }, "Starting font editing");
         set({ isEditing: true });
       },
 
       cancelEditing: () => {
-        logger.info("Canceling font editing");
+        logger.info({ caller: "useFontStore" }, "Canceling font editing");
         set({ isEditing: false });
       },
 
       // Utility
       reset: () => {
-        logger.info("Resetting font store");
+        logger.info({ caller: "useFontStore" }, "Resetting font store");
         set(initialState);
       },
     }),

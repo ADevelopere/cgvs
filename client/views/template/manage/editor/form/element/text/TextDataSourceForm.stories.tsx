@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { logger } from "@/client/lib/logger";
+import { logger } from "@/client/lib/console";
 import { DataSourceForm } from "./TextDataSourceForm";
 import { mockTextVariables, mockSelectVariables } from "../story.util";
 import { CertificateTextField, StudentTextField } from "@/client/graphql/generated/gql/graphql";

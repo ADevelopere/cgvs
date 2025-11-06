@@ -58,7 +58,7 @@ export const FontPreview: React.FC<FontPreviewProps> = ({ fontName, fontUrl }) =
 
         setFontFaceLoaded(true);
       } catch (err) {
-        logger.error("[FontPreview] Error loading font:", err);
+        logger.error({ caller: "FontPreview" }, "Error loading font:", err);
         setError(strings.failedToLoadPreview);
       } finally {
         setLoading(false);

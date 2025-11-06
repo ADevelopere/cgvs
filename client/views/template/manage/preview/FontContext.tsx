@@ -33,16 +33,16 @@ export const FontProvider: React.FC<FontProviderProps> = ({ families, children }
       WebFont.load({
         google: { families },
         active: () => {
-          logger.debug("FontProvider: Fonts active", { families });
+          logger.debug({ caller: "FontProvider" }, "Fonts active", { families });
           setFontsLoaded(true);
         },
         inactive: () => {
-          logger.warn("FontProvider: Fonts inactive", { families });
+          logger.warn({ caller: "FontProvider" }, "Fonts inactive", { families });
           setFontsLoaded(true); // allow rendering to proceed with fallbacks
         },
       });
     } catch (e) {
-      logger.error("FontProvider: Failed to load fonts", { error: e });
+      logger.error({ caller: "FontProvider" }, "Failed to load fonts", { error: e });
       setFontsLoaded(true);
     }
   }, [families]);

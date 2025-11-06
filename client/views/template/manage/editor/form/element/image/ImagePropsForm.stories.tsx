@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { logger } from "@/client/lib/logger";
+import { logger } from "@/client/lib/console";
 import { ImagePropsForm } from "./ImagePropsForm";
 import { ElementImageFit } from "@/client/graphql/generated/gql/graphql";
 

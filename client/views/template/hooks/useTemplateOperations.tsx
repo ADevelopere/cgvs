@@ -34,7 +34,7 @@ export const useTemplateOperations = () => {
           // Directly update the store
           return result.data.updateTemplate;
         } else {
-          logger.error("Error updating template:", result.error);
+          logger.error({ caller: "useTemplateOperations" }, "Error updating template:", result.error);
           notifications.show(strings.templateUpdateFailed, {
             severity: "error",
           });
@@ -46,7 +46,7 @@ export const useTemplateOperations = () => {
         };
         const errorMessage = gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.templateUpdateFailed;
 
-        logger.error("Error updating template:", error);
+        logger.error({ caller: "useTemplateOperations" }, "Error updating template:", error);
         notifications.show(errorMessage, { severity: "error" });
       }
     },

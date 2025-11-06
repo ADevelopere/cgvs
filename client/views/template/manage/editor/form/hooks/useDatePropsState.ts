@@ -78,7 +78,7 @@ export function useDatePropsState(params: UseDatePropsStateParams): UseDateProps
         });
       } catch (error) {
         const errorMessage = errorStrings?.updateFailed || "Failed to update date properties";
-        logger.error("useDatePropsState: Mutation failed", {
+        logger.error({ caller: "useDatePropsState" }, "Mutation failed", {
           elementId,
           error,
         });

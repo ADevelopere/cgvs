@@ -1,9 +1,15 @@
-import { LogEntry, LogLevel, LoggerConfig } from "./types";
+import { LogEntry, LogLevel, LoggerConfig, ApiLogOptions } from "./types";
+
+type LogOptions = {
+  caller: string;
+};
 
 class ClientLogger {
   private readonly config: LoggerConfig;
   private readonly sessionId: string;
   private sequenceNumber: number;
+  private logQueue: LogEntry[];
+  private batchTimer: NodeJS.Timeout | null;
 
   constructor() {
     // Only enable in development
@@ -11,10 +17,13 @@ class ClientLogger {
 
     this.sessionId = this.generateSessionId();
     this.sequenceNumber = 0;
+    this.logQueue = [];
+    this.batchTimer = null;
     this.config = {
       enabled,
       apiEndpoint: "/api/logs",
       sessionId: this.sessionId,
+      batchInterval: 300, // 300ms
     };
   }
 
@@ -69,41 +78,65 @@ class ClientLogger {
       .join(" ");
   }
 
-  private async sendToAPI(level: LogLevel, ...args: unknown[]): Promise<void> {
+  private queueLogEntry(options: ApiLogOptions, ...args: unknown[]): void {
     if (!this.config.enabled) return;
 
-    try {
-      const message = this.serializeForAPI(...args);
-      const logEntry: LogEntry = {
-        sessionId: this.sessionId,
-        level,
-        message,
-        timestamp: this.formatTimestamp(),
-        sequence: ++this.sequenceNumber,
-      };
+    const message = this.serializeForAPI(...args);
+    const logEntry: LogEntry = {
+      sessionId: this.sessionId,
+      level: options.level,
+      message,
+      timestamp: this.formatTimestamp(),
+      caller: options.caller,
+      sequence: options.sequence,
+    };
 
+    this.logQueue.push(logEntry);
+    this.scheduleBatchSend();
+  }
+
+  private scheduleBatchSend(): void {
+    if (this.batchTimer !== null) return;
+
+    this.batchTimer = setTimeout(() => {
+      this.flushLogs();
+    }, this.config.batchInterval);
+  }
+
+  private async flushLogs(): Promise<void> {
+    if (this.logQueue.length === 0) return;
+
+    const logsToSend = [...this.logQueue];
+    this.logQueue = [];
+    this.batchTimer = null;
+
+    try {
       await fetch(this.config.apiEndpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(logEntry),
+        body: JSON.stringify({ logs: logsToSend }),
       });
     } catch {
       // Silently fail - don't log errors to avoid infinite loops
     }
   }
 
-  private logToConsole(level: LogLevel, ...args: unknown[]): void {
+  private logToConsole(options: ApiLogOptions, ...args: unknown[]): void {
     if (!this.config.enabled) return;
 
     const timestamp = this.formatTimestamp();
-    const color = this.getColorCode(level);
+    const color = this.getColorCode(options.level);
 
     // Console output with colors - let browser handle formatting naturally
-    const consoleArgs = [`%c[${timestamp}] [${level.toUpperCase()}]`, `color: ${color}; font-weight: bold;`, ...args];
+    const consoleArgs = [
+      `%c[${timestamp}] [${options.level.toUpperCase()}] [${options.caller || "unknown"}]`,
+      `color: ${color}; font-weight: bold;`,
+      ...args,
+    ];
 
-    switch (level) {
+    switch (options.level) {
       case "log":
         console.log(...consoleArgs);
         break;
@@ -121,28 +154,53 @@ class ClientLogger {
         break;
     }
 
-    // Send to API (in background, don't await)
-    void this.sendToAPI(level, ...args);
+    // Queue for batch send
+    this.queueLogEntry(options, ...args);
   }
 
-  public log(...args: unknown[]): void {
-    this.logToConsole("log", ...args);
+  public log(options: LogOptions, ...args: unknown[]): void {
+    const apiOptions: ApiLogOptions = {
+      caller: options.caller,
+      level: "log",
+      sequence: ++this.sequenceNumber,
+    };
+    this.logToConsole(apiOptions, ...args);
   }
 
-  public info(...args: unknown[]): void {
-    this.logToConsole("info", ...args);
+  public info(options: LogOptions, ...args: unknown[]): void {
+    const apiOptions: ApiLogOptions = {
+      caller: options.caller,
+      level: "info",
+      sequence: ++this.sequenceNumber,
+    };
+    this.logToConsole(apiOptions, ...args);
   }
 
-  public warn(...args: unknown[]): void {
-    this.logToConsole("warn", ...args);
+  public warn(options: LogOptions, ...args: unknown[]): void {
+    const apiOptions: ApiLogOptions = {
+      caller: options.caller,
+      level: "warn",
+      sequence: ++this.sequenceNumber,
+    };
+    this.logToConsole(apiOptions, ...args);
   }
 
-  public error(...args: unknown[]): void {
-    this.logToConsole("error", ...args);
+  public error(options: LogOptions, ...args: unknown[]): void {
+    const apiOptions: ApiLogOptions = {
+      caller: options.caller,
+      level: "error",
+      sequence: ++this.sequenceNumber,
+    };
+    this.logToConsole(apiOptions, ...args);
   }
 
-  public debug(...args: unknown[]): void {
-    this.logToConsole("debug", ...args);
+  public debug(options: LogOptions, ...args: unknown[]): void {
+    const apiOptions: ApiLogOptions = {
+      caller: options.caller,
+      level: "debug",
+      sequence: ++this.sequenceNumber,
+    };
+    this.logToConsole(apiOptions, ...args);
   }
 }
 

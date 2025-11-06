@@ -110,7 +110,7 @@ const StorageItem: React.FC<StorageItemProps> = ({
   // Handle double-click for navigation
   const handleDoubleClick = React.useCallback(
     (event: React.MouseEvent) => {
-      logger.info("Double-click detected", {
+      logger.info({ caller: "StorageItem" }, "Double-click detected", {
         itemPath: item.path,
         isDirectory,
       });
@@ -128,10 +128,10 @@ const StorageItem: React.FC<StorageItemProps> = ({
       }
 
       if (isDirectory) {
-        logger.info("Navigating via double-click", { path: item.path });
+        logger.info({ caller: "StorageItem" }, "Navigating via double-click", { path: item.path });
         onNavigate(item.path);
       } else {
-        logger.info("File double-clicked - no action", { path: item.path });
+        logger.info({ caller: "StorageItem" }, "File double-clicked - no action", { path: item.path });
         // For files, we could trigger preview or download
         // For now, do nothing for files
       }

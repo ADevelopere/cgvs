@@ -89,7 +89,7 @@ export function useBaseElementState(params: UseBaseElementStateParams): UseBaseE
         });
       } catch (error) {
         const errorMessage = errorStrings?.updateFailed || "Failed to update element";
-        logger.error("useBaseElementState: Mutation failed", {
+        logger.error({ caller: "useBaseElementState" }, " Mutation failed", {
           elementId,
           error,
         });
@@ -134,9 +134,9 @@ export function useBaseElementState(params: UseBaseElementStateParams): UseBaseE
       const { key, value } = action;
 
       // Map form state keys to node data properties
-      if (key === "positionX" || key === "positionY" || key === "width" || key === "height") {
+      if (key === "positionX" || key === "positionY" || key === "width" || key === "height" || key === "zIndex") {
         updateBaseNodeData(elementId, {
-          [key]: value as number,
+          [key]: value,
         });
       }
     },

@@ -110,7 +110,7 @@ export const TemplateConfigCreateForm: React.FC<TemplateConfigCreateFormProps> =
       });
     } catch (error) {
       setCreateError(strings.failedToCreateTemplateConfiguration);
-      logger.error("TemplateConfigCreateForm: Failed to create template config", {
+      logger.error({ caller: "TemplateConfigCreateForm" }, "Failed to create template config", {
         error,
       });
     } finally {

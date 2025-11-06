@@ -11,6 +11,7 @@ import { templateVariablesByTemplateIdQueryDocument } from "../variables/hooks/t
  * Context value type
  */
 export interface CertificateElementContextValue {
+  templateId: number;
   // common
   bases: ElState.UseBaseElementStateReturn;
   textProps: ElState.UseTextPropsStateReturn;
@@ -121,6 +122,7 @@ export const CertificateElementProvider: React.FC<{
 
   const value: CertificateElementContextValue = React.useMemo(
     () => ({
+      templateId,
       textProps,
       bases,
       config,
@@ -139,6 +141,7 @@ export const CertificateElementProvider: React.FC<{
       numberVariables,
     }),
     [
+      templateId,
       textProps,
       bases,
       config,

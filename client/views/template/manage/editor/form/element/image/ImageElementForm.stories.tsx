@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { logger } from "@/client/lib/logger";
+import { logger } from "@/client/lib/console";
 import { ImageElementForm } from "./ImageElementForm";
 import type { ImageElementFormErrors, ImageElementFormState, UpdateImageDataSourceFn } from "./types";
 import { UpdateBaseElementFn } from "../base";
@@ -33,7 +33,10 @@ const defaultState: ImageElementFormState = {
     fit: ElementImageFit.Contain,
   },
   dataSource: {
-    storageFile: { storageFileId: 1 },
+    storageFile: {
+      path: "",
+      url: "",
+    },
   },
 };
 

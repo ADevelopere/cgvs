@@ -87,7 +87,7 @@ export function useCountryPropsState(params: UseCountryPropsStateParams): UseCou
         });
       } catch (error) {
         const errorMessage = errorStrings?.updateFailed || "Failed to update country properties";
-        logger.error("useCountryPropsState: Mutation failed", {
+        logger.error({ caller: "useCountryPropsState" }, "Mutation failed", {
           elementId,
           error,
         });

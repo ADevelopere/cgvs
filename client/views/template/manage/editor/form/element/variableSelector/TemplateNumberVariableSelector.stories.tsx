@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { logger } from "@/client/lib/logger";
+import { logger } from "@/client/lib/console";
 import { TemplateNumberVariableSelector } from "./TemplateNumberVariableSelector";
 import { mockNumberVariables } from "../story.util";
 import { useState } from "react";

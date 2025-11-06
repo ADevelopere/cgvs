@@ -218,7 +218,7 @@ export const CreateNumberElementWrapper: React.FC<CreateNumberElementWrapperProp
 
   const handleSubmit = useCallback(async () => {
     if (hasError) {
-      logger.warn("Validation failed for number element creation");
+      logger.warn({ caller: "CreateNumberElementWrapper" }, "Validation failed for number element creation");
       return;
     }
 
@@ -231,7 +231,7 @@ export const CreateNumberElementWrapper: React.FC<CreateNumberElementWrapperProp
         },
       });
 
-      logger.info("Number element created successfully");
+      logger.info({ caller: "CreateNumberElementWrapper" }, "Number element created successfully");
 
       // Reset state
       setState(getInitialState());
@@ -247,7 +247,7 @@ export const CreateNumberElementWrapper: React.FC<CreateNumberElementWrapperProp
         onClose();
       }
     } catch (error) {
-      logger.error("Failed to create number element", error);
+      logger.error({ caller: "CreateNumberElementWrapper" }, "Failed to create number element", error);
       // Error is automatically handled by Apollo Client
     } finally {
       setIsSubmitting(false);

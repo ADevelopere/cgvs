@@ -56,7 +56,7 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
 
   // Debug logging
   useEffect(() => {
-    logger.debug("CountryEditRenderer mounted", {
+    logger.debug({ caller: "CountryEditRenderer" }, "CountryEditRenderer mounted", {
       totalCountries: countries.length,
       first5Countries: countries.slice(0, 5),
       selectedCountry,
@@ -139,7 +139,7 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
   );
 
   const handleClickAway = useCallback(() => {
-    logger.debug("ClickAway triggered", { error, selectedCountry });
+    logger.debug({ caller: "CountryEditRenderer" }, "ClickAway triggered", { error, selectedCountry });
     if (!error && selectedCountry) {
       handleSave();
     }
@@ -176,7 +176,7 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
           onInputChange={(_event, newInputValue) => {
             setInputValue(newInputValue);
           }}
-          onOpen={() => logger.debug("Autocomplete opened")}
+          onOpen={() => logger.debug({ caller: "CountryEditRenderer" }, "Autocomplete opened")}
           getOptionLabel={option => countryStrings[option.code] || option.code}
           slotProps={{
             popper: {

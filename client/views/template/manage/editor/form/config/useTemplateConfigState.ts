@@ -76,7 +76,7 @@ export function useTemplateConfigState(params: UseTemplateConfigStateParams): Us
         });
       } catch (error) {
         const errorMessage = strings.failedToUpdateTemplateConfiguration || "Failed to update template configuration";
-        logger.error("useTemplateConfigState: Failed to update template config", { error });
+        logger.error({ caller: "useTemplateConfigState" }, "Failed to update template config", { error });
         notifications.show(errorMessage, {
           severity: "error",
           autoHideDuration: 3000,
@@ -142,7 +142,7 @@ export function useTemplateConfigState(params: UseTemplateConfigStateParams): Us
         const pendingState = pendingUpdateRef.current;
         if (pendingState) {
           mutationFnRef.current(pendingState).catch(err => {
-            logger.error("Debounced mutation failed", { err });
+            logger.error({ caller: "useTemplateConfigState" }, "Debounced mutation failed", { err });
           });
           pendingUpdateRef.current = null;
         }
@@ -168,7 +168,7 @@ export function useTemplateConfigState(params: UseTemplateConfigStateParams): Us
       const pendingState = pendingUpdateRefSnapshot.current;
       if (pendingState) {
         mutationFnOnUnmount(pendingState).catch(err => {
-          logger.error("Save on unmount failed", { err });
+          logger.error({ caller: "useTemplateConfigState" }, "Save on unmount failed", { err });
         });
       }
     };

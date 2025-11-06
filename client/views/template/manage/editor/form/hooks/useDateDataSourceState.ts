@@ -77,7 +77,7 @@ export function useDateDataSourceState(params: UseDateDataSourceStateParams): Us
         });
       } catch (error) {
         const errorMessage = errorStrings?.updateFailed || "Failed to update date data source";
-        logger.error("useDateDataSourceState: Mutation failed", {
+        logger.error({ caller: "useDateDataSourceState" }, "Mutation failed", {
           elementId,
           error,
         });

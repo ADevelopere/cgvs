@@ -1,9 +1,6 @@
 import React from "react";
 import { useEditorStore } from "./useEditorStore";
-import { logger } from "@/client/lib/logger";
-import { useNode } from "./NodesStateProvider";
 import { useCertificateElementStates } from "./CertificateElementContext";
-import { TemplateConfigUpdateInput } from "@/client/graphql/generated/gql/graphql";
 
 /**
  * Return type for useNodeData hook
@@ -12,17 +9,8 @@ export interface UseFlowUpdaterReturn {
   templateId: number | null;
   updateElementPosition: (elementId: number, x: number, y: number, isDragging?: boolean) => void;
   updateElementSize: (elementId: number, width: number, height: number, isResizing?: boolean) => void;
-  config: TemplateConfigUpdateInput;
-  helperLineHorizontal: number | undefined;
-  helperLineVertical: number | undefined;
-  setHelperLineHorizontal: (value: number | undefined) => void;
-  setHelperLineVertical: (value: number | undefined) => void;
-  setIsDragging: (isDragging: boolean) => void;
-  setIsResizing: (isResizing: boolean) => void;
   undo: () => void;
   redo: () => void;
-  canUndo: boolean;
-  canRedo: boolean;
 }
 
 /**
@@ -32,45 +20,11 @@ export interface UseFlowUpdaterReturn {
  */
 export function useFlowUpdater(): UseFlowUpdaterReturn {
   // Get bases and config from certificate element context
-  const { bases, config } = useCertificateElementStates();
-
-  // Use the nodes hook - it automatically fetches data and initializes nodes
-  const {
-    nodes,
-    templateId,
-    loading: nodesLoading,
-    error: nodesError,
-  } = useNode();
-
-  // Helper line state (kept local as it's UI-only)
-  const [helperLineHorizontal, setHelperLineHorizontal] = React.useState<number | undefined>(undefined);
-  const [helperLineVertical, setHelperLineVertical] = React.useState<number | undefined>(undefined);
-
-  // Drag/resize state for future use or optimization
-  const [, setIsDragging] = React.useState<boolean>(false);
-  const [, setIsResizing] = React.useState<boolean>(false);
-
-  // Log loading/error states
-  React.useEffect(() => {
-    if (nodesError) {
-      logger.error("NodeDataProvider: Error loading nodes", {
-        templateId,
-        error: nodesError,
-      });
-    }
-    if (!nodesLoading && !nodesError && nodes.length > 0) {
-      logger.debug("NodeDataProvider: Nodes loaded successfully", {
-        templateId,
-        nodeCount: nodes.length,
-      });
-    }
-  }, [nodesError, nodes.length, templateId]);
+  const { bases, templateId } = useCertificateElementStates();
 
   const addToHistory = useEditorStore(state => state.addToHistory);
   const undoFromStore = useEditorStore(state => state.undo);
   const redoFromStore = useEditorStore(state => state.redo);
-  const canUndo = useEditorStore(state => state.canUndo());
-  const canRedo = useEditorStore(state => state.canRedo());
 
   const updateElementPosition = React.useCallback(
     (elementId: number, x: number, y: number, isDragging: boolean = false) => {
@@ -180,16 +134,7 @@ export function useFlowUpdater(): UseFlowUpdaterReturn {
     templateId,
     updateElementPosition,
     updateElementSize,
-    config: config.state,
-    helperLineHorizontal,
-    helperLineVertical,
-    setHelperLineHorizontal,
-    setHelperLineVertical,
-    setIsDragging,
-    setIsResizing,
     undo,
     redo,
-    canUndo,
-    canRedo,
   };
 }

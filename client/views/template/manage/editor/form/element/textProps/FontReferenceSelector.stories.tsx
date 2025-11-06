@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { logger } from "@/client/lib/logger";
+import { logger } from "@/client/lib/console";
 import { FontReferenceSelector } from "./FontReferenceSelector";
 import { mockSelfHostedFonts } from "../story.util";
 import { AppLanguage } from "@/client/graphql/generated/gql/graphql";

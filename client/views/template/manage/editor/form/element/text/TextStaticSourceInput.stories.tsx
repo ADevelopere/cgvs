@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { logger } from "@/client/lib/logger";
+import { logger } from "@/client/lib/console";
 import { TextStaticSourceInput } from "./TextStaticSourceInput";
 
 const meta: Meta<typeof TextStaticSourceInput> = {

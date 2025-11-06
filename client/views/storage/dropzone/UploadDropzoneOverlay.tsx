@@ -92,16 +92,13 @@ export const UploadDropzoneOverlay: React.FC<UploadDropzoneOverlayProps> = ({
         onUploadStart?.();
         onFilesDropped?.(files);
 
-        logger.info(`Uploading ${files.length} files to: ${uploadPath}`);
-
         await startUpload(files, uploadPath, {
           onComplete: () => {
             onUploadComplete?.();
-            logger.info("Overlay upload completed successfully");
           },
         });
       } catch (error) {
-        logger.error("Overlay upload failed:", error);
+        logger.error({ caller: "UploadDropzoneOverlay" }, "Overlay upload failed:", error);
       }
     },
     [disabled, onUploadStart, onFilesDropped, uploadPath, startUpload, onUploadComplete]

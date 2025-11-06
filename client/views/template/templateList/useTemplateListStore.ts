@@ -112,8 +112,8 @@ export const useTemplateListStore = create<TemplateListState>()(
 
       updateSelectedCategory: category => {
         set(state => {
-          logger.log("updateSelectedCategory", category);
-          logger.log("state.currentCategory", state.currentCategory);
+          logger.log({ caller: "useTemplateListStore" }, category);
+          logger.log({ caller: "useTemplateListStore" }, state.currentCategory);
           // Only update if we have a current category and the new category has the same ID
           if (!state.currentCategory || !category || state.currentCategory.id !== category.id) {
             return state;

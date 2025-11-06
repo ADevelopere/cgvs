@@ -78,7 +78,7 @@ export function useQRCodePropsState(params: UseQRCodePropsStateParams): UseQRCod
         });
       } catch (error) {
         const errorMessage = errorStrings?.updateFailed || "Failed to update QR code properties";
-        logger.error("useQRCodePropsState: Mutation failed", {
+        logger.error({ caller: "useQRCodePropsState" }, "Mutation failed", {
           elementId,
           error,
         });

@@ -37,7 +37,7 @@ export const FontDetail: React.FC<FontDetailProps> = ({
   // Handle create font submission
   const handleCreateSubmit = useCallback(
     async (input: FontCreateInput) => {
-      logger.debug("[FontDetail] handleCreateSubmit", input);
+      logger.debug({ caller: "FontDetail" }, "handleCreateSubmit", input);
       setIsSaving(true);
       await createFont(input);
       setIsSaving(false);
