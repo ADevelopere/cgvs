@@ -316,3 +316,79 @@ export const updateElementTextPropsMutationDocument: TypedDocumentNode<
     }
   }
 `;
+
+export const moveElementMutationDocument: TypedDocumentNode<GQL.MoveElementMutation, GQL.MoveElementMutationVariables> =
+  gql`
+    mutation MoveElement($input: ElementMoveInput!) {
+      moveElement(input: $input) {
+        base {
+          alignment
+          createdAt
+          description
+          height
+          hidden
+          id
+          name
+          positionX
+          positionY
+          renderOrder
+          templateId
+          type
+          updatedAt
+          width
+        }
+      }
+    }
+  `;
+
+export const increaseElementOrderMutationDocument: TypedDocumentNode<
+  GQL.IncreaseElementOrderMutation,
+  GQL.IncreaseElementOrderMutationVariables
+> = gql`
+  mutation IncreaseElementOrder($input: IncreaseElementOrderInput!) {
+    increaseElementOrder(input: $input) {
+      base {
+        alignment
+        createdAt
+        description
+        height
+        hidden
+        id
+        name
+        positionX
+        positionY
+        renderOrder
+        templateId
+        type
+        updatedAt
+        width
+      }
+    }
+  }
+`;
+
+export const decreaseElementOrderMutationDocument: TypedDocumentNode<
+  GQL.DecreaseElementOrderMutation,
+  GQL.DecreaseElementOrderMutationVariables
+> = gql`
+  mutation decreaseElementOrder($input: DecreaseElementOrderInput!) {
+    decreaseElementOrder(input: $input) {
+      base {
+        alignment
+        createdAt
+        description
+        height
+        hidden
+        id
+        name
+        positionX
+        positionY
+        renderOrder
+        templateId
+        type
+        updatedAt
+        width
+      }
+    }
+  }
+`;

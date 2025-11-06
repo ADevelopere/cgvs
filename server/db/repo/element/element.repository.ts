@@ -325,7 +325,7 @@ export namespace ElementRepository {
    * @param input - The element to move and its new render order.
    * @returns A promise that resolves to an array of all elements with updated orders.
    */
-  export const moveElement = async (input: ElementMoveInput): Promise<CertificateElementEntity[]> => {
+  export const moveElement = async (input: ElementMoveInput): Promise<CertificateElementInterface[]> => {
     const { elementId, newRenderOrder } = input;
 
     const updatedElements = await db.transaction(async tx => {
@@ -401,31 +401,37 @@ export namespace ElementRepository {
       `Moved element ID ${elementId} to render order ${newRenderOrder}. Affected ${updatedElements.length} element(s).`
     );
 
-    return updatedElements;
+    return updatedElements.map(el => ({ base: el }));
   };
 
   /**
    * Increase the render order of an element (move it down the list).
    */
-  export const increaseElementOrder = async (input: IncreaseElementOrderInput): Promise<void> => {
+  export const increaseElementOrder = async (
+    input: IncreaseElementOrderInput
+  ): Promise<CertificateElementInterface[]> => {
     const { elementId } = input;
     const element = await findByIdOrThrow(elementId);
     const maxOrder = await findMaxOrderInTemplate(element.templateId);
 
     if (element.renderOrder < maxOrder) {
-      await moveElement({ elementId, newRenderOrder: element.renderOrder + 1 });
+      return await moveElement({ elementId, newRenderOrder: element.renderOrder + 1 });
     }
+    return [];
   };
 
   /**
    * Decrease the render order of an element (move it up the list).
    */
-  export const decreaseElementOrder = async (input: DecreaseElementOrderInput): Promise<void> => {
+  export const decreaseElementOrder = async (
+    input: DecreaseElementOrderInput
+  ): Promise<CertificateElementInterface[]> => {
     const { elementId } = input;
     const element = await findByIdOrThrow(elementId);
 
     if (element.renderOrder > 1) {
-      await moveElement({ elementId, newRenderOrder: element.renderOrder - 1 });
+      return await moveElement({ elementId, newRenderOrder: element.renderOrder - 1 });
     }
+    return [];
   };
 }

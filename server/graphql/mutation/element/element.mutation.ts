@@ -65,7 +65,7 @@ gqlSchemaBuilder.mutationFields(t => ({
   }),
 
   moveElement: t.field({
-    type: "Boolean",
+    type: [ElementPothos.UpdateElemenetBaseResponseObject],
     args: {
       input: t.arg({
         type: ElementPothos.ElementMoveInputObject,
@@ -73,13 +73,12 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      await ElementRepository.moveElement(args.input);
-      return true;
+      return await ElementRepository.moveElement(args.input);
     },
   }),
 
   increaseElementOrder: t.field({
-    type: "Boolean",
+    type: [ElementPothos.UpdateElemenetBaseResponseObject],
     args: {
       input: t.arg({
         type: ElementPothos.IncreaseElementOrderInputObject,
@@ -87,13 +86,12 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      await ElementRepository.increaseElementOrder(args.input);
-      return true;
+      return await ElementRepository.increaseElementOrder(args.input);
     },
   }),
 
   decreaseElementOrder: t.field({
-    type: "Boolean",
+    type: [ElementPothos.UpdateElemenetBaseResponseObject],
     args: {
       input: t.arg({
         type: ElementPothos.DecreaseElementOrderInputObject,
@@ -101,8 +99,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      await ElementRepository.decreaseElementOrder(args.input);
-      return true;
+      return await ElementRepository.decreaseElementOrder(args.input);
     },
   }),
 }));

@@ -921,7 +921,7 @@ type Mutation {
   createTemplateSelectVariable(input: TemplateSelectVariableCreateInput!): TemplateSelectVariable
   createTemplateTextVariable(input: TemplateTextVariableCreateInput!): TemplateTextVariable
   createTextElement(input: TextElementInput!): TextElement
-  decreaseElementOrder(input: DecreaseElementOrderInput!): Boolean
+  decreaseElementOrder(input: DecreaseElementOrderInput!): [UpdateElementBaseResponse!]
   deleteElement(id: Int!): Boolean
   deleteElements(ids: [Int!]!): Boolean
   deleteFile(path: String!): FileOperationResult
@@ -935,10 +935,10 @@ type Mutation {
   deleteTemplateRecipientGroup(id: Int!): TemplateRecipientGroup
   deleteTemplateVariable(id: Int!): TemplateVariable
   generateUploadSignedUrl(input: UploadSignedUrlGenerateInput!): String
-  increaseElementOrder(input: IncreaseElementOrderInput!): Boolean
+  increaseElementOrder(input: IncreaseElementOrderInput!): [UpdateElementBaseResponse!]
   login(input: LoginInput!): LoginResponse
   logout: Boolean
-  moveElement(input: ElementMoveInput!): Boolean
+  moveElement(input: ElementMoveInput!): [UpdateElementBaseResponse!]
   moveStorageItems(input: StorageItemsMoveInput!): BulkOperationResult
   partiallyUpdateStudent(input: PartialStudentUpdateInput!): Student
   refreshToken: RefreshTokenResponse
