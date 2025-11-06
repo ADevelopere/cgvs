@@ -11,8 +11,7 @@ export namespace PaginationUtils {
     total: number
   ): PageInfo {
     if (args) {
-      const lastPage =
-        total > 0 ? Math.floor((total - 1) / args.perPage) + 1 : 1;
+      const lastPage = total > 0 ? Math.floor((total - 1) / args.perPage) + 1 : 1;
       const firstItem = count > 0 ? args.offset + 1 : null;
       const lastItem = count > 0 ? args.offset + count : null;
       return {

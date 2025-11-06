@@ -7,18 +7,13 @@ import {
   isOfElement,
 } from "./base.element.pothos";
 import { InputFieldBuilder, SchemaTypes } from "@pothos/core";
-import {
-  createTextPropsFieldFromEntity,
-  TextPropsInputObject,
-} from "./textProps.pothos";
+import { createTextPropsFieldFromEntity, TextPropsInputObject } from "./textProps.pothos";
 
 // ============================================================================
 // Mutation Inputs
 // ============================================================================
 
-const createGenderElementInputFields = <Types extends SchemaTypes>(
-  t: InputFieldBuilder<Types, "InputObject">
-) => ({
+const createGenderElementInputFields = <Types extends SchemaTypes>(t: InputFieldBuilder<Types, "InputObject">) => ({
   base: t.field({
     type: CertificateElementBaseInputObject,
     required: true,
@@ -47,8 +42,7 @@ export const GenderElementUpdateInputObject = gqlSchemaBuilder
 // Loadable Element Object
 // ============================================================================
 
-const GenderElementObjectRef =
-  gqlSchemaBuilder.objectRef<Types.GenderElementOutput>("GenderElement");
+const GenderElementObjectRef = gqlSchemaBuilder.objectRef<Types.GenderElementOutput>("GenderElement");
 
 export const GenderElementObject = gqlSchemaBuilder.loadableObject<
   Types.GenderElementOutput | Error,

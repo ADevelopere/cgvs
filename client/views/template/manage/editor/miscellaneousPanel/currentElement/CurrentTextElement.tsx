@@ -1,35 +1,24 @@
 import React from "react";
-import { TemplateConfig, TextElement,  } from "@/client/graphql/generated/gql/graphql";
+import { TemplateConfig, TextElement } from "@/client/graphql/generated/gql/graphql";
 import { Stack, Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/material";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { BaseCertificateElementForm } from "../../form/element/base";
 import { TextPropsForm } from "../../form/element/textProps";
 import { useQuery } from "@apollo/client/react";
 import { fontsQueryDocument } from "@/client/views/font/hooks";
 import { DataSourceForm } from "../../form/element/text";
-import {
-  useBaseElement,
-  useTextProps,
-  useTextDataSource,
-} from "../../form/hooks";
+import { useBaseElement, useTextProps, useTextDataSource } from "../../form/hooks";
 import { useCertificateElementStates } from "../../CertificateElementContext";
 import { useAppTranslation } from "@/client/locale";
 
 export type CurrentTextElementProps = {
   element: TextElement;
-  templateConfig: TemplateConfig
+  templateConfig: TemplateConfig;
 };
 
-export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
-  element,
-  templateConfig,
-}) => {
+export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({ element, templateConfig }) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
-  const {
-    data: fontsData,
-    loading: _fontsLoading,
-    error: _fontsError,
-  } = useQuery(fontsQueryDocument);
+  const { data: fontsData, loading: _fontsLoading, error: _fontsError } = useQuery(fontsQueryDocument);
 
   const fonts = React.useMemo(() => {
     return fontsData?.fonts.data || [];
@@ -39,16 +28,11 @@ export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
     elementId: element.base.id,
   });
 
-  const { baseElementState, updateBaseElementState, baseElementErrors } =
-    useBaseElement({
-      elementId: element.base.id,
-    });
+  const { baseElementState, updateBaseElementState, baseElementErrors } = useBaseElement({
+    elementId: element.base.id,
+  });
 
-  const {
-    textDataSourceState,
-    updateTextDataSource,
-    textDataSourceErrors,
-  } = useTextDataSource({
+  const { textDataSourceState, updateTextDataSource, textDataSourceErrors } = useTextDataSource({
     elementId: element.base.id,
   });
 
@@ -76,7 +60,7 @@ export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>{strings.baseElement.basePropertiesTitle}</Typography>
-        </AccordionSummary >
+        </AccordionSummary>
         <AccordionDetails sx={{ backgroundColor: "background.default", pt: 2 }}>
           <BaseCertificateElementForm
             baseProps={baseElementState}

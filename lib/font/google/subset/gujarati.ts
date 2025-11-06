@@ -37,16 +37,11 @@ const data: GoogleFontItem[] = [
     version: "v30",
     lastModified: "2025-09-10",
     files: {
-      "500":
-        "https://fonts.gstatic.com/s/baloobhai2/v30/sZlWdRSL-z1VEWZ4YNA7Y5ItevYWUOHDE8FvNhohMXeCo-jsZzo.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/baloobhai2/v30/sZlWdRSL-z1VEWZ4YNA7Y5ItevYWUOHDE8FvNvYmMXeCo-jsZzo.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/baloobhai2/v30/sZlWdRSL-z1VEWZ4YNA7Y5ItevYWUOHDE8FvNs8mMXeCo-jsZzo.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/baloobhai2/v30/sZlWdRSL-z1VEWZ4YNA7Y5ItevYWUOHDE8FvNqgmMXeCo-jsZzo.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/baloobhai2/v30/sZlWdRSL-z1VEWZ4YNA7Y5ItevYWUOHDE8FvNighMXeCo-jsZzo.ttf",
+      "500": "https://fonts.gstatic.com/s/baloobhai2/v30/sZlWdRSL-z1VEWZ4YNA7Y5ItevYWUOHDE8FvNhohMXeCo-jsZzo.ttf",
+      "600": "https://fonts.gstatic.com/s/baloobhai2/v30/sZlWdRSL-z1VEWZ4YNA7Y5ItevYWUOHDE8FvNvYmMXeCo-jsZzo.ttf",
+      "700": "https://fonts.gstatic.com/s/baloobhai2/v30/sZlWdRSL-z1VEWZ4YNA7Y5ItevYWUOHDE8FvNs8mMXeCo-jsZzo.ttf",
+      "800": "https://fonts.gstatic.com/s/baloobhai2/v30/sZlWdRSL-z1VEWZ4YNA7Y5ItevYWUOHDE8FvNqgmMXeCo-jsZzo.ttf",
+      regular: "https://fonts.gstatic.com/s/baloobhai2/v30/sZlWdRSL-z1VEWZ4YNA7Y5ItevYWUOHDE8FvNighMXeCo-jsZzo.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -59,8 +54,7 @@ const data: GoogleFontItem[] = [
     version: "v24",
     lastModified: "2025-09-16",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/farsan/v24/VEMwRoJ0vY_zsyz62q-pxDX9rQ.ttf",
+      regular: "https://fonts.gstatic.com/s/farsan/v24/VEMwRoJ0vY_zsyz62q-pxDX9rQ.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -73,16 +67,11 @@ const data: GoogleFontItem[] = [
     version: "v16",
     lastModified: "2025-09-10",
     files: {
-      "300":
-        "https://fonts.gstatic.com/s/hindvadodara/v16/neIQzCKvrIcn5pbuuuriV9tTSDn3iXM0oSOL2Yw.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/hindvadodara/v16/neIQzCKvrIcn5pbuuuriV9tTSGH2iXM0oSOL2Yw.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/hindvadodara/v16/neIQzCKvrIcn5pbuuuriV9tTSE3xiXM0oSOL2Yw.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/hindvadodara/v16/neIQzCKvrIcn5pbuuuriV9tTSCnwiXM0oSOL2Yw.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/hindvadodara/v16/neINzCKvrIcn5pbuuuriV9tTcJXfrXsfvSo.ttf",
+      "300": "https://fonts.gstatic.com/s/hindvadodara/v16/neIQzCKvrIcn5pbuuuriV9tTSDn3iXM0oSOL2Yw.ttf",
+      "500": "https://fonts.gstatic.com/s/hindvadodara/v16/neIQzCKvrIcn5pbuuuriV9tTSGH2iXM0oSOL2Yw.ttf",
+      "600": "https://fonts.gstatic.com/s/hindvadodara/v16/neIQzCKvrIcn5pbuuuriV9tTSE3xiXM0oSOL2Yw.ttf",
+      "700": "https://fonts.gstatic.com/s/hindvadodara/v16/neIQzCKvrIcn5pbuuuriV9tTSCnwiXM0oSOL2Yw.ttf",
+      regular: "https://fonts.gstatic.com/s/hindvadodara/v16/neINzCKvrIcn5pbuuuriV9tTcJXfrXsfvSo.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -95,8 +84,7 @@ const data: GoogleFontItem[] = [
     version: "v25",
     lastModified: "2025-09-08",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/kumarone/v25/bMr1mS-P958wYi6YaGeGNO6WU3oT0g.ttf",
+      regular: "https://fonts.gstatic.com/s/kumarone/v25/bMr1mS-P958wYi6YaGeGNO6WU3oT0g.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -109,8 +97,7 @@ const data: GoogleFontItem[] = [
     version: "v20",
     lastModified: "2025-06-25",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/kumaroneoutline/v20/Noao6VH62pyLP0fsrZ-v18wlUEcX9zDwRQu8EGKF.ttf",
+      regular: "https://fonts.gstatic.com/s/kumaroneoutline/v20/Noao6VH62pyLP0fsrZ-v18wlUEcX9zDwRQu8EGKF.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -123,8 +110,7 @@ const data: GoogleFontItem[] = [
     version: "v22",
     lastModified: "2025-09-11",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/mogra/v22/f0X40eSs8c95TBo4DvLmxtnG.ttf",
+      regular: "https://fonts.gstatic.com/s/mogra/v22/f0X40eSs8c95TBo4DvLmxtnG.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -137,20 +123,13 @@ const data: GoogleFontItem[] = [
     version: "v15",
     lastModified: "2025-09-08",
     files: {
-      "200":
-        "https://fonts.gstatic.com/s/muktavaani/v15/3JnkSD_-ynaxmxnEfVHPIGXNV8BD-u97MW1a.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/muktavaani/v15/3JnkSD_-ynaxmxnEfVHPIGWpVMBD-u97MW1a.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/muktavaani/v15/3JnkSD_-ynaxmxnEfVHPIGXxVcBD-u97MW1a.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/muktavaani/v15/3JnkSD_-ynaxmxnEfVHPIGXdUsBD-u97MW1a.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/muktavaani/v15/3JnkSD_-ynaxmxnEfVHPIGW5U8BD-u97MW1a.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/muktavaani/v15/3JnkSD_-ynaxmxnEfVHPIGWlUMBD-u97MW1a.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/muktavaani/v15/3Jn5SD_-ynaxmxnEfVHPIF0FfORL0fNy.ttf",
+      "200": "https://fonts.gstatic.com/s/muktavaani/v15/3JnkSD_-ynaxmxnEfVHPIGXNV8BD-u97MW1a.ttf",
+      "300": "https://fonts.gstatic.com/s/muktavaani/v15/3JnkSD_-ynaxmxnEfVHPIGWpVMBD-u97MW1a.ttf",
+      "500": "https://fonts.gstatic.com/s/muktavaani/v15/3JnkSD_-ynaxmxnEfVHPIGXxVcBD-u97MW1a.ttf",
+      "600": "https://fonts.gstatic.com/s/muktavaani/v15/3JnkSD_-ynaxmxnEfVHPIGXdUsBD-u97MW1a.ttf",
+      "700": "https://fonts.gstatic.com/s/muktavaani/v15/3JnkSD_-ynaxmxnEfVHPIGW5U8BD-u97MW1a.ttf",
+      "800": "https://fonts.gstatic.com/s/muktavaani/v15/3JnkSD_-ynaxmxnEfVHPIGWlUMBD-u97MW1a.ttf",
+      regular: "https://fonts.gstatic.com/s/muktavaani/v15/3Jn5SD_-ynaxmxnEfVHPIF0FfORL0fNy.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -158,17 +137,7 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Noto Sans Gujarati",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
     subsets: ["gujarati", "latin", "latin-ext", "math", "symbols"],
     version: "v27",
     lastModified: "2025-09-16",
@@ -198,17 +167,7 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Noto Serif Gujarati",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
     subsets: ["gujarati", "latin", "latin-ext", "math", "symbols"],
     version: "v29",
     lastModified: "2025-09-11",
@@ -238,42 +197,21 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Rasa",
-    variants: [
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "300italic",
-      "italic",
-      "500italic",
-      "600italic",
-      "700italic",
-    ],
+    variants: ["300", "regular", "500", "600", "700", "300italic", "italic", "500italic", "600italic", "700italic"],
     subsets: ["gujarati", "latin", "latin-ext", "vietnamese"],
     version: "v27",
     lastModified: "2025-09-05",
     files: {
-      "300":
-        "https://fonts.gstatic.com/s/rasa/v27/xn76YHIn1mWmVKl8ZtAM9NrJfN4YJW41fcvN2KT4.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/rasa/v27/xn76YHIn1mWmVKl8ZtAM9NrJfN50JW41fcvN2KT4.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/rasa/v27/xn76YHIn1mWmVKl8ZtAM9NrJfN6YIm41fcvN2KT4.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/rasa/v27/xn76YHIn1mWmVKl8ZtAM9NrJfN6hIm41fcvN2KT4.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/rasa/v27/xn76YHIn1mWmVKl8ZtAM9NrJfN5GJW41fcvN2KT4.ttf",
-      "300italic":
-        "https://fonts.gstatic.com/s/rasa/v27/xn78YHIn1mWmfqBOmQhln0Bne8uOZth2d8_v3bT4Ycc.ttf",
-      italic:
-        "https://fonts.gstatic.com/s/rasa/v27/xn78YHIn1mWmfqBOmQhln0Bne8uOZoZ2d8_v3bT4Ycc.ttf",
-      "500italic":
-        "https://fonts.gstatic.com/s/rasa/v27/xn78YHIn1mWmfqBOmQhln0Bne8uOZrR2d8_v3bT4Ycc.ttf",
-      "600italic":
-        "https://fonts.gstatic.com/s/rasa/v27/xn78YHIn1mWmfqBOmQhln0Bne8uOZlhxd8_v3bT4Ycc.ttf",
-      "700italic":
-        "https://fonts.gstatic.com/s/rasa/v27/xn78YHIn1mWmfqBOmQhln0Bne8uOZmFxd8_v3bT4Ycc.ttf",
+      "300": "https://fonts.gstatic.com/s/rasa/v27/xn76YHIn1mWmVKl8ZtAM9NrJfN4YJW41fcvN2KT4.ttf",
+      "500": "https://fonts.gstatic.com/s/rasa/v27/xn76YHIn1mWmVKl8ZtAM9NrJfN50JW41fcvN2KT4.ttf",
+      "600": "https://fonts.gstatic.com/s/rasa/v27/xn76YHIn1mWmVKl8ZtAM9NrJfN6YIm41fcvN2KT4.ttf",
+      "700": "https://fonts.gstatic.com/s/rasa/v27/xn76YHIn1mWmVKl8ZtAM9NrJfN6hIm41fcvN2KT4.ttf",
+      regular: "https://fonts.gstatic.com/s/rasa/v27/xn76YHIn1mWmVKl8ZtAM9NrJfN5GJW41fcvN2KT4.ttf",
+      "300italic": "https://fonts.gstatic.com/s/rasa/v27/xn78YHIn1mWmfqBOmQhln0Bne8uOZth2d8_v3bT4Ycc.ttf",
+      italic: "https://fonts.gstatic.com/s/rasa/v27/xn78YHIn1mWmfqBOmQhln0Bne8uOZoZ2d8_v3bT4Ycc.ttf",
+      "500italic": "https://fonts.gstatic.com/s/rasa/v27/xn78YHIn1mWmfqBOmQhln0Bne8uOZrR2d8_v3bT4Ycc.ttf",
+      "600italic": "https://fonts.gstatic.com/s/rasa/v27/xn78YHIn1mWmfqBOmQhln0Bne8uOZlhxd8_v3bT4Ycc.ttf",
+      "700italic": "https://fonts.gstatic.com/s/rasa/v27/xn78YHIn1mWmfqBOmQhln0Bne8uOZmFxd8_v3bT4Ycc.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",
@@ -286,8 +224,7 @@ const data: GoogleFontItem[] = [
     version: "v17",
     lastModified: "2025-09-08",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/shrikhand/v17/a8IbNovtLWfR7T7bMJwbBIiQ0zhMtA.ttf",
+      regular: "https://fonts.gstatic.com/s/shrikhand/v17/a8IbNovtLWfR7T7bMJwbBIiQ0zhMtA.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",

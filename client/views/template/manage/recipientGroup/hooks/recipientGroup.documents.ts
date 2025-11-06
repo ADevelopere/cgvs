@@ -45,9 +45,7 @@ export const createTemplateRecipientGroupMutationDocument: TypedDocumentNode<
   Graphql.CreateTemplateRecipientGroupMutation,
   Graphql.CreateTemplateRecipientGroupMutationVariables
 > = gql`
-  mutation createTemplateRecipientGroup(
-    $input: TemplateRecipientGroupCreateInput!
-  ) {
+  mutation createTemplateRecipientGroup($input: TemplateRecipientGroupCreateInput!) {
     createTemplateRecipientGroup(input: $input) {
       id
       name
@@ -67,9 +65,7 @@ export const updateTemplateRecipientGroupMutationDocument: TypedDocumentNode<
   Graphql.UpdateTemplateRecipientGroupMutation,
   Graphql.UpdateTemplateRecipientGroupMutationVariables
 > = gql`
-  mutation updateTemplateRecipientGroup(
-    $input: TemplateRecipientGroupUpdateInput!
-  ) {
+  mutation updateTemplateRecipientGroup($input: TemplateRecipientGroupUpdateInput!) {
     updateTemplateRecipientGroup(input: $input) {
       id
       name

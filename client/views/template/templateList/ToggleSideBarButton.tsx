@@ -12,14 +12,7 @@ const ToggleSideBarButton: React.FC<{
   zIndex: number;
   isMobile: boolean;
   title: string;
-}> = ({
-  open,
-  toggleSidebar,
-  dashboardsidebarState,
-  isMobile,
-  zIndex,
-  title,
-}) => {
+}> = ({ open, toggleSidebar, dashboardsidebarState, isMobile, zIndex, title }) => {
   const { isRtl } = useAppTheme();
 
   if (dashboardsidebarState === "expanded" && isMobile) {
@@ -48,8 +41,7 @@ const ToggleSideBarButton: React.FC<{
             boxShadow: 2,
             border: "1px solid",
             borderColor: "divider",
-            transition:
-              "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+            transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
             transform: open ? "rotate(180deg)" : "rotate(0deg)",
             "&:hover": {
               boxShadow: 4,

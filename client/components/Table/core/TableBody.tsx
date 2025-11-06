@@ -1,10 +1,6 @@
 import React from "react";
 import { CircularProgress, Box } from "@mui/material";
-import {
-  useTableRowsContext,
-  useTableContext,
-  useTableColumnContext,
-} from "../contexts";
+import { useTableRowsContext, useTableContext, useTableColumnContext } from "../contexts";
 import { DataRow } from "../components/";
 import { PageInfo } from "@/client/graphql/generated/gql/graphql";
 
@@ -18,11 +14,7 @@ interface TableBodyProps<TRowData> {
   colSpan: number;
 }
 
-export const TableBody = <
-  TRowData,
-  TValue,
-  TRowId extends string | number = string | number,
->({
+export const TableBody = <TRowData, TValue, TRowId extends string | number = string | number>({
   data,
   isPaginated = false,
   pageInfo,
@@ -41,13 +33,10 @@ export const TableBody = <
     toggleRowSelection,
     enableRowResizing,
   } = useTableRowsContext<TRowData, TRowId>();
-  const {
-    visibleColumns,
-    pinnedColumns,
-    columnWidths,
-    pinnedLeftStyle,
-    pinnedRightStyle,
-  } = useTableColumnContext<TRowData, TRowId>();
+  const { visibleColumns, pinnedColumns, columnWidths, pinnedLeftStyle, pinnedRightStyle } = useTableColumnContext<
+    TRowData,
+    TRowId
+  >();
 
   // Note: edit state now managed internally by DataCell
   // const { _getEditingState, _setEditingState } = useTableDataContext();
@@ -81,16 +70,13 @@ export const TableBody = <
     startHeight: number;
   } | null>(null);
 
-  const handleRowResizeStart = React.useCallback(
-    (e: React.MouseEvent, rowId: TRowId, currentHeight: number) => {
-      setResizingRow({
-        rowId: rowId,
-        startY: e.clientY,
-        startHeight: currentHeight,
-      });
-    },
-    []
-  );
+  const handleRowResizeStart = React.useCallback((e: React.MouseEvent, rowId: TRowId, currentHeight: number) => {
+    setResizingRow({
+      rowId: rowId,
+      startY: e.clientY,
+      startHeight: currentHeight,
+    });
+  }, []);
 
   React.useEffect(() => {
     const handleResizeMove = (e: MouseEvent) => {
@@ -172,12 +158,7 @@ export const TableBody = <
       {isLoading && !isPaginated && (
         <tr style={{ height: `${loadingRowHeight}px` }}>
           <td colSpan={colSpan}>
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height="100%"
-            >
+            <Box display="flex" justifyContent="center" alignItems="center" height="100%">
               <CircularProgress size={30} style={{ marginInlineEnd: 10 }} />
             </Box>
           </td>

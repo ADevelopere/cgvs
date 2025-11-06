@@ -1,10 +1,6 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
-import {
-  certificateElement,
-  dateElement,
-  elementTextProps,
-} from "@/server/db/schema";
+import { certificateElement, dateElement, elementTextProps } from "@/server/db/schema";
 import * as ElType from "@/server/types/element";
 import { TextPropsRepository } from "./textProps.element.repository";
 import { DateElementUtils } from "@/server/utils";
@@ -30,18 +26,14 @@ export namespace DateElementRepository {
    * 5. Insert into date_element
    * 6. Load and return full output
    */
-  export const create = async (
-    input: ElType.DateElementInput
-  ): Promise<ElType.DateElementOutput> => {
+  export const create = async (input: ElType.DateElementInput): Promise<ElType.DateElementOutput> => {
     // 1. Validate input
     await DateElementUtils.checkInput(input);
 
     // 2. Create TextProps
     const newTextProps = await TextPropsRepository.create(input.textProps);
 
-    const variableId = DateElementUtils.extractVariableIdFromDataSource(
-      input.dataSource
-    );
+    const variableId = DateElementUtils.extractVariableIdFromDataSource(input.dataSource);
 
     const baseInput: ElType.CertificateElementEntityInput = {
       ...input.base,
@@ -49,10 +41,7 @@ export namespace DateElementRepository {
     };
 
     // 4. Insert into certificate_element (base table)
-    const [newBaseElement] = await db
-      .insert(certificateElement)
-      .values(baseInput)
-      .returning();
+    const newBaseElement = await ElementRepository.createInternal(baseInput);
 
     // 5. Insert into date_element (type-specific table)
     const [newDateElement] = await db
@@ -64,16 +53,12 @@ export namespace DateElementRepository {
         offsetDays: input.dateProps.offsetDays ?? undefined,
         format: input.dateProps.format,
         transformation: input.dateProps.transformation ?? null,
-        dateDataSource: DateElementUtils.convertInputDataSourceToOutput(
-          input.dataSource
-        ),
+        dateDataSource: DateElementUtils.convertInputDataSourceToOutput(input.dataSource),
         variableId,
       })
       .returning();
 
-    logger.info(
-      `DATE element created: ${newBaseElement.name} (ID: ${newBaseElement.id})`
-    );
+    logger.info(`DATE element created: ${newBaseElement.name} (ID: ${newBaseElement.id})`);
 
     // 6. Load and return full output
     return {
@@ -83,8 +68,7 @@ export namespace DateElementRepository {
         ...newDateElement,
         elementId: newDateElement.elementId,
         calendarType: newDateElement.calendarType as ElType.CalendarType,
-        transformation:
-          newDateElement.transformation as ElType.DateTransformationType | null,
+        transformation: newDateElement.transformation as ElType.DateTransformationType | null,
       },
       dateDataSource: newDateElement.dateDataSource,
     };
@@ -104,43 +88,33 @@ export namespace DateElementRepository {
    * 5. Update date_element (type-specific table)
    * 6. Return updated element
    */
-  export const update = async (
-    input: ElType.DateElementUpdateInput
-  ): Promise<ElType.DateElementOutput> => {
+  export const update = async (input: ElType.DateElementUpdateInput): Promise<ElType.DateElementOutput> => {
     // 1. Load existing element
     const existing = await loadByIdOrThrow(input.id);
 
     // 2. Validate type
     if (existing.base.type !== ElType.ElementType.DATE) {
-      throw new Error(
-        `Element ${input.id} is ${existing.base.type}, not DATE. Use correct repository.`
-      );
+      throw new Error(`Element ${input.id} is ${existing.base.type}, not DATE. Use correct repository.`);
     }
 
     // 3. Validate update input
     await DateElementUtils.checkInput(input);
 
     // 4. Update certificate_element (base table)
-    const updatedBaseElement = await ElementRepository.updateBaseElement(
-      { ...input.base, id: input.id },
+    const updatedBaseElement = await ElementRepository.updateBaseElement({ ...input.base, id: input.id }, true);
+
+    // 5. Update element_text_props (full replace required)
+    const updatedTextProps: ElType.ElementTextPropsEntity = await TextPropsRepository.update(
+      {
+        ...input.textProps,
+        id: existing.textPropsEntity.id,
+      },
       true
     );
 
-    // 5. Update element_text_props (full replace required)
-    const updatedTextProps: ElType.ElementTextPropsEntity =
-      await TextPropsRepository.update(
-        {
-          ...input.textProps,
-          id: existing.textPropsEntity.id,
-        },
-        true
-      );
-
     const updatedDateElement = await updateDateElementInternal(input);
 
-    logger.info(
-      `DATE element updated: ${updatedBaseElement.name} (ID: ${input.id})`
-    );
+    logger.info(`DATE element updated: ${updatedBaseElement.name} (ID: ${input.id})`);
 
     // 8. Return updated element
     return {
@@ -149,8 +123,7 @@ export namespace DateElementRepository {
       dateProps: {
         ...updatedDateElement,
         calendarType: updatedDateElement.calendarType as ElType.CalendarType,
-        transformation:
-          updatedDateElement.transformation as ElType.DateTransformationType | null,
+        transformation: updatedDateElement.transformation as ElType.DateTransformationType | null,
       },
       dateDataSource: updatedDateElement.dateDataSource,
     };
@@ -164,18 +137,13 @@ export namespace DateElementRepository {
    * Load DATE element by ID with all joined data
    * Joins: certificate_element + date_element + element_text_props
    */
-  export const loadById = async (
-    id: number
-  ): Promise<ElType.DateElementOutput | null> => {
+  export const loadById = async (id: number): Promise<ElType.DateElementOutput | null> => {
     // Join all three tables
     const result = await db
       .select()
       .from(certificateElement)
       .innerJoin(dateElement, eq(dateElement.elementId, certificateElement.id))
-      .innerJoin(
-        elementTextProps,
-        eq(elementTextProps.id, dateElement.textPropsId)
-      )
+      .innerJoin(elementTextProps, eq(elementTextProps.id, dateElement.textPropsId))
       .where(eq(certificateElement.id, id))
       .limit(1);
 
@@ -190,29 +158,22 @@ export namespace DateElementRepository {
       dateProps: {
         ...row.date_element,
         calendarType: row.date_element.calendarType as ElType.CalendarType,
-        transformation: row.date_element
-          .transformation as ElType.DateTransformationType | null,
+        transformation: row.date_element.transformation as ElType.DateTransformationType | null,
       },
       dateDataSource: row.date_element.dateDataSource,
     };
   };
 
-  export const loadByBase = async (
-    base: ElType.CertificateElementEntity
-  ): Promise<ElType.DateElementOutput> => {
+  export const loadByBase = async (base: ElType.CertificateElementEntity): Promise<ElType.DateElementOutput> => {
     // Join all three tables
     const result = await db
       .select()
       .from(dateElement)
-      .innerJoin(
-        elementTextProps,
-        eq(elementTextProps.id, dateElement.textPropsId)
-      )
+      .innerJoin(elementTextProps, eq(elementTextProps.id, dateElement.textPropsId))
       .where(eq(dateElement.elementId, base.id))
       .limit(1);
 
-    if (result.length === 0)
-      throw new Error(`DATE element with base ID ${base.id} does not exist.`);
+    if (result.length === 0) throw new Error(`DATE element with base ID ${base.id} does not exist.`);
 
     const row = result[0];
 
@@ -223,8 +184,7 @@ export namespace DateElementRepository {
       dateProps: {
         ...row.date_element,
         calendarType: row.date_element.calendarType as ElType.CalendarType,
-        transformation: row.date_element
-          .transformation as ElType.DateTransformationType | null,
+        transformation: row.date_element.transformation as ElType.DateTransformationType | null,
       },
       dateDataSource: row.date_element.dateDataSource,
     };
@@ -233,9 +193,7 @@ export namespace DateElementRepository {
   /**
    * Load DATE element by ID or throw error
    */
-  export const loadByIdOrThrow = async (
-    id: number
-  ): Promise<ElType.DateElementOutput> => {
+  export const loadByIdOrThrow = async (id: number): Promise<ElType.DateElementOutput> => {
     const element = await loadById(id);
     if (!element) {
       throw new Error(`DATE element with ID ${id} does not exist.`);
@@ -247,9 +205,7 @@ export namespace DateElementRepository {
    * Load DATE elements by IDs for Pothos dataloader
    * Returns array with DateElementOutput or Error per ID
    */
-  export const loadByIds = async (
-    ids: number[]
-  ): Promise<(ElType.DateElementOutput | Error)[]> => {
+  export const loadByIds = async (ids: number[]): Promise<(ElType.DateElementOutput | Error)[]> => {
     if (ids.length === 0) return [];
 
     // Load all elements
@@ -263,9 +219,7 @@ export namespace DateElementRepository {
 
       // Validate element type
       if (element.base.type !== ElType.ElementType.DATE) {
-        return new Error(
-          `Element ${element.base.id} is ${element.base.type}, not DATE`
-        );
+        return new Error(`Element ${element.base.id} is ${element.base.type}, not DATE`);
       }
 
       return element;
@@ -280,20 +234,14 @@ export namespace DateElementRepository {
    * Update date_element (type-specific table)
    * Returns updated entity or existing if no changes
    */
-  const updateDateElementInternal = async (
-    input: ElType.DateElementUpdateInput
-  ): Promise<ElType.DateElementEntity> => {
+  const updateDateElementInternal = async (input: ElType.DateElementUpdateInput): Promise<ElType.DateElementEntity> => {
     const dateUpdates: Partial<ElType.DateElementEntityInput> = {
       calendarType: input.dateProps.calendarType,
       offsetDays: input.dateProps.offsetDays ?? undefined,
       format: input.dateProps.format,
       transformation: input.dateProps.transformation ?? null,
-      dateDataSource: DateElementUtils.convertInputDataSourceToOutput(
-        input.dataSource
-      ),
-      variableId: DateElementUtils.extractVariableIdFromDataSource(
-        input.dataSource
-      ),
+      dateDataSource: DateElementUtils.convertInputDataSourceToOutput(input.dataSource),
+      variableId: DateElementUtils.extractVariableIdFromDataSource(input.dataSource),
     };
 
     const [updated] = await db
@@ -305,29 +253,21 @@ export namespace DateElementRepository {
     return updated;
   };
 
-  export const findById = async (
-    id: number
-  ): Promise<ElType.DateElementEntity | null> => {
-    const result = await db
-      .select()
-      .from(dateElement)
-      .where(eq(dateElement.elementId, id))
-      .limit(1);
+  export const findById = async (id: number): Promise<ElType.DateElementEntity | null> => {
+    const result = await db.select().from(dateElement).where(eq(dateElement.elementId, id)).limit(1);
 
     if (result.length === 0) return null;
 
     return result[0];
   };
 
-  export const findByIdOrThrow = async (  
-    id: number
-  ): Promise<ElType.DateElementEntity> => {
+  export const findByIdOrThrow = async (id: number): Promise<ElType.DateElementEntity> => {
     const element = await findById(id);
     if (!element) {
       throw new Error(`DATE element with ID ${id} does not exist.`);
     }
     return element;
-  }
+  };
 
   /**
    * Update date_element (type-specific table)
@@ -343,10 +283,8 @@ export namespace DateElementRepository {
     const dataSourceInput = input.dataSource;
     const dateUpdates: Partial<ElType.DateElementEntityInput> = {
       ...dataSourceInput,
-      dateDataSource:
-        DateElementUtils.convertInputDataSourceToOutput(dataSourceInput),
-      variableId:
-        DateElementUtils.extractVariableIdFromDataSource(dataSourceInput),
+      dateDataSource: DateElementUtils.convertInputDataSourceToOutput(dataSourceInput),
+      variableId: DateElementUtils.extractVariableIdFromDataSource(dataSourceInput),
     };
 
     const [updated] = await db
@@ -387,8 +325,7 @@ export namespace DateElementRepository {
       dateProps: {
         ...updated,
         calendarType: updated.calendarType as ElType.CalendarType,
-        transformation:
-          updated.transformation as ElType.DateTransformationType | null,
+        transformation: updated.transformation as ElType.DateTransformationType | null,
       },
     };
   };

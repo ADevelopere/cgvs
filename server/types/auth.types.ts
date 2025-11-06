@@ -1,10 +1,4 @@
-import {
-  users,
-  roles,
-  userRoles,
-  sessions,
-  passwordResetTokens,
-} from "@/server/db/schema";
+import { users, roles, userRoles, sessions, passwordResetTokens } from "@/server/db/schema";
 import { PageInfo } from "./pagination.types";
 import { Email } from "@/server/lib/email";
 
@@ -67,10 +61,8 @@ export type SessionPothosDefintion = SessionEntity & {
 };
 
 // password reset tokens
-export type PasswordResetTokenSelectType =
-  typeof passwordResetTokens.$inferSelect;
-export type PasswordResetTokenInsertInput =
-  typeof passwordResetTokens.$inferInsert;
+export type PasswordResetTokenSelectType = typeof passwordResetTokens.$inferSelect;
+export type PasswordResetTokenInsertInput = typeof passwordResetTokens.$inferInsert;
 
 export type PasswordResetTokenPothosDefintion = PasswordResetTokenSelectType;
 

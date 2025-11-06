@@ -9,19 +9,12 @@ import { Tab } from "@mui/material";
 import { TemplateManagementTabType } from "./useTemplateManagementStore";
 
 interface ManagementTabListProps {
-  onChange: (
-    event: React.SyntheticEvent,
-    newValue: TemplateManagementTabType
-  ) => void;
+  onChange: (event: React.SyntheticEvent, newValue: TemplateManagementTabType) => void;
   activeTab: TemplateManagementTabType;
   isLoading: boolean;
 }
 
-export const ManagementTabList: React.FC<ManagementTabListProps> = ({
-  onChange,
-  activeTab,
-  isLoading,
-}) => {
+export const ManagementTabList: React.FC<ManagementTabListProps> = ({ onChange, activeTab, isLoading }) => {
   const { templateCategoryTranslations: strings } = useAppTranslation();
 
   return (

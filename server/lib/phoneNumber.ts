@@ -1,8 +1,4 @@
-import {
-  PhoneNumberUtil,
-  PhoneNumberFormat,
-  PhoneNumber as GooglePhoneNumber,
-} from "google-libphonenumber";
+import { PhoneNumberUtil, PhoneNumberFormat, PhoneNumber as GooglePhoneNumber } from "google-libphonenumber";
 
 /**
  * TypeScript wrapper class for Google's PhoneNumber with validation support
@@ -13,19 +9,11 @@ export class PhoneNumber {
 
   constructor(numberOrGooglePhoneNumber: string | GooglePhoneNumber) {
     if (typeof numberOrGooglePhoneNumber === "string") {
-      this.googlePhoneNumber = PhoneNumber.util.parse(
-        numberOrGooglePhoneNumber
-      );
-      this.number = PhoneNumber.util.format(
-        this.googlePhoneNumber,
-        PhoneNumberFormat.E164
-      );
+      this.googlePhoneNumber = PhoneNumber.util.parse(numberOrGooglePhoneNumber);
+      this.number = PhoneNumber.util.format(this.googlePhoneNumber, PhoneNumberFormat.E164);
     } else {
       this.googlePhoneNumber = numberOrGooglePhoneNumber;
-      this.number = PhoneNumber.util.format(
-        this.googlePhoneNumber,
-        PhoneNumberFormat.E164
-      );
+      this.number = PhoneNumber.util.format(this.googlePhoneNumber, PhoneNumberFormat.E164);
     }
   }
 
@@ -187,15 +175,11 @@ export class PhoneNumber {
   }
   get countryCodeSource(): string | undefined {
     const src = this.googlePhoneNumber.getCountryCodeSource();
-    return src !== undefined
-      ? PhoneNumber.CountryCodeSource.fromGoogleEnum(src as number)
-      : undefined;
+    return src !== undefined ? PhoneNumber.CountryCodeSource.fromGoogleEnum(src as number) : undefined;
   }
   setCountryCodeSource(value: string): PhoneNumber {
     const clone = this.clone();
-    clone.googlePhoneNumber.setCountryCodeSource(
-      PhoneNumber.CountryCodeSource.toGoogleEnum(value)
-    );
+    clone.googlePhoneNumber.setCountryCodeSource(PhoneNumber.CountryCodeSource.toGoogleEnum(value));
     return clone;
   }
   clearCountryCodeSource(): PhoneNumber {
@@ -209,9 +193,7 @@ export class PhoneNumber {
     return this.googlePhoneNumber.hasPreferredDomesticCarrierCode();
   }
   get preferredDomesticCarrierCode(): string | undefined {
-    return (
-      this.googlePhoneNumber.getPreferredDomesticCarrierCode() ?? undefined
-    );
+    return this.googlePhoneNumber.getPreferredDomesticCarrierCode() ?? undefined;
   }
   setPreferredDomesticCarrierCode(value: string): PhoneNumber {
     const clone = this.clone();

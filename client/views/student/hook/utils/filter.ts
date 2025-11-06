@@ -1,20 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import {
-  DateFilterOperation,
-  TextFilterOperation,
-  DateFilterValue,
-} from "@/client/types/filters";
+import { DateFilterOperation, TextFilterOperation, DateFilterValue } from "@/client/types/filters";
 import logger from "@/client/lib/logger";
 
 // Helper function to get column type for filter mapping
 export const getColumnType = (
   columnId: keyof Graphql.Student
 ): "text" | "date" | "phone" | "select" | "country" | null => {
-  const typeMap: Record<
-    string,
-    "text" | "date" | "phone" | "select" | "country"
-  > = {
+  const typeMap: Record<string, "text" | "date" | "phone" | "select" | "country"> = {
     name: "text",
     email: "text",
     phoneNumber: "phone",
@@ -29,9 +22,7 @@ export const getColumnType = (
 
 // Helper function to get all possible filter keys for a column in the new structure
 // Since filters are now grouped in filterArgs, this function helps clear the appropriate filter fields
-export const getFilterKeysForColumn = (
-  columnId: keyof Graphql.Student
-): (keyof Graphql.StudentFilterArgs)[] => {
+export const getFilterKeysForColumn = (columnId: keyof Graphql.Student): (keyof Graphql.StudentFilterArgs)[] => {
   switch (columnId) {
     case "name":
       return [
@@ -93,20 +84,17 @@ export const getFilterKeysForColumn = (
 };
 
 // Legacy function to maintain compatibility - maps to top-level query variables that need clearing
-export const getQueryParamKeysForColumn =
-  (): (keyof Graphql.StudentsQueryVariables)[] => {
-    // In the new structure, filters are grouped in filterArgs and pagination in paginationArgs
-    // This function is mainly used for resetting pagination when filters change
-    return ["paginationArgs"] as (keyof Graphql.StudentsQueryVariables)[];
-  };
+export const getQueryParamKeysForColumn = (): (keyof Graphql.StudentsQueryVariables)[] => {
+  // In the new structure, filters are grouped in filterArgs and pagination in paginationArgs
+  // This function is mainly used for resetting pagination when filters change
+  return ["paginationArgs"] as (keyof Graphql.StudentsQueryVariables)[];
+};
 
 // Define mappings for text operations to camelCase filter field names
 export const textOperationConfig: {
   [key in TextFilterOperation]?: {
     // Field name in StudentFilterArgs (camelCase)
-    fieldName: (
-      columnId: keyof Graphql.Student
-    ) => keyof Graphql.StudentFilterArgs;
+    fieldName: (columnId: keyof Graphql.Student) => keyof Graphql.StudentFilterArgs;
     // Does this operation require a boolean value instead of string?
     isBooleanOp?: boolean;
   };
@@ -119,10 +107,7 @@ export const textOperationConfig: {
         email: "email",
         phoneNumber: "phoneNumber",
       };
-      return (
-        fieldMap[columnId as string] ||
-        (columnId as keyof Graphql.StudentFilterArgs)
-      );
+      return fieldMap[columnId as string] || (columnId as keyof Graphql.StudentFilterArgs);
     },
   },
   [TextFilterOperation.notContains]: {
@@ -131,10 +116,7 @@ export const textOperationConfig: {
         name: "nameNotContains",
         email: "emailNotContains",
       };
-      return (
-        fieldMap[columnId as string] ||
-        (columnId as keyof Graphql.StudentFilterArgs)
-      );
+      return fieldMap[columnId as string] || (columnId as keyof Graphql.StudentFilterArgs);
     },
   },
   [TextFilterOperation.equals]: {
@@ -143,10 +125,7 @@ export const textOperationConfig: {
         name: "nameEquals",
         email: "emailEquals",
       };
-      return (
-        fieldMap[columnId as string] ||
-        (columnId as keyof Graphql.StudentFilterArgs)
-      );
+      return fieldMap[columnId as string] || (columnId as keyof Graphql.StudentFilterArgs);
     },
   },
   [TextFilterOperation.notEquals]: {
@@ -155,10 +134,7 @@ export const textOperationConfig: {
         name: "nameNotEquals",
         email: "emailNotEquals",
       };
-      return (
-        fieldMap[columnId as string] ||
-        (columnId as keyof Graphql.StudentFilterArgs)
-      );
+      return fieldMap[columnId as string] || (columnId as keyof Graphql.StudentFilterArgs);
     },
   },
   [TextFilterOperation.startsWith]: {
@@ -167,10 +143,7 @@ export const textOperationConfig: {
         name: "nameStartsWith",
         email: "emailStartsWith",
       };
-      return (
-        fieldMap[columnId as string] ||
-        (columnId as keyof Graphql.StudentFilterArgs)
-      );
+      return fieldMap[columnId as string] || (columnId as keyof Graphql.StudentFilterArgs);
     },
   },
   [TextFilterOperation.endsWith]: {
@@ -179,10 +152,7 @@ export const textOperationConfig: {
         name: "nameEndsWith",
         email: "emailEndsWith",
       };
-      return (
-        fieldMap[columnId as string] ||
-        (columnId as keyof Graphql.StudentFilterArgs)
-      );
+      return fieldMap[columnId as string] || (columnId as keyof Graphql.StudentFilterArgs);
     },
   },
   [TextFilterOperation.isEmpty]: {
@@ -191,10 +161,7 @@ export const textOperationConfig: {
         name: "nameIsEmpty",
         email: "emailIsEmpty",
       };
-      return (
-        fieldMap[columnId as string] ||
-        (columnId as keyof Graphql.StudentFilterArgs)
-      );
+      return fieldMap[columnId as string] || (columnId as keyof Graphql.StudentFilterArgs);
     },
     isBooleanOp: true,
   },
@@ -204,10 +171,7 @@ export const textOperationConfig: {
         name: "nameIsNotEmpty",
         email: "emailIsNotEmpty",
       };
-      return (
-        fieldMap[columnId as string] ||
-        (columnId as keyof Graphql.StudentFilterArgs)
-      );
+      return fieldMap[columnId as string] || (columnId as keyof Graphql.StudentFilterArgs);
     },
     isBooleanOp: true,
   },
@@ -267,9 +231,7 @@ export const mapTextFilter = (
 };
 
 // Helper to format date for MySQL datetime format
-export const formatDate = (
-  date: string | Date | null | undefined
-): string | undefined => {
+export const formatDate = (date: string | Date | null | undefined): string | undefined => {
   if (!date) return undefined;
 
   try {
@@ -292,20 +254,11 @@ export const mapDateFilter = (
   const filterArgs: Partial<Graphql.StudentFilterArgs> = {};
 
   // Handle boolean operations (isEmpty, isNotEmpty)
-  if (
-    op === DateFilterOperation.isEmpty ||
-    op === DateFilterOperation.isNotEmpty
-  ) {
+  if (op === DateFilterOperation.isEmpty || op === DateFilterOperation.isNotEmpty) {
     // Map columnId to the appropriate boolean field
     const fieldMap: Record<string, keyof Graphql.StudentFilterArgs> = {
-      dateOfBirth:
-        op === DateFilterOperation.isEmpty
-          ? "birthDateIsEmpty"
-          : "birthDateIsNotEmpty",
-      createdAt:
-        op === DateFilterOperation.isEmpty
-          ? "createdAtIsEmpty"
-          : "createdAtIsNotEmpty",
+      dateOfBirth: op === DateFilterOperation.isEmpty ? "birthDateIsEmpty" : "birthDateIsNotEmpty",
+      createdAt: op === DateFilterOperation.isEmpty ? "createdAtIsEmpty" : "createdAtIsNotEmpty",
     };
 
     const fieldName = fieldMap[columnId as string];
@@ -316,11 +269,7 @@ export const mapDateFilter = (
   }
 
   // Handle date range operations (between)
-  if (
-    op === DateFilterOperation.between &&
-    typeof value === "object" &&
-    value !== null
-  ) {
+  if (op === DateFilterOperation.between && typeof value === "object" && value !== null) {
     const { from, to } = value;
 
     // Map columnId to from/to field names
@@ -349,10 +298,7 @@ export const mapDateFilter = (
   }
 
   // Handle single date operations
-  const operationFieldMap: Record<
-    string,
-    Record<DateFilterOperation, keyof Graphql.StudentFilterArgs>
-  > = {
+  const operationFieldMap: Record<string, Record<DateFilterOperation, keyof Graphql.StudentFilterArgs>> = {
     dateOfBirth: {
       [DateFilterOperation.is]: "birthDate",
       [DateFilterOperation.isNot]: "birthDateNot",
@@ -373,9 +319,7 @@ export const mapDateFilter = (
 
   const fieldName = operationFieldMap[columnId as string]?.[op];
   if (!fieldName) {
-    logger.warn(
-      `Unsupported date filter operation: ${op} for column: ${columnId}`
-    );
+    logger.warn(`Unsupported date filter operation: ${op} for column: ${columnId}`);
     return filterArgs;
   }
 

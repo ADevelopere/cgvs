@@ -21,11 +21,7 @@ export class RedisCacheAdapter implements ICacheService {
   /**
    * Set a value in cache
    */
-  async set(
-    key: string,
-    value: string,
-    options?: { ex?: number; px?: number }
-  ): Promise<void> {
+  async set(key: string, value: string, options?: { ex?: number; px?: number }): Promise<void> {
     await this.redisService.set(key, value, options);
   }
 
@@ -60,9 +56,7 @@ export class RedisCacheAdapter implements ICacheService {
   /**
    * Execute a pipeline of commands (for atomic operations)
    */
-  async pipeline(
-    commands: Array<{ command: string; args: (string | number)[] }>
-  ): Promise<unknown[]> {
+  async pipeline(commands: Array<{ command: string; args: (string | number)[] }>): Promise<unknown[]> {
     return await this.redisService.pipeline(commands);
   }
 

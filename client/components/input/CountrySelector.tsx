@@ -72,12 +72,7 @@ export const CountrySelector: React.FC<CountrySelectProps> = ({
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { key, ...optionProps } = props;
         return (
-          <Box
-            key={option.code}
-            component="li"
-            sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-            {...optionProps}
-          >
+          <Box key={option.code} component="li" sx={{ "& > img": { mr: 2, flexShrink: 0 } }} {...optionProps}>
             {option.flag}
             {countryNameByCode(strings, option.code)}
           </Box>

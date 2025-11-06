@@ -1,15 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button,
-  useTheme,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, useTheme } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import { CancelTarget } from "../core/storage-upload.types";
 
@@ -20,12 +12,7 @@ export interface CancelUploadDialogProps {
   onCancel: () => void;
 }
 
-const CancelUploadDialog: React.FC<CancelUploadDialogProps> = ({
-  open,
-  cancelTarget,
-  onConfirm,
-  onCancel,
-}) => {
+const CancelUploadDialog: React.FC<CancelUploadDialogProps> = ({ open, cancelTarget, onConfirm, onCancel }) => {
   const theme = useTheme();
   const {
     storageTranslations: { uploading: translations },
@@ -42,10 +29,7 @@ const CancelUploadDialog: React.FC<CancelUploadDialogProps> = ({
     } else {
       return {
         title: translations.cancelFileUpload,
-        message: translations.cancelFileUploadMessage.replace(
-          "%{fileName}",
-          cancelTarget.fileName ?? "unknown target"
-        ),
+        message: translations.cancelFileUploadMessage.replace("%{fileName}", cancelTarget.fileName ?? "unknown target"),
       };
     }
   };
@@ -67,17 +51,11 @@ const CancelUploadDialog: React.FC<CancelUploadDialogProps> = ({
         },
       }}
     >
-      <DialogTitle
-        id="cancel-upload-dialog-title"
-        sx={{ color: theme.palette.text.primary }}
-      >
+      <DialogTitle id="cancel-upload-dialog-title" sx={{ color: theme.palette.text.primary }}>
         {title}
       </DialogTitle>
       <DialogContent>
-        <DialogContentText
-          id="cancel-upload-dialog-description"
-          sx={{ color: theme.palette.text.secondary }}
-        >
+        <DialogContentText id="cancel-upload-dialog-description" sx={{ color: theme.palette.text.secondary }}>
           {message}
         </DialogContentText>
       </DialogContent>

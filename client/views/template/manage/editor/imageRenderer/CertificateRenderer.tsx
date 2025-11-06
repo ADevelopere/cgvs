@@ -21,16 +21,10 @@ interface TextElementData {
  * Renders certificate elements purely from data
  * No ReactFlow, no editor state - just raw element data
  */
-export const CertificateRenderer: React.FC<CertificateRendererProps> = ({
-  elements,
-  config,
-  onReady,
-}) => {
+export const CertificateRenderer: React.FC<CertificateRendererProps> = ({ elements, config, onReady }) => {
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
   const [fontStyles, setFontStyles] = React.useState<string>("");
-  const [textElements, setTextElements] = React.useState<TextElementData[]>(
-    []
-  );
+  const [textElements, setTextElements] = React.useState<TextElementData[]>([]);
 
   React.useEffect(() => {
     // Filter and sort text elements by renderOrder
@@ -62,11 +56,7 @@ export const CertificateRenderer: React.FC<CertificateRendererProps> = ({
     // Resolve text content for each element
     const resolvedElements: TextElementData[] = textEls.map(el => ({
       element: el,
-      textContent: resolveTextContent(
-        el.textDataSource,
-        config.language,
-        "Text"
-      ),
+      textContent: resolveTextContent(el.textDataSource, config.language, "Text"),
       fontFamily: fontFamilyMap.get(el.base.id) || "Roboto",
     }));
 

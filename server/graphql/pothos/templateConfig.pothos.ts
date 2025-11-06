@@ -31,27 +31,25 @@ export const TemplateConfigUpdateInputPothosObject = gqlSchemaBuilder
     }),
   });
 
-export const TemplateConfigPothosObject = gqlSchemaBuilder
-  .objectRef<Types.TemplateConfig>("TemplateConfig")
-  .implement({
-    fields: t => ({
-      id: t.exposeInt("id", { nullable: false }),
-      templateId: t.exposeInt("templateId"),
-      width: t.exposeInt("width", { nullable: false }),
-      height: t.exposeInt("height", { nullable: false }),
-      language: t.field({
-        type: AppLanguagePothosObject,
-        nullable: false,
-        resolve: tc => tc.language,
-      }),
-      createdAt: t.expose("createdAt", {
-        type: "DateTime",
-      }),
-      updatedAt: t.expose("updatedAt", {
-        type: "DateTime",
-      }),
+export const TemplateConfigPothosObject = gqlSchemaBuilder.objectRef<Types.TemplateConfig>("TemplateConfig").implement({
+  fields: t => ({
+    id: t.exposeInt("id", { nullable: false }),
+    templateId: t.exposeInt("templateId"),
+    width: t.exposeInt("width", { nullable: false }),
+    height: t.exposeInt("height", { nullable: false }),
+    language: t.field({
+      type: AppLanguagePothosObject,
+      nullable: false,
+      resolve: tc => tc.language,
     }),
-  });
+    createdAt: t.expose("createdAt", {
+      type: "DateTime",
+    }),
+    updatedAt: t.expose("updatedAt", {
+      type: "DateTime",
+    }),
+  }),
+});
 
 gqlSchemaBuilder.objectFields(TemplateConfigPothosObject, t => ({
   template: t.loadable({

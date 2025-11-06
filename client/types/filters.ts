@@ -48,21 +48,15 @@ export type FilterClause<TValue = any, TOperation = any> = {
 };
 
 // Type guard functions to check filter operation types
-export function isTextFilterOperation(
-  operation: any
-): operation is TextFilterOperation {
+export function isTextFilterOperation(operation: any): operation is TextFilterOperation {
   return Object.values(TextFilterOperation).includes(operation);
 }
 
-export function isNumberFilterOperation(
-  operation: any
-): operation is NumberFilterOperation {
+export function isNumberFilterOperation(operation: any): operation is NumberFilterOperation {
   return Object.values(NumberFilterOperation).includes(operation);
 }
 
-export function isDateFilterOperation(
-  operation: any
-): operation is DateFilterOperation {
+export function isDateFilterOperation(operation: any): operation is DateFilterOperation {
   return Object.values(DateFilterOperation).includes(operation);
 }
 

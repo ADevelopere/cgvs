@@ -127,8 +127,7 @@ describe("Signed URL Repository", () => {
         })
       );
 
-      const result =
-        await SignedUrlRepository.getSignedUrlById("retrieve-test");
+      const result = await SignedUrlRepository.getSignedUrlById("retrieve-test");
 
       expect(result).not.toBeNull();
       expect(result?.id).toBe("retrieve-test");
@@ -198,13 +197,11 @@ describe("Signed URL Repository", () => {
       );
 
       // Claim once
-      const firstClaim =
-        await SignedUrlRepository.claimSignedUrl("already-used");
+      const firstClaim = await SignedUrlRepository.claimSignedUrl("already-used");
       expect(firstClaim).not.toBeNull();
 
       // Try to claim again
-      const secondClaim =
-        await SignedUrlRepository.claimSignedUrl("already-used");
+      const secondClaim = await SignedUrlRepository.claimSignedUrl("already-used");
       expect(secondClaim).toBeNull();
     });
 
@@ -224,8 +221,7 @@ describe("Signed URL Repository", () => {
       expect(result).toBeNull();
 
       // Verify it's still marked as unused in database
-      const dbToken =
-        await SignedUrlRepository.getSignedUrlById("expired-token");
+      const dbToken = await SignedUrlRepository.getSignedUrlById("expired-token");
       expect(dbToken?.used).toBe(false);
     });
 
@@ -369,8 +365,7 @@ describe("Signed URL Repository", () => {
 
       // Verify both are deleted
       const used = await SignedUrlRepository.getSignedUrlById("expired-used");
-      const unused =
-        await SignedUrlRepository.getSignedUrlById("expired-unused");
+      const unused = await SignedUrlRepository.getSignedUrlById("expired-unused");
       expect(used).toBeNull();
       expect(unused).toBeNull();
     });

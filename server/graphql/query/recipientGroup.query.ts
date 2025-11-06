@@ -8,8 +8,7 @@ gqlSchemaBuilder.queryFields(t => ({
     args: {
       id: t.arg.int({ required: true }),
     },
-    resolve: async (_parent, args) =>
-      RecipientGroupRepository.findById(args.id),
+    resolve: async (_parent, args) => RecipientGroupRepository.findById(args.id),
   }),
 
   templateRecipientGroupsByTemplateId: t.field({
@@ -17,7 +16,6 @@ gqlSchemaBuilder.queryFields(t => ({
     args: {
       templateId: t.arg.int({ required: true }),
     },
-    resolve: async (_parent, args) =>
-      RecipientGroupRepository.findAllByTemplateId(args.templateId),
+    resolve: async (_parent, args) => RecipientGroupRepository.findAllByTemplateId(args.templateId),
   }),
 }));

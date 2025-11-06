@@ -31,8 +31,7 @@ export const recipientGroup: RecipientGroupTranslation = {
   // Delete group
   deleteGroup: "حذف المجموعة",
   deleteGroupTitle: "تأكيد الحذف",
-  confirmDelete:
-    "هل أنت متأكد أنك تريد حذف هذه المجموعة؟ لا يمكن التراجع عن هذا الإجراء.",
+  confirmDelete: "هل أنت متأكد أنك تريد حذف هذه المجموعة؟ لا يمكن التراجع عن هذا الإجراء.",
 
   // Info dialog
   groupInfo: "معلومات المجموعة",
@@ -76,11 +75,9 @@ export const recipientGroup: RecipientGroupTranslation = {
 
   // Confirmation dialogs
   confirmClearSelection: "تأكيد إلغاء التحديد",
-  confirmClearSelectionMessage:
-    "هل أنت متأكد أنك تريد إلغاء تحديد جميع الطلاب المحددين؟",
+  confirmClearSelectionMessage: "هل أنت متأكد أنك تريد إلغاء تحديد جميع الطلاب المحددين؟",
   confirmAddStudents: "تأكيد إضافة الطلاب",
-  confirmAddStudentsMessage:
-    "هل أنت متأكد أنك تريد إضافة الطلاب المحددين إلى المجموعة؟",
+  confirmAddStudentsMessage: "هل أنت متأكد أنك تريد إضافة الطلاب المحددين إلى المجموعة؟",
 
   // Loading and error states
   loading: "جاري التحميل...",

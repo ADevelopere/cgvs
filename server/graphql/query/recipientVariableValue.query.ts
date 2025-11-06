@@ -11,30 +11,26 @@ gqlSchemaBuilder.queryFields(t => ({
     type: RecipientWithVariableValuesPothosObject,
     nullable: true,
     authScopes: { loggedIn: true },
-    description:
-      "Get variable values for a recipient. Auto-fixes invalid data by setting to null.",
+    description: "Get variable values for a recipient. Auto-fixes invalid data by setting to null.",
     args: { recipientGroupItemId: t.arg.int({ required: true }) },
     resolve: async (_, args) =>
-      await RecipientVariableValueRepository.findByRecipientGroupItemId(
-        args.recipientGroupItemId
-      ),
+      await RecipientVariableValueRepository.findByRecipientGroupItemId(args.recipientGroupItemId),
   }),
 
   // All recipients in group (with pagination, auto-fixes invalid data)
   recipientVariableValuesByGroup: t.field({
     type: RecipientVariableValuesGroupResultPothosObject,
     authScopes: { loggedIn: true },
-    description:
-      "Get all recipients with values. Auto-fixes invalid data by setting to null. Supports pagination.",
+    description: "Get all recipients with values. Auto-fixes invalid data by setting to null. Supports pagination.",
     args: {
       recipientGroupId: t.arg.int({ required: true }),
       limit: t.arg.int(),
       offset: t.arg.int(),
     },
     resolve: async (_, args) =>
-      await RecipientVariableValueRepository.findByRecipientGroupId(
-        args.recipientGroupId,
-        { limit: args.limit ?? undefined, offset: args.offset ?? undefined }
-      ),
+      await RecipientVariableValueRepository.findByRecipientGroupId(args.recipientGroupId, {
+        limit: args.limit ?? undefined,
+        offset: args.offset ?? undefined,
+      }),
   }),
 }));

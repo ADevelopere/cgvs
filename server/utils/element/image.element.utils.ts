@@ -28,13 +28,9 @@ export namespace ImageElementUtils {
    * Map GraphQL ImageDataSource input to repository ImageDataSource input
    * Note: IMAGE has only one data source variant (storageFile)
    */
-  export const mapImageDataSourceGraphqlToInput = (
-    input: ImageDataSourceInputGraphql
-  ): ImageDataSourceInput => {
+  export const mapImageDataSourceGraphqlToInput = (input: ImageDataSourceInputGraphql): ImageDataSourceInput => {
     if (!input || input.storageFile === undefined) {
-      throw new Error(
-        "Invalid ImageDataSource input: must specify storageFile"
-      );
+      throw new Error("Invalid ImageDataSource input: must specify storageFile");
     }
     return {
       type: ImageDataSourceType.STORAGE_FILE,
@@ -46,13 +42,9 @@ export namespace ImageElementUtils {
   /**
    * Map GraphQL ImageElement create input to repository ImageElement create input
    */
-  export const mapImageElementCreateGraphqlToInput = (
-    input: ImageElementInputGraphql
-  ): ImageElementInput => {
+  export const mapImageElementCreateGraphqlToInput = (input: ImageElementInputGraphql): ImageElementInput => {
     if (!input || !input.base || !input.imageProps || !input.dataSource) {
-      throw new Error(
-        "ImageElementInputGraphql must include base, imageProps, and dataSource"
-      );
+      throw new Error("ImageElementInputGraphql must include base, imageProps, and dataSource");
     }
     return {
       base: input.base,
@@ -68,9 +60,7 @@ export namespace ImageElementUtils {
     input: ImageElementUpdateInputGraphql
   ): ImageElementUpdateInput => {
     if (!input || !input.base || !input.imageProps || !input.dataSource) {
-      throw new Error(
-        "ImageElementUpdateInputGraphql must include base, imageProps, and dataSource"
-      );
+      throw new Error("ImageElementUpdateInputGraphql must include base, imageProps, and dataSource");
     }
     return {
       id: input.id,
@@ -87,9 +77,7 @@ export namespace ImageElementUtils {
     input: ImageDataSourceStandaloneUpdateInputGraphql
   ): ImageDataSourceStandaloneUpdateInput => {
     if (!input || !input.dataSource) {
-      throw new Error(
-        "ImageDataSourceStandaloneUpdateInputGraphql must include dataSource"
-      );
+      throw new Error("ImageDataSourceStandaloneUpdateInputGraphql must include dataSource");
     }
     return {
       elementId: input.elementId,
@@ -105,14 +93,10 @@ export namespace ImageElementUtils {
    * Validate image data source
    * IMAGE elements only support STORAGE_FILE data source
    */
-  const validateDataSource = async (
-    dataSource: ImageDataSourceInput
-  ): Promise<void> => {
+  const validateDataSource = async (dataSource: ImageDataSourceInput): Promise<void> => {
     // Validate type is STORAGE_FILE
     if (dataSource.type !== ImageDataSourceType.STORAGE_FILE) {
-      throw new Error(
-        `Invalid image data source type: ${dataSource.type}. Must be STORAGE_FILE`
-      );
+      throw new Error(`Invalid image data source type: ${dataSource.type}. Must be STORAGE_FILE`);
     }
 
     // Validate storage file exists
@@ -125,9 +109,7 @@ export namespace ImageElementUtils {
   const validateImageFit = (fit: ElementImageFit): void => {
     const validFits = Object.values(ElementImageFit);
     if (!validFits.includes(fit)) {
-      throw new Error(
-        `Invalid image fit: ${fit}. Must be one of: ${validFits.join(", ")}`
-      );
+      throw new Error(`Invalid image fit: ${fit}. Must be one of: ${validFits.join(", ")}`);
     }
   };
 
@@ -138,13 +120,9 @@ export namespace ImageElementUtils {
   /**
    * Validate all fields for IMAGE element (create/update)
    */
-  export const validateInput = async (
-    input: ImageElementInput
-  ): Promise<void> => {
+  export const validateInput = async (input: ImageElementInput): Promise<void> => {
     if (!input.base || !input.imageProps || !input.dataSource) {
-      throw new Error(
-        "ImageElementInput must include base, imageProps, and dataSource"
-      );
+      throw new Error("ImageElementInput must include base, imageProps, and dataSource");
     }
 
     // Validate base element properties
@@ -160,9 +138,7 @@ export namespace ImageElementUtils {
   /**
    * Validate imageProps for standalone update
    */
-  export const checkSpecProps = async (
-    imageProps: ImageElementSpecPropsInput
-  ): Promise<void> => {
+  export const checkSpecProps = async (imageProps: ImageElementSpecPropsInput): Promise<void> => {
     // Validate image fit
     validateImageFit(imageProps.fit);
   };
@@ -174,9 +150,7 @@ export namespace ImageElementUtils {
   /**
    * Convert input data source format to output format
    */
-  export const convertInputDataSourceToOutput = (
-    input: ImageDataSourceInput
-  ): ImageDataSource => {
+  export const convertInputDataSourceToOutput = (input: ImageDataSourceInput): ImageDataSource => {
     return {
       type: input.type,
       storageFilePath: input.storageFilePath,

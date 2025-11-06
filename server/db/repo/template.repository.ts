@@ -1,9 +1,5 @@
 import { db } from "@/server/db/drizzleDb";
-import {
-  templateCategories,
-  templates,
-  templatesConfigs,
-} from "@/server/db/schema";
+import { templateCategories, templates, templatesConfigs } from "@/server/db/schema";
 import { count, eq, inArray, max, sql, asc } from "drizzle-orm";
 import {
   TemplateEntity,
@@ -18,11 +14,7 @@ import {
 import logger from "@/server/lib/logger";
 import { PaginationArgs } from "../../types/pagination.types";
 import { PaginationArgsDefault } from "../../graphql/pothos/pagination.objects";
-import {
-  TemplateUtils,
-  TemplateFilterUtils,
-  PaginationUtils,
-} from "@/server/utils";
+import { TemplateUtils, TemplateFilterUtils, PaginationUtils } from "@/server/utils";
 import { TemplateCategoryRepository } from "./templateCategory.repository";
 import { getStorageService } from "@/server/storage/storage.service";
 import { StorageDbRepository } from "@/server/db/repo";
@@ -30,9 +22,7 @@ import * as Types from "@/server/types";
 import { queryWithPagination } from "@/server/db/query.extentions";
 
 export namespace TemplateRepository {
-  export const findById = async (
-    id: number
-  ): Promise<TemplateEntity | null> => {
+  export const findById = async (id: number): Promise<TemplateEntity | null> => {
     try {
       return await db
         .select()
@@ -50,9 +40,7 @@ export namespace TemplateRepository {
     }
   };
 
-  export const findByIdOrThrow = async (
-    id: number
-  ): Promise<TemplateEntity> => {
+  export const findByIdOrThrow = async (id: number): Promise<TemplateEntity> => {
     try {
       return await findById(id).then(t => {
         if (!t) {
@@ -71,26 +59,13 @@ export namespace TemplateRepository {
     return total;
   };
 
-  export const findAll = async (opts: {
-    limit: number;
-    offset: number;
-  }): Promise<TemplateEntity[]> => {
-    return await db
-      .select()
-      .from(templates)
-      .orderBy()
-      .limit(opts.limit)
-      .offset(opts.offset);
+  export const findAll = async (opts: { limit: number; offset: number }): Promise<TemplateEntity[]> => {
+    return await db.select().from(templates).orderBy().limit(opts.limit).offset(opts.offset);
   };
 
-  export const loadByIds = async (
-    ids: number[]
-  ): Promise<(TemplateEntity | Error)[]> => {
+  export const loadByIds = async (ids: number[]): Promise<(TemplateEntity | Error)[]> => {
     if (ids.length === 0) return [];
-    const filteredTemplates = await db
-      .select()
-      .from(templates)
-      .where(inArray(templates.id, ids));
+    const filteredTemplates = await db.select().from(templates).where(inArray(templates.id, ids));
 
     const templateList: (TemplateEntity | Error)[] = ids.map(id => {
       const matchingTemplate = filteredTemplates.find(c => c.id === id);
@@ -100,31 +75,20 @@ export namespace TemplateRepository {
     return templateList;
   };
 
-  export const findByCategoryId = async (
-    categoryId: number
-  ): Promise<TemplateEntity[]> => {
-    const templatesList = await db
-      .select()
-      .from(templates)
-      .where(eq(templates.categoryId, categoryId));
+  export const findByCategoryId = async (categoryId: number): Promise<TemplateEntity[]> => {
+    const templatesList = await db.select().from(templates).where(eq(templates.categoryId, categoryId));
 
     return templatesList;
   };
 
   export const suspendedTemplates = async (): Promise<TemplateEntity[]> => {
-    const suspensionCategory =
-      await TemplateCategoryRepository.findTemplatesSuspensionCategory();
-    const templatesList = await db
-      .select()
-      .from(templates)
-      .where(eq(templates.categoryId, suspensionCategory.id));
+    const suspensionCategory = await TemplateCategoryRepository.findTemplatesSuspensionCategory();
+    const templatesList = await db.select().from(templates).where(eq(templates.categoryId, suspensionCategory.id));
 
     return templatesList;
   };
 
-  export const loadForTemplateCategories = async (
-    templateCategoryIds: number[]
-  ): Promise<TemplateEntity[][]> => {
+  export const loadForTemplateCategories = async (templateCategoryIds: number[]): Promise<TemplateEntity[][]> => {
     if (templateCategoryIds.length === 0) return [];
     const templatesList = await db
       .select()
@@ -132,9 +96,7 @@ export namespace TemplateRepository {
       .where(inArray(templates.categoryId, templateCategoryIds))
       .orderBy(templates.order);
 
-    return templateCategoryIds.map(categoryId =>
-      templatesList.filter(template => template.categoryId === categoryId)
-    );
+    return templateCategoryIds.map(categoryId => templatesList.filter(template => template.categoryId === categoryId));
   };
 
   export const findAllPaginated = async (
@@ -145,10 +107,7 @@ export namespace TemplateRepository {
     const total = await totalCount();
 
     // Figure out pagination
-    const perPage = Math.min(
-      first ?? PaginationArgsDefault.first,
-      maxCount ?? PaginationArgsDefault.maxCount
-    );
+    const perPage = Math.min(first ?? PaginationArgsDefault.first, maxCount ?? PaginationArgsDefault.maxCount);
     const currentPage = page ?? (skip ? Math.floor(skip / perPage) + 1 : 1);
     const offset = (currentPage - 1) * perPage;
 
@@ -178,9 +137,7 @@ export namespace TemplateRepository {
     return result;
   };
 
-  export const findMaxOrderInCategory = async (
-    categoryId: number
-  ): Promise<number> => {
+  export const findMaxOrderInCategory = async (categoryId: number): Promise<number> => {
     const [{ maxOrder }] = await db
       .select({ maxOrder: max(templates.order) })
       .from(templates)
@@ -188,16 +145,12 @@ export namespace TemplateRepository {
     return maxOrder ?? 0;
   };
 
-  export const create = async (
-    input: TemplateCreateInput
-  ): Promise<TemplateEntity> => {
+  export const create = async (input: TemplateCreateInput): Promise<TemplateEntity> => {
     const { name, description, categoryId } = input;
 
     // Validate name length
     if (name.length < 3 || name.length > 255) {
-      throw new Error(
-        "Template name must be between 3 and 255 characters long."
-      );
+      throw new Error("Template name must be between 3 and 255 characters long.");
     }
     const newOrder = (await findMaxOrderInCategory(categoryId)) + 1;
 
@@ -253,11 +206,7 @@ export namespace TemplateRepository {
       throw new Error("Image file not found.");
     }
 
-    if (
-      file.isFromBucket &&
-      file.isPublic &&
-      file.contentType === "image/jpeg"
-    ) {
+    if (file.isFromBucket && file.isPublic && file.contentType === "image/jpeg") {
       try {
         const template = await create({ ...input });
         const [reult] = await db
@@ -273,26 +222,14 @@ export namespace TemplateRepository {
       }
     }
 
-    throw new Error(
-      `Failed to create template, name: ${input.name}, imageFileId: ${input.imageFileId}`
-    );
+    throw new Error(`Failed to create template, name: ${input.name}, imageFileId: ${input.imageFileId}`);
   };
 
-  export const update = async (
-    input: TemplateUpdateInput
-  ): Promise<TemplateEntity> => {
-    const {
-      id,
-      name,
-      categoryId: newCategoryId,
-      description,
-      imagePath,
-    } = input;
+  export const update = async (input: TemplateUpdateInput): Promise<TemplateEntity> => {
+    const { id, name, categoryId: newCategoryId, description, imagePath } = input;
 
     // Log function entry
-    logger.info(
-      `Updating template ${id}, imagePath provided: ${imagePath !== undefined ? "yes" : "no"}`
-    );
+    logger.info(`Updating template ${id}, imagePath provided: ${imagePath !== undefined ? "yes" : "no"}`);
 
     // Find existing template
     const existingTemplate = await findByIdOrThrow(id);
@@ -308,9 +245,7 @@ export namespace TemplateRepository {
 
       // Validate not suspension category
       if (category.specialType === "Suspension") {
-        throw new Error(
-          "updateTemplate: Cannot move template to a suspension category."
-        );
+        throw new Error("updateTemplate: Cannot move template to a suspension category.");
       }
     }
 
@@ -320,16 +255,12 @@ export namespace TemplateRepository {
     // Get old image path if exists
     let oldImagePath: string | null = null;
     if (existingTemplate.imageFileId) {
-      const oldFileInfo = await storageService.fileInfoByDbFileId(
-        existingTemplate.imageFileId
-      );
+      const oldFileInfo = await storageService.fileInfoByDbFileId(existingTemplate.imageFileId);
       oldImagePath = oldFileInfo?.path || null;
       if (oldImagePath) {
         logger.info(`Template ${id} has existing image: ${oldImagePath}`);
       } else {
-        logger.info(
-          `Template ${id} has imageFileId but file not found in storage`
-        );
+        logger.info(`Template ${id} has imageFileId but file not found in storage`);
       }
     } else {
       logger.info(`Template ${id} has no existing image`);
@@ -355,9 +286,7 @@ export namespace TemplateRepository {
         let fileEntity = await StorageDbRepository.fileByPath(imagePath);
         if (!fileEntity) {
           fileEntity = await StorageDbRepository.createFile(imagePath, false);
-          logger.info(
-            `📁 Created file record in DB for template image: ${imagePath}`
-          );
+          logger.info(`📁 Created file record in DB for template image: ${imagePath}`);
         } else {
           logger.info(`File record already exists in DB: ${imagePath}`);
         }
@@ -374,21 +303,15 @@ export namespace TemplateRepository {
         });
 
         if (!usageResult.success) {
-          logger.warn(
-            `Failed to register file usage for template ${id}: ${usageResult.message}`
-          );
+          logger.warn(`Failed to register file usage for template ${id}: ${usageResult.message}`);
         } else {
-          logger.info(
-            `✓ File usage registered successfully for template ${id}`
-          );
+          logger.info(`✓ File usage registered successfully for template ${id}`);
         }
       }
 
       // Unregister old file usage if image changed
       if (oldImagePath && oldImagePath !== imagePath) {
-        logger.info(
-          `Unregistering old file usage for template ${id}: ${oldImagePath}`
-        );
+        logger.info(`Unregistering old file usage for template ${id}: ${oldImagePath}`);
         const unregisterResult = await StorageDbRepository.unregisterFileUsage(
           oldImagePath,
           "template_cover",
@@ -396,9 +319,7 @@ export namespace TemplateRepository {
         );
 
         if (!unregisterResult) {
-          logger.warn(
-            `Failed to unregister old file usage for template ${id}: ${oldImagePath}`
-          );
+          logger.warn(`Failed to unregister old file usage for template ${id}: ${oldImagePath}`);
         } else {
           logger.info(`✓ Old file usage unregistered for template ${id}`);
         }
@@ -413,11 +334,7 @@ export namespace TemplateRepository {
       imageFileId: newImageFileId,
     };
 
-    const [updatedTemplate] = await db
-      .update(templates)
-      .set(updateData)
-      .where(eq(templates.id, id))
-      .returning();
+    const [updatedTemplate] = await db.update(templates).set(updateData).where(eq(templates.id, id)).returning();
 
     logger.info(`✓ Template ${id} updated successfully`);
     return updatedTemplate;
@@ -439,8 +356,7 @@ export namespace TemplateRepository {
     // Find existing template
     const existingTemplate = await findByIdOrThrow(id);
 
-    const suspensionCategory =
-      await TemplateCategoryRepository.findTemplatesSuspensionCategory();
+    const suspensionCategory = await TemplateCategoryRepository.findTemplatesSuspensionCategory();
 
     const suspensionCategoryId = suspensionCategory.id;
 
@@ -465,21 +381,15 @@ export namespace TemplateRepository {
     // Find existing template
     const existingTemplate = await findByIdOrThrow(id);
 
-    const suspensionCategoryId = (
-      await TemplateCategoryRepository.findTemplatesSuspensionCategory()
-    ).id;
-    const mainCategoryId = (
-      await TemplateCategoryRepository.findTemplatesMainCategory()
-    ).id;
+    const suspensionCategoryId = (await TemplateCategoryRepository.findTemplatesSuspensionCategory()).id;
+    const mainCategoryId = (await TemplateCategoryRepository.findTemplatesMainCategory()).id;
 
     // Validate it is suspended
     if (existingTemplate.categoryId !== suspensionCategoryId) {
       throw new Error(`Template with ID ${id} is not suspended.`);
     }
 
-    const preSuspensionCategory = await TemplateCategoryRepository.findById(
-      existingTemplate.preSuspensionCategoryId
-    );
+    const preSuspensionCategory = await TemplateCategoryRepository.findById(existingTemplate.preSuspensionCategoryId);
 
     const targetCategoryId = preSuspensionCategory?.id || mainCategoryId;
 
@@ -542,10 +452,7 @@ export namespace TemplateRepository {
       }
     } else {
       // Apply user-specified ordering
-      processedQuery = TemplateFilterUtils.applyOrdering(
-        processedQuery,
-        orderBy
-      );
+      processedQuery = TemplateFilterUtils.applyOrdering(processedQuery, orderBy);
     }
 
     // Apply pagination
@@ -559,11 +466,7 @@ export namespace TemplateRepository {
       return t;
     });
 
-    const pageInfo = PaginationUtils.buildPageInfoFromArgs(
-      paginationArgs,
-      items.length,
-      total
-    );
+    const pageInfo = PaginationUtils.buildPageInfoFromArgs(paginationArgs, items.length, total);
 
     return {
       data: items,

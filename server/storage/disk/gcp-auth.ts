@@ -9,9 +9,7 @@ const secretVersion = process.env.GCP_SECRET_VERSION || "latest";
 
 const getStorageFromSecretManager = async (): Promise<Storage> => {
   if (!projectId || !secretId) {
-    throw new Error(
-      "GCP_PROJECT_ID and GCP_SECRET_ID environment variables are required for Secret Manager auth"
-    );
+    throw new Error("GCP_PROJECT_ID and GCP_SECRET_ID environment variables are required for Secret Manager auth");
   }
 
   try {
@@ -27,14 +25,8 @@ const getStorageFromSecretManager = async (): Promise<Storage> => {
 
     const credentials = JSON.parse(payload.toString());
 
-    if (
-      !credentials.client_email ||
-      !credentials.private_key ||
-      credentials.type !== "service_account"
-    ) {
-      throw new Error(
-        "Invalid service account credentials from Secret Manager"
-      );
+    if (!credentials.client_email || !credentials.private_key || credentials.type !== "service_account") {
+      throw new Error("Invalid service account credentials from Secret Manager");
     }
 
     const auth = new GoogleAuth({
@@ -47,10 +39,7 @@ const getStorageFromSecretManager = async (): Promise<Storage> => {
       authClient: auth,
     });
   } catch (error) {
-    logger.error(
-      `Failed to access secret version: ${secretId} in project: ${projectId}`,
-      error
-    );
+    logger.error(`Failed to access secret version: ${secretId} in project: ${projectId}`, error);
     throw error;
   }
 };
@@ -65,14 +54,8 @@ const getStorageFromEnv = async (): Promise<Storage | null> => {
   try {
     const credentials = JSON.parse(credentialsJson);
 
-    if (
-      !credentials.client_email ||
-      !credentials.private_key ||
-      credentials.type !== "service_account"
-    ) {
-      throw new Error(
-        "Invalid service account credentials from GCP_CREDENTIALS_JSON"
-      );
+    if (!credentials.client_email || !credentials.private_key || credentials.type !== "service_account") {
+      throw new Error("Invalid service account credentials from GCP_CREDENTIALS_JSON");
     }
 
     const auth = new GoogleAuth({

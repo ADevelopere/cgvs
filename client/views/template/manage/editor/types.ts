@@ -1,6 +1,4 @@
-import {
-  ElementType,
-} from "@/client/graphql/generated/gql/graphql";
+import { ElementType } from "@/client/graphql/generated/gql/graphql";
 import { Node } from "@xyflow/react";
 
 export type ElementBaseNodeData = {

@@ -15,23 +15,14 @@ interface StorageDirectoryTreeProps {
   onNavigate: (path: string) => void;
 }
 
-const StorageDirectoryTree: React.FC<StorageDirectoryTreeProps> = ({
-  params,
-  onNavigate,
-}) => {
+const StorageDirectoryTree: React.FC<StorageDirectoryTreeProps> = ({ params, onNavigate }) => {
   const {
     storageTranslations: { ui: translations },
   } = useAppTranslation();
 
   // Get tree store state and actions
-  const {
-    expandedNodes,
-    toggleExpanded,
-    markAsFetched,
-    isFetched,
-    updateCurrentDirectory,
-    setCurrentDirectory,
-  } = useStorageTreeStore();
+  const { expandedNodes, toggleExpanded, markAsFetched, isFetched, updateCurrentDirectory, setCurrentDirectory } =
+    useStorageTreeStore();
 
   // Callback handlers following CategoryPane pattern
   const handleSelectDirectory = React.useCallback(
@@ -82,19 +73,12 @@ const StorageDirectoryTree: React.FC<StorageDirectoryTreeProps> = ({
   );
 
   const getNodeLabel = React.useCallback(
-    (node: StorageDirectoryNode) =>
-      node.name ?? node.path.split("/").pop() ?? "",
+    (node: StorageDirectoryNode) => node.name ?? node.path.split("/").pop() ?? "",
     []
   );
 
   const itemRenderer = React.useCallback(
-    ({
-      node,
-      isSelected,
-    }: {
-      node: StorageDirectoryNode;
-      isSelected: boolean;
-    }) => (
+    ({ node, isSelected }: { node: StorageDirectoryNode; isSelected: boolean }) => (
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <FolderIcon
           sx={{
@@ -115,11 +99,7 @@ const StorageDirectoryTree: React.FC<StorageDirectoryTreeProps> = ({
   );
 
   return (
-    <ReactiveCategoryTree<
-      StorageDirectoryNode,
-      Graphql.DirectoryChildrenQuery,
-      Graphql.DirectoryChildrenQueryVariables
-    >
+    <ReactiveCategoryTree<StorageDirectoryNode, Graphql.DirectoryChildrenQuery, Graphql.DirectoryChildrenQueryVariables>
       resolver={parent => ({
         query: directoryChildrenQueryDocument,
         variables: { path: parent ? parent.path : "" },

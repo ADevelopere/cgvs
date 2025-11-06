@@ -314,9 +314,7 @@ interface TextProps {
 ### Font Reference
 
 ```typescript
-type FontReference =
-  | { type: FontSource.GOOGLE; identifier: string }
-  | { type: FontSource.SELF_HOSTED; fontId: number };
+type FontReference = { type: FontSource.GOOGLE; identifier: string } | { type: FontSource.SELF_HOSTED; fontId: number };
 ```
 
 **Google Fonts**: Use font identifier (e.g., "Roboto", "Cairo")

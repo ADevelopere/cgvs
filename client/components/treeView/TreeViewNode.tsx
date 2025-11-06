@@ -4,10 +4,7 @@ import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import {
-  BaseTreeItem,
-  TreeViewItemRenderer,
-} from "@/client/components/treeView/TreeView";
+import { BaseTreeItem, TreeViewItemRenderer } from "@/client/components/treeView/TreeView";
 import TreeViewItem from "@/client/components/treeView/TreeViewItem";
 
 interface TreeViewNodeProps<T extends BaseTreeItem> {
@@ -62,9 +59,7 @@ export default function TreeViewNode<T extends BaseTreeItem>({
                 paddingInlineStart: `${level * 20 + (!hasChildren ? 10 : 0)}px`,
                 height: `${itemHeight}px`,
                 borderRadius: 2,
-                backgroundColor: isSelected
-                  ? item.selectedColor || "rgba(25, 118, 210, 0.08)"
-                  : "transparent",
+                backgroundColor: isSelected ? item.selectedColor || "rgba(25, 118, 210, 0.08)" : "transparent",
                 "&:hover": {
                   backgroundColor: item.disabled
                     ? "transparent"
@@ -84,11 +79,7 @@ export default function TreeViewNode<T extends BaseTreeItem>({
                   sx={{
                     padding: "4px",
                     marginInlineEnd: "4px",
-                    transform: isExpanded
-                      ? isRtl
-                        ? "rotate(-90deg)"
-                        : "rotate(90deg)"
-                      : "rotate(0deg)",
+                    transform: isExpanded ? (isRtl ? "rotate(-90deg)" : "rotate(90deg)") : "rotate(0deg)",
                     transition: "transform 0.15s ease-in-out",
                   }}
                 >

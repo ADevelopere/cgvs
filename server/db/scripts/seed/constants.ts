@@ -140,9 +140,4 @@ export const templateCategoriesData: CategoryData[] = [
   },
 ];
 
-export const emailDomains = [
-  "gmail.com",
-  "hotmail.com",
-  "outlook.com",
-  "yahoo.com",
-];
+export const emailDomains = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com"];

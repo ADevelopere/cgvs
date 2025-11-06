@@ -17,15 +17,13 @@ export type TextElementNodeData = {
   elementId: number;
 };
 
-
 type TextElementNodeProps = NodeProps & {
   data: TextElementNodeData;
 };
 
 // random verification code generator, using random
 const dumpVerificationCode = () => {
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let code = "";
   for (let i = 0; i < 10; i++) {
     const randomIndex = Math.floor(Math.random() * chars.length);
@@ -55,10 +53,7 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
       return source.static.value;
     }
     if (source.certificateField) {
-      if (
-        source.certificateField.field ===
-        GQL.CertificateTextField.VerificationCode
-      ) {
+      if (source.certificateField.field === GQL.CertificateTextField.VerificationCode) {
         return dumpVerificationCode();
       }
       return `{{${source.certificateField.field}}}`;
@@ -113,10 +108,7 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
       width: baseElementState.width,
       height: baseElementState.height,
       overflow: "hidden",
-      textOverflow:
-        textPropsState.overflow === GQL.ElementOverflow.Ellipse
-          ? "ellipsis"
-          : "clip",
+      textOverflow: textPropsState.overflow === GQL.ElementOverflow.Ellipse ? "ellipsis" : "clip",
       whiteSpace: "nowrap",
       // Add a transition to make changes smooth
       transition: "all 0.3s ease",
@@ -127,9 +119,5 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
   if (!textPropsState || !baseElementState) {
     return <div>Loading...</div>;
   }
-  return (
-    <div style={style}>
-      {text}
-    </div>
-  );
+  return <div style={style}>{text}</div>;
 };

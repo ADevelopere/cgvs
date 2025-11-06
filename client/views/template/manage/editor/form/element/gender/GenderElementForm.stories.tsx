@@ -3,10 +3,7 @@ import { logger } from "@/client/lib/logger";
 import { mockSelfHostedFonts } from "../story.util";
 import { GenderElementForm } from "./GenderElementForm";
 import type { GenderElementFormErrors, GenderElementFormState } from "./types";
-import {
-  ElementAlignment,
-  ElementOverflow,
-} from "@/client/graphql/generated/gql/graphql";
+import { ElementAlignment, ElementOverflow } from "@/client/graphql/generated/gql/graphql";
 import { AppLanguage } from "@/lib/enum";
 
 const meta: Meta<typeof GenderElementForm> = {
@@ -50,8 +47,7 @@ export const Default: Story = {
     selfHostedFonts: mockSelfHostedFonts,
     locale: AppLanguage.default,
     updateBase: ({ key, value }) => logger.info("updateBase", { key, value }),
-    updateTextProps: ({ key, value }) =>
-      logger.info("updateTextProps", { key, value }),
+    updateTextProps: ({ key, value }) => logger.info("updateTextProps", { key, value }),
     onSubmit: () => logger.info("Submit"),
     onCancel: () => logger.info("Cancel"),
     isSubmitting: false,
@@ -95,8 +91,7 @@ export const WithErrors: Story = {
     selfHostedFonts: mockSelfHostedFonts,
     locale: AppLanguage.default,
     updateBase: ({ key, value }) => logger.info("updateBase", { key, value }),
-    updateTextProps: ({ key, value }) =>
-      logger.info("updateTextProps", { key, value }),
+    updateTextProps: ({ key, value }) => logger.info("updateTextProps", { key, value }),
     onSubmit: () => logger.info("Submit"),
     onCancel: () => logger.info("Cancel"),
     isSubmitting: false,
@@ -110,8 +105,7 @@ export const Submitting: Story = {
     selfHostedFonts: mockSelfHostedFonts,
     locale: AppLanguage.en,
     updateBase: ({ key, value }) => logger.info("updateBase", { key, value }),
-    updateTextProps: ({ key, value }) =>
-      logger.info("updateTextProps", { key, value }),
+    updateTextProps: ({ key, value }) => logger.info("updateTextProps", { key, value }),
     onSubmit: () => logger.info("Submit"),
     onCancel: () => logger.info("Cancel"),
     isSubmitting: true,
@@ -125,8 +119,7 @@ export const Disabled: Story = {
     selfHostedFonts: mockSelfHostedFonts,
     locale: AppLanguage.en,
     updateBase: ({ key, value }) => logger.info("updateBase", { key, value }),
-    updateTextProps: ({ key, value }) =>
-      logger.info("updateTextProps", { key, value }),
+    updateTextProps: ({ key, value }) => logger.info("updateTextProps", { key, value }),
     onSubmit: () => logger.info("Submit"),
     onCancel: () => logger.info("Cancel"),
     isSubmitting: false,

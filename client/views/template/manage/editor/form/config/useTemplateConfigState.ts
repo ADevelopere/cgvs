@@ -5,11 +5,7 @@ import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { updateTemplateConfigMutationDocument } from "../../glqDocuments";
 import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale";
-import {
-  TemplateConfigFormErrors,
-  TemplateConfigFormUpdateFn,
-  TemplateConfigUpdateAction,
-} from "./types";
+import { TemplateConfigFormErrors, TemplateConfigFormUpdateFn, TemplateConfigUpdateAction } from "./types";
 import { useTemplateConfigFormValidateFn } from "./templateConfigValidator";
 import { useNodesState } from "../../NodesStateProvider";
 
@@ -26,20 +22,16 @@ export type UseTemplateConfigStateReturn = {
   updating: boolean;
 };
 
-export function useTemplateConfigState(
-  params: UseTemplateConfigStateParams
-): UseTemplateConfigStateReturn {
+export function useTemplateConfigState(params: UseTemplateConfigStateParams): UseTemplateConfigStateReturn {
   const { config } = params;
   const { templateConfigTranslations: strings } = useAppTranslation();
   const notifications = useNotifications();
-  const {updateContainerNode} = useNodesState();
+  const { updateContainerNode } = useNodesState();
 
-  const [updateTemplateConfigMutation] = useMutation(
-    updateTemplateConfigMutationDocument
-  );
+  const [updateTemplateConfigMutation] = useMutation(updateTemplateConfigMutationDocument);
 
   const [state, setState] = React.useState<GQL.TemplateConfigUpdateInput>(() => {
-    if(config){
+    if (config) {
       return {
         id: config.id,
         width: config.width,
@@ -83,13 +75,8 @@ export function useTemplateConfigState(
           },
         });
       } catch (error) {
-        const errorMessage =
-          strings.failedToUpdateTemplateConfiguration ||
-          "Failed to update template configuration";
-        logger.error(
-          "useTemplateConfigState: Failed to update template config",
-          { error }
-        );
+        const errorMessage = strings.failedToUpdateTemplateConfiguration || "Failed to update template configuration";
+        logger.error("useTemplateConfigState: Failed to update template config", { error });
         notifications.show(errorMessage, {
           severity: "error",
           autoHideDuration: 3000,
@@ -99,11 +86,7 @@ export function useTemplateConfigState(
         setUpdating(false);
       }
     },
-    [
-      updateTemplateConfigMutation,
-      notifications,
-      strings.failedToUpdateTemplateConfiguration,
-    ]
+    [updateTemplateConfigMutation, notifications, strings.failedToUpdateTemplateConfiguration]
   );
 
   const mutationFnRef = React.useRef(mutationFn);

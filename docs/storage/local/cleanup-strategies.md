@@ -308,10 +308,7 @@ export async function GET(request: Request) {
 
   // Only run if cron is enabled
   if (strategy !== "cron" && strategy !== "both") {
-    return Response.json(
-      { error: "Cron cleanup is disabled" },
-      { status: 403 }
-    );
+    return Response.json({ error: "Cron cleanup is disabled" }, { status: 403 });
   }
 
   // Verify authentication

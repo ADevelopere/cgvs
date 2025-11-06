@@ -10,12 +10,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
-import {
-  AppLanguage,
-  Font,
-  FontReferenceInput,
-  FontSource,
-} from "@/client/graphql/generated/gql/graphql";
+import { AppLanguage, Font, FontReferenceInput, FontSource } from "@/client/graphql/generated/gql/graphql";
 import { UpdateFontRefFn } from "./types";
 import { getLanguageFonts } from "@/lib/font/google/utils";
 import { Language } from "@/lib/font/google/enum";
@@ -38,7 +33,7 @@ export const FontReferenceSelector: FC<FontReferenceSelectorProps> = ({
   disabled,
 }) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
-  
+
   const googleFonts = useMemo(() => {
     return getLanguageFonts(language as string as Language);
   }, [language]);
@@ -114,29 +109,16 @@ export const FontReferenceSelector: FC<FontReferenceSelectorProps> = ({
 
   // Determine current font source from FontReferenceInput
   const currentSource: FontSource = React.useMemo(
-    () =>
-      fontRef.google?.identifier ? FontSource.Google : FontSource.SelfHosted,
+    () => (fontRef.google?.identifier ? FontSource.Google : FontSource.SelfHosted),
     [fontRef]
   );
 
   return (
     <Box>
       <FormControl component="fieldset" error={!!error} disabled={disabled}>
-        <RadioGroup
-          row
-          value={currentSource}
-          onChange={e => handleSourceChange(e.target.value as FontSource)}
-        >
-          <FormControlLabel
-            value="GOOGLE"
-            control={<Radio />}
-            label={strings.textProps.fontSourceGoogle}
-          />
-          <FormControlLabel
-            value="SELF_HOSTED"
-            control={<Radio />}
-            label={strings.textProps.fontSourceSelfHosted}
-          />
+        <RadioGroup row value={currentSource} onChange={e => handleSourceChange(e.target.value as FontSource)}>
+          <FormControlLabel value="GOOGLE" control={<Radio />} label={strings.textProps.fontSourceGoogle} />
+          <FormControlLabel value="SELF_HOSTED" control={<Radio />} label={strings.textProps.fontSourceSelfHosted} />
         </RadioGroup>
         {error && <FormHelperText>{error}</FormHelperText>}
       </FormControl>

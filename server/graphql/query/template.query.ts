@@ -28,10 +28,7 @@ gqlSchemaBuilder.queryFields(t => ({
         type: PaginationArgsObject,
       }),
     },
-    resolve: async (_, args) =>
-      await TemplateRepository.findAllPaginated(
-        new PaginationArgs({ ...args.pagination })
-      ),
+    resolve: async (_, args) => await TemplateRepository.findAllPaginated(new PaginationArgs({ ...args.pagination })),
   }),
 
   templatesByCategoryId: t.field({

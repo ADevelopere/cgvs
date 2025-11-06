@@ -69,18 +69,6 @@ export const WithOnChange: Story = {
 export const ManyTags: Story = {
   args: {
     label: "Popular Programming Languages",
-    initialTags: [
-      "JavaScript",
-      "TypeScript",
-      "Python",
-      "Java",
-      "C#",
-      "Go",
-      "Rust",
-      "Ruby",
-      "PHP",
-      "Swift",
-      "Kotlin",
-    ],
+    initialTags: ["JavaScript", "TypeScript", "Python", "Java", "C#", "Go", "Rust", "Ruby", "PHP", "Swift", "Kotlin"],
   },
 };

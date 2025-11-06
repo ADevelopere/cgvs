@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  ReactFlow,
-  Controls,
-  Background,
-  OnNodesChange,
-  ReactFlowProvider,
-} from "@xyflow/react";
+import { ReactFlow, Controls, Background, OnNodesChange, ReactFlowProvider } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import React, { useCallback } from "react";
 import "./other/EditorTab.module.css";
@@ -94,10 +88,7 @@ const Flow: React.FC<FlowEditorProps> = ({ nodes, setNodes }) => {
             borderRadius: theme.shape.borderRadius,
           }}
         />
-        <HelperLines
-          horizontal={helperLineHorizontal}
-          vertical={helperLineVertical}
-        />
+        <HelperLines horizontal={helperLineHorizontal} vertical={helperLineVertical} />
         <Box
           sx={{
             display: "flex",
@@ -125,7 +116,6 @@ function FlowDebug() {
     </div>
   );
 }
-
 
 const CertificateReactFlowEditor: React.FC = () => {
   const { nodes, setNodes } = useNodeData();

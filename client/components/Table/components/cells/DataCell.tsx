@@ -1,20 +1,11 @@
 "use client";
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { AnyColumn, isEditableColumn } from "../../types";
 import { useTheme } from "@mui/material";
 
-type DataCellProps<
-  TRowData,
-  TRowId extends string | number = string | number,
-> = {
+type DataCellProps<TRowData, TRowId extends string | number = string | number> = {
   column: AnyColumn<TRowData, TRowId>;
   row: TRowData;
   rowId: TRowId;
@@ -35,11 +26,7 @@ type DataCellProps<
  * - Handles double-click to enter edit mode
  * - Manages save/cancel callbacks
  */
-const DataCellComponent = <
-  TRowData,
-  TValue,
-  TRowId extends string | number = string | number,
->({
+const DataCellComponent = <TRowData, TValue, TRowId extends string | number = string | number>({
   column,
   row,
   rowId,
@@ -82,9 +69,7 @@ const DataCellComponent = <
       // Use box-shadow instead of borders to avoid border-collapse issues
       // Extract the color from cellEditingStyle borders
       const borderColor =
-        typeof cellEditingStyle.borderTop === "string"
-          ? cellEditingStyle.borderTop.split(" ").pop()
-          : "currentColor";
+        typeof cellEditingStyle.borderTop === "string" ? cellEditingStyle.borderTop.split(" ").pop() : "currentColor";
       style = {
         ...style,
         ...cellEditingStyle,
@@ -208,6 +193,4 @@ const DataCellComponent = <
 
 DataCellComponent.displayName = "DataCell";
 
-export const DataCell = React.memo(
-  DataCellComponent
-) as typeof DataCellComponent;
+export const DataCell = React.memo(DataCellComponent) as typeof DataCellComponent;

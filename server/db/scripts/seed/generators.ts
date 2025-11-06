@@ -3,23 +3,15 @@
  */
 
 import { Email, PhoneNumber } from "@/server/lib";
-import {
-  arabicFirstNames,
-  arabicMiddleNames,
-  arabicLastNames,
-  emailDomains,
-} from "./constants";
+import { arabicFirstNames, arabicMiddleNames, arabicLastNames, emailDomains } from "./constants";
 
 /**
  * Generates a random Arabic full name
  */
 export function generateArabicFullName(): string {
-  const firstName =
-    arabicFirstNames[Math.floor(Math.random() * arabicFirstNames.length)];
-  const middleName =
-    arabicMiddleNames[Math.floor(Math.random() * arabicMiddleNames.length)];
-  const lastName =
-    arabicLastNames[Math.floor(Math.random() * arabicLastNames.length)];
+  const firstName = arabicFirstNames[Math.floor(Math.random() * arabicFirstNames.length)];
+  const middleName = arabicMiddleNames[Math.floor(Math.random() * arabicMiddleNames.length)];
+  const lastName = arabicLastNames[Math.floor(Math.random() * arabicLastNames.length)];
 
   return `${firstName} ${middleName} ${lastName}`;
 }
@@ -27,18 +19,13 @@ export function generateArabicFullName(): string {
 /**
  * Generates a random email address from Arabic name components
  */
-export function generateEmail(
-  firstName: string = "",
-  lastName: string = ""
-): Email {
+export function generateEmail(firstName: string = "", lastName: string = ""): Email {
   const randomNum = Math.floor(Math.random() * (999 - 100 + 1) + 100);
   const firstNameSafe = `${firstName.replace(/\s/g, "")}${Math.floor(Math.random() * 9000) + 1000}`;
   const lastNameSafe = `${lastName.replace(/\s/g, "")}${Math.floor(Math.random() * 900) + 100}`;
   const domain = emailDomains[Math.floor(Math.random() * emailDomains.length)];
 
-  return new Email(
-    `${firstNameSafe}.${lastNameSafe}${randomNum}@${domain}`.toLowerCase()
-  );
+  return new Email(`${firstNameSafe}.${lastNameSafe}${randomNum}@${domain}`.toLowerCase());
 }
 
 /**

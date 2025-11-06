@@ -1,7 +1,4 @@
-import {
-  CertificateElementBaseInput,
-  ImageElementSpecPropsInput,
-} from "../input";
+import { CertificateElementBaseInput, ImageElementSpecPropsInput } from "../input";
 
 // ============================================================================
 // Data Source Types

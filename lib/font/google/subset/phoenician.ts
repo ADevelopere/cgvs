@@ -9,8 +9,7 @@ const data: GoogleFontItem[] = [
     version: "v18",
     lastModified: "2025-09-11",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/notosansphoenician/v18/jizFRF9Ksm4Bt9PvcTaEkIHiTVtxmFtS5X7Jot-p5561.ttf",
+      regular: "https://fonts.gstatic.com/s/notosansphoenician/v18/jizFRF9Ksm4Bt9PvcTaEkIHiTVtxmFtS5X7Jot-p5561.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -19,26 +18,14 @@ const data: GoogleFontItem[] = [
   {
     family: "Tuffy",
     variants: ["regular", "italic", "700", "700italic"],
-    subsets: [
-      "cyrillic",
-      "cyrillic-ext",
-      "greek",
-      "greek-ext",
-      "latin",
-      "latin-ext",
-      "phoenician",
-    ],
+    subsets: ["cyrillic", "cyrillic-ext", "greek", "greek-ext", "latin", "latin-ext", "phoenician"],
     version: "v1",
     lastModified: "2025-04-23",
     files: {
-      "700":
-        "https://fonts.gstatic.com/s/tuffy/v1/1q2FY56bHkJl7oTPOKhu4uoXhVzg.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/tuffy/v1/1q2IY56bHkJl7rxzF4xmyfYe.ttf",
-      italic:
-        "https://fonts.gstatic.com/s/tuffy/v1/1q2GY56bHkJl7oxxHYhEzOYenEU.ttf",
-      "700italic":
-        "https://fonts.gstatic.com/s/tuffy/v1/1q2DY56bHkJl7oxxJTRr6O41gEzgZoQ.ttf",
+      "700": "https://fonts.gstatic.com/s/tuffy/v1/1q2FY56bHkJl7oTPOKhu4uoXhVzg.ttf",
+      regular: "https://fonts.gstatic.com/s/tuffy/v1/1q2IY56bHkJl7rxzF4xmyfYe.ttf",
+      italic: "https://fonts.gstatic.com/s/tuffy/v1/1q2GY56bHkJl7oxxHYhEzOYenEU.ttf",
+      "700italic": "https://fonts.gstatic.com/s/tuffy/v1/1q2DY56bHkJl7oxxJTRr6O41gEzgZoQ.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",

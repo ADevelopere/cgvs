@@ -64,10 +64,7 @@ export const evictListFilesCache = (
 /**
  * Evicts directoryChildren cache for a specific path
  */
-export const evictDirectoryChildrenCache = (
-  apolloClient: ApolloClient,
-  path: string
-): void => {
+export const evictDirectoryChildrenCache = (apolloClient: ApolloClient, path: string): void => {
   const targetPath = path || "";
   apolloClient.cache.evict({
     id: "ROOT_QUERY",

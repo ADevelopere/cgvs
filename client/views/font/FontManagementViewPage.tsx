@@ -6,17 +6,9 @@ import { useFontStore } from "./stores/useFontStore";
 import { useFontOperations } from "./hooks/useFontOperations";
 
 export const FontManagementViewPage: React.FC = () => {
-  const { selectedFont, queryParams, setQueryParams, isCreating, isEditing } =
-    useFontStore();
-  const {
-    selectFont,
-    startCreating,
-    cancelCreating,
-    startEditing,
-    cancelEditing,
-    createFont,
-    updateFont,
-  } = useFontOperations();
+  const { selectedFont, queryParams, setQueryParams, isCreating, isEditing } = useFontStore();
+  const { selectFont, startCreating, cancelCreating, startEditing, cancelEditing, createFont, updateFont } =
+    useFontOperations();
 
   return (
     <FontManagementView

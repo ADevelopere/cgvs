@@ -11,265 +11,219 @@ import * as Documents from "./templateVariable.documents";
  */
 export const useTemplateVariableApolloMutations = () => {
   // Create text variable mutation
-  const [createTextMutation] = useMutation(
-    Documents.createTemplateTextVariableMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.createTemplateTextVariable) return;
-        const newVariable = data.createTemplateTextVariable;
-        const templateId = newVariable.template?.id;
-        if (!templateId) return;
+  const [createTextMutation] = useMutation(Documents.createTemplateTextVariableMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.createTemplateTextVariable) return;
+      const newVariable = data.createTemplateTextVariable;
+      const templateId = newVariable.template?.id;
+      if (!templateId) return;
 
-        cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
-          {
-            query: Documents.templateVariablesByTemplateIdQueryDocument,
-            variables: { templateId },
-          },
-          existing => {
-            if (!existing?.templateVariablesByTemplateId) return existing;
-            return {
-              templateVariablesByTemplateId: [
-                ...existing.templateVariablesByTemplateId,
-                newVariable,
-              ],
-            };
-          }
-        );
-      },
-    }
-  );
+      cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
+        {
+          query: Documents.templateVariablesByTemplateIdQueryDocument,
+          variables: { templateId },
+        },
+        existing => {
+          if (!existing?.templateVariablesByTemplateId) return existing;
+          return {
+            templateVariablesByTemplateId: [...existing.templateVariablesByTemplateId, newVariable],
+          };
+        }
+      );
+    },
+  });
 
   // Create number variable mutation
-  const [createNumberMutation] = useMutation(
-    Documents.createTemplateNumberVariableMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.createTemplateNumberVariable) return;
-        const newVariable = data.createTemplateNumberVariable;
-        const templateId = newVariable.template?.id;
-        if (!templateId) return;
+  const [createNumberMutation] = useMutation(Documents.createTemplateNumberVariableMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.createTemplateNumberVariable) return;
+      const newVariable = data.createTemplateNumberVariable;
+      const templateId = newVariable.template?.id;
+      if (!templateId) return;
 
-        cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
-          {
-            query: Documents.templateVariablesByTemplateIdQueryDocument,
-            variables: { templateId },
-          },
-          existing => {
-            if (!existing?.templateVariablesByTemplateId) return existing;
-            return {
-              templateVariablesByTemplateId: [
-                ...existing.templateVariablesByTemplateId,
-                newVariable,
-              ],
-            };
-          }
-        );
-      },
-    }
-  );
+      cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
+        {
+          query: Documents.templateVariablesByTemplateIdQueryDocument,
+          variables: { templateId },
+        },
+        existing => {
+          if (!existing?.templateVariablesByTemplateId) return existing;
+          return {
+            templateVariablesByTemplateId: [...existing.templateVariablesByTemplateId, newVariable],
+          };
+        }
+      );
+    },
+  });
 
   // Create date variable mutation
-  const [createDateMutation] = useMutation(
-    Documents.createTemplateDateVariableMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.createTemplateDateVariable) return;
-        const newVariable = data.createTemplateDateVariable;
-        const templateId = newVariable.template?.id;
-        if (!templateId) return;
+  const [createDateMutation] = useMutation(Documents.createTemplateDateVariableMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.createTemplateDateVariable) return;
+      const newVariable = data.createTemplateDateVariable;
+      const templateId = newVariable.template?.id;
+      if (!templateId) return;
 
-        cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
-          {
-            query: Documents.templateVariablesByTemplateIdQueryDocument,
-            variables: { templateId },
-          },
-          existing => {
-            if (!existing?.templateVariablesByTemplateId) return existing;
-            return {
-              templateVariablesByTemplateId: [
-                ...existing.templateVariablesByTemplateId,
-                newVariable,
-              ],
-            };
-          }
-        );
-      },
-    }
-  );
+      cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
+        {
+          query: Documents.templateVariablesByTemplateIdQueryDocument,
+          variables: { templateId },
+        },
+        existing => {
+          if (!existing?.templateVariablesByTemplateId) return existing;
+          return {
+            templateVariablesByTemplateId: [...existing.templateVariablesByTemplateId, newVariable],
+          };
+        }
+      );
+    },
+  });
 
   // Create select variable mutation
-  const [createSelectMutation] = useMutation(
-    Documents.createTemplateSelectVariableMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.createTemplateSelectVariable) return;
-        const newVariable = data.createTemplateSelectVariable;
-        const templateId = newVariable.template?.id;
-        if (!templateId) return;
+  const [createSelectMutation] = useMutation(Documents.createTemplateSelectVariableMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.createTemplateSelectVariable) return;
+      const newVariable = data.createTemplateSelectVariable;
+      const templateId = newVariable.template?.id;
+      if (!templateId) return;
 
-        cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
-          {
-            query: Documents.templateVariablesByTemplateIdQueryDocument,
-            variables: { templateId },
-          },
-          existing => {
-            if (!existing?.templateVariablesByTemplateId) return existing;
-            return {
-              templateVariablesByTemplateId: [
-                ...existing.templateVariablesByTemplateId,
-                newVariable,
-              ],
-            };
-          }
-        );
-      },
-    }
-  );
+      cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
+        {
+          query: Documents.templateVariablesByTemplateIdQueryDocument,
+          variables: { templateId },
+        },
+        existing => {
+          if (!existing?.templateVariablesByTemplateId) return existing;
+          return {
+            templateVariablesByTemplateId: [...existing.templateVariablesByTemplateId, newVariable],
+          };
+        }
+      );
+    },
+  });
 
   // Update text variable mutation
-  const [updateTextMutation] = useMutation(
-    Documents.updateTemplateTextVariableMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.updateTemplateTextVariable) return;
-        const updated = data.updateTemplateTextVariable;
-        const templateId = updated.template?.id;
-        if (!templateId) return;
+  const [updateTextMutation] = useMutation(Documents.updateTemplateTextVariableMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.updateTemplateTextVariable) return;
+      const updated = data.updateTemplateTextVariable;
+      const templateId = updated.template?.id;
+      if (!templateId) return;
 
-        cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
-          {
-            query: Documents.templateVariablesByTemplateIdQueryDocument,
-            variables: { templateId },
-          },
-          existing => {
-            if (!existing?.templateVariablesByTemplateId) return existing;
-            return {
-              templateVariablesByTemplateId:
-                existing.templateVariablesByTemplateId.map(v =>
-                  v.id === updated.id ? updated : v
-                ),
-            };
-          }
-        );
-      },
-    }
-  );
+      cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
+        {
+          query: Documents.templateVariablesByTemplateIdQueryDocument,
+          variables: { templateId },
+        },
+        existing => {
+          if (!existing?.templateVariablesByTemplateId) return existing;
+          return {
+            templateVariablesByTemplateId: existing.templateVariablesByTemplateId.map(v =>
+              v.id === updated.id ? updated : v
+            ),
+          };
+        }
+      );
+    },
+  });
 
   // Update number variable mutation
-  const [updateNumberMutation] = useMutation(
-    Documents.updateTemplateNumberVariableMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.updateTemplateNumberVariable) return;
-        const updated = data.updateTemplateNumberVariable;
-        const templateId = updated.template?.id;
-        if (!templateId) return;
+  const [updateNumberMutation] = useMutation(Documents.updateTemplateNumberVariableMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.updateTemplateNumberVariable) return;
+      const updated = data.updateTemplateNumberVariable;
+      const templateId = updated.template?.id;
+      if (!templateId) return;
 
-        cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
-          {
-            query: Documents.templateVariablesByTemplateIdQueryDocument,
-            variables: { templateId },
-          },
-          existing => {
-            if (!existing?.templateVariablesByTemplateId) return existing;
-            return {
-              templateVariablesByTemplateId:
-                existing.templateVariablesByTemplateId.map(v =>
-                  v.id === updated.id ? updated : v
-                ),
-            };
-          }
-        );
-      },
-    }
-  );
+      cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
+        {
+          query: Documents.templateVariablesByTemplateIdQueryDocument,
+          variables: { templateId },
+        },
+        existing => {
+          if (!existing?.templateVariablesByTemplateId) return existing;
+          return {
+            templateVariablesByTemplateId: existing.templateVariablesByTemplateId.map(v =>
+              v.id === updated.id ? updated : v
+            ),
+          };
+        }
+      );
+    },
+  });
 
   // Update date variable mutation
-  const [updateDateMutation] = useMutation(
-    Documents.updateTemplateDateVariableMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.updateTemplateDateVariable) return;
-        const updated = data.updateTemplateDateVariable;
-        const templateId = updated.template?.id;
-        if (!templateId) return;
+  const [updateDateMutation] = useMutation(Documents.updateTemplateDateVariableMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.updateTemplateDateVariable) return;
+      const updated = data.updateTemplateDateVariable;
+      const templateId = updated.template?.id;
+      if (!templateId) return;
 
-        cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
-          {
-            query: Documents.templateVariablesByTemplateIdQueryDocument,
-            variables: { templateId },
-          },
-          existing => {
-            if (!existing?.templateVariablesByTemplateId) return existing;
-            return {
-              templateVariablesByTemplateId:
-                existing.templateVariablesByTemplateId.map(v =>
-                  v.id === updated.id ? updated : v
-                ),
-            };
-          }
-        );
-      },
-    }
-  );
+      cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
+        {
+          query: Documents.templateVariablesByTemplateIdQueryDocument,
+          variables: { templateId },
+        },
+        existing => {
+          if (!existing?.templateVariablesByTemplateId) return existing;
+          return {
+            templateVariablesByTemplateId: existing.templateVariablesByTemplateId.map(v =>
+              v.id === updated.id ? updated : v
+            ),
+          };
+        }
+      );
+    },
+  });
 
   // Update select variable mutation
-  const [updateSelectMutation] = useMutation(
-    Documents.updateTemplateSelectVariableMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.updateTemplateSelectVariable) return;
-        const updated = data.updateTemplateSelectVariable;
-        const templateId = updated.template?.id;
-        if (!templateId) return;
+  const [updateSelectMutation] = useMutation(Documents.updateTemplateSelectVariableMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.updateTemplateSelectVariable) return;
+      const updated = data.updateTemplateSelectVariable;
+      const templateId = updated.template?.id;
+      if (!templateId) return;
 
-        cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
-          {
-            query: Documents.templateVariablesByTemplateIdQueryDocument,
-            variables: { templateId },
-          },
-          existing => {
-            if (!existing?.templateVariablesByTemplateId) return existing;
-            return {
-              templateVariablesByTemplateId:
-                existing.templateVariablesByTemplateId.map(v =>
-                  v.id === updated.id ? updated : v
-                ),
-            };
-          }
-        );
-      },
-    }
-  );
+      cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
+        {
+          query: Documents.templateVariablesByTemplateIdQueryDocument,
+          variables: { templateId },
+        },
+        existing => {
+          if (!existing?.templateVariablesByTemplateId) return existing;
+          return {
+            templateVariablesByTemplateId: existing.templateVariablesByTemplateId.map(v =>
+              v.id === updated.id ? updated : v
+            ),
+          };
+        }
+      );
+    },
+  });
 
   // Delete variable mutation (common for all types)
-  const [deleteMutation] = useMutation(
-    Documents.deleteTemplateVariableMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.deleteTemplateVariable) return;
-        const deleted = data.deleteTemplateVariable;
-        const templateId = deleted.template?.id;
-        if (!templateId) return;
+  const [deleteMutation] = useMutation(Documents.deleteTemplateVariableMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.deleteTemplateVariable) return;
+      const deleted = data.deleteTemplateVariable;
+      const templateId = deleted.template?.id;
+      if (!templateId) return;
 
-        cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
-          {
-            query: Documents.templateVariablesByTemplateIdQueryDocument,
-            variables: { templateId },
-          },
-          existing => {
-            if (!existing?.templateVariablesByTemplateId) return existing;
-            return {
-              templateVariablesByTemplateId:
-                existing.templateVariablesByTemplateId.filter(
-                  v => v.id !== deleted.id
-                ),
-            };
-          }
-        );
-      },
-    }
-  );
+      cache.updateQuery<Graphql.TemplateVariablesByTemplateIdQuery>(
+        {
+          query: Documents.templateVariablesByTemplateIdQueryDocument,
+          variables: { templateId },
+        },
+        existing => {
+          if (!existing?.templateVariablesByTemplateId) return existing;
+          return {
+            templateVariablesByTemplateId: existing.templateVariablesByTemplateId.filter(v => v.id !== deleted.id),
+          };
+        }
+      );
+    },
+  });
 
   return React.useMemo(
     () => ({

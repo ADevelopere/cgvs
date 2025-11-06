@@ -45,12 +45,7 @@ import {
   RecipientGroupRepository,
   RecipientRepository,
 } from "../repo";
-import {
-  StudentCreateInput,
-  StudentEntity,
-  RecipientGroupCreateInput,
-  RecipientCreateListInput,
-} from "@/server/types";
+import { StudentCreateInput, StudentEntity, RecipientGroupCreateInput, RecipientCreateListInput } from "@/server/types";
 import { CountryCode, Gender } from "@/lib/enum";
 
 // todo: remove following and create role repositories
@@ -83,11 +78,7 @@ async function createAdminUser() {
 
   try {
     // Create or get admin role
-    const existingRoles = await db
-      .select()
-      .from(roles)
-      .where(eq(roles.name, "admin"))
-      .limit(1);
+    const existingRoles = await db.select().from(roles).where(eq(roles.name, "admin")).limit(1);
 
     let adminRole;
     if (existingRoles.length === 0) {
@@ -126,12 +117,10 @@ async function createTemplateCategories() {
   const allCategories = [];
 
   // Create or ensure special categories exist
-  const templatesMainCategory =
-    await TemplateCategoryRepository.createMainCategoryIfNotExisting();
+  const templatesMainCategory = await TemplateCategoryRepository.createMainCategoryIfNotExisting();
   allCategories.push(templatesMainCategory);
 
-  const templatesSuspensionCategory =
-    await TemplateCategoryRepository.createSuspensionCategoryIfNotExisting();
+  const templatesSuspensionCategory = await TemplateCategoryRepository.createSuspensionCategoryIfNotExisting();
   allCategories.push(templatesSuspensionCategory);
 
   // Create regular categories
@@ -177,9 +166,7 @@ async function initializeFileSystem() {
     // Get demo file IDs
     const fileIds = await fileInitService.getDemoFileIds();
 
-    logger.log(
-      `   ✅ File system initialized with ${fileIds.length} demo files.`
-    );
+    logger.log(`   ✅ File system initialized with ${fileIds.length} demo files.`);
     return { fileInitService, fileIds };
   } catch (error) {
     logger.error("   ❌ Error initializing file system:", error);
@@ -193,17 +180,13 @@ async function initializeFileSystem() {
 async function createTemplates(
   categories: Awaited<ReturnType<typeof createTemplateCategories>>,
   fileIds: bigint[],
-  fileInitService: Awaited<
-    ReturnType<typeof createFileInitializationService>
-  > | null
+  fileInitService: Awaited<ReturnType<typeof createFileInitializationService>> | null
 ) {
   logger.log("📋 Creating templates...");
   const createdTemplates = [];
 
   // Filter for top-level categories, excluding special types
-  const topLevelCategories = categories.filter(
-    c => c.parentCategoryId === null && c.specialType === null
-  );
+  const topLevelCategories = categories.filter(c => c.parentCategoryId === null && c.specialType === null);
 
   if (fileIds.length === 0) {
     logger.error("   �� No demo files available for templates.");
@@ -226,14 +209,9 @@ async function createTemplates(
     // Register file usage if file was assigned
     if (randomFileId && fileInitService) {
       try {
-        await fileInitService.registerTemplateFileUsage(
-          template.id,
-          randomFileId
-        );
+        await fileInitService.registerTemplateFileUsage(template.id, randomFileId);
       } catch {
-        logger.log(
-          `   ⚠️  Could not register file usage for template ${template.id}`
-        );
+        logger.log(`   ⚠️  Could not register file usage for template ${template.id}`);
       }
     }
 
@@ -241,9 +219,7 @@ async function createTemplates(
     await createTemplateVariables(template, category.name);
   }
 
-  logger.log(
-    `   ✅ Created ${createdTemplates.length} templates with variables.`
-  );
+  logger.log(`   ✅ Created ${createdTemplates.length} templates with variables.`);
   return createdTemplates;
 }
 
@@ -272,14 +248,8 @@ async function createStudents() {
         email: Math.random() < 0.7 ? generateEmail(firstName, lastName) : null,
         phoneNumber: Math.random() < 0.6 ? generatePhoneNumber() : null,
         dateOfBirth: Math.random() < 0.8 ? generateDateOfBirth() : null,
-        gender:
-          Math.random() < 0.9
-            ? genders[Math.floor(Math.random() * genders.length)]
-            : null,
-        nationality:
-          Math.random() < 0.75
-            ? nationalities[Math.floor(Math.random() * nationalities.length)]
-            : null,
+        gender: Math.random() < 0.9 ? genders[Math.floor(Math.random() * genders.length)] : null,
+        nationality: Math.random() < 0.75 ? nationalities[Math.floor(Math.random() * nationalities.length)] : null,
       });
     }
     createdStudents.push(...(await StudentRepository.createList(studentsData)));
@@ -293,9 +263,7 @@ async function createStudents() {
 /**
  * Creates recipient groups, two for each template.
  */
-async function createRecipientGroups(
-  templatesArray: Awaited<ReturnType<typeof createTemplates>>
-) {
+async function createRecipientGroups(templatesArray: Awaited<ReturnType<typeof createTemplates>>) {
   logger.log("👥 Creating recipient groups...");
 
   if (templatesArray.length === 0) {
@@ -390,11 +358,7 @@ async function main() {
     logger.log("");
 
     // 4. Create templates
-    const templatesArray = await createTemplates(
-      categories,
-      fileIds,
-      fileInitService
-    );
+    const templatesArray = await createTemplates(categories, fileIds, fileInitService);
     logger.log("");
 
     // 5. Create students

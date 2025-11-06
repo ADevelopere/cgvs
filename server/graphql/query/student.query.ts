@@ -12,9 +12,7 @@ gqlSchemaBuilder.queryFields(t => ({
       id: t.arg.int({ required: true }),
     },
     resolve: async (_query, args) =>
-      await StudentRepository.findById(args.id).then(s =>
-        StudentUtils.mapEntityToDto(s)
-      ),
+      await StudentRepository.findById(args.id).then(s => StudentUtils.mapEntityToDto(s)),
   }),
 
   students: t.field({

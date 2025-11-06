@@ -1,10 +1,6 @@
 import { useAppTranslation } from "@/client/locale";
 import { Box, Typography, IconButton, useTheme } from "@mui/material";
-import {
-  ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon,
-  Close as CloseIcon,
-} from "@mui/icons-material";
+import { ExpandMore as ExpandMoreIcon, ExpandLess as ExpandLessIcon, Close as CloseIcon } from "@mui/icons-material";
 import React from "react";
 
 export interface UploadProgressHeaderProps {
@@ -28,10 +24,7 @@ const UploadProgressHeader: React.FC<UploadProgressHeaderProps> = ({
   const getTitle = () => {
     if (totalCount === 0) return translations.noUploads;
     if (totalCount === 1) return translations.uploading1Item;
-    return translations.uploadingNItems.replace(
-      "%{count}",
-      totalCount.toString()
-    );
+    return translations.uploadingNItems.replace("%{count}", totalCount.toString());
   };
 
   return (
@@ -41,9 +34,7 @@ const UploadProgressHeader: React.FC<UploadProgressHeaderProps> = ({
         alignItems: "center",
         justifyContent: "space-between",
         padding: theme.spacing(1.5, 2),
-        borderBottom: !isCollapsed
-          ? `1px solid ${theme.palette.divider}`
-          : "none",
+        borderBottom: !isCollapsed ? `1px solid ${theme.palette.divider}` : "none",
       }}
     >
       <Typography
@@ -61,11 +52,7 @@ const UploadProgressHeader: React.FC<UploadProgressHeaderProps> = ({
         <IconButton
           onClick={onToggleCollapse}
           size="small"
-          aria-label={
-            isCollapsed
-              ? translations.expandUploadDetails
-              : translations.collapseUploadDetails
-          }
+          aria-label={isCollapsed ? translations.expandUploadDetails : translations.collapseUploadDetails}
           sx={{
             color: theme.palette.text.secondary,
             "&:hover": {

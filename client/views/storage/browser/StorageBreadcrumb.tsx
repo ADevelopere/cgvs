@@ -1,17 +1,6 @@
 import React from "react";
-import {
-  Breadcrumbs,
-  Typography,
-  Link,
-  Box,
-  Tooltip,
-  Chip,
-} from "@mui/material";
-import {
-  Home as HomeIcon,
-  ChevronRight as ChevronRightIcon,
-  MoreHoriz as MoreHorizIcon,
-} from "@mui/icons-material";
+import { Breadcrumbs, Typography, Link, Box, Tooltip, Chip } from "@mui/material";
+import { Home as HomeIcon, ChevronRight as ChevronRightIcon, MoreHoriz as MoreHorizIcon } from "@mui/icons-material";
 import { useAppTranslation } from "@/client/locale";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
@@ -121,10 +110,7 @@ const StorageBreadcrumb: React.FC<StorageBreadcrumbProps> = ({
     handleNavigate(targetPath);
   };
 
-  const getSegmentDisplay = (
-    segment: { name: string; path: string; isTruncated?: boolean },
-    isLast: boolean
-  ) => {
+  const getSegmentDisplay = (segment: { name: string; path: string; isTruncated?: boolean }, isLast: boolean) => {
     // Root segment - show home icon
     if (segment.name === "" && segment.path === "") {
       return isLast ? (
@@ -246,9 +232,7 @@ const StorageBreadcrumb: React.FC<StorageBreadcrumbProps> = ({
     >
       <Breadcrumbs
         separator={<ChevronRightIcon fontSize="small" />}
-        aria-label={
-          translations.breadcrumbNavigation || "breadcrumb navigation"
-        }
+        aria-label={translations.breadcrumbNavigation || "breadcrumb navigation"}
         maxItems={shouldTruncate ? maxSegments : undefined}
         sx={{
           "& .MuiBreadcrumbs-separator": {
@@ -257,9 +241,7 @@ const StorageBreadcrumb: React.FC<StorageBreadcrumbProps> = ({
         }}
       >
         {displaySegments.map((segment, index) => (
-          <Box key={`${segment.path}-${index}`}>
-            {getSegmentDisplay(segment, index === displaySegments.length - 1)}
-          </Box>
+          <Box key={`${segment.path}-${index}`}>{getSegmentDisplay(segment, index === displaySegments.length - 1)}</Box>
         ))}
       </Breadcrumbs>
     </Box>

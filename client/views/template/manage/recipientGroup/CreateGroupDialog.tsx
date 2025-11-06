@@ -1,15 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Button,
-  Stack,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Stack } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -21,9 +13,7 @@ interface CreateGroupDialogProps {
   templateId: number;
 }
 
-const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
-  templateId,
-}) => {
+const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ templateId }) => {
   const { recipientGroupTranslations: strings } = useAppTranslation();
   const { createDialogOpen, closeCreateDialog } = useRecipientGroupDialogs();
   const { createGroup } = useRecipientGroupOperations();
@@ -61,12 +51,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Dialog
-        open={createDialogOpen}
-        onClose={handleClose}
-        maxWidth="sm"
-        fullWidth
-      >
+      <Dialog open={createDialogOpen} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{strings.createGroupTitle}</DialogTitle>
         <DialogContent>
           <Stack spacing={3} sx={{ mt: 1 }}>

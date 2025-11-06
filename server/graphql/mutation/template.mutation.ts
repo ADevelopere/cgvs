@@ -1,9 +1,5 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
-import {
-  TemplateCreateInputPothosObject,
-  TemplatePothosObject,
-  TemplateUpdateInputPothosObject,
-} from "../pothos/";
+import { TemplateCreateInputPothosObject, TemplatePothosObject, TemplateUpdateInputPothosObject } from "../pothos/";
 import { TemplateRepository } from "@/server/db/repo";
 
 gqlSchemaBuilder.mutationFields(t => ({

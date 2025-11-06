@@ -2,12 +2,7 @@ import { db } from "@/server/db/drizzleDb";
 import { users } from "@/server/db/schema";
 import { count, eq, inArray } from "drizzle-orm";
 import logger from "@/server/lib/logger";
-import {
-  UserEntity,
-  PaginatedUsersResponseSelectType,
-  PaginationArgs,
-  UserCreateInput,
-} from "@/server/types";
+import { UserEntity, PaginatedUsersResponseSelectType, PaginationArgs, UserCreateInput } from "@/server/types";
 import { PaginationArgsDefault } from "@/server/graphql/pothos";
 import { AuthUtils } from "@/server/utils";
 import bcrypt from "bcryptjs";
@@ -17,9 +12,7 @@ export namespace UserRepository {
     return (await db.$count(users, eq(users.email, email))) > 0;
   };
 
-  export const findUserByIdOrThrow = async (
-    id: number
-  ): Promise<UserEntity> => {
+  export const findUserByIdOrThrow = async (id: number): Promise<UserEntity> => {
     try {
       return await db
         .select()
@@ -52,9 +45,7 @@ export namespace UserRepository {
     }
   };
 
-  export const findByEmail = async (
-    email: string
-  ): Promise<UserEntity | null> => {
+  export const findByEmail = async (email: string): Promise<UserEntity | null> => {
     try {
       return await db
         .select()
@@ -77,26 +68,13 @@ export namespace UserRepository {
     return await db.select().from(users);
   };
 
-  export const findUsers = async (opts: {
-    limit: number;
-    offset: number;
-  }): Promise<UserEntity[]> => {
-    return await db
-      .select()
-      .from(users)
-      .orderBy()
-      .limit(opts.limit)
-      .offset(opts.offset);
+  export const findUsers = async (opts: { limit: number; offset: number }): Promise<UserEntity[]> => {
+    return await db.select().from(users).orderBy().limit(opts.limit).offset(opts.offset);
   };
 
-  export const loadByIds = async (
-    ids: number[]
-  ): Promise<(UserEntity | Error)[]> => {
+  export const loadByIds = async (ids: number[]): Promise<(UserEntity | Error)[]> => {
     if (ids.length === 0) return [];
-    const filteredUsers = await db
-      .select()
-      .from(users)
-      .where(inArray(users.id, ids));
+    const filteredUsers = await db.select().from(users).where(inArray(users.id, ids));
 
     const userList: (UserEntity | Error)[] = ids.map(id => {
       const matchingUser = filteredUsers.find(c => c.id === id);
@@ -114,10 +92,7 @@ export namespace UserRepository {
     const total = await usersTotalCount();
 
     // Figure out pagination
-    const perPage = Math.min(
-      first ?? PaginationArgsDefault.first,
-      maxCount ?? PaginationArgsDefault.maxCount
-    );
+    const perPage = Math.min(first ?? PaginationArgsDefault.first, maxCount ?? PaginationArgsDefault.maxCount);
     const currentPage = page ?? (skip ? Math.floor(skip / perPage) + 1 : 1);
     const offset = (currentPage - 1) * perPage;
 

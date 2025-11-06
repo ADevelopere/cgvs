@@ -1,8 +1,4 @@
-import {
-  NumberMappingFormErrors,
-  ValidateNumberDataSourceFn,
-  ValidateNumberPropsFn,
-} from "./types";
+import { NumberMappingFormErrors, ValidateNumberDataSourceFn, ValidateNumberPropsFn } from "./types";
 
 /**
  * Validate NumberDataSourceInput
@@ -24,9 +20,7 @@ export const validateNumberDataSource = (): ValidateNumberDataSourceFn => {
  * Validate mapping (locale to decimal places)
  * Ensures all values are valid non-negative integers
  */
-const validateMapping = (
-  mapping: Record<string, string>
-): NumberMappingFormErrors => {
+const validateMapping = (mapping: Record<string, string>): NumberMappingFormErrors => {
   const errors: NumberMappingFormErrors = {};
 
   for (const [locale, value] of Object.entries(mapping)) {

@@ -15,9 +15,10 @@ export type CertificateElementCurrentItemSettingsProps = {
   templateConfig: TemplateConfig;
 };
 
-export const CertificateElementCurrentItemSettings: React.FC<
-  CertificateElementCurrentItemSettingsProps
-> = ({ elements, templateConfig }) => {
+export const CertificateElementCurrentItemSettings: React.FC<CertificateElementCurrentItemSettingsProps> = ({
+  elements,
+  templateConfig,
+}) => {
   const { currentElementId } = useEditorStore();
 
   const currentElement = React.useMemo(() => {
@@ -30,12 +31,7 @@ export const CertificateElementCurrentItemSettings: React.FC<
     }
     switch (currentElement.base.type) {
       case ElementType.Text:
-        return (
-          <CurrentTextElement
-            element={currentElement as TextElement}
-            templateConfig={templateConfig}
-          />
-        );
+        return <CurrentTextElement element={currentElement as TextElement} templateConfig={templateConfig} />;
       default:
         return null;
     }

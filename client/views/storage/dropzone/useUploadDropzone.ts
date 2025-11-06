@@ -1,11 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
-import {
-  useDropzone as useReactDropzone,
-  DropzoneRootProps,
-  DropzoneInputProps,
-} from "react-dropzone";
+import { useDropzone as useReactDropzone, DropzoneRootProps, DropzoneInputProps } from "react-dropzone";
 import { useStorageUploadOperations } from "@/client/views/storage/hooks/useStorageUploadOperations";
 import { useAppTranslation } from "@/client/locale";
 import logger from "@/client/lib/logger";
@@ -98,9 +94,7 @@ export interface UseUploadDropzoneReturn {
  * @param options Configuration options for the dropzone
  * @returns Object with react-dropzone props and helper functions
  */
-export const useUploadDropzone = (
-  options: UseUploadDropzoneOptions
-): UseUploadDropzoneReturn => {
+export const useUploadDropzone = (options: UseUploadDropzoneOptions): UseUploadDropzoneReturn => {
   const {
     uploadPath,
     disabled = false,
@@ -129,9 +123,7 @@ export const useUploadDropzone = (
           onUploadStart?.();
           onFilesSelected?.(files);
 
-          logger.info(
-            `Starting upload of ${files.length} files to ${uploadPath}`
-          );
+          logger.info(`Starting upload of ${files.length} files to ${uploadPath}`);
 
           logger.info("About to call startUpload", {
             fileCount: files.length,
@@ -153,14 +145,7 @@ export const useUploadDropzone = (
         }
       })();
     },
-    [
-      disabled,
-      onUploadStart,
-      onFilesSelected,
-      uploadPath,
-      startUpload,
-      onUploadComplete,
-    ]
+    [disabled, onUploadStart, onFilesSelected, uploadPath, startUpload, onUploadComplete]
   );
 
   // Configure react-dropzone
@@ -176,8 +161,7 @@ export const useUploadDropzone = (
             (acc, type) => {
               if (type.startsWith(".")) {
                 // File extension
-                acc["application/octet-stream"] =
-                  acc["application/octet-stream"] || [];
+                acc["application/octet-stream"] = acc["application/octet-stream"] || [];
                 acc["application/octet-stream"].push(type);
               } else {
                 // MIME type
@@ -201,10 +185,7 @@ export const useUploadDropzone = (
                 .replace("%{maxSize}", formatFileSize(maxFileSize));
               break;
             case "file-invalid-type":
-              message = translations.invalidFileType.replace(
-                "%{fileName}",
-                file.name
-              );
+              message = translations.invalidFileType.replace("%{fileName}", file.name);
               break;
             case "too-many-files":
               message = translations.tooManyFiles

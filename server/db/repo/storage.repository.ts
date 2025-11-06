@@ -1,60 +1,31 @@
 import { db } from "@/server/db/drizzleDb";
-import {
-  storageFiles,
-  fileUsages,
-  storageDirectories,
-} from "@/server/db/schema/storage";
+import { storageFiles, fileUsages, storageDirectories } from "@/server/db/schema/storage";
 import { eq, and, sql, inArray } from "drizzle-orm";
 import logger from "@/server/lib/logger";
 import * as StorageTypes from "@/server/types";
 
 export namespace StorageDbRepository {
   // File operations
-  export const fileById = async (
-    id: bigint
-  ): Promise<StorageTypes.FileEntity | undefined> => {
-    const result = await db
-      .select()
-      .from(storageFiles)
-      .where(eq(storageFiles.id, id))
-      .limit(1);
+  export const fileById = async (id: bigint): Promise<StorageTypes.FileEntity | undefined> => {
+    const result = await db.select().from(storageFiles).where(eq(storageFiles.id, id)).limit(1);
     return result[0];
   };
 
-  export const fileByPath = async (
-    path: string
-  ): Promise<StorageTypes.FileEntity | undefined> => {
-    const result = await db
-      .select()
-      .from(storageFiles)
-      .where(eq(storageFiles.path, path))
-      .limit(1);
+  export const fileByPath = async (path: string): Promise<StorageTypes.FileEntity | undefined> => {
+    const result = await db.select().from(storageFiles).where(eq(storageFiles.path, path)).limit(1);
     return result[0];
   };
 
-  export const filesByIds = async (
-    ids: bigint[]
-  ): Promise<StorageTypes.FileEntity[]> => {
+  export const filesByIds = async (ids: bigint[]): Promise<StorageTypes.FileEntity[]> => {
     if (ids.length === 0) return [];
-    return await db
-      .select()
-      .from(storageFiles)
-      .where(inArray(storageFiles.id, ids));
+    return await db.select().from(storageFiles).where(inArray(storageFiles.id, ids));
   };
 
-  export const filesByPaths = async (
-    paths: string[]
-  ): Promise<StorageTypes.FileEntity[]> => {
+  export const filesByPaths = async (paths: string[]): Promise<StorageTypes.FileEntity[]> => {
     if (paths.length === 0) return [];
-    return await db
-      .select()
-      .from(storageFiles)
-      .where(inArray(storageFiles.path, paths));
+    return await db.select().from(storageFiles).where(inArray(storageFiles.path, paths));
   };
-  export const createFile = async (
-    path: string,
-    isProtected: boolean = false
-  ): Promise<StorageTypes.FileEntity> => {
+  export const createFile = async (path: string, isProtected: boolean = false): Promise<StorageTypes.FileEntity> => {
     const [file] = await db
       .insert(storageFiles)
       .values({
@@ -98,15 +69,9 @@ export namespace StorageDbRepository {
   };
 
   // Directory operations
-  export const directoryByPath = async (
-    path: string
-  ): Promise<StorageTypes.DirectoryEntity | null> => {
+  export const directoryByPath = async (path: string): Promise<StorageTypes.DirectoryEntity | null> => {
     try {
-      const result = await db
-        .select()
-        .from(storageDirectories)
-        .where(eq(storageDirectories.path, path))
-        .limit(1);
+      const result = await db.select().from(storageDirectories).where(eq(storageDirectories.path, path)).limit(1);
       if (result.length === 0) {
         return null;
       }
@@ -117,9 +82,7 @@ export namespace StorageDbRepository {
     }
   };
 
-  export const directoriesByParentPath = async (
-    parentPath?: string
-  ): Promise<StorageTypes.DirectoryEntity[]> => {
+  export const directoriesByParentPath = async (parentPath?: string): Promise<StorageTypes.DirectoryEntity[]> => {
     if (parentPath) {
       return await db
         .select()
@@ -129,14 +92,9 @@ export namespace StorageDbRepository {
     return await db.select().from(storageDirectories);
   };
 
-  export const directoriesByPaths = async (
-    paths: string[]
-  ): Promise<StorageTypes.DirectoryEntity[]> => {
+  export const directoriesByPaths = async (paths: string[]): Promise<StorageTypes.DirectoryEntity[]> => {
     if (paths.length === 0) return [];
-    return await db
-      .select()
-      .from(storageDirectories)
-      .where(inArray(storageDirectories.path, paths));
+    return await db.select().from(storageDirectories).where(inArray(storageDirectories.path, paths));
   };
 
   export const createDirectory = async (
@@ -191,9 +149,7 @@ export namespace StorageDbRepository {
 
   export const deleteDirectory = async (path: string): Promise<boolean> => {
     try {
-      await db
-        .delete(storageDirectories)
-        .where(eq(storageDirectories.path, path));
+      await db.delete(storageDirectories).where(eq(storageDirectories.path, path));
       return true;
     } catch (error) {
       logger.error("Failed to delete directory:", error);
@@ -202,13 +158,8 @@ export namespace StorageDbRepository {
   };
 
   // File usage operations
-  export const getFileUsages = async (
-    filePath: string
-  ): Promise<StorageTypes.FileUsageEntity[]> => {
-    return await db
-      .select()
-      .from(fileUsages)
-      .where(eq(fileUsages.filePath, filePath));
+  export const getFileUsages = async (filePath: string): Promise<StorageTypes.FileUsageEntity[]> => {
+    return await db.select().from(fileUsages).where(eq(fileUsages.filePath, filePath));
   };
 
   export const isFileInUse = async (filePath: string): Promise<boolean> => {
@@ -225,9 +176,7 @@ export namespace StorageDbRepository {
       if (!fileEntity) {
         try {
           await createFile(input.filePath);
-          logger.info(
-            `📁 Registered file in DB upon first usage: ${input.filePath}`
-          );
+          logger.info(`📁 Registered file in DB upon first usage: ${input.filePath}`);
         } catch (error) {
           return {
             success: false,
@@ -335,9 +284,7 @@ export namespace StorageDbRepository {
 
       return {
         success: !!updated,
-        message: updated
-          ? "Directory permissions updated successfully"
-          : "Failed to update directory permissions",
+        message: updated ? "Directory permissions updated successfully" : "Failed to update directory permissions",
       };
     } catch (error) {
       return {
@@ -361,9 +308,7 @@ export namespace StorageDbRepository {
         const updated = await updateFile(updatedFile);
         return {
           success: !!updated,
-          message: updated
-            ? "File protection updated successfully"
-            : "Failed to update file protection",
+          message: updated ? "File protection updated successfully" : "Failed to update file protection",
         };
       }
 
@@ -378,9 +323,7 @@ export namespace StorageDbRepository {
         const updated = await updateDirectory(updatedDirectory);
         return {
           success: !!updated,
-          message: updated
-            ? "Directory protection updated successfully"
-            : "Failed to update directory protection",
+          message: updated ? "Directory protection updated successfully" : "Failed to update directory protection",
         };
       }
 

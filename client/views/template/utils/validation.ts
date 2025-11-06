@@ -13,9 +13,7 @@ export const validateVariableValue = (
     if (isKey || variable.required) {
       return {
         isValid: false,
-        error: isKey
-          ? `${variable.name} is required as it's a key identifier`
-          : `${variable.name} is required`,
+        error: isKey ? `${variable.name} is required as it's a key identifier` : `${variable.name} is required`,
       };
     }
     return { isValid: true }; // Empty is ok for non-required fields

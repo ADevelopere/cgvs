@@ -1,10 +1,6 @@
 import React, { useState, useMemo, useRef } from "react";
 import * as MUI from "@mui/material";
-import {
-  Search as SearchIcon,
-  Add as AddIcon,
-  Description as FontIcon,
-} from "@mui/icons-material";
+import { Search as SearchIcon, Add as AddIcon, Description as FontIcon } from "@mui/icons-material";
 import { useQuery } from "@apollo/client/react";
 import { fontsQueryDocument } from "./hooks/font.documents";
 import { LOCALE_OPTIONS } from "./types";
@@ -41,9 +37,7 @@ export const FontList: React.FC<FontListProps> = ({
   // Update store when debounced value changes
   React.useEffect(() => {
     setQueryParamsRef.current({
-      filterArgs: debouncedSearchTerm
-        ? { name: debouncedSearchTerm }
-        : undefined,
+      filterArgs: debouncedSearchTerm ? { name: debouncedSearchTerm } : undefined,
     });
   }, [debouncedSearchTerm]);
 
@@ -83,12 +77,7 @@ export const FontList: React.FC<FontListProps> = ({
           }}
         >
           <MUI.Typography variant="h6">{strings.fonts}</MUI.Typography>
-          <MUI.Button
-            size="small"
-            variant="contained"
-            onClick={startCreating}
-            startIcon={<AddIcon />}
-          >
+          <MUI.Button size="small" variant="contained" onClick={startCreating} startIcon={<AddIcon />}>
             {strings.newFont}
           </MUI.Button>
         </MUI.Box>
@@ -142,26 +131,13 @@ export const FontList: React.FC<FontListProps> = ({
           >
             <FontIcon sx={{ fontSize: 48, color: "text.secondary", mb: 2 }} />
             <MUI.Typography variant="body2" color="text.secondary" gutterBottom>
-              {queryParams.filterArgs?.name
-                ? strings.noFontsFound
-                : strings.noFontsYet}
+              {queryParams.filterArgs?.name ? strings.noFontsFound : strings.noFontsYet}
             </MUI.Typography>
-            <MUI.Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ mb: 2 }}
-            >
-              {queryParams.filterArgs?.name
-                ? strings.tryDifferentSearch
-                : strings.createFirstFont}
+            <MUI.Typography variant="caption" color="text.secondary" sx={{ mb: 2 }}>
+              {queryParams.filterArgs?.name ? strings.tryDifferentSearch : strings.createFirstFont}
             </MUI.Typography>
             {!queryParams.filterArgs?.name && (
-              <MUI.Button
-                size="small"
-                variant="outlined"
-                onClick={startCreating}
-                startIcon={<AddIcon />}
-              >
+              <MUI.Button size="small" variant="outlined" onClick={startCreating} startIcon={<AddIcon />}>
                 {strings.createFont}
               </MUI.Button>
             )}
@@ -177,10 +153,7 @@ export const FontList: React.FC<FontListProps> = ({
                 mb: 1,
                 cursor: "pointer",
                 transition: "all 0.2s",
-                bgcolor:
-                  selectedFont?.id === font.id
-                    ? "action.selected"
-                    : "background.paper",
+                bgcolor: selectedFont?.id === font.id ? "action.selected" : "background.paper",
                 "&:hover": {
                   bgcolor: "action.hover",
                 },
@@ -191,12 +164,7 @@ export const FontList: React.FC<FontListProps> = ({
               </MUI.Typography>
               <MUI.Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                 {font.locale!.map(locale => (
-                  <MUI.Chip
-                    key={locale}
-                    label={getLocaleLabel(locale!)}
-                    size="small"
-                    variant="outlined"
-                  />
+                  <MUI.Chip key={locale} label={getLocaleLabel(locale!)} size="small" variant="outlined" />
                 ))}
               </MUI.Box>
             </MUI.Card>

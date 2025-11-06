@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  startTransition,
-  lazy,
-  Suspense,
-} from "react";
+import React, { useState, useEffect, startTransition, lazy, Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { Box, Fade, Slide, CircularProgress } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
@@ -14,10 +8,7 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { templateQueryDocument } from "../hooks/template.documents";
 import { useDashboardLayout } from "@/client/views/dashboard/layout/DashboardLayoutContext";
 import { TabContext, TabPanel } from "@mui/lab";
-import {
-  TemplateManagementTabType,
-  useTemplateUIStore,
-} from "./useTemplateManagementStore";
+import { TemplateManagementTabType, useTemplateUIStore } from "./useTemplateManagementStore";
 import BasicInfoTab from "./BasicInfoTab";
 import TemplateVariableManagement from "./variables/TemplateVariableManagement";
 import RecipientGroupTab from "./recipientGroup/RecipientGroupTab";
@@ -30,12 +21,8 @@ import { useAppTheme } from "@/client/contexts";
 import { ClientCanvasGenerator } from "./preview/ClientCanvasGenerator";
 
 // Lazy load heavy components that block on mount
-const RecipientsManagementTab = lazy(
-  () => import("./recipient/RecipientsManagementTab ")
-);
-const RecipientVariableDataTab = lazy(
-  () => import("./data/RecipientVariableDataTab")
-);
+const RecipientsManagementTab = lazy(() => import("./recipient/RecipientsManagementTab "));
+const RecipientVariableDataTab = lazy(() => import("./data/RecipientVariableDataTab"));
 
 // Fallback component for lazy-loaded tabs
 const TabLoadingFallback = () => (
@@ -74,9 +61,7 @@ export const TemplateManagementPageContent: React.FC = () => {
   const router = useRouter();
   const { setDashboardSlot } = useDashboardLayout();
   const { activeTab, setActiveTab } = useTemplateUIStore();
-  const [prevTabIndex, setPrevTabIndex] = React.useState(
-    TAB_ORDER.indexOf(activeTab)
-  );
+  const [prevTabIndex, setPrevTabIndex] = React.useState(TAB_ORDER.indexOf(activeTab));
 
   const { isRtl } = useAppTheme();
 
@@ -93,14 +78,8 @@ export const TemplateManagementPageContent: React.FC = () => {
 
   const [template, setTemplate] = useState<Graphql.Template | null>(null);
   const [updating, setUpdating] = useState(true);
-  const loading = React.useMemo(
-    () => updating || apolloLoading,
-    [updating, apolloLoading]
-  );
-  const templateNotFound = React.useMemo(
-    () => !template && !loading && !error,
-    [template, loading, error]
-  );
+  const loading = React.useMemo(() => updating || apolloLoading, [updating, apolloLoading]);
+  const templateNotFound = React.useMemo(() => !template && !loading && !error, [template, loading, error]);
 
   useEffect(() => {
     if (apolloLoading || !templateQuery) return;
@@ -114,10 +93,7 @@ export const TemplateManagementPageContent: React.FC = () => {
     router.push("/admin/templates");
   }, [router]);
 
-  const handleTabChange = (
-    _: React.SyntheticEvent,
-    newValue: TemplateManagementTabType
-  ) => {
+  const handleTabChange = (_: React.SyntheticEvent, newValue: TemplateManagementTabType) => {
     // Update immediately for smooth UI feedback
     setPrevTabIndex(TAB_ORDER.indexOf(activeTab));
 
@@ -135,11 +111,7 @@ export const TemplateManagementPageContent: React.FC = () => {
     const currentTabIndex = TAB_ORDER.indexOf(activeTab);
     const baseDirection = currentTabIndex > prevTabIndex ? "left" : "right";
     // Reverse direction in RTL mode
-    return isRtl
-      ? baseDirection === "left"
-        ? "right"
-        : "left"
-      : baseDirection;
+    return isRtl ? (baseDirection === "left" ? "right" : "left") : baseDirection;
   }, [activeTab, prevTabIndex, isRtl]);
 
   // Set dashboard title slot
@@ -157,14 +129,7 @@ export const TemplateManagementPageContent: React.FC = () => {
     return () => {
       setDashboardSlot("titleRenderer", null);
     };
-  }, [
-    setDashboardSlot,
-    template?.name,
-    loading,
-    error,
-    templateNotFound,
-    handleBack,
-  ]);
+  }, [setDashboardSlot, template?.name, loading, error, templateNotFound, handleBack]);
 
   // Render tab content based on state
   const renderTabContent = () => {
@@ -185,11 +150,7 @@ export const TemplateManagementPageContent: React.FC = () => {
       <TabContext value={activeTab}>
         <TabPanel value="basic" sx={{ width: "100%", height: "100%" }}>
           <Fade in={activeTab === "basic"} timeout={300}>
-            <Slide
-              direction={slideDirection}
-              in={activeTab === "basic"}
-              timeout={250}
-            >
+            <Slide direction={slideDirection} in={activeTab === "basic"} timeout={250}>
               <Box sx={{ width: "100%", height: "100%" }}>
                 <BasicInfoTab template={template} />
               </Box>
@@ -198,11 +159,7 @@ export const TemplateManagementPageContent: React.FC = () => {
         </TabPanel>
         <TabPanel value="variables" sx={{ width: "100%", height: "100%" }}>
           <Fade in={activeTab === "variables"} timeout={300}>
-            <Slide
-              direction={slideDirection}
-              in={activeTab === "variables"}
-              timeout={250}
-            >
+            <Slide direction={slideDirection} in={activeTab === "variables"} timeout={250}>
               <Box sx={{ width: "100%", height: "100%" }}>
                 <TemplateVariableManagement template={template} />
               </Box>
@@ -211,28 +168,17 @@ export const TemplateManagementPageContent: React.FC = () => {
         </TabPanel>
         <TabPanel value="recipients" sx={{ width: "100%", height: "100%" }}>
           <Fade in={activeTab === "recipients"} timeout={300}>
-            <Slide
-              direction={slideDirection}
-              in={activeTab === "recipients"}
-              timeout={250}
-            >
+            <Slide direction={slideDirection} in={activeTab === "recipients"} timeout={250}>
               <Box sx={{ width: "100%", height: "100%" }}>
                 <RecipientGroupTab template={template} />
               </Box>
             </Slide>
           </Fade>
         </TabPanel>
-        <TabPanel
-          value="recipientsManagement"
-          sx={{ width: "100%", height: "100%" }}
-        >
+        <TabPanel value="recipientsManagement" sx={{ width: "100%", height: "100%" }}>
           <Suspense fallback={<TabLoadingFallback />}>
             <Fade in={activeTab === "recipientsManagement"} timeout={300}>
-              <Slide
-                direction={slideDirection}
-                in={activeTab === "recipientsManagement"}
-                timeout={250}
-              >
+              <Slide direction={slideDirection} in={activeTab === "recipientsManagement"} timeout={250}>
                 <Box sx={{ width: "100%", height: "100%" }}>
                   <RecipientsManagementTab template={template} />
                 </Box>
@@ -243,11 +189,7 @@ export const TemplateManagementPageContent: React.FC = () => {
         <TabPanel value="data" sx={{ width: "100%", height: "100%" }}>
           <Suspense fallback={<TabLoadingFallback />}>
             <Fade in={activeTab === "data"} timeout={300}>
-              <Slide
-                direction={slideDirection}
-                in={activeTab === "data"}
-                timeout={250}
-              >
+              <Slide direction={slideDirection} in={activeTab === "data"} timeout={250}>
                 <Box sx={{ width: "100%", height: "100%" }}>
                   <RecipientVariableDataTab template={template} />
                 </Box>
@@ -257,11 +199,7 @@ export const TemplateManagementPageContent: React.FC = () => {
         </TabPanel>
         <TabPanel value="editor" sx={{ width: "100%", height: "100%" }}>
           <Fade in={activeTab === "editor"} timeout={300}>
-            <Slide
-              direction={slideDirection}
-              in={activeTab === "editor"}
-              timeout={250}
-            >
+            <Slide direction={slideDirection} in={activeTab === "editor"} timeout={250}>
               <Box sx={{ width: "100%", height: "100%" }}>
                 <EditorTab template={template} />
               </Box>
@@ -270,11 +208,7 @@ export const TemplateManagementPageContent: React.FC = () => {
         </TabPanel>
         <TabPanel value="preview">
           <Fade in={activeTab === "preview"} timeout={300}>
-            <Slide
-              direction={slideDirection}
-              in={activeTab === "preview"}
-              timeout={250}
-            >
+            <Slide direction={slideDirection} in={activeTab === "preview"} timeout={250}>
               <Box
                 sx={{
                   p: 2,
@@ -303,11 +237,7 @@ export const TemplateManagementPageContent: React.FC = () => {
       }}
     >
       {/* Always render tabs */}
-      <ManagementTabList
-        onChange={handleTabChange}
-        activeTab={activeTab}
-        isLoading={loading}
-      />
+      <ManagementTabList onChange={handleTabChange} activeTab={activeTab} isLoading={loading} />
 
       {/* Conditionally render content under tabs */}
       {renderTabContent()}

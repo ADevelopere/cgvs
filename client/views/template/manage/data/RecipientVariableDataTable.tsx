@@ -7,10 +7,7 @@ import { Table, type AnyColumn } from "@/client/components/Table";
 import { ROWS_PER_PAGE_OPTIONS } from "@/client/components/Table/constants";
 import { useRecipientVariableDataOperations } from "./hooks/useRecipientVariableDataOperations";
 import { useRecipientVariableDataStore } from "./stores/useRecipientVariableDataStore";
-import {
-  useVariableDataTable,
-  VariableDataRow,
-} from "./hooks/useVariableDataTable";
+import { useVariableDataTable, VariableDataRow } from "./hooks/useVariableDataTable";
 import * as Document from "./hooks/recipientVariableData.documents";
 import { useAppTranslation } from "@/client/locale";
 import { TemplateVariable } from "@/client/graphql/generated/gql/graphql";
@@ -20,27 +17,21 @@ interface RecipientVariableDataTableProps {
   variables: TemplateVariable[];
 }
 
-const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
-  selectedGroupId,
-  variables,
-}) => {
+const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({ selectedGroupId, variables }) => {
   const operations = useRecipientVariableDataOperations();
   const store = useRecipientVariableDataStore();
   const { recipientVariableDataTranslations: strings } = useAppTranslation();
 
   // Fetch recipient variable data
-  const { data, loading, error } = useQuery(
-    Document.recipientVariableValuesByGroupQueryDocument,
-    {
-      variables: {
-        recipientGroupId: selectedGroupId,
-        limit: store.queryParams.limit,
-        offset: store.queryParams.offset,
-      },
-      skip: !selectedGroupId,
-      fetchPolicy: "cache-first",
-    }
-  );
+  const { data, loading, error } = useQuery(Document.recipientVariableValuesByGroupQueryDocument, {
+    variables: {
+      recipientGroupId: selectedGroupId,
+      limit: store.queryParams.limit,
+      offset: store.queryParams.offset,
+    },
+    skip: !selectedGroupId,
+    fetchPolicy: "cache-first",
+  });
 
   const { recipientsVarValues, total } = useMemo(() => {
     return {
@@ -51,8 +42,7 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
 
   // Calculate page info for pagination
   const pageInfo = useMemo(() => {
-    const currentPage =
-      Math.floor(store.queryParams.offset / store.queryParams.limit) + 1;
+    const currentPage = Math.floor(store.queryParams.offset / store.queryParams.limit) + 1;
     const totalPages = Math.ceil(total / store.queryParams.limit);
 
     return {
@@ -66,11 +56,7 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
 
   // Handle cell updates
   const handleUpdateCell = useCallback(
-    async <T = unknown,>(
-      rowId: number,
-      columnId: string,
-      value: T | null | undefined
-    ) => {
+    async <T = unknown,>(rowId: number, columnId: string, value: T | null | undefined) => {
       // Extract variable ID from column ID (format: var_${variableId})
       if (columnId.startsWith("var_")) {
         const variableId = parseInt(columnId.replace("var_", ""), 10);
@@ -90,9 +76,7 @@ const RecipientVariableDataTable: React.FC<RecipientVariableDataTableProps> = ({
   // Transform data for table - flatten variableValues for performance
   const tableData = useMemo(() => {
     return recipientsVarValues.map(recipient => {
-      const flattenedVars = Object.entries(
-        recipient.variableValues || {}
-      ).reduce(
+      const flattenedVars = Object.entries(recipient.variableValues || {}).reduce(
         (acc, [key, value]) => {
           acc[`var_${key}`] = value;
           return acc;

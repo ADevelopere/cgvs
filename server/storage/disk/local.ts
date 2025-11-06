@@ -4,11 +4,7 @@ import path from "path";
 import crypto from "crypto";
 import logger from "@/server/lib/logger";
 import * as Types from "@/server/types";
-import {
-  StorageService,
-  StorageValidationError,
-  STORAGE_CONFIG,
-} from "./storage.service.interface";
+import { StorageService, StorageValidationError, STORAGE_CONFIG } from "./storage.service.interface";
 import { StorageDbRepository, SignedUrlRepository } from "@/server/db/repo";
 import { StorageUtils } from "@/server/utils";
 import { OrderSortDirection } from "@/lib/enum";
@@ -70,10 +66,7 @@ class LocalAdapter implements StorageService {
   /**
    * Convert fs.Stats to BlobMetadata format
    */
-  private fileStatsToMetadata(
-    stats: Stats,
-    filePath: string
-  ): Types.BlobMetadata {
+  private fileStatsToMetadata(stats: Stats, filePath: string): Types.BlobMetadata {
     return {
       name: filePath,
       size: stats.size,
@@ -104,11 +97,7 @@ class LocalAdapter implements StorageService {
   /**
    * Stream data to file while calculating MD5
    */
-  private async streamToFile(
-    stream: NodeJS.ReadableStream,
-    filePath: string,
-    expectedMd5?: string
-  ): Promise<void> {
+  private async streamToFile(stream: NodeJS.ReadableStream, filePath: string, expectedMd5?: string): Promise<void> {
     const hash = crypto.createHash("md5");
     const writeStream = createWriteStream(filePath);
 
@@ -160,9 +149,7 @@ class LocalAdapter implements StorageService {
     }
   }
 
-  async generateUploadSignedUrl(
-    input: Types.UploadSignedUrlGenerateInput
-  ): Promise<string> {
+  async generateUploadSignedUrl(input: Types.UploadSignedUrlGenerateInput): Promise<string> {
     try {
       // Clean the path
       const cleanedPath = cleanLocalPath(input.path);
@@ -178,11 +165,7 @@ class LocalAdapter implements StorageService {
       });
 
       // Validate upload
-      const validationError = await StorageUtils.validateUpload(
-        cleanedPath,
-        input.fileSize,
-        mimeType
-      );
+      const validationError = await StorageUtils.validateUpload(cleanedPath, input.fileSize, mimeType);
       if (validationError) {
         throw new StorageValidationError(validationError);
       }
@@ -194,10 +177,7 @@ class LocalAdapter implements StorageService {
           await SignedUrlRepository.deleteExpired();
         } catch (error) {
           // Non-fatal: log but don't block URL generation
-          logger.error(
-            "Lazy cleanup failed during signed URL generation",
-            error
-          );
+          logger.error("Lazy cleanup failed during signed URL generation", error);
         }
       }
 
@@ -205,9 +185,7 @@ class LocalAdapter implements StorageService {
       const tokenId = crypto.randomUUID();
 
       // Calculate expiration time
-      const expiresAt = new Date(
-        Date.now() + STORAGE_CONFIG.SIGNED_URL_DURATION * 60 * 1000
-      );
+      const expiresAt = new Date(Date.now() + STORAGE_CONFIG.SIGNED_URL_DURATION * 60 * 1000);
 
       // Create signed URL entry in database
       await SignedUrlRepository.createSignedUrl({
@@ -250,22 +228,14 @@ class LocalAdapter implements StorageService {
     }
   }
 
-  async uploadFile(
-    filePath: string,
-    contentType: string,
-    buffer: Buffer
-  ): Promise<Types.FileUploadResult> {
+  async uploadFile(filePath: string, contentType: string, buffer: Buffer): Promise<Types.FileUploadResult> {
     try {
       // Clean the file path
       const cleanedFilePath = cleanLocalPath(filePath);
       const fileSize = buffer.byteLength;
 
       // Validate upload
-      const validationError = await StorageUtils.validateUpload(
-        filePath,
-        fileSize,
-        contentType
-      );
+      const validationError = await StorageUtils.validateUpload(filePath, fileSize, contentType);
       if (validationError) {
         return {
           success: false,
@@ -275,12 +245,8 @@ class LocalAdapter implements StorageService {
       }
 
       // Check directory permissions
-      const directoryPath = cleanedFilePath.substring(
-        0,
-        cleanedFilePath.lastIndexOf("/")
-      );
-      const dbDirectory =
-        await StorageDbRepository.directoryByPath(directoryPath);
+      const directoryPath = cleanedFilePath.substring(0, cleanedFilePath.lastIndexOf("/"));
+      const dbDirectory = await StorageDbRepository.directoryByPath(directoryPath);
 
       if (dbDirectory) {
         // Directory exists in DB, check permissions
@@ -303,10 +269,7 @@ class LocalAdapter implements StorageService {
       logger.info("💾 uploadFile: Creating file entity in database", {
         filePath: cleanedFilePath,
       });
-      const fileEntity = await StorageDbRepository.createFile(
-        cleanedFilePath,
-        false
-      );
+      const fileEntity = await StorageDbRepository.createFile(cleanedFilePath, false);
       logger.info("💾 uploadFile: File entity created successfully", {
         fileEntity,
       });
@@ -347,9 +310,7 @@ class LocalAdapter implements StorageService {
     }
   }
 
-  async listFiles(
-    input: Types.FilesListSearchInput
-  ): Promise<Types.StorageObjectList> {
+  async listFiles(input: Types.FilesListSearchInput): Promise<Types.StorageObjectList> {
     try {
       const searchPath = cleanLocalPath(input.path || "");
       const absolutePath = this.getAbsolutePath(searchPath);
@@ -376,9 +337,7 @@ class LocalAdapter implements StorageService {
       const dirPaths: string[] = [];
 
       for (const entry of entries) {
-        const itemPath = searchPath
-          ? `${searchPath}/${entry.name}`
-          : entry.name;
+        const itemPath = searchPath ? `${searchPath}/${entry.name}` : entry.name;
         if (entry.isFile()) {
           filePaths.push(itemPath);
         } else if (entry.isDirectory()) {
@@ -389,9 +348,7 @@ class LocalAdapter implements StorageService {
       // Batch database queries
       const [dbFiles, dbDirectories] = await Promise.all([
         filePaths.length > 0 ? StorageDbRepository.filesByPaths(filePaths) : [],
-        dirPaths.length > 0
-          ? StorageDbRepository.directoriesByPaths(dirPaths)
-          : [],
+        dirPaths.length > 0 ? StorageDbRepository.directoriesByPaths(dirPaths) : [],
       ]);
 
       // Create lookup maps
@@ -466,11 +423,7 @@ class LocalAdapter implements StorageService {
             isPublic: dirPath.startsWith("public"),
           };
 
-          const dirInfo = StorageUtils.combineDirectoryData(
-            bucketDir,
-            dbDir,
-            fileCount
-          );
+          const dirInfo = StorageUtils.combineDirectoryData(bucketDir, dbDir, fileCount);
           items.push(dirInfo);
         } catch (error) {
           logger.warn(`Failed to process directory: ${dirPath}`, error);
@@ -481,9 +434,7 @@ class LocalAdapter implements StorageService {
       let filteredItems = items;
       if (input.searchTerm && input.searchTerm.length > 0) {
         const searchLower = input.searchTerm.toLowerCase();
-        filteredItems = items.filter(item =>
-          item.name.toLowerCase().includes(searchLower)
-        );
+        filteredItems = items.filter(item => item.name.toLowerCase().includes(searchLower));
       }
 
       logger.info("[LocalAdapter] filteredItems", { filteredItems });
@@ -528,9 +479,7 @@ class LocalAdapter implements StorageService {
     }
   }
 
-  async createFolder(
-    input: Types.FolderCreateInput
-  ): Promise<Types.FileOperationResult> {
+  async createFolder(input: Types.FolderCreateInput): Promise<Types.FileOperationResult> {
     try {
       // Clean the path to remove leading/trailing slashes
       const fullPath = cleanLocalPath(input.path);
@@ -559,9 +508,7 @@ class LocalAdapter implements StorageService {
 
       // Only save folder in DB if custom permissions are provided
       const hasCustomPermissions =
-        input.permissions != null ||
-        input.protected === true ||
-        input.protectChildren === true;
+        input.permissions != null || input.protected === true || input.protectChildren === true;
 
       let newDirectoryInfo: Types.DirectoryInfo;
 
@@ -580,10 +527,7 @@ class LocalAdapter implements StorageService {
             isPublic: fullPath.startsWith("public"),
           };
 
-          newDirectoryInfo = StorageUtils.combineDirectoryData(
-            bucketDir,
-            directoryEntity
-          );
+          newDirectoryInfo = StorageUtils.combineDirectoryData(bucketDir, directoryEntity);
         } catch (error) {
           // If DB operation fails, still return success since folder was created
           logger.warn(
@@ -609,14 +553,10 @@ class LocalAdapter implements StorageService {
     }
   }
 
-  async renameFile(
-    input: Types.FileRenameInput
-  ): Promise<Types.FileOperationResult> {
+  async renameFile(input: Types.FileRenameInput): Promise<Types.FileOperationResult> {
     try {
       // Validate current path
-      const pathValidationError = await StorageUtils.validatePath(
-        input.currentPath
-      );
+      const pathValidationError = await StorageUtils.validatePath(input.currentPath);
       if (pathValidationError) {
         return {
           success: false,
@@ -625,9 +565,7 @@ class LocalAdapter implements StorageService {
       }
 
       // Validate new name
-      const nameValidationError = await StorageUtils.validateFileName(
-        input.newName
-      );
+      const nameValidationError = await StorageUtils.validateFileName(input.newName);
       if (nameValidationError) {
         return {
           success: false,
@@ -635,9 +573,7 @@ class LocalAdapter implements StorageService {
         };
       }
 
-      const directoryPath = StorageUtils.extractDirectoryPath(
-        input.currentPath
-      );
+      const directoryPath = StorageUtils.extractDirectoryPath(input.currentPath);
       const newPath = `${directoryPath}/${input.newName}`;
 
       // Rename file in filesystem
@@ -658,10 +594,7 @@ class LocalAdapter implements StorageService {
           fileEntity = await StorageDbRepository.updateFile(updatedFile);
         }
       } catch (error) {
-        logger.warn(
-          `Failed to update file in database: ${input.currentPath}`,
-          error
-        );
+        logger.warn(`Failed to update file in database: ${input.currentPath}`, error);
       }
 
       // Get file stats and create metadata
@@ -767,9 +700,7 @@ class LocalAdapter implements StorageService {
     }
   }
 
-  async directoryInfoByPath(
-    dirPath: string
-  ): Promise<Types.DirectoryInfo | null> {
+  async directoryInfoByPath(dirPath: string): Promise<Types.DirectoryInfo | null> {
     try {
       // Check database first
       const dbDirectory = await StorageDbRepository.directoryByPath(dirPath);
@@ -900,18 +831,13 @@ class LocalAdapter implements StorageService {
     }
   }
 
-  async storageStatistics(
-    searchPath?: string | null
-  ): Promise<Types.StorageStats> {
+  async storageStatistics(searchPath?: string | null): Promise<Types.StorageStats> {
     try {
       const targetPath = searchPath || "";
       const absolutePath = this.getAbsolutePath(targetPath);
 
       let totalSize = BigInt(0);
-      const fileTypeMap = new Map<
-        Types.FileTypes,
-        { count: number; size: bigint }
-      >();
+      const fileTypeMap = new Map<Types.FileTypes, { count: number; size: bigint }>();
       const directories = new Set<string>();
 
       // Recursively walk through directory
@@ -920,9 +846,7 @@ class LocalAdapter implements StorageService {
 
         for (const entry of entries) {
           const entryAbsolutePath = path.join(dirPath, entry.name);
-          const entryRelativePath = relativePath
-            ? `${relativePath}/${entry.name}`
-            : entry.name;
+          const entryRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
 
           if (entry.isDirectory()) {
             directories.add(entryRelativePath);
@@ -936,8 +860,7 @@ class LocalAdapter implements StorageService {
             const ext = path.extname(entry.name).toLowerCase().slice(1); // Remove leading dot
             const contentType = extToMime[ext] || "application/octet-stream";
 
-            const fileType =
-              StorageUtils.getFileTypeFromContentType(contentType);
+            const fileType = StorageUtils.getFileTypeFromContentType(contentType);
             const current = fileTypeMap.get(fileType) || {
               count: 0,
               size: BigInt(0),
@@ -981,18 +904,13 @@ class LocalAdapter implements StorageService {
         };
       }
 
-      const fileTypeBreakdown = Array.from(fileTypeMap.entries()).map(
-        ([type, data]) => ({
-          type,
-          count: data.count,
-          size: data.size,
-        })
-      );
+      const fileTypeBreakdown = Array.from(fileTypeMap.entries()).map(([type, data]) => ({
+        type,
+        count: data.count,
+        size: data.size,
+      }));
 
-      const totalFiles = Array.from(fileTypeMap.values()).reduce(
-        (sum, data) => sum + data.count,
-        0
-      );
+      const totalFiles = Array.from(fileTypeMap.values()).reduce((sum, data) => sum + data.count, 0);
 
       return {
         totalFiles,
@@ -1011,21 +929,15 @@ class LocalAdapter implements StorageService {
     }
   }
 
-  async fetchDirectoryChildren(
-    searchPath?: string | null
-  ): Promise<Types.DirectoryInfo[]> {
+  async fetchDirectoryChildren(searchPath?: string | null): Promise<Types.DirectoryInfo[]> {
     try {
       // Default to "public" if empty
-      const targetPath =
-        !searchPath || searchPath.length === 0 ? "" : searchPath;
+      const targetPath = !searchPath || searchPath.length === 0 ? "" : searchPath;
       const absolutePath = this.getAbsolutePath(targetPath);
 
       // Get directories from database
-      const dbDirectories =
-        await StorageDbRepository.directoriesByParentPath(targetPath);
-      const dbDirectoriesByPath = new Map(
-        dbDirectories.map(dir => [dir.path, dir])
-      );
+      const dbDirectories = await StorageDbRepository.directoriesByParentPath(targetPath);
+      const dbDirectoriesByPath = new Map(dbDirectories.map(dir => [dir.path, dir]));
 
       const directories: Types.DirectoryInfo[] = [];
 
@@ -1035,9 +947,7 @@ class LocalAdapter implements StorageService {
 
         for (const entry of entries) {
           if (entry.isDirectory()) {
-            const dirPath = targetPath
-              ? `${targetPath}/${entry.name}`
-              : entry.name;
+            const dirPath = targetPath ? `${targetPath}/${entry.name}` : entry.name;
             const absoluteDirPath = this.getAbsolutePath(dirPath);
             const stats = await fs.stat(absoluteDirPath);
             const dbDir = dbDirectoriesByPath.get(dirPath);
@@ -1049,9 +959,7 @@ class LocalAdapter implements StorageService {
               isPublic: dirPath.startsWith("public"),
             };
 
-            directories.push(
-              StorageUtils.combineDirectoryData(bucketDir, dbDir)
-            );
+            directories.push(StorageUtils.combineDirectoryData(bucketDir, dbDir));
           }
         }
       } catch (error) {
@@ -1065,9 +973,7 @@ class LocalAdapter implements StorageService {
     }
   }
 
-  async moveItems(
-    input: Types.StorageItemsMoveInput
-  ): Promise<Types.BulkOperationResult> {
+  async moveItems(input: Types.StorageItemsMoveInput): Promise<Types.BulkOperationResult> {
     let successCount = 0;
     let failureCount = 0;
     const failures: Array<{ path: string; error: string }> = [];
@@ -1113,25 +1019,19 @@ class LocalAdapter implements StorageService {
     }
 
     // Batch load DB entities for source paths and directories
-    const sourceDirectories = [
-      ...new Set(
-        validSources.map(path => path.substring(0, path.lastIndexOf("/")))
-      ),
-    ];
+    const sourceDirectories = [...new Set(validSources.map(path => path.substring(0, path.lastIndexOf("/"))))];
 
     logger.info("💾 moveItems: About to batch load DB entities", {
       validSourcesCount: validSources.length,
       sourceDirectoriesCount: sourceDirectories.length,
     });
 
-    const [dbFiles, dbDirectories, dbSourceDirs, dbDestDir] = await Promise.all(
-      [
-        StorageDbRepository.filesByPaths(validSources),
-        StorageDbRepository.directoriesByPaths(validSources),
-        StorageDbRepository.directoriesByPaths(sourceDirectories),
-        StorageDbRepository.directoryByPath(input.destinationPath),
-      ]
-    );
+    const [dbFiles, dbDirectories, dbSourceDirs, dbDestDir] = await Promise.all([
+      StorageDbRepository.filesByPaths(validSources),
+      StorageDbRepository.directoriesByPaths(validSources),
+      StorageDbRepository.directoriesByPaths(sourceDirectories),
+      StorageDbRepository.directoryByPath(input.destinationPath),
+    ]);
 
     logger.info("💾 moveItems: DB entities loaded", {
       dbFilesCount: dbFiles.length,
@@ -1255,9 +1155,7 @@ class LocalAdapter implements StorageService {
     return {
       success: failureCount === 0,
       message:
-        failureCount === 0
-          ? "All items moved successfully"
-          : `${successCount} items moved, ${failureCount} failed`,
+        failureCount === 0 ? "All items moved successfully" : `${successCount} items moved, ${failureCount} failed`,
       successCount,
       failureCount,
       failures,
@@ -1265,9 +1163,7 @@ class LocalAdapter implements StorageService {
     };
   }
 
-  async copyItems(
-    input: Types.StorageItemsCopyInput
-  ): Promise<Types.BulkOperationResult> {
+  async copyItems(input: Types.StorageItemsCopyInput): Promise<Types.BulkOperationResult> {
     let successCount = 0;
     let failureCount = 0;
     const failures: Array<{ path: string; error: string }> = [];
@@ -1313,9 +1209,7 @@ class LocalAdapter implements StorageService {
     }
 
     // Check destination directory permissions once
-    const dbDestDir = await StorageDbRepository.directoryByPath(
-      input.destinationPath
-    );
+    const dbDestDir = await StorageDbRepository.directoryByPath(input.destinationPath);
     if (dbDestDir && !dbDestDir.allowUploads) {
       return {
         success: false,
@@ -1372,9 +1266,7 @@ class LocalAdapter implements StorageService {
     return {
       success: failureCount === 0,
       message:
-        failureCount === 0
-          ? "All items copied successfully"
-          : `${successCount} items copied, ${failureCount} failed`,
+        failureCount === 0 ? "All items copied successfully" : `${successCount} items copied, ${failureCount} failed`,
       successCount,
       failureCount,
       failures,
@@ -1401,43 +1293,36 @@ class LocalAdapter implements StorageService {
     }
   }
 
-  async deleteItems(
-    input: Types.StorageItemsDeleteInput
-  ): Promise<Types.BulkOperationResult> {
+  async deleteItems(input: Types.StorageItemsDeleteInput): Promise<Types.BulkOperationResult> {
     let successCount = 0;
     let failureCount = 0;
     const failures: Array<{ path: string; error: string }> = [];
     const successfulItems: Array<Types.FileInfo | Types.DirectoryInfo> = [];
 
     // Batch load DB entities for all paths and their parent directories
-    const parentDirectories = [
-      ...new Set(
-        input.paths.map(path => path.substring(0, path.lastIndexOf("/")))
-      ),
-    ];
+    const parentDirectories = [...new Set(input.paths.map(path => path.substring(0, path.lastIndexOf("/"))))];
 
-    const [dbFiles, dbDirectories, dbParentDirs, usageChecks] =
-      await Promise.all([
-        StorageDbRepository.filesByPaths(input.paths),
-        StorageDbRepository.directoriesByPaths(input.paths),
-        StorageDbRepository.directoriesByPaths(parentDirectories),
-        // Batch check file usage if not force delete
-        input.force
-          ? Promise.resolve([])
-          : Promise.all(
-              input.paths.map(filePath =>
-                StorageDbRepository.checkFileUsage({
+    const [dbFiles, dbDirectories, dbParentDirs, usageChecks] = await Promise.all([
+      StorageDbRepository.filesByPaths(input.paths),
+      StorageDbRepository.directoriesByPaths(input.paths),
+      StorageDbRepository.directoriesByPaths(parentDirectories),
+      // Batch check file usage if not force delete
+      input.force
+        ? Promise.resolve([])
+        : Promise.all(
+            input.paths.map(filePath =>
+              StorageDbRepository.checkFileUsage({
+                path: filePath,
+              })
+                .then(result => ({ path: filePath, ...result }))
+                .catch(() => ({
                   path: filePath,
-                })
-                  .then(result => ({ path: filePath, ...result }))
-                  .catch(() => ({
-                    path: filePath,
-                    isInUse: false,
-                    deleteBlockReason: null,
-                  }))
-              )
-            ),
-      ]);
+                  isInUse: false,
+                  deleteBlockReason: null,
+                }))
+            )
+          ),
+    ]);
 
     // Create lookup maps for O(1) access
     const dbFileMap = new Map();
@@ -1500,9 +1385,7 @@ class LocalAdapter implements StorageService {
         const parentDir = dbParentDirMap.get(parentPath);
         if (parentDir) {
           const isFile = dbFile != null;
-          const canDelete = isFile
-            ? parentDir.allowDeleteFiles
-            : parentDir.allowDelete;
+          const canDelete = isFile ? parentDir.allowDeleteFiles : parentDir.allowDelete;
           if (!canDelete) {
             failureCount++;
             failures.push({
@@ -1515,9 +1398,7 @@ class LocalAdapter implements StorageService {
 
         // Get entity before deleting for the result
         const fileEntity = await this.fileInfoByPath(itemPath);
-        const folderEntity = fileEntity
-          ? null
-          : await this.directoryInfoByPath(itemPath);
+        const folderEntity = fileEntity ? null : await this.directoryInfoByPath(itemPath);
 
         // Delete from filesystem
         const absolutePath = this.getAbsolutePath(itemPath);
@@ -1563,9 +1444,7 @@ class LocalAdapter implements StorageService {
     return {
       success: failureCount === 0,
       message:
-        failureCount === 0
-          ? "All items deleted successfully"
-          : `${successCount} items deleted, ${failureCount} failed`,
+        failureCount === 0 ? "All items deleted successfully" : `${successCount} items deleted, ${failureCount} failed`,
       successCount,
       failureCount,
       failures,

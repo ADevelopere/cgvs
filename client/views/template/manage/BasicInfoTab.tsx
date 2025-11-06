@@ -6,12 +6,7 @@ import * as Mui from "@mui/material";
 import { useAppTheme } from "@/client/contexts";
 import { useAppTranslation } from "@/client/locale";
 import { Delete as DeleteIcon, Image as ImageIcon } from "@mui/icons-material";
-import {
-  FileInfo,
-  TemplateUpdateInput,
-  Template,
-  FileType,
-} from "@/client/graphql/generated/gql/graphql";
+import { FileInfo, TemplateUpdateInput, Template, FileType } from "@/client/graphql/generated/gql/graphql";
 import { useTemplateOperations } from "../hooks";
 import { TemplateUtils } from "../utils";
 import { useTemplateUIStore } from "./useTemplateManagementStore";
@@ -31,10 +26,7 @@ interface BasicInfoTabProps {
 
 const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
   const { theme, isDark } = useAppTheme();
-  const {
-    templateCategoryTranslations: strings,
-    storageTranslations: storageStrings,
-  } = useAppTranslation();
+  const { templateCategoryTranslations: strings, storageTranslations: storageStrings } = useAppTranslation();
 
   const { unsavedChanges, setUnsavedChanges } = useTemplateUIStore();
   const templateOperations = useTemplateOperations();
@@ -90,16 +82,13 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
     setUnsavedChangesRef.current(hasChanges);
   }, [formData, template, isDark]);
 
-  const handleInputChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const { name, value } = e.target;
-      setFormData(prev => ({
-        ...prev,
-        [name]: value,
-      }));
-    },
-    []
-  );
+  const handleInputChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  }, []);
 
   const handleFileSelect = React.useCallback(
     (file: FileInfo) => {
@@ -219,20 +208,10 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
             gap: 2,
           }}
         >
-          <Mui.Button
-            variant="outlined"
-            color="secondary"
-            onClick={handleCancel}
-            disabled={saving || !unsavedChanges}
-          >
+          <Mui.Button variant="outlined" color="secondary" onClick={handleCancel} disabled={saving || !unsavedChanges}>
             {strings.cancel}
           </Mui.Button>
-          <Mui.Button
-            variant="contained"
-            color="primary"
-            onClick={handleSave}
-            disabled={saving || !unsavedChanges}
-          >
+          <Mui.Button variant="contained" color="primary" onClick={handleSave} disabled={saving || !unsavedChanges}>
             {saving ? strings.saving : strings.save}
           </Mui.Button>
         </Mui.Box>
@@ -309,12 +288,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
                   {storageStrings.ui.filePickerDialogSelectFile}
                 </Mui.Button>
                 {formData.imageUrl && (
-                  <Mui.Button
-                    variant="outlined"
-                    startIcon={<DeleteIcon />}
-                    onClick={handleRemoveImage}
-                    color="error"
-                  >
+                  <Mui.Button variant="outlined" startIcon={<DeleteIcon />} onClick={handleRemoveImage} color="error">
                     {strings.delete}
                   </Mui.Button>
                 )}
@@ -334,15 +308,10 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ template }) => {
             >
               {formData.imageUrl ? (
                 <Image
-                  src={
-                    imageLoadError
-                      ? TemplateUtils.getTemplateImageUrl({}, isDark)
-                      : formData.imageUrl
-                  }
+                  src={imageLoadError ? TemplateUtils.getTemplateImageUrl({}, isDark) : formData.imageUrl}
                   alt={
                     formData.imageUrl &&
-                    formData.imageUrl !==
-                      "/templateCover/placeholder_dark.png" &&
+                    formData.imageUrl !== "/templateCover/placeholder_dark.png" &&
                     formData.imageUrl !== "/templateCover/placeholder_light.png"
                       ? formData.imageUrl.split("/").pop() || "Template Image"
                       : "Template Image"

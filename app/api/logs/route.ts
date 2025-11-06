@@ -18,15 +18,9 @@ const cleanupEnabled = false;
 const cleanedSessions = new Set<string>();
 
 // Buffer to store out-of-order log entries per session
-const logBuffers = new Map<
-  string,
-  { entries: LogEntry[]; nextSequence: number; writeLock: Promise<void> }
->();
+const logBuffers = new Map<string, { entries: LogEntry[]; nextSequence: number; writeLock: Promise<void> }>();
 
-async function cleanupOldClientLogs(
-  logsDir: string,
-  sessionId: string
-): Promise<void> {
+async function cleanupOldClientLogs(logsDir: string, sessionId: string): Promise<void> {
   // Check if cleanup is enabled (default: false to keep logs)
   if (!cleanupEnabled) return;
 
@@ -59,10 +53,7 @@ async function cleanupOldClientLogs(
   }
 }
 
-async function writeLogEntry(
-  logEntry: LogEntry,
-  logsDir: string
-): Promise<void> {
+async function writeLogEntry(logEntry: LogEntry, logsDir: string): Promise<void> {
   const { sessionId } = logEntry;
 
   // Get or create buffer for this session
@@ -96,10 +87,7 @@ async function writeLogEntry(
     const logFileName = `client_${sessionId}.log`;
     const logFilePath = join(logsDir, logFileName);
 
-    while (
-      buffer.entries.length > 0 &&
-      buffer.entries[0].sequence === buffer.nextSequence
-    ) {
+    while (buffer.entries.length > 0 && buffer.entries[0].sequence === buffer.nextSequence) {
       const entry = buffer.entries.shift()!;
       const logLine = `[${entry.timestamp}] [${entry.level.toUpperCase()}] [${entry.caller || "undefined"}] ${entry.message}\n`;
 
@@ -121,16 +109,8 @@ export async function POST(request: NextRequest) {
     const logEntry: LogEntry = await request.json();
 
     // Validate required fields
-    if (
-      !logEntry.sessionId ||
-      !logEntry.level ||
-      !logEntry.message ||
-      typeof logEntry.sequence !== "number"
-    ) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
+    if (!logEntry.sessionId || !logEntry.level || !logEntry.message || typeof logEntry.sequence !== "number") {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     // Create logs directory if it doesn't exist

@@ -1,15 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useEffect, useMemo } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Button,
-  Stack,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Stack } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -22,12 +14,9 @@ interface GroupSettingsDialogProps {
   groups: TemplateRecipientGroup[];
 }
 
-const GroupSettingsDialog: React.FC<GroupSettingsDialogProps> = ({
-  groups,
-}) => {
+const GroupSettingsDialog: React.FC<GroupSettingsDialogProps> = ({ groups }) => {
   const { recipientGroupTranslations: strings } = useAppTranslation();
-  const { settingsDialogOpen, closeSettingsDialog, selectedGroupId } =
-    useRecipientGroupDialogs();
+  const { settingsDialogOpen, closeSettingsDialog, selectedGroupId } = useRecipientGroupDialogs();
   const { updateGroup } = useRecipientGroupOperations();
 
   const selectedGroup: TemplateRecipientGroup | null = useMemo(() => {
@@ -67,11 +56,8 @@ const GroupSettingsDialog: React.FC<GroupSettingsDialogProps> = ({
     const trimmedName = name.trim();
     const trimmedDescription = description.trim() || null;
     const hasNameChanged = trimmedName !== selectedGroup.name;
-    const hasDescriptionChanged =
-      trimmedDescription !== (selectedGroup.description || null);
-    const hasDateChanged =
-      date?.getTime() !==
-      (selectedGroup.date ? new Date(selectedGroup.date).getTime() : null);
+    const hasDescriptionChanged = trimmedDescription !== (selectedGroup.description || null);
+    const hasDateChanged = date?.getTime() !== (selectedGroup.date ? new Date(selectedGroup.date).getTime() : null);
 
     // If nothing changed, just close the dialog without making a request
     if (!hasNameChanged && !hasDescriptionChanged && !hasDateChanged) {
@@ -85,25 +71,11 @@ const GroupSettingsDialog: React.FC<GroupSettingsDialogProps> = ({
       description: trimmedDescription,
       date: date || null,
     });
-  }, [
-    name,
-    description,
-    date,
-    selectedGroupId,
-    selectedGroup,
-    updateGroup,
-    handleClose,
-    strings,
-  ]);
+  }, [name, description, date, selectedGroupId, selectedGroup, updateGroup, handleClose, strings]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Dialog
-        open={settingsDialogOpen}
-        onClose={handleClose}
-        maxWidth="sm"
-        fullWidth
-      >
+      <Dialog open={settingsDialogOpen} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{strings.updateGroupTitle}</DialogTitle>
         <DialogContent>
           <Stack spacing={3} sx={{ mt: 1 }}>

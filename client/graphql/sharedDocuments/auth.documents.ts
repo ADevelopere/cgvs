@@ -14,10 +14,7 @@ export const meQueryDocumetn: TypedDocumentNode<Graphql.MeQuery> = gql`
   }
 `;
 
-export const userQueryDocument: TypedDocumentNode<
-  Graphql.UserQuery,
-  Graphql.QueryUserArgs
-> = gql`
+export const userQueryDocument: TypedDocumentNode<Graphql.UserQuery, Graphql.QueryUserArgs> = gql`
   query user($id: Int!) {
     user(id: $id) {
       createdAt
@@ -43,10 +40,7 @@ export const usersQueryDocument: TypedDocumentNode<Graphql.UsersQuery> = gql`
   }
 `;
 
-export const loginMutationDocument: TypedDocumentNode<
-  Graphql.LoginMutation,
-  Graphql.MutationLoginArgs
-> = gql`
+export const loginMutationDocument: TypedDocumentNode<Graphql.LoginMutation, Graphql.MutationLoginArgs> = gql`
   mutation login($input: LoginInput!) {
     login(input: $input) {
       token

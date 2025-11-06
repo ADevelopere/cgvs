@@ -24,13 +24,9 @@ export namespace CountryElementUtils {
    * Map GraphQL CountryDataSource input to repository CountryDataSource input
    * Note: COUNTRY has only one data source variant (studentNationality)
    */
-  export const mapCountryDataSourceGraphqlToInput = (
-    input: CountryDataSourceInputGraphql
-  ): CountryDataSourceInput => {
+  export const mapCountryDataSourceGraphqlToInput = (input: CountryDataSourceInputGraphql): CountryDataSourceInput => {
     if (!input || input.studentNationality === undefined) {
-      throw new Error(
-        "Invalid CountryDataSource input: must specify studentNationality"
-      );
+      throw new Error("Invalid CountryDataSource input: must specify studentNationality");
     }
     return {
       type: CountryDataSourceType.STUDENT_NATIONALITY,
@@ -40,19 +36,13 @@ export namespace CountryElementUtils {
   /**
    * Map GraphQL CountryElement create input to repository CountryElement create input
    */
-  export const mapCountryElementCreateGraphqlToInput = (
-    input: CountryElementInputGraphql
-  ): CountryElementInput => {
+  export const mapCountryElementCreateGraphqlToInput = (input: CountryElementInputGraphql): CountryElementInput => {
     if (!input || !input.base || !input.textProps || !input.countryProps) {
-      throw new Error(
-        "CountryElementCreateInputGraphql must include base, textProps, and countrySpecProps"
-      );
+      throw new Error("CountryElementCreateInputGraphql must include base, textProps, and countrySpecProps");
     }
     return {
       base: input.base,
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
-        input.textProps
-      )!,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps)!,
       countryProps: {
         representation: input.countryProps.representation,
       },
@@ -66,16 +56,12 @@ export namespace CountryElementUtils {
     input: CountryElementUpdateInputGraphql
   ): CountryElementUpdateInput => {
     if (!input || !input.base || !input.textProps || !input.countryProps) {
-      throw new Error(
-        "CountryElementUpdateInputGraphql must include base, textProps, and countrySpecProps"
-      );
+      throw new Error("CountryElementUpdateInputGraphql must include base, textProps, and countrySpecProps");
     }
     return {
       id: input.id,
       base: input.base,
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
-        input.textProps
-      )!,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps)!,
       countryProps: {
         representation: input.countryProps.representation,
       },
@@ -117,9 +103,7 @@ export namespace CountryElementUtils {
   // Create Input Validation
   // ============================================================================
 
-  export const checkSpecProps = async (
-    countryProps: CountryElementCountryPropsInput
-  ): Promise<void> => {
+  export const checkSpecProps = async (countryProps: CountryElementCountryPropsInput): Promise<void> => {
     // Validate representation
     await checkRepresentation(countryProps.representation);
   };
@@ -127,16 +111,12 @@ export namespace CountryElementUtils {
   /**
    * Validate all fields for COUNTRY element creation
    */
-  export const checkInput = async (
-    input: CountryElementInput
-  ): Promise<void> => {
+  export const checkInput = async (input: CountryElementInput): Promise<void> => {
     // Validate base element properties
     await CommonElementUtils.checkBaseInput(input.base);
 
     if (!input.base || !input.textProps || !input.countryProps) {
-      throw new Error(
-        "CountryElementInput must include base, textProps, and countrySpecProps"
-      );
+      throw new Error("CountryElementInput must include base, textProps, and countrySpecProps");
     }
 
     // Validate textProps

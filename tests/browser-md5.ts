@@ -14,9 +14,7 @@ import { testLogger } from "@/lib/testlogger";
  * @param filePath - Path to the file to generate MD5 hash for
  * @returns Promise<string> - Base64-encoded MD5 hash
  */
-export const generateFileMD5Browser = async (
-  filePath: string
-): Promise<string> => {
+export const generateFileMD5Browser = async (filePath: string): Promise<string> => {
   const browser = await puppeteer.launch({
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -58,16 +56,10 @@ export const generateFileMD5Browser = async (
               const arrayBuffer = event.target?.result as ArrayBuffer;
               const wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
               // Generate MD5 hash and convert to base64 format for GCP compatibility
-              const hash = CryptoJS.MD5(wordArray).toString(
-                CryptoJS.enc.Base64
-              );
+              const hash = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Base64);
               resolve(hash);
             } catch (error) {
-              reject(
-                error instanceof Error
-                  ? error
-                  : new Error("Failed to generate MD5 hash")
-              );
+              reject(error instanceof Error ? error : new Error("Failed to generate MD5 hash"));
             }
           };
           reader.onerror = () => reject(new Error("Failed to read file"));
@@ -79,10 +71,7 @@ export const generateFileMD5Browser = async (
       return await generateFileMD5(file);
     }, dataUrl);
 
-    testLogger.info(
-      "Browser MD5 generation completed using storage.util.ts logic",
-      { result }
-    );
+    testLogger.info("Browser MD5 generation completed using storage.util.ts logic", { result });
     return result;
   } finally {
     await browser.close();

@@ -1,8 +1,6 @@
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 
-export const mapFontRefInputToFontRef = (
-  fontRefInput: GQL.FontReferenceInput
-): GQL.FontReference => {
+export const mapFontRefInputToFontRef = (fontRefInput: GQL.FontReferenceInput): GQL.FontReference => {
   if (fontRefInput.google) {
     const g: GQL.FontReferenceGoogle = {
       __typename: "FontReferenceGoogle",
@@ -18,8 +16,6 @@ export const mapFontRefInputToFontRef = (
     };
     return s;
   } else {
-    throw new Error(
-      "Invalid FontReferenceInput provided for optimistic response"
-    );
+    throw new Error("Invalid FontReferenceInput provided for optimistic response");
   }
 };

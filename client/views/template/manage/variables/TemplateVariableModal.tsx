@@ -1,14 +1,7 @@
 "use client";
 
 import { FC, useCallback, useMemo } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Box,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, Box, Typography, IconButton } from "@mui/material";
 import { X } from "lucide-react";
 import NumberTemplateVariableForm from "./forms/TemplateNumberVariableForm";
 import DateTemplateVariableForm from "./forms/TemplateDateVariableForm";
@@ -17,10 +10,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import SelectTemplateVariableForm from "./forms/TemplateSelectVariableForm";
 import { useAppTranslation } from "@/client/locale";
-import {
-  TemplateVariableType,
-  TemplateVariable,
-} from "@/client/graphql/generated/gql/graphql";
+import { TemplateVariableType, TemplateVariable } from "@/client/graphql/generated/gql/graphql";
 import {
   TemplateVariableCreateInputUnion,
   TemplateVariableUpdateInputUnion,
@@ -71,26 +61,12 @@ const TemplateVariableModal: FC<TemplateVariableModalProps> = ({
       DATE: strings.dateTypeLabel,
       SELECT: strings.selectTypeLabel,
     }),
-    [
-      strings.dateTypeLabel,
-      strings.numberTypeLabel,
-      strings.selectTypeLabel,
-      strings.textTypeLabel,
-    ]
+    [strings.dateTypeLabel, strings.numberTypeLabel, strings.selectTypeLabel, strings.textTypeLabel]
   );
 
   const modalTitle = useMemo(
-    () =>
-      `${editingVariableId ? strings.editVariable : strings.createVariable} ${
-        typeToLabelMap[type]
-      }`,
-    [
-      editingVariableId,
-      strings.createVariable,
-      strings.editVariable,
-      type,
-      typeToLabelMap,
-    ]
+    () => `${editingVariableId ? strings.editVariable : strings.createVariable} ${typeToLabelMap[type]}`,
+    [editingVariableId, strings.createVariable, strings.editVariable, type, typeToLabelMap]
   );
 
   return (

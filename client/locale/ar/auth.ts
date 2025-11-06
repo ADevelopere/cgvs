@@ -52,8 +52,7 @@ export const auth: AuthTranslations = {
 
   emailExists: "البريد الإلكتروني مسجل مسبقا.",
   changeEmail: "تغيير البريد الإلكتروني",
-  onlyEmailCharactersAllowed:
-    "مسموح بالحروف الإنجليزية، الأرقام، والرموز التالية: . _ - @",
+  onlyEmailCharactersAllowed: "مسموح بالحروف الإنجليزية، الأرقام، والرموز التالية: . _ - @",
 
   onlyArabicCharacters: "الرجاء إدخال حروف عربية فقط",
   name: "الاسم",

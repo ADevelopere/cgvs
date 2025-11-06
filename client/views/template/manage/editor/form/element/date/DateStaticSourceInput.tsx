@@ -13,12 +13,7 @@ interface DateStaticSourceInputProps {
   disabled?: boolean;
 }
 
-export const DateStaticSourceInput: FC<DateStaticSourceInputProps> = ({
-  value,
-  onChange,
-  error,
-  disabled,
-}) => {
+export const DateStaticSourceInput: FC<DateStaticSourceInputProps> = ({ value, onChange, error, disabled }) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
   const { language } = useAppTheme();
 

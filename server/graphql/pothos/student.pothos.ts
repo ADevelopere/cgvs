@@ -177,12 +177,9 @@ export const StudentFilterArgsPothosObject = gqlSchemaBuilder
     }),
   });
 
-export const StudentsOrderByColumnPothosObject = gqlSchemaBuilder.enumType(
-  "StudentsOrderByColumn",
-  {
-    values: Object.values(Types.StudentsOrderByColumn),
-  }
-);
+export const StudentsOrderByColumnPothosObject = gqlSchemaBuilder.enumType("StudentsOrderByColumn", {
+  values: Object.values(Types.StudentsOrderByColumn),
+});
 
 export const StudentsOrderByClausePothosObject = gqlSchemaBuilder
   .inputRef<Types.StudentsOrderByClause>("StudentsOrderByClause")

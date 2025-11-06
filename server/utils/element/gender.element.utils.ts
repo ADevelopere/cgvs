@@ -18,17 +18,13 @@ export namespace GenderElementUtils {
   /**
    * Map GraphQL GenderElement create input to repository GenderElement create input
    */
-  export const mapGenderElementCreateGraphqlToInput = (
-    input: GenderElementInputGraphql
-  ): GenderElementInput => {
+  export const mapGenderElementCreateGraphqlToInput = (input: GenderElementInputGraphql): GenderElementInput => {
     if (!input || !input.base || !input.textProps) {
       throw new Error("GenderElementInputGraphql must include base, textProps");
     }
     return {
       base: input.base,
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
-        input.textProps
-      )!,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps)!,
     };
   };
 
@@ -39,16 +35,12 @@ export namespace GenderElementUtils {
     input: GenderElementUpdateInputGraphql
   ): GenderElementUpdateInput => {
     if (!input || !input.base || !input.textProps) {
-      throw new Error(
-        "GenderElementUpdateInputGraphql must include base, textProps"
-      );
+      throw new Error("GenderElementUpdateInputGraphql must include base, textProps");
     }
     return {
       id: input.id,
       base: input.base,
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
-        input.textProps
-      )!,
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps)!,
     };
   };
   // ============================================================================
@@ -58,9 +50,7 @@ export namespace GenderElementUtils {
   /**
    * Validate all fields for GENDER element (create/update)
    */
-  export const validateInput = async (
-    input: GenderElementInput
-  ): Promise<void> => {
+  export const validateInput = async (input: GenderElementInput): Promise<void> => {
     if (!input.base || !input.textProps) {
       throw new Error("GenderElementInput must include base, textProps");
     }

@@ -93,35 +93,32 @@ useEffect(() => {
 ### Updated `updateParams` Function
 
 ```typescript
-const updateParams = useCallback(
-  (params: RouteParams, options?: { replace?: boolean; merge?: boolean }) => {
-    const { replace = false, merge = true } = options || {};
+const updateParams = useCallback((params: RouteParams, options?: { replace?: boolean; merge?: boolean }) => {
+  const { replace = false, merge = true } = options || {};
 
-    const currentPathname = pathnameRef.current;
-    const currentSearchParams = searchParamsRef.current;
-    const currentRouter = routerRef.current;
+  const currentPathname = pathnameRef.current;
+  const currentSearchParams = searchParamsRef.current;
+  const currentRouter = routerRef.current;
 
-    let newParams = params;
-    if (merge) {
-      const currentParams = parseSearchParams(currentSearchParams);
-      newParams = { ...currentParams, ...params };
-    }
+  let newParams = params;
+  if (merge) {
+    const currentParams = parseSearchParams(currentSearchParams);
+    newParams = { ...currentParams, ...params };
+  }
 
-    const newUrl = buildUrlWithParams(currentPathname || "", newParams);
+  const newUrl = buildUrlWithParams(currentPathname || "", newParams);
 
-    if (replace) {
-      currentRouter.replace(newUrl);
-    } else {
-      currentRouter.push(newUrl);
-    }
+  if (replace) {
+    currentRouter.replace(newUrl);
+  } else {
+    currentRouter.push(newUrl);
+  }
 
-    setState(prev => ({
-      ...prev,
-      currentParams: newParams,
-    }));
-  },
-  []
-);
+  setState(prev => ({
+    ...prev,
+    currentParams: newParams,
+  }));
+}, []);
 ```
 
 ## How It Works

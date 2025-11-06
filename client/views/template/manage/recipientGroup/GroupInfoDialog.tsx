@@ -1,17 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Stack,
-  Typography,
-  Box,
-  Chip,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Stack, Typography, Box, Chip } from "@mui/material";
 import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
 import { useAppTranslation } from "@/client/locale";
 import { format } from "date-fns";
@@ -23,8 +13,7 @@ interface GroupInfoDialogProps {
 
 const GroupInfoDialog: React.FC<GroupInfoDialogProps> = ({ groups }) => {
   const { recipientGroupTranslations: strings } = useAppTranslation();
-  const { infoDialogOpen, closeInfoDialog, selectedGroupId } =
-    useRecipientGroupDialogs();
+  const { infoDialogOpen, closeInfoDialog, selectedGroupId } = useRecipientGroupDialogs();
 
   const selectedGroup: TemplateRecipientGroup | null = useMemo(() => {
     if (!selectedGroupId) return null;
@@ -41,12 +30,7 @@ const GroupInfoDialog: React.FC<GroupInfoDialogProps> = ({ groups }) => {
   };
 
   return (
-    <Dialog
-      open={infoDialogOpen}
-      onClose={closeInfoDialog}
-      maxWidth="sm"
-      fullWidth
-    >
+    <Dialog open={infoDialogOpen} onClose={closeInfoDialog} maxWidth="sm" fullWidth>
       <DialogTitle>{strings.groupInfoTitle}</DialogTitle>
       <DialogContent>
         {selectedGroup && (
@@ -63,9 +47,7 @@ const GroupInfoDialog: React.FC<GroupInfoDialogProps> = ({ groups }) => {
                 <Typography variant="caption" color="text.secondary">
                   {strings.description}
                 </Typography>
-                <Typography variant="body1">
-                  {selectedGroup.description}
-                </Typography>
+                <Typography variant="body1">{selectedGroup.description}</Typography>
               </Box>
             )}
 
@@ -73,9 +55,7 @@ const GroupInfoDialog: React.FC<GroupInfoDialogProps> = ({ groups }) => {
               <Typography variant="caption" color="text.secondary">
                 {strings.date}
               </Typography>
-              <Typography variant="body1">
-                {formatDate(selectedGroup.date)}
-              </Typography>
+              <Typography variant="body1">{formatDate(selectedGroup.date)}</Typography>
             </Box>
 
             <Box>
@@ -83,11 +63,7 @@ const GroupInfoDialog: React.FC<GroupInfoDialogProps> = ({ groups }) => {
                 {strings.studentCount}
               </Typography>
               <Box sx={{ mt: 0.5 }}>
-                <Chip
-                  label={selectedGroup.studentCount || 0}
-                  color="primary"
-                  size="small"
-                />
+                <Chip label={selectedGroup.studentCount || 0} color="primary" size="small" />
               </Box>
             </Box>
 
@@ -95,9 +71,7 @@ const GroupInfoDialog: React.FC<GroupInfoDialogProps> = ({ groups }) => {
               <Typography variant="caption" color="text.secondary">
                 {strings.createdAt}
               </Typography>
-              <Typography variant="body1">
-                {formatDate(selectedGroup.createdAt)}
-              </Typography>
+              <Typography variant="body1">{formatDate(selectedGroup.createdAt)}</Typography>
             </Box>
 
             {selectedGroup.updatedAt && (
@@ -105,9 +79,7 @@ const GroupInfoDialog: React.FC<GroupInfoDialogProps> = ({ groups }) => {
                 <Typography variant="caption" color="text.secondary">
                   {strings.updatedAt}
                 </Typography>
-                <Typography variant="body1">
-                  {formatDate(selectedGroup.updatedAt)}
-                </Typography>
+                <Typography variant="body1">{formatDate(selectedGroup.updatedAt)}</Typography>
               </Box>
             )}
           </Stack>

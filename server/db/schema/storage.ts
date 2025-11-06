@@ -1,13 +1,4 @@
-import {
-  pgTable,
-  bigint,
-  bigserial,
-  text,
-  boolean,
-  varchar,
-  timestamp,
-  index,
-} from "drizzle-orm/pg-core";
+import { pgTable, bigint, bigserial, text, boolean, varchar, timestamp, index } from "drizzle-orm/pg-core";
 
 export const storageFiles = pgTable("storage_file", {
   id: bigserial("id", { mode: "bigint" }).primaryKey(),

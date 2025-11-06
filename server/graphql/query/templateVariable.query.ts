@@ -18,7 +18,6 @@ gqlSchemaBuilder.queryFields(t => ({
     args: {
       templateId: t.arg.int({ required: true }),
     },
-    resolve: async (_parent, args) =>
-      await TempVarRepo.findByTemplateId(args.templateId),
+    resolve: async (_parent, args) => await TempVarRepo.findByTemplateId(args.templateId),
   }),
 }));

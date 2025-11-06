@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Skeleton,
-  IconButton,
-  Dialog,
-  DialogContent,
-  Tooltip,
-} from "@mui/material";
+import { Box, Skeleton, IconButton, Dialog, DialogContent, Tooltip } from "@mui/material";
 import {
   Visibility,
   Image as ImageIcon,
@@ -31,9 +24,7 @@ function isImage(file: FileInfo) {
   return file.contentType && file.contentType.startsWith("image/");
 }
 
-const FolderPreview: React.FC<{ height?: number | string }> = ({
-  height = 120,
-}) => (
+const FolderPreview: React.FC<{ height?: number | string }> = ({ height = 120 }) => (
   <Box
     sx={{
       height,
@@ -62,17 +53,11 @@ const DefaultFilePreview: React.FC<{
       borderRadius: 1,
     }}
   >
-    <FileTypeIcon
-      item={file}
-      sx={{ fontSize: "4rem", color: "text.secondary" }}
-    />
+    <FileTypeIcon item={file} sx={{ fontSize: "4rem", color: "text.secondary" }} />
   </Box>
 );
 
-const ImagePreview: React.FC<{ file: FileInfo; height: number | string }> = ({
-  file,
-  height,
-}) => {
+const ImagePreview: React.FC<{ file: FileInfo; height: number | string }> = ({ file, height }) => {
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -113,11 +98,7 @@ const ImagePreview: React.FC<{ file: FileInfo; height: number | string }> = ({
       </IconButton>
       <Dialog open={open} onClose={handleClose} maxWidth="xl" fullWidth>
         <DialogContent sx={{ position: "relative", p: 0 }}>
-          <TransformWrapper
-            initialScale={1}
-            initialPositionX={0}
-            initialPositionY={0}
-          >
+          <TransformWrapper initialScale={1} initialPositionX={0} initialPositionY={0}>
             {({ zoomIn, zoomOut, resetTransform }) => (
               <React.Fragment>
                 <Box
@@ -134,26 +115,17 @@ const ImagePreview: React.FC<{ file: FileInfo; height: number | string }> = ({
                   }}
                 >
                   <Tooltip title="Zoom In">
-                    <IconButton
-                      onClick={() => zoomIn()}
-                      sx={{ color: "white" }}
-                    >
+                    <IconButton onClick={() => zoomIn()} sx={{ color: "white" }}>
                       <ZoomIn />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Zoom Out">
-                    <IconButton
-                      onClick={() => zoomOut()}
-                      sx={{ color: "white" }}
-                    >
+                    <IconButton onClick={() => zoomOut()} sx={{ color: "white" }}>
                       <ZoomOut />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Reset">
-                    <IconButton
-                      onClick={() => resetTransform()}
-                      sx={{ color: "white" }}
-                    >
+                    <IconButton onClick={() => resetTransform()} sx={{ color: "white" }}>
                       <RestartAlt />
                     </IconButton>
                   </Tooltip>
@@ -185,19 +157,9 @@ const ImagePreview: React.FC<{ file: FileInfo; height: number | string }> = ({
   );
 };
 
-const FilePreview: React.FC<FilePreviewProps> = ({
-  item: file,
-  loading = false,
-  height = 120,
-}) => {
+const FilePreview: React.FC<FilePreviewProps> = ({ item: file, loading = false, height = 120 }) => {
   if (loading) {
-    return (
-      <Skeleton
-        variant="rectangular"
-        height={height}
-        sx={{ borderRadius: 1 }}
-      />
-    );
+    return <Skeleton variant="rectangular" height={height} sx={{ borderRadius: 1 }} />;
   }
 
   if (file.__typename === "FileInfo") {

@@ -1,17 +1,9 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import { comparePassword } from "@/server/lib/auth/password";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-  verifyToken,
-} from "@/server/lib";
+import { generateAccessToken, generateRefreshToken, verifyToken } from "@/server/lib";
 import { GraphQLError } from "graphql";
 import { randomUUID } from "crypto";
-import {
-  LoginInputPothosObject,
-  LoginResponsePothosObject,
-  RefreshTokenResponsePothosObject,
-} from "../pothos";
+import { LoginInputPothosObject, LoginResponsePothosObject, RefreshTokenResponsePothosObject } from "../pothos";
 import { UserEntity, SessionEntity } from "@/server/types";
 import { SessionRepository, UserRepository } from "@/server/db/repo";
 import logger from "@/server/lib/logger";

@@ -1,13 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  Box,
-  Typography,
-  Button,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  Popover,
-} from "@mui/material";
+import { Box, Typography, Button, Radio, RadioGroup, FormControlLabel, Popover } from "@mui/material";
 import { Check, Clear } from "@mui/icons-material";
 import { useTableLocale } from "../../contexts";
 
@@ -40,20 +32,15 @@ export const BooleanFilterPopover: React.FC<BooleanFilterPopoverProps> = ({
     strings: { filter: filterStrings, booleanFilterOps },
   } = useTableLocale();
 
-  const [selectedValue, setSelectedValue] = useState<string>(
-    value === null ? "all" : value ? "true" : "false"
-  );
+  const [selectedValue, setSelectedValue] = useState<string>(value === null ? "all" : value ? "true" : "false");
 
   useEffect(() => {
     setSelectedValue(value === null ? "all" : value ? "true" : "false");
   }, [value, open]);
 
-  const handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSelectedValue(event.target.value);
-    },
-    []
-  );
+  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedValue(event.target.value);
+  }, []);
 
   const handleApply = useCallback(() => {
     const boolValue = selectedValue === "all" ? null : selectedValue === "true";
@@ -86,45 +73,17 @@ export const BooleanFilterPopover: React.FC<BooleanFilterPopoverProps> = ({
           {filterStrings.title}: {columnLabel}
         </Typography>
 
-        <RadioGroup
-          value={selectedValue}
-          onChange={handleChange}
-          sx={{ mt: 2 }}
-        >
-          <FormControlLabel
-            value="all"
-            control={<Radio size="small" />}
-            label={booleanFilterOps.all}
-          />
-          <FormControlLabel
-            value="true"
-            control={<Radio size="small" />}
-            label={booleanFilterOps.true}
-          />
-          <FormControlLabel
-            value="false"
-            control={<Radio size="small" />}
-            label={booleanFilterOps.false}
-          />
+        <RadioGroup value={selectedValue} onChange={handleChange} sx={{ mt: 2 }}>
+          <FormControlLabel value="all" control={<Radio size="small" />} label={booleanFilterOps.all} />
+          <FormControlLabel value="true" control={<Radio size="small" />} label={booleanFilterOps.true} />
+          <FormControlLabel value="false" control={<Radio size="small" />} label={booleanFilterOps.false} />
         </RadioGroup>
 
-        <Box
-          sx={{ display: "flex", gap: 1, mt: 2, justifyContent: "flex-end" }}
-        >
-          <Button
-            size="small"
-            onClick={handleClear}
-            startIcon={<Clear />}
-            color="inherit"
-          >
+        <Box sx={{ display: "flex", gap: 1, mt: 2, justifyContent: "flex-end" }}>
+          <Button size="small" onClick={handleClear} startIcon={<Clear />} color="inherit">
             {filterStrings.clear}
           </Button>
-          <Button
-            size="small"
-            onClick={handleApply}
-            variant="contained"
-            startIcon={<Check />}
-          >
+          <Button size="small" onClick={handleApply} variant="contained" startIcon={<Check />}>
             {filterStrings.apply}
           </Button>
         </Box>

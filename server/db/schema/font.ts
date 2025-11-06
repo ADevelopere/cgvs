@@ -1,11 +1,4 @@
-import {
-  bigint,
-  pgTable,
-  serial,
-  timestamp,
-  varchar,
-  jsonb,
-} from "drizzle-orm/pg-core";
+import { bigint, pgTable, serial, timestamp, varchar, jsonb } from "drizzle-orm/pg-core";
 
 export const font = pgTable("font", {
   id: serial("id").primaryKey(),
@@ -13,9 +6,7 @@ export const font = pgTable("font", {
   // todo: specifiy new type to strict locales
   locale: jsonb("locale").$type<string[]>().notNull(), // Array of locale codes: ["en", "ar", "all"]
   storageFileId: bigint("storage_file_id", { mode: "number" }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()
     .defaultNow()

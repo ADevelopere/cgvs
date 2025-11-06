@@ -195,12 +195,7 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
           renderOption={(props, option) => {
             const { key: _key, ...optionProps } = props;
             return (
-              <Box
-                key={option.code}
-                component="li"
-                sx={{ "& > img": { mr: 1, flexShrink: 0 } }}
-                {...optionProps}
-              >
+              <Box key={option.code} component="li" sx={{ "& > img": { mr: 1, flexShrink: 0 } }} {...optionProps}>
                 <Image
                   src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
                   alt=""
@@ -214,12 +209,7 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
             );
           }}
           renderInput={params => (
-            <Tooltip
-              open={!!error}
-              title={error ?? ""}
-              arrow
-              placement="bottom-start"
-            >
+            <Tooltip open={!!error} title={error ?? ""} arrow placement="bottom-start">
               <TextField
                 {...params}
                 focused={true}
@@ -244,9 +234,7 @@ export const CountryEditRenderer: React.FC<CountryEditRendererProps> = ({
               />
             </Tooltip>
           )}
-          clearIcon={
-            <>{value && <ClearIcon fontSize="small" onClick={handleClear} />}</>
-          }
+          clearIcon={<>{value && <ClearIcon fontSize="small" onClick={handleClear} />}</>}
           clearText={general.delete}
           closeText={general.cancel}
         />

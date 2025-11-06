@@ -1,12 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { styled } from "@mui/material/styles";
 import { IconButton, Tooltip, Badge } from "@mui/material";
-import {
-  ArrowUpward,
-  ArrowDownward,
-  UnfoldMore,
-  FilterList,
-} from "@mui/icons-material";
+import { ArrowUpward, ArrowDownward, UnfoldMore, FilterList } from "@mui/icons-material";
 import { OrderSortDirection } from "@/client/graphql/generated/gql/graphql";
 import { useTableLocale } from "../../contexts";
 
@@ -27,10 +22,7 @@ export type BaseHeaderRendererProps = {
   onSort?: (direction: OrderSortDirection | null) => void;
 
   /** Function that renders the filter popover with anchor element and close handler */
-  filterPopoverRenderer?: (
-    anchorEl: HTMLElement | null,
-    onClose: () => void
-  ) => React.ReactNode;
+  filterPopoverRenderer?: (anchorEl: HTMLElement | null, onClose: () => void) => React.ReactNode;
 
   /** Current sort direction */
   sortDirection?: OrderSortDirection | null;
@@ -150,13 +142,10 @@ export const BaseHeaderRenderer = ({
     [onSort, sortDirection]
   );
 
-  const handleFilterClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.stopPropagation();
-      setFilterAnchor(e.currentTarget);
-    },
-    []
-  );
+  const handleFilterClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setFilterAnchor(e.currentTarget);
+  }, []);
 
   const handleFilterClose = useCallback(() => {
     setFilterAnchor(null);
@@ -168,11 +157,7 @@ export const BaseHeaderRenderer = ({
       <IconsContainer>
         {sortable && onSort && (
           <Tooltip title={sortTooltip ?? sortStrings.title}>
-            <HeaderIconButton
-              onClick={handleSortClick}
-              aria-label={`Sort by ${label}`}
-              size="small"
-            >
+            <HeaderIconButton onClick={handleSortClick} aria-label={`Sort by ${label}`} size="small">
               {sortDirection === "ASC" ? (
                 <ArrowUpward fontSize="small" />
               ) : sortDirection === "DESC" ? (

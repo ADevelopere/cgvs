@@ -32,18 +32,14 @@ export type UseDateDataSourceStateReturn = {
 /**
  * Type guard to check if element is DateElement
  */
-function isDateElement(
-  element: GQL.CertificateElementUnion
-): element is GQL.DateElement {
+function isDateElement(element: GQL.CertificateElementUnion): element is GQL.DateElement {
   return element.__typename === "DateElement";
 }
 
 /**
  * Extract dateDataSource state from element
  */
-function extractDateDataSourceState(
-  element: GQL.CertificateElementUnion
-): DateDataSourceFormState | null {
+function extractDateDataSourceState(element: GQL.CertificateElementUnion): DateDataSourceFormState | null {
   if (isDateElement(element) && element.dateDataSource) {
     return {
       dataSource: dateDataSourceToInput(element.dateDataSource),
@@ -55,33 +51,23 @@ function extractDateDataSourceState(
 /**
  * Convert dateDataSource input to update input
  */
-function toUpdateInput(
-  elementId: number,
-  state: DateDataSourceFormState
-): GQL.DateDataSourceStandaloneInput {
+function toUpdateInput(elementId: number, state: DateDataSourceFormState): GQL.DateDataSourceStandaloneInput {
   return {
     elementId: elementId,
     dataSource: state.dataSource,
   };
 }
 
-export function useDateDataSourceState(
-  params: UseDateDataSourceStateParams
-): UseDateDataSourceStateReturn {
+export function useDateDataSourceState(params: UseDateDataSourceStateParams): UseDateDataSourceStateReturn {
   const { templateId, elements } = params;
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
 
-  const [updateDateElementDataSourceMutation] = useMutation(
-    updateDateElementDataSourceMutationDocument
-  );
+  const [updateDateElementDataSourceMutation] = useMutation(updateDateElementDataSourceMutationDocument);
 
   // Mutation function
   const mutationFn = React.useCallback(
-    async (
-      elementId: number,
-      state: DateDataSourceFormState
-    ): Promise<void> => {
+    async (elementId: number, state: DateDataSourceFormState): Promise<void> => {
       try {
         const updateInput = toUpdateInput(elementId, state);
         await updateDateElementDataSourceMutation({
@@ -90,8 +76,7 @@ export function useDateDataSourceState(
           },
         });
       } catch (error) {
-        const errorMessage =
-          errorStrings?.updateFailed || "Failed to update date data source";
+        const errorMessage = errorStrings?.updateFailed || "Failed to update date data source";
         logger.error("useDateDataSourceState: Mutation failed", {
           elementId,
           error,
@@ -147,10 +132,7 @@ export const useDateDataSource = (params: UseDateDataSourceParams) => {
 
   // Get state or initialize if not present (only initialize once)
   const { dataSource } = React.useMemo(() => {
-    return (
-      dateDataSourceStates.get(params.elementId) ??
-      initDateDataSourceState(params.elementId)
-    );
+    return dateDataSourceStates.get(params.elementId) ?? initDateDataSourceState(params.elementId);
   }, [dateDataSourceStates, params.elementId, initDateDataSourceState]);
 
   const updateDateDataSource = React.useCallback(

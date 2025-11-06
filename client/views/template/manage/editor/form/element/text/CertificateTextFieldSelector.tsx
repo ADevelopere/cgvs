@@ -1,11 +1,5 @@
 import React, { type FC } from "react";
-import {
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
-} from "@mui/material";
+import { FormControl, FormHelperText, InputLabel, MenuItem, Select } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import { CertificateTextField } from "@/client/graphql/generated/gql/graphql";
 
@@ -16,12 +10,7 @@ interface CertificateFieldSelectorProps {
   disabled?: boolean;
 }
 
-export const CertificateFieldSelector: FC<CertificateFieldSelectorProps> = ({
-  value,
-  onChange,
-  error,
-  disabled,
-}) => {
+export const CertificateFieldSelector: FC<CertificateFieldSelectorProps> = ({ value, onChange, error, disabled }) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
 
   return (

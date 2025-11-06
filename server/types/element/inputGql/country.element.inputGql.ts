@@ -1,7 +1,4 @@
-import {
-  CertificateElementBaseInput,
-  CountryElementCountryPropsInput,
-} from "../input";
+import { CertificateElementBaseInput, CountryElementCountryPropsInput } from "../input";
 import { TextPropsInputGraphql } from "./textProps.inputGql";
 
 // ============================================================================
@@ -9,10 +6,7 @@ import { TextPropsInputGraphql } from "./textProps.inputGql";
 // ============================================================================
 
 // GraphQL input types (used in Pothos isOneOf definitions)
-export type CountryDataSourceStudentNationalityInputGraphql = Record<
-  string,
-  never
->;
+export type CountryDataSourceStudentNationalityInputGraphql = Record<string, never>;
 
 export type CountryDataSourceInputGraphql = {
   studentNationality: CountryDataSourceStudentNationalityInputGraphql;

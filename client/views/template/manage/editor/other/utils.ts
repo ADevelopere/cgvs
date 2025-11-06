@@ -8,11 +8,7 @@ type GetHelperLinesResult = {
 
 // this utility function can be called with a position change (inside onNodesChange)
 // it checks all other nodes and calculated the helper line positions and the position where the current node should snap to
-export function getHelperLines(
-  change: NodePositionChange,
-  nodes: Node[],
-  distance = 5
-): GetHelperLinesResult {
+export function getHelperLines(change: NodePositionChange, nodes: Node[], distance = 5): GetHelperLinesResult {
   const defaultResult = {
     horizontal: undefined,
     vertical: undefined,
@@ -72,9 +68,7 @@ export function getHelperLines(
       //  |‾‾‾‾‾‾‾‾‾‾‾|
       //  |     B     |
       //  |___________|
-      const distanceRightRight = Math.abs(
-        nodeABounds.right - nodeBBounds.right
-      );
+      const distanceRightRight = Math.abs(nodeABounds.right - nodeBBounds.right);
 
       if (distanceRightRight < verticalDistance) {
         result.snapPosition.x = nodeBBounds.right - nodeABounds.width;
@@ -142,9 +136,7 @@ export function getHelperLines(
       //  |‾‾‾‾‾‾‾‾‾‾‾|     |‾‾‾‾‾‾‾‾‾‾‾|
       //  |     A     |     |     B     |
       //  |___________|_____|___________|
-      const distanceBottomBottom = Math.abs(
-        nodeABounds.bottom - nodeBBounds.bottom
-      );
+      const distanceBottomBottom = Math.abs(nodeABounds.bottom - nodeBBounds.bottom);
 
       if (distanceBottomBottom < horizontalDistance) {
         result.snapPosition.y = nodeBBounds.bottom - nodeABounds.height;

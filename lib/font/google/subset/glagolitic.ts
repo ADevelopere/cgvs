@@ -5,19 +5,11 @@ const data: GoogleFontItem[] = [
   {
     family: "Noto Sans Glagolitic",
     variants: ["regular"],
-    subsets: [
-      "cyrillic-ext",
-      "glagolitic",
-      "latin",
-      "latin-ext",
-      "math",
-      "symbols",
-    ],
+    subsets: ["cyrillic-ext", "glagolitic", "latin", "latin-ext", "math", "symbols"],
     version: "v19",
     lastModified: "2025-09-05",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/notosansglagolitic/v19/1q2ZY4-BBFBst88SU_tOj4J-4yuNF_HI4ERK4Amu7nM1.ttf",
+      regular: "https://fonts.gstatic.com/s/notosansglagolitic/v19/1q2ZY4-BBFBst88SU_tOj4J-4yuNF_HI4ERK4Amu7nM1.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -30,8 +22,7 @@ const data: GoogleFontItem[] = [
     version: "v3",
     lastModified: "2025-05-30",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/shafarik/v3/RWmLoKaF7PojpZXlW52sbsHKqLkD.ttf",
+      regular: "https://fonts.gstatic.com/s/shafarik/v3/RWmLoKaF7PojpZXlW52sbsHKqLkD.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",

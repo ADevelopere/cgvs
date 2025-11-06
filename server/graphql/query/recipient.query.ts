@@ -25,8 +25,7 @@ gqlSchemaBuilder.queryFields(t => ({
     args: {
       recipientGroupId: t.arg.int({ required: true }),
     },
-    resolve: async (_, args) =>
-      await RecipientRepository.findAllByGroupId(args.recipientGroupId),
+    resolve: async (_, args) => await RecipientRepository.findAllByGroupId(args.recipientGroupId),
   }),
 
   recipientsByStudentId: t.field({
@@ -35,8 +34,7 @@ gqlSchemaBuilder.queryFields(t => ({
     args: {
       studentId: t.arg.int({ required: true }),
     },
-    resolve: async (_, args) =>
-      await RecipientRepository.findByStudentId(args.studentId),
+    resolve: async (_, args) => await RecipientRepository.findByStudentId(args.studentId),
   }),
 
   recipientsByGroupIdFiltered: t.field({

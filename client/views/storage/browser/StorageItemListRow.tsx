@@ -2,10 +2,7 @@ import React, { useState } from "react";
 import { TableRow, TableCell, Typography, Box } from "@mui/material";
 import { formatDistanceToNow } from "date-fns";
 import FileTypeIcon from "./FileTypeIcon";
-import {
-  StorageItemUnion,
-  StorageClipboardState,
-} from "@/client/views/storage/core/storage.type";
+import { StorageItemUnion, StorageClipboardState } from "@/client/views/storage/core/storage.type";
 import FileMenu from "../menu/FileMenu";
 import FolderMenu from "../menu/FolderMenu";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
@@ -69,15 +66,10 @@ const StorageItemListRow: React.FC<StorageItemListRowProps> = ({
   onRenameItem,
   onDeleteItems,
 }) => {
-  const [contextMenuAnchor, setContextMenuAnchor] = useState<
-    undefined | { top: number; left: number }
-  >(undefined);
+  const [contextMenuAnchor, setContextMenuAnchor] = useState<undefined | { top: number; left: number }>(undefined);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
 
-  const isFocused = React.useMemo(
-    () => focusedItem === item.path,
-    [focusedItem, item.path]
-  );
+  const isFocused = React.useMemo(() => focusedItem === item.path, [focusedItem, item.path]);
 
   const handleCloseContextMenu = React.useCallback(() => {
     setContextMenuOpen(false);
@@ -181,20 +173,14 @@ const StorageItemListRow: React.FC<StorageItemListRowProps> = ({
         {/* Size Column */}
         <TableCell align="right">
           <Typography variant="body2" color="text.secondary">
-            {isDirectory
-              ? "—"
-              : formatFileSize(Number("size" in item ? item.size || 0 : 0))}
+            {isDirectory ? "—" : formatFileSize(Number("size" in item ? item.size || 0 : 0))}
           </Typography>
         </TableCell>
 
         {/* Last Modified Column */}
         <TableCell align="right">
           <Typography variant="body2" color="text.secondary">
-            {isDirectory
-              ? "—"
-              : formatDate(
-                  "lastModified" in item ? item.lastModified || "" : ""
-                )}
+            {isDirectory ? "—" : formatDate("lastModified" in item ? item.lastModified || "" : "")}
           </Typography>
         </TableCell>
       </TableRow>

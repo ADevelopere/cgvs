@@ -10,18 +10,7 @@ type DefaultTitleProps = {
 
 export const DefaultTitle = forwardRef<HTMLDivElement, DefaultTitleProps>(
   (
-    {
-      title: {
-        logoIcon,
-        homeUrl,
-        titleText,
-        titleVisible,
-        titleTextVisible,
-        titleLogoVisible,
-        textColor,
-        iconColor,
-      },
-    },
+    { title: { logoIcon, homeUrl, titleText, titleVisible, titleTextVisible, titleLogoVisible, textColor, iconColor } },
     ref
   ) => {
     if (!titleVisible) return null;

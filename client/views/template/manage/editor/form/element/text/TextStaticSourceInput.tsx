@@ -9,12 +9,7 @@ interface StaticSourceInputProps {
   disabled?: boolean;
 }
 
-export const TextStaticSourceInput: FC<StaticSourceInputProps> = ({
-  value,
-  onChange,
-  error,
-  disabled,
-}) => {
+export const TextStaticSourceInput: FC<StaticSourceInputProps> = ({ value, onChange, error, disabled }) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
 
   return (

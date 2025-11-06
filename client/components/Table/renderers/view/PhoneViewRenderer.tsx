@@ -28,13 +28,8 @@ const formatPhoneNumber = (phoneNumber: string): string => {
  * Uses LTR direction and Unicode bidirectional controls for proper display in RTL contexts.
  * Used for rendering phone number values in table cells.
  */
-export const PhoneViewRenderer: React.FC<PhoneViewRendererProps> = ({
-  value,
-}) => {
-  const displayValue =
-    value !== null && value !== undefined
-      ? formatPhoneNumber(String(value))
-      : "";
+export const PhoneViewRenderer: React.FC<PhoneViewRendererProps> = ({ value }) => {
+  const displayValue = value !== null && value !== undefined ? formatPhoneNumber(String(value)) : "";
 
   // Add Unicode LTR mark (U+200E) to force left-to-right display in RTL contexts
   const ltrDisplayValue = displayValue ? `\u200E${displayValue}\u200E` : "";

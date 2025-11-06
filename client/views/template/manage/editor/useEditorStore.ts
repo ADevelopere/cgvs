@@ -42,12 +42,11 @@ export const useEditorStore = create<EditorStore>()(
       history: [],
       historyIndex: -1,
 
-      setCurrntMiscellaneousPanelTab: (tab) =>
-        set({ currntMiscellaneousPanelTab: tab }),
+      setCurrntMiscellaneousPanelTab: tab => set({ currntMiscellaneousPanelTab: tab }),
 
-      setCurrentElementId: (id) => set({ currentElementId: id }),
+      setCurrentElementId: id => set({ currentElementId: id }),
 
-      addToHistory: (changes) => {
+      addToHistory: changes => {
         const { history, historyIndex } = get();
 
         // Remove any redo history when adding new changes
@@ -60,8 +59,7 @@ export const useEditorStore = create<EditorStore>()(
         });
 
         // Limit history to 50 entries
-        const limitedHistory =
-          newHistory.length > 50 ? newHistory.slice(-50) : newHistory;
+        const limitedHistory = newHistory.length > 50 ? newHistory.slice(-50) : newHistory;
 
         set({
           history: limitedHistory,
@@ -80,7 +78,7 @@ export const useEditorStore = create<EditorStore>()(
         set({ historyIndex: historyIndex - 1 });
 
         // Return changes with old values to revert
-        return entry.changes.map((change) => ({
+        return entry.changes.map(change => ({
           ...change,
           newValue: change.oldValue,
         }));
@@ -118,7 +116,7 @@ export const useEditorStore = create<EditorStore>()(
     {
       name: "editor-store",
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({
+      partialize: state => ({
         currntMiscellaneousPanelTab: state.currntMiscellaneousPanelTab,
       }),
     }

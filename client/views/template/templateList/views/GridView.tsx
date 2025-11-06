@@ -1,15 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  ImageList,
-  ImageListItem,
-  ImageListItemBar,
-  IconButton,
-  useTheme,
-  useMediaQuery,
-  Box,
-} from "@mui/material";
+import { ImageList, ImageListItem, ImageListItemBar, IconButton, useTheme, useMediaQuery, Box } from "@mui/material";
 import Image from "next/image";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useAppTheme } from "@/client/contexts";
@@ -24,12 +16,7 @@ interface GridViewProps {
   onImageError: (templateId: number) => void;
 }
 
-const GridView: React.FC<GridViewProps> = ({
-  templates,
-  manageTemplate,
-  failedImages,
-  onImageError,
-}) => {
+const GridView: React.FC<GridViewProps> = ({ templates, manageTemplate, failedImages, onImageError }) => {
   const { templateCategoryTranslations: strings } = useAppTranslation();
   const { isDark } = useAppTheme();
   const theme = useTheme();

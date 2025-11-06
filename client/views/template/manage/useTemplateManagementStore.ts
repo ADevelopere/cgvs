@@ -42,10 +42,7 @@ interface TemplateUIState {
   reset: () => void;
 }
 
-const initialTabErrors: Record<
-  TemplateManagementTabType,
-  TabError | undefined
-> = {
+const initialTabErrors: Record<TemplateManagementTabType, TabError | undefined> = {
   basic: undefined,
   variables: undefined,
   editor: undefined,
@@ -78,9 +75,7 @@ export const useTemplateUIStore = create<TemplateUIState>()(
 
       setTabLoaded: tab =>
         set(state => ({
-          loadedTabs: state.loadedTabs.includes(tab)
-            ? state.loadedTabs
-            : [...state.loadedTabs, tab],
+          loadedTabs: state.loadedTabs.includes(tab) ? state.loadedTabs : [...state.loadedTabs, tab],
         })),
 
       setTabError: (tab, error) =>
@@ -93,8 +88,7 @@ export const useTemplateUIStore = create<TemplateUIState>()(
           tabErrors: { ...state.tabErrors, [tab]: undefined },
         })),
 
-      setInitializedFromURL: initialized =>
-        set({ initializedFromURL: initialized }),
+      setInitializedFromURL: initialized => set({ initializedFromURL: initialized }),
 
       reset: () => set(initialState),
     }),
@@ -113,13 +107,5 @@ export const useTemplateUIStore = create<TemplateUIState>()(
  * Helper to validate tab type
  */
 export function isValidTab(tab: string): tab is TemplateManagementTabType {
-  return [
-    "basic",
-    "variables",
-    "editor",
-    "recipients",
-    "recipientsManagement",
-    "data",
-    "preview",
-  ].includes(tab);
+  return ["basic", "variables", "editor", "recipients", "recipientsManagement", "data", "preview"].includes(tab);
 }

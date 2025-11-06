@@ -12,24 +12,22 @@ export type ImageElementNodeData = {
   height: number;
 };
 
-
 type ImageNodeProps = NodeProps & {
   data: ImageElementNodeData;
 };
 
-
 const ImageNode: React.FC<ImageNodeProps> = ({ data: { elementId, width, height } }) => {
   logger.debug("Rendering ImageNode", { elementId, width, height });
   const { imageDataSourceState: source } = useImageDataSource({ elementId });
-  const {imagePropsState} = useImageProps({elementId});
+  const { imagePropsState } = useImageProps({ elementId });
   const imageUrl = source.storageFile.url;
   logger.debug("ImageNode source", { imageUrl, source });
 
   useEffect(() => {
-      const img = new Image();
-      img.src = imageUrl;
+    const img = new Image();
+    img.src = imageUrl;
   }, [imageUrl]);
-  
+
   return (
     <div
       style={{

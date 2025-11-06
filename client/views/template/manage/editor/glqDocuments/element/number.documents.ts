@@ -109,9 +109,7 @@ export const updateNumberElementDataSourceMutationDocument: TypedDocumentNode<
   Graphql.UpdateNumberElementDataSourceMutation,
   Graphql.UpdateNumberElementDataSourceMutationVariables
 > = gql`
-  mutation updateNumberElementDataSource(
-    $input: NumberElementDataSourceStandaloneUpdateInput!
-  ) {
+  mutation updateNumberElementDataSource($input: NumberElementDataSourceStandaloneUpdateInput!) {
     updateNumberElementDataSource(input: $input) {
       elementId
       numberDataSource {
@@ -126,9 +124,7 @@ export const updateNumberElementSpecPropsMutationDocument: TypedDocumentNode<
   Graphql.UpdateNumberElementSpecPropsMutation,
   Graphql.UpdateNumberElementSpecPropsMutationVariables
 > = gql`
-  mutation updateNumberElementSpecProps(
-    $input: NumberElementSpecPropsStandaloneUpdateInput!
-  ) {
+  mutation updateNumberElementSpecProps($input: NumberElementSpecPropsStandaloneUpdateInput!) {
     updateNumberElementSpecProps(input: $input) {
       elementId
       numberProps {

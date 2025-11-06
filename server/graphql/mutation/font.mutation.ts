@@ -1,9 +1,5 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
-import {
-  FontPothosObject,
-  FontCreateInputPothosObject,
-  FontUpdateInputPothosObject,
-} from "../pothos/font.pothos";
+import { FontPothosObject, FontCreateInputPothosObject, FontUpdateInputPothosObject } from "../pothos/font.pothos";
 import { FontRepository } from "@/server/db/repo";
 
 gqlSchemaBuilder.mutationFields(t => ({

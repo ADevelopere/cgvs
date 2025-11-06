@@ -12,10 +12,7 @@ import {
 import { AnyColumn, PageInfo, PinPosition } from "../types";
 import { TableRenderer } from "./TableRenderer";
 
-export interface TableProps<
-  TRowData,
-  TRowId extends string | number = string | number,
-> {
+export interface TableProps<TRowData, TRowId extends string | number = string | number> {
   // Table data and configuration
   data: TRowData[];
   isLoading?: boolean;
@@ -52,20 +49,14 @@ export interface TableProps<
   onRowResize?: (rowId: TRowId, newHeight: number) => void;
   rowSelectionEnabled?: boolean;
   enableRowResizing?: boolean;
-  onLoadMoreRows?: (params: {
-    visibleStartIndex: number;
-    visibleStopIndex: number;
-  }) => Promise<void>;
+  onLoadMoreRows?: (params: { visibleStartIndex: number; visibleStopIndex: number }) => Promise<void>;
 
   // Rendering
   style?: React.CSSProperties;
   creationRow?: React.ReactNode;
 }
 
-export const Table = <
-  TRowData,
-  TRowId extends string | number = string | number,
->({
+export const Table = <TRowData, TRowId extends string | number = string | number>({
   // Data and columns
   data,
   isLoading = false,

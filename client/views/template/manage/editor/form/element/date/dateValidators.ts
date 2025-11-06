@@ -1,17 +1,11 @@
-import type {
-  DateDataSourceFieldErrors,
-  ValidateDateDataSourceFn,
-  ValidateDatePropsFn,
-} from "./types";
+import type { DateDataSourceFieldErrors, ValidateDateDataSourceFn, ValidateDatePropsFn } from "./types";
 
 /**
  * Validates DateDataSourceInput (OneOf type)
  * Checks each variant and validates the active one
  */
 export const validateDateDataSource = (): ValidateDateDataSourceFn => {
-  const validate: ValidateDateDataSourceFn = ({
-    value: source,
-  }): DateDataSourceFieldErrors => {
+  const validate: ValidateDateDataSourceFn = ({ value: source }): DateDataSourceFieldErrors => {
     if (source.static && !source.static.value?.trim()) {
       return { static: "Static date value is required" };
     }
@@ -43,10 +37,7 @@ export const validateDateDataSource = (): ValidateDateDataSourceFn => {
  * Field-level validation for date-specific properties
  */
 export const validateDateProps = (): ValidateDatePropsFn => {
-  const validate: ValidateDatePropsFn = ({
-    key,
-    value,
-  }): string | undefined => {
+  const validate: ValidateDatePropsFn = ({ key, value }): string | undefined => {
     switch (key) {
       case "format":
         if (!value.trim()) {

@@ -66,14 +66,10 @@ export class FileInitializationService implements IFileInitializationService {
   /**
    * Create a directory if it doesn't exist
    */
-  async createDirectoryIfNotExists(
-    input: Types.FolderCreateInput
-  ): Promise<void> {
+  async createDirectoryIfNotExists(input: Types.FolderCreateInput): Promise<void> {
     try {
       // Check if directory exists in storage
-      const directoryInfo = await this.storageService.directoryInfoByPath(
-        input.path
-      );
+      const directoryInfo = await this.storageService.directoryInfoByPath(input.path);
 
       if (directoryInfo) {
         logger.info(`   📁 Directory already exists: ${input.path}`);
@@ -86,9 +82,7 @@ export class FileInitializationService implements IFileInitializationService {
       if (result.success) {
         logger.info(`   📁 Created directory: ${input.path}`);
       } else {
-        logger.warn(
-          `   ⚠️  Warning: Could not create directory: ${input.path} - ${result.message}`
-        );
+        logger.warn(`   ⚠️  Warning: Could not create directory: ${input.path} - ${result.message}`);
       }
     } catch (error) {
       logger.error(`   ❌ Error creating directory ${input.path}:`, error);
@@ -144,9 +138,7 @@ export class FileInitializationService implements IFileInitializationService {
         return;
       }
     } catch (error) {
-      logger.warn(
-        `   ⚠️  Could not check bucket for file: ${fileName} - ${error}`
-      );
+      logger.warn(`   ⚠️  Could not check bucket for file: ${fileName} - ${error}`);
     }
 
     // Upload file from resources using StorageService
@@ -157,25 +149,15 @@ export class FileInitializationService implements IFileInitializationService {
       const fileBuffer = await fs.readFile(resourcePath);
       const contentType = this.getContentTypeFromFileName(fileName);
 
-      const result = await this.storageService.uploadFile(
-        bucketPath,
-        contentType,
-        fileBuffer
-      );
+      const result = await this.storageService.uploadFile(bucketPath, contentType, fileBuffer);
 
       if (result.success) {
         logger.info(`   🖼️  Uploaded demo file: ${fileName}`);
       } else {
-        logger.error(
-          `   ❌ Failed to upload demo file ${fileName}: ${result.message}`
-        );
+        logger.error(`   ❌ Failed to upload demo file ${fileName}: ${result.message}`);
       }
     } catch (error) {
-      if (
-        error instanceof Error &&
-        "code" in error &&
-        error.code === "ENOENT"
-      ) {
+      if (error instanceof Error && "code" in error && error.code === "ENOENT") {
         logger.error(`   ❌ Resource not found: ${fileName}`);
       } else {
         logger.error(`   ❌ Failed to upload demo file ${fileName}:`, error);
@@ -236,9 +218,7 @@ export class FileInitializationService implements IFileInitializationService {
         const existingFile = await StorageDbRepository.fileByPath(filePath);
 
         if (existingFile) {
-          logger.info(
-            `   ✅ Found demo file in database: ${filePath} (ID: ${existingFile.id})`
-          );
+          logger.info(`   ✅ Found demo file in database: ${filePath} (ID: ${existingFile.id})`);
           fileIds.push(existingFile.id);
           continue;
         }
@@ -253,9 +233,7 @@ export class FileInitializationService implements IFileInitializationService {
             true // isProtected = true for demo files
           );
 
-          logger.info(
-            `   ✅ Registered demo file for use: ${filePath} (ID: ${fileEntity.id})`
-          );
+          logger.info(`   ✅ Registered demo file for use: ${filePath} (ID: ${fileEntity.id})`);
           fileIds.push(fileEntity.id);
         } else {
           logger.error(`   ❌ Demo file NOT found in bucket: ${filePath}`);
@@ -265,16 +243,11 @@ export class FileInitializationService implements IFileInitializationService {
       }
     }
 
-    logger.info(
-      `   📊 Total demo files available: ${fileIds.length} out of ${demoFiles.length}`
-    );
+    logger.info(`   📊 Total demo files available: ${fileIds.length} out of ${demoFiles.length}`);
     return fileIds;
   }
 
-  async registerTemplateFileUsage(
-    templateId: number,
-    fileId: bigint
-  ): Promise<void> {
+  async registerTemplateFileUsage(templateId: number, fileId: bigint): Promise<void> {
     try {
       const fileInfo = await this.storageService.fileInfoByDbFileId(fileId);
 
@@ -288,12 +261,8 @@ export class FileInitializationService implements IFileInitializationService {
         // - Register file usage with type "template_cover"
         // - Track reference to template ID and "templates" table
         // - This enables checking if files can be safely deleted
-        logger.info(
-          `   📎 File ${fileId} (${fileInfo.path}) will be used for template ${templateId}`
-        );
-        logger.info(
-          `   ℹ️  File usage tracking happens through template-file relationships`
-        );
+        logger.info(`   📎 File ${fileId} (${fileInfo.path}) will be used for template ${templateId}`);
+        logger.info(`   ℹ️  File usage tracking happens through template-file relationships`);
       } else {
         logger.warn(`   ⚠️  File with ID ${fileId} not found`);
       }
@@ -303,9 +272,7 @@ export class FileInitializationService implements IFileInitializationService {
   }
 
   getContentTypeFromFileName(fileName: string): string {
-    const extension = fileName
-      .substring(fileName.lastIndexOf(".") + 1)
-      .toLowerCase();
+    const extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
 
     switch (extension) {
       case "jpg":
@@ -356,8 +323,7 @@ export class FileInitializationService implements IFileInitializationService {
 /**
  * Factory function to create FileInitializationService instance
  */
-export const createFileInitializationService =
-  async (): Promise<FileInitializationService> => {
-    const storageService = await getStorageService();
-    return new FileInitializationService(storageService);
-  };
+export const createFileInitializationService = async (): Promise<FileInitializationService> => {
+  const storageService = await getStorageService();
+  return new FileInitializationService(storageService);
+};

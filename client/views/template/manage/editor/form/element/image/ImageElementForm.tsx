@@ -7,12 +7,7 @@ import { UpdateBaseElementFn } from "../base/types";
 import { ActionButtons } from "../component/ActionButtons";
 import { ImageDataSourceForm } from "./ImageDataSourceForm";
 import { ImagePropsForm } from "./ImagePropsForm";
-import {
-  ImageElementFormErrors,
-  ImageElementFormState,
-  UpdateImageDataSourceFn,
-  UpdateImagePropsFn,
-} from "./types";
+import { ImageElementFormErrors, ImageElementFormState, UpdateImageDataSourceFn, UpdateImagePropsFn } from "./types";
 
 export interface ImageElementFormProps {
   state: ImageElementFormState;
@@ -78,12 +73,7 @@ export const ImageElementForm: React.FC<ImageElementFormProps> = ({
       </Mui.Box>
 
       {/* Row 3: Action Buttons (Fixed) */}
-      <ActionButtons
-        onSubmit={onSubmit}
-        onCancel={onCancel}
-        isSubmitting={isSubmitting}
-        submitLabel={submitLabel}
-      />
+      <ActionButtons onSubmit={onSubmit} onCancel={onCancel} isSubmitting={isSubmitting} submitLabel={submitLabel} />
     </Mui.Box>
   );
 };

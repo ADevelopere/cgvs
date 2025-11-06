@@ -43,34 +43,31 @@ export const useApplyNodeChange = () => {
    * Apply helper lines for snapping during drag
    * Complexity: ~8
    */
-  const applyHelperLines = useCallback(
-    (change: NodePositionChange, nodes: Node[]): HelperLinesResult => {
-      try {
-        if (change.type === "position" && change.dragging && change.position) {
-          const helperLines = getHelperLines(change, nodes);
-          return {
-            horizontal: helperLines.horizontal,
-            vertical: helperLines.vertical,
-            snapPosition: helperLines.snapPosition,
-          };
-        }
-      } catch {
-        // If helper lines fail, return no snapping
+  const applyHelperLines = useCallback((change: NodePositionChange, nodes: Node[]): HelperLinesResult => {
+    try {
+      if (change.type === "position" && change.dragging && change.position) {
+        const helperLines = getHelperLines(change, nodes);
         return {
-          horizontal: undefined,
-          vertical: undefined,
-          snapPosition: {},
+          horizontal: helperLines.horizontal,
+          vertical: helperLines.vertical,
+          snapPosition: helperLines.snapPosition,
         };
       }
-
+    } catch {
+      // If helper lines fail, return no snapping
       return {
         horizontal: undefined,
         vertical: undefined,
         snapPosition: {},
       };
-    },
-    []
-  );
+    }
+
+    return {
+      horizontal: undefined,
+      vertical: undefined,
+      snapPosition: {},
+    };
+  }, []);
 
   /**
    * Apply boundary constraints to keep node within container
@@ -131,11 +128,7 @@ export const useApplyNodeChange = () => {
         }
 
         // Update position during drag (with isDragging flag)
-        if (
-          constrainedChange.type === "position" &&
-          constrainedChange.dragging &&
-          constrainedChange.position
-        ) {
+        if (constrainedChange.type === "position" && constrainedChange.dragging && constrainedChange.position) {
           const x = constrainedChange.position.x;
           const y = constrainedChange.position.y;
           setIsDragging(true);
@@ -144,11 +137,7 @@ export const useApplyNodeChange = () => {
         }
 
         // Update element position when drag ends
-        if (
-          constrainedChange.type === "position" &&
-          !constrainedChange.dragging &&
-          constrainedChange.position
-        ) {
+        if (constrainedChange.type === "position" && !constrainedChange.dragging && constrainedChange.position) {
           const x = constrainedChange.position.x;
           const y = constrainedChange.position.y;
           // Use queueMicrotask for better performance than setTimeout
@@ -183,11 +172,7 @@ export const useApplyNodeChange = () => {
         }
 
         // Update size during resize (with isResizing flag)
-        if (
-          change.type === "dimensions" &&
-          change.resizing &&
-          change.dimensions
-        ) {
+        if (change.type === "dimensions" && change.resizing && change.dimensions) {
           const width = change.dimensions.width;
           const height = change.dimensions.height;
           setIsResizing(true);
@@ -196,11 +181,7 @@ export const useApplyNodeChange = () => {
         }
 
         // Update size when resize ends
-        if (
-          change.type === "dimensions" &&
-          !change.resizing &&
-          change.dimensions
-        ) {
+        if (change.type === "dimensions" && !change.resizing && change.dimensions) {
           const width = change.dimensions.width;
           const height = change.dimensions.height;
           // Use queueMicrotask for better performance than setTimeout
@@ -327,9 +308,7 @@ export const useApplyNodeChange = () => {
         }
 
         // Process all changes through handlers
-        const processedChanges = changes.map(change =>
-          processChange(change, nodes)
-        );
+        const processedChanges = changes.map(change => processChange(change, nodes));
 
         // Apply ReactFlow's node changes
         return applyReactFlowNodeChanges(processedChanges, nodes);
@@ -338,12 +317,7 @@ export const useApplyNodeChange = () => {
         return applyReactFlowNodeChanges(changes, nodes);
       }
     },
-    [
-      applyHelperLines,
-      processChange,
-      setHelperLineHorizontal,
-      setHelperLineVertical,
-    ]
+    [applyHelperLines, processChange, setHelperLineHorizontal, setHelperLineVertical]
   );
 
   return {

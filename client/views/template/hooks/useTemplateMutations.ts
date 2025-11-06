@@ -21,66 +21,51 @@ export const useTemplateMutations = () => {
   }, []);
 
   // Update template mutation
-  const [updateTemplateMutation] = useMutation(
-    TemplateDocuments.updateTemplateMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.updateTemplate) return;
-        evictTemplateQueries(cache);
-        cache.gc();
-      },
-    }
-  );
+  const [updateTemplateMutation] = useMutation(TemplateDocuments.updateTemplateMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.updateTemplate) return;
+      evictTemplateQueries(cache);
+      cache.gc();
+    },
+  });
 
   // Create template mutation
-  const [createTemplateMutation] = useMutation(
-    TemplateDocuments.createTemplateQueryDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.createTemplate) return;
-        evictTemplateQueries(cache);
-        cache.gc();
-      },
-    }
-  );
+  const [createTemplateMutation] = useMutation(TemplateDocuments.createTemplateQueryDocument, {
+    update(cache, { data }) {
+      if (!data?.createTemplate) return;
+      evictTemplateQueries(cache);
+      cache.gc();
+    },
+  });
 
   // Delete template mutation
-  const [deleteTemplateMutation] = useMutation(
-    TemplateDocuments.deleteTemplateMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.deleteTemplate) return;
-        evictTemplateQueries(cache);
-        cache.gc();
-      },
-    }
-  );
+  const [deleteTemplateMutation] = useMutation(TemplateDocuments.deleteTemplateMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.deleteTemplate) return;
+      evictTemplateQueries(cache);
+      cache.gc();
+    },
+  });
 
   // Suspend template mutation
-  const [suspendTemplateMutation] = useMutation(
-    TemplateDocuments.suspendTemplateMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.suspendTemplate) return;
-        evictTemplateQueries(cache);
-        cache.evict({ id: "ROOT_QUERY", fieldName: "suspendedTemplates" });
-        cache.gc();
-      },
-    }
-  );
+  const [suspendTemplateMutation] = useMutation(TemplateDocuments.suspendTemplateMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.suspendTemplate) return;
+      evictTemplateQueries(cache);
+      cache.evict({ id: "ROOT_QUERY", fieldName: "suspendedTemplates" });
+      cache.gc();
+    },
+  });
 
   // Unsuspend template mutation
-  const [unsuspendTemplateMutation] = useMutation(
-    TemplateDocuments.unsuspendTemplateMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.unsuspendTemplate) return;
-        evictTemplateQueries(cache);
-        cache.evict({ id: "ROOT_QUERY", fieldName: "suspendedTemplates" });
-        cache.gc();
-      },
-    }
-  );
+  const [unsuspendTemplateMutation] = useMutation(TemplateDocuments.unsuspendTemplateMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.unsuspendTemplate) return;
+      evictTemplateQueries(cache);
+      cache.evict({ id: "ROOT_QUERY", fieldName: "suspendedTemplates" });
+      cache.gc();
+    },
+  });
 
   return React.useMemo(
     () => ({

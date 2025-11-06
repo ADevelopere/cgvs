@@ -14,14 +14,8 @@ export interface EditorToggleProps {
 /**
  * Toggle component for switching between ReactFlow and PDFMe editors
  */
-export const EditorToggle: React.FC<EditorToggleProps> = ({
-  activeEditor,
-  onToggle,
-}) => {
-  const handleChange = (
-    _event: React.MouseEvent<HTMLElement>,
-    newEditor: EditorType | null
-  ) => {
+export const EditorToggle: React.FC<EditorToggleProps> = ({ activeEditor, onToggle }) => {
+  const handleChange = (_event: React.MouseEvent<HTMLElement>, newEditor: EditorType | null) => {
     if (newEditor !== null) {
       onToggle(newEditor);
     }
@@ -39,13 +33,7 @@ export const EditorToggle: React.FC<EditorToggleProps> = ({
         backgroundColor: "background.paper",
       }}
     >
-      <ToggleButtonGroup
-        value={activeEditor}
-        exclusive
-        onChange={handleChange}
-        aria-label="editor type"
-        size="small"
-      >
+      <ToggleButtonGroup value={activeEditor} exclusive onChange={handleChange} aria-label="editor type" size="small">
         <ToggleButton value="reactflow" aria-label="ReactFlow editor">
           <ReactFlowIcon sx={{ mr: 1 }} />
           ReactFlow Editor

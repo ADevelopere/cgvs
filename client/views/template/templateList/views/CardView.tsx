@@ -1,15 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  Grid,
-  Card,
-  CardMedia,
-  CardContent,
-  CardActions,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Grid, Card, CardMedia, CardContent, CardActions, Typography, Button } from "@mui/material";
 import Image from "next/image";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useAppTheme } from "@/client/contexts";
@@ -25,12 +17,7 @@ interface CardViewProps {
   onImageError: (templateId: number) => void;
 }
 
-const CardView: React.FC<CardViewProps> = ({
-  templates,
-  manageTemplate,
-  failedImages,
-  onImageError,
-}) => {
+const CardView: React.FC<CardViewProps> = ({ templates, manageTemplate, failedImages, onImageError }) => {
   const { templateCategoryTranslations: strings } = useAppTranslation();
   const { isDark } = useAppTheme();
 
@@ -83,22 +70,13 @@ const CardView: React.FC<CardViewProps> = ({
                 <Typography variant="body2" color="text.secondary">
                   {template.description}
                 </Typography>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ mt: 1, display: "block" }}
-                  gutterBottom
-                >
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }} gutterBottom>
                   {strings.createdLabel}
                   {formatDate(template.createdAt)}
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button
-                  size="small"
-                  startIcon={<SettingsIcon />}
-                  onClick={() => manageTemplate(template.id)}
-                >
+                <Button size="small" startIcon={<SettingsIcon />} onClick={() => manageTemplate(template.id)}>
                   {strings.manage}
                 </Button>
               </CardActions>

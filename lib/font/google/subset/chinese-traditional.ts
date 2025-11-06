@@ -5,13 +5,7 @@ const data: GoogleFontItem[] = [
   {
     family: "Cactus Classical Serif",
     variants: ["regular"],
-    subsets: [
-      "chinese-traditional",
-      "cyrillic",
-      "latin",
-      "latin-ext",
-      "vietnamese",
-    ],
+    subsets: ["chinese-traditional", "cyrillic", "latin", "latin-ext", "vietnamese"],
     version: "v13",
     lastModified: "2025-07-16",
     files: {
@@ -25,14 +19,7 @@ const data: GoogleFontItem[] = [
   {
     family: "Chiron GoRound TC",
     variants: ["200", "300", "regular", "500", "600", "700", "800", "900"],
-    subsets: [
-      "chinese-traditional",
-      "cyrillic",
-      "cyrillic-ext",
-      "latin",
-      "latin-ext",
-      "vietnamese",
-    ],
+    subsets: ["chinese-traditional", "cyrillic", "cyrillic-ext", "latin", "latin-ext", "vietnamese"],
     version: "v2",
     lastModified: "2025-08-26",
     files: {
@@ -91,28 +78,19 @@ const data: GoogleFontItem[] = [
     version: "v3",
     lastModified: "2025-08-26",
     files: {
-      "200":
-        "https://fonts.gstatic.com/s/chironheihk/v3/wXK-E3MSr44vpVKPvzqVJaxhp3w7QQhPNY163lLtr18MkTEyjPI0.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/chironheihk/v3/wXK-E3MSr44vpVKPvzqVJaxhp3w7QQhPNY163lIzr18MkTEyjPI0.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/chironheihk/v3/wXK-E3MSr44vpVKPvzqVJaxhp3w7QQhPNY163lJfr18MkTEyjPI0.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/chironheihk/v3/wXK-E3MSr44vpVKPvzqVJaxhp3w7QQhPNY163lKzqF8MkTEyjPI0.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/chironheihk/v3/wXK-E3MSr44vpVKPvzqVJaxhp3w7QQhPNY163lKKqF8MkTEyjPI0.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/chironheihk/v3/wXK-E3MSr44vpVKPvzqVJaxhp3w7QQhPNY163lLtqF8MkTEyjPI0.ttf",
-      "900":
-        "https://fonts.gstatic.com/s/chironheihk/v3/wXK-E3MSr44vpVKPvzqVJaxhp3w7QQhPNY163lLEqF8MkTEyjPI0.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/chironheihk/v3/wXK-E3MSr44vpVKPvzqVJaxhp3w7QQhPNY163lJtr18MkTEyjPI0.ttf",
+      "200": "https://fonts.gstatic.com/s/chironheihk/v3/wXK-E3MSr44vpVKPvzqVJaxhp3w7QQhPNY163lLtr18MkTEyjPI0.ttf",
+      "300": "https://fonts.gstatic.com/s/chironheihk/v3/wXK-E3MSr44vpVKPvzqVJaxhp3w7QQhPNY163lIzr18MkTEyjPI0.ttf",
+      "500": "https://fonts.gstatic.com/s/chironheihk/v3/wXK-E3MSr44vpVKPvzqVJaxhp3w7QQhPNY163lJfr18MkTEyjPI0.ttf",
+      "600": "https://fonts.gstatic.com/s/chironheihk/v3/wXK-E3MSr44vpVKPvzqVJaxhp3w7QQhPNY163lKzqF8MkTEyjPI0.ttf",
+      "700": "https://fonts.gstatic.com/s/chironheihk/v3/wXK-E3MSr44vpVKPvzqVJaxhp3w7QQhPNY163lKKqF8MkTEyjPI0.ttf",
+      "800": "https://fonts.gstatic.com/s/chironheihk/v3/wXK-E3MSr44vpVKPvzqVJaxhp3w7QQhPNY163lLtqF8MkTEyjPI0.ttf",
+      "900": "https://fonts.gstatic.com/s/chironheihk/v3/wXK-E3MSr44vpVKPvzqVJaxhp3w7QQhPNY163lLEqF8MkTEyjPI0.ttf",
+      regular: "https://fonts.gstatic.com/s/chironheihk/v3/wXK-E3MSr44vpVKPvzqVJaxhp3w7QQhPNY163lJtr18MkTEyjPI0.ttf",
       "200italic":
         "https://fonts.gstatic.com/s/chironheihk/v3/wXK8E3MSr44vpVKPvzqVJaxhjXUJvtAmXhfU2Uel7DdPmzUQieI0QjQ.ttf",
       "300italic":
         "https://fonts.gstatic.com/s/chironheihk/v3/wXK8E3MSr44vpVKPvzqVJaxhjXUJvtAmXhfU2Uel7OlPmzUQieI0QjQ.ttf",
-      italic:
-        "https://fonts.gstatic.com/s/chironheihk/v3/wXK8E3MSr44vpVKPvzqVJaxhjXUJvtAmXhfU2Uel7LdPmzUQieI0QjQ.ttf",
+      italic: "https://fonts.gstatic.com/s/chironheihk/v3/wXK8E3MSr44vpVKPvzqVJaxhjXUJvtAmXhfU2Uel7LdPmzUQieI0QjQ.ttf",
       "500italic":
         "https://fonts.gstatic.com/s/chironheihk/v3/wXK8E3MSr44vpVKPvzqVJaxhjXUJvtAmXhfU2Uel7IVPmzUQieI0QjQ.ttf",
       "600italic":
@@ -131,13 +109,7 @@ const data: GoogleFontItem[] = [
   {
     family: "Chocolate Classical Sans",
     variants: ["regular"],
-    subsets: [
-      "chinese-traditional",
-      "cyrillic",
-      "latin",
-      "latin-ext",
-      "vietnamese",
-    ],
+    subsets: ["chinese-traditional", "cyrillic", "latin", "latin-ext", "vietnamese"],
     version: "v14",
     lastModified: "2025-06-25",
     files: {
@@ -151,18 +123,11 @@ const data: GoogleFontItem[] = [
   {
     family: "Huninn",
     variants: ["regular"],
-    subsets: [
-      "chinese-traditional",
-      "cyrillic",
-      "latin",
-      "latin-ext",
-      "vietnamese",
-    ],
+    subsets: ["chinese-traditional", "cyrillic", "latin", "latin-ext", "vietnamese"],
     version: "v2",
     lastModified: "2025-06-12",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/huninn/v2/OpNNnoINg9bQ4xkpjiHQjittXw.ttf",
+      regular: "https://fonts.gstatic.com/s/huninn/v2/OpNNnoINg9bQ4xkpjiHQjittXw.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -175,8 +140,7 @@ const data: GoogleFontItem[] = [
     version: "v7",
     lastModified: "2025-06-25",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/iansui/v7/w8gbH2UoTuUp5bOajSGD1FcXoQ.ttf",
+      regular: "https://fonts.gstatic.com/s/iansui/v7/w8gbH2UoTuUp5bOajSGD1FcXoQ.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",
@@ -198,8 +162,7 @@ const data: GoogleFontItem[] = [
     version: "v1",
     lastModified: "2025-06-12",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/lxgwmarkergothic/v1/Gg8oN4AaXyDVTi_NlS1-xCtMQxY3lToBjuw_cZe26Q.ttf",
+      regular: "https://fonts.gstatic.com/s/lxgwmarkergothic/v1/Gg8oN4AaXyDVTi_NlS1-xCtMQxY3lToBjuw_cZe26Q.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -222,12 +185,9 @@ const data: GoogleFontItem[] = [
     version: "v9",
     lastModified: "2025-06-09",
     files: {
-      "300":
-        "https://fonts.gstatic.com/s/lxgwwenkaimonotc/v9/pxiVyos4iPVgyWx9WtufHnsIf5nkaB0HssKqhvJljXmo2SA.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/lxgwwenkaimonotc/v9/pxiVyos4iPVgyWx9WtufHnsIf5nkaB0HstKthvJljXmo2SA.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/lxgwwenkaimonotc/v9/pxiYyos4iPVgyWx9WtufHnsIf5nkaB0Him6CovpOkXA.ttf",
+      "300": "https://fonts.gstatic.com/s/lxgwwenkaimonotc/v9/pxiVyos4iPVgyWx9WtufHnsIf5nkaB0HssKqhvJljXmo2SA.ttf",
+      "700": "https://fonts.gstatic.com/s/lxgwwenkaimonotc/v9/pxiVyos4iPVgyWx9WtufHnsIf5nkaB0HstKthvJljXmo2SA.ttf",
+      regular: "https://fonts.gstatic.com/s/lxgwwenkaimonotc/v9/pxiYyos4iPVgyWx9WtufHnsIf5nkaB0Him6CovpOkXA.ttf",
     },
     category: "monospace",
     kind: "webfonts#webfont",
@@ -250,12 +210,9 @@ const data: GoogleFontItem[] = [
     version: "v9",
     lastModified: "2025-06-09",
     files: {
-      "300":
-        "https://fonts.gstatic.com/s/lxgwwenkaitc/v9/w8gAH20td8wNsI3f40DmtXZb4_MmBfkpTClICyan.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/lxgwwenkaitc/v9/w8gAH20td8wNsI3f40DmtXZb4_M2AvkpTClICyan.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/lxgwwenkaitc/v9/w8gDH20td8wNsI3f40DmtXZb48uKLd0hZzVB.ttf",
+      "300": "https://fonts.gstatic.com/s/lxgwwenkaitc/v9/w8gAH20td8wNsI3f40DmtXZb4_MmBfkpTClICyan.ttf",
+      "700": "https://fonts.gstatic.com/s/lxgwwenkaitc/v9/w8gAH20td8wNsI3f40DmtXZb4_M2AvkpTClICyan.ttf",
+      regular: "https://fonts.gstatic.com/s/lxgwwenkaitc/v9/w8gDH20td8wNsI3f40DmtXZb48uKLd0hZzVB.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",
@@ -263,45 +220,20 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Noto Sans TC",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
-    subsets: [
-      "chinese-traditional",
-      "cyrillic",
-      "latin",
-      "latin-ext",
-      "vietnamese",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
+    subsets: ["chinese-traditional", "cyrillic", "latin", "latin-ext", "vietnamese"],
     version: "v38",
     lastModified: "2025-09-05",
     files: {
-      "100":
-        "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz76Cz_CpOtma3uNQ.ttf",
-      "200":
-        "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz7yCy_CpOtma3uNQ.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz7_6y_CpOtma3uNQ.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz75Ky_CpOtma3uNQ.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz7361_CpOtma3uNQ.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz70e1_CpOtma3uNQ.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz7yC1_CpOtma3uNQ.ttf",
-      "900":
-        "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz7wm1_CpOtma3uNQ.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz76Cy_CpOtma3uNQ.ttf",
+      "100": "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz76Cz_CpOtma3uNQ.ttf",
+      "200": "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz7yCy_CpOtma3uNQ.ttf",
+      "300": "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz7_6y_CpOtma3uNQ.ttf",
+      "500": "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz75Ky_CpOtma3uNQ.ttf",
+      "600": "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz7361_CpOtma3uNQ.ttf",
+      "700": "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz70e1_CpOtma3uNQ.ttf",
+      "800": "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz7yC1_CpOtma3uNQ.ttf",
+      "900": "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz7wm1_CpOtma3uNQ.ttf",
+      regular: "https://fonts.gstatic.com/s/notosanstc/v38/-nFuOG829Oofr2wohFbTp9ifNAn722rq0MXz76Cy_CpOtma3uNQ.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -310,32 +242,18 @@ const data: GoogleFontItem[] = [
   {
     family: "Noto Serif TC",
     variants: ["200", "300", "regular", "500", "600", "700", "800", "900"],
-    subsets: [
-      "chinese-traditional",
-      "cyrillic",
-      "latin",
-      "latin-ext",
-      "vietnamese",
-    ],
+    subsets: ["chinese-traditional", "cyrillic", "latin", "latin-ext", "vietnamese"],
     version: "v34",
     lastModified: "2025-09-08",
     files: {
-      "200":
-        "https://fonts.gstatic.com/s/notoseriftc/v34/XLYzIZb5bJNDGYxLBibeHZ0BnHwmuanx8cUaGX_aMOpDOWYMr2OM.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/notoseriftc/v34/XLYzIZb5bJNDGYxLBibeHZ0BnHwmuanx8cUaGX8EMOpDOWYMr2OM.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/notoseriftc/v34/XLYzIZb5bJNDGYxLBibeHZ0BnHwmuanx8cUaGX9oMOpDOWYMr2OM.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/notoseriftc/v34/XLYzIZb5bJNDGYxLBibeHZ0BnHwmuanx8cUaGX-EN-pDOWYMr2OM.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/notoseriftc/v34/XLYzIZb5bJNDGYxLBibeHZ0BnHwmuanx8cUaGX-9N-pDOWYMr2OM.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/notoseriftc/v34/XLYzIZb5bJNDGYxLBibeHZ0BnHwmuanx8cUaGX_aN-pDOWYMr2OM.ttf",
-      "900":
-        "https://fonts.gstatic.com/s/notoseriftc/v34/XLYzIZb5bJNDGYxLBibeHZ0BnHwmuanx8cUaGX_zN-pDOWYMr2OM.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/notoseriftc/v34/XLYzIZb5bJNDGYxLBibeHZ0BnHwmuanx8cUaGX9aMOpDOWYMr2OM.ttf",
+      "200": "https://fonts.gstatic.com/s/notoseriftc/v34/XLYzIZb5bJNDGYxLBibeHZ0BnHwmuanx8cUaGX_aMOpDOWYMr2OM.ttf",
+      "300": "https://fonts.gstatic.com/s/notoseriftc/v34/XLYzIZb5bJNDGYxLBibeHZ0BnHwmuanx8cUaGX8EMOpDOWYMr2OM.ttf",
+      "500": "https://fonts.gstatic.com/s/notoseriftc/v34/XLYzIZb5bJNDGYxLBibeHZ0BnHwmuanx8cUaGX9oMOpDOWYMr2OM.ttf",
+      "600": "https://fonts.gstatic.com/s/notoseriftc/v34/XLYzIZb5bJNDGYxLBibeHZ0BnHwmuanx8cUaGX-EN-pDOWYMr2OM.ttf",
+      "700": "https://fonts.gstatic.com/s/notoseriftc/v34/XLYzIZb5bJNDGYxLBibeHZ0BnHwmuanx8cUaGX-9N-pDOWYMr2OM.ttf",
+      "800": "https://fonts.gstatic.com/s/notoseriftc/v34/XLYzIZb5bJNDGYxLBibeHZ0BnHwmuanx8cUaGX_aN-pDOWYMr2OM.ttf",
+      "900": "https://fonts.gstatic.com/s/notoseriftc/v34/XLYzIZb5bJNDGYxLBibeHZ0BnHwmuanx8cUaGX_zN-pDOWYMr2OM.ttf",
+      regular: "https://fonts.gstatic.com/s/notoseriftc/v34/XLYzIZb5bJNDGYxLBibeHZ0BnHwmuanx8cUaGX9aMOpDOWYMr2OM.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",
@@ -348,8 +266,7 @@ const data: GoogleFontItem[] = [
     version: "v1",
     lastModified: "2025-06-25",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/uoqmunthenkhung/v1/Y4GTYa1nVTQLt-D5LoLChg5aJjIjwLL9Th8YYA.ttf",
+      regular: "https://fonts.gstatic.com/s/uoqmunthenkhung/v1/Y4GTYa1nVTQLt-D5LoLChg5aJjIjwLL9Th8YYA.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",
@@ -358,18 +275,11 @@ const data: GoogleFontItem[] = [
   {
     family: "WDXL Lubrifont TC",
     variants: ["regular"],
-    subsets: [
-      "chinese-traditional",
-      "cyrillic",
-      "latin",
-      "latin-ext",
-      "symbols2",
-    ],
+    subsets: ["chinese-traditional", "cyrillic", "latin", "latin-ext", "symbols2"],
     version: "v4",
     lastModified: "2025-06-18",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/wdxllubrifonttc/v4/nKKN-H4mPq1yJurnWXfJE8svQHonWc_-EqxyqaA8.ttf",
+      regular: "https://fonts.gstatic.com/s/wdxllubrifonttc/v4/nKKN-H4mPq1yJurnWXfJE8svQHonWc_-EqxyqaA8.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",

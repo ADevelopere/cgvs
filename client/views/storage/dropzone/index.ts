@@ -7,10 +7,7 @@
  */
 
 export { UploadDropzone, type UploadDropzoneProps } from "./UploadDropzone";
-export {
-  FolderDropTarget,
-  type FolderDropTargetProps,
-} from "./FolderDropTarget";
+export { FolderDropTarget, type FolderDropTargetProps } from "./FolderDropTarget";
 export {
   UploadDropzoneOverlay as DropzoneOverlay,
   type UploadDropzoneOverlayProps as DropzoneOverlayProps,

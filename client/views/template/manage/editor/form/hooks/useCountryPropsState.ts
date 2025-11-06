@@ -31,16 +31,13 @@ export type UseCountryPropsStateReturn = {
 /**
  * Extract countryProps state from CountryElement
  */
-function extractCountryPropsState(
-  element: GQL.CertificateElementUnion
-): CountryPropsFormState | null {
+function extractCountryPropsState(element: GQL.CertificateElementUnion): CountryPropsFormState | null {
   if (element.__typename !== "CountryElement" || !element.countryProps) {
     return null;
   }
 
   return {
-    representation: element.countryProps
-      .representation as GQL.CountryRepresentation,
+    representation: element.countryProps.representation as GQL.CountryRepresentation,
   };
 }
 
@@ -59,28 +56,21 @@ function toUpdateInput(
   };
 }
 
-export function useCountryPropsState(
-  params: UseCountryPropsStateParams
-): UseCountryPropsStateReturn {
+export function useCountryPropsState(params: UseCountryPropsStateParams): UseCountryPropsStateReturn {
   const { templateId, elements } = params;
   const notifications = useNotifications();
-  const { errorTranslations: errorStrings, certificateElementsTranslations } =
-    useAppTranslation();
+  const { errorTranslations: errorStrings, certificateElementsTranslations } = useAppTranslation();
 
-  const [updateCountryElementSpecPropsMutation] = useMutation(
-    updateCountryElementSpecPropsMutationDocument
-  );
+  const [updateCountryElementSpecPropsMutation] = useMutation(updateCountryElementSpecPropsMutationDocument);
 
   // Get validator with translations
   const validator = React.useMemo(
     () =>
       validateCountryElementCountryProps({
         representationRequired:
-          certificateElementsTranslations?.countryElement
-            ?.representationRequired || "Representation is required",
+          certificateElementsTranslations?.countryElement?.representationRequired || "Representation is required",
         representationInvalid:
-          certificateElementsTranslations?.countryElement
-            ?.representationInvalid || "Invalid representation",
+          certificateElementsTranslations?.countryElement?.representationInvalid || "Invalid representation",
       }),
     [certificateElementsTranslations]
   );
@@ -96,8 +86,7 @@ export function useCountryPropsState(
           },
         });
       } catch (error) {
-        const errorMessage =
-          errorStrings?.updateFailed || "Failed to update country properties";
+        const errorMessage = errorStrings?.updateFailed || "Failed to update country properties";
         logger.error("useCountryPropsState: Mutation failed", {
           elementId,
           error,
@@ -152,10 +141,7 @@ export const useCountryProps = (params: UseCountryPropsParams) => {
 
   // Get state or initialize if not present (only initialize once)
   const countryProps: CountryPropsFormState = React.useMemo(() => {
-    return (
-      countryPropsStates.get(params.elementId) ??
-      initCountryPropsState(params.elementId)
-    );
+    return countryPropsStates.get(params.elementId) ?? initCountryPropsState(params.elementId);
   }, [countryPropsStates, params.elementId, initCountryPropsState]);
 
   const updateCountryProps: UpdateCountryPropsFn = React.useCallback(

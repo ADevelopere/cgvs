@@ -47,11 +47,7 @@ export type Column<TRowData> = BaseColumnProps & {
 /**
  * Editable column with inline editing support
  */
-export type EditableColumn<
-  TRowData,
-  TValue,
-  TRowId extends string | number = string | number,
-> = BaseColumnProps & {
+export type EditableColumn<TRowData, TValue, TRowId extends string | number = string | number> = BaseColumnProps & {
   type: "editable";
 
   /**
@@ -110,18 +106,14 @@ export type EditableColumn<
  * Union type representing any column in a table
  * TValue defaults to any field type in TRowData
  */
-export type AnyColumn<
-  TRowData,
-  TRowId extends string | number = string | number,
-> = Column<TRowData> | EditableColumn<TRowData, unknown, TRowId>;
+export type AnyColumn<TRowData, TRowId extends string | number = string | number> =
+  | Column<TRowData>
+  | EditableColumn<TRowData, unknown, TRowId>;
 
 /**
  * Type guard to check if column is editable
  */
-export function isEditableColumn<
-  TRowData,
-  TRowId extends string | number = string | number,
->(
+export function isEditableColumn<TRowData, TRowId extends string | number = string | number>(
   column: AnyColumn<TRowData, TRowId>
 ): column is EditableColumn<TRowData, unknown, TRowId> {
   return column.type === "editable";

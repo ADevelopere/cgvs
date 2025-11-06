@@ -8,16 +8,10 @@ export type TemplateConfig = Omit<TemplateConfigEntity, "language"> & {
   language: AppLanguage;
 };
 
-export type TemplateConfigInput = Omit<
-  TemplateConfigInsert,
-  "id" | "language" | "createdAt" | "updatedAt"
-> & {
+export type TemplateConfigInput = Omit<TemplateConfigInsert, "id" | "language" | "createdAt" | "updatedAt"> & {
   language: AppLanguage;
 };
 
-export type TemplateConfigUpdateInput = Omit<
-  TemplateConfigInput,
-  "templateId"
-> & {
+export type TemplateConfigUpdateInput = Omit<TemplateConfigInput, "templateId"> & {
   id: number;
 };

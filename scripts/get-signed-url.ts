@@ -82,9 +82,7 @@ function getFileSize(filePath: string): number {
  * Get MIME type from file extension using shared utility
  */
 function getContentTypeFromFileName(fileName: string): string {
-  const extension = fileName
-    .substring(fileName.lastIndexOf(".") + 1)
-    .toLowerCase();
+  const extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
 
   return extToMime[extension] || "text/plain"; // Default fallback
 }
@@ -103,11 +101,7 @@ function hexToBase64(hex: string): string {
   const buffer = Buffer.from(hex, "hex");
   return buffer.toString("base64");
 }
-async function generateSignedUrl(
-  filePath: string,
-  uploadPath: string,
-  contentType?: string
-): Promise<string> {
+async function generateSignedUrl(filePath: string, uploadPath: string, contentType?: string): Promise<string> {
   try {
     // Get file info
     const fileSize = getFileSize(filePath);
@@ -115,9 +109,7 @@ async function generateSignedUrl(
     const fileName = filePath.split("/").pop() || "unknown";
 
     // Determine content type from file extension (matching server logic)
-    const contentTypeEnum = contentType
-      ? mapContentType(contentType)
-      : getContentTypeFromFileName(fileName);
+    const contentTypeEnum = contentType ? mapContentType(contentType) : getContentTypeFromFileName(fileName);
 
     // Convert MD5 to base64 format for Google Cloud Storage
     const contentMd5Base64 = hexToBase64(contentMd5);
@@ -173,15 +165,9 @@ async function main() {
   const args = process.argv.slice(2);
 
   if (args.length === 0) {
-    testLogger.error(
-      "Usage: node get-signed-url.ts <file-path> <upload-path> [content-type]"
-    );
-    testLogger.error(
-      "Example: node get-signed-url.ts /path/to/local/file.jpg public/uploads/file.jpg"
-    );
-    testLogger.error(
-      "Note: Content type is automatically detected from file extension if not provided"
-    );
+    testLogger.error("Usage: node get-signed-url.ts <file-path> <upload-path> [content-type]");
+    testLogger.error("Example: node get-signed-url.ts /path/to/local/file.jpg public/uploads/file.jpg");
+    testLogger.error("Note: Content type is automatically detected from file extension if not provided");
     process.exit(1);
   }
 
@@ -190,19 +176,13 @@ async function main() {
   const contentType = args[2]; // Optional - will auto-detect if not provided
 
   try {
-    const signedUrl = await generateSignedUrl(
-      filePath,
-      uploadPath,
-      contentType
-    );
+    const signedUrl = await generateSignedUrl(filePath, uploadPath, contentType);
 
     // Get file info for display
     const fileSize = getFileSize(filePath);
     const contentMd5 = await generateMD5Hash(filePath);
     const fileName = filePath.split("/").pop() || "unknown";
-    const contentTypeEnum = contentType
-      ? mapContentType(contentType)
-      : getContentTypeFromFileName(fileName);
+    const contentTypeEnum = contentType ? mapContentType(contentType) : getContentTypeFromFileName(fileName);
     const md5Base64 = hexToBase64(contentMd5);
 
     testLogger.log("\n" + "=".repeat(80));
@@ -224,9 +204,7 @@ async function main() {
       `2. curl: curl -X PUT -H 'Content-Type: image/jpeg' -H 'Content-MD5: ${md5Base64}' --data-binary @file.jpg <signed-url>`
     );
     testLogger.log("");
-    testLogger.log(
-      "Make sure to set the correct Content-Type and Content-MD5 headers!"
-    );
+    testLogger.log("Make sure to set the correct Content-Type and Content-MD5 headers!");
     testLogger.log("3. Any HTTP client");
   } catch (error) {
     testLogger.error("Error:", error);

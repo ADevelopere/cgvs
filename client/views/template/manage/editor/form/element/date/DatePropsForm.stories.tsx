@@ -1,10 +1,7 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { DatePropsForm } from "./DatePropsForm";
-import {
-  CalendarType,
-  DateTransformationType,
-} from "@/client/graphql/generated/gql/graphql";
+import { CalendarType, DateTransformationType } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof DatePropsForm> = {
   title: "Template/Editor/Form/Element/Date/DatePropsForm",

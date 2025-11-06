@@ -1,21 +1,7 @@
 "use client";
 
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import {
-  ApolloClient,
-  InMemoryCache,
-  HttpLink,
-  ApolloLink,
-  Observable,
-} from "@apollo/client";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { ApolloClient, InMemoryCache, HttpLink, ApolloLink, Observable } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
 import { ErrorLink } from "@apollo/client/link/error";
 import { useNotifications } from "@toolpad/core/useNotifications";
@@ -71,24 +57,19 @@ export type NetworkConnectivityContextType = {
   clearAuthData: () => void;
 };
 
-const NetworkConnectivityContext = createContext<
-  NetworkConnectivityContextType | undefined
->(undefined);
+const NetworkConnectivityContext = createContext<NetworkConnectivityContextType | undefined>(undefined);
 
 export const useNetworkConnectivity = (): NetworkConnectivityContextType => {
   const context = useContext(NetworkConnectivityContext);
   if (!context) {
-    throw new Error(
-      "useNetworkConnectivity must be used within a NetworkConnectivityProvider"
-    );
+    throw new Error("useNetworkConnectivity must be used within a NetworkConnectivityProvider");
   }
   return context;
 };
 
 // Convenience functions for global access to auth token management
 export const useAuthToken = () => {
-  const { authToken, updateAuthToken, clearAuthData } =
-    useNetworkConnectivity();
+  const { authToken, updateAuthToken, clearAuthData } = useNetworkConnectivity();
   return {
     authToken,
     updateAuthToken,
@@ -151,10 +132,7 @@ export const AppApolloProvider: React.FC<{
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(
-        () => controller.abort(),
-        CONNECTIVITY_CHECK_TIMEOUT
-      );
+      const timeoutId = setTimeout(() => controller.abort(), CONNECTIVITY_CHECK_TIMEOUT);
 
       const response = await fetch(CONNECTIVITY_CHECK_URL, {
         method: "HEAD", // Use HEAD for faster response (no body)
@@ -208,26 +186,23 @@ export const AppApolloProvider: React.FC<{
 
   const notifyIfDisconnected = useCallback(() => {
     if (!isConnectedRef.current) {
-      notifications.show(
-        `${strings.serverConnectionLost}. ${strings.checkNetworkConnection}.`,
-        {
-          severity: "error",
-          autoHideDuration: 5000, // Auto-hide after 5 seconds for less spam
-          actionText: strings.retry,
-          onAction: () => {
-            // Reset reconnection attempts on manual retry
-            reconnectAttemptRef.current = 0;
-            checkConnectivity().then(connected => {
-              if (connected) {
-                notifications.show(strings.connectionRestored, {
-                  severity: "success",
-                  autoHideDuration: 3000,
-                });
-              }
-            });
-          },
-        }
-      );
+      notifications.show(`${strings.serverConnectionLost}. ${strings.checkNetworkConnection}.`, {
+        severity: "error",
+        autoHideDuration: 5000, // Auto-hide after 5 seconds for less spam
+        actionText: strings.retry,
+        onAction: () => {
+          // Reset reconnection attempts on manual retry
+          reconnectAttemptRef.current = 0;
+          checkConnectivity().then(connected => {
+            if (connected) {
+              notifications.show(strings.connectionRestored, {
+                severity: "success",
+                autoHideDuration: 3000,
+              });
+            }
+          });
+        },
+      });
     }
   }, [notifications, checkConnectivity, strings]);
 
@@ -338,17 +313,13 @@ export const AppApolloProvider: React.FC<{
       if (isNetworkError(error)) {
         const wasConnected = isConnectedRef.current;
 
-        logger.warn(
-          `[Error Link] Network error detected. wasConnected=${wasConnected}`
-        );
+        logger.warn(`[Error Link] Network error detected. wasConnected=${wasConnected}`);
 
         setIsConnected(false);
         isConnectedRef.current = false;
 
         if (wasConnected) {
-          logger.info(
-            "[Error Link] Connection lost (was previously connected)"
-          );
+          logger.info("[Error Link] Connection lost (was previously connected)");
         }
 
         notifyIfDisconnected();
@@ -359,13 +330,7 @@ export const AppApolloProvider: React.FC<{
 
     // Simple client with connectivity check
     const client = new ApolloClient({
-      link: ApolloLink.from([
-        errorLink,
-        connectivityCheckLink,
-        authLink,
-        persistedQueryLink,
-        httpLink,
-      ]),
+      link: ApolloLink.from([errorLink, connectivityCheckLink, authLink, persistedQueryLink, httpLink]),
       cache: new InMemoryCache(),
       defaultOptions: {
         watchQuery: {
@@ -401,17 +366,13 @@ export const AppApolloProvider: React.FC<{
 
   // Automatic reconnection with progressive delays
   useEffect(() => {
-    logger.debug(
-      `[Reconnect Effect] Running. isConnected=${isConnected}, initialCheckDone=${initialCheckDone}`
-    );
+    logger.debug(`[Reconnect Effect] Running. isConnected=${isConnected}, initialCheckDone=${initialCheckDone}`);
 
     // Only attempt reconnection if we're disconnected and initial check is done
     if (isConnected || !initialCheckDone) {
       // Clear any pending reconnection timeout if we're connected
       if (reconnectTimeoutRef.current) {
-        logger.debug(
-          "[Reconnect Effect] Clearing timeout (connected or not initialized)"
-        );
+        logger.debug("[Reconnect Effect] Clearing timeout (connected or not initialized)");
         clearTimeout(reconnectTimeoutRef.current);
         reconnectTimeoutRef.current = null;
       }
@@ -425,9 +386,7 @@ export const AppApolloProvider: React.FC<{
       // Get the delay for the current attempt
       const delay = getReconnectionDelay(reconnectAttemptRef.current);
 
-      logger.debug(
-        `[Reconnect] Scheduling attempt #${reconnectAttemptRef.current}, delay=${delay}ms`
-      );
+      logger.debug(`[Reconnect] Scheduling attempt #${reconnectAttemptRef.current}, delay=${delay}ms`);
 
       if (delay === null) {
         logger.warn("[Reconnect] Max reconnection attempts reached, stopping");
@@ -436,9 +395,7 @@ export const AppApolloProvider: React.FC<{
 
       // Schedule the reconnection attempt
       reconnectTimeoutRef.current = setTimeout(() => {
-        logger.info(
-          `[Reconnect] Executing attempt #${reconnectAttemptRef.current}`
-        );
+        logger.info(`[Reconnect] Executing attempt #${reconnectAttemptRef.current}`);
         checkConnectivity().then(connected => {
           logger.debug(`[Reconnect] Attempt result: connected=${connected}`);
           if (!connected) {
@@ -532,13 +489,7 @@ export const AppApolloProvider: React.FC<{
       checkConnectivity();
     };
 
-    return (
-      <InitializingUI
-        error={hasError}
-        onRetry={handleManualRetry}
-        strings={hasError ? strings : undefined}
-      />
-    );
+    return <InitializingUI error={hasError} onRetry={handleManualRetry} strings={hasError ? strings : undefined} />;
   }
 
   return (

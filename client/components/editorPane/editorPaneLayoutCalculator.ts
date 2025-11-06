@@ -14,21 +14,14 @@ export const RESIZER_WIDTH = 4;
 /**
  * Helper to calculate number of visible resizers
  */
-export const getVisibleResizerCount = (
-  firstVisible: boolean,
-  thirdVisible: boolean
-): number => {
+export const getVisibleResizerCount = (firstVisible: boolean, thirdVisible: boolean): number => {
   return (firstVisible ? 1 : 0) + (thirdVisible ? 1 : 0);
 };
 
 /**
  * Calculate available width for panes (excluding resizers)
  */
-export const getAvailableWidth = (
-  totalWidth: number,
-  firstVisible: boolean,
-  thirdVisible: boolean
-): number => {
+export const getAvailableWidth = (totalWidth: number, firstVisible: boolean, thirdVisible: boolean): number => {
   const resizerCount = getVisibleResizerCount(firstVisible, thirdVisible);
   return totalWidth - resizerCount * RESIZER_WIDTH;
 };
@@ -48,11 +41,7 @@ export const calculateInitialLayout = (
   },
   currentState?: PaneState
 ): PaneState => {
-  const availableWidth = getAvailableWidth(
-    containerWidth,
-    config.firstVisible,
-    config.thirdVisible
-  );
+  const availableWidth = getAvailableWidth(containerWidth, config.firstVisible, config.thirdVisible);
 
   // If we have a current state with valid sizes, scale them proportionally
   if (currentState && currentState.sizes.some(s => s > 0)) {
@@ -75,17 +64,9 @@ export const calculateInitialLayout = (
 
   return {
     sizes: [
-      config.firstVisible
-        ? config.firstCollapsed
-          ? COLLAPSED_PANE_WIDTH
-          : Math.max(MIN_PANE_SIZE, sizePerPane)
-        : 0,
+      config.firstVisible ? (config.firstCollapsed ? COLLAPSED_PANE_WIDTH : Math.max(MIN_PANE_SIZE, sizePerPane)) : 0,
       Math.max(MIN_PANE_SIZE, sizePerPane),
-      config.thirdVisible
-        ? config.thirdCollapsed
-          ? COLLAPSED_PANE_WIDTH
-          : Math.max(MIN_PANE_SIZE, sizePerPane)
-        : 0,
+      config.thirdVisible ? (config.thirdCollapsed ? COLLAPSED_PANE_WIDTH : Math.max(MIN_PANE_SIZE, sizePerPane)) : 0,
     ],
     visibility: {
       first: config.firstVisible,
@@ -109,32 +90,17 @@ export const calculateInitialLayout = (
 /**
  * Scale existing layout proportionally to new container width
  */
-export const scaleLayout = (
-  newWidth: number,
-  currentState: PaneState
-): PaneState => {
-  const availableWidth = getAvailableWidth(
-    newWidth,
-    currentState.visibility.first,
-    currentState.visibility.third
-  );
+export const scaleLayout = (newWidth: number, currentState: PaneState): PaneState => {
+  const availableWidth = getAvailableWidth(newWidth, currentState.visibility.first, currentState.visibility.third);
 
   const collapsedWidth =
-    (currentState.visibility.first && currentState.collapsed.first
-      ? COLLAPSED_PANE_WIDTH
-      : 0) +
-    (currentState.visibility.third && currentState.collapsed.third
-      ? COLLAPSED_PANE_WIDTH
-      : 0);
+    (currentState.visibility.first && currentState.collapsed.first ? COLLAPSED_PANE_WIDTH : 0) +
+    (currentState.visibility.third && currentState.collapsed.third ? COLLAPSED_PANE_WIDTH : 0);
 
   const currentNonCollapsedSize =
-    (currentState.visibility.first && !currentState.collapsed.first
-      ? currentState.sizes[0]
-      : 0) +
+    (currentState.visibility.first && !currentState.collapsed.first ? currentState.sizes[0] : 0) +
     currentState.sizes[1] +
-    (currentState.visibility.third && !currentState.collapsed.third
-      ? currentState.sizes[2]
-      : 0);
+    (currentState.visibility.third && !currentState.collapsed.third ? currentState.sizes[2] : 0);
 
   const targetNonCollapsedWidth = availableWidth - collapsedWidth;
 
@@ -146,10 +112,8 @@ export const scaleLayout = (
 
   const newSizes = currentState.sizes.map((size, index) => {
     // Keep collapsed panes at fixed width
-    if (index === 0 && currentState.collapsed.first)
-      return COLLAPSED_PANE_WIDTH;
-    if (index === 2 && currentState.collapsed.third)
-      return COLLAPSED_PANE_WIDTH;
+    if (index === 0 && currentState.collapsed.first) return COLLAPSED_PANE_WIDTH;
+    if (index === 2 && currentState.collapsed.third) return COLLAPSED_PANE_WIDTH;
 
     // Hide invisible panes
     if (index === 0 && !currentState.visibility.first) return 0;
@@ -167,22 +131,13 @@ export const scaleLayout = (
 /**
  * Toggle collapse state for a pane
  */
-export const togglePaneCollapse = (
-  pane: "first" | "third",
-  currentState: PaneState
-): PaneState => {
+export const togglePaneCollapse = (pane: "first" | "third", currentState: PaneState): PaneState => {
   const paneIndex = pane === "first" ? 0 : 2;
-  const isCurrentlyCollapsed =
-    pane === "first"
-      ? currentState.collapsed.first
-      : currentState.collapsed.third;
+  const isCurrentlyCollapsed = pane === "first" ? currentState.collapsed.first : currentState.collapsed.third;
 
   if (isCurrentlyCollapsed) {
     // Uncollapse: restore from preCollapseSizes
-    const sizeToRestore =
-      pane === "first"
-        ? currentState.preCollapseSizes.first
-        : currentState.preCollapseSizes.third;
+    const sizeToRestore = pane === "first" ? currentState.preCollapseSizes.first : currentState.preCollapseSizes.third;
 
     if (!sizeToRestore || sizeToRestore <= COLLAPSED_PANE_WIDTH) {
       return currentState; // Nothing to restore
@@ -255,11 +210,7 @@ export const togglePaneCollapse = (
 /**
  * Handle manual resize by dragging a resizer
  */
-export const handleManualResize = (
-  resizerIndex: 1 | 2,
-  delta: number,
-  currentState: PaneState
-): PaneState => {
+export const handleManualResize = (resizerIndex: 1 | 2, delta: number, currentState: PaneState): PaneState => {
   const newSizes = [...currentState.sizes];
 
   if (resizerIndex === 1) {
@@ -291,16 +242,9 @@ export const handleManualResize = (
 /**
  * Set visibility for a pane
  */
-export const setPaneVisibility = (
-  pane: "first" | "third",
-  visible: boolean,
-  currentState: PaneState
-): PaneState => {
+export const setPaneVisibility = (pane: "first" | "third", visible: boolean, currentState: PaneState): PaneState => {
   const paneIndex = pane === "first" ? 0 : 2;
-  const isCurrentlyVisible =
-    pane === "first"
-      ? currentState.visibility.first
-      : currentState.visibility.third;
+  const isCurrentlyVisible = pane === "first" ? currentState.visibility.first : currentState.visibility.third;
 
   if (isCurrentlyVisible === visible) {
     return currentState; // No change

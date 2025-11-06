@@ -34,9 +34,7 @@ export namespace QRCodeElementRepository {
    * 3. Insert into qr_code_element
    * 4. Return full output
    */
-  export const create = async (
-    input: QRCodeElementInput
-  ): Promise<QRCodeElementOutput> => {
+  export const create = async (input: QRCodeElementInput): Promise<QRCodeElementOutput> => {
     // 1. Validate input
     await QRCodeElementUtils.validateInput(input);
 
@@ -46,10 +44,7 @@ export namespace QRCodeElementRepository {
     };
 
     // 2. Insert into certificate_element (base table)
-    const [baseElement] = await db
-      .insert(certificateElement)
-      .values(baseInput)
-      .returning();
+    const baseElement = await ElementRepository.createInternal(baseInput);
 
     // 3. Insert into qr_code_element (type-specific table)
     const [newQRCodeElement] = await db
@@ -62,16 +57,13 @@ export namespace QRCodeElementRepository {
       })
       .returning();
 
-    logger.info(
-      `QR_CODE element created: ${baseElement.name} (ID: ${baseElement.id})`
-    );
+    logger.info(`QR_CODE element created: ${baseElement.name} (ID: ${baseElement.id})`);
 
     return {
       base: baseElement,
       qrCodeProps: {
         ...newQRCodeElement,
-        errorCorrection:
-          newQRCodeElement.errorCorrection as QRCodeErrorCorrection,
+        errorCorrection: newQRCodeElement.errorCorrection as QRCodeErrorCorrection,
       },
     };
   };
@@ -89,41 +81,31 @@ export namespace QRCodeElementRepository {
    * 4. Update qr_code_element (type-specific table)
    * 5. Return updated element
    */
-  export const update = async (
-    input: QRCodeElementUpdateInput
-  ): Promise<QRCodeElementOutput> => {
+  export const update = async (input: QRCodeElementUpdateInput): Promise<QRCodeElementOutput> => {
     // 1. Load existing element
     const existing = await loadByIdOrThrow(input.id);
 
     // 2. Validate type
     if (existing.base.type !== ElementType.QR_CODE) {
-      throw new Error(
-        `Element ${input.id} is ${existing.base.type}, not QR_CODE. Use correct repository.`
-      );
+      throw new Error(`Element ${input.id} is ${existing.base.type}, not QR_CODE. Use correct repository.`);
     }
 
     // 3. Validate update input
     await QRCodeElementUtils.validateInput(input);
 
     // 4. Update certificate_element (base table)
-    const updatedBaseElement = await ElementRepository.updateBaseElement(
-      { ...input.base, id: input.id },
-      true
-    );
+    const updatedBaseElement = await ElementRepository.updateBaseElement({ ...input.base, id: input.id }, true);
 
     // 5. Update qr_code_element (type-specific table)
     const updatedQRCodeElement = await updateQRCodeElementSpecific(input);
 
-    logger.info(
-      `QR_CODE element updated: ${updatedBaseElement.name} (ID: ${input.id})`
-    );
+    logger.info(`QR_CODE element updated: ${updatedBaseElement.name} (ID: ${input.id})`);
 
     return {
       base: updatedBaseElement,
       qrCodeProps: {
         ...updatedQRCodeElement,
-        errorCorrection:
-          updatedQRCodeElement.errorCorrection as QRCodeErrorCorrection,
+        errorCorrection: updatedQRCodeElement.errorCorrection as QRCodeErrorCorrection,
       },
     };
   };
@@ -136,17 +118,12 @@ export namespace QRCodeElementRepository {
    * Load QR_CODE element by ID with all joined data
    * Joins: certificate_element + qr_code_element
    */
-  export const loadById = async (
-    id: number
-  ): Promise<QRCodeElementOutput | null> => {
+  export const loadById = async (id: number): Promise<QRCodeElementOutput | null> => {
     // Join both tables
     const result = await db
       .select()
       .from(certificateElement)
-      .innerJoin(
-        qrCodeElement,
-        eq(qrCodeElement.elementId, certificateElement.id)
-      )
+      .innerJoin(qrCodeElement, eq(qrCodeElement.elementId, certificateElement.id))
       .where(eq(certificateElement.id, id))
       .limit(1);
 
@@ -158,26 +135,16 @@ export namespace QRCodeElementRepository {
       base: row.certificate_element,
       qrCodeProps: {
         ...row.qr_code_element,
-        errorCorrection: row.qr_code_element
-          .errorCorrection as QRCodeErrorCorrection,
+        errorCorrection: row.qr_code_element.errorCorrection as QRCodeErrorCorrection,
       },
     };
   };
 
-  export const loadByBase = async (
-    base: CertificateElementEntity
-  ): Promise<QRCodeElementOutput> => {
+  export const loadByBase = async (base: CertificateElementEntity): Promise<QRCodeElementOutput> => {
     // Join both tables
-    const result = await db
-      .select()
-      .from(qrCodeElement)
-      .where(eq(qrCodeElement.elementId, base.id))
-      .limit(1);
+    const result = await db.select().from(qrCodeElement).where(eq(qrCodeElement.elementId, base.id)).limit(1);
 
-    if (result.length === 0)
-      throw new Error(
-        `QR_CODE element with base ID ${base.id} does not exist.`
-      );
+    if (result.length === 0) throw new Error(`QR_CODE element with base ID ${base.id} does not exist.`);
 
     const row = result[0];
 
@@ -193,9 +160,7 @@ export namespace QRCodeElementRepository {
   /**
    * Load QR_CODE element by ID or throw error
    */
-  export const loadByIdOrThrow = async (
-    id: number
-  ): Promise<QRCodeElementOutput> => {
+  export const loadByIdOrThrow = async (id: number): Promise<QRCodeElementOutput> => {
     const element = await loadById(id);
     if (!element) {
       throw new Error(`QR_CODE element with ID ${id} does not exist.`);
@@ -207,9 +172,7 @@ export namespace QRCodeElementRepository {
    * Load QR_CODE elements by IDs for Pothos dataloader
    * Returns array with QRCodeElementOutput or Error per ID
    */
-  export const loadByIds = async (
-    ids: number[]
-  ): Promise<(QRCodeElementOutput | Error)[]> => {
+  export const loadByIds = async (ids: number[]): Promise<(QRCodeElementOutput | Error)[]> => {
     if (ids.length === 0) return [];
 
     // Load all elements
@@ -218,16 +181,12 @@ export namespace QRCodeElementRepository {
     // Map to maintain order and handle missing elements
     return results.map((element, index) => {
       if (!element) {
-        return new Error(
-          `QR_CODE element with ID ${ids[index]} does not exist.`
-        );
+        return new Error(`QR_CODE element with ID ${ids[index]} does not exist.`);
       }
 
       // Validate element type
       if (element.base.type !== ElementType.QR_CODE) {
-        return new Error(
-          `Element ${element.base.id} is ${element.base.type}, not QR_CODE`
-        );
+        return new Error(`Element ${element.base.id} is ${element.base.type}, not QR_CODE`);
       }
 
       return element;
@@ -242,14 +201,8 @@ export namespace QRCodeElementRepository {
    * Find qrCode element entity by elementId
    * Returns entity from qr_code_element table only
    */
-  export const findById = async (
-    id: number
-  ): Promise<QRCodeElementEntity | null> => {
-    const qrCodeEl = await db
-      .select()
-      .from(qrCodeElement)
-      .where(eq(qrCodeElement.elementId, id))
-      .limit(1);
+  export const findById = async (id: number): Promise<QRCodeElementEntity | null> => {
+    const qrCodeEl = await db.select().from(qrCodeElement).where(eq(qrCodeElement.elementId, id)).limit(1);
 
     if (qrCodeEl.length === 0) return null;
     return qrCodeEl[0];
@@ -258,9 +211,7 @@ export namespace QRCodeElementRepository {
   /**
    * Find qrCode element entity by elementId or throw error
    */
-  export const findByIdOrThrow = async (
-    id: number
-  ): Promise<QRCodeElementEntity> => {
+  export const findByIdOrThrow = async (id: number): Promise<QRCodeElementEntity> => {
     const qrCodeEl = await findById(id);
     if (!qrCodeEl) {
       throw new Error(`QRCode element with ID ${id} does not exist.`);
@@ -277,9 +228,7 @@ export namespace QRCodeElementRepository {
    * Returns updated entity
    * Note: qrCodeDataSource is stored in base element config, not in this table
    */
-  const updateQRCodeElementSpecific = async (
-    input: QRCodeElementUpdateInput
-  ): Promise<QRCodeElementEntity> => {
+  const updateQRCodeElementSpecific = async (input: QRCodeElementUpdateInput): Promise<QRCodeElementEntity> => {
     const qrCodeUpdates: Partial<typeof qrCodeElement.$inferInsert> = {
       errorCorrection: input.qrCodeProps.errorCorrection,
       foregroundColor: input.qrCodeProps.foregroundColor,
@@ -317,16 +266,13 @@ export namespace QRCodeElementRepository {
       .where(eq(qrCodeElement.elementId, input.elementId))
       .returning();
 
-    logger.info(
-      `QR_CODE element specProps updated: (ID: ${input.elementId})`
-    );
+    logger.info(`QR_CODE element specProps updated: (ID: ${input.elementId})`);
 
     return {
       elementId: input.elementId,
       qrCodeProps: {
         ...updatedQRCodeElement[0],
-        errorCorrection: updatedQRCodeElement[0]
-          .errorCorrection as QRCodeErrorCorrection,
+        errorCorrection: updatedQRCodeElement[0].errorCorrection as QRCodeErrorCorrection,
       },
     };
   };

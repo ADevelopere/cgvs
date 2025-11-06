@@ -1,10 +1,6 @@
 import { create } from "zustand";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import {
-  StorageItemUnion,
-  ViewMode,
-  StorageClipboardState,
-} from "../core/storage.type";
+import { StorageItemUnion, ViewMode, StorageClipboardState } from "../core/storage.type";
 
 // ============================================================================
 // STATE INTERFACE

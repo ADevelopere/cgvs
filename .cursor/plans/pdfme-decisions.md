@@ -7,12 +7,14 @@
 **Decision**: Both editors will operate on the same `CertificateElementProvider` state, with separate "view adapters" (NodesStoreProvider for ReactFlow, PdfmeStoreProvider for PDFMe).
 
 **Rationale**:
+
 - Avoids data synchronization complexity
 - Single source of truth
 - No data loss between editor switches
 - Simpler to maintain
 
 **Implementation**:
+
 ```
 CertificateElementProvider (Single Source of Truth)
     ├── NodesStoreProvider → ReactFlow Editor
@@ -22,10 +24,12 @@ CertificateElementProvider (Single Source of Truth)
 ### ✅ Decision 2: Non-Invasive Integration
 
 **Decision**: Zero modifications to existing ReactFlow editor files. All changes isolated to:
+
 - EditorTab.tsx (add toggle)
 - New PDFMe-specific files
 
 **Rationale**:
+
 - Preserves ReactFlow as fallback
 - Reduces risk of breaking existing functionality
 - Easier to rollback if needed
@@ -36,16 +40,18 @@ CertificateElementProvider (Single Source of Truth)
 **Decision**: Use update flags to prevent circular updates between editors.
 
 **Rationale**:
+
 - Prevents infinite loops
 - Maintains data consistency
 - Simple to implement and debug
 
 **Implementation**:
+
 ```typescript
 const [isUpdatingFromPdfme, setIsUpdatingFromPdfme] = useState(false);
 
 // PDFMe changes
-const handlePdfmeChange = (newTemplate) => {
+const handlePdfmeChange = newTemplate => {
   setIsUpdatingFromPdfme(true);
   updateElementStates(newTemplate);
   setIsUpdatingFromPdfme(false);
@@ -64,17 +70,19 @@ useEffect(() => {
 **Decision**: Use `useEffect` with cleanup function for PDFMe Designer lifecycle.
 
 **Rationale**:
+
 - Prevents memory leaks
 - Proper cleanup on unmount
 - Follows React best practices
 - Matches official PDFMe examples
 
 **Implementation**:
+
 ```typescript
 useEffect(() => {
   // Mount
   designerRef.current = new Designer({...});
-  
+
   // Unmount
   return () => {
     designerRef.current?.destroy();
@@ -88,6 +96,7 @@ useEffect(() => {
 **Decision**: Create standalone `TemplateConverter` service for data transformation.
 
 **Rationale**:
+
 - Isolates complex conversion logic
 - Testable in isolation
 - Reusable across components
@@ -98,6 +107,7 @@ useEffect(() => {
 **Decision**: Implement in 4 phases over 4 weeks.
 
 **Rationale**:
+
 - Reduces risk
 - Allows for testing at each phase
 - Easier to identify issues
@@ -108,6 +118,7 @@ useEffect(() => {
 ### 1. Position/Size Updates
 
 **Challenge**: When user drags element in PDFMe, we need to update:
+
 1. CertificateElementProvider state
 2. NodesStoreProvider (for ReactFlow consistency)
 3. GraphQL backend (via mutation)
@@ -119,12 +130,12 @@ useEffect(() => {
 const handlePdfmePositionChange = (elementId: number, x: number, y: number) => {
   // This already updates both element state AND nodes store
   bases.updateBaseElementStateFn(elementId, {
-    key: 'positionX',
-    value: x
+    key: "positionX",
+    value: x,
   });
   bases.updateBaseElementStateFn(elementId, {
-    key: 'positionY',
-    value: y
+    key: "positionY",
+    value: y,
   });
 };
 ```
@@ -153,14 +164,15 @@ const { undo, redo } = useNodeData();
 **Phase 3**: Add Date, Number, Country (as formatted text)
 
 **Mapping**:
+
 ```typescript
 const elementTypeToSchema = {
-  [ElementType.Text]: 'text',
-  [ElementType.Image]: 'image',
-  [ElementType.QRCode]: 'qrcode',
-  [ElementType.Date]: 'text', // with date formatting
-  [ElementType.Number]: 'text', // with number formatting
-  [ElementType.Country]: 'text', // with country name
+  [ElementType.Text]: "text",
+  [ElementType.Image]: "image",
+  [ElementType.QRCode]: "qrcode",
+  [ElementType.Date]: "text", // with date formatting
+  [ElementType.Number]: "text", // with number formatting
+  [ElementType.Country]: "text", // with country name
 };
 ```
 
@@ -179,7 +191,7 @@ const template: Template = {
   },
   schemas: [
     // Element schemas here
-  ]
+  ],
 };
 ```
 
@@ -232,6 +244,7 @@ bun add @pdfme/ui @pdfme/common @pdfme/schemas
 ```
 
 **Package Sizes**:
+
 - @pdfme/ui: ~150KB
 - @pdfme/common: ~20KB
 - @pdfme/schemas: ~50KB
@@ -240,6 +253,7 @@ bun add @pdfme/ui @pdfme/common @pdfme/schemas
 ## Testing Checklist
 
 ### Unit Tests
+
 - [ ] TemplateConverter.toPdfmeTemplate()
 - [ ] TemplateConverter.fromPdfmeTemplate()
 - [ ] TemplateConverter.elementToSchema()
@@ -248,6 +262,7 @@ bun add @pdfme/ui @pdfme/common @pdfme/schemas
 - [ ] usePdfmeChange update logic
 
 ### Integration Tests
+
 - [ ] PDFMe → State synchronization
 - [ ] State → PDFMe synchronization
 - [ ] Circular update prevention
@@ -255,6 +270,7 @@ bun add @pdfme/ui @pdfme/common @pdfme/schemas
 - [ ] Memory cleanup on unmount
 
 ### E2E Tests
+
 - [ ] Create text element in ReactFlow, view in PDFMe
 - [ ] Create text element in PDFMe, view in ReactFlow
 - [ ] Edit position in PDFMe, verify in ReactFlow
@@ -263,6 +279,7 @@ bun add @pdfme/ui @pdfme/common @pdfme/schemas
 - [ ] Switch editors multiple times
 
 ### Performance Tests
+
 - [ ] No memory leaks on editor toggle
 - [ ] Conversion performance (<100ms)
 - [ ] Update performance (<50ms)
@@ -271,9 +288,11 @@ bun add @pdfme/ui @pdfme/common @pdfme/schemas
 ## Questions for Discussion
 
 ### 1. Font Handling
+
 **Question**: How should we map custom fonts between ReactFlow and PDFMe?
 
 **Options**:
+
 - A) Use font family name directly (may not work if font not loaded in PDFMe)
 - B) Create font mapping service
 - C) Load all fonts in PDFMe upfront
@@ -281,9 +300,11 @@ bun add @pdfme/ui @pdfme/common @pdfme/schemas
 **Recommendation**: Option B - Create font mapping service
 
 ### 2. Image Upload
+
 **Question**: How should image upload work in PDFMe editor?
 
 **Options**:
+
 - A) Disable image upload in PDFMe (use ReactFlow only)
 - B) Implement custom image upload handler
 - C) Use PDFMe's built-in image upload
@@ -291,9 +312,11 @@ bun add @pdfme/ui @pdfme/common @pdfme/schemas
 **Recommendation**: Option A for Phase 1, Option B for Phase 3
 
 ### 3. Validation
+
 **Question**: Should validation rules apply in PDFMe editor?
 
 **Options**:
+
 - A) Yes, validate on every change
 - B) Yes, validate on save only
 - C) No, trust PDFMe's validation
@@ -301,9 +324,11 @@ bun add @pdfme/ui @pdfme/common @pdfme/schemas
 **Recommendation**: Option B - Validate on save
 
 ### 4. Default Editor
+
 **Question**: Which editor should be the default?
 
 **Options**:
+
 - A) ReactFlow (current)
 - B) PDFMe (new)
 - C) User preference (saved in localStorage)
@@ -311,9 +336,11 @@ bun add @pdfme/ui @pdfme/common @pdfme/schemas
 **Recommendation**: Option A for Phase 1-3, Option C for Phase 4
 
 ### 5. Feature Parity
+
 **Question**: Should PDFMe editor support all ReactFlow features?
 
 **Features to consider**:
+
 - Helper lines (snapping)
 - Undo/redo
 - Copy/paste
@@ -411,18 +438,21 @@ bun add @pdfme/ui @pdfme/common @pdfme/schemas
 ## Success Metrics
 
 ### Functional Metrics
+
 - [ ] Both editors work independently
 - [ ] State synchronization works correctly
 - [ ] No data loss on editor switch
 - [ ] All element types supported
 
 ### Performance Metrics
+
 - [ ] No memory leaks (verified with Chrome DevTools)
 - [ ] Conversion time < 100ms
 - [ ] Update time < 50ms
 - [ ] Bundle size increase < 300KB
 
 ### Quality Metrics
+
 - [ ] 80%+ test coverage
 - [ ] Zero critical bugs
 - [ ] Zero data corruption issues
@@ -430,14 +460,14 @@ bun add @pdfme/ui @pdfme/common @pdfme/schemas
 
 ## Risk Register
 
-| Risk | Probability | Impact | Mitigation |
-|------|-------------|--------|------------|
-| State sync issues | Medium | High | Comprehensive testing, update flags |
-| Memory leaks | Low | High | Proper lifecycle management, profiling |
-| Performance degradation | Low | Medium | Memoization, lazy loading, monitoring |
-| User confusion | Medium | Low | Clear UI, documentation, training |
-| Data loss | Low | Critical | Validation, error handling, backups |
-| PDFMe limitations | Medium | Medium | Research playground, fallback to ReactFlow |
+| Risk                    | Probability | Impact   | Mitigation                                 |
+| ----------------------- | ----------- | -------- | ------------------------------------------ |
+| State sync issues       | Medium      | High     | Comprehensive testing, update flags        |
+| Memory leaks            | Low         | High     | Proper lifecycle management, profiling     |
+| Performance degradation | Low         | Medium   | Memoization, lazy loading, monitoring      |
+| User confusion          | Medium      | Low      | Clear UI, documentation, training          |
+| Data loss               | Low         | Critical | Validation, error handling, backups        |
+| PDFMe limitations       | Medium      | Medium   | Research playground, fallback to ReactFlow |
 
 ## Rollback Plan
 
@@ -448,6 +478,7 @@ If critical issues arise:
 3. **Long-term**: If unfixable, remove PDFMe integration
 
 **Rollback triggers**:
+
 - Critical data loss bug
 - Severe performance degradation
 - Memory leaks causing crashes
@@ -456,17 +487,20 @@ If critical issues arise:
 ## Communication Plan
 
 ### Stakeholders
+
 - Development team
 - QA team
 - Product manager
 - End users
 
 ### Updates
+
 - **Weekly**: Progress updates to team
 - **Bi-weekly**: Demo to stakeholders
 - **Monthly**: User feedback review
 
 ### Documentation
+
 - Technical documentation (for developers)
 - User guide (for end users)
 - Migration guide (for existing users)

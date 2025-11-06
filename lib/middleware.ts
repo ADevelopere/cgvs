@@ -12,10 +12,7 @@ export function middleware(request: NextRequest) {
 
   // Extract useful information
   const contentType = request.headers.get("content-type") || "null";
-  const ip =
-    request.headers.get("x-forwarded-for") ||
-    request.headers.get("x-real-ip") ||
-    "unknown";
+  const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
 
   // Log incoming request
   logger.log(`[REQUEST] ${method} ${nextUrl.pathname}`);
@@ -31,9 +28,7 @@ export function middleware(request: NextRequest) {
 
   // Log response (in development)
   if (process.env.NODE_ENV === "development") {
-    logger.log(
-      `[RESPONSE] ${method} ${nextUrl.pathname} - ${response.status} (${Date.now() - start}ms)`
-    );
+    logger.log(`[RESPONSE] ${method} ${nextUrl.pathname} - ${response.status} (${Date.now() - start}ms)`);
   }
 
   return response;

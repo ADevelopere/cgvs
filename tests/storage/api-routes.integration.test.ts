@@ -1,13 +1,6 @@
 // ~/.bun/bin/bun test --timeout=60000 tests/storage/api-routes.integration.test.ts --testNamePattern="should upload file successfully"
 
-import {
-  describe,
-  beforeAll,
-  afterAll,
-  beforeEach,
-  it,
-  expect,
-} from "@jest/globals";
+import { describe, beforeAll, afterAll, beforeEach, it, expect } from "@jest/globals";
 import { spawn, type ChildProcess } from "child_process";
 import fs from "fs/promises";
 import path from "path";
@@ -17,11 +10,7 @@ import { testLogger } from "@/lib/testlogger";
 import { config } from "dotenv";
 import { SignedUrlRepository } from "@/server/db/repo/signedUrl.repository";
 import { db } from "@/server/db/drizzleDb";
-import {
-  storageFiles,
-  storageDirectories,
-  signedUrls,
-} from "@/server/db/schema/storage";
+import { storageFiles, storageDirectories, signedUrls } from "@/server/db/schema/storage";
 import { loginMutationDocument } from "@/client/graphql/sharedDocuments/auth.documents";
 import { UserRepository } from "@/server/db/repo";
 import { Email } from "@/server/lib";
@@ -79,15 +68,11 @@ async function startDevServer(): Promise<number> {
     // Use a non-popular port range (8000-8999)
     const port = Math.floor(Math.random() * 1000) + 8000;
 
-    devServer = spawn(
-      "/home/vscode/.bun/bin/bun",
-      ["dev", "--port", port.toString()],
-      {
-        stdio: ["pipe", "pipe", "pipe"],
-        cwd: process.cwd(),
-        env: { ...process.env, PORT: port.toString() },
-      }
-    );
+    devServer = spawn("/home/vscode/.bun/bin/bun", ["dev", "--port", port.toString()], {
+      stdio: ["pipe", "pipe", "pipe"],
+      cwd: process.cwd(),
+      env: { ...process.env, PORT: port.toString() },
+    });
 
     let serverStarted = false;
     let output = "";
@@ -245,10 +230,7 @@ async function _createTestFile(
 /**
  * Make an API request to the dev server
  */
-async function makeApiRequest(
-  apiPath: string,
-  options: RequestInit = {}
-): Promise<Response> {
+async function makeApiRequest(apiPath: string, options: RequestInit = {}): Promise<Response> {
   const url = `http://localhost:${serverPort}${apiPath}`;
   testLogger.info(`Making API request: ${options.method || "GET"} ${url}`);
 
@@ -258,10 +240,8 @@ async function makeApiRequest(
       options.headers = {};
     }
     // Add both Cookie and Authorization header for compatibility
-    (options.headers as Record<string, string>)["Cookie"] =
-      `token=${authToken}`;
-    (options.headers as Record<string, string>)["Authorization"] =
-      `Bearer ${authToken}`;
+    (options.headers as Record<string, string>)["Cookie"] = `token=${authToken}`;
+    (options.headers as Record<string, string>)["Authorization"] = `Bearer ${authToken}`;
   }
 
   return await fetch(url, options);
@@ -328,10 +308,7 @@ describe("Storage API Routes Integration Tests", () => {
     testLogger.info("🔧 Setting up API routes tests");
 
     // Set up test storage directory
-    testStorageDir = path.resolve(
-      process.cwd(),
-      process.env.LOCAL_STORAGE_PATH || "./tests/fixtures/storage-test"
-    );
+    testStorageDir = path.resolve(process.cwd(), process.env.LOCAL_STORAGE_PATH || "./tests/fixtures/storage-test");
 
     testLogger.info("Creating test storage directories...");
     // Create storage directories
@@ -473,18 +450,15 @@ describe("Storage API Routes Integration Tests", () => {
       const nonExistentTokenId = crypto.randomUUID();
 
       // Attempt to upload with non-existent token
-      const response = await makeApiRequest(
-        `/api/storage/upload/${nonExistentTokenId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "text/plain",
-            "Content-MD5": contentMd5,
-            "Content-Length": fileContent.length.toString(),
-          },
-          body: fileContent,
-        }
-      );
+      const response = await makeApiRequest(`/api/storage/upload/${nonExistentTokenId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "text/plain",
+          "Content-MD5": contentMd5,
+          "Content-Length": fileContent.length.toString(),
+        },
+        body: fileContent,
+      });
 
       // Verify response indicates invalid token
       expect(response.status).toBe(403);
@@ -758,9 +732,7 @@ describe("Storage API Routes Integration Tests", () => {
       expect(response.status).toBe(413);
       const responseData = await response.json();
       expect(responseData.error).toBeDefined();
-      expect(responseData.error.toLowerCase()).toMatch(
-        /size|exceeded|too large|payload/
-      );
+      expect(responseData.error.toLowerCase()).toMatch(/size|exceeded|too large|payload/);
 
       // Verify no file created
       const files = await db.select().from(storageFiles);
@@ -800,9 +772,7 @@ describe("Storage API Routes Integration Tests", () => {
       expect(response.status).toBe(400);
       const responseData = await response.json();
       expect(responseData.error).toBeDefined();
-      expect(responseData.error.toLowerCase()).toMatch(
-        /invalid|path|traversal/
-      );
+      expect(responseData.error.toLowerCase()).toMatch(/invalid|path|traversal/);
 
       // Verify no file created outside storage directory
       // We can't reliably test if /etc/passwd was modified, so we just verify no DB record
@@ -818,9 +788,7 @@ describe("Storage API Routes Integration Tests", () => {
 
     it("should upload file and verify file exists on disk after successful upload", async () => {
       // Create test file content (binary data)
-      const fileContent = Buffer.from(
-        "This is a test file for disk verification"
-      );
+      const fileContent = Buffer.from("This is a test file for disk verification");
       const contentMd5 = calculateMd5(fileContent);
       const filePath = "private/disk-verify-test.dat";
       const tokenId = crypto.randomUUID();
@@ -899,15 +867,11 @@ describe("Storage API Routes Integration Tests", () => {
       // Verify response
       expect(response.status).toBe(200);
       expect(response.headers.get("content-type")).toContain("text/plain");
-      expect(response.headers.get("content-length")).toBe(
-        fileContent.length.toString()
-      );
+      expect(response.headers.get("content-length")).toBe(fileContent.length.toString());
 
       // Verify content
       const downloadedContent = await response.arrayBuffer();
-      expect(Buffer.compare(Buffer.from(downloadedContent), fileContent)).toBe(
-        0
-      );
+      expect(Buffer.compare(Buffer.from(downloadedContent), fileContent)).toBe(0);
     });
 
     it("should download protected file with authentication", async () => {
@@ -934,9 +898,7 @@ describe("Storage API Routes Integration Tests", () => {
 
       if (response.status === 200) {
         const downloadedContent = await response.arrayBuffer();
-        expect(
-          Buffer.compare(Buffer.from(downloadedContent), fileContent)
-        ).toBe(0);
+        expect(Buffer.compare(Buffer.from(downloadedContent), fileContent)).toBe(0);
       }
     });
 
@@ -968,39 +930,29 @@ describe("Storage API Routes Integration Tests", () => {
       expect(response.status).toBe(403);
       const responseData = await response.json();
       expect(responseData.error).toBeDefined();
-      expect(responseData.error.toLowerCase()).toMatch(
-        /authentication|unauthorized|forbidden/
-      );
+      expect(responseData.error.toLowerCase()).toMatch(/authentication|unauthorized|forbidden/);
     });
 
     it("should return 404 for non-existent file", async () => {
       // Request file that doesn't exist
       const nonExistentPath = "public/does-not-exist.txt";
-      const response = await makeApiRequest(
-        `/api/storage/files/${nonExistentPath}`,
-        {
-          method: "GET",
-        }
-      );
+      const response = await makeApiRequest(`/api/storage/files/${nonExistentPath}`, {
+        method: "GET",
+      });
 
       // Verify response indicates not found
       expect(response.status).toBe(404);
       const responseData = await response.json();
       expect(responseData.error).toBeDefined();
-      expect(responseData.error.toLowerCase()).toMatch(
-        /not found|does not exist/
-      );
+      expect(responseData.error.toLowerCase()).toMatch(/not found|does not exist/);
     });
 
     it("should reject path traversal in download", async () => {
       // Attempt path traversal attack
       const maliciousPath = "../../../etc/passwd";
-      const response = await makeApiRequest(
-        `/api/storage/files/${maliciousPath}`,
-        {
-          method: "GET",
-        }
-      );
+      const response = await makeApiRequest(`/api/storage/files/${maliciousPath}`, {
+        method: "GET",
+      });
 
       // Verify response indicates invalid path
       // Note: Next.js router normalizes paths, so path traversal attempts result in 404
@@ -1035,12 +987,7 @@ describe("Storage API Routes Integration Tests", () => {
       // Verify content
       const downloadedContent = await response.arrayBuffer();
       expect(downloadedContent.byteLength).toBe(1024);
-      expect(
-        Buffer.compare(
-          Buffer.from(downloadedContent),
-          fileContent.slice(0, 1024)
-        )
-      ).toBe(0);
+      expect(Buffer.compare(Buffer.from(downloadedContent), fileContent.slice(0, 1024))).toBe(0);
     });
 
     it("should support multiple range requests", async () => {
@@ -1066,9 +1013,7 @@ describe("Storage API Routes Integration Tests", () => {
       expect(response1.status).toBe(206);
       expect(response1.headers.get("content-length")).toBe("1000");
       const content1 = await response1.arrayBuffer();
-      expect(
-        Buffer.compare(Buffer.from(content1), fileContent.slice(1000, 2000))
-      ).toBe(0);
+      expect(Buffer.compare(Buffer.from(content1), fileContent.slice(1000, 2000))).toBe(0);
 
       // Request tail section (bytes 5000 to end)
       const response2 = await makeApiRequest(`/api/storage/files/${filePath}`, {
@@ -1080,9 +1025,7 @@ describe("Storage API Routes Integration Tests", () => {
 
       expect(response2.status).toBe(206);
       const content2 = await response2.arrayBuffer();
-      expect(
-        Buffer.compare(Buffer.from(content2), fileContent.slice(5000))
-      ).toBe(0);
+      expect(Buffer.compare(Buffer.from(content2), fileContent.slice(5000))).toBe(0);
     });
 
     it("should handle invalid range requests", async () => {
@@ -1112,9 +1055,7 @@ describe("Storage API Routes Integration Tests", () => {
       if (contentType && contentType.includes("application/json")) {
         const responseData = await response.json();
         expect(responseData.error).toBeDefined();
-        expect(responseData.error.toLowerCase()).toMatch(
-          /range|satisfiable|invalid/
-        );
+        expect(responseData.error.toLowerCase()).toMatch(/range|satisfiable|invalid/);
       }
     });
   });
@@ -1240,9 +1181,7 @@ describe("Storage API Routes Integration Tests", () => {
       if (response.status === 401 || response.status === 403) {
         const responseData = await response.json();
         expect(responseData.error).toBeDefined();
-        expect(responseData.error.toLowerCase()).toMatch(
-          /authentication|unauthorized|forbidden/
-        );
+        expect(responseData.error.toLowerCase()).toMatch(/authentication|unauthorized|forbidden/);
 
         // Verify no tokens deleted
         const remainingTokens = await db.select().from(signedUrls);
@@ -1326,15 +1265,12 @@ describe("Storage API Routes Integration Tests", () => {
 
       // Call cron cleanup endpoint with valid bearer token
       // Don't use makeApiRequest since it adds JWT token
-      const response = await fetch(
-        `http://localhost:${serverPort}/api/cron/cleanup-signed-urls`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${cronSecret}`,
-          },
-        }
-      );
+      const response = await fetch(`http://localhost:${serverPort}/api/cron/cleanup-signed-urls`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${cronSecret}`,
+        },
+      });
 
       // Verify response
       expect(response.status).toBe(200);
@@ -1369,9 +1305,7 @@ describe("Storage API Routes Integration Tests", () => {
       expect(response.status).toBe(401);
       const responseData = await response.json();
       expect(responseData.error).toBeDefined();
-      expect(responseData.error.toLowerCase()).toMatch(
-        /unauthorized|invalid|token/
-      );
+      expect(responseData.error.toLowerCase()).toMatch(/unauthorized|invalid|token/);
 
       // Verify no tokens deleted
       const remainingTokens = await db.select().from(signedUrls);
@@ -1397,9 +1331,7 @@ describe("Storage API Routes Integration Tests", () => {
       expect(response.status).toBe(401);
       const responseData = await response.json();
       expect(responseData.error).toBeDefined();
-      expect(responseData.error.toLowerCase()).toMatch(
-        /unauthorized|authentication|missing/
-      );
+      expect(responseData.error.toLowerCase()).toMatch(/unauthorized|authentication|missing/);
 
       // Verify no tokens deleted
       const remainingTokens = await db.select().from(signedUrls);
@@ -1417,15 +1349,12 @@ describe("Storage API Routes Integration Tests", () => {
       });
 
       // Call cron cleanup endpoint with completely wrong token format
-      const response = await fetch(
-        `http://localhost:${serverPort}/api/cron/cleanup-signed-urls`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: "Bearer completely-wrong-token",
-          },
-        }
-      );
+      const response = await fetch(`http://localhost:${serverPort}/api/cron/cleanup-signed-urls`, {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer completely-wrong-token",
+        },
+      });
 
       // Verify response indicates unauthorized
       expect(response.status).toBe(401);

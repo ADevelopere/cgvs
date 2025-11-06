@@ -31,9 +31,7 @@ const initialState: UploadProgressUIState = {
   cancelTarget: null,
 };
 
-export const useUploadProgressUIStore = create<
-  UploadProgressUIState & UploadProgressUIActions
->(set => ({
+export const useUploadProgressUIStore = create<UploadProgressUIState & UploadProgressUIActions>(set => ({
   ...initialState,
 
   // UI state actions

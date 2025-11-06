@@ -5,10 +5,7 @@ import { ColumnHeaderCell } from "../components";
 import { Box, Checkbox } from "@mui/material";
 
 import { useTableColumnContext, useTableRowsContext } from "../contexts";
-import {
-  TABLE_CHECKBOX_CONTAINER_SIZE,
-  TABLE_CHECKBOX_WIDTH,
-} from "../constants";
+import { TABLE_CHECKBOX_CONTAINER_SIZE, TABLE_CHECKBOX_WIDTH } from "../constants";
 
 /**
  * TableHeader Component
@@ -34,8 +31,7 @@ export const TableHeader: React.FC<{
     hideColumn,
   } = useTableColumnContext();
 
-  const { rowSelectionEnabled, isAllRowsSelected, toggleAllRowsSelection } =
-    useTableRowsContext();
+  const { rowSelectionEnabled, isAllRowsSelected, toggleAllRowsSelection } = useTableRowsContext();
 
   // Column management callbacks
   const handlePinLeft = useCallback(

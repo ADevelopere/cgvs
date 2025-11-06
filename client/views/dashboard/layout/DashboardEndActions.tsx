@@ -1,10 +1,5 @@
 import { Box } from "@mui/material";
-import {
-  UserMenu,
-  LanguageSwitcher,
-  ThemeSwitcher,
-  ConnectivityStatus,
-} from "@/client/components";
+import { UserMenu, LanguageSwitcher, ThemeSwitcher, ConnectivityStatus } from "@/client/components";
 
 export default function DashboardEndActions() {
   return (

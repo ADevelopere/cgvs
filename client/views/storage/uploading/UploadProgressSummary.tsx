@@ -10,11 +10,7 @@ export interface UploadProgressSummaryProps {
   onCancelAll: () => void;
 }
 
-const UploadProgressSummary: React.FC<UploadProgressSummaryProps> = ({
-  timeRemaining,
-  isCollapsed,
-  onCancelAll,
-}) => {
+const UploadProgressSummary: React.FC<UploadProgressSummaryProps> = ({ timeRemaining, isCollapsed, onCancelAll }) => {
   const theme = useTheme();
   const {
     storageTranslations: { uploading: translations },
@@ -24,10 +20,7 @@ const UploadProgressSummary: React.FC<UploadProgressSummaryProps> = ({
     if (!seconds || seconds <= 0) return "";
 
     if (seconds < 60) {
-      return translations.secondsLeft.replace(
-        "%{seconds}",
-        Math.ceil(seconds).toString()
-      );
+      return translations.secondsLeft.replace("%{seconds}", Math.ceil(seconds).toString());
     } else if (seconds < 3600) {
       const minutes = Math.ceil(seconds / 60);
       return translations.minutesLeft.replace("%{minutes}", minutes.toString());

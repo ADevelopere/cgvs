@@ -6,10 +6,7 @@ import { PgSelect } from "drizzle-orm/pg-core";
 import { fullTextSearch } from "@/server/db/query.extentions";
 
 export namespace TemplateFilterUtils {
-  export function applyFilters<T extends PgSelect>(
-    qb: T,
-    args?: Types.TemplateFilterArgs | null
-  ) {
+  export function applyFilters<T extends PgSelect>(qb: T, args?: Types.TemplateFilterArgs | null) {
     if (!args) return qb;
     const ftsLang = "simple"; // Use "simple" for language-agnostic
 
@@ -24,10 +21,7 @@ export namespace TemplateFilterUtils {
     return qb;
   }
 
-  export function applyOrdering<T extends PgSelect>(
-    qb: T,
-    orderBy?: Types.TemplatesOrderByClause[] | null
-  ) {
+  export function applyOrdering<T extends PgSelect>(qb: T, orderBy?: Types.TemplatesOrderByClause[] | null) {
     if (!orderBy || orderBy.length === 0) return qb;
 
     orderBy.forEach(clause => {
@@ -48,9 +42,7 @@ export namespace TemplateFilterUtils {
         default:
           return;
       }
-      qb = qb.orderBy(
-        clause.order === OrderSortDirection.ASC ? asc(column) : desc(column)
-      );
+      qb = qb.orderBy(clause.order === OrderSortDirection.ASC ? asc(column) : desc(column));
     });
     return qb;
   }

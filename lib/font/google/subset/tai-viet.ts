@@ -9,8 +9,7 @@ const data: GoogleFontItem[] = [
     version: "v20",
     lastModified: "2025-09-16",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/notosanstaiviet/v20/8QIUdj3HhN_lv4jf9vsE-9GMOLsaSPZr644fWsRO9w.ttf",
+      regular: "https://fonts.gstatic.com/s/notosanstaiviet/v20/8QIUdj3HhN_lv4jf9vsE-9GMOLsaSPZr644fWsRO9w.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -23,10 +22,8 @@ const data: GoogleFontItem[] = [
     version: "v9",
     lastModified: "2025-09-08",
     files: {
-      "700":
-        "https://fonts.gstatic.com/s/taiheritagepro/v9/sZlYdQid-zgaNiNIYcUzJMU3IYyNmMB9NNRFMuhjCXY.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/taiheritagepro/v9/sZlfdQid-zgaNiNIYcUzJMU3IYyNoHxSENxuLuE.ttf",
+      "700": "https://fonts.gstatic.com/s/taiheritagepro/v9/sZlYdQid-zgaNiNIYcUzJMU3IYyNmMB9NNRFMuhjCXY.ttf",
+      regular: "https://fonts.gstatic.com/s/taiheritagepro/v9/sZlfdQid-zgaNiNIYcUzJMU3IYyNoHxSENxuLuE.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",

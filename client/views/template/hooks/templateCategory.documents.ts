@@ -25,16 +25,8 @@ export const searchTemplateCategoriesQueryDocument: TypedDocumentNode<
   Graphql.SearchTemplateCategoriesQuery,
   Graphql.SearchTemplateCategoriesQueryVariables
 > = gql`
-  query searchTemplateCategories(
-    $searchTerm: String!
-    $limit: Int
-    $includeParentTree: Boolean
-  ) {
-    searchTemplateCategories(
-      searchTerm: $searchTerm
-      limit: $limit
-      includeParentTree: $includeParentTree
-    ) {
+  query searchTemplateCategories($searchTerm: String!, $limit: Int, $includeParentTree: Boolean) {
+    searchTemplateCategories(searchTerm: $searchTerm, limit: $limit, includeParentTree: $includeParentTree) {
       id
       name
       description

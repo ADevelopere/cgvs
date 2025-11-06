@@ -213,10 +213,7 @@ async function updateElement(input: TextElementUpdateInput) {
     updates.storageFileId = extractStorageFileId(config);
   }
 
-  return await db
-    .update(certificateElement)
-    .set(updates)
-    .where(eq(certificateElement.id, id));
+  return await db.update(certificateElement).set(updates).where(eq(certificateElement.id, id));
 }
 ```
 
@@ -280,10 +277,7 @@ Before deleting font/variable/file, check if used:
 ```typescript
 async function deleteFontSafely(fontId: number) {
   // Check if any elements use this font
-  const usedBy = await db
-    .select()
-    .from(certificateElement)
-    .where(eq(certificateElement.fontId, fontId));
+  const usedBy = await db.select().from(certificateElement).where(eq(certificateElement.fontId, fontId));
 
   if (usedBy.length > 0) {
     throw new Error(`Font is used by ${usedBy.length} element(s)`);

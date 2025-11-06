@@ -1,9 +1,6 @@
 import Typography from "@mui/material/Typography";
 import type React from "react";
-import {
-  BaseTreeItem,
-  TreeViewItemRenderer,
-} from "@/client/components/treeView/TreeView";
+import { BaseTreeItem, TreeViewItemRenderer } from "@/client/components/treeView/TreeView";
 
 interface TreeViewItemProps<T extends BaseTreeItem> {
   item: T;

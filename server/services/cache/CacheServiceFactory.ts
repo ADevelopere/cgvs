@@ -35,9 +35,7 @@ export class CacheServiceFactory {
         return await this.createRedisCache();
 
       default:
-        logger.warn(
-          `Unknown cache provider: ${provider}, falling back to redis`
-        );
+        logger.warn(`Unknown cache provider: ${provider}, falling back to redis`);
         return await this.createRedisCache();
     }
   }
@@ -64,14 +62,10 @@ export class CacheServiceFactory {
    * Get cache provider from environment variable
    */
   private static getCacheProvider(): CacheProvider {
-    const provider = (
-      process.env.CACHE_PROVIDER || "redis"
-    ).toLowerCase() as CacheProvider;
+    const provider = (process.env.CACHE_PROVIDER || "redis").toLowerCase() as CacheProvider;
 
     if (provider !== "redis" && provider !== "postgres") {
-      logger.warn(
-        `⚠️  Invalid CACHE_PROVIDER: ${provider}. Must be 'redis' or 'postgres'. Using 'redis'.`
-      );
+      logger.warn(`⚠️  Invalid CACHE_PROVIDER: ${provider}. Must be 'redis' or 'postgres'. Using 'redis'.`);
       return "redis";
     }
 
@@ -116,11 +110,7 @@ export const cacheService = {
     const service = await CacheServiceFactory.getInstance();
     return service.get(key);
   },
-  set: async (
-    key: string,
-    value: string,
-    options?: { ex?: number; px?: number }
-  ) => {
+  set: async (key: string, value: string, options?: { ex?: number; px?: number }) => {
     const service = await CacheServiceFactory.getInstance();
     return service.set(key, value, options);
   },
@@ -140,9 +130,7 @@ export const cacheService = {
     const service = await CacheServiceFactory.getInstance();
     return service.incr(key);
   },
-  pipeline: async (
-    commands: Array<{ command: string; args: (string | number)[] }>
-  ) => {
+  pipeline: async (commands: Array<{ command: string; args: (string | number)[] }>) => {
     const service = await CacheServiceFactory.getInstance();
     return service.pipeline(commands);
   },

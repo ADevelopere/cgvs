@@ -10,10 +10,7 @@ interface FontPreviewProps {
   fontUrl: string;
 }
 
-export const FontPreview: React.FC<FontPreviewProps> = ({
-  fontName,
-  fontUrl,
-}) => {
+export const FontPreview: React.FC<FontPreviewProps> = ({ fontName, fontUrl }) => {
   const { fontManagementTranslations: strings } = useAppTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,9 +28,7 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
         const fontFamily = `font-preview-${fontName.replace(/\s+/g, "-")}`;
 
         // Check if font is already loaded
-        const existingFont = Array.from(document.fonts).find(
-          font => font.family === fontFamily
-        );
+        const existingFont = Array.from(document.fonts).find(font => font.family === fontFamily);
 
         if (existingFont && existingFont.status === "loaded") {
           setFontFaceLoaded(true);
@@ -85,9 +80,7 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
   if (loading) {
     return (
       <MUI.Card>
-        <MUI.CardContent
-          sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-        >
+        <MUI.CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <MUI.Skeleton variant="text" width="100%" height={40} />
           <MUI.Skeleton variant="text" width="75%" height={32} />
           <MUI.Skeleton variant="text" width="100%" height={28} />
@@ -112,9 +105,7 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
             display: "flex",
             flexDirection: "column",
             gap: 2,
-            fontFamily: fontFaceLoaded
-              ? `"${fontFamily}", sans-serif`
-              : "inherit",
+            fontFamily: fontFaceLoaded ? `"${fontFamily}", sans-serif` : "inherit",
             width: "100%",
           }}
         >
@@ -160,11 +151,7 @@ export const FontPreview: React.FC<FontPreviewProps> = ({
           >
             abcdefghijklmnopqrstuvwxyz
           </MUI.Typography>
-          <MUI.Typography
-            variant="h4"
-            component="p"
-            sx={{ fontFamily: "inherit" }}
-          >
+          <MUI.Typography variant="h4" component="p" sx={{ fontFamily: "inherit" }}>
             0123456789 !@#$%^&*()_+-=[]&#123;&#125;|;&apos;&quot;:,./&lt;&gt;?
           </MUI.Typography>
 

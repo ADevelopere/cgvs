@@ -1,20 +1,8 @@
 "use client";
 
 import React, { useCallback } from "react";
-import {
-  Avatar,
-  IconButton,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  Tooltip,
-} from "@mui/material";
-import {
-  AccountCircle as ProfileIcon,
-  Settings as PreferencesIcon,
-  Logout as LogoutIcon,
-} from "@mui/icons-material";
+import { Avatar, IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Tooltip } from "@mui/material";
+import { AccountCircle as ProfileIcon, Settings as PreferencesIcon, Logout as LogoutIcon } from "@mui/icons-material";
 import { useAuth } from "@/client/contexts/AuthContext";
 import { useAppTranslation } from "@/client/locale";
 import { useRouter } from "next/navigation";
@@ -43,17 +31,10 @@ export const UserMenu: React.FC = () => {
     <>
       <Tooltip title={strings.accountSettings}>
         <IconButton onClick={handleClick} color="inherit">
-          <Avatar sx={{ width: 32, height: 32 }}>
-            {user?.name?.[0] || "U"}
-          </Avatar>
+          <Avatar sx={{ width: 32, height: 32 }}>{user?.name?.[0] || "U"}</Avatar>
         </IconButton>
       </Tooltip>
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        keepMounted
-      >
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose} keepMounted>
         <MenuItem
           onClick={() => {
             handleClose();
@@ -80,9 +61,7 @@ export const UserMenu: React.FC = () => {
           <ListItemIcon>
             <LogoutIcon fontSize="small" color="error" />
           </ListItemIcon>
-          <ListItemText slotProps={{ primary: { color: "error" } }}>
-            {strings.logout}
-          </ListItemText>
+          <ListItemText slotProps={{ primary: { color: "error" } }}>{strings.logout}</ListItemText>
         </MenuItem>
       </Menu>
     </>

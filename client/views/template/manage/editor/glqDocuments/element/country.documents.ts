@@ -96,11 +96,11 @@ export const updateCountryElementSpecPropsMutationDocument: TypedDocumentNode<
   Graphql.UpdateCountryElementSpecPropsMutationVariables
 > = gql`
   mutation UpdateCountryElementSpecProps($input: CountryElementSpecPropsStandaloneUpdateInput!) {
-  updateCountryElementSpecProps(input: $input) {
-    countryProps {
-      representation
+    updateCountryElementSpecProps(input: $input) {
+      countryProps {
+        representation
+      }
+      elementId
     }
-    elementId
   }
-}
 `;

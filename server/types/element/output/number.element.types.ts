@@ -30,10 +30,7 @@ export type NumberElementEntity = typeof numberElement.$inferSelect;
 // Output Type (mirrors database - base + number_element + element_text_props joined)
 // ============================================================================
 
-export type NumberElementSpecProps = Omit<
-  NumberElementEntity,
-  "numberDataSource"
->;
+export type NumberElementSpecProps = Omit<NumberElementEntity, "numberDataSource">;
 
 export type NumberElementOutput = {
   base: CertificateElementEntity;

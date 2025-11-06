@@ -16,9 +16,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = NumberElementUtils.mapNumberElementCreateGraphqlToInput(
-        args.input
-      );
+      const input = NumberElementUtils.mapNumberElementCreateGraphqlToInput(args.input);
       return await NumberElementRepository.create(input);
     },
   }),
@@ -32,9 +30,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = NumberElementUtils.mapNumberElementUpdateGraphqlToInput(
-        args.input
-      );
+      const input = NumberElementUtils.mapNumberElementUpdateGraphqlToInput(args.input);
       return await NumberElementRepository.update(input);
     },
   }),
@@ -48,10 +44,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input =
-        NumberElementUtils.mapNumberElementDataSourceStandaloneUpdateGraphqlToInput(
-          args.input
-        );
+      const input = NumberElementUtils.mapNumberElementDataSourceStandaloneUpdateGraphqlToInput(args.input);
       return await NumberElementRepository.updateNumberElementDataSource(input);
     },
   }),
@@ -65,9 +58,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      return await NumberElementRepository.updateNumberElementSpecProps(
-        args.input
-      );
+      return await NumberElementRepository.updateNumberElementSpecProps(args.input);
     },
   }),
 }));

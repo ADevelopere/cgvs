@@ -5,8 +5,7 @@ if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET must be set in production environment");
 }
 
-const JWT_SECRET =
-  process.env.JWT_SECRET ?? "your-secret-key-change-this-in-production";
+const JWT_SECRET = process.env.JWT_SECRET ?? "your-secret-key-change-this-in-production";
 const JWT_ACCESS_TOKEN_EXPIRY = "15m"; // 15 minutes
 const JWT_REFRESH_TOKEN_EXPIRY = "7d"; // 7 days
 
@@ -21,10 +20,7 @@ export interface CustomJWTPayload extends JoseJWTPayload {
 /**
  * Generate an access token for a user
  */
-export async function generateAccessToken(
-  userId: number,
-  email: string
-): Promise<string> {
+export async function generateAccessToken(userId: number, email: string): Promise<string> {
   const token = await new SignJWT({
     userId,
     email,
@@ -41,10 +37,7 @@ export async function generateAccessToken(
 /**
  * Generate a refresh token for a user
  */
-export async function generateRefreshToken(
-  userId: number,
-  email: string
-): Promise<string> {
+export async function generateRefreshToken(userId: number, email: string): Promise<string> {
   const token = await new SignJWT({
     userId,
     email,
@@ -61,9 +54,7 @@ export async function generateRefreshToken(
 /**
  * Verify and decode a JWT token
  */
-export async function verifyToken(
-  token: string
-): Promise<CustomJWTPayload | null> {
+export async function verifyToken(token: string): Promise<CustomJWTPayload | null> {
   try {
     const { payload } = await jwtVerify(token, secret);
     return payload as unknown as CustomJWTPayload;
@@ -76,9 +67,7 @@ export async function verifyToken(
 /**
  * Extract token from Authorization header
  */
-export function extractTokenFromHeader(
-  authHeader: string | null
-): string | null {
+export function extractTokenFromHeader(authHeader: string | null): string | null {
   if (!authHeader?.startsWith("Bearer ")) {
     return null;
   }

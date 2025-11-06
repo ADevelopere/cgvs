@@ -3,12 +3,7 @@ import * as MUI from "@mui/material";
 import { SplitPane } from "@/client/components/splitPane/SplitPane";
 import { FontList } from "./FontList";
 import { FontDetail } from "./FontDetail";
-import {
-  Font,
-  FontCreateInput,
-  FontsQueryVariables,
-  FontUpdateInput,
-} from "@/client/graphql/generated/gql/graphql";
+import { Font, FontCreateInput, FontsQueryVariables, FontUpdateInput } from "@/client/graphql/generated/gql/graphql";
 
 type FontManagementViewProps = {
   selectedFont: Font | null;

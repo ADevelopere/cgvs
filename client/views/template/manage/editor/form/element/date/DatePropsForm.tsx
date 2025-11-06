@@ -11,15 +11,8 @@ import {
   TextField,
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
-import {
-  CalendarType,
-  DateTransformationType,
-} from "@/client/graphql/generated/gql/graphql";
-import type {
-  DatePropsFormState,
-  UpdateDatePropsFn,
-  DatePropsFormErrors
-} from "./types";
+import { CalendarType, DateTransformationType } from "@/client/graphql/generated/gql/graphql";
+import type { DatePropsFormState, UpdateDatePropsFn, DatePropsFormErrors } from "./types";
 
 interface DatePropsFormProps {
   dateProps: DatePropsFormState;
@@ -35,17 +28,10 @@ const transformationOptions = [
   },
 ];
 
-export const DatePropsForm: FC<DatePropsFormProps> = ({
-  dateProps,
-  onUpdate,
-  errors,
-  disabled,
-}) => {
+export const DatePropsForm: FC<DatePropsFormProps> = ({ dateProps, onUpdate, errors, disabled }) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
 
-  const selectedTransformation =
-    transformationOptions.find(opt => opt.value === dateProps.transformation) ||
-    null;
+  const selectedTransformation = transformationOptions.find(opt => opt.value === dateProps.transformation) || null;
 
   return (
     <Box>
@@ -64,14 +50,8 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
         </Grid>
 
         <Grid size={{ xs: 12 }}>
-          <FormControl
-            component="fieldset"
-            disabled={disabled}
-            error={!!errors?.calendarType}
-          >
-            <FormLabel component="legend">
-              {strings.dateElement.calendarTypeLabel}
-            </FormLabel>
+          <FormControl component="fieldset" disabled={disabled} error={!!errors?.calendarType}>
+            <FormLabel component="legend">{strings.dateElement.calendarTypeLabel}</FormLabel>
             <RadioGroup
               row
               value={dateProps.calendarType || CalendarType.Gregorian}
@@ -102,9 +82,7 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
             type="number"
             label={strings.dateElement.offsetDaysLabel}
             placeholder={strings.dateElement.offsetDaysPlaceholder}
-            value={
-              dateProps.offsetDays === undefined ? "" : dateProps.offsetDays
-            }
+            value={dateProps.offsetDays === undefined ? "" : dateProps.offsetDays}
             onChange={e =>
               onUpdate({
                 key: "offsetDays",
@@ -112,9 +90,7 @@ export const DatePropsForm: FC<DatePropsFormProps> = ({
               })
             }
             error={!!errors?.offsetDays}
-            helperText={
-              errors?.offsetDays || strings.dateElement.offsetDaysHelper
-            }
+            helperText={errors?.offsetDays || strings.dateElement.offsetDaysHelper}
             disabled={disabled}
           />
         </Grid>

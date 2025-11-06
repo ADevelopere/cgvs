@@ -20,13 +20,9 @@ export namespace QRCodeElementUtils {
   /**
    * Map GraphQL QRCodeElement create input to repository QRCodeElement create input
    */
-  export const mapQRCodeElementCreateGraphqlToInput = (
-    input: QRCodeElementInputGraphql
-  ): QRCodeElementInput => {
+  export const mapQRCodeElementCreateGraphqlToInput = (input: QRCodeElementInputGraphql): QRCodeElementInput => {
     if (!input || !input.base || !input.qrCodeProps) {
-      throw new Error(
-        "QRCodeElementInputGraphql must include base, qrCodeProps, and dataSource"
-      );
+      throw new Error("QRCodeElementInputGraphql must include base, qrCodeProps, and dataSource");
     }
     return {
       base: input.base,
@@ -41,9 +37,7 @@ export namespace QRCodeElementUtils {
     input: QRCodeElementUpdateInputGraphql
   ): QRCodeElementUpdateInput => {
     if (!input || !input.base || !input.qrCodeProps) {
-      throw new Error(
-        "QRCodeElementUpdateInputGraphql must include base, qrCodeProps"
-      );
+      throw new Error("QRCodeElementUpdateInputGraphql must include base, qrCodeProps");
     }
     return {
       id: input.id,
@@ -55,14 +49,10 @@ export namespace QRCodeElementUtils {
   /**
    * Validate error correction level
    */
-  const validateErrorCorrection = (
-    errorCorrection: QRCodeErrorCorrection
-  ): void => {
+  const validateErrorCorrection = (errorCorrection: QRCodeErrorCorrection): void => {
     const validLevels = Object.values(QRCodeErrorCorrection);
     if (!validLevels.includes(errorCorrection)) {
-      throw new Error(
-        `Invalid error correction level: ${errorCorrection}. Must be one of: ${validLevels.join(", ")}`
-      );
+      throw new Error(`Invalid error correction level: ${errorCorrection}. Must be one of: ${validLevels.join(", ")}`);
     }
   };
 
@@ -73,9 +63,7 @@ export namespace QRCodeElementUtils {
   /**
    * Validate all fields for QR_CODE element (create/update)
    */
-  export const validateInput = async (
-    input: QRCodeElementInput
-  ): Promise<void> => {
+  export const validateInput = async (input: QRCodeElementInput): Promise<void> => {
     if (!input.base || !input.qrCodeProps) {
       throw new Error("QRCodeElementInput must include base, qrCodeProps");
     }
@@ -94,9 +82,7 @@ export namespace QRCodeElementUtils {
   /**
    * Validate qrCodeProps for standalone update
    */
-  export const checkSpecProps = async (
-    qrCodeProps: QRCodeElementSpecPropsInput
-  ): Promise<void> => {
+  export const checkSpecProps = async (qrCodeProps: QRCodeElementSpecPropsInput): Promise<void> => {
     // Validate error correction level
     validateErrorCorrection(qrCodeProps.errorCorrection);
 

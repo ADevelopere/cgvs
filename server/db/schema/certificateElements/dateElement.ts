@@ -2,10 +2,7 @@ import { integer, pgTable, jsonb, varchar } from "drizzle-orm/pg-core";
 import { certificateElement } from "./certificateElement";
 import { elementTextProps } from "./elementTextProps";
 import { templateVariableBases } from "../templateVariables";
-import {
-  calendarTypeEnum,
-  dateTransformationTypeEnum,
-} from "./templateElementEnums";
+import { calendarTypeEnum, dateTransformationTypeEnum } from "./templateElementEnums";
 import { type DateDataSource } from "@/server/types/element";
 
 export const dateElement = pgTable("date_element", {
@@ -22,8 +19,5 @@ export const dateElement = pgTable("date_element", {
   dateDataSource: jsonb("date_data_source").$type<DateDataSource>().notNull(),
   // Mirrored from data_source.dateVariableId
   // Populated when data_source.type = 'TEMPLATE_DATE_VARIABLE'
-  variableId: integer("variable_id").references(
-    () => templateVariableBases.id,
-    { onDelete: "restrict" }
-  ),
+  variableId: integer("variable_id").references(() => templateVariableBases.id, { onDelete: "restrict" }),
 });

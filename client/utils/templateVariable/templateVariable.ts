@@ -8,10 +8,7 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
  * @param b - Second value to compare
  * @returns boolean - true if values are different, false if they are equivalent
  */
-function isDifferent<T>(
-  a: T | undefined | null,
-  b: T | undefined | null
-): boolean {
+function isDifferent<T>(a: T | undefined | null, b: T | undefined | null): boolean {
   // Handle null and undefined cases
   const aIsNullish = a === null || a === undefined;
   const bIsNullish = b === null || b === undefined;
@@ -95,13 +92,7 @@ export function isNumberVariableDifferent(
   if (isDifferent(temporary.name, original.name)) return true;
   if (isDifferent(temporary.description, original.description)) return true;
   if (isDifferent(temporary.required, original.required)) return true;
-  if (
-    isDifferent(
-      temporary.previewValue,
-      original.previewValue as number | null | undefined
-    )
-  )
-    return true;
+  if (isDifferent(temporary.previewValue, original.previewValue as number | null | undefined)) return true;
   if (isDifferent(temporary.minValue, original.minValue)) return true;
   if (isDifferent(temporary.maxValue, original.maxValue)) return true;
   if (isDifferent(temporary.decimalPlaces, original.decimalPlaces)) return true;
@@ -141,10 +132,7 @@ export function isSelectVariableDifferent(
   if (isDifferent(temporary.multiple, original.multiple)) return true;
 
   // Special handling for options since it's an array
-  if (
-    temporary.options !== undefined &&
-    JSON.stringify(temporary.options) !== JSON.stringify(original.options)
-  )
+  if (temporary.options !== undefined && JSON.stringify(temporary.options) !== JSON.stringify(original.options))
     return true;
 
   return false;

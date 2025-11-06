@@ -1,11 +1,5 @@
 export interface UploadFileState {
-  status:
-    | "pending"
-    | "uploading"
-    | "completed"
-    | "success"
-    | "error"
-    | "cancelled";
+  status: "pending" | "uploading" | "completed" | "success" | "error" | "cancelled";
   progress: number;
   error?: string;
   file: File;
@@ -30,13 +24,7 @@ export interface UploadFileDisplayInfo {
   fileName: string;
   fileType: string;
   progress: number;
-  status:
-    | "pending"
-    | "uploading"
-    | "completed"
-    | "success"
-    | "error"
-    | "cancelled";
+  status: "pending" | "uploading" | "completed" | "success" | "error" | "cancelled";
   error?: string;
 }
 

@@ -5,7 +5,5 @@ export type OmitIdRelationFields<T> = {
 
 // omit "id" | "createdAt" | "updatedAt"
 export type OmitEntityFields<T> = {
-  [K in keyof T as K extends "id" | "createdAt" | "updatedAt"
-    ? never
-    : K]: T[K];
+  [K in keyof T as K extends "id" | "createdAt" | "updatedAt" ? never : K]: T[K];
 };

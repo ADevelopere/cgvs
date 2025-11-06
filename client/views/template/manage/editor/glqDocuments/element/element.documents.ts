@@ -278,9 +278,7 @@ export const updateElementCommonPropertiesMutationDocument: TypedDocumentNode<
     input: GQL.CertificateElementBaseUpdateInput;
   }
 > = gql`
-  mutation UpdateElementCommonProperties(
-    $input: CertificateElementBaseUpdateInput!
-  ) {
+  mutation UpdateElementCommonProperties($input: CertificateElementBaseUpdateInput!) {
     updateElementCommonProperties(input: $input) {
       base {
         id

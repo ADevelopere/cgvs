@@ -52,11 +52,7 @@ export const DownloadImage: React.FC = () => {
             opacity: isGenerating ? 0.6 : 1,
           }}
         >
-          {isGenerating ? (
-            <CircularProgress size={16} color="inherit" />
-          ) : (
-            "Download Image"
-          )}
+          {isGenerating ? <CircularProgress size={16} color="inherit" /> : "Download Image"}
         </button>
       </Panel>
 

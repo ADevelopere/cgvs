@@ -8,19 +8,13 @@ import { useNodeData } from "../NodeDataProvider";
 import { CircularProgress } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import {
-  elementsByTemplateIdQueryDocument,
-  templateConfigByTemplateIdQueryDocument,
-} from "../glqDocuments";
+import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "../glqDocuments";
 import { resolveTextContent } from "../imageRenderer/textResolvers";
 import { FontFamily, getFontByFamily } from "@/lib/font/google";
 import { ElementAlignment } from "@/client/graphql/generated/gql/graphql";
 
 // Function to trigger PDF download
-async function downloadPdf(
-  pdfBytes: Uint8Array,
-  filename: string = "certificate.pdf"
-) {
+async function downloadPdf(pdfBytes: Uint8Array, filename: string = "certificate.pdf") {
   const blob = new Blob([pdfBytes.buffer as ArrayBuffer], {
     type: "application/pdf",
   });
@@ -34,9 +28,7 @@ async function downloadPdf(
 }
 
 // Collect unique font families from text elements
-function collectFontFamilies(
-  elements: GQL.CertificateElementUnion[]
-): FontFamily[] {
+function collectFontFamilies(elements: GQL.CertificateElementUnion[]): FontFamily[] {
   const families = new Set<FontFamily>();
   for (const el of elements) {
     if (el.__typename === "TextElement") {
@@ -62,10 +54,7 @@ async function fetchFontBytes(url: string): Promise<Uint8Array> {
 }
 
 // Embed fonts in PDF document
-async function embedFontsForPdf(
-  pdfDoc: PDFDocument,
-  fontFamilies: FontFamily[]
-): Promise<Map<FontFamily, PDFFont>> {
+async function embedFontsForPdf(pdfDoc: PDFDocument, fontFamilies: FontFamily[]): Promise<Map<FontFamily, PDFFont>> {
   const fontMap = new Map<FontFamily, PDFFont>();
   const fallbackFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
@@ -84,8 +73,7 @@ async function embedFontsForPdf(
       }
 
       // Get font URL (prioritize "regular" variant)
-      const fontUrl =
-        fontItem.files.regular || Object.values(fontItem.files)[0];
+      const fontUrl = fontItem.files.regular || Object.values(fontItem.files)[0];
       if (!fontUrl) {
         logger.warn(`No font file found for family "${family}", using fallback`);
         fontMap.set(family, fallbackFont);
@@ -109,7 +97,7 @@ async function embedFontsForPdf(
 function hexToRgb(hex: string): { r: number; g: number; b: number } {
   // Remove # if present
   const cleanHex = hex.startsWith("#") ? hex.slice(1) : hex;
-  
+
   // Handle 3-character hex codes
   if (cleanHex.length === 3) {
     const r = parseInt(cleanHex[0] + cleanHex[0], 16) / 255;
@@ -117,7 +105,7 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
     const b = parseInt(cleanHex[2] + cleanHex[2], 16) / 255;
     return { r, g, b };
   }
-  
+
   // Handle 6-character hex codes
   const r = parseInt(cleanHex.slice(0, 2), 16) / 255;
   const g = parseInt(cleanHex.slice(2, 4), 16) / 255;
@@ -126,12 +114,7 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
 }
 
 // Calculate text X position based on alignment
-function getTextXPosition(
-  x: number,
-  width: number,
-  textWidth: number,
-  alignment: ElementAlignment
-): number {
+function getTextXPosition(x: number, width: number, textWidth: number, alignment: ElementAlignment): number {
   switch (alignment) {
     case ElementAlignment.TopCenter:
     case ElementAlignment.Center:
@@ -157,19 +140,25 @@ export const DownloadPdf: React.FC = () => {
   const { templateId } = useNodeData();
   const [isGenerating, setIsGenerating] = React.useState(false);
 
-  const { data: configData, error: configError, loading: configLoading } =
-    useQuery(templateConfigByTemplateIdQueryDocument, {
-      variables: { templateId: templateId! },
-      skip: !templateId,
-      fetchPolicy: "cache-first",
-    });
+  const {
+    data: configData,
+    error: configError,
+    loading: configLoading,
+  } = useQuery(templateConfigByTemplateIdQueryDocument, {
+    variables: { templateId: templateId! },
+    skip: !templateId,
+    fetchPolicy: "cache-first",
+  });
 
-  const { data: elementsData, error: elementsError, loading: elementsLoading } =
-    useQuery(elementsByTemplateIdQueryDocument, {
-      variables: { templateId: templateId! },
-      skip: !templateId,
-      fetchPolicy: "cache-first",
-    });
+  const {
+    data: elementsData,
+    error: elementsError,
+    loading: elementsLoading,
+  } = useQuery(elementsByTemplateIdQueryDocument, {
+    variables: { templateId: templateId! },
+    skip: !templateId,
+    fetchPolicy: "cache-first",
+  });
 
   const isDataReady =
     !configLoading &&
@@ -205,7 +194,7 @@ export const DownloadPdf: React.FC = () => {
       return;
     }
 
-    const password = "123"
+    const password = "123";
     //  prompt("Enter a password to protect the PDF:");
     // if (!password) {
     //   logger.info("PDF generation cancelled: No password provided.");
@@ -216,7 +205,7 @@ export const DownloadPdf: React.FC = () => {
 
     try {
       const pdfDoc = await PDFDocument.create();
-      
+
       // Register fontkit for custom font embedding
       pdfDoc.registerFontkit(fontkit);
 
@@ -241,15 +230,10 @@ export const DownloadPdf: React.FC = () => {
       for (const el of textElements) {
         if (el.base.hidden) continue;
 
-        const text = resolveTextContent(
-          el.textDataSource,
-          config.language,
-          "Text"
-        );
+        const text = resolveTextContent(el.textDataSource, config.language, "Text");
 
         const family =
-          el.textProps.fontRef.__typename === "FontReferenceGoogle" &&
-          el.textProps.fontRef.identifier
+          el.textProps.fontRef.__typename === "FontReferenceGoogle" && el.textProps.fontRef.identifier
             ? (el.textProps.fontRef.identifier as FontFamily)
             : FontFamily.ROBOTO;
 
@@ -263,12 +247,7 @@ export const DownloadPdf: React.FC = () => {
 
         // Calculate text width for alignment
         const textWidth = font.widthOfTextAtSize(text, fontSize);
-        const x = getTextXPosition(
-          el.base.positionX * 0.75,
-          el.base.width * 0.75,
-          textWidth,
-          el.base.alignment
-        );
+        const x = getTextXPosition(el.base.positionX * 0.75, el.base.width * 0.75, textWidth, el.base.alignment);
 
         // Handle text overflow (simple truncation for now)
         let displayText = text;
@@ -308,10 +287,7 @@ export const DownloadPdf: React.FC = () => {
 
       const pdfBytes = await pdfDoc.save(saveOptionsWithPassword);
 
-      await downloadPdf(
-        pdfBytes,
-        `certificate-${templateId}_protected.pdf`
-      );
+      await downloadPdf(pdfBytes, `certificate-${templateId}_protected.pdf`);
 
       logger.info("PDF generated successfully");
     } catch (error) {
@@ -319,15 +295,7 @@ export const DownloadPdf: React.FC = () => {
     } finally {
       setIsGenerating(false);
     }
-  }, [
-    templateId,
-    isGenerating,
-    isDataReady,
-    configData,
-    elementsData,
-    configError,
-    elementsError,
-  ]);
+  }, [templateId, isGenerating, isDataReady, configData, elementsData, configError, elementsError]);
 
   return (
     <Panel position="top-left">
@@ -341,16 +309,11 @@ export const DownloadPdf: React.FC = () => {
           color: theme.palette.primary.contrastText,
           border: "none",
           borderRadius: theme.shape.borderRadius,
-          cursor:
-            isGenerating || !isDataReady ? "not-allowed" : "pointer",
+          cursor: isGenerating || !isDataReady ? "not-allowed" : "pointer",
           opacity: isGenerating || !isDataReady ? 0.6 : 1,
         }}
       >
-        {isGenerating ? (
-          <CircularProgress size={16} color="inherit" />
-        ) : (
-          "Download Protected PDF"
-        )}
+        {isGenerating ? <CircularProgress size={16} color="inherit" /> : "Download Protected PDF"}
       </button>
     </Panel>
   );

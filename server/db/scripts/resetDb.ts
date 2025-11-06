@@ -4,9 +4,7 @@ import { runMigrations } from "./migrate";
 
 function parseDatabaseUrl(url: string) {
   // Example: postgres://user:password@host:port/dbname or postgresql://user:password@host:port/dbname
-  const match = url.match(
-    /^postgres(?:ql)?:\/\/(.*?):(.*?)@(.*?):(\d+)\/(.*)$/
-  );
+  const match = url.match(/^postgres(?:ql)?:\/\/(.*?):(.*?)@(.*?):(\d+)\/(.*)$/);
   if (!match) throw new Error("Invalid DATABASE_URL format");
   return {
     user: match[1],
@@ -39,10 +37,7 @@ async function resetDatabase() {
   });
   try {
     // Terminate connections to target DB
-    await adminPool.query(
-      `SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = $1;`,
-      [database]
-    );
+    await adminPool.query(`SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = $1;`, [database]);
     // Drop DB
     await adminPool.query(`DROP DATABASE IF EXISTS "${database}";`);
     logger.log(`Dropped database: ${database}`);

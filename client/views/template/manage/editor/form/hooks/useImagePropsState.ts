@@ -31,9 +31,7 @@ export type UseImagePropsStateReturn = {
 /**
  * Extract imageProps state from ImageElement
  */
-function extractImagePropsState(
-  element: GQL.CertificateElementUnion
-): ImagePropsFormState | null {
+function extractImagePropsState(element: GQL.CertificateElementUnion): ImagePropsFormState | null {
   if (element.__typename !== "ImageElement" || !element.imageProps) {
     return null;
   }
@@ -46,10 +44,7 @@ function extractImagePropsState(
 /**
  * Convert imageProps input to update input
  */
-function toUpdateInput(
-  elementId: number,
-  state: ImagePropsFormState
-): GQL.ImageElementSpecPropsStandaloneUpdateInput {
+function toUpdateInput(elementId: number, state: ImagePropsFormState): GQL.ImageElementSpecPropsStandaloneUpdateInput {
   return {
     elementId: elementId,
     imageProps: {
@@ -58,16 +53,12 @@ function toUpdateInput(
   };
 }
 
-export function useImagePropsState(
-  params: UseImagePropsStateParams
-): UseImagePropsStateReturn {
+export function useImagePropsState(params: UseImagePropsStateParams): UseImagePropsStateReturn {
   const { templateId, elements } = params;
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
 
-  const [updateImageElementSpecPropsMutation] = useMutation(
-    updateImageElementSpecPropsMutationDocument
-  );
+  const [updateImageElementSpecPropsMutation] = useMutation(updateImageElementSpecPropsMutationDocument);
 
   // Mutation function
   const mutationFn = React.useCallback(
@@ -80,8 +71,7 @@ export function useImagePropsState(
           },
         });
       } catch (error) {
-        const errorMessage =
-          errorStrings?.updateFailed || "Failed to update image properties";
+        const errorMessage = errorStrings?.updateFailed || "Failed to update image properties";
         logger.error("useImagePropsState: Mutation failed", {
           elementId,
           error,
@@ -138,10 +128,7 @@ export const useImageProps = (params: UseImagePropsParams) => {
 
   // Get state or initialize if not present (only initialize once)
   const imageProps: ImagePropsFormState = React.useMemo(() => {
-    return (
-      imagePropsStates.get(params.elementId) ??
-      initImagePropsState(params.elementId)
-    );
+    return imagePropsStates.get(params.elementId) ?? initImagePropsState(params.elementId);
   }, [imagePropsStates, params.elementId, initImagePropsState]);
 
   const updateImageProps: UpdateImagePropsFn = React.useCallback(

@@ -24,8 +24,7 @@ const This: React.FC = () => {
 
   const { theme, isRtl } = useAppTheme();
   const [firstPaneVisible, setFirstPaneVisible] = React.useState<boolean>(true);
-  const [secondPaneVisible, setSecondPaneVisible] =
-    React.useState<boolean>(true);
+  const [secondPaneVisible, setSecondPaneVisible] = React.useState<boolean>(true);
 
   const handleFirstPaneVisibility = () => {
     setFirstPaneVisible(!firstPaneVisible);
@@ -35,16 +34,10 @@ const This: React.FC = () => {
     setSecondPaneVisible(!secondPaneVisible);
   };
 
-  const { activeCategoryTab, setActiveCategoryTab, currentCategory } =
-    useTemplateCategoryStore();
-  const [prevTabIndex, setPrevTabIndex] = React.useState(
-    TAB_ORDER.indexOf(activeCategoryTab)
-  );
+  const { activeCategoryTab, setActiveCategoryTab, currentCategory } = useTemplateCategoryStore();
+  const [prevTabIndex, setPrevTabIndex] = React.useState(TAB_ORDER.indexOf(activeCategoryTab));
 
-  const handleTabChange = async (
-    _: React.SyntheticEvent,
-    newValue: TemplateCategoryManagementTabType
-  ) => {
+  const handleTabChange = async (_: React.SyntheticEvent, newValue: TemplateCategoryManagementTabType) => {
     setPrevTabIndex(TAB_ORDER.indexOf(activeCategoryTab));
     setActiveCategoryTab(newValue);
   };
@@ -54,11 +47,7 @@ const This: React.FC = () => {
     const currentTabIndex = TAB_ORDER.indexOf(activeCategoryTab);
     const baseDirection = currentTabIndex > prevTabIndex ? "left" : "right";
     // Reverse direction in RTL mode
-    return isRtl
-      ? baseDirection === "left"
-        ? "right"
-        : "left"
-      : baseDirection;
+    return isRtl ? (baseDirection === "left" ? "right" : "left") : baseDirection;
   }, [activeCategoryTab, prevTabIndex, isRtl]);
 
   return (
@@ -108,18 +97,8 @@ const This: React.FC = () => {
                 },
               }}
             >
-              <Tab
-                label={strings.templateCategoriesManagement}
-                value="all"
-                icon={<FileStack />}
-                iconPosition="start"
-              />
-              <Tab
-                icon={<DeleteOutline />}
-                iconPosition="start"
-                label={strings.theDeleted}
-                value="deleted"
-              />
+              <Tab label={strings.templateCategoriesManagement} value="all" icon={<FileStack />} iconPosition="start" />
+              <Tab icon={<DeleteOutline />} iconPosition="start" label={strings.theDeleted} value="deleted" />
             </TabList>
 
             <Box sx={{ flex: 1 }} />
@@ -128,10 +107,7 @@ const This: React.FC = () => {
                 {/* first pane visibility button*/}
                 <Tooltip title={strings.toggleCategoriesPane}>
                   <span>
-                    <IconButton
-                      onClick={handleFirstPaneVisibility}
-                      disabled={!(currentCategory && secondPaneVisible)}
-                    >
+                    <IconButton onClick={handleFirstPaneVisibility} disabled={!(currentCategory && secondPaneVisible)}>
                       <PanelRight />
                     </IconButton>
                   </span>
@@ -139,10 +115,7 @@ const This: React.FC = () => {
                 {/* second pane visibility button */}
                 <Tooltip title={strings.toggleTemplatesPane}>
                   <span>
-                    <IconButton
-                      onClick={handleSecondPaneVisibility}
-                      disabled={!firstPaneVisible}
-                    >
+                    <IconButton onClick={handleSecondPaneVisibility} disabled={!firstPaneVisible}>
                       <PanelLeft />
                     </IconButton>
                   </span>
@@ -159,11 +132,7 @@ const This: React.FC = () => {
             }}
           >
             <Fade in={activeCategoryTab === "all"} timeout={300}>
-              <Slide
-                direction={slideDirection}
-                in={activeCategoryTab === "all"}
-                timeout={250}
-              >
+              <Slide direction={slideDirection} in={activeCategoryTab === "all"} timeout={250}>
                 <Box sx={{ height: "100%" }}>
                   <SplitPane
                     orientation="vertical"
@@ -195,11 +164,7 @@ const This: React.FC = () => {
           </TabPanel>
           <TabPanel value="deleted">
             <Fade in={activeCategoryTab === "deleted"} timeout={300}>
-              <Slide
-                direction={slideDirection}
-                in={activeCategoryTab === "deleted"}
-                timeout={250}
-              >
+              <Slide direction={slideDirection} in={activeCategoryTab === "deleted"} timeout={250}>
                 <Box>
                   <SuspenstionTemplatesCategory />
                 </Box>

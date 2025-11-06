@@ -2,8 +2,7 @@ import * as GQL from "@/client/graphql/generated/gql/graphql";
 
 // Random verification code generator
 const generateVerificationCode = () => {
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let code = "";
   for (let i = 0; i < 10; i++) {
     const randomIndex = Math.floor(Math.random() * chars.length);
@@ -34,9 +33,7 @@ export function resolveTextContent(
 
   // Certificate field
   if (dataSource.__typename === "TextDataSourceCertificateField") {
-    if (
-      dataSource.certificateField === GQL.CertificateTextField.VerificationCode
-    ) {
+    if (dataSource.certificateField === GQL.CertificateTextField.VerificationCode) {
       return generateVerificationCode();
     }
     return `{{${dataSource.certificateField}}}`;

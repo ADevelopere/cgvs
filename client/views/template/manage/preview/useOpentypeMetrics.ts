@@ -92,5 +92,3 @@ export function getTrueFontMetrics(font: OpentypeFont | undefined, fontSize: num
   const baselineOffset = ascender * scale;
   return { lineHeight, baselineOffset };
 }
-
-

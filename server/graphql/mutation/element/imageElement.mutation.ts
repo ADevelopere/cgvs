@@ -1,11 +1,7 @@
 import { gqlSchemaBuilder } from "../../gqlSchemaBuilder";
 import * as ElementPothos from "../../pothos/element";
-import {
-  ImageElementRepository,
-} from "@/server/db/repo";
-import {
-  ImageElementUtils,
-} from "@/server/utils";
+import { ImageElementRepository } from "@/server/db/repo";
+import { ImageElementUtils } from "@/server/utils";
 
 gqlSchemaBuilder.mutationFields(t => ({
   createImageElement: t.field({
@@ -17,9 +13,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = ImageElementUtils.mapImageElementCreateGraphqlToInput(
-        args.input
-      );
+      const input = ImageElementUtils.mapImageElementCreateGraphqlToInput(args.input);
       return await ImageElementRepository.create(input);
     },
   }),
@@ -33,9 +27,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = ImageElementUtils.mapImageElementUpdateGraphqlToInput(
-        args.input
-      );
+      const input = ImageElementUtils.mapImageElementUpdateGraphqlToInput(args.input);
       return await ImageElementRepository.update(input);
     },
   }),
@@ -62,9 +54,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = ImageElementUtils.mapDataSourceStandaloneGqlToInput(
-        args.input
-      );
+      const input = ImageElementUtils.mapDataSourceStandaloneGqlToInput(args.input);
       return await ImageElementRepository.updateImageElementDataSource(input);
     },
   }),

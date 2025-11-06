@@ -23,12 +23,7 @@ export const useTemplateCategoryOperations = () => {
   const { templateCategoryTranslations: strings } = useAppTranslation();
 
   // Get the state and setters from the store
-  const {
-    currentCategory,
-    currentTemplateId,
-    setCurrentTemplateId,
-    selectCategory,
-  } = useTemplateCategoryStore();
+  const { currentCategory, currentTemplateId, setCurrentTemplateId, selectCategory } = useTemplateCategoryStore();
 
   /**
    * Create a new template category.
@@ -134,9 +129,7 @@ export const useTemplateCategoryOperations = () => {
    * Updates the store directly on success.
    */
   const createTemplate = useCallback(
-    async (
-      input: Graphql.CreateTemplateMutationVariables["input"]
-    ): Promise<void> => {
+    async (input: Graphql.CreateTemplateMutationVariables["input"]): Promise<void> => {
       try {
         const result = await templateApollo.createTemplateMutation({
           variables: { input },
@@ -157,22 +150,13 @@ export const useTemplateCategoryOperations = () => {
           message?: string;
           graphQLErrors?: Array<{ message: string }>;
         };
-        const errorMessage =
-          gqlError.graphQLErrors?.[0]?.message ||
-          gqlError.message ||
-          strings.templateAddFailed;
+        const errorMessage = gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.templateAddFailed;
 
         logger.error("Error creating template:", error);
         notifications.show(errorMessage, { severity: "error" });
       }
     },
-    [
-      templateApollo,
-      notifications,
-      strings.templateAddedSuccessfully,
-      strings.templateAddFailed,
-      setCurrentTemplateId,
-    ]
+    [templateApollo, notifications, strings.templateAddedSuccessfully, strings.templateAddFailed, setCurrentTemplateId]
   );
 
   /**
@@ -180,9 +164,7 @@ export const useTemplateCategoryOperations = () => {
    * Updates the store directly on success.
    */
   const updateTemplate = useCallback(
-    async (
-      input: Graphql.UpdateTemplateMutationVariables["input"]
-    ): Promise<void> => {
+    async (input: Graphql.UpdateTemplateMutationVariables["input"]): Promise<void> => {
       const updatedTemplate = await templateOperations.updateTemplate(input);
       if (updatedTemplate) {
         setCurrentTemplateId(updatedTemplate.id);
@@ -203,28 +185,20 @@ export const useTemplateCategoryOperations = () => {
         });
 
         if (result.data) {
-          notifications.show(
-            strings.templateDeletedSuccessfully ||
-              "Template deleted successfully",
-            { severity: "success" }
-          );
+          notifications.show(strings.templateDeletedSuccessfully || "Template deleted successfully", {
+            severity: "success",
+          });
           // If the deleted template was the active one, clear it from the store
           if (currentTemplateId === id) {
             setCurrentTemplateId(null);
           }
         } else {
           logger.error("Error deleting template:", result.error);
-          notifications.show(
-            strings.templateDeleteFailed || "Failed to delete template",
-            { severity: "error" }
-          );
+          notifications.show(strings.templateDeleteFailed || "Failed to delete template", { severity: "error" });
         }
       } catch (error) {
         logger.error("Error deleting template:", error);
-        notifications.show(
-          strings.templateDeleteFailed || "Failed to delete template",
-          { severity: "error" }
-        );
+        notifications.show(strings.templateDeleteFailed || "Failed to delete template", { severity: "error" });
       }
     },
     [
@@ -268,9 +242,7 @@ export const useTemplateCategoryOperations = () => {
           graphQLErrors?: Array<{ message: string }>;
         };
         const errorMessage =
-          gqlError.graphQLErrors?.[0]?.message ||
-          gqlError.message ||
-          strings.templateMoveToDeletionFailed;
+          gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.templateMoveToDeletionFailed;
 
         logger.error("Error suspending template:", error);
         notifications.show(errorMessage, { severity: "error" });
@@ -314,10 +286,7 @@ export const useTemplateCategoryOperations = () => {
           message?: string;
           graphQLErrors?: Array<{ message: string }>;
         };
-        const errorMessage =
-          gqlError.graphQLErrors?.[0]?.message ||
-          gqlError.message ||
-          strings.templateRestoreFailed;
+        const errorMessage = gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.templateRestoreFailed;
 
         logger.error("Error unsuspending template:", error);
         notifications.show(errorMessage, { severity: "error" });

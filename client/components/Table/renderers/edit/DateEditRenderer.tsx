@@ -137,14 +137,7 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
     onSave(editValue.toISOString()).catch(() => {
       // Error handling is done by the parent component
     });
-  }, [
-    editValue,
-    onSave,
-    validateDate,
-    initialDate,
-    onCancel,
-    validationStrings,
-  ]);
+  }, [editValue, onSave, validateDate, initialDate, onCancel, validationStrings]);
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
@@ -184,9 +177,7 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
           cursor: "pointer",
         }}
       >
-        <Typography variant="body2">
-          {editValue ? editValue.toLocaleDateString() : "Select date..."}
-        </Typography>
+        <Typography variant="body2">{editValue ? editValue.toLocaleDateString() : "Select date..."}</Typography>
       </Box>
 
       {/* Popover with StaticDatePicker */}
@@ -208,10 +199,7 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
           },
         }}
       >
-        <LocalizationProvider
-          dateAdapter={AdapterDateFns}
-          adapterLocale={locale}
-        >
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={locale}>
           <Box sx={{ p: 2 }}>
             <StaticDatePicker
               value={editValue}
@@ -228,11 +216,7 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
 
             {/* Error message */}
             {error && (
-              <Typography
-                color="error"
-                variant="caption"
-                sx={{ display: "block", mt: 1, px: 1 }}
-              >
+              <Typography color="error" variant="caption" sx={{ display: "block", mt: 1, px: 1 }}>
                 {error}
               </Typography>
             )}
@@ -250,11 +234,7 @@ export const DateEditRenderer: React.FC<DateEditRendererProps> = ({
               }}
             >
               <Button onClick={onCancel}>{generalStrings.cancel}</Button>
-              <Button
-                onClick={handleConfirm}
-                variant="contained"
-                disabled={!!error || !editValue}
-              >
+              <Button onClick={handleConfirm} variant="contained" disabled={!!error || !editValue}>
                 {generalStrings.confirm}
               </Button>
             </Box>

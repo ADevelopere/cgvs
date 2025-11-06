@@ -1,13 +1,4 @@
-import {
-  createContext,
-  useContext,
-  ReactNode,
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
+import { createContext, useContext, ReactNode, useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { LoadMoreParams, PageInfo } from "../types";
 import { useTableContext } from "./TableContext";
 
@@ -15,10 +6,7 @@ import { useTableContext } from "./TableContext";
  * Type definition for the Table Rows Context
  * Manages row selection, heights, and loading functionality
  */
-export type TableRowsContextType<
-  TRowData,
-  TRowId extends string | number = string | number,
-> = {
+export type TableRowsContextType<TRowData, TRowId extends string | number = string | number> = {
   // Row selection related props
   rowSelectionEnabled: boolean;
   isAllRowsSelected?: boolean;
@@ -34,10 +22,7 @@ export type TableRowsContextType<
 
   // Pagination and loading
   totalRows: number; // Total number of rows in the dataset
-  loadMoreRowsIfNeeded: (
-    visibleStartIndex: number,
-    visibleStopIndex: number
-  ) => Promise<void>;
+  loadMoreRowsIfNeeded: (visibleStartIndex: number, visibleStopIndex: number) => Promise<void>;
 
   // Configuration
   getRowId: (row: TRowData) => TRowId; // Function to extract row ID
@@ -48,10 +33,7 @@ const TableRowsContext =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   createContext<TableRowsContextType<any, any> | null>(null);
 
-export type TableRowsProviderProps<
-  TRowData,
-  TRowId extends string | number = string | number,
-> = {
+export type TableRowsProviderProps<TRowData, TRowId extends string | number = string | number> = {
   children: ReactNode;
 
   onLoadMoreRows?: (params: LoadMoreParams) => Promise<void>;
@@ -72,10 +54,7 @@ export type TableRowsProviderProps<
   onSelectionChange?: (selectedIds: TRowId[]) => void;
 };
 
-export const TableRowsProvider = <
-  TRowData,
-  TRowId extends string | number = string | number,
->({
+export const TableRowsProvider = <TRowData, TRowId extends string | number = string | number>({
   children,
 
   getRowStyle,
@@ -94,15 +73,11 @@ export const TableRowsProvider = <
   onSelectionChange,
 }: TableRowsProviderProps<TRowData, TRowId>) => {
   const { data, isLoading } = useTableContext<TRowData, string>();
-  const [rowHeights, setRowHeights] = useState<Record<TRowId, number>>(
-    {} as Record<TRowId, number>
-  );
+  const [rowHeights, setRowHeights] = useState<Record<TRowId, number>>({} as Record<TRowId, number>);
   const loadingMoreRef = useRef(false);
 
   // Use external selection state if provided, otherwise use internal state
-  const [internalSelectedRowIds, setInternalSelectedRowIds] = useState<
-    TRowId[]
-  >([]);
+  const [internalSelectedRowIds, setInternalSelectedRowIds] = useState<TRowId[]>([]);
   const selectedRowIds = externalSelectedRowIds ?? internalSelectedRowIds;
 
   // Use pageInfo.total if available, otherwise use provided totalRows or data.length
@@ -113,10 +88,7 @@ export const TableRowsProvider = <
   // Effect to initialize row heights
 
   useEffect(() => {
-    const initialRowHeights: Record<TRowId, number> = {} as Record<
-      TRowId,
-      number
-    >;
+    const initialRowHeights: Record<TRowId, number> = {} as Record<TRowId, number>;
     data.forEach(item => {
       initialRowHeights[getRowId(item)] = 50; // Default row height
     });
@@ -201,24 +173,14 @@ export const TableRowsProvider = <
         try {
           await onLoadMoreRows({
             visibleStartIndex: data.length,
-            visibleStopIndex: Math.min(
-              data.length + pageSize - 1,
-              effectiveTotalRows - 1
-            ),
+            visibleStopIndex: Math.min(data.length + pageSize - 1, effectiveTotalRows - 1),
           });
         } finally {
           loadingMoreRef.current = false;
         }
       }
     },
-    [
-      data.length,
-      isLoading,
-      onLoadMoreRows,
-      pageSize,
-      effectiveTotalRows,
-      pageInfo,
-    ]
+    [data.length, isLoading, onLoadMoreRows, pageSize, effectiveTotalRows, pageInfo]
   );
 
   // Rest of the component...
@@ -245,9 +207,7 @@ export const TableRowsProvider = <
         }
       } else {
         // Deselect only rows in the current page, keeping selections from other pages
-        const newSelections = selectedRowIds.filter(
-          id => !currentPageIds.includes(id)
-        );
+        const newSelections = selectedRowIds.filter(id => !currentPageIds.includes(id));
 
         if (onSelectionChange) {
           onSelectionChange(newSelections);
@@ -333,17 +293,13 @@ export const TableRowsProvider = <
     ]
   );
 
-  return (
-    <TableRowsContext.Provider value={value}>
-      {children}
-    </TableRowsContext.Provider>
-  );
+  return <TableRowsContext.Provider value={value}>{children}</TableRowsContext.Provider>;
 };
 
-export const useTableRowsContext = <
+export const useTableRowsContext = <TRowData, TRowId extends string | number = string | number>(): TableRowsContextType<
   TRowData,
-  TRowId extends string | number = string | number,
->(): TableRowsContextType<TRowData, TRowId> => {
+  TRowId
+> => {
   const context = useContext(TableRowsContext);
   if (!context) {
     throw new Error("useTableRowsContext must be used within a TableProvider");

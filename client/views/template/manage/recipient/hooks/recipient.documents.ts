@@ -1,10 +1,7 @@
 import { TypedDocumentNode, gql } from "@apollo/client";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
-export const recipientQueryDocument: TypedDocumentNode<
-  Graphql.RecipientQuery,
-  Graphql.RecipientQueryVariables
-> = gql`
+export const recipientQueryDocument: TypedDocumentNode<Graphql.RecipientQuery, Graphql.RecipientQueryVariables> = gql`
   query recipient($id: Int!) {
     recipient(id: $id) {
       id

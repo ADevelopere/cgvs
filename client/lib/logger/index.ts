@@ -57,7 +57,7 @@ class ClientLogger {
   private serializeForAPI(...args: unknown[]): string {
     // Convert args to a string for API logging only
     return args
-      .map((arg) => {
+      .map(arg => {
         if (typeof arg === "string") return arg;
         if (arg instanceof Error) return `${arg.name}: ${arg.message}`;
         try {
@@ -101,11 +101,7 @@ class ClientLogger {
     const color = this.getColorCode(level);
 
     // Console output with colors - let browser handle formatting naturally
-    const consoleArgs = [
-      `%c[${timestamp}] [${level.toUpperCase()}]`,
-      `color: ${color}; font-weight: bold;`,
-      ...args,
-    ];
+    const consoleArgs = [`%c[${timestamp}] [${level.toUpperCase()}]`, `color: ${color}; font-weight: bold;`, ...args];
 
     switch (level) {
       case "log":

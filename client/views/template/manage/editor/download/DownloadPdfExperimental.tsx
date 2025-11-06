@@ -8,10 +8,7 @@ import { useNodeData } from "../NodeDataProvider";
 import { CircularProgress } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import {
-  elementsByTemplateIdQueryDocument,
-  templateConfigByTemplateIdQueryDocument,
-} from "../glqDocuments";
+import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "../glqDocuments";
 import { resolveTextContent } from "../imageRenderer/textResolvers";
 import { FontFamily, getFontByFamily } from "@/lib/font/google";
 
@@ -51,10 +48,7 @@ function measureLineHeight(font: PDFFont, size: number): number {
 /**
  * Calculate total height of a text block
  */
-function calculateTextBlockHeight(
-  lineCount: number,
-  lineHeight: number
-): number {
+function calculateTextBlockHeight(lineCount: number, lineHeight: number): number {
   return lineCount * lineHeight;
 }
 
@@ -65,12 +59,7 @@ function calculateTextBlockHeight(
 /**
  * TRUNCATE: Hard clip text to fit width (no ellipsis)
  */
-function handleTruncate(
-  text: string,
-  maxWidth: number,
-  font: PDFFont,
-  size: number
-): string {
+function handleTruncate(text: string, maxWidth: number, font: PDFFont, size: number): string {
   let truncated = text;
   let textWidth = measureTextWidth(truncated, font, size);
 
@@ -85,12 +74,7 @@ function handleTruncate(
 /**
  * ELLIPSE: Truncate text and append "..." to fit width
  */
-function handleEllipse(
-  text: string,
-  maxWidth: number,
-  font: PDFFont,
-  size: number
-): string {
+function handleEllipse(text: string, maxWidth: number, font: PDFFont, size: number): string {
   const ellipsis = "...";
   const ellipsisWidth = measureTextWidth(ellipsis, font, size);
 
@@ -109,10 +93,7 @@ function handleEllipse(
   let truncated = text;
   let truncatedWidth = measureTextWidth(truncated, font, size);
 
-  while (
-    truncatedWidth + ellipsisWidth > maxWidth &&
-    truncated.length > 0
-  ) {
+  while (truncatedWidth + ellipsisWidth > maxWidth && truncated.length > 0) {
     truncated = truncated.substring(0, truncated.length - 1);
     truncatedWidth = measureTextWidth(truncated, font, size);
   }
@@ -124,12 +105,7 @@ function handleEllipse(
  * WRAP: Break text into multiple lines that fit within maxWidth
  * Uses greedy word-wrap algorithm
  */
-function handleWrap(
-  text: string,
-  maxWidth: number,
-  font: PDFFont,
-  size: number
-): string[] {
+function handleWrap(text: string, maxWidth: number, font: PDFFont, size: number): string[] {
   const words = text.split(" ");
   const lines: string[] = [];
   let currentLine = "";
@@ -329,19 +305,10 @@ function calculateTextPosition(
 /**
  * Render text element with proper overflow and alignment handling
  */
-function renderTextElement(
-  element: GQL.TextElement,
-  page: PDFPage,
-  font: PDFFont,
-  config: GQL.TemplateConfig
-): void {
+function renderTextElement(element: GQL.TextElement, page: PDFPage, font: PDFFont, config: GQL.TemplateConfig): void {
   if (element.base.hidden) return;
 
-  const text = resolveTextContent(
-    element.textDataSource,
-    config.language,
-    "Text"
-  );
+  const text = resolveTextContent(element.textDataSource, config.language, "Text");
 
   const fontSize = element.textProps.fontSize;
   const color = element.textProps.color || "#000000";
@@ -355,14 +322,7 @@ function renderTextElement(
   const maxHeight = element.base.height * 0.75;
 
   // Process text based on overflow mode
-  const { lines, finalSize, lineHeight } = processTextOverflow(
-    text,
-    overflow,
-    maxWidth,
-    maxHeight,
-    font,
-    fontSize
-  );
+  const { lines, finalSize, lineHeight } = processTextOverflow(text, overflow, maxWidth, maxHeight, font, fontSize);
 
   // Calculate text position based on alignment
   const { height: pageHeight } = page.getSize();
@@ -399,9 +359,7 @@ function renderTextElement(
 /**
  * Collect unique font families from text elements
  */
-function collectFontFamilies(
-  elements: GQL.CertificateElementUnion[]
-): FontFamily[] {
+function collectFontFamilies(elements: GQL.CertificateElementUnion[]): FontFamily[] {
   const families = new Set<FontFamily>();
   for (const el of elements) {
     if (el.__typename === "TextElement") {
@@ -431,10 +389,7 @@ async function fetchFontBytes(url: string): Promise<Uint8Array> {
 /**
  * Embed fonts in PDF document
  */
-async function embedFontsForPdf(
-  pdfDoc: PDFDocument,
-  fontFamilies: FontFamily[]
-): Promise<Map<FontFamily, PDFFont>> {
+async function embedFontsForPdf(pdfDoc: PDFDocument, fontFamilies: FontFamily[]): Promise<Map<FontFamily, PDFFont>> {
   const fontMap = new Map<FontFamily, PDFFont>();
   const fallbackFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
@@ -453,8 +408,7 @@ async function embedFontsForPdf(
       }
 
       // Get font URL (prioritize "regular" variant)
-      const fontUrl =
-        fontItem.files.regular || Object.values(fontItem.files)[0];
+      const fontUrl = fontItem.files.regular || Object.values(fontItem.files)[0];
       if (!fontUrl) {
         logger.warn(`No font file found for family "${family}", using fallback`);
         fontMap.set(family, fallbackFont);
@@ -507,10 +461,7 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
 /**
  * Trigger PDF download
  */
-async function downloadPdf(
-  pdfBytes: Uint8Array,
-  filename: string = "certificate.pdf"
-) {
+async function downloadPdf(pdfBytes: Uint8Array, filename: string = "certificate.pdf") {
   const blob = new Blob([pdfBytes.buffer as ArrayBuffer], {
     type: "application/pdf",
   });
@@ -532,19 +483,25 @@ export const DownloadPdfExperimental: React.FC = () => {
   const { templateId } = useNodeData();
   const [isGenerating, setIsGenerating] = React.useState(false);
 
-  const { data: configData, error: configError, loading: configLoading } =
-    useQuery(templateConfigByTemplateIdQueryDocument, {
-      variables: { templateId: templateId! },
-      skip: !templateId,
-      fetchPolicy: "cache-first",
-    });
+  const {
+    data: configData,
+    error: configError,
+    loading: configLoading,
+  } = useQuery(templateConfigByTemplateIdQueryDocument, {
+    variables: { templateId: templateId! },
+    skip: !templateId,
+    fetchPolicy: "cache-first",
+  });
 
-  const { data: elementsData, error: elementsError, loading: elementsLoading } =
-    useQuery(elementsByTemplateIdQueryDocument, {
-      variables: { templateId: templateId! },
-      skip: !templateId,
-      fetchPolicy: "cache-first",
-    });
+  const {
+    data: elementsData,
+    error: elementsError,
+    loading: elementsLoading,
+  } = useQuery(elementsByTemplateIdQueryDocument, {
+    variables: { templateId: templateId! },
+    skip: !templateId,
+    fetchPolicy: "cache-first",
+  });
 
   const isDataReady =
     !configLoading &&
@@ -580,7 +537,7 @@ export const DownloadPdfExperimental: React.FC = () => {
       return;
     }
 
-    const password = "123"
+    const password = "123";
     // prompt("Enter a password to protect the PDF:");
     // if (!password) {
     //   logger.info("PDF generation cancelled: No password provided.");
@@ -614,8 +571,7 @@ export const DownloadPdfExperimental: React.FC = () => {
       // Render text elements
       for (const el of textElements) {
         const family =
-          el.textProps.fontRef.__typename === "FontReferenceGoogle" &&
-          el.textProps.fontRef.identifier
+          el.textProps.fontRef.__typename === "FontReferenceGoogle" && el.textProps.fontRef.identifier
             ? (el.textProps.fontRef.identifier as FontFamily)
             : FontFamily.ROBOTO;
 
@@ -639,10 +595,7 @@ export const DownloadPdfExperimental: React.FC = () => {
 
       const pdfBytes = await pdfDoc.save(saveOptionsWithPassword);
 
-      await downloadPdf(
-        pdfBytes,
-        `certificate-${templateId}_experimental.pdf`
-      );
+      await downloadPdf(pdfBytes, `certificate-${templateId}_experimental.pdf`);
 
       logger.info("PDF generated successfully (experimental)");
     } catch (error) {
@@ -650,15 +603,7 @@ export const DownloadPdfExperimental: React.FC = () => {
     } finally {
       setIsGenerating(false);
     }
-  }, [
-    templateId,
-    isGenerating,
-    isDataReady,
-    configData,
-    elementsData,
-    configError,
-    elementsError,
-  ]);
+  }, [templateId, isGenerating, isDataReady, configData, elementsData, configError, elementsError]);
 
   return (
     <Panel position="top-center">
@@ -672,17 +617,12 @@ export const DownloadPdfExperimental: React.FC = () => {
           color: theme.palette.primary.contrastText,
           border: "none",
           borderRadius: theme.shape.borderRadius,
-          cursor:
-            isGenerating || !isDataReady ? "not-allowed" : "pointer",
+          cursor: isGenerating || !isDataReady ? "not-allowed" : "pointer",
           opacity: isGenerating || !isDataReady ? 0.6 : 1,
           marginLeft: "8px",
         }}
       >
-        {isGenerating ? (
-          <CircularProgress size={16} color="inherit" />
-        ) : (
-          "Download PDF (Experimental)"
-        )}
+        {isGenerating ? <CircularProgress size={16} color="inherit" /> : "Download PDF (Experimental)"}
       </button>
     </Panel>
   );

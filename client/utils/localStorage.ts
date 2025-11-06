@@ -2,10 +2,7 @@
 const STORAGE_DEBOUNCE_MS = 300;
 
 // Helper function to debounce operations
-export function debounce<Args extends unknown[]>(
-  func: (...args: Args) => void,
-  wait: number
-): (...args: Args) => void {
+export function debounce<Args extends unknown[]>(func: (...args: Args) => void, wait: number): (...args: Args) => void {
   let timeout: NodeJS.Timeout;
   return (...args: Args) => {
     clearTimeout(timeout);
@@ -43,7 +40,4 @@ export function loadFromLocalStorage<T>(key: string): T | null {
 }
 
 // Create a debounced version of saveToLocalStorage
-export const debouncedSaveToLocalStorage = debounce(
-  saveToLocalStorage,
-  STORAGE_DEBOUNCE_MS
-);
+export const debouncedSaveToLocalStorage = debounce(saveToLocalStorage, STORAGE_DEBOUNCE_MS);

@@ -4,17 +4,7 @@ import { GoogleFontItem } from "../types";
 const data: GoogleFontItem[] = [
   {
     family: "Noto Sans Meetei Mayek",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
     subsets: ["latin", "latin-ext", "meetei-mayek"],
     version: "v20",
     lastModified: "2025-09-08",

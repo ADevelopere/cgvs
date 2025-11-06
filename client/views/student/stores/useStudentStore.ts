@@ -58,24 +58,15 @@ export const useStudentStore = create<StudentStoreState>()(
 
       setQueryParams: params =>
         set(state => {
-          logger.info(
-            "🔍 useStudentStore: setQueryParams called with:",
-            params
-          );
-          logger.info(
-            "🔍 useStudentStore: current queryParams before:",
-            state.queryParams
-          );
+          logger.info("🔍 useStudentStore: setQueryParams called with:", params);
+          logger.info("🔍 useStudentStore: current queryParams before:", state.queryParams);
 
           const newQueryParams = {
             ...state.queryParams,
             ...params,
           };
 
-          logger.info(
-            "🔍 useStudentStore: new queryParams after setQueryParams:",
-            newQueryParams
-          );
+          logger.info("🔍 useStudentStore: new queryParams after setQueryParams:", newQueryParams);
           return { queryParams: newQueryParams };
         }),
 
@@ -85,9 +76,7 @@ export const useStudentStore = create<StudentStoreState>()(
           if (isSelected) {
             // Remove from selection
             return {
-              selectedStudents: state.selectedStudents.filter(
-                studentId => studentId !== id
-              ),
+              selectedStudents: state.selectedStudents.filter(studentId => studentId !== id),
             };
           } else {
             // Clear previous selection and select this student (single select)
@@ -109,59 +98,32 @@ export const useStudentStore = create<StudentStoreState>()(
             clause,
             columnId,
           });
-          logger.info(
-            "🔍 useStudentStore: current filters before:",
-            state.filters
-          );
-          logger.info(
-            "🔍 useStudentStore: current queryParams.filterArgs before:",
-            state.queryParams.filterArgs
-          );
+          logger.info("🔍 useStudentStore: current filters before:", state.filters);
+          logger.info("🔍 useStudentStore: current queryParams.filterArgs before:", state.queryParams.filterArgs);
 
           const newFilters = { ...state.filters };
           if (clause) {
             newFilters[columnId] = clause;
-            logger.info(
-              "🔍 useStudentStore: setting filter for column:",
-              columnId
-            );
+            logger.info("🔍 useStudentStore: setting filter for column:", columnId);
           } else {
             delete newFilters[columnId];
-            logger.info(
-              "🔍 useStudentStore: removing filter for column:",
-              columnId
-            );
+            logger.info("🔍 useStudentStore: removing filter for column:", columnId);
           }
 
-          logger.info(
-            "🔍 useStudentStore: new filters after setColumnFilter:",
-            newFilters
-          );
+          logger.info("🔍 useStudentStore: new filters after setColumnFilter:", newFilters);
           return { filters: newFilters };
         }),
 
       clearFilter: columnId =>
         set(state => {
-          logger.info(
-            "🔍 useStudentStore: clearFilter called with columnId:",
-            columnId
-          );
-          logger.info(
-            "🔍 useStudentStore: current filters before:",
-            state.filters
-          );
-          logger.info(
-            "🔍 useStudentStore: current queryParams.filterArgs before:",
-            state.queryParams.filterArgs
-          );
+          logger.info("🔍 useStudentStore: clearFilter called with columnId:", columnId);
+          logger.info("🔍 useStudentStore: current filters before:", state.filters);
+          logger.info("🔍 useStudentStore: current queryParams.filterArgs before:", state.queryParams.filterArgs);
 
           const newFilters = { ...state.filters };
           delete newFilters[columnId];
 
-          logger.info(
-            "🔍 useStudentStore: new filters after clearFilter:",
-            newFilters
-          );
+          logger.info("🔍 useStudentStore: new filters after clearFilter:", newFilters);
           return { filters: newFilters };
         }),
 
@@ -174,10 +136,7 @@ export const useStudentStore = create<StudentStoreState>()(
       storage: createJSONStorage(() => sessionStorage),
       // Persist query parameters for restoration
       partialize: state => {
-        logger.info(
-          "💾 Persisting student store state:",
-          JSON.stringify(state, null, 2)
-        );
+        logger.info("💾 Persisting student store state:", JSON.stringify(state, null, 2));
         const persistedState = {
           queryParams: state.queryParams,
           filters: state.filters,
@@ -206,13 +165,9 @@ export const useStudentStore = create<StudentStoreState>()(
                 ...typedPersistedState.queryParams.paginationArgs,
               },
               // Preserve orderBy from persisted state
-              orderBy:
-                typedPersistedState.queryParams.orderBy ||
-                currentState.queryParams.orderBy,
+              orderBy: typedPersistedState.queryParams.orderBy || currentState.queryParams.orderBy,
               // Preserve filterArgs from persisted state
-              filterArgs:
-                typedPersistedState.queryParams.filterArgs ||
-                currentState.queryParams.filterArgs,
+              filterArgs: typedPersistedState.queryParams.filterArgs || currentState.queryParams.filterArgs,
             }
           : currentState.queryParams;
 
@@ -220,15 +175,10 @@ export const useStudentStore = create<StudentStoreState>()(
           ...currentState,
           queryParams: mergedQueryParams,
           filters: typedPersistedState?.filters || currentState.filters,
-          selectedStudents:
-            typedPersistedState?.selectedStudents ||
-            currentState.selectedStudents,
+          selectedStudents: typedPersistedState?.selectedStudents || currentState.selectedStudents,
         };
 
-        logger.info(
-          "✅ Final merged state:",
-          JSON.stringify(mergedState, null, 2)
-        );
+        logger.info("✅ Final merged state:", JSON.stringify(mergedState, null, 2));
         return mergedState;
       },
     }

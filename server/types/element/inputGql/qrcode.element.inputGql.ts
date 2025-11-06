@@ -1,7 +1,4 @@
-import {
-  CertificateElementBaseInput,
-  QRCodeElementSpecPropsInput,
-} from "../input";
+import { CertificateElementBaseInput, QRCodeElementSpecPropsInput } from "../input";
 
 // ============================================================================
 // Mutation Inputs

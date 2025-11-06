@@ -16,9 +16,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = GenderElementUtils.mapGenderElementCreateGraphqlToInput(
-        args.input
-      );
+      const input = GenderElementUtils.mapGenderElementCreateGraphqlToInput(args.input);
       return await GenderElementRepository.create(input);
     },
   }),
@@ -32,9 +30,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = GenderElementUtils.mapGenderElementUpdateGraphqlToInput(
-        args.input
-      );
+      const input = GenderElementUtils.mapGenderElementUpdateGraphqlToInput(args.input);
       return await GenderElementRepository.update(input);
     },
   }),

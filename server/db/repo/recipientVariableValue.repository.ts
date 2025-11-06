@@ -19,10 +19,7 @@ export namespace RecipientVariableValueRepository {
         studentName: DB.students.name,
       })
       .from(DB.templateRecipientGroupItems)
-      .leftJoin(
-        DB.students,
-        eq(DB.templateRecipientGroupItems.studentId, DB.students.id)
-      )
+      .leftJoin(DB.students, eq(DB.templateRecipientGroupItems.studentId, DB.students.id))
       .where(eq(DB.templateRecipientGroupItems.id, recipientGroupItemId))
       .limit(1);
 
@@ -40,29 +37,19 @@ export namespace RecipientVariableValueRepository {
     if (!group[0]) return null;
 
     // 3. Fetch template variables
-    const variables = await TemplateVariableRepository.findByTemplateId(
-      group[0].templateId
-    );
+    const variables = await TemplateVariableRepository.findByTemplateId(group[0].templateId);
 
     // 4. Fetch JSONB values
     const valueRow = await db
       .select()
       .from(DB.recipientGroupItemVariableValues)
-      .where(
-        eq(
-          DB.recipientGroupItemVariableValues.templateRecipientGroupItemId,
-          recipientGroupItemId
-        )
-      )
+      .where(eq(DB.recipientGroupItemVariableValues.templateRecipientGroupItemId, recipientGroupItemId))
       .limit(1);
 
     const jsonbValues = valueRow[0]?.variableValues || {};
 
     // 5. Transform to map and collect invalid fields
-    const { values, invalidFields } = transformAndValidateJsonb(
-      jsonbValues,
-      variables
-    );
+    const { values, invalidFields } = transformAndValidateJsonb(jsonbValues, variables);
 
     // 6. If there are invalid fields, fix them in DB (set to null)
     if (invalidFields.length > 0 && valueRow[0]) {
@@ -103,9 +90,7 @@ export namespace RecipientVariableValueRepository {
     if (!group[0]) return { data: [], total: 0 };
 
     // 2. Fetch template variables
-    const variables = await TemplateVariableRepository.findByTemplateId(
-      group[0].templateId
-    );
+    const variables = await TemplateVariableRepository.findByTemplateId(group[0].templateId);
 
     // 3. Build query for recipients with student names
     const baseQuery = db
@@ -115,20 +100,13 @@ export namespace RecipientVariableValueRepository {
         studentName: DB.students.name,
       })
       .from(DB.templateRecipientGroupItems)
-      .leftJoin(
-        DB.students,
-        eq(DB.templateRecipientGroupItems.studentId, DB.students.id)
-      )
-      .where(
-        eq(DB.templateRecipientGroupItems.recipientGroupId, recipientGroupId)
-      )
+      .leftJoin(DB.students, eq(DB.templateRecipientGroupItems.studentId, DB.students.id))
+      .where(eq(DB.templateRecipientGroupItems.recipientGroupId, recipientGroupId))
       .$dynamic();
 
     // Apply pagination if provided
     const recipientsQuery =
-      pagination?.limit !== undefined
-        ? baseQuery.limit(pagination.limit).offset(pagination.offset || 0)
-        : baseQuery;
+      pagination?.limit !== undefined ? baseQuery.limit(pagination.limit).offset(pagination.offset || 0) : baseQuery;
 
     const recipients = await recipientsQuery;
 
@@ -142,18 +120,10 @@ export namespace RecipientVariableValueRepository {
     const valueRows = await db
       .select()
       .from(DB.recipientGroupItemVariableValues)
-      .where(
-        eq(
-          DB.recipientGroupItemVariableValues.recipientGroupId,
-          recipientGroupId
-        )
-      );
+      .where(eq(DB.recipientGroupItemVariableValues.recipientGroupId, recipientGroupId));
 
     const valuesMap = new Map(
-      valueRows.map(row => [
-        row.templateRecipientGroupItemId,
-        { jsonb: row.variableValues, dbId: row.id },
-      ])
+      valueRows.map(row => [row.templateRecipientGroupItemId, { jsonb: row.variableValues, dbId: row.id }])
     );
 
     // 5. Transform each recipient and collect fixes
@@ -167,10 +137,7 @@ export namespace RecipientVariableValueRepository {
       const valueData = valuesMap.get(recipient.id);
       const jsonbValues = valueData?.jsonb || {};
 
-      const { values, invalidFields } = transformAndValidateJsonb(
-        jsonbValues,
-        variables
-      );
+      const { values, invalidFields } = transformAndValidateJsonb(jsonbValues, variables);
 
       // Collect fixes for this recipient
       if (invalidFields.length > 0 && valueData?.dbId) {
@@ -222,17 +189,12 @@ export namespace RecipientVariableValueRepository {
           studentName: DB.students.name,
         })
         .from(DB.templateRecipientGroupItems)
-        .leftJoin(
-          DB.students,
-          eq(DB.templateRecipientGroupItems.studentId, DB.students.id)
-        )
+        .leftJoin(DB.students, eq(DB.templateRecipientGroupItems.studentId, DB.students.id))
         .where(eq(DB.templateRecipientGroupItems.id, recipientGroupItemId))
         .limit(1);
 
       if (!recipientItem[0]) {
-        throw new Error(
-          `Recipient group item ${recipientGroupItemId} not found`
-        );
+        throw new Error(`Recipient group item ${recipientGroupItemId} not found`);
       }
 
       const item = recipientItem[0];
@@ -248,17 +210,13 @@ export namespace RecipientVariableValueRepository {
       }
 
       // 2. Fetch template variables
-      const variables = await TemplateVariableRepository.findByTemplateId(
-        group[0].templateId
-      );
+      const variables = await TemplateVariableRepository.findByTemplateId(group[0].templateId);
       const variablesById = new Map(variables.map(v => [v.id, v]));
 
       // 3. Validate all variable IDs belong to template
       const invalidIds = values.filter(v => !variablesById.has(v.variableId));
       if (invalidIds.length > 0) {
-        throw new Error(
-          `Invalid variable IDs: ${invalidIds.map(v => v.variableId).join(", ")}`
-        );
+        throw new Error(`Invalid variable IDs: ${invalidIds.map(v => v.variableId).join(", ")}`);
       }
 
       // 4. Parse and validate inputs - throw on first error
@@ -282,12 +240,7 @@ export namespace RecipientVariableValueRepository {
       const currentRow = await tx
         .select()
         .from(DB.recipientGroupItemVariableValues)
-        .where(
-          eq(
-            DB.recipientGroupItemVariableValues.templateRecipientGroupItemId,
-            recipientGroupItemId
-          )
-        )
+        .where(eq(DB.recipientGroupItemVariableValues.templateRecipientGroupItemId, recipientGroupItemId))
         .limit(1);
 
       const currentValues = currentRow[0]?.variableValues || {};
@@ -323,10 +276,7 @@ export namespace RecipientVariableValueRepository {
       }
 
       // 7. Transform mergedValues to VariableValuesMap format
-      const { values: transformedValues } = transformAndValidateJsonb(
-        mergedValues,
-        variables
-      );
+      const { values: transformedValues } = transformAndValidateJsonb(mergedValues, variables);
 
       // 8. Return result with fresh data from transaction
       return {
@@ -352,8 +302,7 @@ export namespace RecipientVariableValueRepository {
     // Initialize all variables with null (or [] for SELECT multiple)
     for (const variable of variables) {
       if (variable.type === Types.TemplateVariableType.SELECT) {
-        const selectVar =
-          variable as Types.TemplateSelectVariablePothosDefinition;
+        const selectVar = variable as Types.TemplateSelectVariablePothosDefinition;
         if (selectVar.multiple) {
           values[variable.id] = [];
         } else {
@@ -409,8 +358,7 @@ export namespace RecipientVariableValueRepository {
 
       switch (variable.type) {
         case Types.TemplateVariableType.TEXT: {
-          const textVar =
-            variable as Types.TemplateTextVariablePothosDefinition;
+          const textVar = variable as Types.TemplateTextVariablePothosDefinition;
           // Validate pattern if exists (patterns should be sanitized at create/update)
           if (textVar.pattern) {
             try {
@@ -429,18 +377,13 @@ export namespace RecipientVariableValueRepository {
         }
 
         case Types.TemplateVariableType.NUMBER: {
-          const numberVar =
-            variable as Types.TemplateNumberVariablePothosDefinition;
+          const numberVar = variable as Types.TemplateNumberVariablePothosDefinition;
           const num = parseFloat(input.value);
           if (isNaN(num)) {
             return { parsed: null, error: "Invalid number format" };
           }
-          if (
-            numberVar.decimalPlaces !== undefined &&
-            numberVar.decimalPlaces !== null
-          ) {
-            const decimals = (Math.abs(num).toString().split(".")[1] || "")
-              .length;
+          if (numberVar.decimalPlaces !== undefined && numberVar.decimalPlaces !== null) {
+            const decimals = (Math.abs(num).toString().split(".")[1] || "").length;
             if (decimals > numberVar.decimalPlaces) {
               return {
                 parsed: null,
@@ -448,21 +391,13 @@ export namespace RecipientVariableValueRepository {
               };
             }
           }
-          if (
-            numberVar.minValue !== undefined &&
-            numberVar.minValue !== null &&
-            num < numberVar.minValue
-          ) {
+          if (numberVar.minValue !== undefined && numberVar.minValue !== null && num < numberVar.minValue) {
             return {
               parsed: null,
               error: `Value ${num} is less than minimum ${numberVar.minValue}`,
             };
           }
-          if (
-            numberVar.maxValue !== undefined &&
-            numberVar.maxValue !== null &&
-            num > numberVar.maxValue
-          ) {
+          if (numberVar.maxValue !== undefined && numberVar.maxValue !== null && num > numberVar.maxValue) {
             return {
               parsed: null,
               error: `Value ${num} exceeds maximum ${numberVar.maxValue}`,
@@ -472,8 +407,7 @@ export namespace RecipientVariableValueRepository {
         }
 
         case Types.TemplateVariableType.DATE: {
-          const dateVar =
-            variable as Types.TemplateDateVariablePothosDefinition;
+          const dateVar = variable as Types.TemplateDateVariablePothosDefinition;
           const date = new Date(input.value);
           if (isNaN(date.getTime())) {
             return { parsed: null, error: "Invalid date format" };
@@ -500,8 +434,7 @@ export namespace RecipientVariableValueRepository {
         }
 
         case Types.TemplateVariableType.SELECT: {
-          const selectVar =
-            variable as Types.TemplateSelectVariablePothosDefinition;
+          const selectVar = variable as Types.TemplateSelectVariablePothosDefinition;
           // Try parse as JSON array for multiple select
           let selectedValues: string[];
           try {
@@ -513,9 +446,7 @@ export namespace RecipientVariableValueRepository {
 
           // Validate against options
           const validOptions = selectVar.options || [];
-          const invalidOptions = selectedValues.filter(
-            v => !validOptions.includes(v)
-          );
+          const invalidOptions = selectedValues.filter(v => !validOptions.includes(v));
           if (invalidOptions.length > 0) {
             return {
               parsed: null,
@@ -570,29 +501,16 @@ export namespace RecipientVariableValueRepository {
       }
 
       case Types.TemplateVariableType.NUMBER: {
-        const numberVar =
-          variable as Types.TemplateNumberVariablePothosDefinition;
+        const numberVar = variable as Types.TemplateNumberVariablePothosDefinition;
         if (typeof value !== "number") return "Expected number";
-        if (
-          numberVar.minValue !== undefined &&
-          numberVar.minValue !== null &&
-          value < numberVar.minValue
-        ) {
+        if (numberVar.minValue !== undefined && numberVar.minValue !== null && value < numberVar.minValue) {
           return `Value ${value} is less than minimum ${numberVar.minValue}`;
         }
-        if (
-          numberVar.maxValue !== undefined &&
-          numberVar.maxValue !== null &&
-          value > numberVar.maxValue
-        ) {
+        if (numberVar.maxValue !== undefined && numberVar.maxValue !== null && value > numberVar.maxValue) {
           return `Value ${value} exceeds maximum ${numberVar.maxValue}`;
         }
-        if (
-          numberVar.decimalPlaces !== undefined &&
-          numberVar.decimalPlaces !== null
-        ) {
-          const decimals = (Math.abs(value).toString().split(".")[1] || "")
-            .length;
+        if (numberVar.decimalPlaces !== undefined && numberVar.decimalPlaces !== null) {
+          const decimals = (Math.abs(value).toString().split(".")[1] || "").length;
           if (decimals > numberVar.decimalPlaces) {
             return `Too many decimal places (max ${numberVar.decimalPlaces})`;
           }
@@ -632,15 +550,12 @@ export namespace RecipientVariableValueRepository {
       }
 
       case Types.TemplateVariableType.SELECT: {
-        const selectVar =
-          variable as Types.TemplateSelectVariablePothosDefinition;
+        const selectVar = variable as Types.TemplateSelectVariablePothosDefinition;
         const isMultiple = selectVar.multiple;
         if (isMultiple) {
           const values = Array.isArray(value) ? value : [value];
           const validOptions = selectVar.options || [];
-          const invalid = values.filter(
-            v => !validOptions.includes(v as string)
-          );
+          const invalid = values.filter(v => !validOptions.includes(v as string));
           if (invalid.length > 0) {
             return `Invalid options: ${invalid.join(", ")}`;
           }
@@ -648,8 +563,7 @@ export namespace RecipientVariableValueRepository {
         } else {
           if (Array.isArray(value)) return "Expected single value";
           const validOptions = selectVar.options || [];
-          if (!validOptions.includes(value as string))
-            return `Invalid options: ${value}`;
+          if (!validOptions.includes(value as string)) return `Invalid options: ${value}`;
           return null;
         }
       }

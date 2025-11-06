@@ -31,18 +31,14 @@ export type UseNumberDataSourceStateReturn = {
 /**
  * Type guard to check if element is NumberElement
  */
-function isNumberElement(
-  element: GQL.CertificateElementUnion
-): element is GQL.NumberElement {
+function isNumberElement(element: GQL.CertificateElementUnion): element is GQL.NumberElement {
   return element.__typename === "NumberElement";
 }
 
 /**
  * Extract numberDataSource state from element
  */
-function extractNumberDataSourceState(
-  element: GQL.CertificateElementUnion
-): NumberDataSourceFormState | null {
+function extractNumberDataSourceState(element: GQL.CertificateElementUnion): NumberDataSourceFormState | null {
   if (isNumberElement(element) && element.numberDataSource) {
     return {
       dataSource: numberDataSourceToInput(element.numberDataSource),
@@ -64,23 +60,16 @@ function toUpdateInput(
   };
 }
 
-export function useNumberDataSourceState(
-  params: UseNumberDataSourceStateParams
-): UseNumberDataSourceStateReturn {
+export function useNumberDataSourceState(params: UseNumberDataSourceStateParams): UseNumberDataSourceStateReturn {
   const { templateId, elements } = params;
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
 
-  const [updateNumberElementDataSourceMutation] = useMutation(
-    updateNumberElementDataSourceMutationDocument
-  );
+  const [updateNumberElementDataSourceMutation] = useMutation(updateNumberElementDataSourceMutationDocument);
 
   // Mutation function
   const mutationFn = React.useCallback(
-    async (
-      elementId: number,
-      state: NumberDataSourceFormState
-    ): Promise<void> => {
+    async (elementId: number, state: NumberDataSourceFormState): Promise<void> => {
       try {
         const updateInput = toUpdateInput(elementId, state);
         await updateNumberElementDataSourceMutation({
@@ -89,8 +78,7 @@ export function useNumberDataSourceState(
           },
         });
       } catch (error) {
-        const errorMessage =
-          errorStrings?.updateFailed || "Failed to update number data source";
+        const errorMessage = errorStrings?.updateFailed || "Failed to update number data source";
         logger.error("useNumberDataSourceState: Mutation failed", {
           elementId,
           error,
@@ -108,9 +96,9 @@ export function useNumberDataSourceState(
   const validator = validateNumberDataSource();
 
   const { states, updateFn, pushUpdate, initState, errors } = useElementState<
-  NumberDataSourceFormState, 
-  NumberDataSourceFormErrors,
-  NumberDataSourceFormErrors
+    NumberDataSourceFormState,
+    NumberDataSourceFormErrors,
+    NumberDataSourceFormErrors
   >({
     templateId,
     elements,
@@ -146,10 +134,7 @@ export const useNumberDataSource = (params: UseNumberDataSourceParams) => {
 
   // Get state or initialize if not present (only initialize once)
   const { dataSource } = React.useMemo(() => {
-    return (
-      numberDataSourceStates.get(params.elementId) ??
-      initNumberDataSourceState(params.elementId)
-    );
+    return numberDataSourceStates.get(params.elementId) ?? initNumberDataSourceState(params.elementId);
   }, [numberDataSourceStates, params.elementId, initNumberDataSourceState]);
 
   const updateNumberDataSource = React.useCallback(
@@ -181,4 +166,3 @@ export const useNumberDataSource = (params: UseNumberDataSourceParams) => {
     numberDataSourceErrors: errors,
   };
 };
-

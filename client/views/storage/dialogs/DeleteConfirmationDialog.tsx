@@ -12,12 +12,7 @@ export interface DeleteConfirmationDialogProps {
   onDelete: (paths: string[]) => Promise<boolean>;
 }
 
-const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
-  open,
-  onClose,
-  items,
-  onDelete,
-}) => {
+const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ open, onClose, items, onDelete }) => {
   const theme = MUI.useTheme();
   const {
     storageTranslations: { ui: translations },
@@ -41,16 +36,10 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
       if (success) {
         onClose();
       } else {
-        setError(
-          translations.deleteDialogFailedToDelete ||
-            "Failed to delete the item(s). Please try again."
-        );
+        setError(translations.deleteDialogFailedToDelete || "Failed to delete the item(s). Please try again.");
       }
     } catch {
-      setError(
-        translations.deleteDialogUnexpectedError ||
-          "An unexpected error occurred. Please try again."
-      );
+      setError(translations.deleteDialogUnexpectedError || "An unexpected error occurred. Please try again.");
     } finally {
       setIsDeleting(false);
     }
@@ -87,10 +76,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
     if (items.length === 1) {
       const item = items[0];
       return {
-        title: translations.deleteConfirmation.replace(
-          "%{fileName}",
-          item.name ?? item.path.split("/").pop() ?? ""
-        ),
+        title: translations.deleteConfirmation.replace("%{fileName}", item.name ?? item.path.split("/").pop() ?? ""),
         message: translations.deleteConfirmationMessage.replace(
           "%{fileName}",
           item.name ?? item.path.split("/").pop() ?? ""

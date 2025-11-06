@@ -1,11 +1,5 @@
 import type * as GQL from "@/client/graphql/generated/gql/graphql";
-import {
-  Action,
-  FormErrors,
-  UpdateStateFn,
-  ValidateFieldFn,
-  UpdateStateWithElementIdFn,
-} from "../../types";
+import { Action, FormErrors, UpdateStateFn, ValidateFieldFn, UpdateStateWithElementIdFn } from "../../types";
 import { TextPropsFormErrors } from "../textProps";
 import { BaseElementFormErrors } from "../base";
 
@@ -44,25 +38,17 @@ export type DateElementFormErrors = DateDataSourceFormErrors & {
 
 export type UpdateDateDataSourceFn = UpdateStateFn<DateDataSourceFormState>;
 
-export type UpdateDateDataSourceWithElementIdFn =
-  UpdateStateWithElementIdFn<DateDataSourceFormState>;
+export type UpdateDateDataSourceWithElementIdFn = UpdateStateWithElementIdFn<DateDataSourceFormState>;
 
 export type DateDataSourceUpdateAction = Action<DateDataSourceFormState>;
 
 export type UpdateDatePropsFn = UpdateStateFn<DatePropsFormState>;
 
-export type UpdateDatePropsWithElementIdFn =
-  UpdateStateWithElementIdFn<DatePropsFormState>;
+export type UpdateDatePropsWithElementIdFn = UpdateStateWithElementIdFn<DatePropsFormState>;
 
-export type ValidateDateDataSourceFn = ValidateFieldFn<
-  DateDataSourceFormState,
-  DateDataSourceFieldErrors
->;
+export type ValidateDateDataSourceFn = ValidateFieldFn<DateDataSourceFormState, DateDataSourceFieldErrors>;
 
-export type ValidateDatePropsFn = ValidateFieldFn<
-  DatePropsFormState,
-  string | undefined
->;
+export type ValidateDatePropsFn = ValidateFieldFn<DatePropsFormState, string | undefined>;
 
 // ============================================================================
 // SANITIZED STATE TYPES
@@ -77,9 +63,7 @@ export type SanitizedDateDataSourceFormState = GQL.DateDataSourceInput;
 /**
  * Convert DateDataSource (query union type) to DateDataSourceInput (OneOf input type)
  */
-export const dateDataSourceToInput = (
-  state: GQL.DateDataSource
-): GQL.DateDataSourceInput => {
+export const dateDataSourceToInput = (state: GQL.DateDataSource): GQL.DateDataSourceInput => {
   switch (state.__typename) {
     case "DateDataSourceStatic":
       return { static: { value: state.value ?? "" } };

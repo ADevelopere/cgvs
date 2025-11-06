@@ -36,9 +36,7 @@ export const TemplateNumberVariableSelector = ({
           <div>
             <div style={{ fontWeight: 500 }}>{option.name}</div>
             {option.description && (
-              <div style={{ fontSize: "0.875rem", color: "text.secondary" }}>
-                {option.description}
-              </div>
+              <div style={{ fontSize: "0.875rem", color: "text.secondary" }}>{option.description}</div>
             )}
             <div style={{ fontSize: "0.75rem", color: "text.secondary" }}>
               {option.minValue !== null && option.maxValue !== null && (
@@ -46,9 +44,7 @@ export const TemplateNumberVariableSelector = ({
                   Range: {option.minValue} - {option.maxValue} |{" "}
                 </span>
               )}
-              {option.decimalPlaces !== null && (
-                <span>Decimals: {option.decimalPlaces}</span>
-              )}
+              {option.decimalPlaces !== null && <span>Decimals: {option.decimalPlaces}</span>}
             </div>
           </div>
         </li>

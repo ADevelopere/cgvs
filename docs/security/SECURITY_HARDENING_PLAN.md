@@ -521,12 +521,7 @@ CREATE POLICY user_isolation_policy ON students
 **Implementation:**
 
 ```typescript
-const ALLOWED_MIME_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "application/pdf",
-];
+const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/gif", "application/pdf"];
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 ```

@@ -19,11 +19,8 @@ interface ColumnVisibilityPanelProps {
   onClose: () => void;
 }
 
-const ColumnVisibilityPanel: React.FC<ColumnVisibilityPanelProps> = ({
-  onClose,
-}) => {
-  const { allColumns, showColumn, hideColumn, hiddenColumns } =
-    useTableColumnContext();
+const ColumnVisibilityPanel: React.FC<ColumnVisibilityPanelProps> = ({ onClose }) => {
+  const { allColumns, showColumn, hideColumn, hiddenColumns } = useTableColumnContext();
   const { strings } = useTableLocale();
 
   return (
@@ -37,11 +34,7 @@ const ColumnVisibilityPanel: React.FC<ColumnVisibilityPanelProps> = ({
                 <Checkbox
                   edge="start"
                   checked={!hiddenColumns.includes(column.id)}
-                  onChange={() =>
-                    hiddenColumns.includes(column.id)
-                      ? showColumn(column.id)
-                      : hideColumn(column.id)
-                  }
+                  onChange={() => (hiddenColumns.includes(column.id) ? showColumn(column.id) : hideColumn(column.id))}
                 />
               </ListItemIcon>
               <ListItemText primary={column.label || column.id} />

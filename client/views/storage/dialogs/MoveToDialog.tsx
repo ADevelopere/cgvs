@@ -22,12 +22,7 @@ export interface MoveToDialogProps {
   onMove: (sourcePaths: string[], destinationPath: string) => Promise<boolean>;
 }
 
-const MoveToDialog: React.FC<MoveToDialogProps> = ({
-  open,
-  onClose,
-  items,
-  onMove,
-}) => {
+const MoveToDialog: React.FC<MoveToDialogProps> = ({ open, onClose, items, onMove }) => {
   const theme = MUI.useTheme();
   const {
     storageTranslations: { ui: translations },
@@ -35,10 +30,9 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
   const apolloClient = useApolloClient();
 
   // Query variables state
-  const [queryVariables, setQueryVariables] =
-    useState<Graphql.DirectoryChildrenQueryVariables>({
-      path: "", // empty string for root
-    });
+  const [queryVariables, setQueryVariables] = useState<Graphql.DirectoryChildrenQueryVariables>({
+    path: "", // empty string for root
+  });
 
   // Use Apollo Client hook to fetch directories
   const {
@@ -112,10 +106,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
       // Can't move to same location
       if (
         items.some(item => {
-          const itemParentPath = item.path.substring(
-            0,
-            item.path.lastIndexOf("/")
-          );
+          const itemParentPath = item.path.substring(0, item.path.lastIndexOf("/"));
           return itemParentPath === destinationPath;
         })
       ) {
@@ -127,10 +118,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
         if ("contentType" in item) return false; // Files can't create cycles
 
         // Check if destination is the item itself or a child of the item
-        return (
-          destinationPath === item.path ||
-          destinationPath.startsWith(item.path + "/")
-        );
+        return destinationPath === item.path || destinationPath.startsWith(item.path + "/");
       });
     },
     [items]
@@ -231,13 +219,10 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
           flexShrink: 0,
         }}
       >
-        {translations.moveDialogTitle ||
-          `Move ${items.length} item${items.length === 1 ? "" : "s"}`}
+        {translations.moveDialogTitle || `Move ${items.length} item${items.length === 1 ? "" : "s"}`}
       </MUI.DialogTitle>
 
-      <MUI.DialogContent
-        sx={{ flex: 1, display: "flex", flexDirection: "column", p: 0 }}
-      >
+      <MUI.DialogContent sx={{ flex: 1, display: "flex", flexDirection: "column", p: 0 }}>
         {/* Breadcrumb Navigation */}
         <MUI.Box
           sx={{
@@ -255,37 +240,25 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
             }}
           >
             <MUI.Typography variant="subtitle2" color="text.secondary">
-              {translations.moveDialogSelectDestination ||
-                "Select destination folder"}
+              {translations.moveDialogSelectDestination || "Select destination folder"}
             </MUI.Typography>
             <MUI.Box sx={{ display: "flex", gap: 1 }}>
               <MUI.Tooltip title={translations.moveDialogGoUp}>
                 <span>
-                  <MUI.IconButton
-                    size="small"
-                    onClick={navigateUp}
-                    disabled={!currentPath || loading}
-                  >
+                  <MUI.IconButton size="small" onClick={navigateUp} disabled={!currentPath || loading}>
                     <ArrowUpwardIcon fontSize="small" />
                   </MUI.IconButton>
                 </span>
               </MUI.Tooltip>
               <MUI.Tooltip title={translations.moveDialogRefresh}>
-                <MUI.IconButton
-                  size="small"
-                  onClick={refreshDirectory}
-                  disabled={loading}
-                >
+                <MUI.IconButton size="small" onClick={refreshDirectory} disabled={loading}>
                   <RefreshIcon fontSize="small" />
                 </MUI.IconButton>
               </MUI.Tooltip>
             </MUI.Box>
           </MUI.Box>
 
-          <MUI.Breadcrumbs
-            separator={<NavigateNextIcon fontSize="small" />}
-            sx={{ fontSize: "0.875rem" }}
-          >
+          <MUI.Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} sx={{ fontSize: "0.875rem" }}>
             {breadcrumbSegments.map((segment, index) => (
               <MUI.Link
                 key={segment.path}
@@ -294,9 +267,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
                 onClick={() => navigateToDirectory(segment.path)}
                 sx={{
                   color:
-                    index === breadcrumbSegments.length - 1
-                      ? theme.palette.text.primary
-                      : theme.palette.primary.main,
+                    index === breadcrumbSegments.length - 1 ? theme.palette.text.primary : theme.palette.primary.main,
                   textDecoration: "none",
                   cursor: "pointer",
                   display: "flex",
@@ -336,9 +307,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
             </MUI.Box>
           ) : directories.length === 0 ? (
             <MUI.Box sx={{ p: 3, textAlign: "center" }}>
-              <MUI.Typography color="text.secondary">
-                {translations.moveDialogNoFolders}
-              </MUI.Typography>
+              <MUI.Typography color="text.secondary">{translations.moveDialogNoFolders}</MUI.Typography>
             </MUI.Box>
           ) : (
             <MUI.List sx={{ p: 0 }}>
@@ -360,18 +329,13 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
                           py: 1.5,
                           px: 3,
                           opacity: isInvalid ? 0.5 : 1,
-                          backgroundColor:
-                            isHovered && !isInvalid
-                              ? theme.palette.action.hover
-                              : "transparent",
+                          backgroundColor: isHovered && !isInvalid ? theme.palette.action.hover : "transparent",
                         }}
                       >
                         <MUI.ListItemIcon sx={{ minWidth: 40 }}>
                           <FolderIcon
                             sx={{
-                              color: isInvalid
-                                ? theme.palette.text.disabled
-                                : theme.palette.warning.main,
+                              color: isInvalid ? theme.palette.text.disabled : theme.palette.warning.main,
                             }}
                           />
                         </MUI.ListItemIcon>
@@ -379,18 +343,12 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
                           primary={directory.name}
                           sx={{
                             "& .MuiListItemText-primary": {
-                              color: isInvalid
-                                ? theme.palette.text.disabled
-                                : theme.palette.text.primary,
+                              color: isInvalid ? theme.palette.text.disabled : theme.palette.text.primary,
                             },
                           }}
                         />
                         {isInvalid && (
-                          <MUI.Typography
-                            variant="caption"
-                            color="error"
-                            sx={{ ml: 1 }}
-                          >
+                          <MUI.Typography variant="caption" color="error" sx={{ ml: 1 }}>
                             {translations.moveDialogInvalid}
                           </MUI.Typography>
                         )}
@@ -414,8 +372,7 @@ const MoveToDialog: React.FC<MoveToDialogProps> = ({
             }}
           >
             <MUI.Alert severity="warning" sx={{ borderRadius: 1 }}>
-              {translations.moveDialogCannotMoveHere ||
-                "Cannot move items to this location"}
+              {translations.moveDialogCannotMoveHere || "Cannot move items to this location"}
             </MUI.Alert>
           </MUI.Box>
         )}

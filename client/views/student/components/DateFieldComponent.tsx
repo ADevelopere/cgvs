@@ -32,10 +32,7 @@ const DateFieldComponent: React.FC<DateFieldProps> = ({
     return enUS;
   }, [language]);
 
-  const StyledDateField = useMemo(
-    () => createStyledTextField(theme.palette.info.main),
-    [theme.palette.info.main]
-  );
+  const StyledDateField = useMemo(() => createStyledTextField(theme.palette.info.main), [theme.palette.info.main]);
 
   const { studentTranslations: strings } = useAppTranslation();
 
@@ -150,10 +147,7 @@ const DateFieldComponent: React.FC<DateFieldProps> = ({
           },
         }}
       >
-        <LocalizationProvider
-          dateAdapter={AdapterDateFns}
-          adapterLocale={locale}
-        >
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={locale}>
           <Box sx={{ p: 2 }}>
             <StaticDatePicker
               value={editValue}
@@ -169,11 +163,7 @@ const DateFieldComponent: React.FC<DateFieldProps> = ({
 
             {/* Error message */}
             {error && (
-              <Typography
-                color="error"
-                variant="caption"
-                sx={{ display: "block", mt: 1, px: 1 }}
-              >
+              <Typography color="error" variant="caption" sx={{ display: "block", mt: 1, px: 1 }}>
                 {error}
               </Typography>
             )}
@@ -193,11 +183,7 @@ const DateFieldComponent: React.FC<DateFieldProps> = ({
               <Button onClick={handleCancel} disabled={disabled}>
                 {strings.cancel}
               </Button>
-              <Button
-                onClick={handleConfirm}
-                variant="contained"
-                disabled={disabled || !!error || !editValue}
-              >
+              <Button onClick={handleConfirm} variant="contained" disabled={disabled || !!error || !editValue}>
                 {strings.confirm}
               </Button>
             </Box>

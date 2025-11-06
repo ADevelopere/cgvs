@@ -1,10 +1,6 @@
 import React from "react";
 import * as MUI from "@mui/material";
-import {
-  GridView as GridViewIcon,
-  Sort as SortIcon,
-  ViewList as ListViewIcon,
-} from "@mui/icons-material";
+import { GridView as GridViewIcon, Sort as SortIcon, ViewList as ListViewIcon } from "@mui/icons-material";
 import { useAppTranslation } from "@/client/locale";
 import StorageItem from "./StorageItem";
 import ViewAreaMenu from "../menu/ViewAreaMenu";
@@ -43,10 +39,7 @@ const StorageToolbar: React.FC<{
 }) => {
   // Handle view mode change
   const handleViewModeChange = React.useCallback(
-    (
-      _event: React.MouseEvent<HTMLElement>,
-      newViewMode: "grid" | "list" | null
-    ) => {
+    (_event: React.MouseEvent<HTMLElement>, newViewMode: "grid" | "list" | null) => {
       if (newViewMode !== null) {
         setViewMode(newViewMode);
       }
@@ -65,9 +58,7 @@ const StorageToolbar: React.FC<{
   // Handle sort direction change
   const handleSortDirectionChange = React.useCallback(() => {
     setSortDirection(
-      sortDirection === GQL.OrderSortDirection.Asc
-        ? GQL.OrderSortDirection.Desc
-        : GQL.OrderSortDirection.Asc
+      sortDirection === GQL.OrderSortDirection.Asc ? GQL.OrderSortDirection.Desc : GQL.OrderSortDirection.Asc
     );
   }, [setSortDirection, sortDirection]);
 
@@ -98,27 +89,18 @@ const StorageToolbar: React.FC<{
         borderRadius: 0,
       }}
     >
-      <MUI.Toolbar
-        variant="dense"
-        sx={{ justifyContent: "space-between", minHeight: 48 }}
-      >
+      <MUI.Toolbar variant="dense" sx={{ justifyContent: "space-between", minHeight: 48 }}>
         {/* Left side - Results info */}
         <MUI.Box>
           {searchMode && (
             <MUI.Typography variant="body2" color="text.secondary">
-              {translations.searchResults.replace(
-                "%{count}",
-                currentItems.length.toString()
-              )}
+              {translations.searchResults.replace("%{count}", currentItems.length.toString())}
               {params.searchTerm && ` for "${params.searchTerm}"`}
             </MUI.Typography>
           )}
           {!searchMode && (
             <MUI.Typography variant="body2" color="text.secondary">
-              {currentItems.length}{" "}
-              {currentItems.length === 1
-                ? translations.item
-                : translations.items}
+              {currentItems.length} {currentItems.length === 1 ? translations.item : translations.items}
             </MUI.Typography>
           )}
         </MUI.Box>
@@ -130,11 +112,7 @@ const StorageToolbar: React.FC<{
             <>
               <MUI.FormControl size="small" sx={{ minWidth: 120 }}>
                 <MUI.InputLabel>{translations.sortBy}</MUI.InputLabel>
-                <MUI.Select
-                  value={sortBy}
-                  label={translations.sortBy}
-                  onChange={handleSortFieldChange}
-                >
+                <MUI.Select value={sortBy} label={translations.sortBy} onChange={handleSortFieldChange}>
                   {sortFieldOptions.map(option => (
                     <MUI.MenuItem key={option.value} value={option.value}>
                       {option.label}
@@ -143,22 +121,11 @@ const StorageToolbar: React.FC<{
                 </MUI.Select>
               </MUI.FormControl>
 
-              <MUI.ToggleButtonGroup
-                value={sortDirection}
-                exclusive
-                onChange={handleSortDirectionChange}
-                size="small"
-              >
-                <MUI.ToggleButton
-                  value="ASC"
-                  aria-label={translations.ascending}
-                >
+              <MUI.ToggleButtonGroup value={sortDirection} exclusive onChange={handleSortDirectionChange} size="small">
+                <MUI.ToggleButton value="ASC" aria-label={translations.ascending}>
                   <SortIcon sx={{ transform: "rotate(0deg)" }} />
                 </MUI.ToggleButton>
-                <MUI.ToggleButton
-                  value="DESC"
-                  aria-label={translations.descending}
-                >
+                <MUI.ToggleButton value="DESC" aria-label={translations.descending}>
                   <SortIcon sx={{ transform: "rotate(180deg)" }} />
                 </MUI.ToggleButton>
               </MUI.ToggleButtonGroup>
@@ -166,12 +133,7 @@ const StorageToolbar: React.FC<{
           )}
 
           {/* View mode toggle */}
-          <MUI.ToggleButtonGroup
-            value={viewMode}
-            exclusive
-            onChange={handleViewModeChange}
-            size="small"
-          >
+          <MUI.ToggleButtonGroup value={viewMode} exclusive onChange={handleViewModeChange} size="small">
             <MUI.ToggleButton value="grid" aria-label={translations.gridView}>
               <GridViewIcon />
             </MUI.ToggleButton>
@@ -211,11 +173,7 @@ const ListView: React.FC<{
   toggleSelect: (path: string) => void;
   selectAll: () => void;
   clearSelection: () => void;
-  selectRange: (
-    fromPath: string,
-    toPath: string,
-    items: StorageItemType[]
-  ) => void;
+  selectRange: (fromPath: string, toPath: string, items: StorageItemType[]) => void;
   setFocusedItem: (path: string | null) => void;
 }> = ({
   sortBy,
@@ -251,9 +209,7 @@ const ListView: React.FC<{
       if (sortBy === field) {
         // Same field, toggle direction
         setSortDirection(
-          sortDirection === GQL.OrderSortDirection.Asc
-            ? GQL.OrderSortDirection.Desc
-            : GQL.OrderSortDirection.Asc
+          sortDirection === GQL.OrderSortDirection.Asc ? GQL.OrderSortDirection.Desc : GQL.OrderSortDirection.Asc
         );
       } else {
         // New field, set ascending
@@ -281,13 +237,7 @@ const ListView: React.FC<{
             <MUI.TableCell sx={{ width: "40%" }}>
               <MUI.TableSortLabel
                 active={sortBy === "name"}
-                direction={
-                  sortBy === "name"
-                    ? sortDirection === "ASC"
-                      ? "asc"
-                      : "desc"
-                    : "asc"
-                }
+                direction={sortBy === "name" ? (sortDirection === "ASC" ? "asc" : "desc") : "asc"}
                 onClick={() => handleTableSort("name")}
               >
                 {translations.name}
@@ -296,13 +246,7 @@ const ListView: React.FC<{
             <MUI.TableCell sx={{ width: "15%" }}>
               <MUI.TableSortLabel
                 active={sortBy === "size"}
-                direction={
-                  sortBy === "size"
-                    ? sortDirection === "ASC"
-                      ? "asc"
-                      : "desc"
-                    : "asc"
-                }
+                direction={sortBy === "size" ? (sortDirection === "ASC" ? "asc" : "desc") : "asc"}
                 onClick={() => handleTableSort("size")}
               >
                 {translations.size}
@@ -311,13 +255,7 @@ const ListView: React.FC<{
             <MUI.TableCell sx={{ width: "20%" }}>
               <MUI.TableSortLabel
                 active={sortBy === "lastModified"}
-                direction={
-                  sortBy === "lastModified"
-                    ? sortDirection === "ASC"
-                      ? "asc"
-                      : "desc"
-                    : "asc"
-                }
+                direction={sortBy === "lastModified" ? (sortDirection === "ASC" ? "asc" : "desc") : "asc"}
                 onClick={() => handleTableSort("lastModified")}
               >
                 {translations.lastModified}
@@ -326,21 +264,13 @@ const ListView: React.FC<{
             <MUI.TableCell sx={{ width: "20%" }}>
               <MUI.TableSortLabel
                 active={sortBy === "created"}
-                direction={
-                  sortBy === "created"
-                    ? sortDirection === "ASC"
-                      ? "asc"
-                      : "desc"
-                    : "asc"
-                }
+                direction={sortBy === "created" ? (sortDirection === "ASC" ? "asc" : "desc") : "asc"}
                 onClick={() => handleTableSort("created")}
               >
                 {translations.createdAt}
               </MUI.TableSortLabel>
             </MUI.TableCell>
-            <MUI.TableCell sx={{ width: "5%" }}>
-              {/* Actions column - no sorting */}
-            </MUI.TableCell>
+            <MUI.TableCell sx={{ width: "5%" }}>{/* Actions column - no sorting */}</MUI.TableCell>
           </MUI.TableRow>
         </MUI.TableHead>
         <MUI.TableBody>
@@ -383,11 +313,7 @@ const ErrorState: React.FC<{
     <MUI.Alert
       severity="error"
       sx={{ m: 2 }}
-      action={
-        <button onClick={() => window.location.reload()}>
-          {translations.retry}
-        </button>
-      }
+      action={<button onClick={() => window.location.reload()}>{translations.retry}</button>}
     >
       {hasError}
     </MUI.Alert>
@@ -437,9 +363,7 @@ const EmptyState: React.FC<{
         {searchMode ? translations.noSearchResults : translations.emptyFolder}
       </MUI.Typography>
       <MUI.Typography variant="body2">
-        {searchMode
-          ? translations.tryDifferentSearch
-          : translations.uploadOrCreate}
+        {searchMode ? translations.tryDifferentSearch : translations.uploadOrCreate}
       </MUI.Typography>
     </MUI.Box>
   );
@@ -465,11 +389,7 @@ const GridView: React.FC<{
   toggleSelect: (path: string) => void;
   selectAll: () => void;
   clearSelection: () => void;
-  selectRange: (
-    fromPath: string,
-    toPath: string,
-    items: StorageItemType[]
-  ) => void;
+  selectRange: (fromPath: string, toPath: string, items: StorageItemType[]) => void;
   setFocusedItem: (path: string | null) => void;
 }> = ({
   sortedItems,
@@ -513,10 +433,7 @@ const GridView: React.FC<{
         }}
       >
         {sortedItems.map(item => (
-          <MUI.Grid
-            size={{ xs: 6, sm: 4, md: 3, lg: 2, xl: 1.5 }}
-            key={item.path}
-          >
+          <MUI.Grid size={{ xs: 6, sm: 4, md: 3, lg: 2, xl: 1.5 }} key={item.path}>
             <StorageItem
               item={item}
               focusedItem={focusedItem}
@@ -572,11 +489,7 @@ interface StorageItemsViewProps {
   toggleSelect: (path: string) => void;
   selectAll: () => void;
   clearSelection: () => void;
-  selectRange: (
-    fromPath: string,
-    toPath: string,
-    items: StorageItemType[]
-  ) => void;
+  selectRange: (fromPath: string, toPath: string, items: StorageItemType[]) => void;
   setFocusedItem: (path: string | null) => void;
   setSortBy: (field: string) => void;
   setSortDirection: (direction: GQL.OrderSortDirection) => void;
@@ -626,8 +539,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
   const theme = MUI.useTheme();
 
   // Context menu state
-  const [viewAreaMenuAnchor, setViewAreaMenuAnchor] =
-    React.useState<HTMLElement | null>(null);
+  const [viewAreaMenuAnchor, setViewAreaMenuAnchor] = React.useState<HTMLElement | null>(null);
   const [viewAreaMenuPosition, setViewAreaMenuPosition] = React.useState<
     | {
         top: number;
@@ -675,25 +587,16 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
     (event: KeyboardEvent) => {
       if (sortedItems.length === 0) return;
 
-      const currentFocusedIndex = focusedItem
-        ? sortedItems.findIndex(item => item.path === focusedItem)
-        : -1;
+      const currentFocusedIndex = focusedItem ? sortedItems.findIndex(item => item.path === focusedItem) : -1;
 
       switch (event.key) {
         case "ArrowDown": {
           event.preventDefault();
-          const nextIndex = Math.min(
-            currentFocusedIndex + 1,
-            sortedItems.length - 1
-          );
+          const nextIndex = Math.min(currentFocusedIndex + 1, sortedItems.length - 1);
           if (nextIndex !== currentFocusedIndex) {
             setFocusedItem(sortedItems[nextIndex].path);
             if (event.shiftKey && lastSelectedItem) {
-              selectRange(
-                lastSelectedItem,
-                sortedItems[nextIndex].path,
-                sortedItems
-              );
+              selectRange(lastSelectedItem, sortedItems[nextIndex].path, sortedItems);
             }
           }
           break;
@@ -705,11 +608,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
           if (prevIndex !== currentFocusedIndex) {
             setFocusedItem(sortedItems[prevIndex].path);
             if (event.shiftKey && lastSelectedItem) {
-              selectRange(
-                lastSelectedItem,
-                sortedItems[prevIndex].path,
-                sortedItems
-              );
+              selectRange(lastSelectedItem, sortedItems[prevIndex].path, sortedItems);
             }
           }
           break;
@@ -727,11 +626,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
           event.preventDefault();
           setFocusedItem(sortedItems[sortedItems.length - 1].path);
           if (event.shiftKey && lastSelectedItem) {
-            selectRange(
-              lastSelectedItem,
-              sortedItems[sortedItems.length - 1].path,
-              sortedItems
-            );
+            selectRange(lastSelectedItem, sortedItems[sortedItems.length - 1].path, sortedItems);
           }
           break;
 
@@ -806,9 +701,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
     (event: React.MouseEvent) => {
       // Only deselect if clicking on empty area (not on items)
       const target = event.target as HTMLElement;
-      const isEmptyArea =
-        target.closest("[data-storage-item]") === null &&
-        target.closest(".storage-item") === null;
+      const isEmptyArea = target.closest("[data-storage-item]") === null && target.closest(".storage-item") === null;
       if (isEmptyArea && selectedItems.length > 0) {
         clearSelection();
       }
@@ -821,9 +714,7 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
     (event: React.MouseEvent) => {
       // Only show context menu if clicking on empty area (not on items)
       const target = event.target as HTMLElement;
-      const isEmptyArea =
-        target.closest("[data-storage-item]") === null &&
-        target.closest(".storage-item") === null;
+      const isEmptyArea = target.closest("[data-storage-item]") === null && target.closest(".storage-item") === null;
 
       if (isEmptyArea) {
         event.preventDefault();
@@ -875,26 +766,17 @@ const StorageItemsView: React.FC<StorageItemsViewProps> = ({
           flex: 1,
           overflow: "auto",
           position: "relative",
-          border: isDragActive
-            ? `2px dashed ${theme.palette.primary.main}`
-            : "2px solid transparent",
-          backgroundColor: isDragActive
-            ? MUI.alpha(theme.palette.primary.main, 0.05)
-            : "transparent",
+          border: isDragActive ? `2px dashed ${theme.palette.primary.main}` : "2px solid transparent",
+          backgroundColor: isDragActive ? MUI.alpha(theme.palette.primary.main, 0.05) : "transparent",
           transition: "border-color 0.2s ease, background-color 0.2s ease",
         }}
         onContextMenu={handleViewAreaContextMenu}
         onClick={handleViewAreaClick}
       >
         <input {...getInputProps()} />
-        {isLoading && (
-          <LoadingStates searchMode={searchMode} translations={translations} />
-        )}
+        {isLoading && <LoadingStates searchMode={searchMode} translations={translations} />}
         {!isLoading && hasError && (
-          <ErrorState
-            hasError={error instanceof Error ? error.message : "Unknown error"}
-            translations={translations}
-          />
+          <ErrorState hasError={error instanceof Error ? error.message : "Unknown error"} translations={translations} />
         )}
         {!isLoading && !hasError && sortedItems.length === 0 && (
           <EmptyState translations={translations} searchMode={searchMode} />

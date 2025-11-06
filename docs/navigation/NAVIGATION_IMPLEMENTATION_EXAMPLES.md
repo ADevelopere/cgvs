@@ -47,8 +47,7 @@ export const StorageManagementUIProvider: React.FC<{
           }
 
           if (params.sortDirection) {
-            const direction =
-              params.sortDirection as Graphql.OrderSortDirection;
+            const direction = params.sortDirection as Graphql.OrderSortDirection;
             if (["ASC", "DESC"].includes(direction)) {
               setSortDirection(direction);
             }
@@ -123,10 +122,7 @@ export const StorageManagementUIProvider: React.FC<{
   const changeSortDirection = useCallback(
     (direction: Graphql.OrderSortDirection) => {
       setSortDirection(direction);
-      updateParams(
-        { sortDirection: direction },
-        { replace: true, merge: true }
-      );
+      updateParams({ sortDirection: direction }, { replace: true, merge: true });
     },
     [updateParams]
   );
@@ -162,9 +158,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
   // ... existing state ...
 
   // Add a state for active view
-  const [activeView, setActiveView] = useState<"categories" | "suspended">(
-    "categories"
-  );
+  const [activeView, setActiveView] = useState<"categories" | "suspended">("categories");
 
   // Register navigation resolver
   useEffect(() => {
@@ -185,10 +179,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
             const categoryId = parseInt(params.categoryId as string, 10);
             if (!isNaN(categoryId)) {
               // Find and select the category
-              const category = findCategoryInTreeById(
-                allCategoriesFromCache,
-                categoryId
-              );
+              const category = findCategoryInTreeById(allCategoriesFromCache, categoryId);
               if (category) {
                 setCurrentCategory(category);
               }
@@ -199,9 +190,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
           if (params.templateId) {
             const templateId = parseInt(params.templateId as string, 10);
             if (!isNaN(templateId)) {
-              const template = allTemplatesFromCache.find(
-                t => t.id === templateId
-              );
+              const template = allTemplatesFromCache.find(t => t.id === templateId);
               if (template) {
                 setCurrentTemplate(template);
               }
@@ -220,12 +209,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
     });
 
     return unregister;
-  }, [
-    registerResolver,
-    allCategoriesFromCache,
-    allTemplatesFromCache,
-    setCurrentCategory,
-  ]);
+  }, [registerResolver, allCategoriesFromCache, allTemplatesFromCache, setCurrentCategory]);
 
   // Update trySelectCategory to update URL
   const trySelectCategory = useCallback(
@@ -240,10 +224,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
 
       // Update URL with selected category
       if (category) {
-        updateParams(
-          { categoryId: String(category.id) },
-          { replace: true, merge: true }
-        );
+        updateParams({ categoryId: String(category.id) }, { replace: true, merge: true });
       } else {
         updateParams({ categoryId: undefined }, { replace: true, merge: true });
       }
@@ -267,12 +248,7 @@ export const TemplateCategoryManagementProvider: React.FC<{
         setCurrentCategory(sortedRegularCategories[0] || null);
       }
     },
-    [
-      updateParams,
-      suspensionCategoryFromCache,
-      sortedRegularCategories,
-      setCurrentCategory,
-    ]
+    [updateParams, suspensionCategoryFromCache, sortedRegularCategories, setCurrentCategory]
   );
 
   // Update context value to include new functions
@@ -306,17 +282,11 @@ export const TemplateCategoryManagementProvider: React.FC<{
 // Add to imports
 import { usePageNavigation } from "../usePageNavigation";
 
-export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { registerResolver, updateParams } = usePageNavigation();
 
-  const [activeTab, setActiveTab] = useState<"all" | "groups" | "archived">(
-    "all"
-  );
-  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(
-    null
-  );
+  const [activeTab, setActiveTab] = useState<"all" | "groups" | "archived">("all");
+  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
 
   // Register navigation resolver
   useEffect(() => {
@@ -364,10 +334,7 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({
     (studentId: number | null) => {
       setSelectedStudentId(studentId);
       if (studentId) {
-        updateParams(
-          { studentId: String(studentId) },
-          { replace: true, merge: true }
-        );
+        updateParams({ studentId: String(studentId) }, { replace: true, merge: true });
       } else {
         updateParams({ studentId: undefined }, { replace: true, merge: true });
       }
@@ -437,10 +404,7 @@ export const TemplateVariableEditor: React.FC = () => {
   const selectVariable = useCallback(
     (variableId: number) => {
       setSelectedVariable(variableId);
-      updateParams(
-        { variableId: String(variableId) },
-        { replace: true, merge: true }
-      );
+      updateParams({ variableId: String(variableId) }, { replace: true, merge: true });
     },
     [updateParams]
   );

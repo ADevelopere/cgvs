@@ -32,14 +32,9 @@ export class PostgresCacheAdapter implements ICacheService {
   /**
    * Set a value in cache
    */
-  async set(
-    key: string,
-    value: string,
-    options?: { ex?: number; px?: number }
-  ): Promise<void> {
+  async set(key: string, value: string, options?: { ex?: number; px?: number }): Promise<void> {
     try {
-      const ttlSeconds =
-        options?.ex || options?.px ? options.ex || options.px! / 1000 : 3600; // Default 1 hour
+      const ttlSeconds = options?.ex || options?.px ? options.ex || options.px! / 1000 : 3600; // Default 1 hour
       const expiresAt = new Date(Date.now() + ttlSeconds * 1000);
 
       await CacheDbRepository.set(key, value, expiresAt);
@@ -107,9 +102,7 @@ export class PostgresCacheAdapter implements ICacheService {
    * Execute a pipeline of commands (for atomic operations)
    * Uses database transactions for atomicity
    */
-  async pipeline(
-    commands: Array<{ command: string; args: (string | number)[] }>
-  ): Promise<unknown[]> {
+  async pipeline(commands: Array<{ command: string; args: (string | number)[] }>): Promise<unknown[]> {
     try {
       return await db.transaction(async () => {
         const results: unknown[] = [];

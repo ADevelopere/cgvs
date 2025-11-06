@@ -2,10 +2,7 @@ import { PgSelect } from "drizzle-orm/pg-core";
 import { sql, SQL, Column } from "drizzle-orm";
 import { PaginationArgs } from "../types/pagination.types";
 
-export function queryWithPagination<T extends PgSelect>(
-  qb: T,
-  args?: PaginationArgs | null
-) {
+export function queryWithPagination<T extends PgSelect>(qb: T, args?: PaginationArgs | null) {
   if (!args) return qb;
   return qb.limit(args.perPage).offset(args.offset);
 }

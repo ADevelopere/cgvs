@@ -20,10 +20,7 @@ import { useQuery } from "@apollo/client/react";
 import { useAppTranslation } from "@/client/locale";
 import { EditableTypography } from "@/client/components";
 import { EditIcon, Ungroup, FolderPlus } from "lucide-react";
-import {
-  TemplateCategoryWithParentTree,
-  TemplateCategoryCreateInput,
-} from "@/client/graphql/generated/gql/graphql";
+import { TemplateCategoryWithParentTree, TemplateCategoryCreateInput } from "@/client/graphql/generated/gql/graphql";
 import { TemplateDocuments } from "../hooks";
 
 type RenderCategoryItemProps = {
@@ -32,10 +29,7 @@ type RenderCategoryItemProps = {
   handleOpenEditDialog: (category: TemplateCategoryWithParentTree) => void;
   deleteCategory: (categoryId: number) => void;
   validateCategoryName: (name: string) => string;
-  handleCategoryNameEdit: (
-    category: TemplateCategoryWithParentTree,
-    newValue: string
-  ) => void;
+  handleCategoryNameEdit: (category: TemplateCategoryWithParentTree, newValue: string) => void;
   createCategory: (input: TemplateCategoryCreateInput) => Promise<void>;
 };
 
@@ -52,27 +46,21 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
   const { templateCategoryTranslations: strings } = useAppTranslation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
   const [newCategoryName, setNewCategoryName] = React.useState("");
-  const [newCategoryDescription, setNewCategoryDescription] =
-    React.useState("");
+  const [newCategoryDescription, setNewCategoryDescription] = React.useState("");
   const [error, setError] = React.useState("");
 
   // Fetch templates for current category
-  const { data: templatesByCategoryIdQuery } = useQuery(
-    TemplateDocuments.templatesByCategoryIdQueryDocument,
-    {
-      variables: {
-        categoryId: category.id,
-      },
-      skip: !category.id,
-      fetchPolicy: "cache-only",
-      nextFetchPolicy: "cache-only",
-    }
-  );
+  const { data: templatesByCategoryIdQuery } = useQuery(TemplateDocuments.templatesByCategoryIdQueryDocument, {
+    variables: {
+      categoryId: category.id,
+    },
+    skip: !category.id,
+    fetchPolicy: "cache-only",
+    nextFetchPolicy: "cache-only",
+  });
 
   const hasTemplates: boolean = React.useMemo(
-    () =>
-      (templatesByCategoryIdQuery?.templatesByCategoryId?.data?.length ?? 0) >
-      0,
+    () => (templatesByCategoryIdQuery?.templatesByCategoryId?.data?.length ?? 0) > 0,
     [templatesByCategoryIdQuery?.templatesByCategoryId?.data]
   );
 
@@ -138,10 +126,7 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
           <Ungroup
             size={16}
             style={{
-              transform:
-                theme.direction === "rtl"
-                  ? "rotate(180deg)"
-                  : "rotate(-180deg)",
+              transform: theme.direction === "rtl" ? "rotate(180deg)" : "rotate(-180deg)",
             }}
           />
           <EditableTypography
@@ -156,9 +141,7 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
               sx: { minWidth: "150px", width: "max-content" },
             }}
             value={category.name}
-            onSaveAction={newValue =>
-              handleCategoryNameEdit(category, newValue)
-            }
+            onSaveAction={newValue => handleCategoryNameEdit(category, newValue)}
             isValidAction={validateCategoryName}
           />
         </Box>
@@ -203,12 +186,7 @@ const RenderCategoryItem: React.FC<RenderCategoryItemProps> = ({
       </ListItemButton>
 
       {/* Simple Create Child Category Dialog */}
-      <Dialog
-        open={isCreateDialogOpen}
-        onClose={handleCloseCreateDialog}
-        maxWidth="sm"
-        fullWidth
-      >
+      <Dialog open={isCreateDialogOpen} onClose={handleCloseCreateDialog} maxWidth="sm" fullWidth>
         <DialogTitle>{strings.createChildCategory}</DialogTitle>
         <DialogContent>
           <Box

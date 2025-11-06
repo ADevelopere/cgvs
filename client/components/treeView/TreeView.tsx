@@ -18,11 +18,7 @@ export interface BaseTreeItem {
   [key: string]: any;
 }
 
-export type TreeViewItemRenderer<T> = (props: {
-  item: T;
-  isSelected: boolean;
-  isExpanded: boolean;
-}) => React.ReactNode;
+export type TreeViewItemRenderer<T> = (props: { item: T; isSelected: boolean; isExpanded: boolean }) => React.ReactNode;
 
 export type LazyLoadStrategy = "on-expand" | "preload-level";
 
@@ -69,13 +65,9 @@ export function TreeView<T extends BaseTreeItem>({
 }>) {
   const { isRtl } = useAppTheme();
 
-  const [internalExpandedItems, setInternalExpandedItems] = useState<
-    Set<string | number>
-  >(new Set());
+  const [internalExpandedItems, setInternalExpandedItems] = useState<Set<string | number>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
-  const [loadingItems, setLoadingItems] = useState<Set<string | number>>(
-    new Set()
-  );
+  const [loadingItems, setLoadingItems] = useState<Set<string | number>>(new Set());
 
   const expandedItems = expandedItemsProp ?? internalExpandedItems;
   const setExpandedItems = useMemo(
@@ -101,11 +93,7 @@ export function TreeView<T extends BaseTreeItem>({
         const children = item[childrenKey] as T[] | undefined;
         const hasChildrenFlag = hasChildrenKey ? item[hasChildrenKey] : true;
 
-        if (
-          childrenResolver &&
-          hasChildrenFlag &&
-          (!children || children.length === 0)
-        ) {
+        if (childrenResolver && hasChildrenFlag && (!children || children.length === 0)) {
           setLoadingItems(prev => new Set(prev).add(item.id));
           try {
             const loadedChildren = await childrenResolver(item);
@@ -162,14 +150,11 @@ export function TreeView<T extends BaseTreeItem>({
       return items
         .map(item => {
           const itemLabel = item[labelKey] || "";
-          const matchesSearch = itemLabel
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
+          const matchesSearch = itemLabel.toLowerCase().includes(searchTerm.toLowerCase());
 
           const children = item[childrenKey] as T[] | undefined;
           const filteredChildren = children ? filterTree(children) : undefined;
-          const hasMatchingChildren =
-            filteredChildren && filteredChildren.length > 0;
+          const hasMatchingChildren = filteredChildren && filteredChildren.length > 0;
 
           if (matchesSearch || hasMatchingChildren) {
             return {
@@ -190,10 +175,7 @@ export function TreeView<T extends BaseTreeItem>({
     if (!searchTerm.trim()) return;
 
     const itemsToExpand = new Set<string | number>();
-    const findAndExpandParents = (
-      items: T[],
-      parentIds: (string | number)[] = []
-    ) => {
+    const findAndExpandParents = (items: T[], parentIds: (string | number)[] = []) => {
       items.forEach(item => {
         const currentPath = [...parentIds, item.id];
         const itemLabel = item[labelKey] || "";
@@ -213,11 +195,7 @@ export function TreeView<T extends BaseTreeItem>({
   }, [searchTerm, items, childrenKey, labelKey, setExpandedItems]);
 
   const handleAutocompleteChange = useCallback(
-    (
-      _event: React.SyntheticEvent,
-      value: T | string | null,
-      _reason: AutocompleteChangeReason
-    ) => {
+    (_event: React.SyntheticEvent, value: T | string | null, _reason: AutocompleteChangeReason) => {
       if (value && typeof value !== "string") {
         const itemLabel: string = value[labelKey] || "";
         setSearchTerm(itemLabel);
@@ -233,10 +211,7 @@ export function TreeView<T extends BaseTreeItem>({
             }
             const children = item[childrenKey] as T[] | undefined;
             if (children) {
-              const result = findParents(children, targetId, [
-                ...path,
-                item.id,
-              ]);
+              const result = findParents(children, targetId, [...path, item.id]);
               if (result) return result;
             }
           }

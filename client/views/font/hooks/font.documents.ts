@@ -2,10 +2,7 @@ import { TypedDocumentNode, gql } from "@apollo/client";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 // Query: Get single font by ID
-export const fontQueryDocument: TypedDocumentNode<
-  Graphql.FontQuery,
-  Graphql.FontQueryVariables
-> = gql`
+export const fontQueryDocument: TypedDocumentNode<Graphql.FontQuery, Graphql.FontQueryVariables> = gql`
   query font($id: Int!) {
     font(id: $id) {
       id
@@ -25,20 +22,9 @@ export const fontQueryDocument: TypedDocumentNode<
 `;
 
 // Query: Get all fonts with pagination, filtering, and sorting
-export const fontsQueryDocument: TypedDocumentNode<
-  Graphql.FontsQuery,
-  Graphql.FontsQueryVariables
-> = gql`
-  query fonts(
-    $paginationArgs: PaginationArgs
-    $orderBy: [FontsOrderByClause!]
-    $filterArgs: FontFilterArgs
-  ) {
-    fonts(
-      paginationArgs: $paginationArgs
-      orderBy: $orderBy
-      filterArgs: $filterArgs
-    ) {
+export const fontsQueryDocument: TypedDocumentNode<Graphql.FontsQuery, Graphql.FontsQueryVariables> = gql`
+  query fonts($paginationArgs: PaginationArgs, $orderBy: [FontsOrderByClause!], $filterArgs: FontFilterArgs) {
+    fonts(paginationArgs: $paginationArgs, orderBy: $orderBy, filterArgs: $filterArgs) {
       data {
         id
         name

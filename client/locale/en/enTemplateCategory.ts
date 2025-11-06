@@ -75,8 +75,7 @@ export const enTemplateCategory: TemplateCategoryTranslation = {
   selectCategoryFirst: "Please select a category first",
   createCategoryFirst: "Please create a category first",
   confirmSwitchCategory: "Confirm Switch Category",
-  switchCategoryWhileAddingTemplate:
-    "You are adding a template to a different category. Do you want to continue?",
+  switchCategoryWhileAddingTemplate: "You are adding a template to a different category. Do you want to continue?",
   confirm: "Confirm",
   invalidDataFormat: "Invalid data format",
   categoryNotFound: "Category not found",
@@ -96,8 +95,7 @@ export const enTemplateCategory: TemplateCategoryTranslation = {
   errorMovingToDeletion: "Error moving template to deletion",
   errorUpdatingTemplate: "Error updating template",
   templateMoveToDeletionFailed: "Template move to deletion failed",
-  templateMovedToDeletionSuccessfully:
-    "Template moved to deletion successfully",
+  templateMovedToDeletionSuccessfully: "Template moved to deletion successfully",
   useCategoryContextError: "useCategory must be used within a CategoryProvider",
   failedToProcessFile: "Failed to process file",
   noTemplateDataReceived: "No template data received",

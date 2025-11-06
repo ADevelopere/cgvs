@@ -1,30 +1,11 @@
 import { PgSelect } from "drizzle-orm/pg-core";
 import { font } from "@/server/db/schema/font";
-import {
-  and,
-  eq,
-  ilike,
-  gte,
-  lte,
-  gt,
-  lt,
-  ne,
-  asc,
-  desc,
-  sql,
-} from "drizzle-orm";
-import {
-  FontFilterArgs,
-  FontsOrderByClause,
-  FontsOrderByColumn,
-} from "@/server/types/font.types";
+import { and, eq, ilike, gte, lte, gt, lt, ne, asc, desc, sql } from "drizzle-orm";
+import { FontFilterArgs, FontsOrderByClause, FontsOrderByColumn } from "@/server/types/font.types";
 import { OrderSortDirection } from "@/lib/enum";
 
 export namespace FontFilterUtils {
-  export const applyFilters = <T extends PgSelect>(
-    query: T,
-    filters?: FontFilterArgs | null
-  ): T => {
+  export const applyFilters = <T extends PgSelect>(query: T, filters?: FontFilterArgs | null): T => {
     if (!filters) return query;
 
     const conditions = [];
@@ -65,12 +46,7 @@ export namespace FontFilterUtils {
       conditions.push(eq(font.createdAt, filters.createdAt));
     }
     if (filters.createdAtFrom && filters.createdAtTo) {
-      conditions.push(
-        and(
-          gte(font.createdAt, filters.createdAtFrom),
-          lte(font.createdAt, filters.createdAtTo)
-        )
-      );
+      conditions.push(and(gte(font.createdAt, filters.createdAtFrom), lte(font.createdAt, filters.createdAtTo)));
     } else if (filters.createdAtFrom) {
       conditions.push(gte(font.createdAt, filters.createdAtFrom));
     } else if (filters.createdAtTo) {
@@ -88,12 +64,7 @@ export namespace FontFilterUtils {
       conditions.push(eq(font.updatedAt, filters.updatedAt));
     }
     if (filters.updatedAtFrom && filters.updatedAtTo) {
-      conditions.push(
-        and(
-          gte(font.updatedAt, filters.updatedAtFrom),
-          lte(font.updatedAt, filters.updatedAtTo)
-        )
-      );
+      conditions.push(and(gte(font.updatedAt, filters.updatedAtFrom), lte(font.updatedAt, filters.updatedAtTo)));
     } else if (filters.updatedAtFrom) {
       conditions.push(gte(font.updatedAt, filters.updatedAtFrom));
     } else if (filters.updatedAtTo) {
@@ -103,10 +74,7 @@ export namespace FontFilterUtils {
     return conditions.length > 0 ? query.where(and(...conditions)) : query;
   };
 
-  export const applyOrdering = <T extends PgSelect>(
-    query: T,
-    orderBy?: FontsOrderByClause[] | null
-  ): T => {
+  export const applyOrdering = <T extends PgSelect>(query: T, orderBy?: FontsOrderByClause[] | null): T => {
     if (!orderBy || orderBy.length === 0) {
       return query.orderBy(asc(font.name));
     }

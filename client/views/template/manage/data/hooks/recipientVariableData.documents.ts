@@ -5,16 +5,8 @@ export const recipientVariableValuesByGroupQueryDocument: TypedDocumentNode<
   Graphql.RecipientVariableValuesByGroupQuery,
   Graphql.RecipientVariableValuesByGroupQueryVariables
 > = gql`
-  query recipientVariableValuesByGroup(
-    $recipientGroupId: Int!
-    $limit: Int
-    $offset: Int
-  ) {
-    recipientVariableValuesByGroup(
-      recipientGroupId: $recipientGroupId
-      limit: $limit
-      offset: $offset
-    ) {
+  query recipientVariableValuesByGroup($recipientGroupId: Int!, $limit: Int, $offset: Int) {
+    recipientVariableValuesByGroup(recipientGroupId: $recipientGroupId, limit: $limit, offset: $offset) {
       data {
         recipientGroupItemId
         studentId
@@ -30,14 +22,8 @@ export const setRecipientVariableValuesMutationDocument: TypedDocumentNode<
   Graphql.SetRecipientVariableValuesMutation,
   Graphql.SetRecipientVariableValuesMutationVariables
 > = gql`
-  mutation setRecipientVariableValues(
-    $recipientGroupItemId: Int!
-    $values: [VariableValueInput!]!
-  ) {
-    setRecipientVariableValues(
-      recipientGroupItemId: $recipientGroupItemId
-      values: $values
-    ) {
+  mutation setRecipientVariableValues($recipientGroupItemId: Int!, $values: [VariableValueInput!]!) {
+    setRecipientVariableValues(recipientGroupItemId: $recipientGroupItemId, values: $values) {
       recipientGroupItemId
       studentId
       studentName

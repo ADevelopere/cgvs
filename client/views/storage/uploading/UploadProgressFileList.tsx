@@ -11,11 +11,7 @@ export interface UploadProgressFileListProps {
   onCancelFile: (fileKey: string) => void;
 }
 
-const UploadProgressFileList: React.FC<UploadProgressFileListProps> = ({
-  files,
-  isCollapsed,
-  onCancelFile,
-}) => {
+const UploadProgressFileList: React.FC<UploadProgressFileListProps> = ({ files, isCollapsed, onCancelFile }) => {
   const theme = useTheme();
 
   if (files.length === 0) {

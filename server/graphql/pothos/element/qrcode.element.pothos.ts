@@ -12,12 +12,9 @@ import { InputFieldBuilder, SchemaTypes } from "@pothos/core";
 // Enums
 // ============================================================================
 
-export const QRCodeErrorCorrectionPothosEnum = gqlSchemaBuilder.enumType(
-  "QRCodeErrorCorrection",
-  {
-    values: Object.values(Types.QRCodeErrorCorrection),
-  }
-);
+export const QRCodeErrorCorrectionPothosEnum = gqlSchemaBuilder.enumType("QRCodeErrorCorrection", {
+  values: Object.values(Types.QRCodeErrorCorrection),
+});
 
 // ============================================================================
 // Mutation Inputs
@@ -42,9 +39,7 @@ export const QRCodeElementSpecPropsInputObject = gqlSchemaBuilder
     }),
   });
 
-const createQRCodeElementInputFields = <Types extends SchemaTypes>(
-  t: InputFieldBuilder<Types, "InputObject">
-) => ({
+const createQRCodeElementInputFields = <Types extends SchemaTypes>(t: InputFieldBuilder<Types, "InputObject">) => ({
   base: t.field({
     type: CertificateElementBaseInputObject,
     required: true,
@@ -72,20 +67,17 @@ export const QRCodeElementUpdateInputObject = gqlSchemaBuilder
     }),
   });
 
-export const QRCodeElementSpecPropsStandaloneUpdateInputObject =
-  gqlSchemaBuilder
-    .inputRef<Types.QRCodeElementSpecPropsStandaloneUpdateInput>(
-      "QRCodeElementSpecPropsStandaloneUpdateInput"
-    )
-    .implement({
-      fields: t => ({
-        elementId: t.int({ required: true }),
-        qrCodeProps: t.field({
-          type: QRCodeElementSpecPropsInputObject,
-          required: true,
-        }),
+export const QRCodeElementSpecPropsStandaloneUpdateInputObject = gqlSchemaBuilder
+  .inputRef<Types.QRCodeElementSpecPropsStandaloneUpdateInput>("QRCodeElementSpecPropsStandaloneUpdateInput")
+  .implement({
+    fields: t => ({
+      elementId: t.int({ required: true }),
+      qrCodeProps: t.field({
+        type: QRCodeElementSpecPropsInputObject,
+        required: true,
       }),
-    });
+    }),
+  });
 
 // ============================================================================
 // Loadable Element Object
@@ -104,22 +96,18 @@ export const QRCodeElementSpecPropsObject = gqlSchemaBuilder
     }),
   });
 
-export const QRCodeElementSpecPropsStandaloneUpdateResponseObject =
-  gqlSchemaBuilder
-    .objectRef<Types.QRCodeElementSpecPropsStandaloneUpdateResponse>(
-      "QRCodeElementSpecPropsStandaloneUpdateResponse"
-    )
-    .implement({
-      fields: t => ({
-        elementId: t.expose("elementId", { type: "Int" }),
-        qrCodeProps: t.expose("qrCodeProps", {
-          type: QRCodeElementSpecPropsObject,
-        }),
+export const QRCodeElementSpecPropsStandaloneUpdateResponseObject = gqlSchemaBuilder
+  .objectRef<Types.QRCodeElementSpecPropsStandaloneUpdateResponse>("QRCodeElementSpecPropsStandaloneUpdateResponse")
+  .implement({
+    fields: t => ({
+      elementId: t.expose("elementId", { type: "Int" }),
+      qrCodeProps: t.expose("qrCodeProps", {
+        type: QRCodeElementSpecPropsObject,
       }),
-    });
+    }),
+  });
 
-const QRCodeElementObjectRef =
-  gqlSchemaBuilder.objectRef<Types.QRCodeElementOutput>("QRCodeElement");
+const QRCodeElementObjectRef = gqlSchemaBuilder.objectRef<Types.QRCodeElementOutput>("QRCodeElement");
 
 export const QRCodeElementObject = gqlSchemaBuilder.loadableObject<
   Types.QRCodeElementOutput | Error,

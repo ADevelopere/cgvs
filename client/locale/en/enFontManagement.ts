@@ -32,8 +32,7 @@ export const enFontManagement: FontManagementTranslations = {
   fontNameLabel: "Font Name",
   fontNamePlaceholder: "e.g., Roboto, Cairo, Noto Sans",
   supportedLocalesLabel: "Supported Locales",
-  supportedLocalesHelper:
-    'Select "All Languages" for universal fonts, or choose specific locales',
+  supportedLocalesHelper: 'Select "All Languages" for universal fonts, or choose specific locales',
   fontFileLabel: "Font File",
   preview: "Preview",
 

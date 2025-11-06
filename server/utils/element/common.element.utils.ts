@@ -25,9 +25,7 @@ export namespace CommonElementUtils {
   /**
    * Map GraphQL FontReference input (isOneOf) to repository FontReference input (discriminated union)
    */
-  export const mapFontReferenceGraphqlToInput = (
-    input: FontReferenceInputGraphql
-  ): FontReference => {
+  export const mapFontReferenceGraphqlToInput = (input: FontReferenceInputGraphql): FontReference => {
     if (input?.google) {
       return {
         type: FontSource.GOOGLE,
@@ -39,17 +37,13 @@ export namespace CommonElementUtils {
         fontId: input.selfHosted.fontId,
       };
     }
-    throw new Error(
-      "Invalid FontReference input: must specify either google or selfHosted"
-    );
+    throw new Error("Invalid FontReference input: must specify either google or selfHosted");
   };
 
   /**
    * Map GraphQL TextProps input to repository TextProps input
    */
-  export const mapTextPropsGraphqlCreateToInput = (
-    input: TextPropsInputGraphql
-  ): TextPropsInput => {
+  export const mapTextPropsGraphqlCreateToInput = (input: TextPropsInputGraphql): TextPropsInput => {
     return {
       ...input,
       fontRef: mapFontReferenceGraphqlToInput(input.fontRef)!,
@@ -59,9 +53,7 @@ export namespace CommonElementUtils {
   /**
    * Map GraphQL TextProps update input (partial) to repository TextProps input (partial)
    */
-  export const mapTextPropsUpdateGraphqlToInput = (
-    input: TextPropsUpdateInputGraphql
-  ): TextPropsUpdateInput => {
+  export const mapTextPropsUpdateGraphqlToInput = (input: TextPropsUpdateInputGraphql): TextPropsUpdateInput => {
     return {
       ...input,
       fontRef: mapFontReferenceGraphqlToInput(input.fontRef),
@@ -75,9 +67,7 @@ export namespace CommonElementUtils {
    * Validate text properties (font, size, color, overflow)
    * Used by TEXT, DATE, NUMBER, COUNTRY, GENDER elements
    */
-  export const checkTextProps = async (
-    textProps: TextPropsInput | TextPropsUpdateInput
-  ): Promise<void> => {
+  export const checkTextProps = async (textProps: TextPropsInput | TextPropsUpdateInput): Promise<void> => {
     // Validate font reference
     if (textProps.fontRef) {
       await validateFontReference(textProps.fontRef);
@@ -102,9 +92,7 @@ export namespace CommonElementUtils {
   /**
    * Validate font reference (Google or Self-Hosted)
    */
-  export const validateFontReference = async (
-    fontRef: FontReference
-  ): Promise<void> => {
+  export const validateFontReference = async (fontRef: FontReference): Promise<void> => {
     if (fontRef.type === FontSource.SELF_HOSTED) {
       // Validate font ID exists in database
       if (!fontRef.fontId) {
@@ -154,8 +142,7 @@ export namespace CommonElementUtils {
     const hexRegex = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/;
 
     // Check for rgb/rgba format
-    const rgbRegex =
-      /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(,\s*(0|1|0?\.\d+)\s*)?\)$/;
+    const rgbRegex = /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(,\s*(0|1|0?\.\d+)\s*)?\)$/;
 
     if (!hexRegex.test(color) && !rgbRegex.test(color)) {
       throw new Error(
@@ -185,9 +172,7 @@ export namespace CommonElementUtils {
   export const validateOverflow = (overflow: ElementOverflow): void => {
     const validOverflows = Object.values(ElementOverflow);
     if (!validOverflows.includes(overflow)) {
-      throw new Error(
-        `Invalid overflow value: ${overflow}. Must be one of: ${validOverflows.join(", ")}`
-      );
+      throw new Error(`Invalid overflow value: ${overflow}. Must be one of: ${validOverflows.join(", ")}`);
     }
   };
 
@@ -213,23 +198,15 @@ export namespace CommonElementUtils {
     if (nameError) throw new Error(nameError);
 
     // Dimensions validation
-    const dimError = await ElementUtils.validateDimensions(
-      input.width,
-      input.height
-    );
+    const dimError = await ElementUtils.validateDimensions(input.width, input.height);
     if (dimError) throw new Error(dimError);
 
     // Position validation
-    const posError = await ElementUtils.validatePosition(
-      input.positionX,
-      input.positionY
-    );
+    const posError = await ElementUtils.validatePosition(input.positionX, input.positionY);
     if (posError) throw new Error(posError);
 
     // Render order validation
-    const orderError = await ElementUtils.validateRenderOrder(
-      input.renderOrder
-    );
+    const orderError = await ElementUtils.validateRenderOrder(input.renderOrder);
     if (orderError) throw new Error(orderError);
   };
 }

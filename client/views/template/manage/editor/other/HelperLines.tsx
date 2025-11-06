@@ -56,13 +56,7 @@ function HelperLinesRenderer({ horizontal, vertical }: HelperLinesProps) {
     }
   }, [width, height, transform, horizontal, vertical]);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="react-flow__canvas"
-      style={canvasStyle}
-    />
-  );
+  return <canvas ref={canvasRef} className="react-flow__canvas" style={canvasStyle} />;
 }
 
 export default HelperLinesRenderer;

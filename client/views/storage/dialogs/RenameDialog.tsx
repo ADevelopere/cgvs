@@ -12,12 +12,7 @@ export interface RenameDialogProps {
   onRename: (path: string, newName: string) => Promise<boolean>;
 }
 
-const RenameDialog: React.FC<RenameDialogProps> = ({
-  open,
-  onClose,
-  item,
-  onRename,
-}) => {
+const RenameDialog: React.FC<RenameDialogProps> = ({ open, onClose, item, onRename }) => {
   const theme = MUI.useTheme();
   const {
     storageTranslations: { ui: translations },
@@ -161,9 +156,7 @@ const RenameDialog: React.FC<RenameDialogProps> = ({
 
   const isFormValid = useMemo(() => {
     if (!item) return false;
-    return (
-      newName.trim() && !validateName(newName) && newName.trim() !== item.name
-    );
+    return newName.trim() && !validateName(newName) && newName.trim() !== item.name;
   }, [newName, validateName, item]);
 
   return (

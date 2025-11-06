@@ -11,11 +11,7 @@ import {
   Popover,
   type SelectChangeEvent,
 } from "@mui/material";
-import {
-  type FilterClause,
-  TextFilterOperation,
-  operationRequiresValue,
-} from "@/client/types/filters";
+import { type FilterClause, TextFilterOperation, operationRequiresValue } from "@/client/types/filters";
 import { Check, Clear } from "@mui/icons-material";
 import { useTableLocale } from "../../contexts/TableLocaleContext";
 
@@ -51,9 +47,7 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
     strings: { filter: filterStrings, textFilterOps },
   } = useTableLocale();
 
-  const [operation, setOperation] = useState<TextFilterOperation>(
-    value?.operation || TextFilterOperation.contains
-  );
+  const [operation, setOperation] = useState<TextFilterOperation>(value?.operation || TextFilterOperation.contains);
   const [filterValue, setFilterValue] = useState<string>(value?.value || "");
   const [error, setError] = useState<string | null>(null);
 
@@ -68,30 +62,21 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
     setError(null);
   }, [value, open]);
 
-  const handleOperationChange = useCallback(
-    (event: SelectChangeEvent<TextFilterOperation>) => {
-      const newOperation = event.target.value as TextFilterOperation;
-      setOperation(newOperation);
-      if (!operationRequiresValue(newOperation)) {
-        setFilterValue("");
-      }
-      setError(null);
-    },
-    []
-  );
+  const handleOperationChange = useCallback((event: SelectChangeEvent<TextFilterOperation>) => {
+    const newOperation = event.target.value as TextFilterOperation;
+    setOperation(newOperation);
+    if (!operationRequiresValue(newOperation)) {
+      setFilterValue("");
+    }
+    setError(null);
+  }, []);
 
-  const handleValueChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setFilterValue(event.target.value);
-      setError(null);
-    },
-    []
-  );
+  const handleValueChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilterValue(event.target.value);
+    setError(null);
+  }, []);
 
-  const valueRequired = useMemo(
-    () => operationRequiresValue(operation),
-    [operation]
-  );
+  const valueRequired = useMemo(() => operationRequiresValue(operation), [operation]);
 
   const handleApply = useCallback(() => {
     if (valueRequired && !filterValue.trim()) {
@@ -105,15 +90,7 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
     };
     onApply(filterClause);
     onClose();
-  }, [
-    onApply,
-    columnId,
-    onClose,
-    operation,
-    filterValue,
-    valueRequired,
-    filterStrings.valueRequired,
-  ]);
+  }, [onApply, columnId, onClose, operation, filterValue, valueRequired, filterStrings.valueRequired]);
 
   const handleClear = useCallback(() => {
     onClear();
@@ -154,9 +131,7 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
         </Typography>
 
         <FormControl fullWidth sx={{ mt: 2 }}>
-          <InputLabel id="text-filter-operation-label">
-            {filterStrings.operation}
-          </InputLabel>
+          <InputLabel id="text-filter-operation-label">{filterStrings.operation}</InputLabel>
           <Select
             labelId="text-filter-operation-label"
             value={operation}
@@ -164,30 +139,14 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
             label={filterStrings.operation}
             size="small"
           >
-            <MenuItem value={TextFilterOperation.contains}>
-              {textFilterOps.contains}
-            </MenuItem>
-            <MenuItem value={TextFilterOperation.notContains}>
-              {textFilterOps.notContains}
-            </MenuItem>
-            <MenuItem value={TextFilterOperation.equals}>
-              {textFilterOps.equals}
-            </MenuItem>
-            <MenuItem value={TextFilterOperation.notEquals}>
-              {textFilterOps.notEquals}
-            </MenuItem>
-            <MenuItem value={TextFilterOperation.startsWith}>
-              {textFilterOps.startsWith}
-            </MenuItem>
-            <MenuItem value={TextFilterOperation.endsWith}>
-              {textFilterOps.endsWith}
-            </MenuItem>
-            <MenuItem value={TextFilterOperation.isEmpty}>
-              {textFilterOps.isEmpty}
-            </MenuItem>
-            <MenuItem value={TextFilterOperation.isNotEmpty}>
-              {textFilterOps.isNotEmpty}
-            </MenuItem>
+            <MenuItem value={TextFilterOperation.contains}>{textFilterOps.contains}</MenuItem>
+            <MenuItem value={TextFilterOperation.notContains}>{textFilterOps.notContains}</MenuItem>
+            <MenuItem value={TextFilterOperation.equals}>{textFilterOps.equals}</MenuItem>
+            <MenuItem value={TextFilterOperation.notEquals}>{textFilterOps.notEquals}</MenuItem>
+            <MenuItem value={TextFilterOperation.startsWith}>{textFilterOps.startsWith}</MenuItem>
+            <MenuItem value={TextFilterOperation.endsWith}>{textFilterOps.endsWith}</MenuItem>
+            <MenuItem value={TextFilterOperation.isEmpty}>{textFilterOps.isEmpty}</MenuItem>
+            <MenuItem value={TextFilterOperation.isNotEmpty}>{textFilterOps.isNotEmpty}</MenuItem>
           </Select>
         </FormControl>
 
@@ -206,23 +165,11 @@ export const TextFilterPopover: React.FC<TextFilterPopoverProps> = ({
           />
         )}
 
-        <Box
-          sx={{ display: "flex", gap: 1, mt: 2, justifyContent: "flex-end" }}
-        >
-          <Button
-            size="small"
-            onClick={handleClear}
-            startIcon={<Clear />}
-            color="inherit"
-          >
+        <Box sx={{ display: "flex", gap: 1, mt: 2, justifyContent: "flex-end" }}>
+          <Button size="small" onClick={handleClear} startIcon={<Clear />} color="inherit">
             {filterStrings.clear}
           </Button>
-          <Button
-            size="small"
-            onClick={handleApply}
-            variant="contained"
-            startIcon={<Check />}
-          >
+          <Button size="small" onClick={handleApply} variant="contained" startIcon={<Check />}>
             {filterStrings.apply}
           </Button>
         </Box>

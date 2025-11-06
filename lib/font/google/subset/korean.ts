@@ -9,18 +9,12 @@ const data: GoogleFontItem[] = [
     version: "v3",
     lastModified: "2025-09-08",
     files: {
-      "300":
-        "https://fonts.gstatic.com/s/astasans/v3/XoH32Y74XaWovvhMb0c3tN_dRqdT9zveo6r_mVnvqYRoVr0.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/astasans/v3/XoH32Y74XaWovvhMb0c3tN_dRqdT9zveo8b_mVnvqYRoVr0.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/astasans/v3/XoH32Y74XaWovvhMb0c3tN_dRqdT9zveoyr4mVnvqYRoVr0.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/astasans/v3/XoH32Y74XaWovvhMb0c3tN_dRqdT9zveoxP4mVnvqYRoVr0.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/astasans/v3/XoH32Y74XaWovvhMb0c3tN_dRqdT9zveo3T4mVnvqYRoVr0.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/astasans/v3/XoH32Y74XaWovvhMb0c3tN_dRqdT9zveo_T_mVnvqYRoVr0.ttf",
+      "300": "https://fonts.gstatic.com/s/astasans/v3/XoH32Y74XaWovvhMb0c3tN_dRqdT9zveo6r_mVnvqYRoVr0.ttf",
+      "500": "https://fonts.gstatic.com/s/astasans/v3/XoH32Y74XaWovvhMb0c3tN_dRqdT9zveo8b_mVnvqYRoVr0.ttf",
+      "600": "https://fonts.gstatic.com/s/astasans/v3/XoH32Y74XaWovvhMb0c3tN_dRqdT9zveoyr4mVnvqYRoVr0.ttf",
+      "700": "https://fonts.gstatic.com/s/astasans/v3/XoH32Y74XaWovvhMb0c3tN_dRqdT9zveoxP4mVnvqYRoVr0.ttf",
+      "800": "https://fonts.gstatic.com/s/astasans/v3/XoH32Y74XaWovvhMb0c3tN_dRqdT9zveo3T4mVnvqYRoVr0.ttf",
+      regular: "https://fonts.gstatic.com/s/astasans/v3/XoH32Y74XaWovvhMb0c3tN_dRqdT9zveo_T_mVnvqYRoVr0.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -33,8 +27,7 @@ const data: GoogleFontItem[] = [
     version: "v2",
     lastModified: "2025-05-30",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/bagelfatone/v2/hYkPPucsQOr5dy02WmQr5Zkd0B5mvv0dSbM.ttf",
+      regular: "https://fonts.gstatic.com/s/bagelfatone/v2/hYkPPucsQOr5dy02WmQr5Zkd0B5mvv0dSbM.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -61,8 +54,7 @@ const data: GoogleFontItem[] = [
     version: "v24",
     lastModified: "2025-09-10",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/blackhansans/v24/ea8Aad44WunzF9a-dL6toA8r8nqVIXSkH-Hc.ttf",
+      regular: "https://fonts.gstatic.com/s/blackhansans/v24/ea8Aad44WunzF9a-dL6toA8r8nqVIXSkH-Hc.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -75,8 +67,7 @@ const data: GoogleFontItem[] = [
     version: "v28",
     lastModified: "2025-09-05",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/cutefont/v28/Noaw6Uny2oWPbSHMrY6vmJNVNC9hkw.ttf",
+      regular: "https://fonts.gstatic.com/s/cutefont/v28/Noaw6Uny2oWPbSHMrY6vmJNVNC9hkw.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -89,8 +80,7 @@ const data: GoogleFontItem[] = [
     version: "v2",
     lastModified: "2025-05-30",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/diphylleia/v2/DtVmJxCtRKMixK4_HXsIulwm6gDXvwE.ttf",
+      regular: "https://fonts.gstatic.com/s/diphylleia/v2/DtVmJxCtRKMixK4_HXsIulwm6gDXvwE.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",
@@ -103,8 +93,7 @@ const data: GoogleFontItem[] = [
     version: "v21",
     lastModified: "2025-09-11",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/dohyeon/v21/TwMN-I8CRRU2zM86HFE3ZwaH__-C.ttf",
+      regular: "https://fonts.gstatic.com/s/dohyeon/v21/TwMN-I8CRRU2zM86HFE3ZwaH__-C.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -117,8 +106,7 @@ const data: GoogleFontItem[] = [
     version: "v23",
     lastModified: "2025-09-16",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/dokdo/v23/esDf315XNuCBLxLo4NaMlKcH.ttf",
+      regular: "https://fonts.gstatic.com/s/dokdo/v23/esDf315XNuCBLxLo4NaMlKcH.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -131,12 +119,9 @@ const data: GoogleFontItem[] = [
     version: "v16",
     lastModified: "2025-09-16",
     files: {
-      "300":
-        "https://fonts.gstatic.com/s/dongle/v16/sJoG3Ltdjt6VPkqeEcxrYjWNzXvVPA.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/dongle/v16/sJoG3Ltdjt6VPkqeActrYjWNzXvVPA.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/dongle/v16/sJoF3Ltdjt6VPkqmveRPah6RxA.ttf",
+      "300": "https://fonts.gstatic.com/s/dongle/v16/sJoG3Ltdjt6VPkqeEcxrYjWNzXvVPA.ttf",
+      "700": "https://fonts.gstatic.com/s/dongle/v16/sJoG3Ltdjt6VPkqeActrYjWNzXvVPA.ttf",
+      regular: "https://fonts.gstatic.com/s/dongle/v16/sJoF3Ltdjt6VPkqmveRPah6RxA.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -149,8 +134,7 @@ const data: GoogleFontItem[] = [
     version: "v26",
     lastModified: "2025-09-16",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/eastseadokdo/v26/xfuo0Wn2V2_KanASqXSZp22m05_aGavYS18y.ttf",
+      regular: "https://fonts.gstatic.com/s/eastseadokdo/v26/xfuo0Wn2V2_KanASqXSZp22m05_aGavYS18y.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",
@@ -163,12 +147,9 @@ const data: GoogleFontItem[] = [
     version: "v23",
     lastModified: "2025-09-10",
     files: {
-      "300":
-        "https://fonts.gstatic.com/s/gaegu/v23/TuGSUVB6Up9NU57nifw74sdtBk0x.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/gaegu/v23/TuGSUVB6Up9NU573jvw74sdtBk0x.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/gaegu/v23/TuGfUVB6Up9NU6ZLodgzydtk.ttf",
+      "300": "https://fonts.gstatic.com/s/gaegu/v23/TuGSUVB6Up9NU57nifw74sdtBk0x.ttf",
+      "700": "https://fonts.gstatic.com/s/gaegu/v23/TuGSUVB6Up9NU573jvw74sdtBk0x.ttf",
+      regular: "https://fonts.gstatic.com/s/gaegu/v23/TuGfUVB6Up9NU6ZLodgzydtk.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",
@@ -181,8 +162,7 @@ const data: GoogleFontItem[] = [
     version: "v26",
     lastModified: "2025-09-08",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/gamjaflower/v26/6NUR8FiKJg-Pa0rM6uN40Z4kyf9Fdty2ew.ttf",
+      regular: "https://fonts.gstatic.com/s/gamjaflower/v26/6NUR8FiKJg-Pa0rM6uN40Z4kyf9Fdty2ew.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",
@@ -195,8 +175,7 @@ const data: GoogleFontItem[] = [
     version: "v3",
     lastModified: "2025-05-30",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/gasoekone/v3/EJRTQgQ_UMUKvDgnlX80zrq_cyb-vco.ttf",
+      regular: "https://fonts.gstatic.com/s/gasoekone/v3/EJRTQgQ_UMUKvDgnlX80zrq_cyb-vco.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -204,48 +183,20 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Gothic A1",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
-    subsets: [
-      "cyrillic",
-      "cyrillic-ext",
-      "greek",
-      "greek-ext",
-      "korean",
-      "latin",
-      "latin-ext",
-      "vietnamese",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
+    subsets: ["cyrillic", "cyrillic-ext", "greek", "greek-ext", "korean", "latin", "latin-ext", "vietnamese"],
     version: "v18",
     lastModified: "2025-09-11",
     files: {
-      "100":
-        "https://fonts.gstatic.com/s/gothica1/v18/CSR74z5ZnPydRjlCCwlCCMcqYtd2vfwk.ttf",
-      "200":
-        "https://fonts.gstatic.com/s/gothica1/v18/CSR44z5ZnPydRjlCCwlCpOYKSPl6tOU9Eg.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/gothica1/v18/CSR44z5ZnPydRjlCCwlCwOUKSPl6tOU9Eg.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/gothica1/v18/CSR44z5ZnPydRjlCCwlCmOQKSPl6tOU9Eg.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/gothica1/v18/CSR44z5ZnPydRjlCCwlCtOMKSPl6tOU9Eg.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/gothica1/v18/CSR44z5ZnPydRjlCCwlC0OIKSPl6tOU9Eg.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/gothica1/v18/CSR44z5ZnPydRjlCCwlCzOEKSPl6tOU9Eg.ttf",
-      "900":
-        "https://fonts.gstatic.com/s/gothica1/v18/CSR44z5ZnPydRjlCCwlC6OAKSPl6tOU9Eg.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/gothica1/v18/CSR94z5ZnPydRjlCCwl6bM0uQNJmvQ.ttf",
+      "100": "https://fonts.gstatic.com/s/gothica1/v18/CSR74z5ZnPydRjlCCwlCCMcqYtd2vfwk.ttf",
+      "200": "https://fonts.gstatic.com/s/gothica1/v18/CSR44z5ZnPydRjlCCwlCpOYKSPl6tOU9Eg.ttf",
+      "300": "https://fonts.gstatic.com/s/gothica1/v18/CSR44z5ZnPydRjlCCwlCwOUKSPl6tOU9Eg.ttf",
+      "500": "https://fonts.gstatic.com/s/gothica1/v18/CSR44z5ZnPydRjlCCwlCmOQKSPl6tOU9Eg.ttf",
+      "600": "https://fonts.gstatic.com/s/gothica1/v18/CSR44z5ZnPydRjlCCwlCtOMKSPl6tOU9Eg.ttf",
+      "700": "https://fonts.gstatic.com/s/gothica1/v18/CSR44z5ZnPydRjlCCwlC0OIKSPl6tOU9Eg.ttf",
+      "800": "https://fonts.gstatic.com/s/gothica1/v18/CSR44z5ZnPydRjlCCwlCzOEKSPl6tOU9Eg.ttf",
+      "900": "https://fonts.gstatic.com/s/gothica1/v18/CSR44z5ZnPydRjlCCwlC6OAKSPl6tOU9Eg.ttf",
+      regular: "https://fonts.gstatic.com/s/gothica1/v18/CSR94z5ZnPydRjlCCwl6bM0uQNJmvQ.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -258,10 +209,8 @@ const data: GoogleFontItem[] = [
     version: "v12",
     lastModified: "2025-09-10",
     files: {
-      "700":
-        "https://fonts.gstatic.com/s/gowunbatang/v12/ijwNs5nhRMIjYsdSgcMa3wRZ4J7awssxJii23w.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/gowunbatang/v12/ijwSs5nhRMIjYsdSgcMa3wRhXLH-yuAtLw.ttf",
+      "700": "https://fonts.gstatic.com/s/gowunbatang/v12/ijwNs5nhRMIjYsdSgcMa3wRZ4J7awssxJii23w.ttf",
+      regular: "https://fonts.gstatic.com/s/gowunbatang/v12/ijwSs5nhRMIjYsdSgcMa3wRhXLH-yuAtLw.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",
@@ -274,8 +223,7 @@ const data: GoogleFontItem[] = [
     version: "v12",
     lastModified: "2025-09-11",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/gowundodum/v12/3Jn5SD_00GqwlBnWc1TUJF0FfORL0fNy.ttf",
+      regular: "https://fonts.gstatic.com/s/gowundodum/v12/3Jn5SD_00GqwlBnWc1TUJF0FfORL0fNy.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -288,8 +236,7 @@ const data: GoogleFontItem[] = [
     version: "v3",
     lastModified: "2025-05-30",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/grandifloraone/v3/0ybmGD0g27bCk_5MGWZcKWhxwnUU_R3y8DOWGA.ttf",
+      regular: "https://fonts.gstatic.com/s/grandifloraone/v3/0ybmGD0g27bCk_5MGWZcKWhxwnUU_R3y8DOWGA.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",
@@ -302,8 +249,7 @@ const data: GoogleFontItem[] = [
     version: "v21",
     lastModified: "2025-09-16",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/gugi/v21/A2BVn5dXywshVA6A9DEfgqM.ttf",
+      regular: "https://fonts.gstatic.com/s/gugi/v21/A2BVn5dXywshVA6A9DEfgqM.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -311,39 +257,20 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Hahmlet",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
     subsets: ["korean", "latin", "latin-ext", "vietnamese"],
     version: "v21",
     lastModified: "2025-09-08",
     files: {
-      "100":
-        "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4RhKOdjobsO-aVxn.ttf",
-      "200":
-        "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4RjKONjobsO-aVxn.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4RgUONjobsO-aVxn.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4Rh4ONjobsO-aVxn.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4RiUP9jobsO-aVxn.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4RitP9jobsO-aVxn.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4RjKP9jobsO-aVxn.ttf",
-      "900":
-        "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4RjjP9jobsO-aVxn.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4RhKONjobsO-aVxn.ttf",
+      "100": "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4RhKOdjobsO-aVxn.ttf",
+      "200": "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4RjKONjobsO-aVxn.ttf",
+      "300": "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4RgUONjobsO-aVxn.ttf",
+      "500": "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4Rh4ONjobsO-aVxn.ttf",
+      "600": "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4RiUP9jobsO-aVxn.ttf",
+      "700": "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4RitP9jobsO-aVxn.ttf",
+      "800": "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4RjKP9jobsO-aVxn.ttf",
+      "900": "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4RjjP9jobsO-aVxn.ttf",
+      regular: "https://fonts.gstatic.com/s/hahmlet/v21/BngXUXpCQ3nKpIo0TfPyfCdXfaeU4RhKONjobsO-aVxn.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",
@@ -356,8 +283,7 @@ const data: GoogleFontItem[] = [
     version: "v19",
     lastModified: "2025-09-05",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/himelody/v19/46ktlbP8Vnz0pJcqCTbEf29E31BBGA.ttf",
+      regular: "https://fonts.gstatic.com/s/himelody/v19/46ktlbP8Vnz0pJcqCTbEf29E31BBGA.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",
@@ -370,20 +296,13 @@ const data: GoogleFontItem[] = [
     version: "v11",
     lastModified: "2025-09-08",
     files: {
-      "100":
-        "https://fonts.gstatic.com/s/ibmplexsanskr/v11/vEFM2-VJISZe3O_rc3ZVYh4aTwNOyra_X5zCpMrMfA.ttf",
-      "200":
-        "https://fonts.gstatic.com/s/ibmplexsanskr/v11/vEFN2-VJISZe3O_rc3ZVYh4aTwNOyhqef7bsqMPVZb4.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/ibmplexsanskr/v11/vEFN2-VJISZe3O_rc3ZVYh4aTwNOyn6df7bsqMPVZb4.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/ibmplexsanskr/v11/vEFN2-VJISZe3O_rc3ZVYh4aTwNOyiacf7bsqMPVZb4.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/ibmplexsanskr/v11/vEFN2-VJISZe3O_rc3ZVYh4aTwNOygqbf7bsqMPVZb4.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/ibmplexsanskr/v11/vEFN2-VJISZe3O_rc3ZVYh4aTwNOym6af7bsqMPVZb4.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/ibmplexsanskr/v11/vEFK2-VJISZe3O_rc3ZVYh4aTwNO8tK1W77HtMo.ttf",
+      "100": "https://fonts.gstatic.com/s/ibmplexsanskr/v11/vEFM2-VJISZe3O_rc3ZVYh4aTwNOyra_X5zCpMrMfA.ttf",
+      "200": "https://fonts.gstatic.com/s/ibmplexsanskr/v11/vEFN2-VJISZe3O_rc3ZVYh4aTwNOyhqef7bsqMPVZb4.ttf",
+      "300": "https://fonts.gstatic.com/s/ibmplexsanskr/v11/vEFN2-VJISZe3O_rc3ZVYh4aTwNOyn6df7bsqMPVZb4.ttf",
+      "500": "https://fonts.gstatic.com/s/ibmplexsanskr/v11/vEFN2-VJISZe3O_rc3ZVYh4aTwNOyiacf7bsqMPVZb4.ttf",
+      "600": "https://fonts.gstatic.com/s/ibmplexsanskr/v11/vEFN2-VJISZe3O_rc3ZVYh4aTwNOygqbf7bsqMPVZb4.ttf",
+      "700": "https://fonts.gstatic.com/s/ibmplexsanskr/v11/vEFN2-VJISZe3O_rc3ZVYh4aTwNOym6af7bsqMPVZb4.ttf",
+      regular: "https://fonts.gstatic.com/s/ibmplexsanskr/v11/vEFK2-VJISZe3O_rc3ZVYh4aTwNO8tK1W77HtMo.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -409,8 +328,7 @@ const data: GoogleFontItem[] = [
     version: "v22",
     lastModified: "2025-09-10",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/kiranghaerang/v22/E21-_dn_gvvIjhYON1lpIU4-bcqvWPaJq4no.ttf",
+      regular: "https://fonts.gstatic.com/s/kiranghaerang/v22/E21-_dn_gvvIjhYON1lpIU4-bcqvWPaJq4no.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -423,8 +341,7 @@ const data: GoogleFontItem[] = [
     version: "v1",
     lastModified: "2025-05-30",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/moiraione/v1/2sDbZGFUgJLJmby6xgNGT0WWB7UcfCg.ttf",
+      regular: "https://fonts.gstatic.com/s/moiraione/v1/2sDbZGFUgJLJmby6xgNGT0WWB7UcfCg.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -437,8 +354,7 @@ const data: GoogleFontItem[] = [
     version: "v26",
     lastModified: "2025-09-08",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/nanumbrushscript/v26/wXK2E2wfpokopxzthSqPbcR5_gVaxazyjqBr1lO97Q.ttf",
+      regular: "https://fonts.gstatic.com/s/nanumbrushscript/v26/wXK2E2wfpokopxzthSqPbcR5_gVaxazyjqBr1lO97Q.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",
@@ -451,12 +367,9 @@ const data: GoogleFontItem[] = [
     version: "v26",
     lastModified: "2025-05-30",
     files: {
-      "700":
-        "https://fonts.gstatic.com/s/nanumgothic/v26/PN_oRfi-oW3hYwmKDpxS7F_LQv37zlEn14YEUQ.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/nanumgothic/v26/PN_oRfi-oW3hYwmKDpxS7F_LXv77zlEn14YEUQ.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/nanumgothic/v26/PN_3Rfi-oW3hYwmKDpxS7F_z_tLfxno73g.ttf",
+      "700": "https://fonts.gstatic.com/s/nanumgothic/v26/PN_oRfi-oW3hYwmKDpxS7F_LQv37zlEn14YEUQ.ttf",
+      "800": "https://fonts.gstatic.com/s/nanumgothic/v26/PN_oRfi-oW3hYwmKDpxS7F_LXv77zlEn14YEUQ.ttf",
+      regular: "https://fonts.gstatic.com/s/nanumgothic/v26/PN_3Rfi-oW3hYwmKDpxS7F_z_tLfxno73g.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -469,10 +382,8 @@ const data: GoogleFontItem[] = [
     version: "v27",
     lastModified: "2025-09-10",
     files: {
-      "700":
-        "https://fonts.gstatic.com/s/nanumgothiccoding/v27/8QIYdjzHisX_8vv59_xMxtPFW4IXROws8xgecsV88t5V9r4.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/nanumgothiccoding/v27/8QIVdjzHisX_8vv59_xMxtPFW4IXROwsy6QxVs1X7tc.ttf",
+      "700": "https://fonts.gstatic.com/s/nanumgothiccoding/v27/8QIYdjzHisX_8vv59_xMxtPFW4IXROws8xgecsV88t5V9r4.ttf",
+      regular: "https://fonts.gstatic.com/s/nanumgothiccoding/v27/8QIVdjzHisX_8vv59_xMxtPFW4IXROwsy6QxVs1X7tc.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",
@@ -485,12 +396,9 @@ const data: GoogleFontItem[] = [
     version: "v31",
     lastModified: "2025-09-10",
     files: {
-      "700":
-        "https://fonts.gstatic.com/s/nanummyeongjo/v31/9Bty3DZF0dXLMZlywRbVRNhxy2pXV1A0pfCs5Kos.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/nanummyeongjo/v31/9Bty3DZF0dXLMZlywRbVRNhxy2pLVFA0pfCs5Kos.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/nanummyeongjo/v31/9Btx3DZF0dXLMZlywRbVRNhxy1LreHQ8juyl.ttf",
+      "700": "https://fonts.gstatic.com/s/nanummyeongjo/v31/9Bty3DZF0dXLMZlywRbVRNhxy2pXV1A0pfCs5Kos.ttf",
+      "800": "https://fonts.gstatic.com/s/nanummyeongjo/v31/9Bty3DZF0dXLMZlywRbVRNhxy2pLVFA0pfCs5Kos.ttf",
+      regular: "https://fonts.gstatic.com/s/nanummyeongjo/v31/9Btx3DZF0dXLMZlywRbVRNhxy1LreHQ8juyl.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",
@@ -503,8 +411,7 @@ const data: GoogleFontItem[] = [
     version: "v25",
     lastModified: "2025-05-30",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/nanumpenscript/v25/daaDSSYiLGqEal3MvdA_FOL_3FkN2z7-aMFCcTU.ttf",
+      regular: "https://fonts.gstatic.com/s/nanumpenscript/v25/daaDSSYiLGqEal3MvdA_FOL_3FkN2z7-aMFCcTU.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",
@@ -512,39 +419,20 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Noto Sans KR",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
     subsets: ["cyrillic", "korean", "latin", "latin-ext", "vietnamese"],
     version: "v38",
     lastModified: "2025-09-05",
     files: {
-      "100":
-        "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuozeLTq8H4hfeE.ttf",
-      "200":
-        "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzmoyeLTq8H4hfeE.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzrQyeLTq8H4hfeE.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzztgyeLTq8H4hfeE.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzjQ1eLTq8H4hfeE.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzg01eLTq8H4hfeE.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzmo1eLTq8H4hfeE.ttf",
-      "900":
-        "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzkM1eLTq8H4hfeE.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyeLTq8H4hfeE.ttf",
+      "100": "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuozeLTq8H4hfeE.ttf",
+      "200": "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzmoyeLTq8H4hfeE.ttf",
+      "300": "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzrQyeLTq8H4hfeE.ttf",
+      "500": "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzztgyeLTq8H4hfeE.ttf",
+      "600": "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzjQ1eLTq8H4hfeE.ttf",
+      "700": "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzg01eLTq8H4hfeE.ttf",
+      "800": "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzmo1eLTq8H4hfeE.ttf",
+      "900": "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzkM1eLTq8H4hfeE.ttf",
+      regular: "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyeLTq8H4hfeE.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -557,22 +445,14 @@ const data: GoogleFontItem[] = [
     version: "v30",
     lastModified: "2025-09-02",
     files: {
-      "200":
-        "https://fonts.gstatic.com/s/notoserifkr/v30/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOnchmeM524ZvTePRu.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/notoserifkr/v30/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOnci4eM524ZvTePRu.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/notoserifkr/v30/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOncjUeM524ZvTePRu.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/notoserifkr/v30/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOncg4f8524ZvTePRu.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/notoserifkr/v30/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOncgBf8524ZvTePRu.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/notoserifkr/v30/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOnchmf8524ZvTePRu.ttf",
-      "900":
-        "https://fonts.gstatic.com/s/notoserifkr/v30/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOnchPf8524ZvTePRu.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/notoserifkr/v30/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOncjmeM524ZvTePRu.ttf",
+      "200": "https://fonts.gstatic.com/s/notoserifkr/v30/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOnchmeM524ZvTePRu.ttf",
+      "300": "https://fonts.gstatic.com/s/notoserifkr/v30/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOnci4eM524ZvTePRu.ttf",
+      "500": "https://fonts.gstatic.com/s/notoserifkr/v30/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOncjUeM524ZvTePRu.ttf",
+      "600": "https://fonts.gstatic.com/s/notoserifkr/v30/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOncg4f8524ZvTePRu.ttf",
+      "700": "https://fonts.gstatic.com/s/notoserifkr/v30/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOncgBf8524ZvTePRu.ttf",
+      "800": "https://fonts.gstatic.com/s/notoserifkr/v30/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOnchmf8524ZvTePRu.ttf",
+      "900": "https://fonts.gstatic.com/s/notoserifkr/v30/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOnchPf8524ZvTePRu.ttf",
+      regular: "https://fonts.gstatic.com/s/notoserifkr/v30/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOncjmeM524ZvTePRu.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",
@@ -585,8 +465,7 @@ const data: GoogleFontItem[] = [
     version: "v1",
     lastModified: "2025-05-30",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/orbit/v1/_LOCmz7I-uHd2mjEeqciRwRm.ttf",
+      regular: "https://fonts.gstatic.com/s/orbit/v1/_LOCmz7I-uHd2mjEeqciRwRm.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -599,8 +478,7 @@ const data: GoogleFontItem[] = [
     version: "v24",
     lastModified: "2025-09-08",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/poorstory/v24/jizfREFUsnUct9P6cDfd4OmnLD0Z4zM.ttf",
+      regular: "https://fonts.gstatic.com/s/poorstory/v24/jizfREFUsnUct9P6cDfd4OmnLD0Z4zM.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -613,8 +491,7 @@ const data: GoogleFontItem[] = [
     version: "v19",
     lastModified: "2025-09-08",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/singleday/v19/LYjHdGDjlEgoAcF95EI5jVoFUNfeQJU.ttf",
+      regular: "https://fonts.gstatic.com/s/singleday/v19/LYjHdGDjlEgoAcF95EI5jVoFUNfeQJU.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -627,8 +504,7 @@ const data: GoogleFontItem[] = [
     version: "v22",
     lastModified: "2025-09-08",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/songmyung/v22/1cX2aUDWAJH5-EIC7DIhr1GqhcitzeM.ttf",
+      regular: "https://fonts.gstatic.com/s/songmyung/v22/1cX2aUDWAJH5-EIC7DIhr1GqhcitzeM.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",
@@ -641,8 +517,7 @@ const data: GoogleFontItem[] = [
     version: "v25",
     lastModified: "2025-06-25",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/stylish/v25/m8JSjfhPYriQkk7-fo35dLxEdmo.ttf",
+      regular: "https://fonts.gstatic.com/s/stylish/v25/m8JSjfhPYriQkk7-fo35dLxEdmo.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -655,12 +530,9 @@ const data: GoogleFontItem[] = [
     version: "v18",
     lastModified: "2025-09-16",
     files: {
-      "300":
-        "https://fonts.gstatic.com/s/sunflower/v18/RWmPoKeF8fUjqIj7Vc-06MfiqYsGBGBzCw.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/sunflower/v18/RWmPoKeF8fUjqIj7Vc-0sMbiqYsGBGBzCw.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/sunflower/v18/RWmPoKeF8fUjqIj7Vc-0-MDiqYsGBGBzCw.ttf",
+      "300": "https://fonts.gstatic.com/s/sunflower/v18/RWmPoKeF8fUjqIj7Vc-06MfiqYsGBGBzCw.ttf",
+      "500": "https://fonts.gstatic.com/s/sunflower/v18/RWmPoKeF8fUjqIj7Vc-0sMbiqYsGBGBzCw.ttf",
+      "700": "https://fonts.gstatic.com/s/sunflower/v18/RWmPoKeF8fUjqIj7Vc-0-MDiqYsGBGBzCw.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -673,8 +545,7 @@ const data: GoogleFontItem[] = [
     version: "v22",
     lastModified: "2025-09-05",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/yeonsung/v22/QldMNTpbohAGtsJvUn6xSVNazqx2xg.ttf",
+      regular: "https://fonts.gstatic.com/s/yeonsung/v22/QldMNTpbohAGtsJvUn6xSVNazqx2xg.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",

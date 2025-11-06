@@ -2,10 +2,7 @@
 
 import React from "react";
 import { Box, Grid, Paper, Typography, Card, CardContent } from "@mui/material";
-import {
-  Description as TemplatesIcon,
-  FileCopy as CertificatesIcon,
-} from "@mui/icons-material";
+import { Description as TemplatesIcon, FileCopy as CertificatesIcon } from "@mui/icons-material";
 
 import { useNotifications } from "@toolpad/core/useNotifications";
 
@@ -108,9 +105,7 @@ const Dashboard: React.FC = () => {
           إجراءات سريعة
         </Typography>
         <Paper sx={{ p: 3 }}>
-          <Typography variant="body1">
-            ابدأ بإنشاء قالب شهادة جديد أو إنشاء شهادات للمستلمين.
-          </Typography>
+          <Typography variant="body1">ابدأ بإنشاء قالب شهادة جديد أو إنشاء شهادات للمستلمين.</Typography>
         </Paper>
       </Box>
 

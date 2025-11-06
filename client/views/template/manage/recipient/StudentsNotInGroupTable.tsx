@@ -6,10 +6,7 @@ import { useRecipientStore } from "./stores/useRecipientStore";
 import { useRecipientOperations } from "./hooks/useRecipientOperations";
 import { studentsNotInRecipientGroupQueryDocument } from "./hooks/recipient.documents";
 import RecipientTable from "./RecipientTable";
-import {
-  RecipientTableFooterEnd,
-  RecipientTableFooterStart,
-} from "./components/RecipientTableFooter";
+import { RecipientTableFooterEnd, RecipientTableFooterStart } from "./components/RecipientTableFooter";
 import { useAppTranslation } from "@/client/locale";
 import { Student } from "@/client/graphql/generated/gql/graphql";
 
@@ -18,10 +15,7 @@ interface StudentsNotInGroupTableProps {
   isMobile: boolean;
 }
 
-const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
-  templateId,
-  isMobile,
-}) => {
+const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({ templateId, isMobile }) => {
   const store = useRecipientStore();
   const operations = useRecipientOperations(templateId);
   const { recipientTranslations: strings } = useAppTranslation();
@@ -56,16 +50,8 @@ const StudentsNotInGroupTable: React.FC<StudentsNotInGroupTableProps> = ({
       onPageChange={operations.onPageChange}
       onRowsPerPageChange={operations.onRowsPerPageChange}
       selectedRowIds={store.selectedStudentIdsNotInGroup}
-      onSelectionChange={ids =>
-        store.setSelectedStudentIdsNotInGroup(ids.map(Number))
-      }
-      footerStartContent={
-        <RecipientTableFooterStart
-          tabType="add"
-          isMobile={isMobile}
-          isLoading={loading}
-        />
-      }
+      onSelectionChange={ids => store.setSelectedStudentIdsNotInGroup(ids.map(Number))}
+      footerStartContent={<RecipientTableFooterStart tabType="add" isMobile={isMobile} isLoading={loading} />}
       footerEndContent={
         <RecipientTableFooterEnd
           mode="add"

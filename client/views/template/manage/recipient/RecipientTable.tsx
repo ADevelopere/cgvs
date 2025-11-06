@@ -8,10 +8,7 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { FilterClause } from "@/client/types/filters";
 import { useRecipientTable } from "./hooks/useRecipientTable";
 
-interface RecipientTableProps<
-  TRowData,
-  TRowId extends string | number = string | number,
-> {
+interface RecipientTableProps<TRowData, TRowId extends string | number = string | number> {
   // Data
   data: TRowData[];
   getRowId: (row: TRowData) => TRowId;
@@ -20,15 +17,9 @@ interface RecipientTableProps<
   // Operations (externally managed)
   filters: Record<string, FilterClause | null>;
   queryParams: {
-    orderBy?:
-      | Graphql.StudentsOrderByClause[]
-      | Graphql.StudentsOrderByClause
-      | null;
+    orderBy?: Graphql.StudentsOrderByClause[] | Graphql.StudentsOrderByClause | null;
   };
-  setColumnFilter: (
-    filterClause: FilterClause | null,
-    columnId: string
-  ) => void;
+  setColumnFilter: (filterClause: FilterClause | null, columnId: string) => void;
   clearFilter: (columnId: string) => void;
   updateSort: (
     orderByClause: {
@@ -51,10 +42,7 @@ interface RecipientTableProps<
   isMobile: boolean;
 }
 
-const RecipientTable = <
-  TRowData,
-  TRowId extends string | number = string | number,
->({
+const RecipientTable = <TRowData, TRowId extends string | number = string | number>({
   data,
   getRowId,
   loading,

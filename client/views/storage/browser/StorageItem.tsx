@@ -29,11 +29,7 @@ interface StorageItemProps {
   toggleSelect: (path: string) => void;
   selectAll: () => void;
   clearSelection: () => void;
-  selectRange: (
-    fromPath: string,
-    toPath: string,
-    items: StorageItemType[]
-  ) => void;
+  selectRange: (fromPath: string, toPath: string, items: StorageItemType[]) => void;
   setFocusedItem: (path: string | null) => void;
 }
 
@@ -64,9 +60,7 @@ const StorageItem: React.FC<StorageItemProps> = ({
   setFocusedItem,
 }) => {
   const isCut = React.useMemo(
-    () =>
-      clipboard?.operation === "cut" &&
-      clipboard.items.some(clipItem => clipItem.path === item.path),
+    () => clipboard?.operation === "cut" && clipboard.items.some(clipItem => clipItem.path === item.path),
     [clipboard?.items, clipboard?.operation, item.path]
   );
 
@@ -110,15 +104,7 @@ const StorageItem: React.FC<StorageItemProps> = ({
         }
       }, 200); // 200ms delay to detect double-click
     },
-    [
-      clearSelection,
-      item.path,
-      lastSelectedItem,
-      selectRange,
-      setFocusedItem,
-      toggleSelect,
-      currentItems,
-    ]
+    [clearSelection, item.path, lastSelectedItem, selectRange, setFocusedItem, toggleSelect, currentItems]
   );
 
   // Handle double-click for navigation
@@ -224,9 +210,7 @@ const StorageItem: React.FC<StorageItemProps> = ({
 
   // Wrap directories with FolderDropTarget for drag-and-drop upload
   if (isDirectory) {
-    return (
-      <FolderDropTarget folderPath={item.path}>{renderItem()}</FolderDropTarget>
-    );
+    return <FolderDropTarget folderPath={item.path}>{renderItem()}</FolderDropTarget>;
   }
 
   // For files, render normally

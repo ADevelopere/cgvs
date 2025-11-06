@@ -131,12 +131,7 @@ export const TextEditRenderer: React.FC<TextEditRendererProps> = ({
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <div>
-        <Tooltip
-          open={!!error}
-          title={error ?? ""}
-          arrow
-          placement="bottom-start"
-        >
+        <Tooltip open={!!error} title={error ?? ""} arrow placement="bottom-start">
           <TextField
             inputRef={inputRef}
             value={editValue}

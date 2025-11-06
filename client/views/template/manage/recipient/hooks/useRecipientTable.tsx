@@ -18,15 +18,9 @@ type CreatedAtColumn = Table.Column<Graphql.Student>;
 interface UseRecipientTableParams {
   filters: Record<string, FilterClause | null>;
   queryParams: {
-    orderBy?:
-      | Graphql.StudentsOrderByClause[]
-      | Graphql.StudentsOrderByClause
-      | null;
+    orderBy?: Graphql.StudentsOrderByClause[] | Graphql.StudentsOrderByClause | null;
   };
-  setColumnFilter: (
-    filterClause: FilterClause | null,
-    columnId: string
-  ) => void;
+  setColumnFilter: (filterClause: FilterClause | null, columnId: string) => void;
   clearFilter: (columnId: string) => void;
   updateSort: (
     orderByClause: {
@@ -47,8 +41,7 @@ export const useRecipientTable = ({
   clearFilter,
   updateSort,
 }: UseRecipientTableParams) => {
-  const { recipientTranslations: strings, genderTranslations: genderStrings } =
-    useAppTranslation();
+  const { recipientTranslations: strings, genderTranslations: genderStrings } = useAppTranslation();
 
   // Build gender options
   const genderOptions = useMemo(
@@ -63,15 +56,7 @@ export const useRecipientTable = ({
    * Helper component for text filterable headers
    */
   const TextFilterHeader = useCallback(
-    ({
-      label,
-      columnId,
-      sortable = true,
-    }: {
-      label: string;
-      columnId: string;
-      sortable?: boolean;
-    }) => {
+    ({ label, columnId, sortable = true }: { label: string; columnId: string; sortable?: boolean }) => {
       // Get current filter from filters
       const currentFilter = filters[columnId];
 
@@ -82,10 +67,7 @@ export const useRecipientTable = ({
         : queryParams.orderBy
           ? [queryParams.orderBy]
           : [];
-      const sortDirection =
-        orderByArray[0]?.column === graphqlColumnName
-          ? orderByArray[0].order
-          : null;
+      const sortDirection = orderByArray[0]?.column === graphqlColumnName ? orderByArray[0].order : null;
 
       return (
         <Table.BaseHeaderRenderer
@@ -130,10 +112,7 @@ export const useRecipientTable = ({
         : queryParams.orderBy
           ? [queryParams.orderBy]
           : [];
-      const sortDirection =
-        orderByArray[0]?.column === graphqlColumnName
-          ? orderByArray[0].order
-          : null;
+      const sortDirection = orderByArray[0]?.column === graphqlColumnName ? orderByArray[0].order : null;
 
       return (
         <Table.BaseHeaderRenderer
@@ -173,9 +152,7 @@ export const useRecipientTable = ({
       label: strings.name,
       resizable: false,
       initialWidth: 200,
-      headerRenderer: () => (
-        <TextFilterHeader label={strings.name} columnId="name" />
-      ),
+      headerRenderer: () => <TextFilterHeader label={strings.name} columnId="name" />,
       viewRenderer: ({ row }) => <Table.TextViewRenderer value={row.name} />,
     };
 
@@ -192,10 +169,7 @@ export const useRecipientTable = ({
           : queryParams.orderBy
             ? [queryParams.orderBy]
             : [];
-        const sortDirection =
-          orderByArray[0]?.column === graphqlColumnName
-            ? orderByArray[0].order
-            : null;
+        const sortDirection = orderByArray[0]?.column === graphqlColumnName ? orderByArray[0].order : null;
 
         return (
           <Table.BaseHeaderRenderer
@@ -209,9 +183,7 @@ export const useRecipientTable = ({
           />
         );
       },
-      viewRenderer: ({ row }) => (
-        <Table.CountryViewRenderer value={row.nationality} />
-      ),
+      viewRenderer: ({ row }) => <Table.CountryViewRenderer value={row.nationality} />,
     };
 
     const dateOfBirthColumn: DateOfBirthColumn = {
@@ -220,12 +192,8 @@ export const useRecipientTable = ({
       label: strings.dateOfBirth,
       resizable: false,
       initialWidth: 150,
-      headerRenderer: () => (
-        <DateFilterHeader label={strings.dateOfBirth} columnId="dateOfBirth" />
-      ),
-      viewRenderer: ({ row }) => (
-        <Table.DateViewRenderer value={row.dateOfBirth} format="PPP" />
-      ),
+      headerRenderer: () => <DateFilterHeader label={strings.dateOfBirth} columnId="dateOfBirth" />,
+      viewRenderer: ({ row }) => <Table.DateViewRenderer value={row.dateOfBirth} format="PPP" />,
     };
 
     const genderColumn: GenderColumn = {
@@ -241,10 +209,7 @@ export const useRecipientTable = ({
           : queryParams.orderBy
             ? [queryParams.orderBy]
             : [];
-        const sortDirection =
-          orderByArray[0]?.column === graphqlColumnName
-            ? orderByArray[0].order
-            : null;
+        const sortDirection = orderByArray[0]?.column === graphqlColumnName ? orderByArray[0].order : null;
 
         return (
           <Table.BaseHeaderRenderer
@@ -258,9 +223,7 @@ export const useRecipientTable = ({
           />
         );
       },
-      viewRenderer: ({ row }) => (
-        <Table.SelectViewRenderer value={row.gender} options={genderOptions} />
-      ),
+      viewRenderer: ({ row }) => <Table.SelectViewRenderer value={row.gender} options={genderOptions} />,
     };
 
     const emailColumn: EmailColumn = {
@@ -269,9 +232,7 @@ export const useRecipientTable = ({
       label: strings.email,
       resizable: false,
       initialWidth: 200,
-      headerRenderer: () => (
-        <TextFilterHeader label={strings.email} columnId="email" />
-      ),
+      headerRenderer: () => <TextFilterHeader label={strings.email} columnId="email" />,
       viewRenderer: ({ row }) => <Table.TextViewRenderer value={row.email} />,
     };
 
@@ -281,30 +242,12 @@ export const useRecipientTable = ({
       label: strings.createdAt,
       resizable: false,
       initialWidth: 150,
-      headerRenderer: () => (
-        <DateFilterHeader label={strings.createdAt} columnId="createdAt" />
-      ),
-      viewRenderer: ({ row }) => (
-        <Table.DateViewRenderer value={row.createdAt} format="PPP" />
-      ),
+      headerRenderer: () => <DateFilterHeader label={strings.createdAt} columnId="createdAt" />,
+      viewRenderer: ({ row }) => <Table.DateViewRenderer value={row.createdAt} format="PPP" />,
     };
 
-    return [
-      nameColumn,
-      nationalityColumn,
-      dateOfBirthColumn,
-      genderColumn,
-      emailColumn,
-      createdAtColumn,
-    ] as const;
-  }, [
-    strings,
-    genderOptions,
-    TextFilterHeader,
-    DateFilterHeader,
-    queryParams,
-    updateSort,
-  ]);
+    return [nameColumn, nationalityColumn, dateOfBirthColumn, genderColumn, emailColumn, createdAtColumn] as const;
+  }, [strings, genderOptions, TextFilterHeader, DateFilterHeader, queryParams, updateSort]);
 
   return {
     columns,

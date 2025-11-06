@@ -356,9 +356,7 @@ import { usePageNavigation } from "@/client/contexts/usePageNavigation";
 
 export type TabType = "basic" | "advanced" | "settings";
 
-export const MyFeatureProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const MyFeatureProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { registerResolver, updateParams } = usePageNavigation();
 
   // State
@@ -415,10 +413,7 @@ export const MyFeatureProvider: React.FC<{ children: React.ReactNode }> = ({
     (itemId: number | null) => {
       setSelectedItemId(itemId);
       if (itemId !== null) {
-        updateParams(
-          { itemId: String(itemId) },
-          { replace: true, merge: true }
-        );
+        updateParams({ itemId: String(itemId) }, { replace: true, merge: true });
       } else {
         updateParams({ itemId: undefined }, { replace: true, merge: true });
       }
@@ -433,11 +428,7 @@ export const MyFeatureProvider: React.FC<{ children: React.ReactNode }> = ({
     selectItem,
   };
 
-  return (
-    <MyFeatureContext.Provider value={value}>
-      {children}
-    </MyFeatureContext.Provider>
-  );
+  return <MyFeatureContext.Provider value={value}>{children}</MyFeatureContext.Provider>;
 };
 ```
 

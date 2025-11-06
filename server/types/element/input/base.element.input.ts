@@ -1,8 +1,7 @@
 import { certificateElement } from "@/server/db/schema";
 import { ElementAlignment } from "../output";
 
-export type CertificateElementEntityInput =
-  typeof certificateElement.$inferInsert;
+export type CertificateElementEntityInput = typeof certificateElement.$inferInsert;
 
 export type CertificateElementBaseInput = Omit<
   CertificateElementEntityInput,
@@ -14,10 +13,7 @@ export type CertificateElementBaseInput = Omit<
 // Base Update Input (extended by all element update inputs)
 // ============================================================================
 
-export type CertificateElementBaseUpdateInput = Omit<
-  CertificateElementBaseInput,
-  "templateId"
-> & {
+export type CertificateElementBaseUpdateInput = Omit<CertificateElementBaseInput, "templateId"> & {
   id: number;
 };
 
@@ -32,4 +28,12 @@ export type ElementOrderUpdateInput = {
 
 export type BatchElementOrderUpdateInput = {
   elements: ElementOrderUpdateInput[];
+};
+
+export type IncreaseElementOrderInput = {
+  elementId: number;
+};
+
+export type DecreaseElementOrderInput = {
+  elementId: number;
 };

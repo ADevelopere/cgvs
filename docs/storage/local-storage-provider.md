@@ -204,10 +204,7 @@ The adapter **refuses to start** in serverless environments:
 ```typescript
 // Fatal error if serverless detected
 const isServerless =
-  process.env.VERCEL ||
-  process.env.AWS_LAMBDA_FUNCTION_NAME ||
-  process.env.NETLIFY ||
-  process.env.CLOUD_FUNCTIONS;
+  process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NETLIFY || process.env.CLOUD_FUNCTIONS;
 
 if (isServerless) {
   throw new Error(

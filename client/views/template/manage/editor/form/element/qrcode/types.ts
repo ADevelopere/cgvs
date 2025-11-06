@@ -1,11 +1,6 @@
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { BaseElementFormErrors } from "../base/types";
-import {
-  FormErrors,
-  UpdateStateFn,
-  ValidateFieldFn,
-  UpdateStateWithElementIdFn,
-} from "../../types";
+import { FormErrors, UpdateStateFn, ValidateFieldFn, UpdateStateWithElementIdFn } from "../../types";
 
 // ============================================================================
 // QR Code-specific Props State
@@ -35,10 +30,6 @@ export type QrCodeElementFormErrors = {
 // ============================================================================
 
 export type UpdateQRCodePropsFn = UpdateStateFn<QRCodePropsFormState>;
-export type UpdateQRCodePropsWithElementIdFn =
-  UpdateStateWithElementIdFn<QRCodePropsFormState>;
+export type UpdateQRCodePropsWithElementIdFn = UpdateStateWithElementIdFn<QRCodePropsFormState>;
 
-export type ValidateQRCodePropsFn = ValidateFieldFn<
-  QRCodePropsFormState,
-  string | undefined
->;
+export type ValidateQRCodePropsFn = ValidateFieldFn<QRCodePropsFormState, string | undefined>;

@@ -8,10 +8,7 @@ import { FontProvider, FontContext } from "./FontContext";
 import { useOpentypeMetrics } from "./useOpentypeMetrics";
 import { layoutResizeDown, layoutTruncate, layoutWrap, drawLayout } from "./textLayout";
 import { resolveTextContent } from "../editor/imageRenderer/textResolvers";
-import {
-  elementsByTemplateIdQueryDocument,
-  templateConfigByTemplateIdQueryDocument,
-} from "../editor/glqDocuments";
+import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "../editor/glqDocuments";
 
 export interface ClientCanvasGeneratorProps {
   templateId: number;
@@ -39,7 +36,17 @@ function collectFontFamilies(elements: GQL.CertificateElementUnion[]): string[] 
 }
 
 function CanvasInner(
-  { elements, config, onExport, onReady }: { elements: GQL.CertificateElementUnion[]; config: GQL.TemplateConfig; onExport?: (d: string) => void; onReady?: () => void },
+  {
+    elements,
+    config,
+    onExport,
+    onReady,
+  }: {
+    elements: GQL.CertificateElementUnion[];
+    config: GQL.TemplateConfig;
+    onExport?: (d: string) => void;
+    onReady?: () => void;
+  },
   ref: React.Ref<ClientCanvasGeneratorRef>
 ) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -63,9 +70,10 @@ function CanvasInner(
 
     for (const el of textElements) {
       const text = resolveTextContent(el.textDataSource, config.language, "Text");
-      const family = el.textProps.fontRef.__typename === "FontReferenceGoogle" && el.textProps.fontRef.identifier
-        ? el.textProps.fontRef.identifier
-        : "Roboto";
+      const family =
+        el.textProps.fontRef.__typename === "FontReferenceGoogle" && el.textProps.fontRef.identifier
+          ? el.textProps.fontRef.identifier
+          : "Roboto";
       const fontSize = el.textProps.fontSize;
       const color = el.textProps.color || "#000";
       const font = getFont(family);
@@ -76,7 +84,10 @@ function CanvasInner(
       let layout;
       if (el.textProps.overflow === GQL.ElementOverflow.Wrap) {
         layout = layoutWrap(ctx, text, el.base.width, font, fontSize);
-      } else if (el.textProps.overflow === GQL.ElementOverflow.Ellipse || el.textProps.overflow === GQL.ElementOverflow.Truncate) {
+      } else if (
+        el.textProps.overflow === GQL.ElementOverflow.Ellipse ||
+        el.textProps.overflow === GQL.ElementOverflow.Truncate
+      ) {
         layout = layoutTruncate(ctx, text, el.base.width, fontSize);
       } else if (el.textProps.overflow === GQL.ElementOverflow.ResizeDown) {
         layout = layoutResizeDown(ctx, text, el.base.width, el.base.height, font, fontSize, family);
@@ -135,18 +146,26 @@ function CanvasInner(
   );
 }
 
-const CanvasInnerWithRef = React.forwardRef<ClientCanvasGeneratorRef, { elements: GQL.CertificateElementUnion[]; config: GQL.TemplateConfig; onExport?: (d: string) => void; onReady?: () => void }>(CanvasInner);
+const CanvasInnerWithRef = React.forwardRef<
+  ClientCanvasGeneratorRef,
+  {
+    elements: GQL.CertificateElementUnion[];
+    config: GQL.TemplateConfig;
+    onExport?: (d: string) => void;
+    onReady?: () => void;
+  }
+>(CanvasInner);
 
 export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, ClientCanvasGeneratorProps>(
   ({ templateId, onExport, onReady }, ref) => {
-    const { data: configData, error: configError } = useQuery(
-      templateConfigByTemplateIdQueryDocument,
-      { variables: { templateId }, fetchPolicy: "cache-first" }
-    );
-    const { data: elementsData, error: elementsError } = useQuery(
-      elementsByTemplateIdQueryDocument,
-      { variables: { templateId }, fetchPolicy: "cache-first" }
-    );
+    const { data: configData, error: configError } = useQuery(templateConfigByTemplateIdQueryDocument, {
+      variables: { templateId },
+      fetchPolicy: "cache-first",
+    });
+    const { data: elementsData, error: elementsError } = useQuery(elementsByTemplateIdQueryDocument, {
+      variables: { templateId },
+      fetchPolicy: "cache-first",
+    });
 
     if (configError) {
       logger.error("ClientCanvasGenerator: config query error", { error: configError });
@@ -155,8 +174,8 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
       logger.error("ClientCanvasGenerator: elements query error", { error: elementsError });
     }
 
-    const config = configData?.templateConfigByTemplateId
-    const elements = elementsData?.elementsByTemplateId 
+    const config = configData?.templateConfigByTemplateId;
+    const elements = elementsData?.elementsByTemplateId;
 
     if (!config || !elements) return null;
 
@@ -173,5 +192,3 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
 ClientCanvasGenerator.displayName = "ClientCanvasGenerator";
 
 export default ClientCanvasGenerator;
-
-

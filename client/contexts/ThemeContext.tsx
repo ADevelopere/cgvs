@@ -7,12 +7,7 @@ import {
   // Experimental_CssVarsProvider as CssVarsProvider,
 } from "@mui/material/styles"; // Import CssVarsProvider
 import { CssBaseline, Box } from "@mui/material";
-import {
-  ltrLightTheme,
-  rtlLightTheme,
-  rtlDarkTheme,
-  ltrDarkTheme,
-} from "@/client/theme";
+import { ltrLightTheme, rtlLightTheme, rtlDarkTheme, ltrDarkTheme } from "@/client/theme";
 import ThemeMode from "@/client/theme/ThemeMode";
 import { jssPreset, StylesProvider } from "@mui/styles";
 import rtl from "jss-rtl";
@@ -59,22 +54,15 @@ const updateTheme = (mode: ThemeMode): void => {
 const getStoredLanguage = (): string => {
   // Only access window on the client
   if (typeof window !== "undefined") {
-    const initialLanguage = (
-      window as unknown as { __INITIAL_LANGUAGE__: string }
-    ).__INITIAL_LANGUAGE__;
-    return (
-      initialLanguage || loadFromLocalStorage("language") || AppLanguage.default
-    );
+    const initialLanguage = (window as unknown as { __INITIAL_LANGUAGE__: string }).__INITIAL_LANGUAGE__;
+    return initialLanguage || loadFromLocalStorage("language") || AppLanguage.default;
   }
   // On server, return default
   return AppLanguage.default;
 };
 
 export function matchMedia(query: string): MediaQueryList | undefined {
-  if (
-    typeof window !== "undefined" &&
-    typeof window.matchMedia === "function"
-  ) {
+  if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
     return window.matchMedia(query);
   }
   return undefined;
@@ -98,9 +86,7 @@ type ThemeContextType = {
   isDark: boolean;
 };
 
-const AppThemeContext = React.createContext<ThemeContextType | undefined>(
-  undefined
-);
+const AppThemeContext = React.createContext<ThemeContextType | undefined>(undefined);
 
 type AppThemeProviderProps = {
   children: React.ReactNode;
@@ -108,28 +94,19 @@ type AppThemeProviderProps = {
   initialTheme?: ThemeMode;
 };
 
-export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
-  children,
-  initialLanguage,
-  initialTheme,
-}) => {
+export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children, initialLanguage, initialTheme }) => {
   // Determine if we're using initial props (e.g., from Storybook)
-  const hasInitialProps =
-    initialLanguage !== undefined || initialTheme !== undefined;
+  const hasInitialProps = initialLanguage !== undefined || initialTheme !== undefined;
 
   const [currentTheme, setCurrentTheme] = React.useState<Theme>(ltrLightTheme);
   const [currentThemeMode, setCurrentThemeMode] = React.useState<ThemeMode>(
     hasInitialProps && initialTheme ? initialTheme : ThemeMode.System
   );
   const [currentLanguage, setCurrentLanguage] = React.useState<AppLanguage>(
-    hasInitialProps && initialLanguage
-      ? (initialLanguage as AppLanguage)
-      : (AppLanguage.default as AppLanguage)
+    hasInitialProps && initialLanguage ? (initialLanguage as AppLanguage) : (AppLanguage.default as AppLanguage)
   );
   const [isTransitioning, setIsTransitioning] = React.useState(false);
-  const [transitionDirection, setTransitionDirection] = React.useState<
-    "rtl" | "ltr"
-  >("ltr");
+  const [transitionDirection, setTransitionDirection] = React.useState<"rtl" | "ltr">("ltr");
   const isInitialized = React.useRef(hasInitialProps);
 
   // Effect to set theme and language from client-side storage after mount
@@ -145,9 +122,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
 
       const isRtl = language === "ar";
       const isDarkMode =
-        mode === ThemeMode.Dark ||
-        (mode === ThemeMode.System &&
-          matchMedia("(prefers-color-scheme: dark)")?.matches);
+        mode === ThemeMode.Dark || (mode === ThemeMode.System && matchMedia("(prefers-color-scheme: dark)")?.matches);
 
       if (isRtl) {
         setCurrentTheme(isDarkMode ? rtlDarkTheme : rtlLightTheme);
@@ -170,8 +145,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
     const isRtl = storedLanguage === "ar";
     const isDarkMode =
       storedMode === ThemeMode.Dark ||
-      (storedMode === ThemeMode.System &&
-        matchMedia("(prefers-color-scheme: dark)")?.matches);
+      (storedMode === ThemeMode.System && matchMedia("(prefers-color-scheme: dark)")?.matches);
 
     if (isRtl) {
       setCurrentTheme(isDarkMode ? rtlDarkTheme : rtlLightTheme);
@@ -189,15 +163,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
       const mediaQuery = matchMedia("(prefers-color-scheme: dark)");
       const handleChange = (e: MediaQueryListEvent) => {
         const isRtl = currentLanguage === "ar";
-        setCurrentTheme(
-          isRtl
-            ? e.matches
-              ? rtlDarkTheme
-              : rtlLightTheme
-            : e.matches
-              ? ltrDarkTheme
-              : ltrLightTheme
-        );
+        setCurrentTheme(isRtl ? (e.matches ? rtlDarkTheme : rtlLightTheme) : e.matches ? ltrDarkTheme : ltrLightTheme);
       };
 
       mediaQuery?.addEventListener("change", handleChange);
@@ -221,17 +187,10 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
         const isRtl = language === "ar";
         const isDarkMode =
           currentThemeMode === ThemeMode.Dark ||
-          (currentThemeMode === ThemeMode.System &&
-            matchMedia("(prefers-color-scheme: dark)")?.matches);
+          (currentThemeMode === ThemeMode.System && matchMedia("(prefers-color-scheme: dark)")?.matches);
 
         setCurrentTheme(
-          isRtl
-            ? isDarkMode
-              ? rtlDarkTheme
-              : rtlLightTheme
-            : isDarkMode
-              ? ltrDarkTheme
-              : ltrLightTheme
+          isRtl ? (isDarkMode ? rtlDarkTheme : rtlLightTheme) : isDarkMode ? ltrDarkTheme : ltrLightTheme
         );
       }, 150);
 
@@ -258,23 +217,12 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
       const isRtl = currentLanguage === "ar";
       const isDarkMode = effectiveMode === ThemeMode.Dark;
 
-      setCurrentTheme(
-        isRtl
-          ? isDarkMode
-            ? rtlDarkTheme
-            : rtlLightTheme
-          : isDarkMode
-            ? ltrDarkTheme
-            : ltrLightTheme
-      );
+      setCurrentTheme(isRtl ? (isDarkMode ? rtlDarkTheme : rtlLightTheme) : isDarkMode ? ltrDarkTheme : ltrLightTheme);
     },
     [currentLanguage]
   ); // Removed setColorSchemeMode dependency
 
-  const isRtl = React.useMemo(
-    () => currentLanguage === "ar",
-    [currentLanguage]
-  );
+  const isRtl = React.useMemo(() => currentLanguage === "ar", [currentLanguage]);
   const isDark = React.useMemo(() => {
     if (currentThemeMode === ThemeMode.System) {
       return matchMedia("(prefers-color-scheme: dark)")?.matches ?? false;
@@ -292,15 +240,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
       isRtl,
       isDark,
     }),
-    [
-      currentTheme,
-      currentLanguage,
-      handleSetLanguage,
-      handleSetThemeMode,
-      currentThemeMode,
-      isRtl,
-      isDark,
-    ]
+    [currentTheme, currentLanguage, handleSetLanguage, handleSetThemeMode, currentThemeMode, isRtl, isDark]
   );
 
   const jss = React.useMemo(() => (isRtl ? jssRtl : jssLtr), [isRtl]);
@@ -329,8 +269,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
                     ? "translateX(20px)"
                     : "translateX(-20px)"
                   : "translateX(0)",
-                transition:
-                  "opacity 300ms ease-in-out, transform 300ms ease-in-out",
+                transition: "opacity 300ms ease-in-out, transform 300ms ease-in-out",
               }}
             >
               {children}

@@ -16,11 +16,7 @@ export interface ReactiveTreeNode<TId = string | number> {
   id: TId;
 }
 
-export interface ReactiveTreeProps<
-  TNode extends ReactiveTreeNode,
-  TResult = unknown,
-  TVariables = unknown,
-> {
+export interface ReactiveTreeProps<TNode extends ReactiveTreeNode, TResult = unknown, TVariables = unknown> {
   // Unified resolver for both root and children items
   resolver: ItemResolver<TNode, TVariables>;
 
@@ -34,12 +30,7 @@ export interface ReactiveTreeProps<
   getNodeLabel: (node: TNode) => string;
 
   // Custom rendering
-  itemRenderer?: (props: {
-    node: TNode;
-    level: number;
-    isExpanded: boolean;
-    isSelected: boolean;
-  }) => React.ReactNode;
+  itemRenderer?: (props: { node: TNode; level: number; isExpanded: boolean; isSelected: boolean }) => React.ReactNode;
 
   // Selection
   selectedItemId?: TNode["id"] | null;

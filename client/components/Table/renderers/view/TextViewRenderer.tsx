@@ -12,12 +12,8 @@ export interface TextViewRendererProps {
  * Simple text display with ellipsis and optional tooltip.
  * Used for rendering text/string values in table cells.
  */
-export const TextViewRenderer: React.FC<TextViewRendererProps> = ({
-  value,
-  tooltip = true,
-}) => {
-  const displayValue =
-    value !== null && value !== undefined ? String(value) : "";
+export const TextViewRenderer: React.FC<TextViewRendererProps> = ({ value, tooltip = true }) => {
+  const displayValue = value !== null && value !== undefined ? String(value) : "";
 
   const content = (
     <Box

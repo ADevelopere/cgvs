@@ -11,9 +11,13 @@ interface TemplateDateVariableSelectorProps {
   disabled?: boolean;
 }
 
-export const TemplateDateVariableSelector: FC<
-  TemplateDateVariableSelectorProps
-> = ({ value, variables, onChange, error, disabled }) => {
+export const TemplateDateVariableSelector: FC<TemplateDateVariableSelectorProps> = ({
+  value,
+  variables,
+  onChange,
+  error,
+  disabled,
+}) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
   const selectedVariable = variables.find(v => v.id === value) || null;
 

@@ -27,9 +27,7 @@ async function fetchFontAsBase64(url: string): Promise<string> {
  * @param fontFamilies - An array of font family names to embed.
  * @returns A promise that resolves to a string containing the <style> tag.
  */
-export async function embedGoogleFonts(
-  fontFamilies: FontFamily[]
-): Promise<string> {
+export async function embedGoogleFonts(fontFamilies: FontFamily[]): Promise<string> {
   const fontFaceRules = await Promise.all(
     fontFamilies.map(async family => {
       const fontItem = getFontByFamily(family);
@@ -39,8 +37,7 @@ export async function embedGoogleFonts(
       }
 
       // Prioritize "regular" variant, otherwise take the first available.
-      const fontUrl =
-        fontItem.files.regular || Object.values(fontItem.files)[0];
+      const fontUrl = fontItem.files.regular || Object.values(fontItem.files)[0];
       if (!fontUrl) {
         console.warn(`No font file found for family "${family}".`);
         return "";

@@ -112,29 +112,31 @@ GraphQL Backend
 **Location**: `client/views/template/manage/editor/PdfmeStoreProvider.tsx`
 
 **Responsibilities**:
+
 - Convert CertificateElementProvider state to PDFMe Template format
 - Provide PDFMe template object
 - Provide update functions for PDFMe changes
 - Handle PDFMe-specific state (selected schema, etc.)
 
 **Interface**:
+
 ```typescript
 interface UsePdfmeStoreReturn {
   // PDFMe template object
   template: Template;
-  
+
   // Loading state
   loading: boolean;
-  
+
   // Error state
   error: Error | null;
-  
+
   // Template ID
   templateId: number;
-  
+
   // Update template (called by PDFMe editor)
   updateTemplate: (newTemplate: Template) => void;
-  
+
   // Initialized flag
   pdfmeInitialized: boolean;
 }
@@ -145,12 +147,14 @@ interface UsePdfmeStoreReturn {
 **Location**: `client/views/template/manage/editor/PdfmeEditorWrapper.tsx`
 
 **Responsibilities**:
+
 - Wrap PDFMe Designer component
 - Manage Designer lifecycle (mount/unmount)
 - Handle bidirectional sync between PDFMe and state
 - Register PDFMe plugins (text, image, qrcode)
 
 **Key Features**:
+
 - Uses `useRef` for Designer instance
 - Uses `useEffect` for lifecycle management
 - Calls `designer.destroy()` on unmount
@@ -162,36 +166,27 @@ interface UsePdfmeStoreReturn {
 **Location**: `client/views/template/manage/editor/services/templateConverter.ts`
 
 **Responsibilities**:
+
 - Convert CertificateElementProvider state to PDFMe Template
 - Convert PDFMe Template changes back to element updates
 - Handle schema mapping (text, image, qrcode, etc.)
 - Handle coordinate system differences (if any)
 
 **Interface**:
+
 ```typescript
 class TemplateConverter {
   // Convert element states to PDFMe template
-  static toPdfmeTemplate(
-    elements: CertificateElementUnion[],
-    config: TemplateConfig
-  ): Template;
-  
+  static toPdfmeTemplate(elements: CertificateElementUnion[], config: TemplateConfig): Template;
+
   // Convert PDFMe template changes to element updates
-  static fromPdfmeTemplate(
-    template: Template,
-    currentElements: CertificateElementUnion[]
-  ): ElementUpdate[];
-  
+  static fromPdfmeTemplate(template: Template, currentElements: CertificateElementUnion[]): ElementUpdate[];
+
   // Convert single element to PDFMe schema
-  static elementToSchema(
-    element: CertificateElementUnion
-  ): Schema;
-  
+  static elementToSchema(element: CertificateElementUnion): Schema;
+
   // Convert PDFMe schema to element update
-  static schemaToElementUpdate(
-    schema: Schema,
-    elementId: number
-  ): ElementUpdate;
+  static schemaToElementUpdate(schema: Schema, elementId: number): ElementUpdate;
 }
 ```
 
@@ -200,6 +195,7 @@ class TemplateConverter {
 **Location**: `client/views/template/manage/editor/usePdfmeChange.ts`
 
 **Responsibilities**:
+
 - Handle PDFMe template changes
 - Convert changes to element updates
 - Call useBaseElementState to update shared state
@@ -212,33 +208,28 @@ class TemplateConverter {
 **Location**: `client/views/template/manage/editor/EditorTab.tsx`
 
 **Changes**:
+
 - Add editor toggle state (`'reactflow' | 'pdfme'`)
 - Add toggle UI (tabs or buttons)
 - Conditionally render ReactFlow or PDFMe editor
 - Wrap PDFMe editor in PdfmeStoreProvider
 
 **Example**:
+
 ```tsx
-const [activeEditor, setActiveEditor] = useState<'reactflow' | 'pdfme'>('reactflow');
+const [activeEditor, setActiveEditor] = useState<"reactflow" | "pdfme">("reactflow");
 
 return (
   <NodesStoreProvider templateId={template.id}>
     <CertificateElementProvider templateId={template.id}>
       <PdfmeStoreProvider templateId={template.id}>
         {/* Toggle UI */}
-        <EditorToggle 
-          activeEditor={activeEditor} 
-          onToggle={setActiveEditor} 
-        />
-        
+        <EditorToggle activeEditor={activeEditor} onToggle={setActiveEditor} />
+
         {/* Conditional rendering */}
-        {activeEditor === 'reactflow' && (
-          <CertificateReactFlowEditor />
-        )}
-        
-        {activeEditor === 'pdfme' && (
-          <PdfmeEditorWrapper />
-        )}
+        {activeEditor === "reactflow" && <CertificateReactFlowEditor />}
+
+        {activeEditor === "pdfme" && <PdfmeEditorWrapper />}
       </PdfmeStoreProvider>
     </CertificateElementProvider>
   </NodesStoreProvider>
@@ -250,6 +241,7 @@ return (
 ### Challenge: Avoiding Circular Updates
 
 When PDFMe editor updates position, we need to:
+
 1. Update CertificateElementProvider state
 2. Update NodesStoreProvider (for ReactFlow)
 3. NOT trigger PDFMe update (would cause infinite loop)
@@ -280,11 +272,13 @@ useEffect(() => {
 ### Alternative: Debouncing
 
 Use debouncing to prevent rapid updates:
+
 ```typescript
 const debouncedUpdatePdfme = useMemo(
-  () => debounce((template: Template) => {
-    designerRef.current?.updateTemplate(template);
-  }, 100),
+  () =>
+    debounce((template: Template) => {
+      designerRef.current?.updateTemplate(template);
+    }, 100),
   []
 );
 ```
@@ -293,45 +287,46 @@ const debouncedUpdatePdfme = useMemo(
 
 ### Element Type to PDFMe Schema
 
-| Element Type | PDFMe Schema | Plugin Required |
-|--------------|--------------|-----------------|
-| Text         | text         | @pdfme/schemas  |
-| Image        | image        | @pdfme/schemas  |
-| QRCode       | qrcode       | @pdfme/schemas (barcodes) |
+| Element Type | PDFMe Schema | Plugin Required            |
+| ------------ | ------------ | -------------------------- |
+| Text         | text         | @pdfme/schemas             |
+| Image        | image        | @pdfme/schemas             |
+| QRCode       | qrcode       | @pdfme/schemas (barcodes)  |
 | Date         | text         | @pdfme/schemas (formatted) |
 | Number       | text         | @pdfme/schemas (formatted) |
 | Country      | text         | @pdfme/schemas (formatted) |
-| Container    | N/A          | (background only) |
+| Container    | N/A          | (background only)          |
 
 ### Property Mapping
 
-| Element Property | PDFMe Property | Notes |
-|------------------|----------------|-------|
-| positionX        | position.x     | Direct mapping |
-| positionY        | position.y     | Direct mapping |
-| width            | width          | Direct mapping |
-| height           | height         | Direct mapping |
-| alignment        | alignment      | May need conversion |
-| hidden           | N/A            | Handle in converter |
+| Element Property | PDFMe Property | Notes                   |
+| ---------------- | -------------- | ----------------------- |
+| positionX        | position.x     | Direct mapping          |
+| positionY        | position.y     | Direct mapping          |
+| width            | width          | Direct mapping          |
+| height           | height         | Direct mapping          |
+| alignment        | alignment      | May need conversion     |
+| hidden           | N/A            | Handle in converter     |
 | renderOrder      | N/A            | Handle via schema order |
 
 ### Text-Specific Properties
 
-| Element Property | PDFMe Property | Notes |
-|------------------|----------------|-------|
-| content          | text           | Direct mapping |
-| fontSize         | fontSize       | Direct mapping |
-| fontFamily       | fontName       | May need font mapping |
-| fontColor        | fontColor      | Direct mapping |
+| Element Property | PDFMe Property | Notes                   |
+| ---------------- | -------------- | ----------------------- |
+| content          | text           | Direct mapping          |
+| fontSize         | fontSize       | Direct mapping          |
+| fontFamily       | fontName       | May need font mapping   |
+| fontColor        | fontColor      | Direct mapping          |
 | fontWeight       | N/A            | Handle via font variant |
-| textAlign        | alignment      | Direct mapping |
-| lineHeight       | lineHeight     | Direct mapping |
+| textAlign        | alignment      | Direct mapping          |
+| lineHeight       | lineHeight     | Direct mapping          |
 
 ## Implementation Phases
 
 ### Phase 1: Foundation (Week 1)
 
 1. **Install PDFMe packages**
+
    ```bash
    bun add @pdfme/ui @pdfme/common @pdfme/schemas
    ```
@@ -429,10 +424,10 @@ useEffect(() => {
     designerRef.current = new Designer({
       domContainer: domContainerRef.current,
       template: initialTemplate,
-      plugins: { text, image, qrcode: barcodes.qrcode }
+      plugins: { text, image, qrcode: barcodes.qrcode },
     });
   }
-  
+
   // Unmount
   return () => {
     if (designerRef.current) {
@@ -460,6 +455,7 @@ useEffect(() => {
 ### Browser Compatibility
 
 PDFMe requires:
+
 - Modern browsers (ES6+)
 - Canvas API support
 - No IE11 support (acceptable for this project)
@@ -537,21 +533,25 @@ client/views/template/manage/editor/
 ## Migration Strategy
 
 ### Phase 1: Internal Testing (Week 1-2)
+
 - PDFMe editor available via feature flag
 - Internal team testing only
 - Gather feedback and fix issues
 
 ### Phase 2: Beta Testing (Week 3)
+
 - Enable for select users
 - Monitor for issues
 - Collect user feedback
 
 ### Phase 3: Gradual Rollout (Week 4)
+
 - Enable for all users
 - ReactFlow remains default
 - Users can opt-in to PDFMe
 
 ### Phase 4: Full Migration (Future)
+
 - PDFMe becomes default
 - ReactFlow available as fallback
 - Deprecation plan for ReactFlow (if desired)
@@ -559,18 +559,23 @@ client/views/template/manage/editor/
 ## Risk Mitigation
 
 ### Risk 1: State Synchronization Issues
+
 **Mitigation**: Comprehensive testing, update flags, debouncing
 
 ### Risk 2: Performance Degradation
+
 **Mitigation**: Memoization, lazy loading, performance monitoring
 
 ### Risk 3: Memory Leaks
+
 **Mitigation**: Proper lifecycle management, memory profiling
 
 ### Risk 4: User Confusion
+
 **Mitigation**: Clear UI, documentation, gradual rollout
 
 ### Risk 5: Data Loss
+
 **Mitigation**: Validation, error handling, backup strategy
 
 ## Success Criteria

@@ -33,32 +33,17 @@ const data: GoogleFontItem[] = [
   {
     family: "Arima",
     variants: ["100", "200", "300", "regular", "500", "600", "700"],
-    subsets: [
-      "greek",
-      "greek-ext",
-      "latin",
-      "latin-ext",
-      "malayalam",
-      "tamil",
-      "vietnamese",
-    ],
+    subsets: ["greek", "greek-ext", "latin", "latin-ext", "malayalam", "tamil", "vietnamese"],
     version: "v7",
     lastModified: "2025-09-10",
     files: {
-      "100":
-        "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1YTE-pQGOyYw2fw.ttf",
-      "200":
-        "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX14TA-pQGOyYw2fw.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1PzA-pQGOyYw2fw.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1UzA-pQGOyYw2fw.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1vzc-pQGOyYw2fw.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1hjc-pQGOyYw2fw.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1YTA-pQGOyYw2fw.ttf",
+      "100": "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1YTE-pQGOyYw2fw.ttf",
+      "200": "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX14TA-pQGOyYw2fw.ttf",
+      "300": "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1PzA-pQGOyYw2fw.ttf",
+      "500": "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1UzA-pQGOyYw2fw.ttf",
+      "600": "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1vzc-pQGOyYw2fw.ttf",
+      "700": "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1hjc-pQGOyYw2fw.ttf",
+      regular: "https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1YTA-pQGOyYw2fw.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -93,8 +78,7 @@ const data: GoogleFontItem[] = [
     version: "v23",
     lastModified: "2025-09-16",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/chilanka/v23/WWXRlj2DZQiMJYaYRrJQI9EAZhTO.ttf",
+      regular: "https://fonts.gstatic.com/s/chilanka/v23/WWXRlj2DZQiMJYaYRrJQI9EAZhTO.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",
@@ -107,12 +91,9 @@ const data: GoogleFontItem[] = [
     version: "v20",
     lastModified: "2025-09-05",
     files: {
-      "100":
-        "https://fonts.gstatic.com/s/gayathri/v20/MCoWzAb429DbBilWLLhc-pvSA_gA2W8.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/gayathri/v20/MCoXzAb429DbBilWLLiE37v4LfQJwHbn.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/gayathri/v20/MCoQzAb429DbBilWLIA48J_wBugA.ttf",
+      "100": "https://fonts.gstatic.com/s/gayathri/v20/MCoWzAb429DbBilWLLhc-pvSA_gA2W8.ttf",
+      "700": "https://fonts.gstatic.com/s/gayathri/v20/MCoXzAb429DbBilWLLiE37v4LfQJwHbn.ttf",
+      regular: "https://fonts.gstatic.com/s/gayathri/v20/MCoQzAb429DbBilWLIA48J_wBugA.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -125,12 +106,9 @@ const data: GoogleFontItem[] = [
     version: "v14",
     lastModified: "2025-09-11",
     files: {
-      "100":
-        "https://fonts.gstatic.com/s/manjari/v14/k3kSo8UPMOBO2w1UdbroK2vFIaOV8A.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/manjari/v14/k3kVo8UPMOBO2w1UdWLNC0HrLaqM6Q4.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/manjari/v14/k3kQo8UPMOBO2w1UTd7iL0nAMaM.ttf",
+      "100": "https://fonts.gstatic.com/s/manjari/v14/k3kSo8UPMOBO2w1UdbroK2vFIaOV8A.ttf",
+      "700": "https://fonts.gstatic.com/s/manjari/v14/k3kVo8UPMOBO2w1UdWLNC0HrLaqM6Q4.ttf",
+      regular: "https://fonts.gstatic.com/s/manjari/v14/k3kQo8UPMOBO2w1UTd7iL0nAMaM.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -138,17 +116,7 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Noto Sans Malayalam",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
     subsets: ["latin", "latin-ext", "malayalam"],
     version: "v29",
     lastModified: "2025-09-11",
@@ -178,17 +146,7 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Noto Serif Malayalam",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
     subsets: ["latin", "latin-ext", "malayalam"],
     version: "v32",
     lastModified: "2025-09-10",

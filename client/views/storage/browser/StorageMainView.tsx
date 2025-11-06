@@ -22,13 +22,7 @@ interface StorageMainViewProps {
  * Assembles the breadcrumb navigation, toolbar, and items view into a cohesive layout.
  * This component represents the right pane in the split-pane layout.
  */
-const StorageMainView: React.FC<StorageMainViewProps> = ({
-  params,
-  items,
-  pagination,
-  loading,
-  error,
-}) => {
+const StorageMainView: React.FC<StorageMainViewProps> = ({ params, items, pagination, loading, error }) => {
   const {
     searchMode,
     selectedItems,
@@ -63,15 +57,7 @@ const StorageMainView: React.FC<StorageMainViewProps> = ({
   }, [items, setSelectedItems]);
 
   // Get operations from context
-  const {
-    navigateTo,
-    refresh,
-    pasteItems,
-    renameItem,
-    deleteItems,
-    move,
-    createFolder,
-  } = useStorageOperations();
+  const { navigateTo, refresh, pasteItems, renameItem, deleteItems, move, createFolder } = useStorageOperations();
 
   return (
     <Box

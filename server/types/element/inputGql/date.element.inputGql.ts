@@ -1,7 +1,4 @@
-import {
-  CertificateElementBaseInput,
-  DateElementSpecPropsInput,
-} from "../input";
+import { CertificateElementBaseInput, DateElementSpecPropsInput } from "../input";
 import { CertificateDateField, StudentDateField } from "../output";
 import { TextPropsInputGraphql } from "./config.element.inputGql";
 

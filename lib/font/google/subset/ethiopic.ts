@@ -9,8 +9,7 @@ const data: GoogleFontItem[] = [
     version: "v9",
     lastModified: "2025-09-10",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/abyssinicasil/v9/oY1H8ezOqK7iI3rK_45WKoc8J6UZBFOVAXuI.ttf",
+      regular: "https://fonts.gstatic.com/s/abyssinicasil/v9/oY1H8ezOqK7iI3rK_45WKoc8J6UZBFOVAXuI.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",
@@ -23,8 +22,7 @@ const data: GoogleFontItem[] = [
     version: "v6",
     lastModified: "2025-06-25",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/agbalumo/v6/55xvey5uMdT2N37KZcMFirl08KDJ.ttf",
+      regular: "https://fonts.gstatic.com/s/agbalumo/v6/55xvey5uMdT2N37KZcMFirl08KDJ.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -37,20 +35,13 @@ const data: GoogleFontItem[] = [
     version: "v1",
     lastModified: "2025-06-25",
     files: {
-      "100":
-        "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdI_9qn1UnpeWOQ5.ttf",
-      "200":
-        "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdK_96n1UnpeWOQ5.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdJh96n1UnpeWOQ5.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdIN96n1UnpeWOQ5.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdLh8Kn1UnpeWOQ5.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdLY8Kn1UnpeWOQ5.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdI_96n1UnpeWOQ5.ttf",
+      "100": "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdI_9qn1UnpeWOQ5.ttf",
+      "200": "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdK_96n1UnpeWOQ5.ttf",
+      "300": "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdJh96n1UnpeWOQ5.ttf",
+      "500": "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdIN96n1UnpeWOQ5.ttf",
+      "600": "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdLh8Kn1UnpeWOQ5.ttf",
+      "700": "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdLY8Kn1UnpeWOQ5.ttf",
+      regular: "https://fonts.gstatic.com/s/menbere/v1/lJwY-p0zhmBrWvcG80OiXWeXfSDWXdI_96n1UnpeWOQ5.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -58,17 +49,7 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Noto Sans Ethiopic",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
     subsets: ["ethiopic", "latin", "latin-ext"],
     version: "v50",
     lastModified: "2025-09-16",
@@ -98,17 +79,7 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Noto Serif Ethiopic",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
     subsets: ["ethiopic", "latin", "latin-ext"],
     version: "v32",
     lastModified: "2025-09-11",

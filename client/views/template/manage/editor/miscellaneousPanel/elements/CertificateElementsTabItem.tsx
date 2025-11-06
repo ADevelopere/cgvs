@@ -12,9 +12,7 @@ export type CertificateElementsTabItemProps = {
   decreaseOrder?: () => void;
 };
 
-export const CertificateElementsTabItem: React.FC<
-  CertificateElementsTabItemProps
-> = ({
+export const CertificateElementsTabItem: React.FC<CertificateElementsTabItemProps> = ({
   element,
   deleteElement,
   toggleElementHidden,
@@ -25,10 +23,7 @@ export const CertificateElementsTabItem: React.FC<
   return (
     <Stack direction={"row"} sx={{ alignItems: "center" }}>
       {/* increaseOrder */}
-      <IconButton
-        disabled={element.base.renderOrder === 1}
-        onClick={increaseOrder}
-      >
+      <IconButton disabled={element.base.renderOrder === 1} onClick={increaseOrder}>
         <MuiICons.ArrowUpward />
       </IconButton>
       {/* decreaseOrder */}
@@ -36,10 +31,7 @@ export const CertificateElementsTabItem: React.FC<
         <MuiICons.ArrowDownward />
       </IconButton>
       {/* icon */}
-      <CertificateElementIcon
-        type={element.base.type}
-        style={{ marginInline: 8 }}
-      />
+      <CertificateElementIcon type={element.base.type} style={{ marginInline: 8 }} />
       {/* name */}
       <Typography
         sx={{
@@ -53,11 +45,7 @@ export const CertificateElementsTabItem: React.FC<
       </Typography>
       {/* hide/show */}
       <IconButton onClick={() => toggleElementHidden(element.base.id)}>
-        {element.base.hidden ? (
-          <MuiICons.VisibilityOff />
-        ) : (
-          <MuiICons.Visibility />
-        )}
+        {element.base.hidden ? <MuiICons.VisibilityOff /> : <MuiICons.Visibility />}
       </IconButton>
       {/* settings */}
       <IconButton onClick={() => manageElement(element.base.id)}>

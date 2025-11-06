@@ -41,9 +41,7 @@ gqlSchemaBuilder.objectFields(TemplateRecipientGroupPothosObject, t => ({
 }));
 
 export const TemplateRecipientGroupCreateInputPothosObject = gqlSchemaBuilder
-  .inputRef<TrgTypes.RecipientGroupCreateInput>(
-    "TemplateRecipientGroupCreateInput"
-  )
+  .inputRef<TrgTypes.RecipientGroupCreateInput>("TemplateRecipientGroupCreateInput")
   .implement({
     fields: t => ({
       templateId: t.int({ required: true }),
@@ -54,9 +52,7 @@ export const TemplateRecipientGroupCreateInputPothosObject = gqlSchemaBuilder
   });
 
 export const TemplateRecipientGroupUpdateInputPothosObject = gqlSchemaBuilder
-  .inputRef<TrgTypes.RecipientGroupUpdateInput>(
-    "TemplateRecipientGroupUpdateInput"
-  )
+  .inputRef<TrgTypes.RecipientGroupUpdateInput>("TemplateRecipientGroupUpdateInput")
   .implement({
     fields: t => ({
       id: t.int({ required: true }),

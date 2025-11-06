@@ -19,19 +19,11 @@ const data: GoogleFontItem[] = [
   {
     family: "Noto Sans Symbols 2",
     variants: ["regular"],
-    subsets: [
-      "braille",
-      "latin",
-      "latin-ext",
-      "math",
-      "mayan-numerals",
-      "symbols",
-    ],
+    subsets: ["braille", "latin", "latin-ext", "math", "mayan-numerals", "symbols"],
     version: "v25",
     lastModified: "2025-09-05",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/notosanssymbols2/v25/I_uyMoGduATTei9eI8daxVHDyfisHr71ypPqfX71-AI.ttf",
+      regular: "https://fonts.gstatic.com/s/notosanssymbols2/v25/I_uyMoGduATTei9eI8daxVHDyfisHr71ypPqfX71-AI.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",

@@ -5,19 +5,11 @@ const data: GoogleFontItem[] = [
   {
     family: "Kablammo",
     variants: ["regular"],
-    subsets: [
-      "cyrillic",
-      "cyrillic-ext",
-      "emoji",
-      "latin",
-      "latin-ext",
-      "vietnamese",
-    ],
+    subsets: ["cyrillic", "cyrillic-ext", "emoji", "latin", "latin-ext", "vietnamese"],
     version: "v4",
     lastModified: "2025-09-11",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/kablammo/v4/bWtm7fHPcgrhC-J3lcXhcQTY5Ixs6Au9YgCjjx0Rf4YDKw.ttf",
+      regular: "https://fonts.gstatic.com/s/kablammo/v4/bWtm7fHPcgrhC-J3lcXhcQTY5Ixs6Au9YgCjjx0Rf4YDKw.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -30,8 +22,7 @@ const data: GoogleFontItem[] = [
     version: "v36",
     lastModified: "2025-09-06",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/notocoloremoji/v36/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFab5s79iz64w.ttf",
+      regular: "https://fonts.gstatic.com/s/notocoloremoji/v36/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFab5s79iz64w.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -45,16 +36,11 @@ const data: GoogleFontItem[] = [
     version: "v61",
     lastModified: "2025-09-17",
     files: {
-      "300":
-        "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob_10jwvS-FGJCMY.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob-Z0jwvS-FGJCMY.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob911TwvS-FGJCMY.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob9M1TwvS-FGJCMY.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob-r0jwvS-FGJCMY.ttf",
+      "300": "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob_10jwvS-FGJCMY.ttf",
+      "500": "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob-Z0jwvS-FGJCMY.ttf",
+      "600": "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob911TwvS-FGJCMY.ttf",
+      "700": "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob9M1TwvS-FGJCMY.ttf",
+      regular: "https://fonts.gstatic.com/s/notoemoji/v61/bMrnmSyK7YY-MEu6aWjPDs-ar6uWaGWuob-r0jwvS-FGJCMY.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -63,35 +49,18 @@ const data: GoogleFontItem[] = [
   {
     family: "Playpen Sans",
     variants: ["100", "200", "300", "regular", "500", "600", "700", "800"],
-    subsets: [
-      "cyrillic",
-      "cyrillic-ext",
-      "emoji",
-      "greek",
-      "latin",
-      "latin-ext",
-      "math",
-      "vietnamese",
-    ],
+    subsets: ["cyrillic", "cyrillic-ext", "emoji", "greek", "latin", "latin-ext", "math", "vietnamese"],
     version: "v22",
     lastModified: "2025-09-16",
     files: {
-      "100":
-        "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IvRgunQ9Ffmme0w.ttf",
-      "200":
-        "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4InRhunQ9Ffmme0w.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IqphunQ9Ffmme0w.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IsZhunQ9Ffmme0w.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IipmunQ9Ffmme0w.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IhNmunQ9Ffmme0w.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4InRmunQ9Ffmme0w.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IvRhunQ9Ffmme0w.ttf",
+      "100": "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IvRgunQ9Ffmme0w.ttf",
+      "200": "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4InRhunQ9Ffmme0w.ttf",
+      "300": "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IqphunQ9Ffmme0w.ttf",
+      "500": "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IsZhunQ9Ffmme0w.ttf",
+      "600": "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IipmunQ9Ffmme0w.ttf",
+      "700": "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IhNmunQ9Ffmme0w.ttf",
+      "800": "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4InRmunQ9Ffmme0w.ttf",
+      regular: "https://fonts.gstatic.com/s/playpensans/v22/dg43_pj1p6gXP0gzAZgm4c8XQArSU7ACQSn4IvRhunQ9Ffmme0w.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",

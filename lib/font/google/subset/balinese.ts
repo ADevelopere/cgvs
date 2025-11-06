@@ -29,8 +29,7 @@ const data: GoogleFontItem[] = [
     version: "v21",
     lastModified: "2025-09-11",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/notoserifbalinese/v21/QdVKSS0-JginysQSRvuCmUMB_wVeQAxXRbgJdhapcUU.ttf",
+      regular: "https://fonts.gstatic.com/s/notoserifbalinese/v21/QdVKSS0-JginysQSRvuCmUMB_wVeQAxXRbgJdhapcUU.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",

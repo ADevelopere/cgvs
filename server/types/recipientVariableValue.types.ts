@@ -1,11 +1,9 @@
 import * as Db from "@/server/db/schema";
 
 // Entity types
-export type RecipientVariableValueEntity =
-  typeof Db.recipientGroupItemVariableValues.$inferSelect;
+export type RecipientVariableValueEntity = typeof Db.recipientGroupItemVariableValues.$inferSelect;
 
-export type RecipientVariableValueEntityInput =
-  typeof Db.recipientGroupItemVariableValues.$inferInsert;
+export type RecipientVariableValueEntityInput = typeof Db.recipientGroupItemVariableValues.$inferInsert;
 
 // Simple value map (matches DB structure, allows O(1) access)
 export type VariableValuesMap = {

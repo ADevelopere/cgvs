@@ -154,11 +154,7 @@ import { TextElementConfig, TextElementConfigInput, ... } from "./text.element.t
 ### External code imports from:
 
 ```typescript
-import {
-  ElementType,
-  TextElementCreateInput,
-  ElementConfig,
-} from "@/server/types/element";
+import { ElementType, TextElementCreateInput, ElementConfig } from "@/server/types/element";
 ```
 
 ## Naming Conventions

@@ -9,10 +9,8 @@ const data: GoogleFontItem[] = [
     version: "v19",
     lastModified: "2025-09-16",
     files: {
-      "700":
-        "https://fonts.gstatic.com/s/notosansduployan/v19/gokwH7nwAEdtF9N8-mdTDx_X9JM5wsvTqu0D4U0ftZS-Iw.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/notosansduployan/v19/gokzH7nwAEdtF9N8-mdTDx_X9JM5wsvrFsIn6WYDvA.ttf",
+      "700": "https://fonts.gstatic.com/s/notosansduployan/v19/gokwH7nwAEdtF9N8-mdTDx_X9JM5wsvTqu0D4U0ftZS-Iw.ttf",
+      regular: "https://fonts.gstatic.com/s/notosansduployan/v19/gokzH7nwAEdtF9N8-mdTDx_X9JM5wsvrFsIn6WYDvA.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",

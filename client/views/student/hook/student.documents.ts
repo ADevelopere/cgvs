@@ -1,10 +1,7 @@
 import { TypedDocumentNode, gql } from "@apollo/client";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
-export const studentQueryDocument: TypedDocumentNode<
-  Graphql.StudentQuery,
-  Graphql.StudentQueryVariables
-> = gql`
+export const studentQueryDocument: TypedDocumentNode<Graphql.StudentQuery, Graphql.StudentQueryVariables> = gql`
   query student($id: Int!) {
     student(id: $id) {
       id
@@ -28,20 +25,9 @@ export const studentQueryDocument: TypedDocumentNode<
   }
 `;
 
-export const studentsQueryDocument: TypedDocumentNode<
-  Graphql.StudentsQuery,
-  Graphql.StudentsQueryVariables
-> = gql`
-  query students(
-    $orderBy: [StudentsOrderByClause!]
-    $paginationArgs: PaginationArgs
-    $filterArgs: StudentFilterArgs
-  ) {
-    students(
-      orderBy: $orderBy
-      paginationArgs: $paginationArgs
-      filterArgs: $filterArgs
-    ) {
+export const studentsQueryDocument: TypedDocumentNode<Graphql.StudentsQuery, Graphql.StudentsQueryVariables> = gql`
+  query students($orderBy: [StudentsOrderByClause!], $paginationArgs: PaginationArgs, $filterArgs: StudentFilterArgs) {
+    students(orderBy: $orderBy, paginationArgs: $paginationArgs, filterArgs: $filterArgs) {
       data {
         id
         name

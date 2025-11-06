@@ -33,21 +33,14 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
   isFirstPaneVisible,
 }) => {
   const { templateCategoryTranslations: strings } = useAppTranslation();
-  const {
-    templateQueryVariables,
-    updateTemplateQueryVariables,
-    viewMode,
-    setViewMode,
-    currentCategory,
-  } = useTemplateListStore();
+  const { templateQueryVariables, updateTemplateQueryVariables, viewMode, setViewMode, currentCategory } =
+    useTemplateListStore();
 
   // Local state for page input value (can be different from actual current page until confirmed)
   const [pageInputValue, setPageInputValue] = React.useState<number>(1);
 
   // Shared state for failed images across all views
-  const [failedImages, setFailedImages] = React.useState<Set<number>>(
-    new Set()
-  );
+  const [failedImages, setFailedImages] = React.useState<Set<number>>(new Set());
 
   // Container width tracking for responsive layout
   const containerRef = React.useRef<HTMLDivElement | null>(null);
@@ -72,15 +65,9 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
     fetchPolicy: "cache-first",
   });
 
-  const templates = React.useMemo(
-    () => data?.templatesByCategoryId?.data ?? [],
-    [data?.templatesByCategoryId?.data]
-  );
+  const templates = React.useMemo(() => data?.templatesByCategoryId?.data ?? [], [data?.templatesByCategoryId?.data]);
 
-  const pageInfo = React.useMemo(
-    () => data?.templatesByCategoryId?.pageInfo,
-    [data?.templatesByCategoryId?.pageInfo]
-  );
+  const pageInfo = React.useMemo(() => data?.templatesByCategoryId?.pageInfo, [data?.templatesByCategoryId?.pageInfo]);
 
   // Sync local input value with actual current page when pageInfo changes
   React.useEffect(() => {
@@ -147,10 +134,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
   );
 
   const handleViewChange = React.useCallback(
-    (
-      _: React.MouseEvent<HTMLElement>,
-      newView: "card" | "grid" | "list" | null
-    ): void => {
+    (_: React.MouseEvent<HTMLElement>, newView: "card" | "grid" | "list" | null): void => {
       if (newView !== null) {
         setViewMode(newView);
       }
@@ -186,21 +170,18 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
     [updateTemplateQueryVariables]
   );
 
-  const handlePageInputChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const pageValue = event.target.value;
-      const pageNumber = parseInt(pageValue, 10);
+  const handlePageInputChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const pageValue = event.target.value;
+    const pageNumber = parseInt(pageValue, 10);
 
-      // Update local state regardless of validity (for controlled input)
-      if (pageValue === "") {
-        // Allow empty value for better UX, but don't change the state yet
-        return;
-      } else if (!isNaN(pageNumber) && pageNumber >= 1) {
-        setPageInputValue(pageNumber);
-      }
-    },
-    []
-  );
+    // Update local state regardless of validity (for controlled input)
+    if (pageValue === "") {
+      // Allow empty value for better UX, but don't change the state yet
+      return;
+    } else if (!isNaN(pageNumber) && pageNumber >= 1) {
+      setPageInputValue(pageNumber);
+    }
+  }, []);
 
   const handlePageInputSubmit = React.useCallback(() => {
     const maxPage = pageInfo?.lastPage ?? 1;
@@ -296,16 +277,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
           />
         );
     }
-  }, [
-    templates,
-    loading,
-    viewMode,
-    getEmptyMessage,
-    manageTemplate,
-    failedImages,
-    handleImageError,
-    containerWidth,
-  ]);
+  }, [templates, loading, viewMode, getEmptyMessage, manageTemplate, failedImages, handleImageError, containerWidth]);
 
   return (
     <Mui.Box
@@ -338,11 +310,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
               sx={{
                 flexShrink: 0,
               }}
-              aria-label={
-                isFirstPaneVisible
-                  ? strings.hideCategoriesPane
-                  : strings.showCategoriesPane
-              }
+              aria-label={isFirstPaneVisible ? strings.hideCategoriesPane : strings.showCategoriesPane}
             >
               {isFirstPaneVisible ? <PanelLeft /> : <PanelRight />}
             </Mui.IconButton>
@@ -381,12 +349,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
           />
 
           {/* View mode toggle */}
-          <Mui.ToggleButtonGroup
-            value={viewMode}
-            exclusive
-            onChange={handleViewChange}
-            sx={{ flexShrink: 0 }}
-          >
+          <Mui.ToggleButtonGroup value={viewMode} exclusive onChange={handleViewChange} sx={{ flexShrink: 0 }}>
             <Mui.ToggleButton value="card">
               <ViewModuleIcon />
             </Mui.ToggleButton>
@@ -425,11 +388,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
                 sx={{
                   flexShrink: 0,
                 }}
-                aria-label={
-                  isFirstPaneVisible
-                    ? strings.hideCategoriesPane
-                    : strings.showCategoriesPane
-                }
+                aria-label={isFirstPaneVisible ? strings.hideCategoriesPane : strings.showCategoriesPane}
               >
                 {isFirstPaneVisible ? <PanelLeft /> : <PanelRight />}
               </Mui.IconButton>
@@ -451,12 +410,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
             </Mui.Typography>
 
             {/* View mode toggle */}
-            <Mui.ToggleButtonGroup
-              value={viewMode}
-              exclusive
-              onChange={handleViewChange}
-              sx={{ flexShrink: 0 }}
-            >
+            <Mui.ToggleButtonGroup value={viewMode} exclusive onChange={handleViewChange} sx={{ flexShrink: 0 }}>
               <Mui.ToggleButton value="card">
                 <ViewModuleIcon />
               </Mui.ToggleButton>
@@ -503,9 +457,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
       )}
 
       {/* Template view */}
-      <Mui.Box sx={{ flexGrow: 1, overflow: "auto" }}>
-        {renderTemplateView}
-      </Mui.Box>
+      <Mui.Box sx={{ flexGrow: 1, overflow: "auto" }}>{renderTemplateView}</Mui.Box>
 
       {/* Pagination controls */}
       {pageInfo && pageInfo.total > 0 && (
@@ -531,8 +483,7 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
               display: { xs: "none", md: "block" },
             }}
           >
-            {strings.showing} {pageInfo.firstItem ?? 0}-{pageInfo.lastItem ?? 0}{" "}
-            {strings.of} {pageInfo.total}
+            {strings.showing} {pageInfo.firstItem ?? 0}-{pageInfo.lastItem ?? 0} {strings.of} {pageInfo.total}
           </Mui.Typography>
 
           <Mui.Box
@@ -609,15 +560,10 @@ const TemplateListContent: React.FC<TemplateListProps> = ({
                 },
               }}
             >
-              <Mui.InputLabel id="page-size-label">
-                {strings.perPage}
-              </Mui.InputLabel>
+              <Mui.InputLabel id="page-size-label">{strings.perPage}</Mui.InputLabel>
               <Mui.Select
                 labelId="page-size-label"
-                value={
-                  templateQueryVariables.paginationArgs?.first ??
-                  pageInfo.perPage
-                }
+                value={templateQueryVariables.paginationArgs?.first ?? pageInfo.perPage}
                 label={strings.perPage}
                 onChange={handlePageSizeChange}
                 disabled={loading}

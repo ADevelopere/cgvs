@@ -18,41 +18,21 @@ export type VariableDataRow = {
 // Column type definitions
 type StudentNameColumn = Table.Column<VariableDataRow>;
 type TextVariableColumn = Table.EditableColumn<VariableDataRow, string, number>;
-type NumberVariableColumn = Table.EditableColumn<
-  VariableDataRow,
-  number,
-  number
->;
-type DateVariableColumn = Table.EditableColumn<
-  VariableDataRow,
-  Date | string,
-  number
->;
-type SelectVariableColumn = Table.EditableColumn<
-  VariableDataRow,
-  string | string[],
-  number
->;
+type NumberVariableColumn = Table.EditableColumn<VariableDataRow, number, number>;
+type DateVariableColumn = Table.EditableColumn<VariableDataRow, Date | string, number>;
+type SelectVariableColumn = Table.EditableColumn<VariableDataRow, string | string[], number>;
 type ReadyStatusColumn = Table.Column<VariableDataRow>;
 
 interface UseVariableDataTableParams {
   variables: Graphql.TemplateVariable[];
-  onUpdateCell: <T = unknown>(
-    rowId: number,
-    columnId: string,
-    value: T | null | undefined
-  ) => Promise<void>;
+  onUpdateCell: <T = unknown>(rowId: number, columnId: string, value: T | null | undefined) => Promise<void>;
   strings: RecipientVariableDataTranslation;
 }
 
 /**
  * Hook to build dynamic columns for recipient variable data table
  */
-export const useVariableDataTable = ({
-  variables,
-  onUpdateCell,
-  strings,
-}: UseVariableDataTableParams) => {
+export const useVariableDataTable = ({ variables, onUpdateCell, strings }: UseVariableDataTableParams) => {
   const columns = useMemo(() => {
     const cols: Array<
       | StudentNameColumn
@@ -71,20 +51,14 @@ export const useVariableDataTable = ({
       resizable: true,
       initialWidth: 200,
       widthStorageKey: "recipient_variable_data_student_name_column_width",
-      headerRenderer: () => (
-        <Table.BaseHeaderRenderer label={strings.studentName} />
-      ),
-      viewRenderer: ({ row }) => (
-        <Table.TextViewRenderer value={row.studentName} />
-      ),
+      headerRenderer: () => <Table.BaseHeaderRenderer label={strings.studentName} />,
+      viewRenderer: ({ row }) => <Table.TextViewRenderer value={row.studentName} />,
     };
 
     cols.push(studentNameColumn);
 
     // Sort variables by order property
-    const sortedVariables = [...variables].sort(
-      (a, b) => (a.order || 0) - (b.order || 0)
-    );
+    const sortedVariables = [...variables].sort((a, b) => (a.order || 0) - (b.order || 0));
 
     // Add variable columns
     sortedVariables.forEach(variable => {
@@ -98,23 +72,16 @@ export const useVariableDataTable = ({
           const textColumn: TextVariableColumn = {
             id: columnId,
             type: "editable" as const,
-            label:
-              variable.name ||
-              strings.variableWithId.replace("{id}", String(variable.id)),
+            label: variable.name || strings.variableWithId.replace("{id}", String(variable.id)),
             resizable: true,
             initialWidth: 150,
             widthStorageKey: `recipient_variable_data_var_${variable.id}_column_width`,
             headerRenderer: () => (
               <Table.BaseHeaderRenderer
-                label={
-                  variable.name ||
-                  strings.variableWithId.replace("{id}", String(variable.id))
-                }
+                label={variable.name || strings.variableWithId.replace("{id}", String(variable.id))}
               />
             ),
-            viewRenderer: ({ row }) => (
-              <Table.TextViewRenderer value={row[columnId] as string} />
-            ),
+            viewRenderer: ({ row }) => <Table.TextViewRenderer value={row[columnId] as string} />,
             editRenderer: ({ row, ...props }) => (
               <Table.TextEditRenderer
                 {...props}
@@ -122,8 +89,7 @@ export const useVariableDataTable = ({
                 validator={value => getValidationError(value, textVar, strings)}
               />
             ),
-            onUpdate: async (rowId, value) =>
-              await onUpdateCell(rowId, columnId, value),
+            onUpdate: async (rowId, value) => await onUpdateCell(rowId, columnId, value),
           };
           cols.push(textColumn);
           break;
@@ -134,34 +100,24 @@ export const useVariableDataTable = ({
           const numberColumn: NumberVariableColumn = {
             id: columnId,
             type: "editable" as const,
-            label:
-              variable.name ||
-              strings.variableWithId.replace("{id}", String(variable.id)),
+            label: variable.name || strings.variableWithId.replace("{id}", String(variable.id)),
             resizable: true,
             initialWidth: 150,
             widthStorageKey: `recipient_variable_data_var_${variable.id}_column_width`,
             headerRenderer: () => (
               <Table.BaseHeaderRenderer
-                label={
-                  variable.name ||
-                  strings.variableWithId.replace("{id}", String(variable.id))
-                }
+                label={variable.name || strings.variableWithId.replace("{id}", String(variable.id))}
               />
             ),
-            viewRenderer: ({ row }) => (
-              <Table.NumberViewRenderer value={row[columnId] as number} />
-            ),
+            viewRenderer: ({ row }) => <Table.NumberViewRenderer value={row[columnId] as number} />,
             editRenderer: ({ row, ...props }) => (
               <Table.NumberEditRenderer
                 {...props}
                 value={row[columnId] as number}
-                validator={value =>
-                  getValidationError(value, numberVar, strings)
-                }
+                validator={value => getValidationError(value, numberVar, strings)}
               />
             ),
-            onUpdate: async (rowId, value) =>
-              await onUpdateCell(rowId, columnId, value),
+            onUpdate: async (rowId, value) => await onUpdateCell(rowId, columnId, value),
           };
           cols.push(numberColumn);
           break;
@@ -172,26 +128,16 @@ export const useVariableDataTable = ({
           const dateColumn: DateVariableColumn = {
             id: columnId,
             type: "editable" as const,
-            label:
-              variable.name ||
-              strings.variableWithId.replace("{id}", String(variable.id)),
+            label: variable.name || strings.variableWithId.replace("{id}", String(variable.id)),
             resizable: true,
             initialWidth: 150,
             widthStorageKey: `recipient_variable_data_var_${variable.id}_column_width`,
             headerRenderer: () => (
               <Table.BaseHeaderRenderer
-                label={
-                  variable.name ||
-                  strings.variableWithId.replace("{id}", String(variable.id))
-                }
+                label={variable.name || strings.variableWithId.replace("{id}", String(variable.id))}
               />
             ),
-            viewRenderer: ({ row }) => (
-              <Table.DateViewRenderer
-                value={row[columnId] as Date}
-                format="PP"
-              />
-            ),
+            viewRenderer: ({ row }) => <Table.DateViewRenderer value={row[columnId] as Date} format="PP" />,
             editRenderer: ({ row, ...props }) => (
               <Table.DateEditRenderer
                 {...props}
@@ -199,8 +145,7 @@ export const useVariableDataTable = ({
                 validator={value => getValidationError(value, dateVar, strings)}
               />
             ),
-            onUpdate: async (rowId, value) =>
-              await onUpdateCell(rowId, columnId, value),
+            onUpdate: async (rowId, value) => await onUpdateCell(rowId, columnId, value),
           };
           cols.push(dateColumn);
           break;
@@ -219,35 +164,20 @@ export const useVariableDataTable = ({
           const selectColumn: SelectVariableColumn = {
             id: columnId,
             type: "editable" as const,
-            label:
-              variable.name ||
-              strings.variableWithId.replace("{id}", String(variable.id)),
+            label: variable.name || strings.variableWithId.replace("{id}", String(variable.id)),
             resizable: true,
             initialWidth: 150,
             widthStorageKey: `recipient_variable_data_var_${variable.id}_column_width`,
             headerRenderer: () => (
               <Table.BaseHeaderRenderer
-                label={
-                  variable.name ||
-                  strings.variableWithId.replace("{id}", String(variable.id))
-                }
+                label={variable.name || strings.variableWithId.replace("{id}", String(variable.id))}
               />
             ),
-            viewRenderer: ({ row }) => (
-              <Table.SelectViewRenderer
-                value={row[columnId] as string}
-                options={options}
-              />
-            ),
+            viewRenderer: ({ row }) => <Table.SelectViewRenderer value={row[columnId] as string} options={options} />,
             editRenderer: ({ row, ...props }) => (
-              <Table.SelectEditRenderer
-                {...props}
-                value={(row[columnId] as string) || ""}
-                options={options}
-              />
+              <Table.SelectEditRenderer {...props} value={(row[columnId] as string) || ""} options={options} />
             ),
-            onUpdate: async (rowId, value) =>
-              await onUpdateCell(rowId, columnId, value),
+            onUpdate: async (rowId, value) => await onUpdateCell(rowId, columnId, value),
           };
           cols.push(selectColumn);
           break;
@@ -263,14 +193,10 @@ export const useVariableDataTable = ({
       resizable: true,
       initialWidth: 120,
       widthStorageKey: "recipient_variable_data_ready_status_column_width",
-      headerRenderer: () => (
-        <Table.BaseHeaderRenderer label={strings.readyStatus} />
-      ),
+      headerRenderer: () => <Table.BaseHeaderRenderer label={strings.readyStatus} />,
       viewRenderer: ({ row }) => (
         <ReadyStatusViewRenderer
-          variableValues={
-            (row._fullData.variableValues || {}) as Record<string, unknown>
-          }
+          variableValues={(row._fullData.variableValues || {}) as Record<string, unknown>}
           variables={variables}
         />
       ),

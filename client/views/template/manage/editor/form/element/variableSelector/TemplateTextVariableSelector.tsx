@@ -11,9 +11,13 @@ interface TemplateTextVariableSelectorProps {
   disabled?: boolean;
 }
 
-export const TemplateTextVariableSelector: FC<
-  TemplateTextVariableSelectorProps
-> = ({ value, variables, onChange, error, disabled }) => {
+export const TemplateTextVariableSelector: FC<TemplateTextVariableSelectorProps> = ({
+  value,
+  variables,
+  onChange,
+  error,
+  disabled,
+}) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
 
   const selectedVariable = variables.find(v => v.id === value) || null;

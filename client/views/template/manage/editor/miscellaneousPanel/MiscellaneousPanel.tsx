@@ -13,23 +13,16 @@ import { CertificateElementCurrentItemSettings } from "./currentElement/CurrentE
 
 export type MiscellaneousPanelProps = {
   elements: GQL.CertificateElementUnion[];
-  templateConfig: GQL.TemplateConfig
+  templateConfig: GQL.TemplateConfig;
 };
 
-export const MiscellaneousPanel: React.FC<MiscellaneousPanelProps> = ({
-  elements,
-  templateConfig,
-}) => {
+export const MiscellaneousPanel: React.FC<MiscellaneousPanelProps> = ({ elements, templateConfig }) => {
   const {
     templateEditorTranslations: { miscellaneousPanel: strings },
   } = useAppTranslation();
-  const { currntMiscellaneousPanelTab, setCurrntMiscellaneousPanelTab } =
-    useEditorStore();
+  const { currntMiscellaneousPanelTab, setCurrntMiscellaneousPanelTab } = useEditorStore();
 
-  const handleTabChange = (
-    _: React.SyntheticEvent,
-    newValue: MiscellaneousPanelTab
-  ) => {
+  const handleTabChange = (_: React.SyntheticEvent, newValue: MiscellaneousPanelTab) => {
     setCurrntMiscellaneousPanelTab(newValue);
   };
 
@@ -111,16 +104,10 @@ export const MiscellaneousPanel: React.FC<MiscellaneousPanelProps> = ({
         >
           <TemplateConfigAutoUpdateForm />
         </TabPanel>
-        <TabPanel
-          value="elements"
-          sx={{ flexGrow: 1, p: 1, overflowY: "auto" }}
-        >
+        <TabPanel value="elements" sx={{ flexGrow: 1, p: 1, overflowY: "auto" }}>
           <ElementsTab elements={elements} />
         </TabPanel>
-        <TabPanel
-          value="currentElement"
-          sx={{ flexGrow: 1, p: 1, overflowY: "auto" }}
-        >
+        <TabPanel value="currentElement" sx={{ flexGrow: 1, p: 1, overflowY: "auto" }}>
           <CertificateElementCurrentItemSettings elements={elements} templateConfig={templateConfig} />
         </TabPanel>
       </TabContext>

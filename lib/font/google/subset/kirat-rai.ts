@@ -9,14 +9,10 @@ const data: GoogleFontItem[] = [
     version: "v2",
     lastModified: "2025-04-23",
     files: {
-      "500":
-        "https://fonts.gstatic.com/s/kanchenjunga/v2/RWmQoKKd5fUmrILiWsjCI6TaXaIiDEtvAlaMKw.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/kanchenjunga/v2/RWmQoKKd5fUmrILiWsjCI6TacaUiDEtvAlaMKw.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/kanchenjunga/v2/RWmQoKKd5fUmrILiWsjCI6TaFaQiDEtvAlaMKw.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/kanchenjunga/v2/RWmPoKKd5fUmrILiWsjCI6TiqYsGBGBzCw.ttf",
+      "500": "https://fonts.gstatic.com/s/kanchenjunga/v2/RWmQoKKd5fUmrILiWsjCI6TaXaIiDEtvAlaMKw.ttf",
+      "600": "https://fonts.gstatic.com/s/kanchenjunga/v2/RWmQoKKd5fUmrILiWsjCI6TacaUiDEtvAlaMKw.ttf",
+      "700": "https://fonts.gstatic.com/s/kanchenjunga/v2/RWmQoKKd5fUmrILiWsjCI6TaFaQiDEtvAlaMKw.ttf",
+      regular: "https://fonts.gstatic.com/s/kanchenjunga/v2/RWmPoKKd5fUmrILiWsjCI6TiqYsGBGBzCw.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",

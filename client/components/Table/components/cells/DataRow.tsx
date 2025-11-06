@@ -1,17 +1,11 @@
 import React from "react";
 import { useTheme } from "@mui/material/styles";
 import { Checkbox, Box } from "@mui/material";
-import {
-  TABLE_CHECKBOX_CONTAINER_SIZE,
-  TABLE_CHECKBOX_WIDTH,
-} from "../../constants";
+import { TABLE_CHECKBOX_CONTAINER_SIZE, TABLE_CHECKBOX_WIDTH } from "../../constants";
 import { DataCell } from "./DataCell";
 import { AnyColumn } from "../../types";
 
-export type DataRowProps<
-  TRowData,
-  TRowId extends string | number = string | number,
-> = {
+export type DataRowProps<TRowData, TRowId extends string | number = string | number> = {
   rowData: TRowData;
   height: number;
   virtualIndex?: number;
@@ -26,11 +20,7 @@ export type DataRowProps<
   toggleRowSelection: (rowId: TRowId) => void;
   isRowSelected: (rowId: TRowId) => boolean;
   getRowStyle?: (rowData: TRowData, rowIndex: number) => React.CSSProperties;
-  onRowResizeStart: (
-    e: React.MouseEvent,
-    rowId: TRowId,
-    currentHeight: number
-  ) => void;
+  onRowResizeStart: (e: React.MouseEvent, rowId: TRowId, currentHeight: number) => void;
   rowSelectionEnabled: boolean;
   enableRowResizing: boolean;
   // styles
@@ -38,11 +28,7 @@ export type DataRowProps<
   pinnedRightStyle: React.CSSProperties;
 };
 
-const DataRowComponent = <
-  TRowData,
-  TValue,
-  TRowId extends string | number = string | number,
->({
+const DataRowComponent = <TRowData, TValue, TRowId extends string | number = string | number>({
   rowData,
   height,
   virtualIndex = 0,
@@ -116,9 +102,7 @@ const DataRowComponent = <
     if (isRowSelected(rowId)) {
       return theme.palette.action.selected;
     }
-    return virtualIndex % 2 === 0
-      ? theme.palette.customTable.evenRow
-      : theme.palette.customTable.oddRow;
+    return virtualIndex % 2 === 0 ? theme.palette.customTable.evenRow : theme.palette.customTable.oddRow;
   }, [
     isRowSelected,
     rowId,

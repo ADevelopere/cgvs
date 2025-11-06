@@ -32,10 +32,7 @@ export async function createGraphQLContext(): Promise<
   const accessToken = extractTokenFromHeader(authHeader);
 
   // Extract refresh token from cookie or custom header
-  const refreshToken =
-    cookieStore.get("cgvs_refresh_token")?.value ||
-    headersList.get("x-refresh-token") ||
-    undefined;
+  const refreshToken = cookieStore.get("cgvs_refresh_token")?.value || headersList.get("x-refresh-token") || undefined;
 
   // Extract session ID from cookie (similar to Ktor approach)
   const sessionId = cookieStore.get("cgvs_session_id")?.value || undefined;

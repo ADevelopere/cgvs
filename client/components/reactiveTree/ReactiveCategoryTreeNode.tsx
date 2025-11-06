@@ -8,23 +8,14 @@ import { ChevronRight as ChevronRightIcon } from "@mui/icons-material";
 import type { ReactiveTreeNode, QueryResolverOptions } from "./types";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 
-interface TreeNodeProps<
-  TNode extends ReactiveTreeNode,
-  TResult = unknown,
-  TVariables = unknown,
-> {
+interface TreeNodeProps<TNode extends ReactiveTreeNode, TResult = unknown, TVariables = unknown> {
   node: TNode;
   level: number;
   resolver: (parent: TNode | undefined) => QueryResolverOptions<TVariables>;
   getItems: (data: TResult, parent?: TNode) => TNode[];
   hasChildren?: (node: TNode) => boolean;
   getNodeLabel: (node: TNode) => string;
-  itemRenderer?: (props: {
-    node: TNode;
-    level: number;
-    isExpanded: boolean;
-    isSelected: boolean;
-  }) => React.ReactNode;
+  itemRenderer?: (props: { node: TNode; level: number; isExpanded: boolean; isSelected: boolean }) => React.ReactNode;
   selectedItemId?: TNode["id"] | null;
   onSelectItem?: (node: TNode) => void;
   onUpdateItem?: (node: TNode) => void;
@@ -36,11 +27,9 @@ interface TreeNodeProps<
   itemContentStyle?: SxProps<Theme>;
 }
 
-export function ReactiveCategoryTreeNode<
-  TNode extends ReactiveTreeNode,
-  TResult = unknown,
-  TVariables = unknown,
->(props: TreeNodeProps<TNode, TResult, TVariables>) {
+export function ReactiveCategoryTreeNode<TNode extends ReactiveTreeNode, TResult = unknown, TVariables = unknown>(
+  props: TreeNodeProps<TNode, TResult, TVariables>
+) {
   const {
     node,
     level,
@@ -62,18 +51,14 @@ export function ReactiveCategoryTreeNode<
 
   // Use external expansion state if provided, otherwise use internal state
   const [internalExpanded, setInternalExpanded] = useState(false);
-  const isExpanded = expandedItemIds
-    ? expandedItemIds.has(node.id)
-    : internalExpanded;
+  const isExpanded = expandedItemIds ? expandedItemIds.has(node.id) : internalExpanded;
   const isSelected = node.id === selectedItemId;
   const { isRtl } = useAppTheme();
 
   // Track if we've initiated a fetch (via hover or expand click)
   // Use external fetched state if provided, otherwise use internal state
   const [internalFetched, setInternalFetched] = useState(false);
-  const hasFetched = isFetchedExternal
-    ? isFetchedExternal(node.id)
-    : internalFetched;
+  const hasFetched = isFetchedExternal ? isFetchedExternal(node.id) : internalFetched;
 
   // Determine if this node might have children
   const mightHaveChildren = hasChildren ? hasChildren(node) : true;
@@ -81,31 +66,20 @@ export function ReactiveCategoryTreeNode<
   // Call useQuery for THIS node's children at top level
   // Skip until first fetch is initiated (via hover or expand click)
   const childQueryOptions = resolver(node);
-  const { data: childData, loading: childLoading } = useQuery(
-    childQueryOptions.query,
-    {
-      variables: childQueryOptions.variables as Record<
-        string,
-        string | number | boolean
-      >,
-      skip: !hasFetched || !mightHaveChildren,
-      fetchPolicy: childQueryOptions.fetchPolicy || "cache-first",
-    }
-  );
+  const { data: childData, loading: childLoading } = useQuery(childQueryOptions.query, {
+    variables: childQueryOptions.variables as Record<string, string | number | boolean>,
+    skip: !hasFetched || !mightHaveChildren,
+    fetchPolicy: childQueryOptions.fetchPolicy || "cache-first",
+  });
 
-  const children = useMemo(
-    () => (childData ? getItems(childData as TResult, node) : []),
-    [childData, getItems, node]
-  );
+  const children = useMemo(() => (childData ? getItems(childData as TResult, node) : []), [childData, getItems, node]);
   const hasLoadedChildren = isExpanded && children.length > 0;
   const isLoading = hasFetched && childLoading;
 
   // Update child item if it matches selectedItemId after data updates
   useEffect(() => {
     if (selectedItemId && children.length > 0) {
-      const selectedItem = children.find(
-        (item: TNode) => item.id === selectedItemId
-      );
+      const selectedItem = children.find((item: TNode) => item.id === selectedItemId);
       if (selectedItem) {
         if (onUpdateItem) {
           onUpdateItem(selectedItem);
@@ -159,41 +133,27 @@ export function ReactiveCategoryTreeNode<
           paddingInlineStart: `${level * 20}px`,
           cursor: "pointer",
           borderRadius: 1,
-          backgroundColor: isSelected
-            ? "rgba(25, 118, 210, 0.08)"
-            : "transparent",
+          backgroundColor: isSelected ? "rgba(25, 118, 210, 0.08)" : "transparent",
           "&:hover": {
-            backgroundColor: isSelected
-              ? "rgba(25, 118, 210, 0.12)"
-              : "rgba(0, 0, 0, 0.04)",
+            backgroundColor: isSelected ? "rgba(25, 118, 210, 0.12)" : "rgba(0, 0, 0, 0.04)",
           },
         }}
         onClick={() => onSelectItem?.(node)}
         onMouseEnter={handleHover}
       >
         {/* Expand/Collapse Button or Spacer */}
-        {mightHaveChildren &&
-        (isLoading || !hasFetched || children.length > 0) ? (
+        {mightHaveChildren && (isLoading || !hasFetched || children.length > 0) ? (
           <IconButton
             size="small"
             onClick={toggleExpand}
             disabled={isLoading}
             sx={{
               mr: 1,
-              transform:
-                isExpanded && !isLoading
-                  ? "rotate(90deg)"
-                  : isRtl
-                    ? "rotate(180deg)"
-                    : "rotate(0deg)",
+              transform: isExpanded && !isLoading ? "rotate(90deg)" : isRtl ? "rotate(180deg)" : "rotate(0deg)",
               transition: "transform 0.2s",
             }}
           >
-            {isLoading ? (
-              <CircularProgress size={20} />
-            ) : (
-              <ChevronRightIcon sx={{ fontSize: 20 }} />
-            )}
+            {isLoading ? <CircularProgress size={20} /> : <ChevronRightIcon sx={{ fontSize: 20 }} />}
           </IconButton>
         ) : mightHaveChildren ? (
           // Invisible spacer to maintain consistent spacing when no icon is shown

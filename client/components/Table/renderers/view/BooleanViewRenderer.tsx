@@ -10,9 +10,7 @@ export interface BooleanViewRendererProps {
  *
  * Displays a read-only checkbox for boolean values.
  */
-export const BooleanViewRenderer: React.FC<BooleanViewRendererProps> = ({
-  value,
-}) => {
+export const BooleanViewRenderer: React.FC<BooleanViewRendererProps> = ({ value }) => {
   return (
     <Checkbox
       checked={!!value}

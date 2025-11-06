@@ -4,26 +4,8 @@ import { GoogleFontItem } from "../types";
 const data: GoogleFontItem[] = [
   {
     family: "Noto Sans Georgian",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
-    subsets: [
-      "cyrillic-ext",
-      "georgian",
-      "greek-ext",
-      "latin",
-      "latin-ext",
-      "math",
-      "symbols",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
+    subsets: ["cyrillic-ext", "georgian", "greek-ext", "latin", "latin-ext", "math", "symbols"],
     version: "v48",
     lastModified: "2025-09-05",
     files: {
@@ -52,17 +34,7 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Noto Serif Georgian",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
     subsets: ["georgian", "latin", "latin-ext"],
     version: "v29",
     lastModified: "2025-09-10",

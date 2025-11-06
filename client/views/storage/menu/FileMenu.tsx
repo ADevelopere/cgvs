@@ -253,17 +253,11 @@ const FileMenu: React.FC<FileMenuProps> = ({
           },
         }}
       >
-        <DialogTitle
-          id="info-dialog-title"
-          sx={{ color: theme.palette.text.primary }}
-        >
+        <DialogTitle id="info-dialog-title" sx={{ color: theme.palette.text.primary }}>
           {translations.getInfo}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText
-            component="div"
-            sx={{ color: theme.palette.text.secondary }}
-          >
+          <DialogContentText component="div" sx={{ color: theme.palette.text.secondary }}>
             <div style={{ marginBottom: theme.spacing(2) }}>
               <strong>{translations.name}:</strong> {file.name}
             </div>
@@ -276,12 +270,10 @@ const FileMenu: React.FC<FileMenuProps> = ({
               </div>
             )}
             <div style={{ marginBottom: theme.spacing(2) }}>
-              <strong>{translations.lastModified}:</strong>{" "}
-              {formatDate(file.lastModified)}
+              <strong>{translations.lastModified}:</strong> {formatDate(file.lastModified)}
             </div>
             <div style={{ marginBottom: theme.spacing(2) }}>
-              <strong>{translations.createdAt}:</strong>{" "}
-              {formatDate(file.createdAt)}
+              <strong>{translations.createdAt}:</strong> {formatDate(file.createdAt)}
             </div>
             <div style={{ marginBottom: theme.spacing(2) }}>
               <strong>{translations.path}:</strong> {file.path}

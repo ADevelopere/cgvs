@@ -23,11 +23,7 @@ export const generateFileMD5 = async (file: File): Promise<string> => {
         const hash = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Base64);
         resolve(hash);
       } catch (error) {
-        reject(
-          error instanceof Error
-            ? error
-            : new Error("Failed to generate MD5 hash")
-        );
+        reject(error instanceof Error ? error : new Error("Failed to generate MD5 hash"));
       }
     };
     reader.onerror = () => reject(new Error("Failed to read file"));
@@ -38,8 +34,7 @@ export const generateFileMD5 = async (file: File): Promise<string> => {
 // Re-export inferContentType from shared utils for convenience
 export { inferContentType } from "@/utils/storage.utils";
 
-export const getFileKey = (file: File): string =>
-  `${file.name}-${file.size}-${file.lastModified}`;
+export const getFileKey = (file: File): string => `${file.name}-${file.size}-${file.lastModified}`;
 
 /**
  * Convert array of MIME types to file extensions

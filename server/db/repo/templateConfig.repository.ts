@@ -19,11 +19,7 @@ export namespace TemplateConfigRepository {
    * @returns The template config, or undefined if not found.
    */
   export async function findById(id: number): Promise<TemplateConfig | null> {
-    const [result] = await db
-      .select()
-      .from(templateConfig)
-      .where(eq(templateConfig.id, id))
-      .limit(1);
+    const [result] = await db.select().from(templateConfig).where(eq(templateConfig.id, id)).limit(1);
 
     if (!result) {
       return null;
@@ -37,17 +33,12 @@ export namespace TemplateConfigRepository {
    * @param templateId - The ID of the template.
    * @returns An array of template configs.
    */
-  export async function findByTemplateId(
-    templateId: number
-  ): Promise<TemplateConfig | null> {
+  export async function findByTemplateId(templateId: number): Promise<TemplateConfig | null> {
     const template = await TemplateRepository.findById(templateId);
     if (!template) {
       throw new Error(`Template with ID ${templateId} not found.`);
     }
-    const [result] = await db
-      .select()
-      .from(templateConfig)
-      .where(eq(templateConfig.templateId, templateId));
+    const [result] = await db.select().from(templateConfig).where(eq(templateConfig.templateId, templateId));
     if (!result) {
       return null;
     }
@@ -63,9 +54,7 @@ export namespace TemplateConfigRepository {
    * @param input - The data for the new template config.
    * @returns The created template config.
    */
-  export async function create(
-    input: TemplateConfigInput
-  ): Promise<TemplateConfig> {
+  export async function create(input: TemplateConfigInput): Promise<TemplateConfig> {
     // 1. Check if template exists
     const template = await TemplateRepository.findById(input.templateId);
     if (!template) {
@@ -73,10 +62,7 @@ export namespace TemplateConfigRepository {
     }
 
     // 2. Dimensions validation
-    const dimError = await ElementUtils.validateDimensions(
-      input.width,
-      input.height
-    );
+    const dimError = await ElementUtils.validateDimensions(input.width, input.height);
     if (dimError) {
       throw new Error(dimError);
     }
@@ -88,10 +74,7 @@ export namespace TemplateConfigRepository {
     };
 
     // 3. Insert into DB
-    const [newConfig] = await db
-      .insert(templateConfig)
-      .values(insertInput)
-      .returning();
+    const [newConfig] = await db.insert(templateConfig).values(insertInput).returning();
 
     return { ...newConfig, language: newConfig.language as AppLanguage };
   }
@@ -101,9 +84,7 @@ export namespace TemplateConfigRepository {
    * @param input - The data to update.
    * @returns The updated template config.
    */
-  export async function update(
-    input: TemplateConfigUpdateInput
-  ): Promise<TemplateConfig> {
+  export async function update(input: TemplateConfigUpdateInput): Promise<TemplateConfig> {
     const { id, ...updateData } = input;
 
     // 1. Check if config exists

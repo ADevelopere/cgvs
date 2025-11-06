@@ -1,8 +1,5 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
-import {
-  TemplateCategoryPothosObject,
-  TemplateCategoryWithParentTreePothosObject,
-} from "@/server/graphql/pothos";
+import { TemplateCategoryPothosObject, TemplateCategoryWithParentTreePothosObject } from "@/server/graphql/pothos";
 import { TemplateCategoryRepository } from "@/server/db/repo";
 
 gqlSchemaBuilder.queryFields(t => ({
@@ -12,8 +9,7 @@ gqlSchemaBuilder.queryFields(t => ({
     args: {
       id: t.arg.int({ required: true }),
     },
-    resolve: async (_query, args) =>
-      await TemplateCategoryRepository.findById(args.id),
+    resolve: async (_query, args) => await TemplateCategoryRepository.findById(args.id),
   }),
 
   templateCategories: t.field({
@@ -25,15 +21,13 @@ gqlSchemaBuilder.queryFields(t => ({
   mainTemplateCategory: t.field({
     type: TemplateCategoryPothosObject,
     nullable: false,
-    resolve: async () =>
-      await TemplateCategoryRepository.findTemplatesMainCategory(),
+    resolve: async () => await TemplateCategoryRepository.findTemplatesMainCategory(),
   }),
 
   suspensionTemplateCategory: t.field({
     type: TemplateCategoryPothosObject,
     nullable: false,
-    resolve: async () =>
-      await TemplateCategoryRepository.findTemplatesSuspensionCategory(),
+    resolve: async () => await TemplateCategoryRepository.findTemplatesSuspensionCategory(),
   }),
 
   categoryChildren: t.field({
@@ -42,10 +36,7 @@ gqlSchemaBuilder.queryFields(t => ({
     args: {
       parentCategoryId: t.arg.int({ required: false }),
     },
-    resolve: async (_query, args) =>
-      await TemplateCategoryRepository.findCategoryChildren(
-        args.parentCategoryId
-      ),
+    resolve: async (_query, args) => await TemplateCategoryRepository.findCategoryChildren(args.parentCategoryId),
   }),
 
   searchTemplateCategories: t.field({
@@ -57,10 +48,6 @@ gqlSchemaBuilder.queryFields(t => ({
       includeParentTree: t.arg.boolean({ required: false }),
     },
     resolve: async (_query, args) =>
-      await TemplateCategoryRepository.searchByName(
-        args.searchTerm,
-        args.limit ?? 10,
-        args.includeParentTree ?? false
-      ),
+      await TemplateCategoryRepository.searchByName(args.searchTerm, args.limit ?? 10, args.includeParentTree ?? false),
   }),
 }));

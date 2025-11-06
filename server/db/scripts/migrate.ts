@@ -23,9 +23,7 @@ export async function runMigrations(closePool: boolean) {
   await drizzleDbPool.end();
 
   logger.warn("🔴 Database pool has been closed!");
-  logger.warn(
-    "⚠️  Any subsequent database operations will fail with 'Cannot use a pool after calling end'"
-  );
+  logger.warn("⚠️  Any subsequent database operations will fail with 'Cannot use a pool after calling end'");
 }
 
 if (require.main === module) {

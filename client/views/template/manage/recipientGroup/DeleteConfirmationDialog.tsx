@@ -1,15 +1,7 @@
 "use client";
 
 import React, { useCallback, useMemo } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Typography,
-  Alert,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Alert } from "@mui/material";
 import { useRecipientGroupDialogs } from "./hooks/useRecipientGroupDialogs";
 import { useRecipientGroupOperations } from "./hooks/useRecipientGroupOperations";
 import { useAppTranslation } from "@/client/locale";
@@ -19,12 +11,9 @@ interface DeleteConfirmationDialogProps {
   groups: TemplateRecipientGroup[];
 }
 
-const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
-  groups,
-}) => {
+const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ groups }) => {
   const { recipientGroupTranslations: strings } = useAppTranslation();
-  const { deleteDialogOpen, closeDeleteDialog, selectedGroupId } =
-    useRecipientGroupDialogs();
+  const { deleteDialogOpen, closeDeleteDialog, selectedGroupId } = useRecipientGroupDialogs();
   const { deleteGroup } = useRecipientGroupOperations();
 
   const selectedGroup: TemplateRecipientGroup | null = useMemo(() => {
@@ -36,11 +25,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
     if (!selectedGroupId) return;
 
     // Additional check: prevent deletion if group has students
-    if (
-      selectedGroup &&
-      selectedGroup.studentCount &&
-      selectedGroup.studentCount > 0
-    ) {
+    if (selectedGroup && selectedGroup.studentCount && selectedGroup.studentCount > 0) {
       return;
     }
 
@@ -48,17 +33,10 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
   }, [selectedGroupId, selectedGroup, deleteGroup]);
 
   return (
-    <Dialog
-      open={deleteDialogOpen}
-      onClose={closeDeleteDialog}
-      maxWidth="sm"
-      fullWidth
-    >
+    <Dialog open={deleteDialogOpen} onClose={closeDeleteDialog} maxWidth="sm" fullWidth>
       <DialogTitle>{strings.deleteGroupTitle}</DialogTitle>
       <DialogContent>
-        {selectedGroup &&
-        selectedGroup.studentCount &&
-        selectedGroup.studentCount > 0 ? (
+        {selectedGroup && selectedGroup.studentCount && selectedGroup.studentCount > 0 ? (
           <Alert severity="error" sx={{ mb: 2 }}>
             {strings.cannotDeleteGroupWithStudents}
           </Alert>
@@ -70,28 +48,22 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
         {selectedGroup && (
           <Typography variant="body2" color="text.secondary">
             {strings.name}: <strong>{selectedGroup.name}</strong>
-            {selectedGroup.studentCount !== null &&
-              selectedGroup.studentCount !== undefined && (
-                <>
-                  <br />
-                  {strings.studentCount}:{" "}
-                  <strong>{selectedGroup.studentCount}</strong>
-                </>
-              )}
+            {selectedGroup.studentCount !== null && selectedGroup.studentCount !== undefined && (
+              <>
+                <br />
+                {strings.studentCount}: <strong>{selectedGroup.studentCount}</strong>
+              </>
+            )}
           </Typography>
         )}
       </DialogContent>
       <DialogActions>
         <Button onClick={closeDeleteDialog}>
-          {selectedGroup &&
-          selectedGroup.studentCount &&
-          selectedGroup.studentCount > 0
+          {selectedGroup && selectedGroup.studentCount && selectedGroup.studentCount > 0
             ? strings.close
             : strings.cancel}
         </Button>
-        {(!selectedGroup ||
-          !selectedGroup.studentCount ||
-          selectedGroup.studentCount === 0) && (
+        {(!selectedGroup || !selectedGroup.studentCount || selectedGroup.studentCount === 0) && (
           <Button onClick={handleDelete} variant="contained" color="error">
             {strings.delete}
           </Button>

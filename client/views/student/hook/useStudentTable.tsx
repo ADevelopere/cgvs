@@ -23,31 +23,11 @@ const mapColumnIdToGraphQLColumn = (columnId: string): string | null => {
 
 // Column type definitions
 type NameColumn = Table.EditableColumn<GQL.Student, string, number>;
-type EmailColumn = Table.EditableColumn<
-  GQL.Student,
-  string | null | undefined,
-  number
->;
-type DateOfBirthColumn = Table.EditableColumn<
-  GQL.Student,
-  Date | string | null | undefined,
-  number
->;
-type GenderColumn = Table.EditableColumn<
-  GQL.Student,
-  GQL.Gender | null | undefined,
-  number
->;
-type NationalityColumn = Table.EditableColumn<
-  GQL.Student,
-  GQL.CountryCode | null | undefined,
-  number
->;
-type PhoneNumberColumn = Table.EditableColumn<
-  GQL.Student,
-  string | null | undefined,
-  number
->;
+type EmailColumn = Table.EditableColumn<GQL.Student, string | null | undefined, number>;
+type DateOfBirthColumn = Table.EditableColumn<GQL.Student, Date | string | null | undefined, number>;
+type GenderColumn = Table.EditableColumn<GQL.Student, GQL.Gender | null | undefined, number>;
+type NationalityColumn = Table.EditableColumn<GQL.Student, GQL.CountryCode | null | undefined, number>;
+type PhoneNumberColumn = Table.EditableColumn<GQL.Student, string | null | undefined, number>;
 type CreatedAtColumn = Table.Column<GQL.Student>;
 type UpdatedAtColumn = Table.Column<GQL.Student>;
 
@@ -56,16 +36,9 @@ type UpdatedAtColumn = Table.Column<GQL.Student>;
  * Builds columns with renderer-based API
  */
 export const useStudentTable = () => {
-  const {
-    partialUpdateStudent,
-    updateSort,
-    setColumnFilter,
-    clearFilter,
-    filters,
-    queryParams,
-  } = useStudentOperations();
-  const { studentTranslations: strings, genderTranslations: genderStrings } =
-    useAppTranslation();
+  const { partialUpdateStudent, updateSort, setColumnFilter, clearFilter, filters, queryParams } =
+    useStudentOperations();
+  const { studentTranslations: strings, genderTranslations: genderStrings } = useAppTranslation();
 
   // Build gender options
   const genderOptions: {
@@ -119,15 +92,7 @@ export const useStudentTable = () => {
    * Helper component for text filterable headers
    */
   const TextFilterHeader = useCallback(
-    ({
-      label,
-      columnId,
-      sortable = true,
-    }: {
-      label: string;
-      columnId: string;
-      sortable?: boolean;
-    }) => {
+    ({ label, columnId, sortable = true }: { label: string; columnId: string; sortable?: boolean }) => {
       // Get current filter from store
       const currentFilter = filters[columnId];
 
@@ -138,10 +103,7 @@ export const useStudentTable = () => {
         : queryParams.orderBy
           ? [queryParams.orderBy]
           : [];
-      const sortDirection =
-        orderByArray[0]?.column === graphqlColumnName
-          ? orderByArray[0].order
-          : null;
+      const sortDirection = orderByArray[0]?.column === graphqlColumnName ? orderByArray[0].order : null;
 
       return (
         <Table.BaseHeaderRenderer
@@ -186,10 +148,7 @@ export const useStudentTable = () => {
         : queryParams.orderBy
           ? [queryParams.orderBy]
           : [];
-      const sortDirection =
-        orderByArray[0]?.column === graphqlColumnName
-          ? orderByArray[0].order
-          : null;
+      const sortDirection = orderByArray[0]?.column === graphqlColumnName ? orderByArray[0].order : null;
 
       return (
         <Table.BaseHeaderRenderer
@@ -229,16 +188,10 @@ export const useStudentTable = () => {
       label: strings.name,
       resizable: true,
       widthStorageKey: "student_table_student_name_column_width",
-      headerRenderer: () => (
-        <TextFilterHeader label={strings.name} columnId="name" />
-      ),
+      headerRenderer: () => <TextFilterHeader label={strings.name} columnId="name" />,
       viewRenderer: ({ row }) => <Table.TextViewRenderer value={row.name} />,
       editRenderer: ({ row, ...props }) => (
-        <Table.TextEditRenderer
-          value={row.name}
-          {...props}
-          validator={Validators.validateName}
-        />
+        <Table.TextEditRenderer value={row.name} {...props} validator={Validators.validateName} />
       ),
       onUpdate: async (rowId, newValue) => {
         await handleUpdateCell(rowId, "name", newValue);
@@ -251,16 +204,10 @@ export const useStudentTable = () => {
       label: strings.email,
       resizable: true,
       widthStorageKey: "student_table_student_email_column_width",
-      headerRenderer: () => (
-        <TextFilterHeader label={strings.email} columnId="email" />
-      ),
+      headerRenderer: () => <TextFilterHeader label={strings.email} columnId="email" />,
       viewRenderer: ({ row }) => <Table.TextViewRenderer value={row.email} />,
       editRenderer: ({ row, ...props }) => (
-        <Table.TextEditRenderer
-          value={row.email || ""}
-          {...props}
-          validator={Validators.validateEmail}
-        />
+        <Table.TextEditRenderer value={row.email || ""} {...props} validator={Validators.validateEmail} />
       ),
       onUpdate: async (rowId, newValue) => {
         await handleUpdateCell(rowId, "email", newValue);
@@ -273,18 +220,10 @@ export const useStudentTable = () => {
       label: strings.dateOfBirth,
       resizable: true,
       widthStorageKey: "student_table_student_dateOfBirth_column_width",
-      headerRenderer: () => (
-        <DateFilterHeader label={strings.dateOfBirth} columnId="dateOfBirth" />
-      ),
-      viewRenderer: ({ row }) => (
-        <Table.DateViewRenderer value={row.dateOfBirth} format="PPP" />
-      ),
+      headerRenderer: () => <DateFilterHeader label={strings.dateOfBirth} columnId="dateOfBirth" />,
+      viewRenderer: ({ row }) => <Table.DateViewRenderer value={row.dateOfBirth} format="PPP" />,
       editRenderer: ({ row, ...props }) => (
-        <Table.DateEditRenderer
-          value={row.dateOfBirth}
-          {...props}
-          validator={Validators.validateDateOfBirth}
-        />
+        <Table.DateEditRenderer value={row.dateOfBirth} {...props} validator={Validators.validateDateOfBirth} />
       ),
       onUpdate: async (rowId, newValue) => {
         await handleUpdateCell(rowId, "dateOfBirth", newValue);
@@ -304,10 +243,7 @@ export const useStudentTable = () => {
           : queryParams.orderBy
             ? [queryParams.orderBy]
             : [];
-        const sortDirection =
-          orderByArray[0]?.column === graphqlColumnName
-            ? orderByArray[0].order
-            : null;
+        const sortDirection = orderByArray[0]?.column === graphqlColumnName ? orderByArray[0].order : null;
 
         return (
           <Table.BaseHeaderRenderer
@@ -321,15 +257,9 @@ export const useStudentTable = () => {
           />
         );
       },
-      viewRenderer: ({ row }) => (
-        <Table.SelectViewRenderer value={row.gender} options={genderOptions} />
-      ),
+      viewRenderer: ({ row }) => <Table.SelectViewRenderer value={row.gender} options={genderOptions} />,
       editRenderer: ({ row, ...props }) => (
-        <Table.SelectEditRenderer
-          value={row.gender}
-          options={genderOptions}
-          {...props}
-        />
+        <Table.SelectEditRenderer value={row.gender} options={genderOptions} {...props} />
       ),
       onUpdate: async (rowId, newValue) => {
         await handleUpdateCell(rowId, "gender", newValue);
@@ -349,10 +279,7 @@ export const useStudentTable = () => {
           : queryParams.orderBy
             ? [queryParams.orderBy]
             : [];
-        const sortDirection =
-          orderByArray[0]?.column === graphqlColumnName
-            ? orderByArray[0].order
-            : null;
+        const sortDirection = orderByArray[0]?.column === graphqlColumnName ? orderByArray[0].order : null;
 
         return (
           <Table.BaseHeaderRenderer
@@ -366,15 +293,9 @@ export const useStudentTable = () => {
           />
         );
       },
-      viewRenderer: ({ row }) => (
-        <Table.CountryViewRenderer value={row.nationality} />
-      ),
+      viewRenderer: ({ row }) => <Table.CountryViewRenderer value={row.nationality} />,
       editRenderer: ({ row, ...props }) => (
-        <Table.CountryEditRenderer
-          value={row.nationality}
-          {...props}
-          validator={Validators.validateNationality}
-        />
+        <Table.CountryEditRenderer value={row.nationality} {...props} validator={Validators.validateNationality} />
       ),
       onUpdate: async (rowId, newValue) => {
         await handleUpdateCell(rowId, "nationality", newValue);
@@ -387,16 +308,8 @@ export const useStudentTable = () => {
       label: strings.phoneNumber,
       resizable: true,
       widthStorageKey: "student_table_student_phoneNumber_column_width",
-      headerRenderer: () => (
-        <TextFilterHeader
-          label={strings.phoneNumber}
-          columnId="phoneNumber"
-          sortable={false}
-        />
-      ),
-      viewRenderer: ({ row }) => (
-        <Table.PhoneViewRenderer value={row.phoneNumber} />
-      ),
+      headerRenderer: () => <TextFilterHeader label={strings.phoneNumber} columnId="phoneNumber" sortable={false} />,
+      viewRenderer: ({ row }) => <Table.PhoneViewRenderer value={row.phoneNumber} />,
       editRenderer: ({ row, ...props }) => (
         <Table.PhoneEditRenderer
           value={row.phoneNumber as string | null | undefined}
@@ -415,12 +328,8 @@ export const useStudentTable = () => {
       label: strings.createdAt,
       resizable: true,
       widthStorageKey: "student_table_student_createdAt_column_width",
-      headerRenderer: () => (
-        <DateFilterHeader label={strings.createdAt} columnId="createdAt" />
-      ),
-      viewRenderer: ({ row }) => (
-        <Table.DateViewRenderer value={row.createdAt} format="PPP" />
-      ),
+      headerRenderer: () => <DateFilterHeader label={strings.createdAt} columnId="createdAt" />,
+      viewRenderer: ({ row }) => <Table.DateViewRenderer value={row.createdAt} format="PPP" />,
     };
 
     const updatedAtColumn: UpdatedAtColumn = {
@@ -429,12 +338,8 @@ export const useStudentTable = () => {
       label: strings.updatedAt,
       resizable: true,
       widthStorageKey: "student_table_student_updatedAt_column_width",
-      headerRenderer: () => (
-        <DateFilterHeader label={strings.updatedAt} columnId="updatedAt" />
-      ),
-      viewRenderer: ({ row }) => (
-        <Table.DateViewRenderer value={row.updatedAt} format="PPP" />
-      ),
+      headerRenderer: () => <DateFilterHeader label={strings.updatedAt} columnId="updatedAt" />,
+      viewRenderer: ({ row }) => <Table.DateViewRenderer value={row.updatedAt} format="PPP" />,
     };
 
     return [
@@ -447,15 +352,7 @@ export const useStudentTable = () => {
       createdAtColumn,
       updatedAtColumn,
     ] as const;
-  }, [
-    strings,
-    genderOptions,
-    handleUpdateCell,
-    TextFilterHeader,
-    DateFilterHeader,
-    queryParams,
-    updateSort,
-  ]);
+  }, [strings, genderOptions, handleUpdateCell, TextFilterHeader, DateFilterHeader, queryParams, updateSort]);
 
   return {
     columns,

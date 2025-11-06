@@ -1,11 +1,7 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { DateDataSourceForm } from "./DateDataSourceForm";
-import {
-  CertificateDateField,
-  StudentDateField,
-  TemplateDateVariable,
-} from "@/client/graphql/generated/gql/graphql";
+import { CertificateDateField, StudentDateField, TemplateDateVariable } from "@/client/graphql/generated/gql/graphql";
 
 const mockDateVariables: TemplateDateVariable[] = [
   {
@@ -51,8 +47,7 @@ export const Static: Story = {
   args: {
     dataSource: { static: { value: "2024-01-15" } },
     dateVariables: mockDateVariables,
-    onDataSourceChange: dataSource =>
-      logger.info("Data source changed", { dataSource }),
+    onDataSourceChange: dataSource => logger.info("Data source changed", { dataSource }),
     errors: {},
     showSelector: true,
   },
@@ -62,8 +57,7 @@ export const StudentField: Story = {
   args: {
     dataSource: { studentField: { field: StudentDateField.DateOfBirth } },
     dateVariables: mockDateVariables,
-    onDataSourceChange: dataSource =>
-      logger.info("Data source changed", { dataSource }),
+    onDataSourceChange: dataSource => logger.info("Data source changed", { dataSource }),
     errors: {},
     showSelector: true,
   },
@@ -75,8 +69,7 @@ export const CertificateField: Story = {
       certificateField: { field: CertificateDateField.ReleaseDate },
     },
     dateVariables: mockDateVariables,
-    onDataSourceChange: dataSource =>
-      logger.info("Data source changed", { dataSource }),
+    onDataSourceChange: dataSource => logger.info("Data source changed", { dataSource }),
     errors: {},
     showSelector: true,
   },
@@ -86,8 +79,7 @@ export const TemplateVariable: Story = {
   args: {
     dataSource: { templateVariable: { variableId: 1 } },
     dateVariables: mockDateVariables,
-    onDataSourceChange: dataSource =>
-      logger.info("Data source changed", { dataSource }),
+    onDataSourceChange: dataSource => logger.info("Data source changed", { dataSource }),
     errors: {},
     showSelector: true,
   },
@@ -97,8 +89,7 @@ export const WithErrors: Story = {
   args: {
     dataSource: { static: { value: "" } },
     dateVariables: mockDateVariables,
-    onDataSourceChange: dataSource =>
-      logger.info("Data source changed", { dataSource }),
+    onDataSourceChange: dataSource => logger.info("Data source changed", { dataSource }),
     errors: { static: "Date is required" },
     showSelector: true,
   },
@@ -108,8 +99,7 @@ export const WithoutSelector: Story = {
   args: {
     dataSource: { static: { value: "2024-01-15" } },
     dateVariables: mockDateVariables,
-    onDataSourceChange: dataSource =>
-      logger.info("Data source changed", { dataSource }),
+    onDataSourceChange: dataSource => logger.info("Data source changed", { dataSource }),
     errors: {},
     showSelector: false,
   },

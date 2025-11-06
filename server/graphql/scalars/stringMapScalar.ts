@@ -20,9 +20,7 @@ export const StringMapScalar = new GraphQLScalarType({
     // Validate all values are strings
     for (const [key, val] of Object.entries(obj)) {
       if (typeof val !== "string") {
-        throw new GraphQLError(
-          `StringMap values must be strings. Key "${key}" has value of type ${typeof val}`
-        );
+        throw new GraphQLError(`StringMap values must be strings. Key "${key}" has value of type ${typeof val}`);
       }
     }
 
@@ -40,9 +38,7 @@ export const StringMapScalar = new GraphQLScalarType({
     // Validate all values are strings
     for (const [key, val] of Object.entries(obj)) {
       if (typeof val !== "string") {
-        throw new GraphQLError(
-          `StringMap values must be strings. Key "${key}" has value of type ${typeof val}`
-        );
+        throw new GraphQLError(`StringMap values must be strings. Key "${key}" has value of type ${typeof val}`);
       }
     }
 
@@ -61,9 +57,7 @@ export const StringMapScalar = new GraphQLScalarType({
       const key = field.name.value;
 
       if (field.value.kind !== Kind.STRING) {
-        throw new GraphQLError(
-          `StringMap values must be strings. Key "${key}" has non-string value`
-        );
+        throw new GraphQLError(`StringMap values must be strings. Key "${key}" has non-string value`);
       }
 
       result[key] = field.value.value;

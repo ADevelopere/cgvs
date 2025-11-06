@@ -17,10 +17,7 @@ export async function POST(request: NextRequest) {
 
     if (!cronSecret) {
       logger.error("CRON_SECRET not configured");
-      return NextResponse.json(
-        { error: "Cron endpoint not configured" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Cron endpoint not configured" }, { status: 500 });
     }
 
     if (authHeader !== `Bearer ${cronSecret}`) {
@@ -65,10 +62,7 @@ export async function POST(request: NextRequest) {
       stack: error instanceof Error ? error.stack : undefined,
     });
 
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 

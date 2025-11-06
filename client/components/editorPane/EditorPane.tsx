@@ -12,16 +12,7 @@ function unFocus(doc: Document, win: Window) {
   }
 }
 
-import React, {
-  CSSProperties,
-  FC,
-  ReactNode,
-  TouchEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
+import React, { CSSProperties, FC, ReactNode, TouchEvent, useCallback, useEffect, useMemo, useRef } from "react";
 import EditorPaneResizer from "./EditorPaneResizer";
 import { Box } from "@mui/material";
 import { useAppTheme } from "@/client/contexts";
@@ -251,10 +242,7 @@ const EditorPane: FC<EditorPaneProps> = ({
       const containerLeft = containerRect.left;
       const containerRight = containerRect.right;
 
-      const boundedClientX = Math.min(
-        Math.max(clientX, containerLeft),
-        containerRight
-      );
+      const boundedClientX = Math.min(Math.max(clientX, containerLeft), containerRight);
 
       const rawDelta = boundedClientX - position;
       const deltaX = isRtl ? -rawDelta : rawDelta;
@@ -336,14 +324,11 @@ const EditorPane: FC<EditorPaneProps> = ({
       //   orientation === "horizontal" ? `${paneState.sizes[index]}px` : "100%",
       width: "100%",
       height: "100%",
-      flexBasis:
-        paneState.sizes[index] > 0 ? `${paneState.sizes[index]}px` : "0px",
+      flexBasis: paneState.sizes[index] > 0 ? `${paneState.sizes[index]}px` : "0px",
       flexGrow: 0,
       flexShrink: 0,
       display: paneState.sizes[index] > 0 ? "block" : "none",
-      transition: active
-        ? "none"
-        : "flex-basis 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+      transition: active ? "none" : "flex-basis 300ms cubic-bezier(0.4, 0, 0.2, 1)",
       ...basePaneStyle,
       ...(paneProps?.style ?? {}),
     }),
@@ -364,19 +349,10 @@ const EditorPane: FC<EditorPaneProps> = ({
   }, [handleMouseMove, onResizeEnd]);
 
   return (
-    <Box
-      ref={editorPaneRef}
-      className={className}
-      style={wrapperStyle}
-      id="editor-pane"
-    >
+    <Box ref={editorPaneRef} className={className} style={wrapperStyle} id="editor-pane">
       {/* First pane */}
       {firstPane.visible && paneState.sizes[0] > 0 && (
-        <Box
-          ref={pane1Ref}
-          className={`${paneClassName} first-pane`}
-          style={getPaneStyle(0, firstPane)}
-        >
+        <Box ref={pane1Ref} className={`${paneClassName} first-pane`} style={getPaneStyle(0, firstPane)}>
           {notNullChildren[0]}
         </Box>
       )}
@@ -402,11 +378,7 @@ const EditorPane: FC<EditorPaneProps> = ({
 
       {/* Middle pane */}
       {paneState.sizes[1] > 0 && (
-        <Box
-          ref={pane2Ref}
-          className={`${paneClassName} middle-pane`}
-          style={getPaneStyle(1, middlePane)}
-        >
+        <Box ref={pane2Ref} className={`${paneClassName} middle-pane`} style={getPaneStyle(1, middlePane)}>
           {notNullChildren[1]}
         </Box>
       )}
@@ -432,11 +404,7 @@ const EditorPane: FC<EditorPaneProps> = ({
 
       {/* Third pane */}
       {thirdPane.visible && paneState.sizes[2] > 0 && (
-        <Box
-          ref={pane3Ref}
-          className={`${paneClassName} third-pane`}
-          style={getPaneStyle(2, thirdPane)}
-        >
+        <Box ref={pane3Ref} className={`${paneClassName} third-pane`} style={getPaneStyle(2, thirdPane)}>
           {notNullChildren[2]}
         </Box>
       )}

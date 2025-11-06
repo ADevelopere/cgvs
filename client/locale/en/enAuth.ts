@@ -52,8 +52,7 @@ export const enAuth: AuthTranslations = {
 
   emailExists: "Email already exists.",
   changeEmail: "Change Email",
-  onlyEmailCharactersAllowed:
-    "Only English letters, numbers, and the following symbols are allowed: . _ - @",
+  onlyEmailCharactersAllowed: "Only English letters, numbers, and the following symbols are allowed: . _ - @",
 
   onlyArabicCharacters: "Please enter Arabic letters only",
   name: "Name",

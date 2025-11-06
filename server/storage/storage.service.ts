@@ -63,17 +63,9 @@ class StorageServiceFactory {
       );
     }
 
-    const validProviders: StorageProvider[] = [
-      "gcp",
-      "local",
-      "vercel",
-      "s3",
-      "r2",
-    ];
+    const validProviders: StorageProvider[] = ["gcp", "local", "vercel", "s3", "r2"];
     if (!validProviders.includes(provider)) {
-      throw new Error(
-        `Invalid STORAGE_PROVIDER: ${provider}. Options: ${validProviders.join(", ")}`
-      );
+      throw new Error(`Invalid STORAGE_PROVIDER: ${provider}. Options: ${validProviders.join(", ")}`);
     }
 
     return provider;
@@ -82,9 +74,7 @@ class StorageServiceFactory {
   /**
    * Create storage service instance based on provider
    */
-  private static async createService(
-    provider: StorageProvider
-  ): Promise<StorageService> {
+  private static async createService(provider: StorageProvider): Promise<StorageService> {
     switch (provider) {
       case "gcp":
         return await createGcpAdapter();
@@ -111,9 +101,7 @@ class StorageServiceFactory {
    */
   static getInstanceSync(): StorageService {
     if (!this.instance) {
-      throw new Error(
-        "Storage service not initialized. Call getStorageService() first."
-      );
+      throw new Error("Storage service not initialized. Call getStorageService() first.");
     }
     return this.instance;
   }

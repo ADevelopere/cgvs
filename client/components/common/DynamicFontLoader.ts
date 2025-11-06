@@ -13,11 +13,7 @@ function getFontFamilyString(fontItem: GoogleFontItem): string | null {
   return `${fontItem.family}:${variants}`;
 }
 
-const useDynamicFontLoader = ({
-  fontItem,
-}: {
-  fontItem: GoogleFontItem | null | undefined;
-}) => {
+const useDynamicFontLoader = ({ fontItem }: { fontItem: GoogleFontItem | null | undefined }) => {
   useEffect(() => {
     if (!fontItem) return;
 

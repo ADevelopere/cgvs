@@ -9,8 +9,7 @@ const data: GoogleFontItem[] = [
     version: "v18",
     lastModified: "2025-09-11",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/notosanswancho/v18/zrf-0GXXyfn6Fs0lH9P4cUubP0GBqAPopiRfKp8.ttf",
+      regular: "https://fonts.gstatic.com/s/notosanswancho/v18/zrf-0GXXyfn6Fs0lH9P4cUubP0GBqAPopiRfKp8.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",

@@ -27,15 +27,12 @@ interface RecipientVariableDataState {
 interface RecipientVariableDataActions {
   setSelectedGroup: (group: Graphql.TemplateRecipientGroup | null) => void;
   setSelectedGroupId: (groupId: number | null) => void;
-  setQueryParams: (
-    params: Partial<RecipientVariableDataState["queryParams"]>
-  ) => void;
+  setQueryParams: (params: Partial<RecipientVariableDataState["queryParams"]>) => void;
   setPagination: (limit: number, offset: number) => void;
   reset: () => void;
 }
 
-type RecipientVariableDataStoreState = RecipientVariableDataState &
-  RecipientVariableDataActions;
+type RecipientVariableDataStoreState = RecipientVariableDataState & RecipientVariableDataActions;
 
 // Persistence keys
 const SELECTED_GROUP_ID_KEY = "recipient-variable-data-selected-group-id";
@@ -51,25 +48,24 @@ const getPersistedGroupId = (): number | null => {
   }
 };
 
-const getPersistedQueryParams =
-  (): RecipientVariableDataState["queryParams"] => {
-    try {
-      const stored = sessionStorage.getItem(QUERY_PARAMS_KEY);
-      return stored
-        ? JSON.parse(stored)
-        : {
-            recipientGroupId: 0,
-            limit: 50,
-            offset: 0,
-          };
-    } catch {
-      return {
-        recipientGroupId: 0,
-        limit: 50,
-        offset: 0,
-      };
-    }
-  };
+const getPersistedQueryParams = (): RecipientVariableDataState["queryParams"] => {
+  try {
+    const stored = sessionStorage.getItem(QUERY_PARAMS_KEY);
+    return stored
+      ? JSON.parse(stored)
+      : {
+          recipientGroupId: 0,
+          limit: 50,
+          offset: 0,
+        };
+  } catch {
+    return {
+      recipientGroupId: 0,
+      limit: 50,
+      offset: 0,
+    };
+  }
+};
 
 const setPersistedGroupId = (groupId: number | null) => {
   if (groupId) {
@@ -79,9 +75,7 @@ const setPersistedGroupId = (groupId: number | null) => {
   }
 };
 
-const setPersistedQueryParams = (
-  params: RecipientVariableDataState["queryParams"]
-) => {
+const setPersistedQueryParams = (params: RecipientVariableDataState["queryParams"]) => {
   sessionStorage.setItem(QUERY_PARAMS_KEY, JSON.stringify(params));
 };
 
@@ -95,135 +89,110 @@ const initialState: RecipientVariableDataState = {
  * Zustand store for recipient variable data UI state
  * Persists query parameters and group selection to sessionStorage for restoration
  */
-export const useRecipientVariableDataStore =
-  create<RecipientVariableDataStoreState>()(
-    persist(
-      set => ({
-        ...initialState,
+export const useRecipientVariableDataStore = create<RecipientVariableDataStoreState>()(
+  persist(
+    set => ({
+      ...initialState,
 
-        setSelectedGroup: group =>
-          set(state => {
-            const groupId = group?.id || null;
-            setPersistedGroupId(groupId);
-            logger.info(
-              "🔍 useRecipientVariableDataStore: setSelectedGroup called with:",
-              group
-            );
-            return {
-              selectedGroup: group,
-              selectedGroupId: groupId,
-              queryParams: {
-                ...state.queryParams,
-                recipientGroupId: group?.id || 0,
-                offset: 0, // Reset to first page when group changes
-              },
-            };
-          }),
-
-        setSelectedGroupId: groupId =>
-          set(state => {
-            setPersistedGroupId(groupId);
-            logger.info(
-              "🔍 useRecipientVariableDataStore: setSelectedGroupId called with:",
-              groupId
-            );
-            return {
-              selectedGroupId: groupId,
-              queryParams: {
-                ...state.queryParams,
-                recipientGroupId: groupId || 0,
-                offset: 0, // Reset to first page when group changes
-              },
-            };
-          }),
-
-        setQueryParams: params =>
-          set(state => {
-            const newParams = {
-              ...state.queryParams,
-              ...params,
-            };
-            setPersistedQueryParams(newParams);
-            logger.info(
-              "🔍 useRecipientVariableDataStore: setQueryParams called with:",
-              params
-            );
-            logger.info(
-              "🔍 useRecipientVariableDataStore: new queryParams:",
-              newParams
-            );
-            return { queryParams: newParams };
-          }),
-
-        setPagination: (limit, offset) =>
-          set(state => {
-            const newParams = {
-              ...state.queryParams,
-              limit,
-              offset,
-            };
-            setPersistedQueryParams(newParams);
-            logger.info(
-              "🔍 useRecipientVariableDataStore: setPagination called with:",
-              { limit, offset }
-            );
-            return { queryParams: newParams };
-          }),
-
-        reset: () => {
-          setPersistedGroupId(null);
-          setPersistedQueryParams(initialState.queryParams);
-          logger.info("🔍 useRecipientVariableDataStore: reset called");
-          set(initialState);
-        },
-      }),
-      {
-        name: "recipient-variable-data-ui-store",
-        storage: createJSONStorage(() => sessionStorage),
-        // Persist query parameters and group selection for restoration
-        partialize: state => {
-          logger.info(
-            "💾 Persisting recipient variable data store state:",
-            JSON.stringify(state, null, 2)
-          );
+      setSelectedGroup: group =>
+        set(state => {
+          const groupId = group?.id || null;
+          setPersistedGroupId(groupId);
+          logger.info("🔍 useRecipientVariableDataStore: setSelectedGroup called with:", group);
           return {
-            selectedGroupId: state.selectedGroupId,
-            queryParams: state.queryParams,
+            selectedGroup: group,
+            selectedGroupId: groupId,
+            queryParams: {
+              ...state.queryParams,
+              recipientGroupId: group?.id || 0,
+              offset: 0, // Reset to first page when group changes
+            },
           };
-        },
-        // Custom merge to handle state restoration
-        merge: (persistedState, currentState) => {
-          const typedPersistedState =
-            persistedState as Partial<RecipientVariableDataState>;
+        }),
 
-          logger.info(
-            "🔄 Merging recipient variable data store state:",
-            JSON.stringify(persistedState, null, 2),
-            JSON.stringify(currentState, null, 2)
-          );
-
-          // Deep merge the queryParams to preserve nested objects
-          const mergedQueryParams = typedPersistedState?.queryParams
-            ? {
-                ...currentState.queryParams,
-                ...typedPersistedState.queryParams,
-              }
-            : currentState.queryParams;
-
-          const mergedState = {
-            ...currentState,
-            selectedGroupId:
-              typedPersistedState?.selectedGroupId ||
-              currentState.selectedGroupId,
-            queryParams: mergedQueryParams,
+      setSelectedGroupId: groupId =>
+        set(state => {
+          setPersistedGroupId(groupId);
+          logger.info("🔍 useRecipientVariableDataStore: setSelectedGroupId called with:", groupId);
+          return {
+            selectedGroupId: groupId,
+            queryParams: {
+              ...state.queryParams,
+              recipientGroupId: groupId || 0,
+              offset: 0, // Reset to first page when group changes
+            },
           };
+        }),
 
-          logger.info(
-            "✅ Final merged state:",
-            JSON.stringify(mergedState, null, 2)
-          );
-          return mergedState;
-        },
-      }
-    )
-  );
+      setQueryParams: params =>
+        set(state => {
+          const newParams = {
+            ...state.queryParams,
+            ...params,
+          };
+          setPersistedQueryParams(newParams);
+          logger.info("🔍 useRecipientVariableDataStore: setQueryParams called with:", params);
+          logger.info("🔍 useRecipientVariableDataStore: new queryParams:", newParams);
+          return { queryParams: newParams };
+        }),
+
+      setPagination: (limit, offset) =>
+        set(state => {
+          const newParams = {
+            ...state.queryParams,
+            limit,
+            offset,
+          };
+          setPersistedQueryParams(newParams);
+          logger.info("🔍 useRecipientVariableDataStore: setPagination called with:", { limit, offset });
+          return { queryParams: newParams };
+        }),
+
+      reset: () => {
+        setPersistedGroupId(null);
+        setPersistedQueryParams(initialState.queryParams);
+        logger.info("🔍 useRecipientVariableDataStore: reset called");
+        set(initialState);
+      },
+    }),
+    {
+      name: "recipient-variable-data-ui-store",
+      storage: createJSONStorage(() => sessionStorage),
+      // Persist query parameters and group selection for restoration
+      partialize: state => {
+        logger.info("💾 Persisting recipient variable data store state:", JSON.stringify(state, null, 2));
+        return {
+          selectedGroupId: state.selectedGroupId,
+          queryParams: state.queryParams,
+        };
+      },
+      // Custom merge to handle state restoration
+      merge: (persistedState, currentState) => {
+        const typedPersistedState = persistedState as Partial<RecipientVariableDataState>;
+
+        logger.info(
+          "🔄 Merging recipient variable data store state:",
+          JSON.stringify(persistedState, null, 2),
+          JSON.stringify(currentState, null, 2)
+        );
+
+        // Deep merge the queryParams to preserve nested objects
+        const mergedQueryParams = typedPersistedState?.queryParams
+          ? {
+              ...currentState.queryParams,
+              ...typedPersistedState.queryParams,
+            }
+          : currentState.queryParams;
+
+        const mergedState = {
+          ...currentState,
+          selectedGroupId: typedPersistedState?.selectedGroupId || currentState.selectedGroupId,
+          queryParams: mergedQueryParams,
+        };
+
+        logger.info("✅ Final merged state:", JSON.stringify(mergedState, null, 2));
+        return mergedState;
+      },
+    }
+  )
+);

@@ -1,10 +1,6 @@
 import { TemplateCategoryPothosDefintion } from "./templateCategory.types";
 import { PageInfo } from "./pagination.types";
-import {
-  templates,
-  templatesConfigs,
-  templatesConfigsKeyEnum,
-} from "@/server/db/schema";
+import { templates, templatesConfigs, templatesConfigsKeyEnum } from "@/server/db/schema";
 import { OrderSortDirection } from "@/lib/enum";
 
 export type TemplateEntity = typeof templates.$inferSelect;
@@ -45,8 +41,7 @@ export type PaginatedTemplatesResponse = {
   pageInfo: PageInfo;
 };
 
-export type TemplatesConfigsKey =
-  (typeof templatesConfigsKeyEnum.enumValues)[number];
+export type TemplatesConfigsKey = (typeof templatesConfigsKeyEnum.enumValues)[number];
 export const TemplatesConfigsKeyValues = templatesConfigsKeyEnum.enumValues;
 
 export type TemplatesConfigSelectType = typeof templatesConfigs.$inferSelect;

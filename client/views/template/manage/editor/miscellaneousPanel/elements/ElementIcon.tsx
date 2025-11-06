@@ -21,11 +21,7 @@ const elementIconMap: Record<ElementType, ElementIcon> = {
   [ElementType.Text]: { icon: MuiIcons.TextFields, color: "#512da8" },
 };
 
-export const CertificateElementIcon: React.FC<CertificateElementIconProps> = ({
-  type,
-  style,
-}) => {
-  const { icon: IconComponent, color } =
-    elementIconMap[type] || elementIconMap[ElementType.Text];
+export const CertificateElementIcon: React.FC<CertificateElementIconProps> = ({ type, style }) => {
+  const { icon: IconComponent, color } = elementIconMap[type] || elementIconMap[ElementType.Text];
   return <IconComponent style={{ ...style, color }} />;
 };

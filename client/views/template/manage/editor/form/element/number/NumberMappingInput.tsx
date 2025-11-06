@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Grid,
-  IconButton,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid, IconButton, TextField, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import { useAppTranslation } from "@/client/locale";
@@ -18,12 +11,7 @@ export type NumberMappingInputProps = {
   disabled?: boolean;
 };
 
-export const NumberMappingInput = ({
-  value,
-  onChange,
-  errors = {},
-  disabled = false,
-}: NumberMappingInputProps) => {
+export const NumberMappingInput = ({ value, onChange, errors = {}, disabled = false }: NumberMappingInputProps) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
 
   const entries = Object.entries(value);
@@ -57,12 +45,7 @@ export const NumberMappingInput = ({
       <Typography variant="subtitle2" gutterBottom>
         {strings.numberElement.mappingLabel}
       </Typography>
-      <Typography
-        variant="caption"
-        color="text.secondary"
-        display="block"
-        sx={{ mb: 2 }}
-      >
+      <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
         {strings.numberElement.mappingDescription}
       </Typography>
 
@@ -93,29 +76,15 @@ export const NumberMappingInput = ({
               slotProps={{ htmlInput: { min: 0, step: 1 } }}
             />
           </Grid>
-          <Grid
-            size={{ xs: 12, sm: 2 }}
-            sx={{ display: "flex", alignItems: "center" }}
-          >
-            <IconButton
-              onClick={() => handleRemoveEntry(locale)}
-              disabled={disabled}
-              color="error"
-              size="small"
-            >
+          <Grid size={{ xs: 12, sm: 2 }} sx={{ display: "flex", alignItems: "center" }}>
+            <IconButton onClick={() => handleRemoveEntry(locale)} disabled={disabled} color="error" size="small">
               <DeleteIcon />
             </IconButton>
           </Grid>
         </Grid>
       ))}
 
-      <Button
-        startIcon={<AddIcon />}
-        onClick={handleAddEntry}
-        disabled={disabled}
-        variant="outlined"
-        size="small"
-      >
+      <Button startIcon={<AddIcon />} onClick={handleAddEntry} disabled={disabled} variant="outlined" size="small">
         {strings.numberElement.addLocaleButton}
       </Button>
     </Box>

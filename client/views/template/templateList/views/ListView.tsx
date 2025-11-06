@@ -45,18 +45,14 @@ const ListView: React.FC<ListViewProps> = ({
         <TableHead>
           <TableRow>
             <TableCell sx={{ width: isMobile ? "30%" : "5%" }}></TableCell>
-            <TableCell sx={{ width: isMobile ? "50%" : "20%" }}>
-              {strings.columnName}
-            </TableCell>
+            <TableCell sx={{ width: isMobile ? "50%" : "20%" }}>{strings.columnName}</TableCell>
             {!isMobile && (
               <>
                 <TableCell width="35%">{strings.columnDescription}</TableCell>
                 <TableCell width="20%">{strings.columnCreated}</TableCell>
               </>
             )}
-            <TableCell sx={{ width: isMobile ? "20%" : "15%" }}>
-              {strings.columnActions}
-            </TableCell>
+            <TableCell sx={{ width: isMobile ? "20%" : "15%" }}>{strings.columnActions}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

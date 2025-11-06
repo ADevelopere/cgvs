@@ -2,11 +2,7 @@ import { db } from "@/server/db/drizzleDb";
 import { students, templateRecipientGroupItems } from "@/server/db/schema";
 import { eq, inArray, sql, notInArray } from "drizzle-orm";
 import * as Types from "@/server/types";
-import {
-  StudentFilterUtils,
-  StudentUtils,
-  PaginationUtils,
-} from "@/server/utils";
+import { StudentFilterUtils, StudentUtils, PaginationUtils } from "@/server/utils";
 import { queryWithPagination } from "@/server/db/query.extentions";
 import { RecipientGroupRepository } from "./recipientGroup.repository";
 import { PgSelect } from "drizzle-orm/pg-core";
@@ -27,17 +23,12 @@ const _processStudentQuery = async <T extends PgSelect>(
   const total = (results[0] as { total: number })?.total ?? 0;
   const items: Types.StudentDto[] = results
     .map(r => {
-      const s: Types.StudentEntity = (r as { student: Types.StudentEntity })
-        .student;
+      const s: Types.StudentEntity = (r as { student: Types.StudentEntity }).student;
       return StudentUtils.mapEntityToDto(s);
     })
     .filter(s => s !== null);
 
-  const pageInfo = PaginationUtils.buildPageInfoFromArgs(
-    paginationArgs,
-    items.length,
-    total
-  );
+  const pageInfo = PaginationUtils.buildPageInfoFromArgs(paginationArgs, items.length, total);
 
   return {
     data: items,
@@ -45,10 +36,7 @@ const _processStudentQuery = async <T extends PgSelect>(
   };
 };
 
-const _getStudentsByGroupQueryBase = (
-  recipientGroupId: number,
-  isInGroup: boolean
-) => {
+const _getStudentsByGroupQueryBase = (recipientGroupId: number, isInGroup: boolean) => {
   const studentIdsInGroupSubQuery = db
     .select({ studentId: templateRecipientGroupItems.studentId })
     .from(templateRecipientGroupItems)
@@ -68,17 +56,13 @@ const _getStudentsByGroupQueryBase = (
     .$dynamic();
 };
 export namespace StudentRepository {
-  export const findById = async (
-    id: number
-  ): Promise<Types.StudentEntity | null | undefined> => {
+  export const findById = async (id: number): Promise<Types.StudentEntity | null | undefined> => {
     return await db.query.students.findFirst({
       where: { id: id },
     });
   };
 
-  export const create = async (
-    input: Types.StudentCreateInput
-  ): Promise<Types.StudentEntity> => {
+  export const create = async (input: Types.StudentCreateInput): Promise<Types.StudentEntity> => {
     await StudentUtils.validateName(input.name).then(err => {
       if (err) throw new Error(err);
     });
@@ -94,10 +78,7 @@ export namespace StudentRepository {
       updatedAt: new Date(),
     };
     try {
-      const [createdStudent] = await db
-        .insert(students)
-        .values(insertInput)
-        .returning();
+      const [createdStudent] = await db.insert(students).values(insertInput).returning();
       if (!createdStudent) {
         throw new Error("Failed to create student");
       }
@@ -107,30 +88,21 @@ export namespace StudentRepository {
     }
   };
 
-  export const createList = async (
-    input: Types.StudentCreateInput[]
-  ): Promise<Types.StudentEntity[]> => {
+  export const createList = async (input: Types.StudentCreateInput[]): Promise<Types.StudentEntity[]> => {
     if (input.length === 0) return [];
 
     try {
       const result = await Promise.all(input.map(item => create(item)));
       return result;
     } catch (error) {
-      throw new Error(
-        `Failed to create students: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
+      throw new Error(`Failed to create students: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   };
 
-  export const loadByIds = async (
-    ids: number[]
-  ): Promise<(Types.StudentDto | Error)[]> => {
+  export const loadByIds = async (ids: number[]): Promise<(Types.StudentDto | Error)[]> => {
     if (ids.length === 0) return [];
 
-    const foundStudents = await db
-      .select()
-      .from(students)
-      .where(inArray(students.id, ids));
+    const foundStudents = await db.select().from(students).where(inArray(students.id, ids));
 
     const studentList: (Types.StudentDto | Error)[] = ids.map(id => {
       const s = foundStudents.find(c => c.id === id);
@@ -145,18 +117,14 @@ export namespace StudentRepository {
   };
 
   export const allExistsByIds = async (ids: number[]): Promise<boolean> => {
-    return (
-      (await db.$count(students, inArray(students.id, ids))) === ids.length
-    );
+    return (await db.$count(students, inArray(students.id, ids))) === ids.length;
   };
 
   export const countAllStudents = async (): Promise<number> => {
     return await db.$count(students);
   };
 
-  export const deleteById = async (
-    id: number
-  ): Promise<Types.StudentEntity> => {
+  export const deleteById = async (id: number): Promise<Types.StudentEntity> => {
     const existingStudent = await findById(id);
     if (!existingStudent) {
       throw new Error(`Student ${id} not found`);
@@ -165,9 +133,7 @@ export namespace StudentRepository {
     return existingStudent;
   };
 
-  export const partiallyUpdate = async (
-    input: Types.PartialStudentUpdateInput
-  ): Promise<Types.StudentEntity> => {
+  export const partiallyUpdate = async (input: Types.PartialStudentUpdateInput): Promise<Types.StudentEntity> => {
     const existingStudent = await findById(input.id);
     if (!existingStudent) {
       throw new Error(`Student ${input.id} not found`);
@@ -182,34 +148,17 @@ export namespace StudentRepository {
     const updateInput: Types.StudentEntityInput = {
       id: input.id,
       name: input.name ?? existingStudent.name,
-      email:
-        input.email === null
-          ? null
-          : (input.email?.value ?? existingStudent.email),
-      phoneNumber:
-        input.phoneNumber === null
-          ? null
-          : (input.phoneNumber?.number ?? existingStudent.phoneNumber),
-      dateOfBirth:
-        input.dateOfBirth === null
-          ? null
-          : (input.dateOfBirth ?? existingStudent.dateOfBirth),
-      gender:
-        input.gender === null ? null : (input.gender ?? existingStudent.gender),
-      nationality:
-        input.nationality === null
-          ? null
-          : (input.nationality ?? existingStudent.nationality),
+      email: input.email === null ? null : (input.email?.value ?? existingStudent.email),
+      phoneNumber: input.phoneNumber === null ? null : (input.phoneNumber?.number ?? existingStudent.phoneNumber),
+      dateOfBirth: input.dateOfBirth === null ? null : (input.dateOfBirth ?? existingStudent.dateOfBirth),
+      gender: input.gender === null ? null : (input.gender ?? existingStudent.gender),
+      nationality: input.nationality === null ? null : (input.nationality ?? existingStudent.nationality),
       createdAt: existingStudent.createdAt,
       updatedAt: new Date(),
     };
 
     try {
-      const [updatedStudent] = await db
-        .update(students)
-        .set(updateInput)
-        .where(eq(students.id, input.id))
-        .returning();
+      const [updatedStudent] = await db.update(students).set(updateInput).where(eq(students.id, input.id)).returning();
 
       if (!updatedStudent) {
         throw new Error(`Failed to update student with ID ${input.id}.`);
@@ -233,12 +182,7 @@ export namespace StudentRepository {
       .from(students)
       .$dynamic();
 
-    return await _processStudentQuery(
-      baseQuery,
-      paginationArgs,
-      orderBy,
-      filters
-    );
+    return await _processStudentQuery(baseQuery, paginationArgs, orderBy, filters);
   };
 
   export const searchStudentsRecipientInGroup = async (
@@ -254,12 +198,7 @@ export namespace StudentRepository {
     });
 
     const baseQuery = _getStudentsByGroupQueryBase(recipientGroupId, true);
-    return await _processStudentQuery(
-      baseQuery,
-      paginationArgs,
-      orderBy,
-      filters
-    );
+    return await _processStudentQuery(baseQuery, paginationArgs, orderBy, filters);
   };
 
   export const searchStudentsNotInRecipientGroup = async (
@@ -275,11 +214,6 @@ export namespace StudentRepository {
     });
 
     const baseQuery = _getStudentsByGroupQueryBase(recipientGroupId, false);
-    return await _processStudentQuery(
-      baseQuery,
-      paginationArgs,
-      orderBy,
-      filters
-    );
+    return await _processStudentQuery(baseQuery, paginationArgs, orderBy, filters);
   };
 }

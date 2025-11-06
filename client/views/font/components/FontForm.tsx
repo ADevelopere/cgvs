@@ -22,12 +22,7 @@ interface FontFormProps {
   disabled?: boolean;
 }
 
-export const FontForm: React.FC<FontFormProps> = ({
-  initialData,
-  onSubmit,
-  onCancel,
-  disabled = false,
-}) => {
+export const FontForm: React.FC<FontFormProps> = ({ initialData, onSubmit, onCancel, disabled = false }) => {
   const { fontManagementTranslations: strings } = useAppTranslation();
 
   const [formData, setFormData] = useState<FontFormData>({
@@ -103,9 +98,7 @@ export const FontForm: React.FC<FontFormProps> = ({
             fullWidth
             size="small"
             value={formData.name}
-            onChange={e =>
-              setFormData(prev => ({ ...prev, name: e.target.value }))
-            }
+            onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
             placeholder={strings.fontNamePlaceholder}
             disabled={disabled || isSubmitting}
             error={Boolean(errors.name)}
@@ -124,12 +117,8 @@ export const FontForm: React.FC<FontFormProps> = ({
               disabled={disabled || isSubmitting}
             />
           </MUI.Box>
-          {errors.locale && (
-            <MUI.FormHelperText error>{errors.locale}</MUI.FormHelperText>
-          )}
-          <MUI.FormHelperText>
-            {strings.supportedLocalesHelper}
-          </MUI.FormHelperText>
+          {errors.locale && <MUI.FormHelperText error>{errors.locale}</MUI.FormHelperText>}
+          <MUI.FormHelperText>{strings.supportedLocalesHelper}</MUI.FormHelperText>
         </MUI.Box>
 
         {/* Font File */}
@@ -150,9 +139,7 @@ export const FontForm: React.FC<FontFormProps> = ({
               disabled={disabled || isSubmitting}
             />
           </MUI.Box>
-          {errors.file && (
-            <MUI.FormHelperText error>{errors.file}</MUI.FormHelperText>
-          )}
+          {errors.file && <MUI.FormHelperText error>{errors.file}</MUI.FormHelperText>}
         </MUI.Box>
 
         {/* Font Preview */}
@@ -160,10 +147,7 @@ export const FontForm: React.FC<FontFormProps> = ({
           <MUI.Box>
             <MUI.FormLabel>{strings.preview}</MUI.FormLabel>
             <MUI.Box sx={{ mt: 1 }}>
-              <FontPreview
-                fontName={formData.name || strings.preview}
-                fontUrl={selectedFile.fileUrl}
-              />
+              <FontPreview fontName={formData.name || strings.preview} fontUrl={selectedFile.fileUrl} />
             </MUI.Box>
           </MUI.Box>
         )}
@@ -171,19 +155,10 @@ export const FontForm: React.FC<FontFormProps> = ({
         {/* Actions */}
         <MUI.Divider />
         <MUI.Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-          <MUI.Button
-            type="button"
-            variant="outlined"
-            onClick={onCancel}
-            disabled={isSubmitting}
-          >
+          <MUI.Button type="button" variant="outlined" onClick={onCancel} disabled={isSubmitting}>
             {strings.cancel}
           </MUI.Button>
-          <MUI.Button
-            type="submit"
-            variant="contained"
-            disabled={disabled || isSubmitting}
-          >
+          <MUI.Button type="submit" variant="contained" disabled={disabled || isSubmitting}>
             {isSubmitting ? strings.saving : strings.createFont}
           </MUI.Button>
         </MUI.Box>

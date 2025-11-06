@@ -3,9 +3,7 @@ import { StudentsOrderByColumn } from "@/client/graphql/generated/gql/graphql";
 /**
  * Map column IDs to GraphQL column names for sorting
  */
-export const mapColumnIdToGraphQLColumn = (
-  columnId: string
-): StudentsOrderByColumn | null => {
+export const mapColumnIdToGraphQLColumn = (columnId: string): StudentsOrderByColumn | null => {
   const columnMap: Record<string, StudentsOrderByColumn> = {
     id: StudentsOrderByColumn.Id,
     name: StudentsOrderByColumn.Name,

@@ -3,11 +3,7 @@ import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
 import { createGraphQLContext } from "@/server/graphql/gqlContextFactory";
 import { NextRequest, NextResponse } from "next/server";
-import {
-  checkRateLimit,
-  getClientIdentifier,
-  graphqlRateLimiter,
-} from "@/server/lib/ratelimit";
+import { checkRateLimit, getClientIdentifier, graphqlRateLimiter } from "@/server/lib/ratelimit";
 import logger from "@/server/lib/logger";
 import { ApolloCacheAdapter } from "@/server/services/cache";
 // import { ApolloServerPluginUsageReporting } from "@apollo/server/plugin/usageReporting";
@@ -32,11 +28,7 @@ const server = new ApolloServer({
   includeStacktraceInErrorResponses: !isProduction,
   logger: logger,
   csrfPrevention: {
-    requestHeaders: [
-      "x-apollo-operation-name",
-      "apollo-require-preflight",
-      "x-csrf-token",
-    ],
+    requestHeaders: ["x-apollo-operation-name", "apollo-require-preflight", "x-csrf-token"],
   },
   introspection: !isProduction,
   persistedQueries: {
@@ -90,10 +82,7 @@ async function withRateLimit(
   const identifier = getClientIdentifier(request);
 
   // Check rate limit
-  const { success, limit, remaining, reset } = await checkRateLimit(
-    identifier,
-    graphqlRateLimiter
-  );
+  const { success, limit, remaining, reset } = await checkRateLimit(identifier, graphqlRateLimiter);
 
   if (!success) {
     logger.warn(`Rate limit exceeded for ${identifier}`);

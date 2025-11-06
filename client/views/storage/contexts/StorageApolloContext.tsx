@@ -15,18 +15,14 @@ type StorageApolloQueries = {
   fetchDirectoryChildren: (
     variables: Graphql.DirectoryChildrenQueryVariables
   ) => Promise<ApolloClient.QueryResult<Graphql.DirectoryChildrenQuery>>;
-  getFileInfo: (
-    variables: Graphql.FileInfoQueryVariables
-  ) => Promise<ApolloClient.QueryResult<Graphql.FileInfoQuery>>;
+  getFileInfo: (variables: Graphql.FileInfoQueryVariables) => Promise<ApolloClient.QueryResult<Graphql.FileInfoQuery>>;
   getFolderInfo: (
     variables: Graphql.FolderInfoQueryVariables
   ) => Promise<ApolloClient.QueryResult<Graphql.FolderInfoQuery>>;
   getStorageStats: (
     variables: Graphql.StorageStatsQueryVariables
   ) => Promise<ApolloClient.QueryResult<Graphql.StorageStatsQuery>>;
-  listFiles: (
-    variables: Graphql.ListFilesQueryVariables
-  ) => Promise<ApolloClient.QueryResult<Graphql.ListFilesQuery>>;
+  listFiles: (variables: Graphql.ListFilesQueryVariables) => Promise<ApolloClient.QueryResult<Graphql.ListFilesQuery>>;
   searchFiles: (
     variables: Graphql.SearchFilesQueryVariables
   ) => Promise<ApolloClient.QueryResult<Graphql.SearchFilesQuery>>;
@@ -35,41 +31,23 @@ type StorageApolloQueries = {
 type StorageApolloContextValue = StorageApolloQueries;
 
 // Create the context
-const StorageApolloContext = createContext<StorageApolloContextValue | null>(
-  null
-);
+const StorageApolloContext = createContext<StorageApolloContextValue | null>(null);
 
 // this context is needed to avoid fetch abort erros
-export const StorageApolloProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const checkFileUsage = useLazyQueryWrapper(
-    useLazyQuery(Document.fileUsageQueryDocument)
-  );
+export const StorageApolloProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const checkFileUsage = useLazyQueryWrapper(useLazyQuery(Document.fileUsageQueryDocument));
 
-  const fetchDirectoryChildren = useLazyQueryWrapper(
-    useLazyQuery(Document.directoryChildrenQueryDocument)
-  );
+  const fetchDirectoryChildren = useLazyQueryWrapper(useLazyQuery(Document.directoryChildrenQueryDocument));
 
-  const getFileInfo = useLazyQueryWrapper(
-    useLazyQuery(Document.fileInfoQueryDocument)
-  );
+  const getFileInfo = useLazyQueryWrapper(useLazyQuery(Document.fileInfoQueryDocument));
 
-  const getFolderInfo = useLazyQueryWrapper(
-    useLazyQuery(Document.folderInfoQueryDocument)
-  );
+  const getFolderInfo = useLazyQueryWrapper(useLazyQuery(Document.folderInfoQueryDocument));
 
-  const getStorageStats = useLazyQueryWrapper(
-    useLazyQuery(Document.storageStatsQueryDocument)
-  );
+  const getStorageStats = useLazyQueryWrapper(useLazyQuery(Document.storageStatsQueryDocument));
 
-  const listFiles = useLazyQueryWrapper(
-    useLazyQuery(Document.listFilesQueryDocument)
-  );
+  const listFiles = useLazyQueryWrapper(useLazyQuery(Document.listFilesQueryDocument));
 
-  const searchFiles = useLazyQueryWrapper(
-    useLazyQuery(Document.searchFilesQueryDocument)
-  );
+  const searchFiles = useLazyQueryWrapper(useLazyQuery(Document.searchFilesQueryDocument));
 
   const queries = useMemo(
     () => ({
@@ -81,33 +59,19 @@ export const StorageApolloProvider: React.FC<{ children: ReactNode }> = ({
       listFiles,
       searchFiles,
     }),
-    [
-      checkFileUsage,
-      fetchDirectoryChildren,
-      getFileInfo,
-      getFolderInfo,
-      getStorageStats,
-      listFiles,
-      searchFiles,
-    ]
+    [checkFileUsage, fetchDirectoryChildren, getFileInfo, getFolderInfo, getStorageStats, listFiles, searchFiles]
   );
 
   const value = useMemo(() => ({ ...queries }), [queries]);
 
-  return (
-    <StorageApolloContext.Provider value={value}>
-      {children}
-    </StorageApolloContext.Provider>
-  );
+  return <StorageApolloContext.Provider value={value}>{children}</StorageApolloContext.Provider>;
 };
 
 // Hook to use the context
 export const useStorageApollo = (): StorageApolloContextValue => {
   const context = useContext(StorageApolloContext);
   if (!context) {
-    throw new Error(
-      "useStorageApollo must be used within a StorageApolloProvider"
-    );
+    throw new Error("useStorageApollo must be used within a StorageApolloProvider");
   }
   return context;
 };

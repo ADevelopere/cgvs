@@ -6,10 +6,7 @@ import { useRecipientStore } from "./stores/useRecipientStore";
 import { useRecipientOperations } from "./hooks/useRecipientOperations";
 import { recipientsByGroupIdFilteredQueryDocument } from "./hooks/recipient.documents";
 import RecipientTable from "./RecipientTable";
-import {
-  RecipientTableFooterEnd,
-  RecipientTableFooterStart,
-} from "./components/RecipientTableFooter";
+import { RecipientTableFooterEnd, RecipientTableFooterStart } from "./components/RecipientTableFooter";
 import { useAppTranslation } from "@/client/locale";
 import { CountryCode, Gender } from "@/client/graphql/generated/gql/graphql";
 
@@ -33,18 +30,12 @@ type RecipientInGroupTableData = {
   updatedAt?: Date | null;
 };
 
-const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
-  templateId,
-  isMobile,
-}) => {
+const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({ templateId, isMobile }) => {
   const store = useRecipientStore();
   const operations = useRecipientOperations(templateId);
   const { recipientTranslations: strings } = useAppTranslation();
   // Get query variables from store
-  const {
-    recipientsByGroupIdFilteredQuery: studentsInGroupQueryParams,
-    selectedGroup,
-  } = store;
+  const { recipientsByGroupIdFilteredQuery: studentsInGroupQueryParams, selectedGroup } = store;
 
   // Fetch students directly with useQuery - Apollo handles refetch automatically
   const { data, loading } = useQuery(recipientsByGroupIdFilteredQueryDocument, {
@@ -86,16 +77,8 @@ const StudentsInGroupTable: React.FC<StudentsInGroupTableProps> = ({
       onPageChange={operations.onPageChangeInGroup}
       onRowsPerPageChange={operations.onRowsPerPageChangeInGroup}
       selectedRowIds={store.selectedRecipientIdsInGroup}
-      onSelectionChange={ids =>
-        store.setSelectedRecipientIdsInGroup(ids.map(Number))
-      }
-      footerStartContent={
-        <RecipientTableFooterStart
-          tabType="manage"
-          isMobile={isMobile}
-          isLoading={loading}
-        />
-      }
+      onSelectionChange={ids => store.setSelectedRecipientIdsInGroup(ids.map(Number))}
+      footerStartContent={<RecipientTableFooterStart tabType="manage" isMobile={isMobile} isLoading={loading} />}
       footerEndContent={
         <RecipientTableFooterEnd
           mode="remove"

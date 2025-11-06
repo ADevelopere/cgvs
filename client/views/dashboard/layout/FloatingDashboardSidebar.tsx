@@ -8,9 +8,7 @@ interface FloatingDashboardSidebarProps {
   headerHeight: number;
 }
 
-export const FloatingDashboardSidebar: React.FC<
-  FloatingDashboardSidebarProps
-> = ({ open, onClose, headerHeight }) => {
+export const FloatingDashboardSidebar: React.FC<FloatingDashboardSidebarProps> = ({ open, onClose, headerHeight }) => {
   const theme = useTheme();
 
   return (

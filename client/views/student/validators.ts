@@ -14,10 +14,7 @@ export const ARABIC_REGEX = /^[\u0621-\u064A ]+$/;
  * @param {boolean} isRequired - Whether the name is required.
  * @returns {boolean} - True if the name is valid, false otherwise.
  */
-export const isArabicNameValid = (
-  name: string,
-  isRequired: boolean
-): boolean => {
+export const isArabicNameValid = (name: string, isRequired: boolean): boolean => {
   if (name.trim().length === 0) {
     return !isRequired;
   }
@@ -32,11 +29,7 @@ export const isArabicNameValid = (
  * @param {Calendar} calendar - The calendar type (Hijri or Gregorian).
  * @returns {boolean} - True if the date is valid, false otherwise.
  */
-export const isValidDate = (
-  date: moment.Moment,
-  maxDate: moment.Moment,
-  calendar: Calendar
-): boolean => {
+export const isValidDate = (date: moment.Moment, maxDate: moment.Moment, calendar: Calendar): boolean => {
   maxDate.add(6, "months");
 
   if (calendar === Calendar.Hijri) {
@@ -50,9 +43,7 @@ export const isValidDate = (
 
 export const isValidCountryCode = (countryCode: string): boolean => {
   if (!countryCode) return false;
-  return countries.some(
-    country => country.code.toLowerCase() === countryCode.toLowerCase()
-  );
+  return countries.some(country => country.code.toLowerCase() === countryCode.toLowerCase());
 };
 
 // Function to validate country
@@ -157,9 +148,7 @@ export const validateGender = (value: string | undefined): string | null => {
   }
 
   const validGenders = ["MALE", "FEMALE", "OTHER"];
-  return validGenders.includes(value.toUpperCase())
-    ? null
-    : "Invalid gender value";
+  return validGenders.includes(value.toUpperCase()) ? null : "Invalid gender value";
 };
 
 /**
@@ -167,9 +156,7 @@ export const validateGender = (value: string | undefined): string | null => {
  * @param value - The country code to validate
  * @returns null if valid, error message if invalid
  */
-export const validateNationality = (
-  value: CountryCode | undefined
-): string | null => {
+export const validateNationality = (value: CountryCode | undefined): string | null => {
   if (!value) {
     return null; // Optional field
   }
@@ -182,9 +169,7 @@ export const validateNationality = (
  * @param value - The phone number to validate
  * @returns null if valid, error message if invalid
  */
-export const validatePhoneNumber = (
-  value: string | null | undefined
-): string | null => {
+export const validatePhoneNumber = (value: string | null | undefined): string | null => {
   if (!value || !value.trim()) {
     return null; // Optional field
   }

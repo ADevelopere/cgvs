@@ -9,10 +9,7 @@ import { fontsQueryDocument } from "@/client/views/font/hooks/font.documents";
 import { validateBaseElementField } from "../../form/element/base/cretElementBaseValidator";
 import { validateTextPropsField } from "../../form/element/textProps/textPropsValidator";
 import { validateNumberDataSource, validateNumberProps } from "../../form/element/number/numberValidators";
-import type {
-  NumberElementFormState,
-  NumberElementFormErrors,
-} from "../../form/element/number/types";
+import type { NumberElementFormState, NumberElementFormErrors } from "../../form/element/number/types";
 import type { UpdateBaseElementFn } from "../../form/element/base";
 import type { UpdateTextPropsFn } from "../../form/element/textProps";
 import { logger } from "@/client/lib/logger";
@@ -26,7 +23,7 @@ interface CreateNumberElementWrapperProps {
   templateId: number;
   // Pre-configured data source
   initialNumberVariable?: { variableId: number };
-  // 
+  //
   initialElementName: string;
 
   // Dialog mode (for compact layout)
@@ -38,20 +35,19 @@ interface CreateNumberElementWrapperProps {
 // COMPONENT
 // ============================================================================
 
-export const CreateNumberElementWrapper: React.FC<
-  CreateNumberElementWrapperProps
-> = ({
+export const CreateNumberElementWrapper: React.FC<CreateNumberElementWrapperProps> = ({
   templateId,
   initialNumberVariable,
   initialElementName,
   open,
   onClose,
 }) => {
-    const { templateEditorTranslations: {addNodePanel: t} } = useAppTranslation();
-  
+  const {
+    templateEditorTranslations: { addNodePanel: t },
+  } = useAppTranslation();
+
   // Get context data
-  const { numberVariables, config } =
-    useCertificateElementStates();
+  const { numberVariables, config } = useCertificateElementStates();
   const language = config.state.language;
 
   // Query fonts
@@ -175,7 +171,7 @@ export const CreateNumberElementWrapper: React.FC<
       }));
 
       const error = dataSourceValidator({ key: "dataSource", value: dataSource });
-      
+
       setErrors(prev => ({
         ...prev,
         dataSource: error?.dataSource || {},
@@ -203,7 +199,7 @@ export const CreateNumberElementWrapper: React.FC<
         ...prev,
         numberProps: {
           ...prev.numberProps,
-          mapping: (typeof error === "object" && error !== null) ? error : undefined,
+          mapping: typeof error === "object" && error !== null ? error : undefined,
         },
       }));
     },

@@ -62,20 +62,12 @@ export const validateNumberVariable = (
   }
 
   // Check minimum value
-  if (
-    variable.minValue !== null &&
-    variable.minValue !== undefined &&
-    numValue < variable.minValue
-  ) {
+  if (variable.minValue !== null && variable.minValue !== undefined && numValue < variable.minValue) {
     return strings.numberTooLow.replace("{min}", String(variable.minValue));
   }
 
   // Check maximum value
-  if (
-    variable.maxValue !== null &&
-    variable.maxValue !== undefined &&
-    numValue > variable.maxValue
-  ) {
+  if (variable.maxValue !== null && variable.maxValue !== undefined && numValue > variable.maxValue) {
     return strings.numberTooHigh.replace("{max}", String(variable.maxValue));
   }
 
@@ -83,10 +75,7 @@ export const validateNumberVariable = (
   if (variable.decimalPlaces !== null && variable.decimalPlaces !== undefined) {
     const decimalPlaces = (numValue.toString().split(".")[1] || "").length;
     if (decimalPlaces > variable.decimalPlaces) {
-      return strings.tooManyDecimalPlaces.replace(
-        "{max}",
-        String(variable.decimalPlaces)
-      );
+      return strings.tooManyDecimalPlaces.replace("{max}", String(variable.decimalPlaces));
     }
   }
 
@@ -117,10 +106,7 @@ export const validateDateVariable = (
   if (variable.minDate) {
     const minDate = new Date(variable.minDate);
     if (dateValue < minDate) {
-      return strings.dateTooEarly.replace(
-        "{min}",
-        minDate.toLocaleDateString()
-      );
+      return strings.dateTooEarly.replace("{min}", minDate.toLocaleDateString());
     }
   }
 
@@ -182,12 +168,7 @@ export const isRecipientReady = (
     const value = variableValues[variable.id?.toString() || ""];
 
     // Check if value exists and is not empty
-    if (
-      value === null ||
-      value === undefined ||
-      value === "" ||
-      (Array.isArray(value) && value.length === 0)
-    ) {
+    if (value === null || value === undefined || value === "" || (Array.isArray(value) && value.length === 0)) {
       return false;
     }
 
@@ -196,11 +177,7 @@ export const isRecipientReady = (
 
     switch (variable.type) {
       case "TEXT":
-        validationError = validateTextVariable(
-          value as string,
-          variable as Graphql.TemplateTextVariable,
-          strings
-        );
+        validationError = validateTextVariable(value as string, variable as Graphql.TemplateTextVariable, strings);
         break;
       case "NUMBER":
         validationError = validateNumberVariable(
@@ -243,29 +220,13 @@ export const getValidationError = (
 ): string | null => {
   switch (variable.type) {
     case "TEXT":
-      return validateTextVariable(
-        value as string,
-        variable as Graphql.TemplateTextVariable,
-        strings
-      );
+      return validateTextVariable(value as string, variable as Graphql.TemplateTextVariable, strings);
     case "NUMBER":
-      return validateNumberVariable(
-        value as number | string,
-        variable as Graphql.TemplateNumberVariable,
-        strings
-      );
+      return validateNumberVariable(value as number | string, variable as Graphql.TemplateNumberVariable, strings);
     case "DATE":
-      return validateDateVariable(
-        value as string | Date,
-        variable as Graphql.TemplateDateVariable,
-        strings
-      );
+      return validateDateVariable(value as string | Date, variable as Graphql.TemplateDateVariable, strings);
     case "SELECT":
-      return validateSelectVariable(
-        value as string | string[],
-        variable as Graphql.TemplateSelectVariable,
-        strings
-      );
+      return validateSelectVariable(value as string | string[], variable as Graphql.TemplateSelectVariable, strings);
     default:
       return null;
   }

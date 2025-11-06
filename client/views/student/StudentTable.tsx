@@ -35,8 +35,7 @@ const StudentManagementDashboardTitle: React.FC = () => {
 
 const StudentTable: React.FC = () => {
   // Get operations and store state
-  const { queryParams, onPageChange, onRowsPerPageChange } =
-    useStudentOperations();
+  const { queryParams, onPageChange, onRowsPerPageChange } = useStudentOperations();
 
   // Fetch students directly with useQuery - Apollo handles refetch automatically
   const { data, loading } = useQuery(Document.studentsQueryDocument, {

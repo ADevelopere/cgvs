@@ -9,16 +9,10 @@ interface LocaleSelectorProps {
   disabled?: boolean;
 }
 
-export const LocaleSelector: React.FC<LocaleSelectorProps> = ({
-  value,
-  onChange,
-  disabled = false,
-}) => {
+export const LocaleSelector: React.FC<LocaleSelectorProps> = ({ value, onChange, disabled = false }) => {
   const { fontManagementTranslations: strings } = useAppTranslation();
 
-  const selectedOptions = LOCALE_OPTIONS.filter(opt =>
-    value.includes(opt.value)
-  );
+  const selectedOptions = LOCALE_OPTIONS.filter(opt => value.includes(opt.value));
 
   const isAllSelected = value.includes("all");
 
@@ -35,9 +29,7 @@ export const LocaleSelector: React.FC<LocaleSelectorProps> = ({
           onChange(["all"]);
         } else {
           // Remove "all" if present and use selected locales
-          const values = newValue
-            .filter(opt => opt.value !== "all")
-            .map(opt => opt.value);
+          const values = newValue.filter(opt => opt.value !== "all").map(opt => opt.value);
           onChange(values);
         }
       }}
@@ -45,24 +37,13 @@ export const LocaleSelector: React.FC<LocaleSelectorProps> = ({
       isOptionEqualToValue={(option, value) => option.value === value.value}
       disabled={disabled}
       disableCloseOnSelect
-      renderInput={params => (
-        <MUI.TextField
-          {...params}
-          placeholder={strings.selectLocalesPlaceholder}
-          size="small"
-        />
-      )}
+      renderInput={params => <MUI.TextField {...params} placeholder={strings.selectLocalesPlaceholder} size="small" />}
       renderOption={(props, option, { selected }) => {
         const { key, ...otherProps } = props;
         const isDisabled = isAllSelected && option.value !== "all";
         return (
           <li key={key} {...otherProps}>
-            <MUI.Checkbox
-              checked={selected}
-              disabled={isDisabled}
-              size="small"
-              sx={{ mr: 1 }}
-            />
+            <MUI.Checkbox checked={selected} disabled={isDisabled} size="small" sx={{ mr: 1 }} />
             <MUI.Typography variant="body2">
               <span style={{ marginInlineEnd: 8 }}>{option.flag}</span>
               {option.label}

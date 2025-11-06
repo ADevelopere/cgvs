@@ -27,9 +27,7 @@ const LoginForm: React.FC = () => {
       // Check for autofilled values after a short delay
       const checkAutofill = setTimeout(() => {
         const emailInput = document.getElementById("email") as HTMLInputElement;
-        const passwordInput = document.getElementById(
-          "password"
-        ) as HTMLInputElement;
+        const passwordInput = document.getElementById("password") as HTMLInputElement;
 
         if (emailInput?.value && !email) {
           const newEmail = emailInput.value;
@@ -115,21 +113,11 @@ const LoginForm: React.FC = () => {
           </MUI.Typography>
         </MUI.Box>
 
-        <MUI.Typography
-          variant="h4"
-          component="h1"
-          fontWeight="bold"
-          color="primary.main"
-        >
+        <MUI.Typography variant="h4" component="h1" fontWeight="bold" color="primary.main">
           {strings.signin}
         </MUI.Typography>
 
-        <MUI.Typography
-          variant="body2"
-          color="text.secondary"
-          align="center"
-          sx={{ mt: 1 }}
-        >
+        <MUI.Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 1 }}>
           {strings.signinDescription}
         </MUI.Typography>
       </MUI.Box>
@@ -147,12 +135,7 @@ const LoginForm: React.FC = () => {
         </MUI.Alert>
       )}
 
-      <MUI.Box
-        component="form"
-        onSubmit={handleSubmit}
-        noValidate
-        method="POST"
-      >
+      <MUI.Box component="form" onSubmit={handleSubmit} noValidate method="POST">
         <MUI.TextField
           margin="normal"
           required
@@ -272,12 +255,7 @@ const LoginForm: React.FC = () => {
           <MUI.Typography variant="body2" color="text.secondary">
             {strings.dontHaveAccountQuestion}
           </MUI.Typography>
-          <MUI.Link
-            href="#"
-            variant="body2"
-            underline="hover"
-            fontWeight="bold"
-          >
+          <MUI.Link href="#" variant="body2" underline="hover" fontWeight="bold">
             {strings.createAccount}
           </MUI.Link>
         </MUI.Box>

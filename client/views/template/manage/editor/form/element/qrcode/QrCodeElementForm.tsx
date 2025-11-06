@@ -6,11 +6,7 @@ import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { UpdateBaseElementFn } from "../base/types";
 import { ActionButtons } from "../component/ActionButtons";
 import { QrCodePropsForm } from "./QrCodePropsForm";
-import {
-  QrCodeElementFormErrors,
-  QrCodeElementFormState,
-  UpdateQRCodePropsFn,
-} from "./types";
+import { QrCodeElementFormErrors, QrCodeElementFormState, UpdateQRCodePropsFn } from "./types";
 
 export interface QrCodeElementFormProps {
   state: QrCodeElementFormState;
@@ -64,12 +60,7 @@ export const QrCodeElementForm: React.FC<QrCodeElementFormProps> = ({
       </Mui.Box>
 
       {/* Action Buttons (Fixed) */}
-      <ActionButtons
-        onSubmit={onSubmit}
-        onCancel={onCancel}
-        isSubmitting={isSubmitting}
-        submitLabel={submitLabel}
-      />
+      <ActionButtons onSubmit={onSubmit} onCancel={onCancel} isSubmitting={isSubmitting} submitLabel={submitLabel} />
     </Mui.Box>
   );
 };

@@ -4,26 +4,19 @@ import { TemplatePothosDefintion } from "./template.types";
 // entity types
 type TemplateVariableEntity = typeof Db.templateVariableBases.$inferSelect;
 
-export type TemplateVariableEntityInput =
-  typeof Db.templateVariableBases.$inferInsert;
+export type TemplateVariableEntityInput = typeof Db.templateVariableBases.$inferInsert;
 
 type TemplateTextVariableEntity = typeof Db.templateTextVariables.$inferSelect;
-export type TemplateTextVariableEntityInput =
-  typeof Db.templateTextVariables.$inferInsert;
+export type TemplateTextVariableEntityInput = typeof Db.templateTextVariables.$inferInsert;
 
-type TemplateNumberVariableEntity =
-  typeof Db.templateNumberVariables.$inferSelect;
-export type TemplateNumberVariableEntityInput =
-  typeof Db.templateNumberVariables.$inferInsert;
+type TemplateNumberVariableEntity = typeof Db.templateNumberVariables.$inferSelect;
+export type TemplateNumberVariableEntityInput = typeof Db.templateNumberVariables.$inferInsert;
 
 type TemplateDateVariableEntity = typeof Db.templateDateVariables.$inferSelect;
-export type TemplateDateVariableEntityInput =
-  typeof Db.templateDateVariables.$inferInsert;
+export type TemplateDateVariableEntityInput = typeof Db.templateDateVariables.$inferInsert;
 
-type TemplateSelectVariableEntity =
-  typeof Db.templateSelectVariables.$inferSelect;
-export type TemplateSelectVariableEntityInput =
-  typeof Db.templateSelectVariables.$inferInsert;
+type TemplateSelectVariableEntity = typeof Db.templateSelectVariables.$inferSelect;
+export type TemplateSelectVariableEntityInput = typeof Db.templateSelectVariables.$inferInsert;
 
 export enum TemplateVariableType {
   TEXT = "TEXT",
@@ -38,19 +31,13 @@ export type TemplateVariablePothosDefinition = TemplateVariableEntity & {
   template?: TemplatePothosDefintion | null;
 };
 
-export type TemplateTextVariablePothosDefinition =
-  TemplateVariablePothosDefinition & TemplateTextVariableEntity;
+export type TemplateTextVariablePothosDefinition = TemplateVariablePothosDefinition & TemplateTextVariableEntity;
 
-export type TemplateNumberVariablePothosDefinition =
-  TemplateNumberVariableEntity & TemplateVariablePothosDefinition;
+export type TemplateNumberVariablePothosDefinition = TemplateNumberVariableEntity & TemplateVariablePothosDefinition;
 
-export type TemplateDateVariablePothosDefinition = TemplateDateVariableEntity &
-  TemplateVariablePothosDefinition;
+export type TemplateDateVariablePothosDefinition = TemplateDateVariableEntity & TemplateVariablePothosDefinition;
 
-export type TemplateSelectVariablePothosDefinition = Omit<
-  TemplateSelectVariableEntity,
-  "options"
-> &
+export type TemplateSelectVariablePothosDefinition = Omit<TemplateSelectVariableEntity, "options"> &
   TemplateVariablePothosDefinition & {
     options: string[];
   };
@@ -84,10 +71,8 @@ type TemplateTextVariableProps = {
   pattern?: string | null;
 };
 
-export type TextTemplaeVariableCreateInput = TemplateVariableCreateInput &
-  TemplateTextVariableProps;
-export type TextTemplaeVariableUpdateInput = TemplateVariableUpdateInput &
-  TemplateTextVariableProps;
+export type TextTemplaeVariableCreateInput = TemplateVariableCreateInput & TemplateTextVariableProps;
+export type TextTemplaeVariableUpdateInput = TemplateVariableUpdateInput & TemplateTextVariableProps;
 
 type TemplateNumberVariableProps = {
   previewValue?: number | null;
@@ -96,16 +81,10 @@ type TemplateNumberVariableProps = {
   decimalPlaces?: number | null;
 };
 
-export type TemplateNumberVariableCreateInput = Omit<
-  TemplateVariableCreateInput,
-  "previewValue"
-> &
+export type TemplateNumberVariableCreateInput = Omit<TemplateVariableCreateInput, "previewValue"> &
   TemplateNumberVariableProps;
 
-export type TemplateNumberVariableUpdateInput = Omit<
-  TemplateVariableUpdateInput,
-  "previewValue"
-> &
+export type TemplateNumberVariableUpdateInput = Omit<TemplateVariableUpdateInput, "previewValue"> &
   TemplateNumberVariableProps;
 
 type TemplateDateVariableProps = {
@@ -114,16 +93,10 @@ type TemplateDateVariableProps = {
   maxDate?: Date | null;
   format?: string | null;
 };
-export type TemplateDateVariableCreateInput = Omit<
-  TemplateVariableCreateInput,
-  "previewValue"
-> &
+export type TemplateDateVariableCreateInput = Omit<TemplateVariableCreateInput, "previewValue"> &
   TemplateDateVariableProps;
 
-export type TemplateDateVariableUpdateInput = Omit<
-  TemplateVariableUpdateInput,
-  "previewValue"
-> &
+export type TemplateDateVariableUpdateInput = Omit<TemplateVariableUpdateInput, "previewValue"> &
   TemplateDateVariableProps;
 
 type TemplateSelectVariableProps = {
@@ -131,8 +104,6 @@ type TemplateSelectVariableProps = {
   multiple?: boolean | null;
 };
 
-export type TemplateSelectVariableCreateInput = TemplateVariableCreateInput &
-  TemplateSelectVariableProps;
+export type TemplateSelectVariableCreateInput = TemplateVariableCreateInput & TemplateSelectVariableProps;
 
-export type TemplateSelectVariableUpdateInput = TemplateVariableUpdateInput &
-  TemplateSelectVariableProps;
+export type TemplateSelectVariableUpdateInput = TemplateVariableUpdateInput & TemplateSelectVariableProps;

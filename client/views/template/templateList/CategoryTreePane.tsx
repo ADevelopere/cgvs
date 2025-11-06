@@ -13,24 +13,15 @@ import { ReactiveCategoryTree } from "@/client/components";
 import { CategoryDocuments } from "../hooks";
 import { useTemplateListStore } from "./useTemplateListStore";
 
-const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
-  isMobile: disableTopPadding = false,
-}) => {
+const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({ isMobile: disableTopPadding = false }) => {
   const { templateCategoryTranslations: strings } = useAppTranslation();
-  const {
-    selectCategory,
-    expandedCategoryIds,
-    toggleExpanded,
-    markAsFetched,
-    isFetched,
-    currentCategory,
-  } = useTemplateListStore();
+  const { selectCategory, expandedCategoryIds, toggleExpanded, markAsFetched, isFetched, currentCategory } =
+    useTemplateListStore();
 
   // Category search for autocomplete
-  const [
-    searchCategories,
-    { data: searchCategoriesData, loading: searchLoading },
-  ] = useLazyQuery(CategoryDocuments.searchTemplateCategoriesQueryDocument);
+  const [searchCategories, { data: searchCategoriesData, loading: searchLoading }] = useLazyQuery(
+    CategoryDocuments.searchTemplateCategoriesQueryDocument
+  );
   const [categorySearchTerm, setCategorySearchTerm] = React.useState("");
   const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -113,10 +104,7 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
   }, [selectCategory]);
 
   const handleAutocompleteChange = React.useCallback(
-    (
-      _: React.SyntheticEvent,
-      newValue: TemplateCategoryWithParentTree | null
-    ) => {
+    (_: React.SyntheticEvent, newValue: TemplateCategoryWithParentTree | null) => {
       selectCategory(newValue);
     },
     [selectCategory]
@@ -132,10 +120,7 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
     []
   );
 
-  const getNodeLabel = React.useCallback(
-    (node: TemplateCategoryWithParentTree) => node.name || String(node.id),
-    []
-  );
+  const getNodeLabel = React.useCallback((node: TemplateCategoryWithParentTree) => node.name || String(node.id), []);
 
   return (
     <Box
@@ -170,11 +155,7 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
           getOptionLabel={option => option.name ?? strings.unnamed}
           loading={searchLoading}
           loadingText={strings.loading}
-          noOptionsText={
-            categorySearchTerm.trim().length > 0
-              ? strings.noCategories
-              : strings.selectCategory
-          }
+          noOptionsText={categorySearchTerm.trim().length > 0 ? strings.noCategories : strings.selectCategory}
           sx={{ width: "100%", backgroundColor: "background.paper" }}
           renderInput={params => (
             <TextField
@@ -182,9 +163,7 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
               label={strings.searchCategories}
               variant="outlined"
               size="small"
-              placeholder={
-                currentCategory ? undefined : strings.searchCategories
-              }
+              placeholder={currentCategory ? undefined : strings.searchCategories}
             />
           )}
           isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -198,11 +177,7 @@ const CategoryTreePane: React.FC<{ isMobile?: boolean }> = ({
 
       {/* Reactive Category Tree - now in scrollable area */}
       <Box sx={{ flexGrow: 1, overflow: "auto", px: 2, pt: 1 }}>
-        <ReactiveCategoryTree<
-          TemplateCategoryWithParentTree,
-          CategoryChildrenQuery,
-          CategoryChildrenQueryVariables
-        >
+        <ReactiveCategoryTree<TemplateCategoryWithParentTree, CategoryChildrenQuery, CategoryChildrenQueryVariables>
           resolver={parent => ({
             query: CategoryDocuments.categoryChildrenQueryDocument,
             variables: parent ? { parentCategoryId: parent.id } : undefined,

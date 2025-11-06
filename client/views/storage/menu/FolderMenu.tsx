@@ -24,10 +24,7 @@ import {
   Delete as DeleteIcon,
   Info as InfoIcon,
 } from "@mui/icons-material";
-import {
-  StorageItemUnion,
-  StorageClipboardState,
-} from "@/client/views/storage/core/storage.type";
+import { StorageItemUnion, StorageClipboardState } from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
 import DeleteConfirmationDialog from "@/client/views/storage/dialogs/DeleteConfirmationDialog";
@@ -42,10 +39,7 @@ export interface FolderMenuProps {
   onClose: () => void;
   folder: Graphql.DirectoryInfo;
   params: Graphql.FilesListInput;
-  onNavigate: (
-    path: string,
-    currentParams: Graphql.FilesListInput
-  ) => Promise<void>;
+  onNavigate: (path: string, currentParams: Graphql.FilesListInput) => Promise<void>;
   onRefresh: () => Promise<void>;
   onCopyItems: (items: StorageItemUnion[]) => void;
   onCutItems: (items: StorageItemUnion[]) => void;
@@ -142,10 +136,7 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
   }, []);
 
   // Check if paste is available
-  const isPasteAvailable = React.useMemo(
-    () => clipboard && clipboard.items.length > 0,
-    [clipboard]
-  );
+  const isPasteAvailable = React.useMemo(() => clipboard && clipboard.items.length > 0, [clipboard]);
 
   return (
     <>
@@ -196,16 +187,11 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
           <ListItemText>{translations.copy}</ListItemText>
         </MenuItem>
 
-        <MenuItem
-          onClick={handlePaste}
-          disabled={!isPasteAvailable || isPasting}
-        >
+        <MenuItem onClick={handlePaste} disabled={!isPasteAvailable || isPasting}>
           <ListItemIcon>
             <PasteIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>
-            {isPasting ? translations.loading : translations.paste}
-          </ListItemText>
+          <ListItemText>{isPasting ? translations.loading : translations.paste}</ListItemText>
         </MenuItem>
 
         <Divider />
@@ -278,17 +264,11 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
           },
         }}
       >
-        <DialogTitle
-          id="info-folder-dialog-title"
-          sx={{ color: theme.palette.text.primary }}
-        >
+        <DialogTitle id="info-folder-dialog-title" sx={{ color: theme.palette.text.primary }}>
           {translations.getInfo}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText
-            component="div"
-            sx={{ color: theme.palette.text.secondary }}
-          >
+          <DialogContentText component="div" sx={{ color: theme.palette.text.secondary }}>
             <div style={{ marginBottom: theme.spacing(2) }}>
               <strong>{translations.name}:</strong> {folder.name}
             </div>
@@ -302,12 +282,10 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
               </div>
             )}
             <div style={{ marginBottom: theme.spacing(2) }}>
-              <strong>{translations.lastModified}:</strong>{" "}
-              {formatDate(folder.lastModified)}
+              <strong>{translations.lastModified}:</strong> {formatDate(folder.lastModified)}
             </div>
             <div style={{ marginBottom: theme.spacing(2) }}>
-              <strong>{translations.createdAt}:</strong>{" "}
-              {formatDate(folder.createdAt)}
+              <strong>{translations.createdAt}:</strong> {formatDate(folder.createdAt)}
             </div>
             {folder.isProtected && (
               <div style={{ marginBottom: theme.spacing(2) }}>
@@ -316,8 +294,7 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
             )}
             {folder.protectChildren && (
               <div style={{ marginBottom: theme.spacing(2) }}>
-                <strong>{translations.protectChildren}:</strong>{" "}
-                {translations.yes}
+                <strong>{translations.protectChildren}:</strong> {translations.yes}
               </div>
             )}
             {folder.permissions && (
@@ -329,22 +306,13 @@ const FolderMenu: React.FC<FolderMenuProps> = ({
                     fontSize: "0.9em",
                   }}
                 >
-                  • {translations.allowUploads}:{" "}
-                  {folder.permissions.allowUploads
-                    ? translations.yes
-                    : translations.no}
+                  • {translations.allowUploads}: {folder.permissions.allowUploads ? translations.yes : translations.no}
                   <br />• {translations.allowCreateFolders}:{" "}
-                  {folder.permissions.allowCreateSubDirs
-                    ? translations.yes
-                    : translations.no}
+                  {folder.permissions.allowCreateSubDirs ? translations.yes : translations.no}
                   <br />• {translations.allowDeleteFiles}:{" "}
-                  {folder.permissions.allowDeleteFiles
-                    ? translations.yes
-                    : translations.no}
+                  {folder.permissions.allowDeleteFiles ? translations.yes : translations.no}
                   <br />• {translations.allowMoveFiles}:{" "}
-                  {folder.permissions.allowMoveFiles
-                    ? translations.yes
-                    : translations.no}
+                  {folder.permissions.allowMoveFiles ? translations.yes : translations.no}
                 </div>
               </div>
             )}

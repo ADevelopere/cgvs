@@ -32,9 +32,7 @@ export type UseNumberPropsStateReturn = {
 /**
  * Extract numberProps state from NumberElement
  */
-function extractNumberPropsState(
-  element: GQL.CertificateElementUnion
-): NumberPropsFormState | null {
+function extractNumberPropsState(element: GQL.CertificateElementUnion): NumberPropsFormState | null {
   if (element.__typename !== "NumberElement" || !element.numberProps) {
     return null;
   }
@@ -59,16 +57,12 @@ function toUpdateInput(
   };
 }
 
-export function useNumberPropsState(
-  params: UseNumberPropsStateParams
-): UseNumberPropsStateReturn {
+export function useNumberPropsState(params: UseNumberPropsStateParams): UseNumberPropsStateReturn {
   const { templateId, elements } = params;
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
 
-  const [updateNumberElementSpecPropsMutation] = useMutation(
-    updateNumberElementSpecPropsMutationDocument
-  );
+  const [updateNumberElementSpecPropsMutation] = useMutation(updateNumberElementSpecPropsMutationDocument);
 
   // Mutation function
   const mutationFn = React.useCallback(
@@ -81,8 +75,7 @@ export function useNumberPropsState(
           },
         });
       } catch (error) {
-        const errorMessage =
-          errorStrings?.updateFailed || "Failed to update number properties";
+        const errorMessage = errorStrings?.updateFailed || "Failed to update number properties";
         logger.error("useNumberPropsState: Mutation failed", {
           elementId,
           error,
@@ -139,10 +132,7 @@ export const useNumberProps = (params: UseNumberPropsParams) => {
 
   // Get state or initialize if not present (only initialize once)
   const numberProps: NumberPropsFormState = React.useMemo(() => {
-    return (
-      numberPropsStates.get(params.elementId) ??
-      initNumberPropsState(params.elementId)
-    );
+    return numberPropsStates.get(params.elementId) ?? initNumberPropsState(params.elementId);
   }, [numberPropsStates, params.elementId, initNumberPropsState]);
 
   const updateNumberProps: UpdateNumberPropsFn = React.useCallback(

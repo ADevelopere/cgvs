@@ -70,8 +70,7 @@ const data: GoogleFontItem[] = [
     version: "v18",
     lastModified: "2025-09-10",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/notosansoldpermic/v18/snf1s1q1-dF8pli1TesqcbUY4Mr-ElrwKLdXgv_dKYB5.ttf",
+      regular: "https://fonts.gstatic.com/s/notosansoldpermic/v18/snf1s1q1-dF8pli1TesqcbUY4Mr-ElrwKLdXgv_dKYB5.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",

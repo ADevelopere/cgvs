@@ -38,8 +38,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Track previous sidebar state for desktop view
-  const [previousDesktopState, setPreviousDesktopState] =
-    useState(sidebarState);
+  const [previousDesktopState, setPreviousDesktopState] = useState(sidebarState);
   // Ref to always have the latest sidebarState value
   // prevent stale closure in useEffect
   const sidebarStateRef = React.useRef(sidebarState);
@@ -63,18 +62,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   }, [isMobile, previousDesktopState, setSidebarState]);
 
   // Handle sidebar visibility based on state
-  const isCollapsedSidebarVisible = useMemo(
-    () => !isMobile && sidebarState === "collapsed",
-    [isMobile, sidebarState]
-  );
-  const isFullSidebarVisible = useMemo(
-    () => !isMobile && sidebarState === "expanded",
-    [isMobile, sidebarState]
-  );
-  const isFloatingSidebarVisible = useMemo(
-    () => isMobile && sidebarState === "expanded",
-    [isMobile, sidebarState]
-  );
+  const isCollapsedSidebarVisible = useMemo(() => !isMobile && sidebarState === "collapsed", [isMobile, sidebarState]);
+  const isFullSidebarVisible = useMemo(() => !isMobile && sidebarState === "expanded", [isMobile, sidebarState]);
+  const isFloatingSidebarVisible = useMemo(() => isMobile && sidebarState === "expanded", [isMobile, sidebarState]);
 
   useEffect(() => {
     const updateDimentions = () => {
@@ -99,13 +89,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     return () => {
       window.removeEventListener("resize", updateDimentions);
     };
-  }, [
-    headerRef,
-    setHeaderHeight,
-    setSideBarToggleWidth,
-    setSideBarWidth,
-    sideBarToggleRef,
-  ]);
+  }, [headerRef, setHeaderHeight, setSideBarToggleWidth, setSideBarWidth, sideBarToggleRef]);
 
   // Handle floating sidebar close
   const handleFloatingSidebarClose = () => {

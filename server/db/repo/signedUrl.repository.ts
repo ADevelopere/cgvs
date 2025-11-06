@@ -10,27 +10,17 @@ export namespace SignedUrlRepository {
   /**
    * Create a new signed URL entry in the database
    */
-  export const createSignedUrl = async (
-    data: SignedUrlEntityInput
-  ): Promise<SignedUrlEntity> => {
+  export const createSignedUrl = async (data: SignedUrlEntityInput): Promise<SignedUrlEntity> => {
     const [result] = await db.insert(signedUrls).values(data).returning();
-    logger.info(
-      `Created signed URL: ${result.id} for path: ${result.filePath}`
-    );
+    logger.info(`Created signed URL: ${result.id} for path: ${result.filePath}`);
     return result;
   };
 
   /**
    * Get a signed URL by its token ID
    */
-  export const getSignedUrlById = async (
-    id: string
-  ): Promise<SignedUrlEntity | null> => {
-    const result = await db
-      .select()
-      .from(signedUrls)
-      .where(eq(signedUrls.id, id))
-      .limit(1);
+  export const getSignedUrlById = async (id: string): Promise<SignedUrlEntity | null> => {
+    const result = await db.select().from(signedUrls).where(eq(signedUrls.id, id)).limit(1);
     return result[0] || null;
   };
 
@@ -39,9 +29,7 @@ export namespace SignedUrlRepository {
    * Uses row-level locking to prevent race conditions
    * Returns the signed URL entity if successfully claimed, or null if invalid/used/expired
    */
-  export const claimSignedUrl = async (
-    id: string
-  ): Promise<SignedUrlEntity | null> => {
+  export const claimSignedUrl = async (id: string): Promise<SignedUrlEntity | null> => {
     try {
       const now = new Date();
 
@@ -66,11 +54,7 @@ export namespace SignedUrlRepository {
         }
 
         // Mark as used
-        const [updated] = await tx
-          .update(signedUrls)
-          .set({ used: true })
-          .where(eq(signedUrls.id, id))
-          .returning();
+        const [updated] = await tx.update(signedUrls).set({ used: true }).where(eq(signedUrls.id, id)).returning();
 
         logger.info(`Claimed signed URL: ${id} for path: ${updated.filePath}`);
         return updated;
@@ -90,10 +74,7 @@ export namespace SignedUrlRepository {
   export const deleteExpired = async (): Promise<number> => {
     try {
       const now = new Date();
-      const deleted = await db
-        .delete(signedUrls)
-        .where(lt(signedUrls.expiresAt, now))
-        .returning({ id: signedUrls.id });
+      const deleted = await db.delete(signedUrls).where(lt(signedUrls.expiresAt, now)).returning({ id: signedUrls.id });
 
       const count = deleted.length;
       if (count > 0) {

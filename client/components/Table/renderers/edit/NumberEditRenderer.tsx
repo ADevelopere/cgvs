@@ -33,9 +33,7 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
     strings: { validation: validationStrings },
   } = useTableLocale();
 
-  const [editValue, setEditValue] = useState(
-    value !== null && value !== undefined ? String(value) : ""
-  );
+  const [editValue, setEditValue] = useState(value !== null && value !== undefined ? String(value) : "");
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -49,9 +47,7 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
   }, []);
 
   const validateNumber = useCallback(
-    (
-      strValue: string
-    ): { valid: boolean; value?: number | null; error?: string } => {
+    (strValue: string): { valid: boolean; value?: number | null; error?: string } => {
       const numValue = strValue ? Number(strValue) : null;
       if (numValue !== null) {
         if (isNaN(numValue)) {
@@ -159,12 +155,7 @@ export const NumberEditRenderer: React.FC<NumberEditRendererProps> = ({
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <div>
-        <Tooltip
-          open={!!error}
-          title={error ?? ""}
-          arrow
-          placement="bottom-start"
-        >
+        <Tooltip open={!!error} title={error ?? ""} arrow placement="bottom-start">
           <TextField
             inputRef={inputRef}
             type="text"

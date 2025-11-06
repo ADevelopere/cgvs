@@ -12,8 +12,7 @@ export const validateBaseElementField = () => {
       case "width":
       case "height": {
         const dimensionValue = value;
-        if (dimensionValue === undefined || dimensionValue === null)
-          return "Required";
+        if (dimensionValue === undefined || dimensionValue === null) return "Required";
         if (dimensionValue <= 0) return "Must be positive";
         return undefined;
       }

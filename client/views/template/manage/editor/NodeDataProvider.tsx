@@ -15,18 +15,8 @@ export interface UseNodeDataReturn {
   loading: boolean;
   error: Error | null;
   setNodes: (nodes: Node[]) => void;
-  updateElementPosition: (
-    elementId: number,
-    x: number,
-    y: number,
-    isDragging?: boolean
-  ) => void;
-  updateElementSize: (
-    elementId: number,
-    width: number,
-    height: number,
-    isResizing?: boolean
-  ) => void;
+  updateElementPosition: (elementId: number, x: number, y: number, isDragging?: boolean) => void;
+  updateElementSize: (elementId: number, width: number, height: number, isResizing?: boolean) => void;
   config: TemplateConfigUpdateInput;
   helperLineHorizontal: number | undefined;
   helperLineVertical: number | undefined;
@@ -39,13 +29,8 @@ export interface UseNodeDataReturn {
   canUndo: boolean;
   canRedo: boolean;
   // Node update actions
-  updateBaseNodeData: (
-    elementId: number,
-    updates: Partial<import("./types").ElementBaseNodeData>
-  ) => void;
-  updateContainerNode: (
-    updates: Partial<import("./types").ContainerNodeData>
-  ) => void;
+  updateBaseNodeData: (elementId: number, updates: Partial<import("./types").ElementBaseNodeData>) => void;
+  updateContainerNode: (updates: Partial<import("./types").ContainerNodeData>) => void;
 }
 
 /**
@@ -69,12 +54,8 @@ export function useNodeData(): UseNodeDataReturn {
   } = useNodesState();
 
   // Helper line state (kept local as it's UI-only)
-  const [helperLineHorizontal, setHelperLineHorizontal] = React.useState<
-    number | undefined
-  >(undefined);
-  const [helperLineVertical, setHelperLineVertical] = React.useState<
-    number | undefined
-  >(undefined);
+  const [helperLineHorizontal, setHelperLineHorizontal] = React.useState<number | undefined>(undefined);
+  const [helperLineVertical, setHelperLineVertical] = React.useState<number | undefined>(undefined);
 
   // Drag/resize state for future use or optimization
   const [, setIsDragging] = React.useState<boolean>(false);
@@ -153,12 +134,7 @@ export function useNodeData(): UseNodeDataReturn {
   );
 
   const updateElementSize = React.useCallback(
-    (
-      elementId: number,
-      width: number,
-      height: number,
-      isResizing: boolean = false
-    ) => {
+    (elementId: number, width: number, height: number, isResizing: boolean = false) => {
       // Get old values for undo/redo
       const oldBase = bases.baseElementStates.get(elementId);
       if (!oldBase) return;

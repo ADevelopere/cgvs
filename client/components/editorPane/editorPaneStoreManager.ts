@@ -33,10 +33,7 @@
  * ```
  */
 
-import {
-  createEditorPaneStore,
-  type EditorPaneStoreWithPersist,
-} from "./editorPaneStoreFactory";
+import { createEditorPaneStore, type EditorPaneStoreWithPersist } from "./editorPaneStoreFactory";
 import type { StoreApi } from "zustand";
 
 /**
@@ -53,9 +50,7 @@ const storeCache = new Map<string, StoreApi<EditorPaneStoreWithPersist>>();
  * @param storageKey - Unique identifier for this pane's store
  * @returns The store instance for this storageKey
  */
-export const getEditorPaneStore = (
-  storageKey: string
-): StoreApi<EditorPaneStoreWithPersist> => {
+export const getEditorPaneStore = (storageKey: string): StoreApi<EditorPaneStoreWithPersist> => {
   // Return cached store if it exists
   if (storeCache.has(storageKey)) {
     const cachedStore = storeCache.get(storageKey)!;

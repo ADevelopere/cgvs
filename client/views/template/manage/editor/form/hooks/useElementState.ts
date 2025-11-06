@@ -7,7 +7,7 @@ import logger from "@/client/lib/logger";
 // Persistent state cache at module level - survives remounts
 // Key format: "templateId:namespace:elementId"
 const persistentStateCache = new Map<string, unknown>();
- 
+
 const updateDebounceDelayMs = 200; // 10 seconds
 
 export type UseElementStateParams<T, VR> = {
@@ -34,22 +34,12 @@ export type UseElementStateReturn<T, E> = {
  * E: error type
  * VR: validation result type
  */
-export function useElementState<T, E, VR>(
-  params: UseElementStateParams<T, VR>
-): UseElementStateReturn<T, E> {
-  const {
-    templateId,
-    elements: providedElements,
-    validator,
-    extractInitialState,
-    mutationFn,
-    stateNamespace,
-  } = params;
+export function useElementState<T, E, VR>(params: UseElementStateParams<T, VR>): UseElementStateReturn<T, E> {
+  const { templateId, elements: providedElements, validator, extractInitialState, mutationFn, stateNamespace } = params;
 
   // Helper to generate cache key
   const getCacheKey = React.useCallback(
-    (elementId: number) =>
-      `${templateId ?? "noTpl"}:${stateNamespace}:${elementId}`,
+    (elementId: number) => `${templateId ?? "noTpl"}:${stateNamespace}:${elementId}`,
     [templateId, stateNamespace]
   );
 
@@ -90,8 +80,7 @@ export function useElementState<T, E, VR>(
   const statesRef = React.useRef<Map<number, T>>(new Map());
   const [statesMap, setStatesMap] = React.useState<Map<number, T>>(() => {
     const initialStates = new Map<number, T>();
-    const initialElements =
-      providedElements || elementsData?.elementsByTemplateId || [];
+    const initialElements = providedElements || elementsData?.elementsByTemplateId || [];
     for (const element of initialElements) {
       if (element.base?.id) {
         const elementId = element.base.id;
@@ -112,14 +101,10 @@ export function useElementState<T, E, VR>(
     statesRef.current = initialStates;
     return initialStates;
   });
-  const [errorsMap, setErrorsMap] = React.useState<Map<number, E>>(
-    new Map()
-  );
+  const [errorsMap, setErrorsMap] = React.useState<Map<number, E>>(new Map());
   const errorsRef = React.useRef<Map<number, E>>(new Map());
   const pendingUpdatesRef = React.useRef<Map<number, T>>(new Map());
-  const debounceTimersRef = React.useRef<Map<number, NodeJS.Timeout>>(
-    new Map()
-  );
+  const debounceTimersRef = React.useRef<Map<number, NodeJS.Timeout>>(new Map());
 
   // Refs for dependencies to stabilize callbacks
   const elementsRef = React.useRef(elements);
@@ -138,9 +123,7 @@ export function useElementState<T, E, VR>(
       if (statesRef.current.has(elementId)) {
         const state = statesRef.current.get(elementId);
         if (state === undefined) {
-          throw new Error(
-            `useElementState: State is undefined for element id ${elementId}`
-          );
+          throw new Error(`useElementState: State is undefined for element id ${elementId}`);
         }
         return state;
       }
@@ -157,16 +140,12 @@ export function useElementState<T, E, VR>(
       // Find element and extract initial state (only if not in cache)
       const element = elementsRef.current.find(el => el.base?.id === elementId);
       if (!element) {
-        throw new Error(
-          `useElementState: Element not found for id ${elementId}`
-        );
+        throw new Error(`useElementState: Element not found for id ${elementId}`);
       }
 
       const initialState = extractInitialStateRef.current(element);
       if (initialState === undefined || initialState === null) {
-        throw new Error(
-          `useElementState: Failed to extract initial state for element id ${elementId}`
-        );
+        throw new Error(`useElementState: Failed to extract initial state for element id ${elementId}`);
       }
 
       // Store in both ref and persistent cache
@@ -204,17 +183,13 @@ export function useElementState<T, E, VR>(
     (elementId: number) => {
       const element = elementsRef.current.find(el => el.base?.id === elementId);
       if (!element) {
-        logger.warn(
-          `useElementState: Cannot reset - element not found for id ${elementId}`
-        );
+        logger.warn(`useElementState: Cannot reset - element not found for id ${elementId}`);
         return;
       }
 
       const freshState = extractInitialStateRef.current(element);
       if (freshState === undefined || freshState === null) {
-        logger.warn(
-          `useElementState: Cannot reset - failed to extract state for element id ${elementId}`
-        );
+        logger.warn(`useElementState: Cannot reset - failed to extract state for element id ${elementId}`);
         return;
       }
 
@@ -251,12 +226,11 @@ export function useElementState<T, E, VR>(
       const error = validatorRef.current(action);
 
       // Update errors
-      const currentErrors =
-        (errorsRef.current.get(elementId) as Partial<E>) ?? {};
+      const currentErrors = (errorsRef.current.get(elementId) as Partial<E>) ?? {};
       const newErrors = {
         ...currentErrors,
         [key]: error,
-      } as E
+      } as E;
 
       errorsRef.current.set(elementId, newErrors);
       setErrorsMap(new Map(errorsRef.current));
@@ -286,13 +260,10 @@ export function useElementState<T, E, VR>(
         const pendingState = pendingUpdatesRef.current.get(elementId);
         if (pendingState) {
           mutationFnRef.current(elementId, pendingState).catch(error => {
-            logger.error(
-              "useElementState: Mutation failed, resetting to server state",
-              {
-                elementId,
-                error,
-              }
-            );
+            logger.error("useElementState: Mutation failed, resetting to server state", {
+              elementId,
+              error,
+            });
             // Reset to server state on failure
             resetStateFromElements(elementId);
           });
@@ -322,13 +293,10 @@ export function useElementState<T, E, VR>(
           await mutationFnRef.current(elementId, pendingState);
           pendingUpdatesRef.current.delete(elementId);
         } catch (error) {
-          logger.error(
-            "useElementState: Push update failed, resetting to server state",
-            {
-              elementId,
-              error,
-            }
-          );
+          logger.error("useElementState: Push update failed, resetting to server state", {
+            elementId,
+            error,
+          });
           // Reset to server state on failure
           resetStateFromElements(elementId);
           pendingUpdatesRef.current.delete(elementId);
@@ -355,13 +323,10 @@ export function useElementState<T, E, VR>(
       // Save all pending updates
       for (const [elementId, state] of pendingUpdates.entries()) {
         mutationFnOnUnmount(elementId, state).catch(error => {
-          logger.error(
-            "useElementState: Failed to save on unmount, resetting to server state",
-            {
-              elementId,
-              error,
-            }
-          );
+          logger.error("useElementState: Failed to save on unmount, resetting to server state", {
+            elementId,
+            error,
+          });
           // Reset to server state on failure
           resetFn(elementId);
         });

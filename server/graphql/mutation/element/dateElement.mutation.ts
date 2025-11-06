@@ -14,9 +14,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = DateElementUtils.mapDateElementCreateGraphqlToInput(
-        args.input
-      );
+      const input = DateElementUtils.mapDateElementCreateGraphqlToInput(args.input);
       return await DateElementRepository.create(input);
     },
   }),
@@ -30,9 +28,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = DateElementUtils.mapDateElementUpdateGraphqlToInput(
-        args.input
-      );
+      const input = DateElementUtils.mapDateElementUpdateGraphqlToInput(args.input);
       return await DateElementRepository.update(input);
     },
   }),
@@ -46,9 +42,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = DateElementUtils.mapDataSourceStandaloneGqlToInput(
-        args.input
-      );
+      const input = DateElementUtils.mapDataSourceStandaloneGqlToInput(args.input);
       return await DateElementRepository.updateDateElementDataSource(input);
     },
   }),

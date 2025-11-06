@@ -9,8 +9,7 @@ const data: GoogleFontItem[] = [
     version: "v24",
     lastModified: "2025-09-05",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/liujianmaocao/v24/845DNN84HJrccNonurqXILGpvCOoferVKGWsUo8.ttf",
+      regular: "https://fonts.gstatic.com/s/liujianmaocao/v24/845DNN84HJrccNonurqXILGpvCOoferVKGWsUo8.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",
@@ -23,8 +22,7 @@ const data: GoogleFontItem[] = [
     version: "v21",
     lastModified: "2025-09-08",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/longcang/v21/LYjAdGP8kkgoTec8zkRgrXArXN7HWQ.ttf",
+      regular: "https://fonts.gstatic.com/s/longcang/v21/LYjAdGP8kkgoTec8zkRgrXArXN7HWQ.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",
@@ -37,8 +35,7 @@ const data: GoogleFontItem[] = [
     version: "v14",
     lastModified: "2025-09-08",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/mashanzheng/v14/NaPecZTRCLxvwo41b4gvzkXaRMTsDIRSfr0.ttf",
+      regular: "https://fonts.gstatic.com/s/mashanzheng/v14/NaPecZTRCLxvwo41b4gvzkXaRMTsDIRSfr0.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",
@@ -46,45 +43,20 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Noto Sans SC",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
-    subsets: [
-      "chinese-simplified",
-      "cyrillic",
-      "latin",
-      "latin-ext",
-      "vietnamese",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
+    subsets: ["chinese-simplified", "cyrillic", "latin", "latin-ext", "vietnamese"],
     version: "v39",
     lastModified: "2025-09-11",
     files: {
-      "100":
-        "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_EnYxNbPzS5HE.ttf",
-      "200":
-        "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG1_FnYxNbPzS5HE.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG4HFnYxNbPzS5HE.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG-3FnYxNbPzS5HE.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaGwHCnYxNbPzS5HE.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaGzjCnYxNbPzS5HE.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG1_CnYxNbPzS5HE.ttf",
-      "900":
-        "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG3bCnYxNbPzS5HE.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYxNbPzS5HE.ttf",
+      "100": "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_EnYxNbPzS5HE.ttf",
+      "200": "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG1_FnYxNbPzS5HE.ttf",
+      "300": "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG4HFnYxNbPzS5HE.ttf",
+      "500": "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG-3FnYxNbPzS5HE.ttf",
+      "600": "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaGwHCnYxNbPzS5HE.ttf",
+      "700": "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaGzjCnYxNbPzS5HE.ttf",
+      "800": "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG1_CnYxNbPzS5HE.ttf",
+      "900": "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG3bCnYxNbPzS5HE.ttf",
+      regular: "https://fonts.gstatic.com/s/notosanssc/v39/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYxNbPzS5HE.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -93,32 +65,18 @@ const data: GoogleFontItem[] = [
   {
     family: "Noto Serif SC",
     variants: ["200", "300", "regular", "500", "600", "700", "800", "900"],
-    subsets: [
-      "chinese-simplified",
-      "cyrillic",
-      "latin",
-      "latin-ext",
-      "vietnamese",
-    ],
+    subsets: ["chinese-simplified", "cyrillic", "latin", "latin-ext", "vietnamese"],
     version: "v34",
     lastModified: "2025-09-05",
     files: {
-      "200":
-        "https://fonts.gstatic.com/s/notoserifsc/v34/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7QCqyWv847hdDWC.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/notoserifsc/v34/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7TcqyWv847hdDWC.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/notoserifsc/v34/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7SwqyWv847hdDWC.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/notoserifsc/v34/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7RcrCWv847hdDWC.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/notoserifsc/v34/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7RlrCWv847hdDWC.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/notoserifsc/v34/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7QCrCWv847hdDWC.ttf",
-      "900":
-        "https://fonts.gstatic.com/s/notoserifsc/v34/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7QrrCWv847hdDWC.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/notoserifsc/v34/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7SCqyWv847hdDWC.ttf",
+      "200": "https://fonts.gstatic.com/s/notoserifsc/v34/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7QCqyWv847hdDWC.ttf",
+      "300": "https://fonts.gstatic.com/s/notoserifsc/v34/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7TcqyWv847hdDWC.ttf",
+      "500": "https://fonts.gstatic.com/s/notoserifsc/v34/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7SwqyWv847hdDWC.ttf",
+      "600": "https://fonts.gstatic.com/s/notoserifsc/v34/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7RcrCWv847hdDWC.ttf",
+      "700": "https://fonts.gstatic.com/s/notoserifsc/v34/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7RlrCWv847hdDWC.ttf",
+      "800": "https://fonts.gstatic.com/s/notoserifsc/v34/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7QCrCWv847hdDWC.ttf",
+      "900": "https://fonts.gstatic.com/s/notoserifsc/v34/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7QrrCWv847hdDWC.ttf",
+      regular: "https://fonts.gstatic.com/s/notoserifsc/v34/H4cyBXePl9DZ0Xe7gG9cyOj7uK2-n-D2rd4FY7SCqyWv847hdDWC.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",
@@ -127,18 +85,11 @@ const data: GoogleFontItem[] = [
   {
     family: "WDXL Lubrifont SC",
     variants: ["regular"],
-    subsets: [
-      "chinese-simplified",
-      "cyrillic",
-      "latin",
-      "latin-ext",
-      "symbols2",
-    ],
+    subsets: ["chinese-simplified", "cyrillic", "latin", "latin-ext", "symbols2"],
     version: "v1",
     lastModified: "2025-06-12",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/wdxllubrifontsc/v1/gNMeW2VmY6acu0XtugFrduDciOOyfny5mD9ASHz5.ttf",
+      regular: "https://fonts.gstatic.com/s/wdxllubrifontsc/v1/gNMeW2VmY6acu0XtugFrduDciOOyfny5mD9ASHz5.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -151,8 +102,7 @@ const data: GoogleFontItem[] = [
     version: "v20",
     lastModified: "2025-09-16",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/zcoolkuaile/v20/tssqApdaRQokwFjFJjvM6h2WpozzoXhC2g.ttf",
+      regular: "https://fonts.gstatic.com/s/zcoolkuaile/v20/tssqApdaRQokwFjFJjvM6h2WpozzoXhC2g.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -165,8 +115,7 @@ const data: GoogleFontItem[] = [
     version: "v16",
     lastModified: "2025-09-10",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/zcoolqingkehuangyou/v16/2Eb5L_R5IXJEWhD3AOhSvFC554MOOahI4mRIi_28c8bHWA.ttf",
+      regular: "https://fonts.gstatic.com/s/zcoolqingkehuangyou/v16/2Eb5L_R5IXJEWhD3AOhSvFC554MOOahI4mRIi_28c8bHWA.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -179,8 +128,7 @@ const data: GoogleFontItem[] = [
     version: "v15",
     lastModified: "2025-09-05",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/zcoolxiaowei/v15/i7dMIFFrTRywPpUVX9_RJyM1YFKQHwyVd3U.ttf",
+      regular: "https://fonts.gstatic.com/s/zcoolxiaowei/v15/i7dMIFFrTRywPpUVX9_RJyM1YFKQHwyVd3U.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -193,8 +141,7 @@ const data: GoogleFontItem[] = [
     version: "v19",
     lastModified: "2025-09-08",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/zhimangxing/v19/f0Xw0ey79sErYFtWQ9a2rq-g0actfektIJ0.ttf",
+      regular: "https://fonts.gstatic.com/s/zhimangxing/v19/f0Xw0ey79sErYFtWQ9a2rq-g0actfektIJ0.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",

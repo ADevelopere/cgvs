@@ -147,7 +147,7 @@ function initializeNodesFromData(
       // Add other element types here as needed
       return null;
     })
-    .filter((node) => node !== null);
+    .filter(node => node !== null);
 
   return [containerNode, ...elementNodes];
 }

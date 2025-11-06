@@ -30,8 +30,7 @@ export const useFontOperations = (): FontOperations => {
   storeRef.current = store;
   const notifications = useNotifications();
   const { fontManagementTranslations: strings } = useAppTranslation();
-  const { createFontMutation, updateFontMutation, deleteFontMutation } =
-    useFontApolloMutations();
+  const { createFontMutation, updateFontMutation, deleteFontMutation } = useFontApolloMutations();
 
   /**
    * Select a font
@@ -84,21 +83,13 @@ export const useFontOperations = (): FontOperations => {
         });
 
         if (result.data?.createFont) {
-          notifications.show(
-            strings.fontCreatedSuccess.replace(
-              "%{name}",
-              result.data.createFont.name
-            ),
-            {
-              severity: "success",
-              autoHideDuration: 3000,
-            }
-          );
+          notifications.show(strings.fontCreatedSuccess.replace("%{name}", result.data.createFont.name), {
+            severity: "success",
+            autoHideDuration: 3000,
+          });
 
           // Select the new font and exit create mode
-          storeRef.current.setSelectedFont(
-            result.data.createFont as Graphql.Font
-          );
+          storeRef.current.setSelectedFont(result.data.createFont as Graphql.Font);
           storeRef.current.cancelCreating();
 
           return true;
@@ -107,22 +98,14 @@ export const useFontOperations = (): FontOperations => {
         return false;
       } catch (error) {
         logger.error("Error creating font:", error);
-        notifications.show(
-          error instanceof Error ? error.message : strings.errorCreatingFont,
-          {
-            severity: "error",
-            autoHideDuration: 3000,
-          }
-        );
+        notifications.show(error instanceof Error ? error.message : strings.errorCreatingFont, {
+          severity: "error",
+          autoHideDuration: 3000,
+        });
         return false;
       }
     },
-    [
-      createFontMutation,
-      notifications,
-      strings.errorCreatingFont,
-      strings.fontCreatedSuccess,
-    ]
+    [createFontMutation, notifications, strings.errorCreatingFont, strings.fontCreatedSuccess]
   );
 
   /**
@@ -138,16 +121,10 @@ export const useFontOperations = (): FontOperations => {
         });
 
         if (result.data?.updateFont) {
-          notifications.show(
-            strings.fontUpdatedSuccess.replace(
-              "%{name}",
-              result.data.updateFont.name
-            ),
-            {
-              severity: "success",
-              autoHideDuration: 3000,
-            }
-          );
+          notifications.show(strings.fontUpdatedSuccess.replace("%{name}", result.data.updateFont.name), {
+            severity: "success",
+            autoHideDuration: 3000,
+          });
 
           storeRef.current.cancelEditing();
           return true;
@@ -156,22 +133,14 @@ export const useFontOperations = (): FontOperations => {
         return false;
       } catch (error) {
         logger.error("Error updating font:", error);
-        notifications.show(
-          error instanceof Error ? error.message : strings.errorUpdatingFont,
-          {
-            severity: "error",
-            autoHideDuration: 3000,
-          }
-        );
+        notifications.show(error instanceof Error ? error.message : strings.errorUpdatingFont, {
+          severity: "error",
+          autoHideDuration: 3000,
+        });
         return false;
       }
     },
-    [
-      updateFontMutation,
-      notifications,
-      strings.fontUpdatedSuccess,
-      strings.errorUpdatingFont,
-    ]
+    [updateFontMutation, notifications, strings.fontUpdatedSuccess, strings.errorUpdatingFont]
   );
 
   /**
@@ -187,16 +156,10 @@ export const useFontOperations = (): FontOperations => {
         });
 
         if (result.data?.deleteFont) {
-          notifications.show(
-            strings.fontDeletedSuccess.replace(
-              "%{name}",
-              result.data.deleteFont.name
-            ),
-            {
-              severity: "success",
-              autoHideDuration: 3000,
-            }
-          );
+          notifications.show(strings.fontDeletedSuccess.replace("%{name}", result.data.deleteFont.name), {
+            severity: "success",
+            autoHideDuration: 3000,
+          });
 
           // Clear selection if deleted font was selected
           if (storeRef.current.selectedFont?.id === id) {
@@ -209,22 +172,14 @@ export const useFontOperations = (): FontOperations => {
         return false;
       } catch (error) {
         logger.error("Error deleting font:", error);
-        notifications.show(
-          error instanceof Error ? error.message : strings.errorDeletingFont,
-          {
-            severity: "error",
-            autoHideDuration: 3000,
-          }
-        );
+        notifications.show(error instanceof Error ? error.message : strings.errorDeletingFont, {
+          severity: "error",
+          autoHideDuration: 3000,
+        });
         return false;
       }
     },
-    [
-      deleteFontMutation,
-      notifications,
-      strings.errorDeletingFont,
-      strings.fontDeletedSuccess,
-    ]
+    [deleteFontMutation, notifications, strings.errorDeletingFont, strings.fontDeletedSuccess]
   );
 
   // Return only functions and store accessors, wrapped in useMemo for stability
@@ -242,15 +197,6 @@ export const useFontOperations = (): FontOperations => {
       updateFont,
       deleteFont,
     }),
-    [
-      selectFont,
-      startCreating,
-      cancelCreating,
-      startEditing,
-      cancelEditing,
-      createFont,
-      updateFont,
-      deleteFont,
-    ]
+    [selectFont, startCreating, cancelCreating, startEditing, cancelEditing, createFont, updateFont, deleteFont]
   );
 };

@@ -19,8 +19,7 @@ export const useRecipientGroupOperations = () => {
   const { recipientGroupTranslations: strings } = useAppTranslation();
 
   // Get the dialog store setters
-  const { closeCreateDialog, closeSettingsDialog, closeDeleteDialog } =
-    useRecipientGroupDialogStore();
+  const { closeCreateDialog, closeSettingsDialog, closeDeleteDialog } = useRecipientGroupDialogStore();
 
   /**
    * Create a new template recipient group.
@@ -28,30 +27,20 @@ export const useRecipientGroupOperations = () => {
   const createGroup = useCallback(
     async (input: Graphql.TemplateRecipientGroupCreateInput): Promise<void> => {
       try {
-        const result =
-          await recipientGroupApollo.createTemplateRecipientGroupMutation({
-            variables: { input },
-          });
+        const result = await recipientGroupApollo.createTemplateRecipientGroupMutation({
+          variables: { input },
+        });
 
         if (result.data) {
-          notifications.show(
-            strings.groupCreated || "Group created successfully",
-            {
-              severity: "success",
-            }
-          );
+          notifications.show(strings.groupCreated || "Group created successfully", {
+            severity: "success",
+          });
           closeCreateDialog();
         } else {
-          logger.error(
-            "Error creating template recipient group:",
-            result.error
-          );
-          notifications.show(
-            strings.errorCreating || "Failed to create group",
-            {
-              severity: "error",
-            }
-          );
+          logger.error("Error creating template recipient group:", result.error);
+          notifications.show(strings.errorCreating || "Failed to create group", {
+            severity: "error",
+          });
         }
       } catch (error) {
         const gqlError = error as {
@@ -59,10 +48,7 @@ export const useRecipientGroupOperations = () => {
           graphQLErrors?: Array<{ message: string }>;
         };
         const errorMessage =
-          gqlError.graphQLErrors?.[0]?.message ||
-          gqlError.message ||
-          strings.errorCreating ||
-          "Failed to create group";
+          gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.errorCreating || "Failed to create group";
 
         logger.error("Error creating template recipient group:", error);
         notifications.show(errorMessage, { severity: "error" });
@@ -77,30 +63,20 @@ export const useRecipientGroupOperations = () => {
   const updateGroup = useCallback(
     async (input: Graphql.TemplateRecipientGroupUpdateInput): Promise<void> => {
       try {
-        const result =
-          await recipientGroupApollo.updateTemplateRecipientGroupMutation({
-            variables: { input },
-          });
+        const result = await recipientGroupApollo.updateTemplateRecipientGroupMutation({
+          variables: { input },
+        });
 
         if (result.data) {
-          notifications.show(
-            strings.groupUpdated || "Group updated successfully",
-            {
-              severity: "success",
-            }
-          );
+          notifications.show(strings.groupUpdated || "Group updated successfully", {
+            severity: "success",
+          });
           closeSettingsDialog();
         } else {
-          logger.error(
-            "Error updating template recipient group:",
-            result.error
-          );
-          notifications.show(
-            strings.errorUpdating || "Failed to update group",
-            {
-              severity: "error",
-            }
-          );
+          logger.error("Error updating template recipient group:", result.error);
+          notifications.show(strings.errorUpdating || "Failed to update group", {
+            severity: "error",
+          });
         }
       } catch (error) {
         const gqlError = error as {
@@ -108,10 +84,7 @@ export const useRecipientGroupOperations = () => {
           graphQLErrors?: Array<{ message: string }>;
         };
         const errorMessage =
-          gqlError.graphQLErrors?.[0]?.message ||
-          gqlError.message ||
-          strings.errorUpdating ||
-          "Failed to update group";
+          gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.errorUpdating || "Failed to update group";
 
         logger.error("Error updating template recipient group:", error);
         notifications.show(errorMessage, { severity: "error" });
@@ -126,30 +99,20 @@ export const useRecipientGroupOperations = () => {
   const deleteGroup = useCallback(
     async (id: number): Promise<void> => {
       try {
-        const result =
-          await recipientGroupApollo.deleteTemplateRecipientGroupMutation({
-            variables: { id },
-          });
+        const result = await recipientGroupApollo.deleteTemplateRecipientGroupMutation({
+          variables: { id },
+        });
 
         if (result.data) {
-          notifications.show(
-            strings.groupDeleted || "Group deleted successfully",
-            {
-              severity: "success",
-            }
-          );
+          notifications.show(strings.groupDeleted || "Group deleted successfully", {
+            severity: "success",
+          });
           closeDeleteDialog();
         } else {
-          logger.error(
-            "Error deleting template recipient group:",
-            result.error
-          );
-          notifications.show(
-            strings.errorDeleting || "Failed to delete group",
-            {
-              severity: "error",
-            }
-          );
+          logger.error("Error deleting template recipient group:", result.error);
+          notifications.show(strings.errorDeleting || "Failed to delete group", {
+            severity: "error",
+          });
         }
       } catch (error) {
         const gqlError = error as {
@@ -157,10 +120,7 @@ export const useRecipientGroupOperations = () => {
           graphQLErrors?: Array<{ message: string }>;
         };
         const errorMessage =
-          gqlError.graphQLErrors?.[0]?.message ||
-          gqlError.message ||
-          strings.errorDeleting ||
-          "Failed to delete group";
+          gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.errorDeleting || "Failed to delete group";
 
         logger.error("Error deleting template recipient group:", error);
         notifications.show(errorMessage, { severity: "error" });

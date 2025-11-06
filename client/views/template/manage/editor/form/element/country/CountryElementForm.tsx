@@ -1,18 +1,12 @@
 import React, { type FC } from "react";
 import { Box, Grid, Paper } from "@mui/material";
-import type {
-  CountryElementFormErrors,
-  CountryElementFormState,
-} from "./types";
+import type { CountryElementFormErrors, CountryElementFormState } from "./types";
 import { CountryRepresentationSelector } from "./CountryRepresentationSelector";
 import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../component/ActionButtons";
 import { UpdateBaseElementFn } from "../base";
-import {
-  Font,
-  CountryRepresentation,
-} from "@/client/graphql/generated/gql/graphql";
+import { Font, CountryRepresentation } from "@/client/graphql/generated/gql/graphql";
 import { UpdateTextPropsFn } from "../textProps";
 
 interface CountryElementFormProps {
@@ -85,12 +79,7 @@ export const CountryElementForm: FC<CountryElementFormProps> = ({
       </Box>
 
       {/* Row 3: Action Buttons (Fixed) */}
-      <ActionButtons
-        onSubmit={onSubmit}
-        onCancel={onCancel}
-        isSubmitting={isSubmitting}
-        submitLabel={submitLabel}
-      />
+      <ActionButtons onSubmit={onSubmit} onCancel={onCancel} isSubmitting={isSubmitting} submitLabel={submitLabel} />
     </Box>
   );
 };

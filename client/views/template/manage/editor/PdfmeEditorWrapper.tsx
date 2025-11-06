@@ -38,10 +38,7 @@ export const PdfmeEditorWrapper: React.FC = () => {
     fetchPolicy: "cache-first",
   });
 
-  const elements = React.useMemo(
-    () => elementsData?.elementsByTemplateId || [],
-    [elementsData]
-  );
+  const elements = React.useMemo(() => elementsData?.elementsByTemplateId || [], [elementsData]);
 
   // Mount: Create Designer instance (only once)
   React.useEffect(() => {
@@ -65,11 +62,11 @@ export const PdfmeEditorWrapper: React.FC = () => {
         template,
         plugins: {
           text,
-          image
+          image,
         },
         options: {
           lang: "ar",
-        }
+        },
       });
 
       // Register onChange callback for upstream sync (PDFMe → State)
@@ -83,10 +80,7 @@ export const PdfmeEditorWrapper: React.FC = () => {
 
         try {
           // Extract element updates from template changes
-          const updates = TemplateConverter.extractElementUpdates(
-            newTemplate,
-            elements
-          );
+          const updates = TemplateConverter.extractElementUpdates(newTemplate, elements);
 
           // Apply updates to element states
           updates.forEach((update, elementId) => {

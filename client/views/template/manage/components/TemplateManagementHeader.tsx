@@ -1,13 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  Box,
-  Typography,
-  IconButton,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Typography, IconButton, useTheme, useMediaQuery } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import { useAppTranslation } from "@/client/locale";
@@ -20,9 +14,12 @@ type TemplateManagementHeaderProps = {
   onBackAction: () => void;
 };
 
-export const TemplateManagementHeader: React.FC<
-  TemplateManagementHeaderProps
-> = ({ templateName, isLoading, isError, onBackAction: onBack }) => {
+export const TemplateManagementHeader: React.FC<TemplateManagementHeaderProps> = ({
+  templateName,
+  isLoading,
+  isError,
+  onBackAction: onBack,
+}) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { templateCategoryTranslations: strings } = useAppTranslation();

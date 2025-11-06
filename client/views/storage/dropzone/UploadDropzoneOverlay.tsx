@@ -1,15 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import {
-  Box,
-  Paper,
-  Typography,
-  alpha,
-  useTheme,
-  Fade,
-  Portal,
-} from "@mui/material";
+import { Box, Paper, Typography, alpha, useTheme, Fade, Portal } from "@mui/material";
 import { CloudUpload as UploadIcon } from "@mui/icons-material";
 import { useStorageUploadOperations } from "@/client/views/storage/hooks/useStorageUploadOperations";
 import { useAppTranslation } from "@/client/locale";
@@ -112,14 +104,7 @@ export const UploadDropzoneOverlay: React.FC<UploadDropzoneOverlayProps> = ({
         logger.error("Overlay upload failed:", error);
       }
     },
-    [
-      disabled,
-      onUploadStart,
-      onFilesDropped,
-      uploadPath,
-      startUpload,
-      onUploadComplete,
-    ]
+    [disabled, onUploadStart, onFilesDropped, uploadPath, startUpload, onUploadComplete]
   );
 
   // Global drag event handlers
@@ -206,14 +191,7 @@ export const UploadDropzoneOverlay: React.FC<UploadDropzoneOverlayProps> = ({
       targetElement.removeEventListener("dragover", handleDragOver);
       targetElement.removeEventListener("drop", handleDrop);
     };
-  }, [
-    disabled,
-    container,
-    handleDragEnter,
-    handleDragLeave,
-    handleDragOver,
-    handleDrop,
-  ]);
+  }, [disabled, container, handleDragEnter, handleDragLeave, handleDragOver, handleDrop]);
 
   if (!showOverlay || !isVisible) {
     return null;
@@ -271,12 +249,7 @@ export const UploadDropzoneOverlay: React.FC<UploadDropzoneOverlayProps> = ({
             }}
           />
 
-          <Typography
-            variant="h4"
-            color="primary"
-            align="center"
-            sx={{ mb: 2, fontWeight: "bold" }}
-          >
+          <Typography variant="h4" color="primary" align="center" sx={{ mb: 2, fontWeight: "bold" }}>
             {translations.dropHereToUpload}
           </Typography>
 

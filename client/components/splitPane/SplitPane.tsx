@@ -11,11 +11,7 @@ import React, {
   useMemo,
 } from "react";
 import { Resizer } from "./Resizer";
-import {
-  getStorageKey,
-  debouncedSaveToLocalStorage,
-  loadFromLocalStorage,
-} from "@/client/utils/localStorage";
+import { getStorageKey, debouncedSaveToLocalStorage, loadFromLocalStorage } from "@/client/utils/localStorage";
 
 // Helper to remove focus so text isn't selected while dragging
 function unFocus(doc: Document, win: Window) {
@@ -147,9 +143,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
       return defaultRatios;
     }
 
-    const stored = loadFromLocalStorage<StoredPaneState>(
-      getStorageKey(SPLIT_PANE_STORAGE_PREFIX, storageKey)
-    );
+    const stored = loadFromLocalStorage<StoredPaneState>(getStorageKey(SPLIT_PANE_STORAGE_PREFIX, storageKey));
 
     return stored?.ratios ?? defaultRatios;
   }, [storageKey, firstPane.preferredRatio, secondPane.preferredRatio]);
@@ -173,21 +167,14 @@ export const SplitPane: FC<SplitPaneProps> = ({
         },
       };
 
-      debouncedSaveToLocalStorage(
-        getStorageKey(SPLIT_PANE_STORAGE_PREFIX, storageKey),
-        state
-      );
+      debouncedSaveToLocalStorage(getStorageKey(SPLIT_PANE_STORAGE_PREFIX, storageKey), state);
     },
     [storageKey, firstPane.visible, secondPane.visible]
   );
 
   // Update ratios when visibility changes
   const updateRatios = useCallback(
-    (
-      firstVisible: boolean,
-      secondVisible: boolean,
-      currentRatios = lastActiveRatios
-    ) => {
+    (firstVisible: boolean, secondVisible: boolean, currentRatios = lastActiveRatios) => {
       if (!firstVisible && secondVisible) {
         setPaneRatios({ first: 0, second: 1 });
       } else if (firstVisible && !secondVisible) {
@@ -221,8 +208,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
   const calculatePaneSizes = useCallback(() => {
     if (!containerWidth || !containerHeight) return;
 
-    const totalSize =
-      orientation === "vertical" ? containerWidth : containerHeight;
+    const totalSize = orientation === "vertical" ? containerWidth : containerHeight;
 
     // Use current local ratios with safe defaults
     const firstRatio = paneRatios?.first ?? firstPane.preferredRatio ?? 0.5;
@@ -230,8 +216,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
 
     // Normalize ratios
     const totalRatio = firstRatio + secondRatio;
-    const normalizedFirstRatio =
-      totalRatio === 0 ? 0.5 : firstRatio / totalRatio;
+    const normalizedFirstRatio = totalRatio === 0 ? 0.5 : firstRatio / totalRatio;
 
     const newPane1Size = totalSize * normalizedFirstRatio;
     const newPane2Size = totalSize - newPane1Size;
@@ -243,17 +228,8 @@ export const SplitPane: FC<SplitPaneProps> = ({
     const secondMaxSize = totalSize * (secondPane.maxRatio ?? 0.9);
 
     setPane1Size(Math.max(firstMinSize, Math.min(firstMaxSize, newPane1Size)));
-    setPane2Size(
-      Math.max(secondMinSize, Math.min(secondMaxSize, newPane2Size))
-    );
-  }, [
-    containerWidth,
-    containerHeight,
-    orientation,
-    firstPane,
-    secondPane,
-    paneRatios,
-  ]);
+    setPane2Size(Math.max(secondMinSize, Math.min(secondMaxSize, newPane2Size)));
+  }, [containerWidth, containerHeight, orientation, firstPane, secondPane, paneRatios]);
 
   useEffect(() => {
     const updateContainerDimensions = () => {
@@ -271,10 +247,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
             setContainerWidth(newWidth);
             previousContainerWidthRef.current = newWidth;
           }
-          if (
-            newHeight !== previousContainerHeightRef.current &&
-            newHeight > 0
-          ) {
+          if (newHeight !== previousContainerHeightRef.current && newHeight > 0) {
             setContainerHeight(newHeight);
             previousContainerHeightRef.current = newHeight;
           }
@@ -308,15 +281,10 @@ export const SplitPane: FC<SplitPaneProps> = ({
       if (!allowResize || !active) return;
       unFocus(document, window);
 
-      const currentPos =
-        orientation === "vertical"
-          ? event.touches[0].clientX
-          : event.touches[0].clientY;
+      const currentPos = orientation === "vertical" ? event.touches[0].clientX : event.touches[0].clientY;
 
-      const sizeNode =
-        primary === "first" ? pane1Ref.current : pane2Ref.current;
-      const otherNode =
-        primary === "first" ? pane2Ref.current : pane1Ref.current;
+      const sizeNode = primary === "first" ? pane1Ref.current : pane2Ref.current;
+      const otherNode = primary === "first" ? pane2Ref.current : pane1Ref.current;
       if (!sizeNode || !otherNode) return;
 
       const rect = sizeNode.getBoundingClientRect();
@@ -331,12 +299,10 @@ export const SplitPane: FC<SplitPaneProps> = ({
         deltaPos = Math.round(deltaPos / step) * step;
       }
 
-      let newSize =
-        primary === "first" ? sizeValue + deltaPos : sizeValue - deltaPos;
+      let newSize = primary === "first" ? sizeValue + deltaPos : sizeValue - deltaPos;
       const newPosition = currentPos;
 
-      const containerSize =
-        orientation === "vertical" ? containerWidth : containerHeight;
+      const containerSize = orientation === "vertical" ? containerWidth : containerHeight;
 
       // Apply min/max constraints for the primary pane
       const activePane = primary === "first" ? firstPane : secondPane;
@@ -407,8 +373,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
       if (onDragFinished) onDragFinished(draggedSize);
 
       // Store current ratios as last active and save to localStorage
-      const totalSize =
-        orientation === "vertical" ? containerWidth : containerHeight;
+      const totalSize = orientation === "vertical" ? containerWidth : containerHeight;
       if (totalSize && pane1Size && pane2Size) {
         const newRatios = {
           first: pane1Size / totalSize,
@@ -449,15 +414,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
       document.removeEventListener("mousemove", onMouseMoveDoc);
       document.removeEventListener("touchmove", onTouchMoveDoc);
     };
-  }, [
-    active,
-    position,
-    draggedSize,
-    allowResize,
-    onMouseUp,
-    onMouseMove,
-    onTouchMove,
-  ]);
+  }, [active, position, draggedSize, allowResize, onMouseUp, onMouseMove, onTouchMove]);
 
   const onMouseDown = (event: MouseEvent<HTMLSpanElement>) => {
     const eventWithTouches = {
@@ -471,21 +428,13 @@ export const SplitPane: FC<SplitPaneProps> = ({
     if (!allowResize) return;
     unFocus(document, window);
     if (onDragStarted) onDragStarted();
-    const currentPos =
-      orientation === "vertical"
-        ? event.touches[0].clientX
-        : event.touches[0].clientY;
+    const currentPos = orientation === "vertical" ? event.touches[0].clientX : event.touches[0].clientY;
     setActive(true);
     setPosition(currentPos);
   };
 
   const disabledClass = allowResize ? "" : "disabled";
-  const classes = [
-    "SplitPane",
-    className ?? "",
-    orientation,
-    disabledClass,
-  ].join(" ");
+  const classes = ["SplitPane", className ?? "", orientation, disabledClass].join(" ");
 
   // Build style
   const wrapperStyle: CSSProperties = {
@@ -541,12 +490,8 @@ export const SplitPane: FC<SplitPaneProps> = ({
   }
 
   const pane1Classes = ["Pane1", paneClassName, firstPane?.className].join(" ");
-  const pane2Classes = ["Pane2", paneClassName, secondPane?.className].join(
-    " "
-  );
-  const resizerClassNames = resizerProps?.className
-    ? `${resizerProps?.className} resizer`
-    : "resizer";
+  const pane2Classes = ["Pane2", paneClassName, secondPane?.className].join(" ");
+  const resizerClassNames = resizerProps?.className ? `${resizerProps?.className} resizer` : "resizer";
 
   return (
     <div
@@ -560,9 +505,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
       <div ref={splitPaneRef} className={classes} style={wrapperStyle}>
         {firstPane?.visible && (
           <div ref={pane1Ref} className={pane1Classes} style={pane1Styles}>
-            <div style={{ width: "100%", height: "100%" }}>
-              {notNullChildren[0]}
-            </div>
+            <div style={{ width: "100%", height: "100%" }}>{notNullChildren[0]}</div>
           </div>
         )}
 
@@ -582,9 +525,7 @@ export const SplitPane: FC<SplitPaneProps> = ({
 
         {secondPane?.visible && (
           <div ref={pane2Ref} className={pane2Classes} style={pane2Styles}>
-            <div style={{ width: "100%", height: "100%" }}>
-              {notNullChildren[1]}
-            </div>
+            <div style={{ width: "100%", height: "100%" }}>{notNullChildren[1]}</div>
           </div>
         )}
       </div>

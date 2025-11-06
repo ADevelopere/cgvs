@@ -5,10 +5,7 @@ import { ImageElementForm } from "../../form/element/image/ImageElementForm";
 import { useElementCreateMutations } from "../../form/hooks/useElementCreateMutations";
 import { validateBaseElementField } from "../../form/element/base/cretElementBaseValidator";
 import { validateImageDataSource, validateImageProps } from "../../form/element/image/imageValidators";
-import type {
-  ImageElementFormState,
-  ImageElementFormErrors,
-} from "../../form/element/image/types";
+import type { ImageElementFormState, ImageElementFormErrors } from "../../form/element/image/types";
 import type { UpdateBaseElementFn } from "../../form/element/base";
 import type { UpdateImagePropsFn } from "../../form/element/image/types";
 import { logger } from "@/client/lib/logger";
@@ -24,7 +21,7 @@ interface CreateImageElementWrapperProps {
   initialStorageFileId?: number;
   // Pre-configured image fit
   initialFit?: GQL.ElementImageFit;
-  // 
+  //
   initialElementName: string;
 
   // Dialog mode (for compact layout)
@@ -36,9 +33,7 @@ interface CreateImageElementWrapperProps {
 // COMPONENT
 // ============================================================================
 
-export const CreateImageElementWrapper: React.FC<
-  CreateImageElementWrapperProps
-> = ({
+export const CreateImageElementWrapper: React.FC<CreateImageElementWrapperProps> = ({
   templateId,
   initialStorageFileId,
   initialFit,
@@ -46,7 +41,9 @@ export const CreateImageElementWrapper: React.FC<
   open,
   onClose,
 }) => {
-    const { templateEditorTranslations: {addNodePanel: t} } = useAppTranslation();
+  const {
+    templateEditorTranslations: { addNodePanel: t },
+  } = useAppTranslation();
 
   // Get mutation
   const { createImageElementMutation } = useElementCreateMutations();
@@ -138,22 +135,19 @@ export const CreateImageElementWrapper: React.FC<
     }));
   }, []);
 
-  const updateDataSource = useCallback(
-    (dataSource: GQL.ImageDataSourceInput) => {
-      setState(prev => ({
-        ...prev,
-        dataSource,
-      }));
+  const updateDataSource = useCallback((dataSource: GQL.ImageDataSourceInput) => {
+    setState(prev => ({
+      ...prev,
+      dataSource,
+    }));
 
-      const dataSourceErrors = validateImageDataSource(dataSource);
-      
-      setErrors(prev => ({
-        ...prev,
-        dataSource: dataSourceErrors,
-      }));
-    },
-    []
-  );
+    const dataSourceErrors = validateImageDataSource(dataSource);
+
+    setErrors(prev => ({
+      ...prev,
+      dataSource: dataSourceErrors,
+    }));
+  }, []);
 
   const hasError = useMemo(() => {
     return (

@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Menu,
-  MenuItem,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, Button, Menu, MenuItem, useMediaQuery, useTheme } from "@mui/material";
 import { KeyboardArrowDown } from "@mui/icons-material";
 import { useAppTranslation } from "@/client/locale";
 import { TabContext } from "@mui/lab";
@@ -20,10 +13,7 @@ interface RecipientSubTabListProps {
   activeTab: "manage" | "add";
 }
 
-export const RecipientSubTabList: React.FC<RecipientSubTabListProps> = ({
-  onChange,
-  activeTab,
-}) => {
+export const RecipientSubTabList: React.FC<RecipientSubTabListProps> = ({ onChange, activeTab }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const { recipientTranslations: strings } = useAppTranslation();
@@ -74,16 +64,10 @@ export const RecipientSubTabList: React.FC<RecipientSubTabListProps> = ({
             horizontal: "left",
           }}
         >
-          <MenuItem
-            onClick={() => handleMenuItemClick("manage")}
-            selected={activeTab === "manage"}
-          >
+          <MenuItem onClick={() => handleMenuItemClick("manage")} selected={activeTab === "manage"}>
             {strings.tabManageAdded}
           </MenuItem>
-          <MenuItem
-            onClick={() => handleMenuItemClick("add")}
-            selected={activeTab === "add"}
-          >
+          <MenuItem onClick={() => handleMenuItemClick("add")} selected={activeTab === "add"}>
             {strings.tabAddNew}
           </MenuItem>
         </Menu>

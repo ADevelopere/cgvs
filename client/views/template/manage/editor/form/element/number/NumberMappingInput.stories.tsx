@@ -13,10 +13,7 @@ export default meta;
 type Story = StoryObj<typeof NumberMappingInput>;
 
 const NumberMappingInputWithState = (
-  props: Omit<
-    React.ComponentProps<typeof NumberMappingInput>,
-    "value" | "onChange"
-  >
+  props: Omit<React.ComponentProps<typeof NumberMappingInput>, "value" | "onChange">
 ) => {
   const [value, setValue] = useState<Record<string, string>>({
     ar: "2",

@@ -25,10 +25,7 @@ import { Template } from "@/client/graphql/generated/gql/graphql";
 import TemplateVariableModal from "./TemplateVariableModal";
 import { useAppTranslation } from "@/client/locale";
 import { TemplateVariableTranslation } from "@/client/locale/components";
-import {
-  TemplateVariable,
-  TemplateVariableType,
-} from "@/client/graphql/generated/gql/graphql";
+import { TemplateVariable, TemplateVariableType } from "@/client/graphql/generated/gql/graphql";
 import { useTemplateVariableOperations } from "./hooks";
 import { templateVariablesByTemplateIdQueryDocument } from "./hooks/templateVariable.documents";
 
@@ -40,15 +37,8 @@ interface ContentProps {
   onDelete: (id: number) => Promise<void>;
 }
 
-const Content: FC<ContentProps> = ({
-  onOpenModal,
-  strings,
-  variables,
-  loading,
-  onDelete,
-}) => {
-  const [isDeleteConfirmationDialogOpen, setIsDeleteConfirmationDialogOpen] =
-    useState(false);
+const Content: FC<ContentProps> = ({ onOpenModal, strings, variables, loading, onDelete }) => {
+  const [isDeleteConfirmationDialogOpen, setIsDeleteConfirmationDialogOpen] = useState(false);
   const [variableToDelete, setVariableToDelete] = useState<number | null>(null);
 
   const typeToLabelMap: Record<TemplateVariableType, string> = useMemo(
@@ -58,12 +48,7 @@ const Content: FC<ContentProps> = ({
       DATE: strings.dateTypeLabel,
       SELECT: strings.selectTypeLabel,
     }),
-    [
-      strings.dateTypeLabel,
-      strings.numberTypeLabel,
-      strings.selectTypeLabel,
-      strings.textTypeLabel,
-    ]
+    [strings.dateTypeLabel, strings.numberTypeLabel, strings.selectTypeLabel, strings.textTypeLabel]
   );
 
   const handleVariableClick = useCallback(
@@ -155,10 +140,7 @@ const Content: FC<ContentProps> = ({
               }
             >
               <ListItemButton onClick={() => handleVariableClick(variable)}>
-                <ListItemText
-                  primary={variable.name}
-                  secondary={typeToLabelMap[type] || type}
-                />
+                <ListItemText primary={variable.name} secondary={typeToLabelMap[type] || type} />
               </ListItemButton>
             </ListItem>
           );
@@ -166,28 +148,16 @@ const Content: FC<ContentProps> = ({
       </List>
 
       {/*  Delete Confirmation Dialog */}
-      <Dialog
-        open={isDeleteConfirmationDialogOpen}
-        onClose={() => setIsDeleteConfirmationDialogOpen(false)}
-      >
+      <Dialog open={isDeleteConfirmationDialogOpen} onClose={() => setIsDeleteConfirmationDialogOpen(false)}>
         <DialogTitle>{strings.deleteVariable}</DialogTitle>
         <DialogContent>
           <DialogContentText>{strings.confirmDelete}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={() => setIsDeleteConfirmationDialogOpen(false)}
-            color="primary"
-            variant="contained"
-          >
+          <Button onClick={() => setIsDeleteConfirmationDialogOpen(false)} color="primary" variant="contained">
             {strings.cancel}
           </Button>
-          <Button
-            onClick={handleConfirmDelete}
-            autoFocus
-            color="error"
-            variant="outlined"
-          >
+          <Button onClick={handleConfirmDelete} autoFocus color="error" variant="outlined">
             {strings.confirm}
           </Button>
         </DialogActions>
@@ -234,36 +204,19 @@ const Header: FC<FooterProps> = ({ onOpenModal, strings }) => {
           mt: 2,
         }}
       >
-        <Button
-          variant="contained"
-          size="small"
-          startIcon={<Plus size={16} />}
-          onClick={handleCreateClick}
-        >
+        <Button variant="contained" size="small" startIcon={<Plus size={16} />} onClick={handleCreateClick}>
           {strings.createVariable}
         </Button>
       </Box>
 
       {/* popover menu */}
       <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
-        <MenuItem
-          onClick={() => handleVariableTypeSelect(TemplateVariableType.Text)}
-        >
-          {strings.textVariable}
-        </MenuItem>
-        <MenuItem
-          onClick={() => handleVariableTypeSelect(TemplateVariableType.Number)}
-        >
+        <MenuItem onClick={() => handleVariableTypeSelect(TemplateVariableType.Text)}>{strings.textVariable}</MenuItem>
+        <MenuItem onClick={() => handleVariableTypeSelect(TemplateVariableType.Number)}>
           {strings.numberVariable}
         </MenuItem>
-        <MenuItem
-          onClick={() => handleVariableTypeSelect(TemplateVariableType.Date)}
-        >
-          {strings.dateVariable}
-        </MenuItem>
-        <MenuItem
-          onClick={() => handleVariableTypeSelect(TemplateVariableType.Select)}
-        >
+        <MenuItem onClick={() => handleVariableTypeSelect(TemplateVariableType.Date)}>{strings.dateVariable}</MenuItem>
+        <MenuItem onClick={() => handleVariableTypeSelect(TemplateVariableType.Select)}>
           {strings.selectVariable}
         </MenuItem>
       </Menu>
@@ -275,20 +228,14 @@ interface TemplateVariableManagementProps {
   template: Template;
 }
 
-const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
-  template,
-}) => {
+const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({ template }) => {
   const { deleteVariable } = useTemplateVariableOperations();
   const { templateVariableTranslations: strings } = useAppTranslation();
 
   // Modal state management
   const [isOpen, setIsOpen] = useState(false);
-  const [editingVariableId, setEditingVariableId] = useState<number | null>(
-    null
-  );
-  const [variableType, setVariableType] = useState<TemplateVariableType>(
-    TemplateVariableType.Text
-  );
+  const [editingVariableId, setEditingVariableId] = useState<number | null>(null);
+  const [variableType, setVariableType] = useState<TemplateVariableType>(TemplateVariableType.Text);
 
   // Modal control functions
   const openCreateModal = useCallback((type: TemplateVariableType) => {
@@ -309,19 +256,13 @@ const TemplateVariableManagement: FC<TemplateVariableManagementProps> = ({
   }, []);
 
   // Direct query - Apollo auto-refetches, no manual sync
-  const { data, loading } = useQuery(
-    templateVariablesByTemplateIdQueryDocument,
-    {
-      variables: { templateId: template.id },
-      skip: !template.id,
-      fetchPolicy: "cache-first",
-    }
-  );
+  const { data, loading } = useQuery(templateVariablesByTemplateIdQueryDocument, {
+    variables: { templateId: template.id },
+    skip: !template.id,
+    fetchPolicy: "cache-first",
+  });
 
-  const variables = useMemo(
-    () => data?.templateVariablesByTemplateId || [],
-    [data]
-  );
+  const variables = useMemo(() => data?.templateVariablesByTemplateId || [], [data]);
 
   return (
     <>

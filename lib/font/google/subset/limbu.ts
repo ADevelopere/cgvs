@@ -9,16 +9,11 @@ const data: GoogleFontItem[] = [
     version: "v2",
     lastModified: "2025-05-30",
     files: {
-      "500":
-        "https://fonts.gstatic.com/s/namdhinggo/v2/uk-lEGe3rbgg8Xzoy5-TNoGKxyRa8oZK9I0.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/namdhinggo/v2/uk-lEGe3rbgg8Xzoy5-TNq2NxyRa8oZK9I0.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/namdhinggo/v2/uk-lEGe3rbgg8Xzoy5-TNsmMxyRa8oZK9I0.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/namdhinggo/v2/uk-lEGe3rbgg8Xzoy5-TNtWPxyRa8oZK9I0.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/namdhinggo/v2/uk-mEGe3rbgg8Xzoy5-TDnWj4yxx7o8.ttf",
+      "500": "https://fonts.gstatic.com/s/namdhinggo/v2/uk-lEGe3rbgg8Xzoy5-TNoGKxyRa8oZK9I0.ttf",
+      "600": "https://fonts.gstatic.com/s/namdhinggo/v2/uk-lEGe3rbgg8Xzoy5-TNq2NxyRa8oZK9I0.ttf",
+      "700": "https://fonts.gstatic.com/s/namdhinggo/v2/uk-lEGe3rbgg8Xzoy5-TNsmMxyRa8oZK9I0.ttf",
+      "800": "https://fonts.gstatic.com/s/namdhinggo/v2/uk-lEGe3rbgg8Xzoy5-TNtWPxyRa8oZK9I0.ttf",
+      regular: "https://fonts.gstatic.com/s/namdhinggo/v2/uk-mEGe3rbgg8Xzoy5-TDnWj4yxx7o8.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",
@@ -31,8 +26,7 @@ const data: GoogleFontItem[] = [
     version: "v26",
     lastModified: "2025-09-05",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/notosanslimbu/v26/3JnlSDv90Gmq2mrzckOBBRRoNJVj0MF3OHRDnA.ttf",
+      regular: "https://fonts.gstatic.com/s/notosanslimbu/v26/3JnlSDv90Gmq2mrzckOBBRRoNJVj0MF3OHRDnA.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",

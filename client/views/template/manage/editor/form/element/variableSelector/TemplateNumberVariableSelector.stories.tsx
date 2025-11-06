@@ -5,8 +5,7 @@ import { mockNumberVariables } from "../story.util";
 import { useState } from "react";
 
 const meta: Meta<typeof TemplateNumberVariableSelector> = {
-  title:
-    "Template/Editor/Form/Element/VariableSelector/TemplateNumberVariableSelector",
+  title: "Template/Editor/Form/Element/VariableSelector/TemplateNumberVariableSelector",
   component: TemplateNumberVariableSelector,
   tags: ["autodocs"],
 };
@@ -15,10 +14,7 @@ export default meta;
 type Story = StoryObj<typeof TemplateNumberVariableSelector>;
 
 const TemplateNumberVariableSelectorWithState = (
-  props: Omit<
-    React.ComponentProps<typeof TemplateNumberVariableSelector>,
-    "value" | "onChange"
-  >
+  props: Omit<React.ComponentProps<typeof TemplateNumberVariableSelector>, "value" | "onChange">
 ) => {
   const [value, setValue] = useState<number | null>(null);
 
@@ -35,11 +31,7 @@ const TemplateNumberVariableSelectorWithState = (
 };
 
 export const Default: Story = {
-  render: () => (
-    <TemplateNumberVariableSelectorWithState
-      numberVariables={mockNumberVariables}
-    />
-  ),
+  render: () => <TemplateNumberVariableSelectorWithState numberVariables={mockNumberVariables} />,
 };
 
 export const WithValue: Story = {

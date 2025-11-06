@@ -12,129 +12,113 @@ import { CategoryDocuments } from "../../hooks/index";
  */
 export const useTemplateCategoryApolloMutations = () => {
   // Create category mutation
-  const [createTemplateCategoryMutation] = useMutation(
-    CategoryDocuments.createTemplateCategoryMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.createTemplateCategory) return;
-        const newCategory = data.createTemplateCategory;
-        const parentId = newCategory.parentCategory?.id;
+  const [createTemplateCategoryMutation] = useMutation(CategoryDocuments.createTemplateCategoryMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.createTemplateCategory) return;
+      const newCategory = data.createTemplateCategory;
+      const parentId = newCategory.parentCategory?.id;
 
-        // Add to parent's children query cache (null for root categories)
-        cache.updateQuery<Graphql.CategoryChildrenQuery>(
-          {
-            query: CategoryDocuments.categoryChildrenQueryDocument,
-            variables: { parentCategoryId: parentId ?? null },
-          },
-          existing => {
-            if (!existing?.categoryChildren) return existing;
-            return {
-              categoryChildren: [...existing.categoryChildren, newCategory],
-            };
-          }
-        );
-      },
-    }
-  );
+      // Add to parent's children query cache (null for root categories)
+      cache.updateQuery<Graphql.CategoryChildrenQuery>(
+        {
+          query: CategoryDocuments.categoryChildrenQueryDocument,
+          variables: { parentCategoryId: parentId ?? null },
+        },
+        existing => {
+          if (!existing?.categoryChildren) return existing;
+          return {
+            categoryChildren: [...existing.categoryChildren, newCategory],
+          };
+        }
+      );
+    },
+  });
 
   // Update category mutation
-  const [updateTemplateCategoryMutation] = useMutation(
-    CategoryDocuments.updateTemplateCategoryMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.updateTemplateCategory) return;
-        const updated = data.updateTemplateCategory;
-        const newParentId = updated.parentCategory?.id;
+  const [updateTemplateCategoryMutation] = useMutation(CategoryDocuments.updateTemplateCategoryMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.updateTemplateCategory) return;
+      const updated = data.updateTemplateCategory;
+      const newParentId = updated.parentCategory?.id;
 
-        // Get old parent to detect changes
-        const oldCat = cache.readFragment<{
-          parentCategory?: { id: number } | null;
-        }>({
-          id: cache.identify({
-            __typename: "TemplateCategory",
-            id: updated.id,
-          }),
-          fragment: gql`
-            fragment Old on TemplateCategory {
-              parentCategory {
-                id
-              }
+      // Get old parent to detect changes
+      const oldCat = cache.readFragment<{
+        parentCategory?: { id: number } | null;
+      }>({
+        id: cache.identify({
+          __typename: "TemplateCategory",
+          id: updated.id,
+        }),
+        fragment: gql`
+          fragment Old on TemplateCategory {
+            parentCategory {
+              id
             }
-          `,
-        });
-        const oldParentId = oldCat?.parentCategory?.id;
+          }
+        `,
+      });
+      const oldParentId = oldCat?.parentCategory?.id;
 
-        if (oldParentId !== newParentId) {
-          // Parent changed: remove from old list
-          cache.updateQuery<Graphql.CategoryChildrenQuery>(
-            {
-              query: CategoryDocuments.categoryChildrenQueryDocument,
-              variables: { parentCategoryId: oldParentId ?? null },
-            },
-            existing => ({
-              categoryChildren:
-                existing?.categoryChildren.filter(c => c.id !== updated.id) ??
-                [],
-            })
-          );
-        }
-
-        // Add to new list (or update in place if parent is the same)
+      if (oldParentId !== newParentId) {
+        // Parent changed: remove from old list
         cache.updateQuery<Graphql.CategoryChildrenQuery>(
           {
             query: CategoryDocuments.categoryChildrenQueryDocument,
-            variables: { parentCategoryId: newParentId ?? null },
+            variables: { parentCategoryId: oldParentId ?? null },
           },
-          existing => {
-            if (!existing?.categoryChildren)
-              return { categoryChildren: [updated] };
-            const existingIndex = existing.categoryChildren.findIndex(
-              c => c.id === updated.id
-            );
-            if (existingIndex > -1) {
-              const newChildren = [...existing.categoryChildren];
-              newChildren[existingIndex] = {
-                ...newChildren[existingIndex],
-                ...updated,
-              };
-              return { categoryChildren: newChildren };
-            }
-            return {
-              categoryChildren: [...existing.categoryChildren, updated],
-            };
-          }
+          existing => ({
+            categoryChildren: existing?.categoryChildren.filter(c => c.id !== updated.id) ?? [],
+          })
         );
-      },
-    }
-  );
+      }
+
+      // Add to new list (or update in place if parent is the same)
+      cache.updateQuery<Graphql.CategoryChildrenQuery>(
+        {
+          query: CategoryDocuments.categoryChildrenQueryDocument,
+          variables: { parentCategoryId: newParentId ?? null },
+        },
+        existing => {
+          if (!existing?.categoryChildren) return { categoryChildren: [updated] };
+          const existingIndex = existing.categoryChildren.findIndex(c => c.id === updated.id);
+          if (existingIndex > -1) {
+            const newChildren = [...existing.categoryChildren];
+            newChildren[existingIndex] = {
+              ...newChildren[existingIndex],
+              ...updated,
+            };
+            return { categoryChildren: newChildren };
+          }
+          return {
+            categoryChildren: [...existing.categoryChildren, updated],
+          };
+        }
+      );
+    },
+  });
 
   // Delete category mutation
-  const [deleteTemplateCategoryMutation] = useMutation(
-    CategoryDocuments.deleteTemplateCategoryMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.deleteTemplateCategory) return;
-        const deleted = data.deleteTemplateCategory;
-        const parentId = deleted.parentCategory?.id;
+  const [deleteTemplateCategoryMutation] = useMutation(CategoryDocuments.deleteTemplateCategoryMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.deleteTemplateCategory) return;
+      const deleted = data.deleteTemplateCategory;
+      const parentId = deleted.parentCategory?.id;
 
-        // Remove from parent's children query (null for root categories)
-        cache.updateQuery<Graphql.CategoryChildrenQuery>(
-          {
-            query: CategoryDocuments.categoryChildrenQueryDocument,
-            variables: { parentCategoryId: parentId ?? null },
-          },
-          existing => {
-            if (!existing?.categoryChildren) return existing;
-            return {
-              categoryChildren: existing.categoryChildren.filter(
-                c => c.id !== deleted.id
-              ),
-            };
-          }
-        );
-      },
-    }
-  );
+      // Remove from parent's children query (null for root categories)
+      cache.updateQuery<Graphql.CategoryChildrenQuery>(
+        {
+          query: CategoryDocuments.categoryChildrenQueryDocument,
+          variables: { parentCategoryId: parentId ?? null },
+        },
+        existing => {
+          if (!existing?.categoryChildren) return existing;
+          return {
+            categoryChildren: existing.categoryChildren.filter(c => c.id !== deleted.id),
+          };
+        }
+      );
+    },
+  });
 
   // useMemo ensures the hook returns a stable object, preventing unnecessary re-renders
   return React.useMemo(
@@ -155,10 +139,6 @@ export const useTemplateCategoryApolloMutations = () => {
        */
       deleteTemplateCategoryMutation,
     }),
-    [
-      createTemplateCategoryMutation,
-      updateTemplateCategoryMutation,
-      deleteTemplateCategoryMutation,
-    ]
+    [createTemplateCategoryMutation, updateTemplateCategoryMutation, deleteTemplateCategoryMutation]
   );
 };

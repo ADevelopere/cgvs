@@ -12,10 +12,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
-export const templatecategorySpecialTypeEnum = pgEnum("category_special_type", [
-  "Main",
-  "Suspension",
-]);
+export const templatecategorySpecialTypeEnum = pgEnum("category_special_type", ["Main", "Suspension"]);
 
 export const templateCategories = pgTable(
   "TemplateCategory",
@@ -32,15 +29,9 @@ export const templateCategories = pgTable(
   table => [
     uniqueIndex("template_category_special_type_key").on(table.specialType),
     // GIN index for Full-Text Search on 'name' column
-    index("idx_template_categories_name_fts").using(
-      "gin",
-      sql`to_tsvector('simple', ${table.name})`
-    ),
+    index("idx_template_categories_name_fts").using("gin", sql`to_tsvector('simple', ${table.name})`),
     // GiST index for faster LIKE/ILIKE on name using pg_trgm
-    index("idx_template_categories_name_trgm").using(
-      "gist",
-      table.name.op("gist_trgm_ops")
-    ),
+    index("idx_template_categories_name_trgm").using("gist", table.name.op("gist_trgm_ops")),
   ]
 );
 
@@ -59,23 +50,14 @@ export const templates = pgTable(
   },
   table => [
     // GIN index for Full-Text Search on 'name' column
-    index("idx_templates_name_fts").using(
-      "gin",
-      sql`to_tsvector('simple', ${table.name})`
-    ),
+    index("idx_templates_name_fts").using("gin", sql`to_tsvector('simple', ${table.name})`),
 
     // GiST index for faster LIKE/ILIKE on name using pg_trgm
-    index("idx_templates_name_trgm").using(
-      "gist",
-      table.name.op("gist_trgm_ops")
-    ),
+    index("idx_templates_name_trgm").using("gist", table.name.op("gist_trgm_ops")),
   ]
 );
 
-export const templatesConfigsKeyEnum = pgEnum("template_config_key", [
-  "MAX_BACKGROUND_SIZE",
-  "ALLOWED_FILE_TYPES",
-]);
+export const templatesConfigsKeyEnum = pgEnum("template_config_key", ["MAX_BACKGROUND_SIZE", "ALLOWED_FILE_TYPES"]);
 
 export const templatesConfigs = pgTable("templates_config", {
   key: templatesConfigsKeyEnum("key").primaryKey(),

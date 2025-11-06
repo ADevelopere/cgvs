@@ -79,9 +79,7 @@ export const FolderDropTarget: React.FC<FolderDropTargetProps> = ({
           onUploadStart?.();
           onFilesDropped?.(files);
 
-          logger.info(
-            `Uploading ${files.length} files to folder: ${folderPath}`
-          );
+          logger.info(`Uploading ${files.length} files to folder: ${folderPath}`);
 
           await startUpload(files, folderPath, {
             onComplete: () => {
@@ -94,25 +92,17 @@ export const FolderDropTarget: React.FC<FolderDropTargetProps> = ({
         }
       })();
     },
-    [
-      disabled,
-      onUploadStart,
-      onFilesDropped,
-      folderPath,
-      startUpload,
-      onUploadComplete,
-    ]
+    [disabled, onUploadStart, onFilesDropped, folderPath, startUpload, onUploadComplete]
   );
 
   // Configure react-dropzone
-  const { getRootProps, getInputProps, isDragActive, isDragReject } =
-    useDropzone({
-      onDrop: handleFilesUpload,
-      disabled,
-      noClick: true, // Prevent click-to-select for folders
-      noKeyboard: true, // Prevent keyboard activation
-      noDragEventsBubbling: true, // Prevent event bubbling conflicts
-    });
+  const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
+    onDrop: handleFilesUpload,
+    disabled,
+    noClick: true, // Prevent click-to-select for folders
+    noKeyboard: true, // Prevent keyboard activation
+    noDragEventsBubbling: true, // Prevent event bubbling conflicts
+  });
 
   return (
     <MUI.Box
@@ -121,20 +111,11 @@ export const FolderDropTarget: React.FC<FolderDropTargetProps> = ({
         position: "relative",
         border:
           isDragActive && !disabled
-            ? `2px dashed ${
-                isDragReject
-                  ? theme.palette.error.main
-                  : theme.palette.primary.main
-              }`
+            ? `2px dashed ${isDragReject ? theme.palette.error.main : theme.palette.primary.main}`
             : "2px solid transparent",
         backgroundColor:
           isDragActive && !disabled
-            ? MUI.alpha(
-                isDragReject
-                  ? theme.palette.error.main
-                  : theme.palette.primary.main,
-                0.05
-              )
+            ? MUI.alpha(isDragReject ? theme.palette.error.main : theme.palette.primary.main, 0.05)
             : "transparent",
         borderRadius: theme.shape.borderRadius,
         transition: "border-color 0.2s ease, background-color 0.2s ease",

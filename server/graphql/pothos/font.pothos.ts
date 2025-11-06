@@ -11,11 +11,7 @@ import {
   FontsOrderByClause,
 } from "@/server/types/font.types";
 import { FontRepository } from "@/server/db/repo";
-import {
-  PageInfoObject,
-  OrderSortDirectionPothosObject,
-  FileInfoPothosObject,
-} from "../pothos";
+import { PageInfoObject, OrderSortDirectionPothosObject, FileInfoPothosObject } from "../pothos";
 import { OrderSortDirection } from "@/lib/enum";
 import { getStorageService } from "@/server/storage/storage.service";
 
@@ -45,9 +41,7 @@ export const FontPothosObject = gqlSchemaBuilder.loadableObject<
       type: FileInfoPothosObject,
       resolve: async font => {
         const storageService = await getStorageService();
-        const fileInfo = await storageService.fileInfoByDbFileId(
-          BigInt(font.storageFileId)
-        );
+        const fileInfo = await storageService.fileInfoByDbFileId(BigInt(font.storageFileId));
         return fileInfo;
       },
     }),
@@ -55,9 +49,7 @@ export const FontPothosObject = gqlSchemaBuilder.loadableObject<
       type: "String",
       resolve: async font => {
         const storageService = await getStorageService();
-        const fileInfo = await storageService.fileInfoByDbFileId(
-          BigInt(font.storageFileId)
-        );
+        const fileInfo = await storageService.fileInfoByDbFileId(BigInt(font.storageFileId));
         return fileInfo?.url;
       },
     }),
@@ -97,8 +89,7 @@ export const FontUsageCheckResultPothosObject = gqlSchemaBuilder
   });
 
 // Font create input
-const FontCreateInputRef =
-  gqlSchemaBuilder.inputRef<FontCreateInput>("FontCreateInput");
+const FontCreateInputRef = gqlSchemaBuilder.inputRef<FontCreateInput>("FontCreateInput");
 
 export const FontCreateInputPothosObject = FontCreateInputRef.implement({
   fields: t => ({
@@ -109,8 +100,7 @@ export const FontCreateInputPothosObject = FontCreateInputRef.implement({
 });
 
 // Font update input
-const FontUpdateInputRef =
-  gqlSchemaBuilder.inputRef<FontUpdateInput>("FontUpdateInput");
+const FontUpdateInputRef = gqlSchemaBuilder.inputRef<FontUpdateInput>("FontUpdateInput");
 
 export const FontUpdateInputPothosObject = FontUpdateInputRef.implement({
   fields: t => ({
@@ -132,40 +122,35 @@ export const FontsWithFiltersPothosObject = gqlSchemaBuilder
   });
 
 // FontFilterArgs
-export const FontFilterArgsPothosObject = gqlSchemaBuilder
-  .inputRef<FontFilterArgs>("FontFilterArgs")
-  .implement({
-    fields: t => ({
-      name: t.string(),
-      nameNotContains: t.string(),
-      nameEquals: t.string(),
-      nameNotEquals: t.string(),
-      nameStartsWith: t.string(),
-      nameEndsWith: t.string(),
-      nameIsEmpty: t.boolean(),
-      nameIsNotEmpty: t.boolean(),
+export const FontFilterArgsPothosObject = gqlSchemaBuilder.inputRef<FontFilterArgs>("FontFilterArgs").implement({
+  fields: t => ({
+    name: t.string(),
+    nameNotContains: t.string(),
+    nameEquals: t.string(),
+    nameNotEquals: t.string(),
+    nameStartsWith: t.string(),
+    nameEndsWith: t.string(),
+    nameIsEmpty: t.boolean(),
+    nameIsNotEmpty: t.boolean(),
 
-      locale: t.string(),
+    locale: t.string(),
 
-      createdAt: t.field({ type: "DateTime" }),
-      createdAtFrom: t.field({ type: "DateTime" }),
-      createdAtTo: t.field({ type: "DateTime" }),
-      createdAtAfter: t.field({ type: "DateTime" }),
-      createdAtBefore: t.field({ type: "DateTime" }),
+    createdAt: t.field({ type: "DateTime" }),
+    createdAtFrom: t.field({ type: "DateTime" }),
+    createdAtTo: t.field({ type: "DateTime" }),
+    createdAtAfter: t.field({ type: "DateTime" }),
+    createdAtBefore: t.field({ type: "DateTime" }),
 
-      updatedAt: t.field({ type: "DateTime" }),
-      updatedAtFrom: t.field({ type: "DateTime" }),
-      updatedAtTo: t.field({ type: "DateTime" }),
-    }),
-  });
+    updatedAt: t.field({ type: "DateTime" }),
+    updatedAtFrom: t.field({ type: "DateTime" }),
+    updatedAtTo: t.field({ type: "DateTime" }),
+  }),
+});
 
 // FontsOrderByColumn enum
-export const FontsOrderByColumnPothosObject = gqlSchemaBuilder.enumType(
-  "FontsOrderByColumn",
-  {
-    values: Object.values(FontsOrderByColumn),
-  }
-);
+export const FontsOrderByColumnPothosObject = gqlSchemaBuilder.enumType("FontsOrderByColumn", {
+  values: Object.values(FontsOrderByColumn),
+});
 
 // FontsOrderByClause
 export const FontsOrderByClausePothosObject = gqlSchemaBuilder

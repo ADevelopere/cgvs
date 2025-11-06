@@ -20,10 +20,7 @@ export const isPasswordValid = (password: string): string => {
  * @param {string} password - The original password.
  * @returns {string} - 'empty', 'short', 'mismatch', or 'valid' based on the validation.
  */
-export const isValidConfirmPassword = (
-  confirmPassword: string,
-  password: string
-): string => {
+export const isValidConfirmPassword = (confirmPassword: string, password: string): string => {
   if (confirmPassword.length === 0) {
     return "empty";
   } else if (confirmPassword.length < 8) {

@@ -26,10 +26,7 @@ export type ValidateFieldFn<T, E> = (action: Action<T>) => E | undefined;
 // ELEMENT-ID AWARE ACTION TYPE
 // ============================================================================
 
-export type UpdateStateWithElementIdFn<T> = (
-  elementId: number,
-  action: Action<T>
-) => void;
+export type UpdateStateWithElementIdFn<T> = (elementId: number, action: Action<T>) => void;
 
 // ============================================================================
 // TYPE-SAFE ERROR MAP

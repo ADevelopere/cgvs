@@ -16,16 +16,8 @@ import {
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import { FontReferenceSelector } from "./FontReferenceSelector";
-import {
-  ElementOverflow,
-  Font,
-  AppLanguage,
-} from "@/client/graphql/generated/gql/graphql";
-import {
-  TextPropsFormErrors,
-  UpdateTextPropsFn,
-  TextPropsFormState,
-} from "./types";
+import { ElementOverflow, Font, AppLanguage } from "@/client/graphql/generated/gql/graphql";
+import { TextPropsFormErrors, UpdateTextPropsFn, TextPropsFormState } from "./types";
 import { SketchPicker } from "react-color";
 
 interface TextPropsFormProps {
@@ -74,9 +66,7 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
             fontRef={textProps.fontRef}
             language={language as AppLanguage}
             selfHostedFonts={selfHostedFonts}
-            onFontRefChange={fontRef =>
-              onTextPropsChange({ key: "fontRef", value: fontRef })
-            }
+            onFontRefChange={fontRef => onTextPropsChange({ key: "fontRef", value: fontRef })}
             error={errors.fontRef}
             disabled={disabled}
           />
@@ -89,18 +79,13 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
             type="color"
             label={strings.textProps.colorLabel}
             value={textProps.color}
-            onChange={e =>
-              onTextPropsChange({ key: "color", value: e.target.value })
-            }
+            onChange={e => onTextPropsChange({ key: "color", value: e.target.value })}
             error={!!errors.color}
             helperText={errors.color}
             disabled={disabled}
             onClick={handleClick}
           />
-          <ClickAwayListener
-            onClickAway={() => setColorPickerOpen(false)}
-            mouseEvent={"onMouseUp"}
-          >
+          <ClickAwayListener onClickAway={() => setColorPickerOpen(false)} mouseEvent={"onMouseUp"}>
             <Popper
               sx={{ zIndex: 3000 }}
               open={colorPickerOpen}
@@ -114,9 +99,7 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
                   <Paper>
                     <SketchPicker
                       color={textProps.color}
-                      onChange={color =>
-                        onTextPropsChange({ key: "color", value: color.hex })
-                      }
+                      onChange={color => onTextPropsChange({ key: "color", value: color.hex })}
                     />
                   </Paper>
                 </Fade>
@@ -160,20 +143,12 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
                 })
               }
             >
-              <MenuItem value="RESIZE_DOWN">
-                {strings.textProps.overflowResizeDown}
-              </MenuItem>
-              <MenuItem value="TRUNCATE">
-                {strings.textProps.overflowTruncate}
-              </MenuItem>
-              <MenuItem value="ELLIPSE">
-                {strings.textProps.overflowEllipse}
-              </MenuItem>
+              <MenuItem value="RESIZE_DOWN">{strings.textProps.overflowResizeDown}</MenuItem>
+              <MenuItem value="TRUNCATE">{strings.textProps.overflowTruncate}</MenuItem>
+              <MenuItem value="ELLIPSE">{strings.textProps.overflowEllipse}</MenuItem>
               <MenuItem value="WRAP">{strings.textProps.overflowWrap}</MenuItem>
             </Select>
-            {errors.overflow && (
-              <FormHelperText>{errors.overflow}</FormHelperText>
-            )}
+            {errors.overflow && <FormHelperText>{errors.overflow}</FormHelperText>}
           </FormControl>
         </Grid>
       </Grid>

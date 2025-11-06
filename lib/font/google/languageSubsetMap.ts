@@ -42,44 +42,19 @@ export const languageSubsetMap: LanguageSubsetMap = {
   [Language.ESTONIAN]: [FontSubset.LATIN, FontSubset.LATIN_EXT],
   [Language.LATVIAN]: [FontSubset.LATIN, FontSubset.LATIN_EXT],
   [Language.LITHUANIAN]: [FontSubset.LATIN, FontSubset.LATIN_EXT],
-  [Language.VIETNAMESE]: [
-    FontSubset.VIETNAMESE,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
+  [Language.VIETNAMESE]: [FontSubset.VIETNAMESE, FontSubset.LATIN, FontSubset.LATIN_EXT],
 
   // CJK (Special case)
-  [Language.CHINESE_SIMPLIFIED]: [
-    FontSubset.CHINESE_SIMPLIFIED,
-    FontSubset.LATIN,
-  ],
-  [Language.CHINESE_TRADITIONAL]: [
-    FontSubset.CHINESE_TRADITIONAL,
-    FontSubset.LATIN,
-  ],
+  [Language.CHINESE_SIMPLIFIED]: [FontSubset.CHINESE_SIMPLIFIED, FontSubset.LATIN],
+  [Language.CHINESE_TRADITIONAL]: [FontSubset.CHINESE_TRADITIONAL, FontSubset.LATIN],
   [Language.CHINESE_HONGKONG]: [FontSubset.CHINESE_HONGKONG, FontSubset.LATIN],
   [Language.JAPANESE]: [FontSubset.JAPANESE, FontSubset.LATIN],
   [Language.KOREAN]: [FontSubset.KOREAN, FontSubset.LATIN],
 
   // Cyrillic-based
-  [Language.RUSSIAN]: [
-    FontSubset.CYRILLIC,
-    FontSubset.CYRILLIC_EXT,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
-  [Language.UKRAINIAN]: [
-    FontSubset.CYRILLIC,
-    FontSubset.CYRILLIC_EXT,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
-  [Language.BULGARIAN]: [
-    FontSubset.CYRILLIC,
-    FontSubset.CYRILLIC_EXT,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
+  [Language.RUSSIAN]: [FontSubset.CYRILLIC, FontSubset.CYRILLIC_EXT, FontSubset.LATIN, FontSubset.LATIN_EXT],
+  [Language.UKRAINIAN]: [FontSubset.CYRILLIC, FontSubset.CYRILLIC_EXT, FontSubset.LATIN, FontSubset.LATIN_EXT],
+  [Language.BULGARIAN]: [FontSubset.CYRILLIC, FontSubset.CYRILLIC_EXT, FontSubset.LATIN, FontSubset.LATIN_EXT],
   [Language.SERBIAN]: [
     FontSubset.CYRILLIC,
     FontSubset.CYRILLIC_EXT, // Added for completeness
@@ -95,115 +70,37 @@ export const languageSubsetMap: LanguageSubsetMap = {
   ],
 
   // Indic
-  [Language.HINDI]: [
-    FontSubset.DEVANAGARI,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
-  [Language.MARATHI]: [
-    FontSubset.DEVANAGARI,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
-  [Language.BENGALI]: [
-    FontSubset.BENGALI,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
-  [Language.PUNJABI]: [
-    FontSubset.GURMUKHI,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
+  [Language.HINDI]: [FontSubset.DEVANAGARI, FontSubset.LATIN, FontSubset.LATIN_EXT],
+  [Language.MARATHI]: [FontSubset.DEVANAGARI, FontSubset.LATIN, FontSubset.LATIN_EXT],
+  [Language.BENGALI]: [FontSubset.BENGALI, FontSubset.LATIN, FontSubset.LATIN_EXT],
+  [Language.PUNJABI]: [FontSubset.GURMUKHI, FontSubset.LATIN, FontSubset.LATIN_EXT],
   [Language.TAMIL]: [
     FontSubset.TAMIL,
     FontSubset.TAMIL_SUPPLEMENT, // Kept from original, assuming it's in your enum
     FontSubset.LATIN,
     FontSubset.LATIN_EXT,
   ],
-  [Language.TELUGU]: [
-    FontSubset.TELUGU,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
-  [Language.GUJARATI]: [
-    FontSubset.GUJARATI,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
-  [Language.KANNADA]: [
-    FontSubset.KANNADA,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
-  [Language.MALAYALAM]: [
-    FontSubset.MALAYALAM,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
+  [Language.TELUGU]: [FontSubset.TELUGU, FontSubset.LATIN, FontSubset.LATIN_EXT],
+  [Language.GUJARATI]: [FontSubset.GUJARATI, FontSubset.LATIN, FontSubset.LATIN_EXT],
+  [Language.KANNADA]: [FontSubset.KANNADA, FontSubset.LATIN, FontSubset.LATIN_EXT],
+  [Language.MALAYALAM]: [FontSubset.MALAYALAM, FontSubset.LATIN, FontSubset.LATIN_EXT],
 
   // Middle Eastern / Arabic Script
-  [Language.ARABIC]: [
-    FontSubset.ARABIC,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
+  [Language.ARABIC]: [FontSubset.ARABIC, FontSubset.LATIN, FontSubset.LATIN_EXT],
   [Language.URDU]: [FontSubset.ARABIC, FontSubset.LATIN, FontSubset.LATIN_EXT],
-  [Language.PERSIAN]: [
-    FontSubset.ARABIC,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
-  [Language.HEBREW]: [
-    FontSubset.HEBREW,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
+  [Language.PERSIAN]: [FontSubset.ARABIC, FontSubset.LATIN, FontSubset.LATIN_EXT],
+  [Language.HEBREW]: [FontSubset.HEBREW, FontSubset.LATIN, FontSubset.LATIN_EXT],
 
   // Other
   [Language.THAI]: [FontSubset.THAI, FontSubset.LATIN, FontSubset.LATIN_EXT],
-  [Language.GREEK]: [
-    FontSubset.GREEK,
-    FontSubset.GREEK_EXT,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
-  [Language.ARMENIAN]: [
-    FontSubset.ARMENIAN,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
-  [Language.GEORGIAN]: [
-    FontSubset.GEORGIAN,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
-  [Language.BURMESE]: [
-    FontSubset.MYANMAR,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
+  [Language.GREEK]: [FontSubset.GREEK, FontSubset.GREEK_EXT, FontSubset.LATIN, FontSubset.LATIN_EXT],
+  [Language.ARMENIAN]: [FontSubset.ARMENIAN, FontSubset.LATIN, FontSubset.LATIN_EXT],
+  [Language.GEORGIAN]: [FontSubset.GEORGIAN, FontSubset.LATIN, FontSubset.LATIN_EXT],
+  [Language.BURMESE]: [FontSubset.MYANMAR, FontSubset.LATIN, FontSubset.LATIN_EXT],
   [Language.KHMER]: [FontSubset.KHMER, FontSubset.LATIN, FontSubset.LATIN_EXT],
   [Language.LAO]: [FontSubset.LAO, FontSubset.LATIN, FontSubset.LATIN_EXT],
-  [Language.SINHALA]: [
-    FontSubset.SINHALA,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
-  [Language.ETHIOPIC]: [
-    FontSubset.ETHIOPIC,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
-  [Language.CHEROKEE]: [
-    FontSubset.CHEROKEE,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
-  [Language.TIBETAN]: [
-    FontSubset.TIBETAN,
-    FontSubset.LATIN,
-    FontSubset.LATIN_EXT,
-  ],
+  [Language.SINHALA]: [FontSubset.SINHALA, FontSubset.LATIN, FontSubset.LATIN_EXT],
+  [Language.ETHIOPIC]: [FontSubset.ETHIOPIC, FontSubset.LATIN, FontSubset.LATIN_EXT],
+  [Language.CHEROKEE]: [FontSubset.CHEROKEE, FontSubset.LATIN, FontSubset.LATIN_EXT],
+  [Language.TIBETAN]: [FontSubset.TIBETAN, FontSubset.LATIN, FontSubset.LATIN_EXT],
 };
-

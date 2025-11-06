@@ -33,9 +33,7 @@ const ltrCache = createCache({ key: "mui", stylisPlugins: [prefixer] });
  * Without it, Emotion will generate a new <style> tag during SSR for every component.
  * See https://github.com/mui/material-ui/issues/26561#issuecomment-855286153 for why it's a problem.
  */
-export default function AppRouterCacheProvider(
-  props: AppRouterCacheProviderProps
-) {
+export default function AppRouterCacheProvider(props: AppRouterCacheProviderProps) {
   const { options, CacheProvider = DefaultCacheProvider, children } = props;
   const { isRtl } = useAppTheme();
   const [cache, setCache] = useState(() => (isRtl ? rtlCache : ltrCache));

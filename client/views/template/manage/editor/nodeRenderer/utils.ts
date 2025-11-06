@@ -13,9 +13,7 @@ export function getFontFamilyString(fontItem: GoogleFontItem): string | null {
  * Takes a single ElementAlignment value and returns the
  * correct flexbox properties.
  */
-export const getFlexAlignment = (
-  alignment: ElementAlignment
-): React.CSSProperties => {
+export const getFlexAlignment = (alignment: ElementAlignment): React.CSSProperties => {
   const baseStyles: React.CSSProperties = {
     display: "flex",
   };

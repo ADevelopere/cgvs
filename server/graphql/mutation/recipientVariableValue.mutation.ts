@@ -15,9 +15,6 @@ gqlSchemaBuilder.mutationFields(t => ({
       values: t.arg({ type: [VariableValueInputPothosObject], required: true }),
     },
     resolve: async (_, args) =>
-      await RecipientVariableValueRepository.upsertVariableValues(
-        args.recipientGroupItemId,
-        args.values
-      ),
+      await RecipientVariableValueRepository.upsertVariableValues(args.recipientGroupItemId, args.values),
   }),
 }));

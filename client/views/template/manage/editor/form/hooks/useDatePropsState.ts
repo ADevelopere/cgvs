@@ -31,16 +31,13 @@ export type UseDatePropsStateReturn = {
 /**
  * Extract dateProps state from DateElement
  */
-function extractDatePropsState(
-  element: GQL.CertificateElementUnion
-): DatePropsFormState | null {
+function extractDatePropsState(element: GQL.CertificateElementUnion): DatePropsFormState | null {
   if (element.__typename !== "DateElement" || !element.dateProps) {
     return null;
   }
 
   return {
-    calendarType:
-      (element.dateProps.calendarType as GQL.CalendarType) ?? undefined,
+    calendarType: (element.dateProps.calendarType as GQL.CalendarType) ?? undefined,
     format: element.dateProps.format ?? "",
     offsetDays: element.dateProps.offsetDays ?? 0,
     transformation: element.dateProps.transformation ?? undefined,
@@ -50,10 +47,7 @@ function extractDatePropsState(
 /**
  * Convert dateProps input to update input
  */
-function toUpdateInput(
-  elementId: number,
-  state: DatePropsFormState
-): GQL.DateElementSpecPropsStandaloneInput {
+function toUpdateInput(elementId: number, state: DatePropsFormState): GQL.DateElementSpecPropsStandaloneInput {
   return {
     elementId: elementId,
     dateProps: {
@@ -65,16 +59,12 @@ function toUpdateInput(
   };
 }
 
-export function useDatePropsState(
-  params: UseDatePropsStateParams
-): UseDatePropsStateReturn {
+export function useDatePropsState(params: UseDatePropsStateParams): UseDatePropsStateReturn {
   const { templateId, elements } = params;
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
 
-  const [updateDateElementSpecPropsMutation] = useMutation(
-    updateDateElementSpecPropsMutationDocument
-  );
+  const [updateDateElementSpecPropsMutation] = useMutation(updateDateElementSpecPropsMutationDocument);
 
   // Mutation function
   const mutationFn = React.useCallback(
@@ -87,8 +77,7 @@ export function useDatePropsState(
           },
         });
       } catch (error) {
-        const errorMessage =
-          errorStrings?.updateFailed || "Failed to update date properties";
+        const errorMessage = errorStrings?.updateFailed || "Failed to update date properties";
         logger.error("useDatePropsState: Mutation failed", {
           elementId,
           error,
@@ -145,10 +134,7 @@ export const useDateProps = (params: UseDatePropsParams) => {
 
   // Get state or initialize if not present (only initialize once)
   const dateProps: DatePropsFormState = React.useMemo(() => {
-    return (
-      datePropsStates.get(params.elementId) ??
-      initDatePropsState(params.elementId)
-    );
+    return datePropsStates.get(params.elementId) ?? initDatePropsState(params.elementId);
   }, [datePropsStates, params.elementId, initDatePropsState]);
 
   const updateDateProps: UpdateDatePropsFn = React.useCallback(

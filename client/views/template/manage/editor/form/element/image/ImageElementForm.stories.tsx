@@ -1,16 +1,9 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { ImageElementForm } from "./ImageElementForm";
-import type {
-  ImageElementFormErrors,
-  ImageElementFormState,
-  UpdateImageDataSourceFn,
-} from "./types";
+import type { ImageElementFormErrors, ImageElementFormState, UpdateImageDataSourceFn } from "./types";
 import { UpdateBaseElementFn } from "../base";
-import {
-  ElementAlignment,
-  ElementImageFit,
-} from "@/client/graphql/generated/gql/graphql";
+import { ElementAlignment, ElementImageFit } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof ImageElementForm> = {
   title: "Template/Editor/Form/Element/Image/ImageElementForm",

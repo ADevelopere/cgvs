@@ -7,8 +7,7 @@ import { useNetworkConnectivity } from "@/client/contexts";
 import { useAppTranslation } from "@/client/locale";
 
 export const ConnectivityStatus: React.FC = () => {
-  const { isConnected, isChecking, checkConnectivity, lastChecked } =
-    useNetworkConnectivity();
+  const { isConnected, isChecking, checkConnectivity, lastChecked } = useNetworkConnectivity();
   const theme = useTheme();
   const { connectivityTranslations: strings } = useAppTranslation();
 
@@ -21,9 +20,7 @@ export const ConnectivityStatus: React.FC = () => {
     if (isChecking) return strings.checkingConnection;
     if (isConnected) {
       const baseText = strings.connected;
-      return lastChecked
-        ? `${baseText} (${strings.lastChecked}: ${lastChecked.toLocaleTimeString()})`
-        : baseText;
+      return lastChecked ? `${baseText} (${strings.lastChecked}: ${lastChecked.toLocaleTimeString()})` : baseText;
     }
     return `${strings.disconnected} - ${strings.clickToRetry}`;
   };

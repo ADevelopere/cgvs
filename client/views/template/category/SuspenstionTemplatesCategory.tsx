@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 import { Box, Button } from "@mui/material";
-import {
-  DataGrid,
-  GridColDef,
-  GridSortModel,
-  GridRenderCellParams,
-} from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridSortModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { useQuery } from "@apollo/client/react";
 import { useAppTranslation } from "@/client/locale";
 import { formatDate } from "@/client/utils/dateUtils";
@@ -60,10 +55,7 @@ const SuspenstionTemplatesCategory: React.FC = () => {
         const imageHasFailed = failedImages.has(params.row.id);
         const imageUrl = imageHasFailed
           ? TemplateUtils.getTemplateImageUrl({}, theme.palette.mode === "dark")
-          : TemplateUtils.getTemplateImageUrl(
-              { imageUrl: params.row.imageUrl },
-              theme.palette.mode === "dark"
-            );
+          : TemplateUtils.getTemplateImageUrl({ imageUrl: params.row.imageUrl }, theme.palette.mode === "dark");
 
         return (
           <Box
@@ -98,15 +90,13 @@ const SuspenstionTemplatesCategory: React.FC = () => {
       field: "createdAt",
       headerName: strings.createdAt,
       flex: 1,
-      renderCell: (params: GridRenderCellParams<TemplateRow>) =>
-        formatDate(params.row.createdAt),
+      renderCell: (params: GridRenderCellParams<TemplateRow>) => formatDate(params.row.createdAt),
     },
     {
       field: "trashed_at",
       headerName: strings.deletedAt,
       flex: 1,
-      renderCell: (params: GridRenderCellParams<TemplateRow>) =>
-        formatDate(params.row.trashed_at),
+      renderCell: (params: GridRenderCellParams<TemplateRow>) => formatDate(params.row.trashed_at),
     },
     {
       field: "actions",
@@ -114,12 +104,7 @@ const SuspenstionTemplatesCategory: React.FC = () => {
       width: 150,
       sortable: false,
       renderCell: (params: GridRenderCellParams<TemplateRow>) => (
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={() => unsuspendTemplate(params.row.id)}
-          color="primary"
-        >
+        <Button variant="outlined" size="small" onClick={() => unsuspendTemplate(params.row.id)} color="primary">
           {strings.restoreTemplate}
         </Button>
       ),

@@ -29,10 +29,7 @@ export const directoryChildrenQueryDocument: TypedDocumentNode<
   }
 `;
 
-export const fileInfoQueryDocument: TypedDocumentNode<
-  Graphql.FileInfoQuery,
-  Graphql.FileInfoQueryVariables
-> = gql`
+export const fileInfoQueryDocument: TypedDocumentNode<Graphql.FileInfoQuery, Graphql.FileInfoQueryVariables> = gql`
   query fileInfo($path: String!) {
     fileInfo(path: $path) {
       contentType
@@ -62,10 +59,7 @@ export const fileInfoQueryDocument: TypedDocumentNode<
   }
 `;
 
-export const fileUsageQueryDocument: TypedDocumentNode<
-  Graphql.FileUsageQuery,
-  Graphql.FileUsageQueryVariables
-> = gql`
+export const fileUsageQueryDocument: TypedDocumentNode<Graphql.FileUsageQuery, Graphql.FileUsageQueryVariables> = gql`
   query fileUsage($input: FileUsageCheckInput!) {
     fileUsage(input: $input) {
       canDelete
@@ -83,38 +77,33 @@ export const fileUsageQueryDocument: TypedDocumentNode<
   }
 `;
 
-export const folderInfoQueryDocument: TypedDocumentNode<
-  Graphql.FolderInfoQuery,
-  Graphql.FolderInfoQueryVariables
-> = gql`
-  query folderInfo($path: String!) {
-    folderInfo(path: $path) {
-      createdAt
-      fileCount
-      folderCount
-      isFromBucket
-      isProtected
-      lastModified
-      name
-      path
-      permissions {
-        allowCreateSubDirs
-        allowDelete
-        allowDeleteFiles
-        allowMove
-        allowMoveFiles
-        allowUploads
+export const folderInfoQueryDocument: TypedDocumentNode<Graphql.FolderInfoQuery, Graphql.FolderInfoQueryVariables> =
+  gql`
+    query folderInfo($path: String!) {
+      folderInfo(path: $path) {
+        createdAt
+        fileCount
+        folderCount
+        isFromBucket
+        isProtected
+        lastModified
+        name
+        path
+        permissions {
+          allowCreateSubDirs
+          allowDelete
+          allowDeleteFiles
+          allowMove
+          allowMoveFiles
+          allowUploads
+        }
+        protectChildren
+        totalSize
       }
-      protectChildren
-      totalSize
     }
-  }
-`;
+  `;
 
-export const listFilesQueryDocument: TypedDocumentNode<
-  Graphql.ListFilesQuery,
-  Graphql.ListFilesQueryVariables
-> = gql`
+export const listFilesQueryDocument: TypedDocumentNode<Graphql.ListFilesQuery, Graphql.ListFilesQueryVariables> = gql`
   query listFiles($input: FilesListInput!) {
     listFiles(input: $input) {
       hasMore
@@ -175,79 +164,67 @@ export const listFilesQueryDocument: TypedDocumentNode<
   }
 `;
 
-export const searchFilesQueryDocument: TypedDocumentNode<
-  Graphql.SearchFilesQuery,
-  Graphql.SearchFilesQueryVariables
-> = gql`
-  query searchFiles(
-    $fileType: String
-    $folder: String
-    $limit: Int!
-    $searchTerm: String!
-  ) {
-    searchFiles(
-      fileType: $fileType
-      folder: $folder
-      limit: $limit
-      searchTerm: $searchTerm
-    ) {
-      hasMore
-      items {
-        name
-        path
-        isProtected
-        ... on DirectoryInfo {
-          createdAt
-          fileCount
-          folderCount
-          isFromBucket
-          isProtected
-          lastModified
+export const searchFilesQueryDocument: TypedDocumentNode<Graphql.SearchFilesQuery, Graphql.SearchFilesQueryVariables> =
+  gql`
+    query searchFiles($fileType: String, $folder: String, $limit: Int!, $searchTerm: String!) {
+      searchFiles(fileType: $fileType, folder: $folder, limit: $limit, searchTerm: $searchTerm) {
+        hasMore
+        items {
           name
           path
-          permissions {
-            allowCreateSubDirs
-            allowDelete
-            allowDeleteFiles
-            allowMove
-            allowMoveFiles
-            allowUploads
-          }
-          protectChildren
-          totalSize
-        }
-        ... on FileInfo {
-          contentType
-          createdAt
-          directoryPath
-          fileType
-          isFromBucket
-          isInUse
           isProtected
-          isPublic
-          lastModified
-          md5Hash
-          mediaLink
-          name
-          path
-          size
-          url
-          usages {
+          ... on DirectoryInfo {
             createdAt
-            filePath
-            id
-            referenceId
-            referenceTable
-            usageType
+            fileCount
+            folderCount
+            isFromBucket
+            isProtected
+            lastModified
+            name
+            path
+            permissions {
+              allowCreateSubDirs
+              allowDelete
+              allowDeleteFiles
+              allowMove
+              allowMoveFiles
+              allowUploads
+            }
+            protectChildren
+            totalSize
+          }
+          ... on FileInfo {
+            contentType
+            createdAt
+            directoryPath
+            fileType
+            isFromBucket
+            isInUse
+            isProtected
+            isPublic
+            lastModified
+            md5Hash
+            mediaLink
+            name
+            path
+            size
+            url
+            usages {
+              createdAt
+              filePath
+              id
+              referenceId
+              referenceTable
+              usageType
+            }
           }
         }
+        limit
+        offset
+        totalCount
       }
-      limit
-      offset
-      totalCount
     }
-  }
-`;
+  `;
 
 export const storageStatsQueryDocument: TypedDocumentNode<
   Graphql.StorageStatsQuery,
@@ -416,9 +393,7 @@ export const updateDirectoryPermissionsMutationDocument: TypedDocumentNode<
   Graphql.UpdateDirectoryPermissionsMutation,
   Graphql.UpdateDirectoryPermissionsMutationVariables
 > = gql`
-  mutation updateDirectoryPermissions(
-    $input: DirectoryPermissionsUpdateInput!
-  ) {
+  mutation updateDirectoryPermissions($input: DirectoryPermissionsUpdateInput!) {
     updateDirectoryPermissions(input: $input) {
       data {
         isProtected

@@ -7,11 +7,7 @@ import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { useRecipientStore } from "../stores/useRecipientStore";
 import { useRecipientApolloMutations } from "./useRecipientApolloMutations";
 import * as StudentUtils from "@/client/views/student/hook/utils/filter";
-import {
-  FilterClause,
-  TextFilterOperation,
-  DateFilterOperation,
-} from "@/client/types/filters";
+import { FilterClause, TextFilterOperation, DateFilterOperation } from "@/client/types/filters";
 
 /**
  * Helper function to get column type for filter mapping
@@ -92,13 +88,7 @@ export const useRecipientOperations = (templateId?: number) => {
         return false;
       }
     },
-    [
-      store.selectedGroup?.id,
-      apollo,
-      notifications,
-      strings.errorAddingToGroup,
-      strings.addedToGroup,
-    ]
+    [store.selectedGroup?.id, apollo, notifications, strings.errorAddingToGroup, strings.addedToGroup]
   );
 
   const deleteRecipient = useCallback(
@@ -239,10 +229,7 @@ export const useRecipientOperations = (templateId?: number) => {
       });
 
       store.setStudentsNotInGroupQueryParams({
-        filterArgs:
-          Object.keys(newFilterArgs).length > 0
-            ? (newFilterArgs as Graphql.StudentFilterArgs)
-            : null,
+        filterArgs: Object.keys(newFilterArgs).length > 0 ? (newFilterArgs as Graphql.StudentFilterArgs) : null,
         // Preserve existing pagination and orderBy
         paginationArgs: store.studentsNotInGroupQueryParams.paginationArgs,
         orderBy: store.studentsNotInGroupQueryParams.orderBy,
@@ -286,10 +273,7 @@ export const useRecipientOperations = (templateId?: number) => {
       });
 
       store.setStudentsInGroupQueryParams({
-        filterArgs:
-          Object.keys(newFilterArgs).length > 0
-            ? (newFilterArgs as Graphql.StudentFilterArgs)
-            : null,
+        filterArgs: Object.keys(newFilterArgs).length > 0 ? (newFilterArgs as Graphql.StudentFilterArgs) : null,
         // Preserve existing pagination and orderBy
         paginationArgs: store.recipientsByGroupIdFilteredQuery.paginationArgs,
         orderBy: store.recipientsByGroupIdFilteredQuery.orderBy,
@@ -315,9 +299,7 @@ export const useRecipientOperations = (templateId?: number) => {
   );
 
   // Helper function to map column IDs to GraphQL columns
-  const mapColumnIdToGraphQLColumn = (
-    columnId: string
-  ): Graphql.StudentsOrderByColumn | null => {
+  const mapColumnIdToGraphQLColumn = (columnId: string): Graphql.StudentsOrderByColumn | null => {
     const columnMap: Record<string, Graphql.StudentsOrderByColumn> = {
       id: Graphql.StudentsOrderByColumn.Id,
       name: Graphql.StudentsOrderByColumn.Name,
@@ -339,9 +321,7 @@ export const useRecipientOperations = (templateId?: number) => {
       }[]
     ) => {
       // Filter out clauses with null order (clear sort)
-      const validClauses = orderByClause.filter(
-        clause => clause.order !== null
-      );
+      const validClauses = orderByClause.filter(clause => clause.order !== null);
 
       // If no valid clauses, clear the sort
       if (validClauses.length === 0) {
@@ -379,9 +359,7 @@ export const useRecipientOperations = (templateId?: number) => {
       }[]
     ) => {
       // Filter out clauses with null order (clear sort)
-      const validClauses = orderByClause.filter(
-        clause => clause.order !== null
-      );
+      const validClauses = orderByClause.filter(clause => clause.order !== null);
 
       // If no valid clauses, clear the sort
       if (validClauses.length === 0) {
@@ -445,10 +423,7 @@ export const useRecipientOperations = (templateId?: number) => {
       });
 
       store.setStudentsNotInGroupQueryParams({
-        filterArgs:
-          Object.keys(newFilterArgs).length > 0
-            ? (newFilterArgs as Graphql.StudentFilterArgs)
-            : null,
+        filterArgs: Object.keys(newFilterArgs).length > 0 ? (newFilterArgs as Graphql.StudentFilterArgs) : null,
         paginationArgs: store.studentsNotInGroupQueryParams.paginationArgs,
         orderBy: store.studentsNotInGroupQueryParams.orderBy,
       });
@@ -491,10 +466,7 @@ export const useRecipientOperations = (templateId?: number) => {
       });
 
       store.setStudentsInGroupQueryParams({
-        filterArgs:
-          Object.keys(newFilterArgs).length > 0
-            ? (newFilterArgs as Graphql.StudentFilterArgs)
-            : null,
+        filterArgs: Object.keys(newFilterArgs).length > 0 ? (newFilterArgs as Graphql.StudentFilterArgs) : null,
         paginationArgs: store.recipientsByGroupIdFilteredQuery.paginationArgs,
         orderBy: store.recipientsByGroupIdFilteredQuery.orderBy,
       });

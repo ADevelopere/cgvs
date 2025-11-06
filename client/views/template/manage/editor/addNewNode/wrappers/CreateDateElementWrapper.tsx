@@ -9,10 +9,7 @@ import { fontsQueryDocument } from "@/client/views/font/hooks/font.documents";
 import { validateBaseElementField } from "../../form/element/base/cretElementBaseValidator";
 import { validateTextPropsField } from "../../form/element/textProps/textPropsValidator";
 import { validateDateDataSource, validateDateProps } from "../../form/element/date/dateValidators";
-import type {
-  DateElementFormState,
-  DateElementFormErrors,
-} from "../../form/element/date/types";
+import type { DateElementFormState, DateElementFormErrors } from "../../form/element/date/types";
 import type { UpdateBaseElementFn } from "../../form/element/base";
 import type { UpdateTextPropsFn } from "../../form/element/textProps";
 import type { UpdateDatePropsFn } from "../../form/element/date/types";
@@ -31,7 +28,7 @@ interface CreateDateElementWrapperProps {
   initialTemplateDateVariable?: { variableId: number };
   // Pre-configured transformation
   initialTransformation?: GQL.DateTransformationType;
-  // 
+  //
   initialElementName: string;
 
   // Dialog mode (for compact layout)
@@ -43,9 +40,7 @@ interface CreateDateElementWrapperProps {
 // COMPONENT
 // ============================================================================
 
-export const CreateDateElementWrapper: React.FC<
-  CreateDateElementWrapperProps
-> = ({
+export const CreateDateElementWrapper: React.FC<CreateDateElementWrapperProps> = ({
   templateId,
   initialStudentField,
   initialCertificateField,
@@ -55,11 +50,12 @@ export const CreateDateElementWrapper: React.FC<
   open,
   onClose,
 }) => {
-    const { templateEditorTranslations: {addNodePanel: t} } = useAppTranslation();
-  
+  const {
+    templateEditorTranslations: { addNodePanel: t },
+  } = useAppTranslation();
+
   // Get context data
-  const { dateVariables, config } =
-    useCertificateElementStates();
+  const { dateVariables, config } = useCertificateElementStates();
   const language = config.state.language;
 
   // Query fonts
@@ -91,11 +87,7 @@ export const CreateDateElementWrapper: React.FC<
     }
     // Default to static value
     return { static: { value: "" } };
-  }, [
-    initialStudentField,
-    initialCertificateField,
-    initialTemplateDateVariable,
-  ]);
+  }, [initialStudentField, initialCertificateField, initialTemplateDateVariable]);
 
   const getInitialState = useCallback((): DateElementFormState => {
     if (!templateId) {
@@ -211,22 +203,19 @@ export const CreateDateElementWrapper: React.FC<
     }));
   }, []);
 
-  const updateDataSource = useCallback(
-    (dataSource: GQL.DateDataSourceInput) => {
-      setState(prev => ({
-        ...prev,
-        dataSource,
-      }));
+  const updateDataSource = useCallback((dataSource: GQL.DateDataSourceInput) => {
+    setState(prev => ({
+      ...prev,
+      dataSource,
+    }));
 
-      const error = dataSourceValidator({ key: "dataSource", value: dataSource });
-      
-      setErrors(prev => ({
-        ...prev,
-        dataSource: error,
-      }));
-    },
-    []
-  );
+    const error = dataSourceValidator({ key: "dataSource", value: dataSource });
+
+    setErrors(prev => ({
+      ...prev,
+      dataSource: error,
+    }));
+  }, []);
 
   const hasError = useMemo(() => {
     return (

@@ -10,10 +10,7 @@ interface RecipientGroupListProps {
   loading?: boolean;
 }
 
-const RecipientGroupList: React.FC<RecipientGroupListProps> = ({
-  groups,
-  loading = false,
-}) => {
+const RecipientGroupList: React.FC<RecipientGroupListProps> = ({ groups, loading = false }) => {
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>

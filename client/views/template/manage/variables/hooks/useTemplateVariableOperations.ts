@@ -26,18 +26,13 @@ export type TemplateVariableUpdateInputUnion =
  */
 export const useTemplateVariableOperations = () => {
   const apollo = useTemplateVariableApolloMutations();
-  const setOperationError = useTemplateVariableUIStore(
-    state => state.setOperationError
-  );
+  const setOperationError = useTemplateVariableUIStore(state => state.setOperationError);
   const notifications = useNotifications();
   const { templateVariableTranslations: strings } = useAppTranslation();
 
   // Create variable helper
   const createVariable = useCallback(
-    async (
-      type: Graphql.TemplateVariableType,
-      input: TemplateVariableCreateInputUnion
-    ): Promise<void> => {
+    async (type: Graphql.TemplateVariableType, input: TemplateVariableCreateInputUnion): Promise<void> => {
       try {
         setOperationError("create", null);
 
@@ -81,10 +76,7 @@ export const useTemplateVariableOperations = () => {
             autoHideDuration: 3000,
           });
         } else {
-          logger.error(
-            `Error creating ${type.toLowerCase()} variable:`,
-            result.error
-          );
+          logger.error(`Error creating ${type.toLowerCase()} variable:`, result.error);
           notifications.show(strings.variableAddFailed, {
             severity: "error",
             autoHideDuration: 3000,
@@ -95,10 +87,7 @@ export const useTemplateVariableOperations = () => {
           message?: string;
           graphQLErrors?: Array<{ message: string }>;
         };
-        const errorMessage =
-          gqlError.graphQLErrors?.[0]?.message ||
-          gqlError.message ||
-          strings.variableAddFailed;
+        const errorMessage = gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.variableAddFailed;
 
         logger.error(`Error creating ${type.toLowerCase()} variable:`, error);
         setOperationError("create", errorMessage);
@@ -113,10 +102,7 @@ export const useTemplateVariableOperations = () => {
 
   // Update variable helper
   const updateVariable = useCallback(
-    async (
-      type: Graphql.TemplateVariableType,
-      input: TemplateVariableUpdateInputUnion
-    ): Promise<void> => {
+    async (type: Graphql.TemplateVariableType, input: TemplateVariableUpdateInputUnion): Promise<void> => {
       try {
         setOperationError("update", null);
 
@@ -160,10 +146,7 @@ export const useTemplateVariableOperations = () => {
             autoHideDuration: 3000,
           });
         } else {
-          logger.error(
-            `Error updating ${type.toLowerCase()} variable:`,
-            result.error
-          );
+          logger.error(`Error updating ${type.toLowerCase()} variable:`, result.error);
           notifications.show(strings.variableUpdateFailed, {
             severity: "error",
             autoHideDuration: 3000,
@@ -174,10 +157,7 @@ export const useTemplateVariableOperations = () => {
           message?: string;
           graphQLErrors?: Array<{ message: string }>;
         };
-        const errorMessage =
-          gqlError.graphQLErrors?.[0]?.message ||
-          gqlError.message ||
-          strings.variableUpdateFailed;
+        const errorMessage = gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.variableUpdateFailed;
 
         logger.error(`Error updating ${type.toLowerCase()} variable:`, error);
         setOperationError("update", errorMessage);
@@ -217,10 +197,7 @@ export const useTemplateVariableOperations = () => {
           message?: string;
           graphQLErrors?: Array<{ message: string }>;
         };
-        const errorMessage =
-          gqlError.graphQLErrors?.[0]?.message ||
-          gqlError.message ||
-          strings.variableDeleteFailed;
+        const errorMessage = gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.variableDeleteFailed;
 
         logger.error("Error deleting variable:", error);
         setOperationError("delete", errorMessage);

@@ -25,9 +25,7 @@ export namespace StorageUtils {
 
   // Allow common file name characters: letters, numbers, spaces, parentheses, brackets, underscores, hyphens, periods
   const FILE_NAME_PATTERN = /^[a-zA-Z0-9._\-\s()[\]]+$/;
-  export const validateFileName = (
-    fileName: string
-  ): Promise<string | null> => {
+  export const validateFileName = (fileName: string): Promise<string | null> => {
     let err: string | null = null;
     if (!fileName || fileName.trim().length === 0) {
       err = "File name cannot be empty";
@@ -49,11 +47,7 @@ export namespace StorageUtils {
     return Promise.resolve(err);
   };
 
-  export const validateUpload = async (
-    path: string,
-    size: number,
-    contentType: string
-  ): Promise<string | null> => {
+  export const validateUpload = async (path: string, size: number, contentType: string): Promise<string | null> => {
     let error: string | null = null;
 
     const fileName = path.slice(path.lastIndexOf("/") + 1);
@@ -76,22 +70,15 @@ export namespace StorageUtils {
     return Promise.resolve(error);
   };
 
-  export const getFileTypeFromContentType = (
-    contentType?: string
-  ): Types.FileTypes => {
+  export const getFileTypeFromContentType = (contentType?: string): Types.FileTypes => {
     if (!contentType) return Types.FileTypes.OTHER;
 
     if (contentType.startsWith("image/")) return Types.FileTypes.IMAGE;
     if (contentType.startsWith("video/")) return Types.FileTypes.VIDEO;
     if (contentType.startsWith("audio/")) return Types.FileTypes.AUDIO;
-    if (
-      contentType.includes("pdf") ||
-      contentType.includes("document") ||
-      contentType.includes("text")
-    )
+    if (contentType.includes("pdf") || contentType.includes("document") || contentType.includes("text"))
       return Types.FileTypes.DOCUMENT;
-    if (contentType.includes("zip") || contentType.includes("rar"))
-      return Types.FileTypes.ARCHIVE;
+    if (contentType.includes("zip") || contentType.includes("rar")) return Types.FileTypes.ARCHIVE;
 
     // fonts
     if (contentType.includes("font")) return Types.FileTypes.FONT;
@@ -106,25 +93,18 @@ export namespace StorageUtils {
 
   export const extractFileName = (filePath: string): string => {
     const lastSlashIndex = filePath.lastIndexOf("/");
-    return lastSlashIndex >= 0
-      ? filePath.substring(lastSlashIndex + 1)
-      : filePath;
+    return lastSlashIndex >= 0 ? filePath.substring(lastSlashIndex + 1) : filePath;
   };
 
   export const sanitizePath = (path: string): string => {
     return path.replace(/\/+/g, "/").replace(/(?:^\/|\/(?=$))/g, "");
   };
 
-  export const blobToFileInfo = (
-    blob: Types.BlobMetadata,
-    baseUrl: string
-  ): Types.BucketFile => {
+  export const blobToFileInfo = (blob: Types.BlobMetadata, baseUrl: string): Types.BucketFile => {
     const path = blob.name || "";
     const size = BigInt(blob.size || 0);
     const contentType = blob.contentType;
-    const createdAt = blob.timeCreated
-      ? new Date(blob.timeCreated)
-      : new Date();
+    const createdAt = blob.timeCreated ? new Date(blob.timeCreated) : new Date();
     const lastModified = blob.updated ? new Date(blob.updated) : new Date();
     const url = `${baseUrl}${path}`;
     const mediaLink = blob.mediaLink;
@@ -146,13 +126,9 @@ export namespace StorageUtils {
     };
   };
 
-  export const blobToDirectoryInfo = (
-    blob: Types.BlobMetadata
-  ): Types.BucketDirectory => {
+  export const blobToDirectoryInfo = (blob: Types.BlobMetadata): Types.BucketDirectory => {
     const path = (blob.name || "").replace(/\/$/, "");
-    const createdAt = blob.timeCreated
-      ? new Date(blob.timeCreated)
-      : new Date();
+    const createdAt = blob.timeCreated ? new Date(blob.timeCreated) : new Date();
     const lastModified = blob.updated ? new Date(blob.updated) : new Date();
     const isPublic = path.startsWith("public");
 
@@ -206,10 +182,7 @@ export namespace StorageUtils {
     return result;
   };
 
-  export const combineFileData = (
-    bucketFile: Types.BucketFile,
-    dbEntity?: Types.FileEntity
-  ): Types.FileInfo => {
+  export const combineFileData = (bucketFile: Types.BucketFile, dbEntity?: Types.FileEntity): Types.FileInfo => {
     const usages: Types.FileUsageInfo[] = [];
     const isProtected = dbEntity?.isProtected || false;
 
@@ -236,9 +209,7 @@ export namespace StorageUtils {
     return result;
   };
 
-  export const createDirectoryFromPath = (
-    path: string
-  ): Types.DirectoryInfo => {
+  export const createDirectoryFromPath = (path: string): Types.DirectoryInfo => {
     const now = new Date();
     const result: Types.DirectoryInfo = {
       path: path,

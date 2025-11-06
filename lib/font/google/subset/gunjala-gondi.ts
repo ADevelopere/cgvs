@@ -9,16 +9,11 @@ const data: GoogleFontItem[] = [
     version: "v10",
     lastModified: "2025-06-25",
     files: {
-      "500":
-        "https://fonts.gstatic.com/s/narnoor/v10/cIf4MaFWuVo-UTyP_N2CRGEsnIJkWL4.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/narnoor/v10/cIf4MaFWuVo-UTyP_PGFRGEsnIJkWL4.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/narnoor/v10/cIf4MaFWuVo-UTyP_JWERGEsnIJkWL4.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/narnoor/v10/cIf4MaFWuVo-UTyP_ImHRGEsnIJkWL4.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/narnoor/v10/cIf9MaFWuVo-UTyPxCmrYGkHgIs.ttf",
+      "500": "https://fonts.gstatic.com/s/narnoor/v10/cIf4MaFWuVo-UTyP_N2CRGEsnIJkWL4.ttf",
+      "600": "https://fonts.gstatic.com/s/narnoor/v10/cIf4MaFWuVo-UTyP_PGFRGEsnIJkWL4.ttf",
+      "700": "https://fonts.gstatic.com/s/narnoor/v10/cIf4MaFWuVo-UTyP_JWERGEsnIJkWL4.ttf",
+      "800": "https://fonts.gstatic.com/s/narnoor/v10/cIf4MaFWuVo-UTyP_ImHRGEsnIJkWL4.ttf",
+      regular: "https://fonts.gstatic.com/s/narnoor/v10/cIf9MaFWuVo-UTyPxCmrYGkHgIs.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",

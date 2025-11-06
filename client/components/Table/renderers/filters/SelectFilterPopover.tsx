@@ -1,12 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  Box,
-  Typography,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  Popover,
-} from "@mui/material";
+import { Box, Typography, Button, Checkbox, FormControlLabel, Popover } from "@mui/material";
 import { Check, Clear } from "@mui/icons-material";
 import { useTableLocale } from "../../contexts";
 
@@ -41,9 +34,7 @@ export const SelectFilterPopover: React.FC<SelectFilterPopoverProps> = ({
     strings: { filter: filterStrings, selection: selectionStrings },
   } = useTableLocale();
 
-  const [selectedValues, setSelectedValues] = useState<Set<string | number>>(
-    new Set(value || [])
-  );
+  const [selectedValues, setSelectedValues] = useState<Set<string | number>>(new Set(value || []));
 
   useEffect(() => {
     setSelectedValues(new Set(value || []));
@@ -110,20 +101,10 @@ export const SelectFilterPopover: React.FC<SelectFilterPopoverProps> = ({
             mb: 1,
           }}
         >
-          <Button
-            size="small"
-            onClick={handleSelectAll}
-            disabled={allSelected}
-            variant="outlined"
-          >
+          <Button size="small" onClick={handleSelectAll} disabled={allSelected} variant="outlined">
             {selectionStrings.selectAll}
           </Button>
-          <Button
-            size="small"
-            onClick={handleDeselectAll}
-            disabled={noneSelected}
-            variant="outlined"
-          >
+          <Button size="small" onClick={handleDeselectAll} disabled={noneSelected} variant="outlined">
             {selectionStrings.deselectAll}
           </Button>
         </Box>
@@ -161,24 +142,11 @@ export const SelectFilterPopover: React.FC<SelectFilterPopoverProps> = ({
           ))}
         </Box>
 
-        <Box
-          sx={{ display: "flex", gap: 1, mt: 2, justifyContent: "flex-end" }}
-        >
-          <Button
-            size="small"
-            onClick={handleClear}
-            startIcon={<Clear />}
-            color="inherit"
-          >
+        <Box sx={{ display: "flex", gap: 1, mt: 2, justifyContent: "flex-end" }}>
+          <Button size="small" onClick={handleClear} startIcon={<Clear />} color="inherit">
             {filterStrings.clear}
           </Button>
-          <Button
-            size="small"
-            onClick={handleApply}
-            variant="contained"
-            startIcon={<Check />}
-            disabled={noneSelected}
-          >
+          <Button size="small" onClick={handleApply} variant="contained" startIcon={<Check />} disabled={noneSelected}>
             {filterStrings.apply}
           </Button>
         </Box>

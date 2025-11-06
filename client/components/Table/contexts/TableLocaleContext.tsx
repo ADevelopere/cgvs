@@ -10,9 +10,7 @@ interface TableLocaleContextValue {
   strings: TableLocale;
 }
 
-const TableLocaleContext = createContext<TableLocaleContextValue | undefined>(
-  undefined
-);
+const TableLocaleContext = createContext<TableLocaleContextValue | undefined>(undefined);
 
 interface TableLocaleProviderProps {
   children: ReactNode;
@@ -20,14 +18,10 @@ interface TableLocaleProviderProps {
   customStrings?: Partial<TableLocale>;
 }
 
-export const TableLocaleProvider: React.FC<TableLocaleProviderProps> = ({
-  children,
-  customStrings,
-}) => {
+export const TableLocaleProvider: React.FC<TableLocaleProviderProps> = ({ children, customStrings }) => {
   const { language } = useAppTheme();
   const strings = useMemo(() => {
-    const baseStrings =
-      defaultLocaleResources[language] || defaultLocaleResources.en;
+    const baseStrings = defaultLocaleResources[language] || defaultLocaleResources.en;
 
     if (!customStrings) {
       return baseStrings;
@@ -38,9 +32,7 @@ export const TableLocaleProvider: React.FC<TableLocaleProviderProps> = ({
     };
 
     const mergeDeep = (target: unknown, source: unknown): TableLocale => {
-      const output: Record<string, unknown> = isObject(target)
-        ? { ...target }
-        : {};
+      const output: Record<string, unknown> = isObject(target) ? { ...target } : {};
       if (isObject(target) && isObject(source)) {
         Object.keys(source).forEach(key => {
           const sourceValue = source[key];
@@ -70,11 +62,7 @@ export const TableLocaleProvider: React.FC<TableLocaleProviderProps> = ({
     [language, strings]
   );
 
-  return (
-    <TableLocaleContext.Provider value={contextValue}>
-      {children}
-    </TableLocaleContext.Provider>
-  );
+  return <TableLocaleContext.Provider value={contextValue}>{children}</TableLocaleContext.Provider>;
 };
 
 export const useTableLocale = (): TableLocaleContextValue => {

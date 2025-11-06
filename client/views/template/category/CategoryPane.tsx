@@ -36,12 +36,10 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
     selectCategory,
     updateSelectedCategory,
   } = useTemplateCategoryStore();
-  const { createCategory, updateCategory, deleteCategory } =
-    useTemplateCategoryOperations();
+  const { createCategory, updateCategory, deleteCategory } = useTemplateCategoryOperations();
 
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
-  const [categoryToEdit, setCategoryToEdit] =
-    React.useState<TemplateCategoryWithParentTree | null>(null);
+  const [categoryToEdit, setCategoryToEdit] = React.useState<TemplateCategoryWithParentTree | null>(null);
   const [tempCategory, setTempCategory] = React.useState<{
     id: string;
     name: string;
@@ -101,15 +99,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
   );
 
   const handleUpdateCategory = React.useCallback(
-    ({
-      name,
-      description,
-      parentId,
-    }: {
-      name: string;
-      description?: string;
-      parentId?: number | null;
-    }) => {
+    ({ name, description, parentId }: { name: string; description?: string; parentId?: number | null }) => {
       if (categoryToEdit) {
         updateCategory({
           ...categoryToEdit,
@@ -134,10 +124,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
     setCategoryToEdit(null);
   };
 
-  const handleCategoryNameEdit = async (
-    category: TemplateCategoryWithParentTree,
-    newName: string
-  ) => {
+  const handleCategoryNameEdit = async (category: TemplateCategoryWithParentTree, newName: string) => {
     const input: TemplateCategoryUpdateInput = {
       id: category.id,
       name: newName.trim(),
@@ -178,10 +165,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
     []
   );
 
-  const getNodeLabel = React.useCallback(
-    (node: TemplateCategoryWithParentTree) => node.name || String(node.id),
-    []
-  );
+  const getNodeLabel = React.useCallback((node: TemplateCategoryWithParentTree) => node.name || String(node.id), []);
 
   return (
     <Box
@@ -201,11 +185,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
           mb: tempCategory ? 0 : 2,
         }}
       >
-        <ReactiveCategoryTree<
-          TemplateCategoryWithParentTree,
-          CategoryChildrenQuery,
-          CategoryChildrenQueryVariables
-        >
+        <ReactiveCategoryTree<TemplateCategoryWithParentTree, CategoryChildrenQuery, CategoryChildrenQueryVariables>
           resolver={parent => ({
             query: CategoryDocuments.categoryChildrenQueryDocument,
             variables: parent ? { parentCategoryId: parent.id } : undefined,
@@ -305,12 +285,7 @@ const TemplateCategoryManagementCategoryPane: React.FC = () => {
         }}
       >
         {/* Add root Category */}
-        <Button
-          variant="contained"
-          onClick={handleAddNewCategory}
-          sx={{ mr: 1 }}
-          disabled={!!tempCategory}
-        >
+        <Button variant="contained" onClick={handleAddNewCategory} sx={{ mr: 1 }} disabled={!!tempCategory}>
           {strings.addCategory}
         </Button>
       </Box>

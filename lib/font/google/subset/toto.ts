@@ -9,12 +9,9 @@ const data: GoogleFontItem[] = [
     version: "v7",
     lastModified: "2025-09-16",
     files: {
-      "500":
-        "https://fonts.gstatic.com/s/notoseriftoto/v7/Ktk6ALSMeZjqPnXk1rCkHYHNtwvtHItpjRP74dHhCx_Il-aj55vdNug.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/notoseriftoto/v7/Ktk6ALSMeZjqPnXk1rCkHYHNtwvtHItpjRP74dHhC_PPl-aj55vdNug.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/notoseriftoto/v7/Ktk6ALSMeZjqPnXk1rCkHYHNtwvtHItpjRP74dHhC8rPl-aj55vdNug.ttf",
+      "500": "https://fonts.gstatic.com/s/notoseriftoto/v7/Ktk6ALSMeZjqPnXk1rCkHYHNtwvtHItpjRP74dHhCx_Il-aj55vdNug.ttf",
+      "600": "https://fonts.gstatic.com/s/notoseriftoto/v7/Ktk6ALSMeZjqPnXk1rCkHYHNtwvtHItpjRP74dHhC_PPl-aj55vdNug.ttf",
+      "700": "https://fonts.gstatic.com/s/notoseriftoto/v7/Ktk6ALSMeZjqPnXk1rCkHYHNtwvtHItpjRP74dHhC8rPl-aj55vdNug.ttf",
       regular:
         "https://fonts.gstatic.com/s/notoseriftoto/v7/Ktk6ALSMeZjqPnXk1rCkHYHNtwvtHItpjRP74dHhCy3Il-aj55vdNug.ttf",
     },

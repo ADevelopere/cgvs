@@ -1,20 +1,19 @@
-import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
+import eslint from "@eslint/js";
+import tseslint from "typescript-eslint";
 
 export default [
   {
     ignores: [
-      'node_modules/**',
-      '.next/**',
-      'logs/**',
-      'storage/**',
-      '.cursor/**',
-      'build/**',
-      'dist/**',
-      'out/**',
+      "node_modules/**",
+      ".next/**",
+      "logs/**",
+      "storage/**",
+      ".cursor/**",
+      "build/**",
+      "dist/**",
+      "out/**",
       "client/graphql/generated/**",
       "next-env.d.ts",
-
     ],
   },
   eslint.configs.recommended,
@@ -23,15 +22,15 @@ export default [
   ...tseslint.configs.recommended,
   {
     rules: {
-      '@typescript-eslint/no-unused-vars': [
-        'error',
+      "@typescript-eslint/no-unused-vars": [
+        "error",
         {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
         },
       ],
-      '@typescript-eslint/no-namespace': 'off',
+      "@typescript-eslint/no-namespace": "off",
     },
   },
 ];

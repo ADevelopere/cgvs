@@ -1,12 +1,8 @@
 import { gqlSchemaBuilder } from "../../gqlSchemaBuilder";
 import * as ElementPothos from "../../pothos/element";
-import {
-  TextElementRepository,
-} from "@/server/db/repo";
+import { TextElementRepository } from "@/server/db/repo";
 import * as Types from "@/server/types";
-import {
-  TextElementUtils,
-} from "@/server/utils";
+import { TextElementUtils } from "@/server/utils";
 
 gqlSchemaBuilder.mutationFields(t => ({
   // =========================================================================
@@ -36,9 +32,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = TextElementUtils.mapTextElementUpdateGraphqlToInput(
-        args.input
-      );
+      const input = TextElementUtils.mapTextElementUpdateGraphqlToInput(args.input);
       return await TextElementRepository.update(input);
     },
   }),
@@ -52,12 +46,8 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = TextElementUtils.mapDataSourceStandaloneGqlToInput(
-        args.input
-      );
-      return await TextElementRepository.updateTextElementDataSource(
-        input
-      );
+      const input = TextElementUtils.mapDataSourceStandaloneGqlToInput(args.input);
+      return await TextElementRepository.updateTextElementDataSource(input);
     },
   }),
 }));

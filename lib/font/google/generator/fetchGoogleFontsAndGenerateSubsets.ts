@@ -40,9 +40,7 @@ async function main() {
     const response = await fetch(API_URL);
 
     if (!response.ok) {
-      throw new Error(
-        `API request failed: ${response.status} ${response.statusText}`
-      );
+      throw new Error(`API request failed: ${response.status} ${response.statusText}`);
     }
 
     // Get the response as a single string
@@ -57,10 +55,7 @@ async function main() {
     // Pass the raw JSON string to your generator function
     generateFontSubsetFiles(jsonString);
   } catch (error) {
-    logger.error(
-      "❌ An error occurred during the fetch-and-generate process:",
-      error
-    );
+    logger.error("❌ An error occurred during the fetch-and-generate process:", error);
     process.exit(1);
   }
 }

@@ -70,8 +70,7 @@ import { usePageNavigation } from "@/client/contexts/usePageNavigation";
 
 export const TemplateManagementProvider = ({ children }) => {
   const { registerResolver, updateParams } = usePageNavigation();
-  const [activeTab, setActiveTab] =
-    useState<TemplateManagementTabType>("basic");
+  const [activeTab, setActiveTab] = useState<TemplateManagementTabType>("basic");
 
   // Register resolver for this route
   useEffect(() => {
@@ -80,12 +79,7 @@ export const TemplateManagementProvider = ({ children }) => {
       resolver: async params => {
         // Handle tab parameter
         const tab = params.tab as TemplateManagementTabType;
-        if (
-          tab &&
-          ["basic", "variables", "editor", "recipients", "preview"].includes(
-            tab
-          )
-        ) {
+        if (tab && ["basic", "variables", "editor", "recipients", "preview"].includes(tab)) {
           setActiveTab(tab);
         }
 
@@ -190,12 +184,8 @@ import { usePageNavigation } from "@/client/contexts/usePageNavigation";
 
 export const TemplateCategoryManagementProvider = ({ children }) => {
   const { registerResolver, updateParams } = usePageNavigation();
-  const [activeView, setActiveView] = useState<"categories" | "suspended">(
-    "categories"
-  );
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
-    null
-  );
+  const [activeView, setActiveView] = useState<"categories" | "suspended">("categories");
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
   useEffect(() => {
     const unregister = registerResolver({
@@ -226,10 +216,7 @@ export const TemplateCategoryManagementProvider = ({ children }) => {
   // When selecting a category
   const selectCategory = (categoryId: number) => {
     setSelectedCategoryId(categoryId);
-    updateParams(
-      { categoryId: String(categoryId) },
-      { replace: true, merge: true }
-    );
+    updateParams({ categoryId: String(categoryId) }, { replace: true, merge: true });
   };
 
   // When switching views
@@ -257,9 +244,7 @@ import { usePageNavigation } from "@/client/contexts/usePageNavigation";
 
 export const VariableEditor = () => {
   const { registerResolver, updateParams } = usePageNavigation();
-  const [selectedVariableId, setSelectedVariableId] = useState<number | null>(
-    null
-  );
+  const [selectedVariableId, setSelectedVariableId] = useState<number | null>(null);
   const [editorMode, setEditorMode] = useState<"edit" | "preview">("edit");
 
   useEffect(() => {
@@ -293,10 +278,7 @@ export const VariableEditor = () => {
   // When selecting a variable
   const selectVariable = (variableId: number) => {
     setSelectedVariableId(variableId);
-    updateParams(
-      { variableId: String(variableId) },
-      { replace: true, merge: true }
-    );
+    updateParams({ variableId: String(variableId) }, { replace: true, merge: true });
   };
 
   // ...

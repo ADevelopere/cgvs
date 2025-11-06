@@ -63,9 +63,7 @@ export const useFontApolloMutations = () => {
 
       try {
         // Read existing font from cache
-        const existingFont = client.cache.readFragment<
-          Graphql.FontQuery["font"]
-        >({
+        const existingFont = client.cache.readFragment<Graphql.FontQuery["font"]>({
           id: client.cache.identify({
             __typename: "Font",
             id: vars.input.id,

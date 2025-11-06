@@ -33,24 +33,17 @@ const data: GoogleFontItem[] = [
     version: "v5",
     lastModified: "2025-09-16",
     files: {
-      "200":
-        "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuWMOaDPb9pHaHCA.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuVSOaDPb9pHaHCA.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuU-OaDPb9pHaHCA.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuXSPqDPb9pHaHCA.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuXrPqDPb9pHaHCA.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuUMOaDPb9pHaHCA.ttf",
+      "200": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuWMOaDPb9pHaHCA.ttf",
+      "300": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuVSOaDPb9pHaHCA.ttf",
+      "500": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuU-OaDPb9pHaHCA.ttf",
+      "600": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuXSPqDPb9pHaHCA.ttf",
+      "700": "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuXrPqDPb9pHaHCA.ttf",
+      regular: "https://fonts.gstatic.com/s/cascadiacode/v5/qWc_B6-zq5zxD57cT5s916v3QjfzRuG9AIUcXuUMOaDPb9pHaHCA.ttf",
       "200italic":
         "https://fonts.gstatic.com/s/cascadiacode/v5/qWc9B6-zq5zxD57cT5s916v3aD7BuTnUax-yWfDEesiMZd5lbWCAUXU.ttf",
       "300italic":
         "https://fonts.gstatic.com/s/cascadiacode/v5/qWc9B6-zq5zxD57cT5s916v3aD7BuTnUax-yWfDEehaMZd5lbWCAUXU.ttf",
-      italic:
-        "https://fonts.gstatic.com/s/cascadiacode/v5/qWc9B6-zq5zxD57cT5s916v3aD7BuTnUax-yWfDEekiMZd5lbWCAUXU.ttf",
+      italic: "https://fonts.gstatic.com/s/cascadiacode/v5/qWc9B6-zq5zxD57cT5s916v3aD7BuTnUax-yWfDEekiMZd5lbWCAUXU.ttf",
       "500italic":
         "https://fonts.gstatic.com/s/cascadiacode/v5/qWc9B6-zq5zxD57cT5s916v3aD7BuTnUax-yWfDEenqMZd5lbWCAUXU.ttf",
       "600italic":
@@ -93,24 +86,17 @@ const data: GoogleFontItem[] = [
     version: "v5",
     lastModified: "2025-09-08",
     files: {
-      "200":
-        "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTadsWVkNot27AYk.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTZDsWVkNot27AYk.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTYvsWVkNot27AYk.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTbDtmVkNot27AYk.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTb6tmVkNot27AYk.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTYdsWVkNot27AYk.ttf",
+      "200": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTadsWVkNot27AYk.ttf",
+      "300": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTZDsWVkNot27AYk.ttf",
+      "500": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTYvsWVkNot27AYk.ttf",
+      "600": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTbDtmVkNot27AYk.ttf",
+      "700": "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTb6tmVkNot27AYk.ttf",
+      regular: "https://fonts.gstatic.com/s/cascadiamono/v5/TUZlzw5pquJF3iuizJDZYqr1Q54PIbV3QmZsSTYdsWVkNot27AYk.ttf",
       "200italic":
         "https://fonts.gstatic.com/s/cascadiamono/v5/TUZnzw5pquJF3iuizJDZYqr1aZc93m0eKfzCTiPV8g0nPI9U6RYkQrY.ttf",
       "300italic":
         "https://fonts.gstatic.com/s/cascadiamono/v5/TUZnzw5pquJF3iuizJDZYqr1aZc93m0eKfzCTiPV8tMnPI9U6RYkQrY.ttf",
-      italic:
-        "https://fonts.gstatic.com/s/cascadiamono/v5/TUZnzw5pquJF3iuizJDZYqr1aZc93m0eKfzCTiPV8o0nPI9U6RYkQrY.ttf",
+      italic: "https://fonts.gstatic.com/s/cascadiamono/v5/TUZnzw5pquJF3iuizJDZYqr1aZc93m0eKfzCTiPV8o0nPI9U6RYkQrY.ttf",
       "500italic":
         "https://fonts.gstatic.com/s/cascadiamono/v5/TUZnzw5pquJF3iuizJDZYqr1aZc93m0eKfzCTiPV8r8nPI9U6RYkQrY.ttf",
       "600italic":
@@ -125,19 +111,11 @@ const data: GoogleFontItem[] = [
   {
     family: "Noto Sans Symbols 2",
     variants: ["regular"],
-    subsets: [
-      "braille",
-      "latin",
-      "latin-ext",
-      "math",
-      "mayan-numerals",
-      "symbols",
-    ],
+    subsets: ["braille", "latin", "latin-ext", "math", "mayan-numerals", "symbols"],
     version: "v25",
     lastModified: "2025-09-05",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/notosanssymbols2/v25/I_uyMoGduATTei9eI8daxVHDyfisHr71ypPqfX71-AI.ttf",
+      regular: "https://fonts.gstatic.com/s/notosanssymbols2/v25/I_uyMoGduATTei9eI8daxVHDyfisHr71ypPqfX71-AI.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -150,8 +128,7 @@ const data: GoogleFontItem[] = [
     version: "v20",
     lastModified: "2025-09-10",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/sawarabimincho/v20/8QIRdiDaitzr7brc8ahpxt6GcIJTLahP46UDUw.ttf",
+      regular: "https://fonts.gstatic.com/s/sawarabimincho/v20/8QIRdiDaitzr7brc8ahpxt6GcIJTLahP46UDUw.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",

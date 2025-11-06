@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Button,
-} from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import { useTemplateCategoryStore } from "./hooks/useTemplateCategoryStore";
 
@@ -14,8 +8,7 @@ export const CategorySwitchWarningDialog = () => {
   const { templateCategoryTranslations: strings } = useAppTranslation();
 
   // Get all necessary state and actions directly from the store
-  const { isSwitchWarningOpen, closeSwitchWarning, confirmSwitch } =
-    useTemplateCategoryStore();
+  const { isSwitchWarningOpen, closeSwitchWarning, confirmSwitch } = useTemplateCategoryStore();
 
   return (
     <Dialog open={isSwitchWarningOpen} onClose={closeSwitchWarning}>

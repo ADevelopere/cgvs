@@ -13,12 +13,7 @@ export interface PureTextElementProps {
  * Pure stateless text element renderer
  * No hooks, no context - just props in, JSX out
  */
-export const PureTextElement: React.FC<PureTextElementProps> = ({
-  base,
-  textProps,
-  textContent,
-  fontFamily,
-}) => {
+export const PureTextElement: React.FC<PureTextElementProps> = ({ base, textProps, textContent, fontFamily }) => {
   const style: React.CSSProperties = {
     position: "absolute",
     left: base.positionX,
@@ -29,10 +24,7 @@ export const PureTextElement: React.FC<PureTextElementProps> = ({
     fontFamily: fontFamily,
     color: textProps.color,
     overflow: "hidden",
-    textOverflow:
-      textProps.overflow === GQL.ElementOverflow.Ellipse
-        ? "ellipsis"
-        : "clip",
+    textOverflow: textProps.overflow === GQL.ElementOverflow.Ellipse ? "ellipsis" : "clip",
     whiteSpace: "nowrap",
     zIndex: base.renderOrder,
     ...getFlexAlignment(base.alignment),

@@ -10,13 +10,7 @@ interface ActionButtonsProps {
   disabled?: boolean;
 }
 
-export const ActionButtons: FC<ActionButtonsProps> = ({
-  onSubmit,
-  onCancel,
-  isSubmitting,
-  submitLabel,
-  disabled,
-}) => {
+export const ActionButtons: FC<ActionButtonsProps> = ({ onSubmit, onCancel, isSubmitting, submitLabel, disabled }) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
 
   return (
@@ -33,11 +27,7 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
         borderColor: "divider",
       }}
     >
-      <Button
-        variant="outlined"
-        onClick={onCancel}
-        disabled={isSubmitting || disabled}
-      >
+      <Button variant="outlined" onClick={onCancel} disabled={isSubmitting || disabled}>
         {strings.common.cancel}
       </Button>
       <Button

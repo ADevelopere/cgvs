@@ -1,14 +1,8 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
-import {
-  LoginInput,
-  LoginResponse,
-  RefreshTokenResponse,
-  UserPothosDefintion,
-} from "@/server/types";
+import { LoginInput, LoginResponse, RefreshTokenResponse, UserPothosDefintion } from "@/server/types";
 import { UserRepository } from "@/server/db/repo";
 
-const UserPothosObjectRef =
-  gqlSchemaBuilder.objectRef<UserPothosDefintion>("User");
+const UserPothosObjectRef = gqlSchemaBuilder.objectRef<UserPothosDefintion>("User");
 
 // User type
 export const UserPothosObject = gqlSchemaBuilder.loadableObject<
@@ -33,33 +27,28 @@ export const UserPothosObject = gqlSchemaBuilder.loadableObject<
 });
 
 // Login input
-export const LoginInputPothosObject = gqlSchemaBuilder
-  .inputRef<LoginInput>("LoginInput")
-  .implement({
-    fields: t => ({
-      email: t.field({
-        type: "Email",
-        required: true,
-      }),
-      password: t.string({ required: true }),
+export const LoginInputPothosObject = gqlSchemaBuilder.inputRef<LoginInput>("LoginInput").implement({
+  fields: t => ({
+    email: t.field({
+      type: "Email",
+      required: true,
     }),
-  });
+    password: t.string({ required: true }),
+  }),
+});
 
 // Login response
-export const LoginResponsePothosObject = gqlSchemaBuilder
-  .objectRef<LoginResponse>("LoginResponse")
-  .implement({
-    fields: t => ({
-      token: t.exposeString("token"),
-      // user: t.expose("user", { type: UserPothosObject }),
-      user: t.loadable({
-        type: UserPothosObject,
-        load: (ids: number[], ctx) =>
-          UserPothosObject.getDataloader(ctx).loadMany(ids),
-        resolve: loginResponse => loginResponse.user.id,
-      }),
+export const LoginResponsePothosObject = gqlSchemaBuilder.objectRef<LoginResponse>("LoginResponse").implement({
+  fields: t => ({
+    token: t.exposeString("token"),
+    // user: t.expose("user", { type: UserPothosObject }),
+    user: t.loadable({
+      type: UserPothosObject,
+      load: (ids: number[], ctx) => UserPothosObject.getDataloader(ctx).loadMany(ids),
+      resolve: loginResponse => loginResponse.user.id,
     }),
-  });
+  }),
+});
 
 // Refresh token response
 export const RefreshTokenResponsePothosObject = gqlSchemaBuilder
@@ -69,8 +58,7 @@ export const RefreshTokenResponsePothosObject = gqlSchemaBuilder
       token: t.exposeString("token"),
       user: t.loadable({
         type: UserPothosObject,
-        load: (ids: number[], ctx) =>
-          UserPothosObject.getDataloader(ctx).loadMany(ids),
+        load: (ids: number[], ctx) => UserPothosObject.getDataloader(ctx).loadMany(ids),
         resolve: loginResponse => loginResponse.user.id,
       }),
     }),

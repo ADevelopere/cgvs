@@ -180,10 +180,7 @@ useEffect(() => {
     segment: "admin/templates/:id/manage",
     resolver: async params => {
       const tab = params.tab as TemplateManagementTabType | undefined;
-      if (
-        tab &&
-        ["basic", "variables", "editor", "recipients", "preview"].includes(tab)
-      ) {
+      if (tab && ["basic", "variables", "editor", "recipients", "preview"].includes(tab)) {
         setActiveTab(tab);
         setTemplateManagementTab(tab);
       }

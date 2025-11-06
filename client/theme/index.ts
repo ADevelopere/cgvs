@@ -1,9 +1,4 @@
-import {
-  BreakpointsOptions,
-  PaletteOptions,
-  Theme,
-  ThemeOptions,
-} from "@mui/material/styles";
+import { BreakpointsOptions, PaletteOptions, Theme, ThemeOptions } from "@mui/material/styles";
 import { createTheme, PaletteMode } from "@mui/material";
 import ThemeMode from "./ThemeMode";
 import { arSD } from "@mui/x-data-grid/locales";
@@ -86,10 +81,7 @@ const breakpoints: BreakpointsOptions = {
   },
 };
 
-const getThemeConfig = (
-  mode: PaletteMode,
-  direction: "rtl" | "ltr"
-): ThemeOptions => ({
+const getThemeConfig = (mode: PaletteMode, direction: "rtl" | "ltr"): ThemeOptions => ({
   direction,
   palette: {
     mode,
@@ -99,10 +91,7 @@ const getThemeConfig = (
     MuiAppBar: {
       styleOverrides: {
         root: {
-          boxShadow:
-            mode === "light"
-              ? "0 1px 3px rgba(0,0,0,0.12)"
-              : "0 1px 3px rgba(255,255,255,0.12)",
+          boxShadow: mode === "light" ? "0 1px 3px rgba(0,0,0,0.12)" : "0 1px 3px rgba(255,255,255,0.12)",
         },
       },
     },
@@ -118,25 +107,17 @@ const getThemeConfig = (
           backgroundColor: "transparent",
         },
         "*::-webkit-scrollbar-track": {
-          background:
-            mode === "dark"
-              ? "rgba(255, 255, 255, 0.05)"
-              : "rgba(0, 0, 0, 0.05)",
+          background: mode === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)",
           borderRadius: "8px",
           margin: "8px 0",
         },
         "*::-webkit-scrollbar-thumb": {
-          background:
-            mode === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+          background: mode === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
           borderRadius: "8px",
-          border:
-            mode === "dark"
-              ? "2px solid rgba(30, 30, 30, 0.9)"
-              : "2px solid rgba(255, 255, 255, 0.9)",
+          border: mode === "dark" ? "2px solid rgba(30, 30, 30, 0.9)" : "2px solid rgba(255, 255, 255, 0.9)",
         },
         "*::-webkit-scrollbar-thumb:hover": {
-          background:
-            mode === "dark" ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.3)",
+          background: mode === "dark" ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.3)",
         },
         "*": {
           scrollbarWidth: "thin",
@@ -150,24 +131,15 @@ const getThemeConfig = (
   },
 });
 
-export const createAppTheme = (
-  mode: ThemeMode,
-  direction: "rtl" | "ltr"
-): Theme => {
+export const createAppTheme = (mode: ThemeMode, direction: "rtl" | "ltr"): Theme => {
   let effectiveMode: PaletteMode = mode as PaletteMode;
   if (mode === "system") {
-    effectiveMode = window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
+    effectiveMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
-  return createTheme(
-    { ...getThemeConfig(effectiveMode, direction) },
-    ...(direction === "rtl" ? [arSD] : [enUS]),
-    {
-      // colorSchemes: { light: true, dark: true },
-      breakpoints: breakpoints,
-    }
-  );
+  return createTheme({ ...getThemeConfig(effectiveMode, direction) }, ...(direction === "rtl" ? [arSD] : [enUS]), {
+    // colorSchemes: { light: true, dark: true },
+    breakpoints: breakpoints,
+  });
 };
 
 export const rtlLightTheme = createAppTheme(ThemeMode.Light, "rtl");

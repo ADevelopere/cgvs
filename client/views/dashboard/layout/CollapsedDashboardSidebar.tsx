@@ -3,16 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  Typography,
-  Divider,
-  Box,
-  Tooltip,
-} from "@mui/material";
+import { List, ListItem, ListItemButton, ListItemIcon, Typography, Divider, Box, Tooltip } from "@mui/material";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { useDashboardLayout } from "./DashboardLayoutContext";
 import { NavigationItem, NavigationPageItem } from "./types";
@@ -29,18 +20,11 @@ const NavItem: React.FC<{
     () =>
       item.pattern ||
       item.pattern ||
-      (item.segment
-        ? item.segment.startsWith("/")
-          ? item.segment
-          : `/${item.segment}`
-        : "#"),
+      (item.segment ? (item.segment.startsWith("/") ? item.segment : `/${item.segment}`) : "#"),
     [item]
   );
 
-  const itemIsActive = React.useMemo(
-    () => isPathActive(item, currentPathname),
-    [item, currentPathname]
-  );
+  const itemIsActive = React.useMemo(() => isPathActive(item, currentPathname), [item, currentPathname]);
 
   return (
     <ListItem disablePadding sx={{ width: "100%" }}>

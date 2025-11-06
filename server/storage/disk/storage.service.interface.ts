@@ -16,32 +16,22 @@ export interface StorageService {
   /**
    * Generate a signed URL for file upload
    */
-  generateUploadSignedUrl(
-    input: Types.UploadSignedUrlGenerateInput
-  ): Promise<string>;
+  generateUploadSignedUrl(input: Types.UploadSignedUrlGenerateInput): Promise<string>;
 
   /**
    * Upload a file to cloud storage
    */
-  uploadFile(
-    path: string,
-    contentType: string,
-    buffer: Buffer
-  ): Promise<Types.FileUploadResult>;
+  uploadFile(path: string, contentType: string, buffer: Buffer): Promise<Types.FileUploadResult>;
 
   /**
    * List files and directories with pagination and filtering
    */
-  listFiles(
-    input: Types.FilesListSearchInput
-  ): Promise<Types.StorageObjectList>;
+  listFiles(input: Types.FilesListSearchInput): Promise<Types.StorageObjectList>;
 
   /**
    * Create a folder in cloud storage
    */
-  createFolder(
-    input: Types.FolderCreateInput
-  ): Promise<Types.FileOperationResult>;
+  createFolder(input: Types.FolderCreateInput): Promise<Types.FileOperationResult>;
 
   /**
    * Rename a file or folder
@@ -81,32 +71,24 @@ export interface StorageService {
   /**
    * Move multiple files/folders
    */
-  moveItems(
-    input: Types.StorageItemsMoveInput
-  ): Promise<Types.BulkOperationResult>;
+  moveItems(input: Types.StorageItemsMoveInput): Promise<Types.BulkOperationResult>;
 
   /**
    * Copy multiple files/folders
    */
-  copyItems(
-    input: Types.StorageItemsCopyInput
-  ): Promise<Types.BulkOperationResult>;
+  copyItems(input: Types.StorageItemsCopyInput): Promise<Types.BulkOperationResult>;
 
   /**
    * Delete multiple items
    */
-  deleteItems(
-    input: Types.StorageItemsDeleteInput
-  ): Promise<Types.BulkOperationResult>;
+  deleteItems(input: Types.StorageItemsDeleteInput): Promise<Types.BulkOperationResult>;
 }
 
 /**
  * Factory function to create StorageService instance
  * Matches the Kotlin storageService factory function
  */
-export declare function createStorageService(
-  provider: StorageProvider
-): StorageService;
+export declare function createStorageService(provider: StorageProvider): StorageService;
 
 /**
  * Configuration constants matching Kotlin companion object

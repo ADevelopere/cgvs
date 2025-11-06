@@ -24,11 +24,9 @@ export const enRecipient: RecipientTranslation = {
   addToGroup: "Add to group",
   removeFromGroup: "Remove from group",
   confirmAddStudents: "Confirm add students",
-  confirmAddStudentsMessage:
-    "Are you sure you want to add the selected students to this group?",
+  confirmAddStudentsMessage: "Are you sure you want to add the selected students to this group?",
   confirmRemoveStudents: "Confirm remove students",
-  confirmRemoveStudentsMessage:
-    "Are you sure you want to remove the selected students from this group?",
+  confirmRemoveStudentsMessage: "Are you sure you want to remove the selected students from this group?",
   tabManageAdded: "Manage Added",
   tabAddNew: "Add New",
 };

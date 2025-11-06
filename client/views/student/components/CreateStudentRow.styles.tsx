@@ -78,14 +78,12 @@ export const _FieldsContainer = styled(Box, {
 
 export const _FieldWrapper = styled(Box, {
   shouldForwardProp: prop => prop !== "isMobile" && prop !== "fieldWidth",
-})<{ isMobile: boolean; fieldWidth: string | number }>(
-  ({ isMobile, fieldWidth }) => ({
-    width: fieldWidth,
-    flexShrink: isMobile ? 1 : 0,
-    position: "relative",
-    transition: "all 0.3s ease",
-  })
-);
+})<{ isMobile: boolean; fieldWidth: string | number }>(({ isMobile, fieldWidth }) => ({
+  width: fieldWidth,
+  flexShrink: isMobile ? 1 : 0,
+  position: "relative",
+  transition: "all 0.3s ease",
+}));
 
 export const _ActionsContainer = styled(Box, {
   shouldForwardProp: prop => prop !== "isMobile",
@@ -108,38 +106,36 @@ export const _StyledAlert = styled(Alert)(({ theme }) => ({
 
 export const _CreateButton = styled(Button, {
   shouldForwardProp: prop => prop !== "isMobile" && prop !== "isFormValid",
-})<{ isMobile: boolean; isFormValid: boolean }>(
-  ({ theme, isMobile, isFormValid }) => ({
-    minWidth: isMobile ? "100%" : 120,
-    height: 40,
-    borderRadius: Number(theme.shape.borderRadius) * 2,
-    fontWeight: 600,
-    fontSize: "0.95rem",
-    textTransform: "none",
-    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-    ...(isFormValid
-      ? {
-          background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.primary.light} 90%)`,
-          border: `2px solid ${theme.palette.primary.main}`,
-          color: theme.palette.primary.contrastText,
-          "&:hover": {
-            background: `linear-gradient(45deg, ${theme.palette.primary.dark} 30%, ${theme.palette.primary.main} 90%)`,
-            transform: "translateY(-2px) scale(1.05)",
-            boxShadow: theme.shadows[8],
-          },
-          "&:active": {
-            transform: "translateY(0) scale(1.02)",
-          },
-        }
-      : {
+})<{ isMobile: boolean; isFormValid: boolean }>(({ theme, isMobile, isFormValid }) => ({
+  minWidth: isMobile ? "100%" : 120,
+  height: 40,
+  borderRadius: Number(theme.shape.borderRadius) * 2,
+  fontWeight: 600,
+  fontSize: "0.95rem",
+  textTransform: "none",
+  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+  ...(isFormValid
+    ? {
+        background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.primary.light} 90%)`,
+        border: `2px solid ${theme.palette.primary.main}`,
+        color: theme.palette.primary.contrastText,
+        "&:hover": {
+          background: `linear-gradient(45deg, ${theme.palette.primary.dark} 30%, ${theme.palette.primary.main} 90%)`,
+          transform: "translateY(-2px) scale(1.05)",
+          boxShadow: theme.shadows[8],
+        },
+        "&:active": {
+          transform: "translateY(0) scale(1.02)",
+        },
+      }
+    : {
+        color: theme.palette.text.disabled,
+        background: theme.palette.action.disabledBackground,
+        border: `2px solid ${theme.palette.action.disabled}`,
+        "&.Mui-disabled": {
           color: theme.palette.text.disabled,
           background: theme.palette.action.disabledBackground,
           border: `2px solid ${theme.palette.action.disabled}`,
-          "&.Mui-disabled": {
-            color: theme.palette.text.disabled,
-            background: theme.palette.action.disabledBackground,
-            border: `2px solid ${theme.palette.action.disabled}`,
-          },
-        }),
-  })
-);
+        },
+      }),
+}));

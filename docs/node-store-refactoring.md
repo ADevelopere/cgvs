@@ -13,6 +13,7 @@ This document describes the refactoring of the node state management system in t
 **Purpose:** A Zustand store that manages all ReactFlow nodes for all templates.
 
 **Key Features:**
+
 - **Template-scoped state:** Nodes are stored per `templateId` for proper lifecycle management
 - **Type-safe operations:** Full TypeScript support with proper node types
 - **Efficient updates:** Direct node updates without iterating through all elements
@@ -24,6 +25,7 @@ This document describes the refactoring of the node state management system in t
   - `batchUpdateNodes`: Batch multiple node updates
 
 **API:**
+
 ```typescript
 interface NodesStoreActions {
   initializeNodes: (templateId, elements, containerConfig) => void;
@@ -43,11 +45,13 @@ interface NodesStoreActions {
 ### 2. Updated `useBaseElementState.ts`
 
 **Changes:**
+
 - Imported `useNodesStore`
 - Enhanced `updateBaseElementStateFn` to automatically update the nodes store when base properties change
 - When `positionX`, `positionY`, `width`, or `height` are updated, the corresponding node is updated in the store
 
 **Benefits:**
+
 - Single source of truth for base element state
 - Automatic synchronization between form state and visual nodes
 - No manual node manipulation required
@@ -55,16 +59,19 @@ interface NodesStoreActions {
 ### 3. Updated `useTemplateConfigState.ts`
 
 **Changes:**
+
 - Imported `useNodesStore`
 - Enhanced `updateFn` to update the container node when `width` or `height` changes
 
 **Benefits:**
+
 - Container dimensions stay in sync with config state
 - Immediate visual feedback when changing template size
 
 ### 4. Simplified `NodeDataProvider.tsx`
 
 **Major Simplification:**
+
 - **Before:** Complex state management with `useNodesState`, manual node creation, syncing with base states
 - **After:** Simple wrapper that:
   - Gets nodes from the store
@@ -72,6 +79,7 @@ interface NodesStoreActions {
   - Provides context for helper lines and interaction states
 
 **Removed Complexity:**
+
 - ❌ No more `useNodesState` hook
 - ❌ No more manual container node creation
 - ❌ No more element node creation from bases
@@ -79,6 +87,7 @@ interface NodesStoreActions {
 - ❌ No more checking `isDragging`/`isResizing` to prevent updates
 
 **Added:**
+
 - ✅ `templateId` prop and context
 - ✅ Single initialization call
 - ✅ Direct store access for nodes
@@ -86,38 +95,45 @@ interface NodesStoreActions {
 ### 5. Updated `ReactFlowEditor.tsx`
 
 **Changes:**
+
 - Updated `setNodes` type from `Dispatch<SetStateAction<Node[]>>` to `(nodes: Node[]) => void`
 - Changed `onNodesChange` to call `applyNodeChanges` and then `setNodes` with the result
 
 ### 6. Updated `CertificateElementContext.tsx`
 
 **Changes:**
+
 - Added `templateId` extraction with fallback
 - Passed `templateId` to `NodeDataProvider`
 
 ## Benefits
 
 ### 1. **Eliminated Redundant State Management**
+
 - Before: Nodes were managed in multiple places (NodeDataProvider, base states, ReactFlow)
 - After: Single source of truth in `useNodesStore`
 
 ### 2. **Improved Performance**
+
 - No more iterating through all elements to update a single node
 - Direct node access by ID
 - Batch updates supported
 
 ### 3. **Better Separation of Concerns**
+
 - `NodeDataProvider`: Only manages UI state (helper lines, drag/resize flags)
 - `useNodesStore`: Manages all node data
 - `useBaseElementState`: Manages form state and syncs to store
 - `useTemplateConfigState`: Manages config state and syncs to store
 
 ### 4. **Type Safety**
+
 - Full TypeScript support
 - Proper node type discrimination
 - Type-safe update functions
 
 ### 5. **Easier to Extend**
+
 - Add new node types by adding creation functions
 - Add new update patterns as needed
 - Store is isolated and testable
@@ -125,6 +141,7 @@ interface NodesStoreActions {
 ## Data Flow
 
 ### Before (Complex):
+
 ```
 User Input → Base State → NodeDataProvider Effect → Node Recreation → ReactFlow
                       ↓
@@ -132,6 +149,7 @@ User Input → Base State → NodeDataProvider Effect → Node Recreation → Re
 ```
 
 ### After (Simple):
+
 ```
 User Input → Base State → Store Update → ReactFlow
          ↓
@@ -143,17 +161,18 @@ User Input → Base State → Store Update → ReactFlow
 ### For Adding New Element Types:
 
 1. Create node creation function in `useNodesStore.ts`:
+
 ```typescript
 function createMyElementNode(element: GQL.CertificateElementUnion): Node<MyNodeData> | null {
   if (element.base.type !== GQL.ElementType.MyType) return null;
-  
+
   return {
     id: element.base.id.toString(),
     type: "myType",
     position: { x: element.base.positionX, y: element.base.positionY },
     width: element.base.width,
     height: element.base.height,
-    data: { elementId: element.base.id, /* other data */ },
+    data: { elementId: element.base.id /* other data */ },
     connectable: false,
     resizing: true,
   };
@@ -161,6 +180,7 @@ function createMyElementNode(element: GQL.CertificateElementUnion): Node<MyNodeD
 ```
 
 2. Add to `initializeNodes`:
+
 ```typescript
 if (element.base.type === GQL.ElementType.MyType) {
   return createMyElementNode(element);
@@ -168,30 +188,36 @@ if (element.base.type === GQL.ElementType.MyType) {
 ```
 
 3. Optionally add update function:
+
 ```typescript
 updateMyElementNodeData: (templateId, elementId, updates) => {
   // Similar to updateTextNodeData
-}
+};
 ```
 
 ### For Updating Node Properties:
 
 **From form state:**
+
 ```typescript
 // In your element state hook
-const updateMyElementState = useCallback((action) => {
-  updateFn(elementId, action);
-  
-  // Update node if needed
-  if (templateId && action.key === "someProperty") {
-    updateMyElementNodeData(templateId, elementId, {
-      [action.key]: action.value
-    });
-  }
-}, [updateFn, templateId, elementId]);
+const updateMyElementState = useCallback(
+  action => {
+    updateFn(elementId, action);
+
+    // Update node if needed
+    if (templateId && action.key === "someProperty") {
+      updateMyElementNodeData(templateId, elementId, {
+        [action.key]: action.value,
+      });
+    }
+  },
+  [updateFn, templateId, elementId]
+);
 ```
 
 **Directly:**
+
 ```typescript
 const updateNode = useNodesStore(state => state.updateNode);
 updateNode(templateId, nodeId, { width: 200, height: 100 });

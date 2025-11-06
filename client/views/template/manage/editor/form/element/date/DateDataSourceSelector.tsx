@@ -26,19 +26,12 @@ export const DateDataSourceSelector: FC<DateDataSourceSelectorProps> = ({
         label={strings.dateElement.dataSourceLabel}
         onChange={e => onTypeChange(e.target.value)}
       >
-        <MenuItem value={DateDataSourceType.Static}>
-          {strings.dateElement.dataSourceStatic}
-        </MenuItem>
-        <MenuItem value={DateDataSourceType.StudentDateField}>
-          {strings.dateElement.dataSourceStudentField}
-        </MenuItem>
+        <MenuItem value={DateDataSourceType.Static}>{strings.dateElement.dataSourceStatic}</MenuItem>
+        <MenuItem value={DateDataSourceType.StudentDateField}>{strings.dateElement.dataSourceStudentField}</MenuItem>
         <MenuItem value={DateDataSourceType.CertificateDateField}>
           {strings.dateElement.dataSourceCertificateField}
         </MenuItem>
-        <MenuItem
-          value={DateDataSourceType.TemplateDateVariable}
-          disabled={dateVariablesDisabled}
-        >
+        <MenuItem value={DateDataSourceType.TemplateDateVariable} disabled={dateVariablesDisabled}>
           {strings.dateElement.dataSourceTemplateVariable}
         </MenuItem>
       </Select>

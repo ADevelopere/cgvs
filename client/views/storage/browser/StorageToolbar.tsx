@@ -2,10 +2,7 @@ import React from "react";
 import { Box, Fade } from "@mui/material";
 import StorageFilters from "./StorageFilters";
 import StorageSelectionActions from "./StorageSelectionActions";
-import {
-  StorageItemUnion,
-  StorageClipboardState,
-} from "@/client/views/storage/core/storage.type";
+import { StorageItemUnion, StorageClipboardState } from "@/client/views/storage/core/storage.type";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
 interface StorageToolbarProps {

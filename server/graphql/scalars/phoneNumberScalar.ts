@@ -21,14 +21,10 @@ export const PhoneNumberScalar = new GraphQLScalarType({
         }
         throw new TypeError("Invalid phone number");
       } catch (err) {
-        throw new TypeError(
-          `Invalid phone number: ${value}: ${(err as Error).message}`
-        );
+        throw new TypeError(`Invalid phone number: ${value}: ${(err as Error).message}`);
       }
     }
-    throw new TypeError(
-      `Expected string for PhoneNumber, got: ${typeof value}`
-    );
+    throw new TypeError(`Expected string for PhoneNumber, got: ${typeof value}`);
   },
   parseLiteral(ast): PhoneNumber {
     if (ast.kind === Kind.STRING) {
@@ -39,9 +35,7 @@ export const PhoneNumberScalar = new GraphQLScalarType({
         }
         throw new TypeError("Invalid phone number");
       } catch (err) {
-        throw new TypeError(
-          `Invalid phone number literal: ${ast.value}: ${(err as Error).message}`
-        );
+        throw new TypeError(`Invalid phone number literal: ${ast.value}: ${(err as Error).message}`);
       }
     }
     throw new TypeError("PhoneNumber literal must be a string");

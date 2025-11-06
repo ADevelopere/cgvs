@@ -9,8 +9,7 @@ const data: GoogleFontItem[] = [
     version: "v20",
     lastModified: "2025-09-16",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/notosansgrantha/v20/3y976akwcCjmsU8NDyrKo3IQfQ4o-r8cFeulHc6N.ttf",
+      regular: "https://fonts.gstatic.com/s/notosansgrantha/v20/3y976akwcCjmsU8NDyrKo3IQfQ4o-r8cFeulHc6N.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -23,8 +22,7 @@ const data: GoogleFontItem[] = [
     version: "v22",
     lastModified: "2025-09-11",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/notoserifgrantha/v22/qkBIXuEH5NzDDvc3fLDYxPk9-Wq3WLiqFENLR7fHGw.ttf",
+      regular: "https://fonts.gstatic.com/s/notoserifgrantha/v22/qkBIXuEH5NzDDvc3fLDYxPk9-Wq3WLiqFENLR7fHGw.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",

@@ -1,14 +1,5 @@
 import React, { useState } from "react";
-import {
-  Box,
-  ButtonGroup,
-  Button,
-  IconButton,
-  Tooltip,
-  Typography,
-  Divider,
-  Stack,
-} from "@mui/material";
+import { Box, ButtonGroup, Button, IconButton, Tooltip, Typography, Divider, Stack } from "@mui/material";
 import {
   Download as DownloadIcon,
   DriveFileMove as MoveIcon,
@@ -20,10 +11,7 @@ import {
   Close as CloseIcon,
 } from "@mui/icons-material";
 import { useAppTranslation } from "@/client/locale";
-import {
-  StorageItemUnion,
-  StorageClipboardState,
-} from "@/client/views/storage/core/storage.type";
+import { StorageItemUnion, StorageClipboardState } from "@/client/views/storage/core/storage.type";
 import DeleteConfirmationDialog from "../dialogs/DeleteConfirmationDialog";
 import MoveToDialog from "../dialogs/MoveToDialog";
 import RenameDialog from "../dialogs/RenameDialog";
@@ -74,9 +62,7 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
   const currentItems = searchMode ? searchResults : items;
 
   // Get selected item objects
-  const selectedItemObjects: StorageItemUnion[] = currentItems.filter(item =>
-    selectedItems.includes(item.path)
-  );
+  const selectedItemObjects: StorageItemUnion[] = currentItems.filter(item => selectedItems.includes(item.path));
 
   const selectedCount = selectedItems.length;
   const isSingleSelection = selectedCount === 1;
@@ -98,11 +84,7 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
   // Handle download action
   const handleDownload = () => {
     selectedItemObjects.forEach(item => {
-      if (
-        item.__typename === "FileInfo" &&
-        "mediaLink" in item &&
-        item.mediaLink
-      ) {
+      if (item.__typename === "FileInfo" && "mediaLink" in item && item.mediaLink) {
         // Create a temporary link to trigger download
         const fileItem = item as unknown as {
           mediaLink: string;
@@ -151,8 +133,7 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
 
   // Check if download is available for selected items
   const canDownload = selectedItemObjects.some(
-    item =>
-      item.__typename === "FileInfo" && "mediaLink" in item && item.mediaLink
+    item => item.__typename === "FileInfo" && "mediaLink" in item && item.mediaLink
   );
 
   return (
@@ -168,18 +149,11 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
         {/* Selection Info */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <Typography variant="body2" color="primary" fontWeight="medium">
-            {translations.selectedItems.replace(
-              "%{count}",
-              selectedCount.toString()
-            )}
+            {translations.selectedItems.replace("%{count}", selectedCount.toString())}
           </Typography>
 
           <Tooltip title={translations.clearSelection}>
-            <IconButton
-              size="small"
-              onClick={clearSelection}
-              sx={{ color: "text.secondary" }}
-            >
+            <IconButton size="small" onClick={clearSelection} sx={{ color: "text.secondary" }}>
               <CloseIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -216,11 +190,7 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
 
           {/* Delete Button */}
           <Tooltip title={translations.delete}>
-            <Button
-              startIcon={<DeleteIcon />}
-              onClick={handleDelete}
-              color="error"
-            >
+            <Button startIcon={<DeleteIcon />} onClick={handleDelete} color="error">
               {translations.delete}
             </Button>
           </Tooltip>
@@ -245,19 +215,9 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
           </Tooltip>
 
           {/* Paste Button */}
-          <Tooltip
-            title={
-              hasClipboard
-                ? translations.paste
-                : translations.noItemsInClipboard
-            }
-          >
+          <Tooltip title={hasClipboard ? translations.paste : translations.noItemsInClipboard}>
             <span>
-              <IconButton
-                onClick={handlePaste}
-                disabled={!hasClipboard}
-                size="small"
-              >
+              <IconButton onClick={handlePaste} disabled={!hasClipboard} size="small">
                 <PasteIcon fontSize="small" />
               </IconButton>
             </span>
@@ -270,14 +230,8 @@ const StorageSelectionActions: React.FC<StorageSelectionActionsProps> = ({
         <Box sx={{ mt: 1 }}>
           <Typography variant="caption" color="text.secondary">
             {clipboard.operation === "copy"
-              ? translations.itemsCopied.replace(
-                  "%{count}",
-                  clipboard.items.length.toString()
-                )
-              : translations.itemsCut.replace(
-                  "%{count}",
-                  clipboard.items.length.toString()
-                )}
+              ? translations.itemsCopied.replace("%{count}", clipboard.items.length.toString())
+              : translations.itemsCut.replace("%{count}", clipboard.items.length.toString())}
           </Typography>
         </Box>
       )}

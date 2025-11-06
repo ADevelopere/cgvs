@@ -28,21 +28,14 @@ type State = {
   fetchedCategoryIds: Set<number>; // Track which categories have had their children fetched
 
   // Template query variables per category
-  templateQueryVariables: Map<
-    number,
-    Graphql.TemplatesByCategoryIdQueryVariables
-  >;
+  templateQueryVariables: Map<number, Graphql.TemplatesByCategoryIdQueryVariables>;
 };
 
 type Actions = {
   onNewTemplateCancel?: () => void; // Note: Storing functions is not ideal for persistence, but we'll mirror the current logic.
 
-  selectCategory: (
-    category: Graphql.TemplateCategoryWithParentTree | null
-  ) => void;
-  updateSelectedCategory: (
-    category: Graphql.TemplateCategoryWithParentTree | null
-  ) => void;
+  selectCategory: (category: Graphql.TemplateCategoryWithParentTree | null) => void;
+  updateSelectedCategory: (category: Graphql.TemplateCategoryWithParentTree | null) => void;
   setCurrentTemplateId: (id: number | null) => void;
   setActiveCategoryTab: (tab: CategoryTabType) => void;
   setIsAddingTemplate: (adding: boolean) => void;
@@ -60,13 +53,8 @@ type Actions = {
   isFetched: (id: number) => boolean;
 
   // Template query variables actions
-  setTemplateQueryVariables: (
-    categoryId: number,
-    vars: Graphql.TemplatesByCategoryIdQueryVariables
-  ) => void;
-  getTemplateQueryVariables: (
-    categoryId: number
-  ) => Graphql.TemplatesByCategoryIdQueryVariables | undefined;
+  setTemplateQueryVariables: (categoryId: number, vars: Graphql.TemplatesByCategoryIdQueryVariables) => void;
+  getTemplateQueryVariables: (categoryId: number) => Graphql.TemplatesByCategoryIdQueryVariables | undefined;
   resetTemplateQueryVariables: (categoryId: number) => void;
 
   reset: () => void;
@@ -85,10 +73,7 @@ const initialState: State = {
 
   expandedCategoryIds: new Set<number>(),
   fetchedCategoryIds: new Set<number>(),
-  templateQueryVariables: new Map<
-    number,
-    Graphql.TemplatesByCategoryIdQueryVariables
-  >(),
+  templateQueryVariables: new Map<number, Graphql.TemplatesByCategoryIdQueryVariables>(),
 };
 
 /**
@@ -109,8 +94,7 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
 
       setIsAddingTemplate: adding => set({ isAddingTemplate: adding }),
 
-      setOnNewTemplateCancel: callback =>
-        set({ onNewTemplateCancel: callback }),
+      setOnNewTemplateCancel: callback => set({ onNewTemplateCancel: callback }),
 
       selectCategory: category => {
         set(state => {
@@ -121,10 +105,7 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
 
           let currentCategory = state.currentCategory;
           let currentTemplateId = state.currentTemplateId;
-          if (
-            state.isAddingTemplate &&
-            category?.id !== state.currentCategory?.id
-          ) {
+          if (state.isAddingTemplate && category?.id !== state.currentCategory?.id) {
             return {
               isSwitchWarningOpen: true,
               pendingCategory: category,
@@ -158,11 +139,7 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
           logger.log("updateSelectedCategory", category);
           logger.log("state.currentCategory", state.currentCategory);
           // Only update if we have a current category and the new category has the same ID
-          if (
-            !state.currentCategory ||
-            !category ||
-            state.currentCategory.id !== category.id
-          ) {
+          if (!state.currentCategory || !category || state.currentCategory.id !== category.id) {
             return state;
           }
 
@@ -255,24 +232,17 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
           currentTemplateId: rest.currentTemplateId,
           activeCategoryTab: rest.activeCategoryTab,
           currentCategory: rest.currentCategory,
-          templateQueryVariables: Array.from(
-            rest.templateQueryVariables.entries()
-          ), // Convert Map to Array for JSON
+          templateQueryVariables: Array.from(rest.templateQueryVariables.entries()), // Convert Map to Array for JSON
         };
       },
       // Custom merge to handle Set and Map conversion
       merge: (persistedState, currentState) => {
-        const typedPersistedState =
-          persistedState as Partial<CategoryUIState> & {
-            templateQueryVariables?: [
-              number,
-              Graphql.TemplatesByCategoryIdQueryVariables,
-            ][];
-          };
+        const typedPersistedState = persistedState as Partial<CategoryUIState> & {
+          templateQueryVariables?: [number, Graphql.TemplatesByCategoryIdQueryVariables][];
+        };
 
         // Initialize expandedCategoryIds from current category's parent tree
-        const currentCategory =
-          typedPersistedState?.currentCategory || currentState.currentCategory;
+        const currentCategory = typedPersistedState?.currentCategory || currentState.currentCategory;
         const expandedCategoryIds = new Set<number>();
         const fetchedCategoryIds = new Set<number>();
 
@@ -289,9 +259,7 @@ export const useTemplateCategoryStore = create<CategoryUIState>()(
           // Initialize expandedCategoryIds from current category's parent tree
           expandedCategoryIds,
           fetchedCategoryIds,
-          templateQueryVariables: new Map(
-            typedPersistedState?.templateQueryVariables || []
-          ), // Convert Array back to Map
+          templateQueryVariables: new Map(typedPersistedState?.templateQueryVariables || []), // Convert Array back to Map
         };
       },
     }

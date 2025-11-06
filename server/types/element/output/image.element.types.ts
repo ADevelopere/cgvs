@@ -35,10 +35,7 @@ export type ImageElementEntity = typeof imageElement.$inferSelect;
 // Output Type (mirrors database - base + image_element joined)
 // ============================================================================
 
-export type ImageElementSpecProps = Omit<
-  ImageElementEntity,
-  "imageDataSource" | "fit"
-> & {
+export type ImageElementSpecProps = Omit<ImageElementEntity, "imageDataSource" | "fit"> & {
   fit: ElementImageFit;
 };
 

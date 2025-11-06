@@ -34,8 +34,7 @@ gqlSchemaBuilder.mutationFields(t => ({
     },
     resolve: async (_, args) => {
       const input = args.input;
-      const textProps =
-        CommonElementUtils.mapTextPropsUpdateGraphqlToInput(input)!;
+      const textProps = CommonElementUtils.mapTextPropsUpdateGraphqlToInput(input)!;
       const result = await TextPropsRepository.update(textProps);
       return {
         textProps: TextPropsUtils.entityToTextProps(result),

@@ -6,5 +6,5 @@ import ImageNode from "../nodeRenderer/ImageNode";
 export const nodeTypes: NodeTypes = {
   container: ContainerNode,
   text: TextElementNode,
-  image: ImageNode
+  image: ImageNode,
 };

@@ -7,15 +7,9 @@ export namespace CacheDbRepository {
   /**
    * Get cache entry by key
    */
-  export const get = async (
-    key: string
-  ): Promise<{ value: string; expiresAt: Date } | null> => {
+  export const get = async (key: string): Promise<{ value: string; expiresAt: Date } | null> => {
     try {
-      const result = await db
-        .select()
-        .from(cache)
-        .where(eq(cache.key, key))
-        .limit(1);
+      const result = await db.select().from(cache).where(eq(cache.key, key)).limit(1);
 
       if (result.length === 0) {
         return null;
@@ -43,11 +37,7 @@ export namespace CacheDbRepository {
   /**
    * Set cache entry with expiration
    */
-  export const set = async (
-    key: string,
-    value: string,
-    expiresAt: Date
-  ): Promise<void> => {
+  export const set = async (key: string, value: string, expiresAt: Date): Promise<void> => {
     try {
       await db
         .insert(cache)
@@ -132,10 +122,7 @@ export namespace CacheDbRepository {
   export const deleteExpired = async (): Promise<number> => {
     try {
       const now = new Date();
-      const result = await db
-        .delete(cache)
-        .where(lt(cache.expiresAt, now))
-        .returning({ key: cache.key });
+      const result = await db.delete(cache).where(lt(cache.expiresAt, now)).returning({ key: cache.key });
 
       const deletedCount = result.length;
       if (deletedCount > 0) {

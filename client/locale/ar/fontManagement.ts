@@ -32,8 +32,7 @@ export const fontManagement: FontManagementTranslations = {
   fontNameLabel: "اسم الخط",
   fontNamePlaceholder: "مثال: Roboto، Cairo، Noto Sans",
   supportedLocalesLabel: "اللغات المدعومة",
-  supportedLocalesHelper:
-    'اختر "جميع اللغات" للخطوط العالمية، أو اختر لغات محددة',
+  supportedLocalesHelper: 'اختر "جميع اللغات" للخطوط العالمية، أو اختر لغات محددة',
   fontFileLabel: "ملف الخط",
   preview: "معاينة",
 
@@ -57,8 +56,7 @@ export const fontManagement: FontManagementTranslations = {
   confirmDeleteMessage: 'هل أنت متأكد أنك تريد حذف "%{fontName}"؟',
   checkingUsage: "جاري التحقق من الاستخدام...",
   cannotDeleteFont: "لا يمكن حذف هذا الخط",
-  fontUsedInElements:
-    "هذا الخط مستخدم في %{count} عنصر(عناصر) من عناصر الشهادات.",
+  fontUsedInElements: "هذا الخط مستخدم في %{count} عنصر(عناصر) من عناصر الشهادات.",
   cannotUndone: "لا يمكن التراجع عن هذا الإجراء.",
   deleteWarning: "سيتم حذف الخط نهائياً من النظام.",
   deletingFont: "جاري حذف الخط...",

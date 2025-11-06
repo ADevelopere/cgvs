@@ -1,13 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import {
-  IconButton,
-  Popover,
-  Tooltip,
-  Box,
-  Stack,
-  Typography,
-  Paper,
-} from "@mui/material";
+import { IconButton, Popover, Tooltip, Box, Stack, Typography, Paper } from "@mui/material";
 import {
   LightMode as LightModeIcon,
   DarkMode as DarkModeIcon,
@@ -22,9 +14,7 @@ export const ThemeSwitcher: React.FC = () => {
   const { headerTranslations: strings } = useAppTranslation();
 
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement | null>(
-    null
-  );
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement | null>(null);
 
   const handleThemeChange = useCallback(
     (newMode: ThemeMode) => {
@@ -66,19 +56,8 @@ export const ThemeSwitcher: React.FC = () => {
   return (
     <React.Fragment>
       <Tooltip title={strings.themeSettings} enterDelay={1000}>
-        <IconButton
-          type="button"
-          aria-label="theme-settings"
-          onClick={toggleMenu}
-          color="inherit"
-        >
-          {themeMode === ThemeMode.System ? (
-            <SystemModeIcon />
-          ) : !isDark ? (
-            <LightModeIcon />
-          ) : (
-            <DarkModeIcon />
-          )}
+        <IconButton type="button" aria-label="theme-settings" onClick={toggleMenu} color="inherit">
+          {themeMode === ThemeMode.System ? <SystemModeIcon /> : !isDark ? <LightModeIcon /> : <DarkModeIcon />}
         </IconButton>
       </Tooltip>
       <Popover
@@ -106,12 +85,8 @@ export const ThemeSwitcher: React.FC = () => {
                   p: 1.5,
                   cursor: "pointer",
                   transition: "all 0.2s ease-in-out",
-                  bgcolor:
-                    themeMode === option.value
-                      ? "action.selected"
-                      : "background.paper",
-                  borderBottom:
-                    index !== array.length - 1 ? "1px solid" : "none",
+                  bgcolor: themeMode === option.value ? "action.selected" : "background.paper",
+                  borderBottom: index !== array.length - 1 ? "1px solid" : "none",
                   borderColor: "divider",
                   "&:hover": {
                     bgcolor: "action.hover",

@@ -194,9 +194,7 @@ class MUIComponentConverter {
 
     const ext = extname(this.filePath);
     if (![".ts", ".tsx", ".js", ".jsx"].includes(ext)) {
-      this.logError(
-        `Unsupported file type: ${ext}. Only .ts, .tsx, .js, .jsx files are supported.`
-      );
+      this.logError(`Unsupported file type: ${ext}. Only .ts, .tsx, .js, .jsx files are supported.`);
       process.exit(1);
     }
 
@@ -214,32 +212,22 @@ class MUIComponentConverter {
    */
   private analyzeFile(): void {
     // Check for MUI imports
-    this.stats.hasMuiImport = this.content.includes(
-      'import * as MUI from "@mui/material"'
-    );
-    this.stats.hasIndividualImports =
-      /import\s*{[^}]*}\s*from\s*["']@mui\/material["']/.test(this.content);
+    this.stats.hasMuiImport = this.content.includes('import * as MUI from "@mui/material"');
+    this.stats.hasIndividualImports = /import\s*{[^}]*}\s*from\s*["']@mui\/material["']/.test(this.content);
 
     // Find which MUI components are used in the file
     for (const component of MUI_COMPONENTS) {
       const openingTagRegex = new RegExp(`<${component}\\b`, "g");
       const closingTagRegex = new RegExp(`</${component}>`, "g");
 
-      if (
-        openingTagRegex.test(this.content) ||
-        closingTagRegex.test(this.content)
-      ) {
+      if (openingTagRegex.test(this.content) || closingTagRegex.test(this.content)) {
         this.stats.componentsFound.add(component);
       }
     }
 
-    this.logInfo(
-      `Found ${this.stats.componentsFound.size} MUI components in use`
-    );
+    this.logInfo(`Found ${this.stats.componentsFound.size} MUI components in use`);
     if (this.stats.componentsFound.size > 0) {
-      this.logInfo(
-        `Components: ${Array.from(this.stats.componentsFound).join(", ")}`
-      );
+      this.logInfo(`Components: ${Array.from(this.stats.componentsFound).join(", ")}`);
     }
   }
 
@@ -254,10 +242,7 @@ class MUIComponentConverter {
       const openingRegex = new RegExp(`<${component}\\b`, "g");
       const matches = convertedContent.match(openingRegex);
       if (matches) {
-        convertedContent = convertedContent.replace(
-          openingRegex,
-          `<MUI.${component}`
-        );
+        convertedContent = convertedContent.replace(openingRegex, `<MUI.${component}`);
         this.stats.totalReplacements += matches.length;
         this.logInfo(`Converted ${matches.length} opening <${component}> tags`);
       }
@@ -268,14 +253,9 @@ class MUIComponentConverter {
       const closingRegex = new RegExp(`</${component}>`, "g");
       const matches = convertedContent.match(closingRegex);
       if (matches) {
-        convertedContent = convertedContent.replace(
-          closingRegex,
-          `</MUI.${component}>`
-        );
+        convertedContent = convertedContent.replace(closingRegex, `</MUI.${component}>`);
         this.stats.totalReplacements += matches.length;
-        this.logInfo(
-          `Converted ${matches.length} closing </${component}> tags`
-        );
+        this.logInfo(`Converted ${matches.length} closing </${component}> tags`);
       }
     }
 
@@ -307,16 +287,12 @@ class MUIComponentConverter {
     logger.log(
       `${colors.cyan}Total replacements:${colors.reset} ${colors.bold}${this.stats.totalReplacements}${colors.reset}`
     );
-    logger.log(
-      `${colors.cyan}Components converted:${colors.reset} ${this.stats.componentsFound.size}`
-    );
+    logger.log(`${colors.cyan}Components converted:${colors.reset} ${this.stats.componentsFound.size}`);
 
     if (this.stats.componentsFound.size > 0) {
       logger.log(`${colors.cyan}Converted components:${colors.reset}`);
       Array.from(this.stats.componentsFound).forEach(component => {
-        logger.log(
-          `  - ${colors.green}${component}${colors.reset} → ${colors.green}MUI.${component}${colors.reset}`
-        );
+        logger.log(`  - ${colors.green}${component}${colors.reset} → ${colors.green}MUI.${component}${colors.reset}`);
       });
     }
 
@@ -337,13 +313,9 @@ class MUIComponentConverter {
     logger.log("\n" + "=".repeat(50));
 
     if (this.stats.totalReplacements > 0) {
-      logger.log(
-        `${colors.bold}${colors.green}✅ Conversion completed successfully!${colors.reset}`
-      );
+      logger.log(`${colors.bold}${colors.green}✅ Conversion completed successfully!${colors.reset}`);
     } else {
-      logger.log(
-        `${colors.bold}${colors.yellow}⚠️  No MUI components found to convert.${colors.reset}`
-      );
+      logger.log(`${colors.bold}${colors.yellow}⚠️  No MUI components found to convert.${colors.reset}`);
     }
   }
 
@@ -376,22 +348,14 @@ function main(): void {
   const args = process.argv.slice(2);
 
   if (args.length === 0) {
-    logger.error(
-      `${colors.red}Error:${colors.reset} Please provide a file path as an argument.`
-    );
-    logger.log(
-      `${colors.yellow}Usage:${colors.reset} bun run convert-mui-components.ts <file-path>`
-    );
+    logger.error(`${colors.red}Error:${colors.reset} Please provide a file path as an argument.`);
+    logger.log(`${colors.yellow}Usage:${colors.reset} bun run convert-mui-components.ts <file-path>`);
     process.exit(1);
   }
 
   const filePath = args[0];
-  logger.log(
-    `${colors.bold}${colors.blue}MUI Component Converter${colors.reset}`
-  );
-  logger.log(
-    `${colors.bold}${colors.blue}======================${colors.reset}\n`
-  );
+  logger.log(`${colors.bold}${colors.blue}MUI Component Converter${colors.reset}`);
+  logger.log(`${colors.bold}${colors.blue}======================${colors.reset}\n`);
 
   try {
     const converter = new MUIComponentConverter(filePath);

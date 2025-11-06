@@ -1,15 +1,9 @@
 "use client";
 import React from "react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import {
-  useTemplateConfigState,
-  UseTemplateConfigStateReturn,
-} from "./form/config/useTemplateConfigState";
+import { useTemplateConfigState, UseTemplateConfigStateReturn } from "./form/config/useTemplateConfigState";
 import * as ElState from "./form/hooks";
-import {
-  elementsByTemplateIdQueryDocument,
-  templateConfigByTemplateIdQueryDocument,
-} from "./glqDocuments";
+import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "./glqDocuments";
 import { useQuery } from "@apollo/client/react";
 import { templateVariablesByTemplateIdQueryDocument } from "../variables/hooks/templateVariable.documents";
 
@@ -53,25 +47,18 @@ export const CertificateElementProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ templateId, children }) => {
   // ========== Template Config ==========
-  const {
-    data: configData,
-    loading: configApolloLoading,
-  } = useQuery(templateConfigByTemplateIdQueryDocument, {
+  const { data: configData, loading: configApolloLoading } = useQuery(templateConfigByTemplateIdQueryDocument, {
     variables: { templateId },
     fetchPolicy: "cache-and-network",
   });
 
-  const templateConfig: GQL.TemplateConfig | null | undefined =
-    React.useMemo(() => {
-      const config = configData?.templateConfigByTemplateId;
-      return config;
-    }, [configApolloLoading, configData?.templateConfigByTemplateId]);
+  const templateConfig: GQL.TemplateConfig | null | undefined = React.useMemo(() => {
+    const config = configData?.templateConfigByTemplateId;
+    return config;
+  }, [configApolloLoading, configData?.templateConfigByTemplateId]);
 
   // =========== Elements =============
-  const {
-    data: elementsData,
-    loading: elementsApolloLoading,
-  } = useQuery(elementsByTemplateIdQueryDocument, {
+  const { data: elementsData, loading: elementsApolloLoading } = useQuery(elementsByTemplateIdQueryDocument, {
     variables: { templateId },
     fetchPolicy: "cache-first",
   });
@@ -82,20 +69,17 @@ export const CertificateElementProvider: React.FC<{
   }, [elementsApolloLoading, elementsData?.elementsByTemplateId]);
 
   // =========== Variables =============
-  const { data: variablesData } = useQuery(
-    templateVariablesByTemplateIdQueryDocument,
-    {
-      variables: { templateId },
-      fetchPolicy: "cache-first",
-    }
-  );
+  const { data: variablesData } = useQuery(templateVariablesByTemplateIdQueryDocument, {
+    variables: { templateId },
+    fetchPolicy: "cache-first",
+  });
 
   const variables: GQL.TemplateVariable[] = React.useMemo(
     () => variablesData?.templateVariablesByTemplateId || [],
     [variablesData]
   );
 
-  const config = useTemplateConfigState({ config: templateConfig});
+  const config = useTemplateConfigState({ config: templateConfig });
   const textProps = ElState.useTextPropsState({ elements });
   const bases = ElState.useBaseElementState({ elements });
   const textDataSource = ElState.useTextDataSourceState({ elements });
@@ -109,32 +93,31 @@ export const CertificateElementProvider: React.FC<{
   const qrCodeProps = ElState.useQRCodePropsState({ elements });
 
   // Process variables by type
-  const { textVariables, selectVariables, dateVariables, numberVariables } =
-    React.useMemo(() => {
-      const textVariables: GQL.TemplateTextVariable[] = [];
-      const selectVariables: GQL.TemplateSelectVariable[] = [];
-      const dateVariables: GQL.TemplateDateVariable[] = [];
-      const numberVariables: GQL.TemplateNumberVariable[] = [];
+  const { textVariables, selectVariables, dateVariables, numberVariables } = React.useMemo(() => {
+    const textVariables: GQL.TemplateTextVariable[] = [];
+    const selectVariables: GQL.TemplateSelectVariable[] = [];
+    const dateVariables: GQL.TemplateDateVariable[] = [];
+    const numberVariables: GQL.TemplateNumberVariable[] = [];
 
-      for (const variable of variables) {
-        switch (variable.type) {
-          case GQL.TemplateVariableType.Text:
-            textVariables.push(variable);
-            break;
-          case GQL.TemplateVariableType.Select:
-            selectVariables.push(variable);
-            break;
-          case GQL.TemplateVariableType.Date:
-            dateVariables.push(variable);
-            break;
-          case GQL.TemplateVariableType.Number:
-            numberVariables.push(variable);
-            break;
-        }
+    for (const variable of variables) {
+      switch (variable.type) {
+        case GQL.TemplateVariableType.Text:
+          textVariables.push(variable);
+          break;
+        case GQL.TemplateVariableType.Select:
+          selectVariables.push(variable);
+          break;
+        case GQL.TemplateVariableType.Date:
+          dateVariables.push(variable);
+          break;
+        case GQL.TemplateVariableType.Number:
+          numberVariables.push(variable);
+          break;
       }
+    }
 
-      return { textVariables, selectVariables, dateVariables, numberVariables };
-    }, [variables]);
+    return { textVariables, selectVariables, dateVariables, numberVariables };
+  }, [variables]);
 
   const value: CertificateElementContextValue = React.useMemo(
     () => ({
@@ -174,11 +157,7 @@ export const CertificateElementProvider: React.FC<{
     ]
   );
 
-  return (
-    <CertificateElementContext.Provider value={value}>
-      {children}
-    </CertificateElementContext.Provider>
-  );
+  return <CertificateElementContext.Provider value={value}>{children}</CertificateElementContext.Provider>;
 };
 
 /**
@@ -189,9 +168,7 @@ export function useCertificateElementStates(): CertificateElementContextValue {
   const context = React.useContext(CertificateElementContext);
 
   if (!context) {
-    throw new Error(
-      "useCertificateElementStates must be used within CertificateElementProvider"
-    );
+    throw new Error("useCertificateElementStates must be used within CertificateElementProvider");
   }
 
   return context;

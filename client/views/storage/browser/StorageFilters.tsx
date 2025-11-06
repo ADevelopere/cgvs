@@ -31,10 +31,7 @@ interface StorageFiltersProps {
  * Displays type and date filters when no items are selected.
  * Updates URL query parameters to trigger data re-fetch.
  */
-const StorageFilters: React.FC<StorageFiltersProps> = ({
-  params,
-  updateParams,
-}) => {
+const StorageFilters: React.FC<StorageFiltersProps> = ({ params, updateParams }) => {
   const setFilterType = React.useCallback(
     (type?: Graphql.FileType) => {
       updateParams({ fileType: type, offset: 0 });
@@ -106,17 +103,14 @@ const StorageFilters: React.FC<StorageFiltersProps> = ({
   );
 
   // Handle date filter change
-  const handleDateFilterChange = React.useCallback(
-    (event: SelectChangeEvent<string>) => {
-      const value = event.target.value;
-      setDateFilter(value);
+  const handleDateFilterChange = React.useCallback((event: SelectChangeEvent<string>) => {
+    const value = event.target.value;
+    setDateFilter(value);
 
-      // For now, we're not implementing date filtering in the backend,
-      // but this is where you would update the query params with date range
-      // setParams({ dateFilter: value, offset: 0 });
-    },
-    []
-  );
+    // For now, we're not implementing date filtering in the backend,
+    // but this is where you would update the query params with date range
+    // setParams({ dateFilter: value, offset: 0 });
+  }, []);
   // Clear all filters
   const handleClearFilters = React.useCallback(() => {
     setFilterType(undefined);
@@ -138,9 +132,7 @@ const StorageFilters: React.FC<StorageFiltersProps> = ({
 
     // File type filter chip
     if (params.fileType) {
-      const fileTypeOption = fileTypeOptions.find(
-        option => option.value === params.fileType
-      );
+      const fileTypeOption = fileTypeOptions.find(option => option.value === params.fileType);
       if (fileTypeOption) {
         chips.push({
           label: `${translations.filterByType}: ${fileTypeOption.label}`,
@@ -151,9 +143,7 @@ const StorageFilters: React.FC<StorageFiltersProps> = ({
 
     // Date filter chip
     if (dateFilter) {
-      const dateOption = dateFilterOptions.find(
-        option => option.value === dateFilter
-      );
+      const dateOption = dateFilterOptions.find(option => option.value === dateFilter);
       if (dateOption) {
         chips.push({
           label: `${translations.filterByDate}: ${dateOption.label}`,
@@ -196,12 +186,7 @@ const StorageFilters: React.FC<StorageFiltersProps> = ({
       }}
     >
       {/* Filter Controls Row */}
-      <Stack
-        direction="row"
-        spacing={2}
-        alignItems="center"
-        sx={{ mb: hasActiveFilters ? 2 : 0 }}
-      >
+      <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: hasActiveFilters ? 2 : 0 }}>
         {/* Filter Icon and Label */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <FilterListIcon color="action" fontSize="small" />
@@ -310,11 +295,7 @@ const StorageFilters: React.FC<StorageFiltersProps> = ({
       {/* Active Filter Chips */}
       {activeFilterChips.length > 0 && (
         <Box>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ mb: 1, display: "block" }}
-          >
+          <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: "block" }}>
             {translations.activeFilters || "Active filters"}:
           </Typography>
           <Stack direction="row" spacing={1} flexWrap="wrap">

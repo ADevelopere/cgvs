@@ -7,27 +7,21 @@ import {
   isOfElement,
 } from "./base.element.pothos";
 import { InputFieldBuilder, SchemaTypes } from "@pothos/core";
-import {
-  createTextPropsFieldFromEntity,
-  TextPropsInputObject,
-} from "./textProps.pothos";
+import { createTextPropsFieldFromEntity, TextPropsInputObject } from "./textProps.pothos";
 
 // ============================================================================
 // Enums
 // ============================================================================
 
-export const CountryRepresentationPothosEnum = gqlSchemaBuilder.enumType(
-  "CountryRepresentation",
-  { values: Object.values(Types.CountryRepresentation) }
-);
+export const CountryRepresentationPothosEnum = gqlSchemaBuilder.enumType("CountryRepresentation", {
+  values: Object.values(Types.CountryRepresentation),
+});
 
 // ============================================================================
 // Mutation Inputs
 // ============================================================================
 export const CountryElementCountryPropsInputObject = gqlSchemaBuilder
-  .inputRef<Types.CountryElementCountryPropsInput>(
-    "CountryElementCountryPropsInput"
-  )
+  .inputRef<Types.CountryElementCountryPropsInput>("CountryElementCountryPropsInput")
   .implement({
     fields: t => ({
       representation: t.field({
@@ -37,9 +31,7 @@ export const CountryElementCountryPropsInputObject = gqlSchemaBuilder
     }),
   });
 
-const createCountryElementInputFields = <Types extends SchemaTypes>(
-  t: InputFieldBuilder<Types, "InputObject">
-) => ({
+const createCountryElementInputFields = <Types extends SchemaTypes>(t: InputFieldBuilder<Types, "InputObject">) => ({
   base: t.field({
     type: CertificateElementBaseInputObject,
     required: true,
@@ -68,34 +60,28 @@ export const CountryElementUpdateInputObject = gqlSchemaBuilder
     }),
   });
 
-export const CountryElementSpecPropsStandaloneUpdateInputObject =
-  gqlSchemaBuilder
-    .inputRef<Types.CountryElementSpecPropsStandaloneUpdateInput>(
-      "CountryElementSpecPropsStandaloneUpdateInput"
-    )
-    .implement({
-      fields: t => ({
-        elementId: t.int({ required: true }),
-        countryProps: t.field({
-          type: CountryElementCountryPropsInputObject,
-          required: true,
-        }),
+export const CountryElementSpecPropsStandaloneUpdateInputObject = gqlSchemaBuilder
+  .inputRef<Types.CountryElementSpecPropsStandaloneUpdateInput>("CountryElementSpecPropsStandaloneUpdateInput")
+  .implement({
+    fields: t => ({
+      elementId: t.int({ required: true }),
+      countryProps: t.field({
+        type: CountryElementCountryPropsInputObject,
+        required: true,
       }),
-    });
+    }),
+  });
 
-export const CountryElementSpecPropsStandaloneUpdateResponseObject =
-  gqlSchemaBuilder
-    .objectRef<Types.CountryElementSpecPropsStandaloneUpdateResponse>(
-      "CountryElementSpecPropsStandaloneUpdateResponse"
-    )
-    .implement({
-      fields: t => ({
-        elementId: t.expose("elementId", { type: "Int" }),
-        countryProps: t.expose("countryProps", {
-          type: CountryElementCountryPropsPothosObject,
-        }),
+export const CountryElementSpecPropsStandaloneUpdateResponseObject = gqlSchemaBuilder
+  .objectRef<Types.CountryElementSpecPropsStandaloneUpdateResponse>("CountryElementSpecPropsStandaloneUpdateResponse")
+  .implement({
+    fields: t => ({
+      elementId: t.expose("elementId", { type: "Int" }),
+      countryProps: t.expose("countryProps", {
+        type: CountryElementCountryPropsPothosObject,
       }),
-    });
+    }),
+  });
 
 // ============================================================================
 // Loadable Element Object
@@ -110,8 +96,7 @@ export const CountryElementCountryPropsPothosObject = gqlSchemaBuilder
     }),
   });
 
-const CountryElementObjectRef =
-  gqlSchemaBuilder.objectRef<Types.CountryElementOutput>("CountryElement");
+const CountryElementObjectRef = gqlSchemaBuilder.objectRef<Types.CountryElementOutput>("CountryElement");
 
 export const CountryElementObject = gqlSchemaBuilder.loadableObject<
   Types.CountryElementOutput | Error,

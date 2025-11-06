@@ -12,11 +12,7 @@ import {
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import { ElementAlignment } from "@/client/graphql/generated/gql/graphql";
-import {
-  BaseCertificateElementFormState,
-  BaseElementFormErrors,
-  UpdateBaseElementFn,
-} from "./types";
+import { BaseCertificateElementFormState, BaseElementFormErrors, UpdateBaseElementFn } from "./types";
 
 interface BaseCertificateElementFormProps {
   baseProps: BaseCertificateElementFormState;
@@ -30,9 +26,13 @@ type AlignmentOption = {
   value: ElementAlignment;
 };
 
-export const BaseCertificateElementForm: FC<
-  BaseCertificateElementFormProps
-> = ({ baseProps, onFieldChange, errors, disabled, showTitle = true }) => {
+export const BaseCertificateElementForm: FC<BaseCertificateElementFormProps> = ({
+  baseProps,
+  onFieldChange,
+  errors,
+  disabled,
+  showTitle = true,
+}) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
 
   const alignments: AlignmentOption[] = React.useMemo(
@@ -88,7 +88,7 @@ export const BaseCertificateElementForm: FC<
     ],
     [strings]
   );
-  
+
   return (
     <Box>
       {showTitle && (
@@ -105,9 +105,7 @@ export const BaseCertificateElementForm: FC<
             label={strings.baseElement.nameLabel}
             placeholder={strings.baseElement.namePlaceholder}
             value={baseProps.name}
-            onChange={e =>
-              onFieldChange({ key: "name", value: e.target.value })
-            }
+            onChange={e => onFieldChange({ key: "name", value: e.target.value })}
             error={!!errors.name}
             helperText={errors.name}
             disabled={disabled}
@@ -124,9 +122,7 @@ export const BaseCertificateElementForm: FC<
             label={strings.baseElement.descriptionLabel}
             placeholder={strings.baseElement.descriptionPlaceholder}
             value={baseProps.description}
-            onChange={e =>
-              onFieldChange({ key: "description", value: e.target.value })
-            }
+            onChange={e => onFieldChange({ key: "description", value: e.target.value })}
             error={!!errors.description}
             helperText={errors.description}
             disabled={disabled}
@@ -237,9 +233,7 @@ export const BaseCertificateElementForm: FC<
                 </MenuItem>
               ))}
             </Select>
-            {errors.alignment && (
-              <FormHelperText>{errors.alignment}</FormHelperText>
-            )}
+            {errors.alignment && <FormHelperText>{errors.alignment}</FormHelperText>}
           </FormControl>
         </Grid>
       </Grid>

@@ -1,11 +1,7 @@
 import { gqlSchemaBuilder } from "../../gqlSchemaBuilder";
 import * as ElementPothos from "../../pothos/element";
-import {
-  QRCodeElementRepository,
-} from "@/server/db/repo";
-import {
-  QRCodeElementUtils,
-} from "@/server/utils";
+import { QRCodeElementRepository } from "@/server/db/repo";
+import { QRCodeElementUtils } from "@/server/utils";
 
 gqlSchemaBuilder.mutationFields(t => ({
   // =========================================================================
@@ -20,9 +16,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = QRCodeElementUtils.mapQRCodeElementCreateGraphqlToInput(
-        args.input
-      );
+      const input = QRCodeElementUtils.mapQRCodeElementCreateGraphqlToInput(args.input);
       return await QRCodeElementRepository.create(input);
     },
   }),
@@ -36,9 +30,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = QRCodeElementUtils.mapQRCodeElementUpdateGraphqlToInput(
-        args.input
-      );
+      const input = QRCodeElementUtils.mapQRCodeElementUpdateGraphqlToInput(args.input);
       return await QRCodeElementRepository.update(input);
     },
   }),

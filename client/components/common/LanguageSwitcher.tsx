@@ -1,13 +1,5 @@
 import React, { useCallback } from "react";
-import {
-  IconButton,
-  Popover,
-  Tooltip,
-  Box,
-  Stack,
-  Typography,
-  Paper,
-} from "@mui/material";
+import { IconButton, Popover, Tooltip, Box, Stack, Typography, Paper } from "@mui/material";
 import { Translate as TranslateIcon } from "@mui/icons-material";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { useAppTranslation } from "@/client/locale";
@@ -18,9 +10,7 @@ export const LanguageSwitcher: React.FC = () => {
   const { language, setLanguage } = useAppTheme();
 
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement | null>(
-    null
-  );
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement | null>(null);
 
   const handleLanguageChange = useCallback(
     (newLanguage: AppLanguage) => {
@@ -55,12 +45,7 @@ export const LanguageSwitcher: React.FC = () => {
   return (
     <React.Fragment>
       <Tooltip title="Language settings" enterDelay={1000}>
-        <IconButton
-          type="button"
-          aria-label="language-settings"
-          onClick={toggleMenu}
-          color="inherit"
-        >
+        <IconButton type="button" aria-label="language-settings" onClick={toggleMenu} color="inherit">
           <TranslateIcon />
         </IconButton>
       </Tooltip>
@@ -89,12 +74,8 @@ export const LanguageSwitcher: React.FC = () => {
                   p: 1.5,
                   cursor: "pointer",
                   transition: "all 0.2s ease-in-out",
-                  bgcolor:
-                    language === option.value
-                      ? "action.selected"
-                      : "background.paper",
-                  borderBottom:
-                    index !== array.length - 1 ? "1px solid" : "none",
+                  bgcolor: language === option.value ? "action.selected" : "background.paper",
+                  borderBottom: index !== array.length - 1 ? "1px solid" : "none",
                   borderColor: "divider",
                   "&:hover": {
                     bgcolor: "action.hover",

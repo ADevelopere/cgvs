@@ -121,9 +121,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
           onUploadStart?.();
           onFilesSelected?.(files);
 
-          logger.info(
-            `Starting upload of ${files.length} files to ${uploadPath}`
-          );
+          logger.info(`Starting upload of ${files.length} files to ${uploadPath}`);
 
           await startUpload(files, uploadPath, {
             onComplete: () => {
@@ -136,24 +134,11 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
         }
       })();
     },
-    [
-      disabled,
-      onUploadStart,
-      onFilesSelected,
-      uploadPath,
-      startUpload,
-      onUploadComplete,
-    ]
+    [disabled, onUploadStart, onFilesSelected, uploadPath, startUpload, onUploadComplete]
   );
 
   // Configure react-dropzone
-  const {
-    getRootProps,
-    getInputProps,
-    isDragActive,
-    isDragReject,
-    fileRejections,
-  } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
     onDrop: handleFilesUpload,
     disabled,
     noClick: !allowClick,
@@ -166,8 +151,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
             (acc, type) => {
               if (type.startsWith(".")) {
                 // File extension
-                acc["application/octet-stream"] =
-                  acc["application/octet-stream"] || [];
+                acc["application/octet-stream"] = acc["application/octet-stream"] || [];
                 acc["application/octet-stream"].push(type);
               } else {
                 // MIME type
@@ -194,10 +178,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
                 .replace("%{maxSize}", formatFileSize(maxFileSize));
               break;
             case "file-invalid-type":
-              message = translations.invalidFileType.replace(
-                "%{fileName}",
-                file.name
-              );
+              message = translations.invalidFileType.replace("%{fileName}", file.name);
               break;
             case "too-many-files":
               message = translations.tooManyFiles
@@ -246,31 +227,19 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
               alignItems: "center",
               justifyContent: "center",
               bgcolor: MUI.alpha(theme.palette.primary.main, 0.1),
-              border: `2px dashed ${
-                isDragReject
-                  ? theme.palette.error.main
-                  : theme.palette.primary.main
-              }`,
+              border: `2px dashed ${isDragReject ? theme.palette.error.main : theme.palette.primary.main}`,
               borderRadius: theme.shape.borderRadius,
             }}
           >
             <UploadIcon
               sx={{
                 fontSize: 64,
-                color: isDragReject
-                  ? theme.palette.error.main
-                  : theme.palette.primary.main,
+                color: isDragReject ? theme.palette.error.main : theme.palette.primary.main,
                 mb: 2,
               }}
             />
-            <MUI.Typography
-              variant="h6"
-              color={isDragReject ? "error" : "primary"}
-              align="center"
-            >
-              {isDragReject
-                ? translations.invalidFileType
-                : translations.dropHereToUpload}
+            <MUI.Typography variant="h6" color={isDragReject ? "error" : "primary"} align="center">
+              {isDragReject ? translations.invalidFileType : translations.dropHereToUpload}
             </MUI.Typography>
           </MUI.Paper>
         </MUI.Fade>
@@ -292,25 +261,12 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
           p: 3,
           cursor: allowClick && !disabled ? "pointer" : "default",
           border: `2px dashed ${
-            isDragReject
-              ? theme.palette.error.main
-              : isDragActive
-                ? theme.palette.primary.main
-                : theme.palette.divider
+            isDragReject ? theme.palette.error.main : isDragActive ? theme.palette.primary.main : theme.palette.divider
           }`,
           bgcolor: isDragActive
-            ? MUI.alpha(
-                isDragReject
-                  ? theme.palette.error.main
-                  : theme.palette.primary.main,
-                0.05
-              )
+            ? MUI.alpha(isDragReject ? theme.palette.error.main : theme.palette.primary.main, 0.05)
             : "transparent",
-          transition: theme.transitions.create([
-            "border-color",
-            "background-color",
-            "elevation",
-          ]),
+          transition: theme.transitions.create(["border-color", "background-color", "elevation"]),
           opacity: disabled ? 0.5 : 1,
           pointerEvents: disabled ? "none" : "auto",
         }}
@@ -339,13 +295,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
             <MUI.Typography
               variant="h6"
               align="center"
-              color={
-                isDragReject
-                  ? "error"
-                  : isDragActive
-                    ? "primary"
-                    : "textSecondary"
-              }
+              color={isDragReject ? "error" : isDragActive ? "primary" : "textSecondary"}
               sx={{ mb: 1 }}
             >
               {isUploading
@@ -358,11 +308,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({
             </MUI.Typography>
 
             {!isUploading && allowClick && (
-              <MUI.Typography
-                variant="body2"
-                align="center"
-                color="textSecondary"
-              >
+              <MUI.Typography variant="body2" align="center" color="textSecondary">
                 {translations.orClickToSelect}
               </MUI.Typography>
             )}

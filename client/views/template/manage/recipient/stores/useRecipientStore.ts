@@ -38,9 +38,7 @@ interface RecipientState {
 interface RecipientActions {
   setSelectedGroup: (group: Graphql.TemplateRecipientGroup | null) => void;
   setSelectedGroupId: (groupId: number | null) => void;
-  setStudentsNotInGroupQueryParams: (
-    params: Partial<Graphql.StudentsNotInRecipientGroupQueryVariables>
-  ) => void;
+  setStudentsNotInGroupQueryParams: (params: Partial<Graphql.StudentsNotInRecipientGroupQueryVariables>) => void;
   setStudentsInGroupQueryParams: (
     params:
       | Partial<Graphql.StudentsInRecipientGroupQueryVariables>
@@ -111,136 +109,127 @@ const initialState: RecipientState = {
   activeSubTab: getPersistedActiveSubTab(),
 };
 
-export const useRecipientStore = create<RecipientState & RecipientActions>(
-  set => ({
-    ...initialState,
+export const useRecipientStore = create<RecipientState & RecipientActions>(set => ({
+  ...initialState,
 
-    setSelectedGroup: group =>
-      set(state => {
-        const groupId = group?.id || null;
-        setPersistedGroupId(groupId);
-        return {
-          selectedGroup: group,
-          selectedGroupId: groupId,
-          studentsNotInGroupQueryParams: {
-            ...state.studentsNotInGroupQueryParams,
-            recipientGroupId: group?.id || 0,
-            paginationArgs: { page: 1, first: 50 }, // Reset pagination when group changes
-            // Preserve existing orderBy
-            orderBy: state.studentsNotInGroupQueryParams.orderBy,
-          },
-          recipientsByGroupIdFilteredQuery: {
-            ...state.recipientsByGroupIdFilteredQuery,
-            recipientGroupId: group?.id || 0,
-            paginationArgs: { page: 1, first: 50 }, // Reset pagination when group changes
-            // Preserve existing orderBy
-            orderBy: state.recipientsByGroupIdFilteredQuery.orderBy,
-          },
-        };
-      }),
-
-    setSelectedGroupId: groupId =>
-      set(state => {
-        setPersistedGroupId(groupId);
-        return {
-          selectedGroupId: groupId,
-          studentsNotInGroupQueryParams: {
-            ...state.studentsNotInGroupQueryParams,
-            recipientGroupId: groupId || 0,
-            paginationArgs: { page: 1, first: 50 }, // Reset pagination when group changes
-            // Preserve existing orderBy
-            orderBy: state.studentsNotInGroupQueryParams.orderBy,
-          },
-          recipientsByGroupIdFilteredQuery: {
-            ...state.recipientsByGroupIdFilteredQuery,
-            recipientGroupId: groupId || 0,
-            paginationArgs: { page: 1, first: 50 }, // Reset pagination when group changes
-            // Preserve existing orderBy
-            orderBy: state.recipientsByGroupIdFilteredQuery.orderBy,
-          },
-        };
-      }),
-
-    setStudentsNotInGroupQueryParams: params =>
-      set(state => ({
+  setSelectedGroup: group =>
+    set(state => {
+      const groupId = group?.id || null;
+      setPersistedGroupId(groupId);
+      return {
+        selectedGroup: group,
+        selectedGroupId: groupId,
         studentsNotInGroupQueryParams: {
           ...state.studentsNotInGroupQueryParams,
-          ...params,
+          recipientGroupId: group?.id || 0,
+          paginationArgs: { page: 1, first: 50 }, // Reset pagination when group changes
+          // Preserve existing orderBy
+          orderBy: state.studentsNotInGroupQueryParams.orderBy,
         },
-      })),
-
-    setStudentsInGroupQueryParams: params =>
-      set(state => ({
         recipientsByGroupIdFilteredQuery: {
           ...state.recipientsByGroupIdFilteredQuery,
-          ...params,
+          recipientGroupId: group?.id || 0,
+          paginationArgs: { page: 1, first: 50 }, // Reset pagination when group changes
+          // Preserve existing orderBy
+          orderBy: state.recipientsByGroupIdFilteredQuery.orderBy,
         },
-      })),
+      };
+    }),
 
-    setFiltersNotInGroup: filters => set({ filtersNotInGroup: filters }),
+  setSelectedGroupId: groupId =>
+    set(state => {
+      setPersistedGroupId(groupId);
+      return {
+        selectedGroupId: groupId,
+        studentsNotInGroupQueryParams: {
+          ...state.studentsNotInGroupQueryParams,
+          recipientGroupId: groupId || 0,
+          paginationArgs: { page: 1, first: 50 }, // Reset pagination when group changes
+          // Preserve existing orderBy
+          orderBy: state.studentsNotInGroupQueryParams.orderBy,
+        },
+        recipientsByGroupIdFilteredQuery: {
+          ...state.recipientsByGroupIdFilteredQuery,
+          recipientGroupId: groupId || 0,
+          paginationArgs: { page: 1, first: 50 }, // Reset pagination when group changes
+          // Preserve existing orderBy
+          orderBy: state.recipientsByGroupIdFilteredQuery.orderBy,
+        },
+      };
+    }),
 
-    setFiltersInGroup: filters => set({ filtersInGroup: filters }),
+  setStudentsNotInGroupQueryParams: params =>
+    set(state => ({
+      studentsNotInGroupQueryParams: {
+        ...state.studentsNotInGroupQueryParams,
+        ...params,
+      },
+    })),
 
-    setFilterNotInGroup: (columnId, filter) =>
-      set(state => ({
-        filtersNotInGroup: { ...state.filtersNotInGroup, [columnId]: filter },
-      })),
+  setStudentsInGroupQueryParams: params =>
+    set(state => ({
+      recipientsByGroupIdFilteredQuery: {
+        ...state.recipientsByGroupIdFilteredQuery,
+        ...params,
+      },
+    })),
 
-    setFilterInGroup: (columnId, filter) =>
-      set(state => ({
-        filtersInGroup: { ...state.filtersInGroup, [columnId]: filter },
-      })),
+  setFiltersNotInGroup: filters => set({ filtersNotInGroup: filters }),
 
-    clearFilterNotInGroup: columnId =>
-      set(state => {
-        const newFilters = { ...state.filtersNotInGroup };
-        delete newFilters[columnId];
-        return { filtersNotInGroup: newFilters };
-      }),
+  setFiltersInGroup: filters => set({ filtersInGroup: filters }),
 
-    clearFilterInGroup: columnId =>
-      set(state => {
-        const newFilters = { ...state.filtersInGroup };
-        delete newFilters[columnId];
-        return { filtersInGroup: newFilters };
-      }),
+  setFilterNotInGroup: (columnId, filter) =>
+    set(state => ({
+      filtersNotInGroup: { ...state.filtersNotInGroup, [columnId]: filter },
+    })),
 
-    clearAllFiltersNotInGroup: () => set({ filtersNotInGroup: {} }),
+  setFilterInGroup: (columnId, filter) =>
+    set(state => ({
+      filtersInGroup: { ...state.filtersInGroup, [columnId]: filter },
+    })),
 
-    clearAllFiltersInGroup: () => set({ filtersInGroup: {} }),
+  clearFilterNotInGroup: columnId =>
+    set(state => {
+      const newFilters = { ...state.filtersNotInGroup };
+      delete newFilters[columnId];
+      return { filtersNotInGroup: newFilters };
+    }),
 
-    setSelectedStudentIdsNotInGroup: ids =>
-      set({ selectedStudentIdsNotInGroup: ids }),
+  clearFilterInGroup: columnId =>
+    set(state => {
+      const newFilters = { ...state.filtersInGroup };
+      delete newFilters[columnId];
+      return { filtersInGroup: newFilters };
+    }),
 
-    setSelectedRecipientIdsInGroup: ids =>
-      set({ selectedRecipientIdsInGroup: ids }),
+  clearAllFiltersNotInGroup: () => set({ filtersNotInGroup: {} }),
 
-    clearSelectedStudentIdsNotInGroup: () =>
-      set({ selectedStudentIdsNotInGroup: [] }),
+  clearAllFiltersInGroup: () => set({ filtersInGroup: {} }),
 
-    clearSelectedRecipientIdsInGroup: () =>
-      set({ selectedRecipientIdsInGroup: [] }),
+  setSelectedStudentIdsNotInGroup: ids => set({ selectedStudentIdsNotInGroup: ids }),
 
-    setActiveSubTab: tab => {
-      setPersistedActiveSubTab(tab);
-      set({ activeSubTab: tab });
-    },
+  setSelectedRecipientIdsInGroup: ids => set({ selectedRecipientIdsInGroup: ids }),
 
-    reset: () => set(initialState),
-  })
-);
+  clearSelectedStudentIdsNotInGroup: () => set({ selectedStudentIdsNotInGroup: [] }),
+
+  clearSelectedRecipientIdsInGroup: () => set({ selectedRecipientIdsInGroup: [] }),
+
+  setActiveSubTab: tab => {
+    setPersistedActiveSubTab(tab);
+    set({ activeSubTab: tab });
+  },
+
+  reset: () => set(initialState),
+}));
 
 // Hook to initialize the store with persisted group data
 export const useRecipientStoreInitializer = () => {
   const { selectedGroupId, setSelectedGroup } = useRecipientStore();
 
-  const { data, loading, error } = useQuery(
-    templateRecipientGroupByIdQueryDocument,
-    {
-      variables: { id: selectedGroupId! },
-      skip: !selectedGroupId,
-    }
-  );
+  const { data, loading, error } = useQuery(templateRecipientGroupByIdQueryDocument, {
+    variables: { id: selectedGroupId! },
+    skip: !selectedGroupId,
+  });
 
   useEffect(() => {
     if (data?.templateRecipientGroupById) {

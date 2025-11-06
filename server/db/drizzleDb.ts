@@ -2,18 +2,12 @@ import logger from "@/server/lib/logger";
 
 // Verify DATABASE_URL is loaded
 if (!process.env.DATABASE_URL) {
-  logger.error(
-    "server/db/drizzleDb.ts:❌ Error: DATABASE_URL is not set in environment variables"
-  );
+  logger.error("server/db/drizzleDb.ts:❌ Error: DATABASE_URL is not set in environment variables");
   logger.error("   Please check your .env file");
   process.exit(1);
 } else {
-  logger.log(
-    "server/db/drizzleDb.ts Environment variables loaded successfully"
-  );
-  logger.log(
-    `   DATABASE_URL=${process.env.DATABASE_URL?.substring(0, 20)}...`
-  );
+  logger.log("server/db/drizzleDb.ts Environment variables loaded successfully");
+  logger.log(`   DATABASE_URL=${process.env.DATABASE_URL?.substring(0, 20)}...`);
 }
 
 import { relations } from "./drizzleRelations";

@@ -10,10 +10,7 @@ export { default as UploadProgressFileItem } from "./UploadProgressFileItem";
 export { default as CancelUploadDialog } from "./CancelUploadDialog";
 
 // Types
-export type {
-  UploadFileDisplayInfo,
-  CancelTarget,
-} from "../core/storage-upload.types";
+export type { UploadFileDisplayInfo, CancelTarget } from "../core/storage-upload.types";
 
 export type { UploadProgressHeaderProps } from "./UploadProgressHeader";
 export type { UploadProgressSummaryProps } from "./UploadProgressSummary";

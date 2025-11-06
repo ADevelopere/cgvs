@@ -32,18 +32,14 @@ export type UseImageDataSourceStateReturn = {
 /**
  * Type guard to check if element is ImageElement
  */
-function isImageElement(
-  element: GQL.CertificateElementUnion
-): element is GQL.ImageElement {
+function isImageElement(element: GQL.CertificateElementUnion): element is GQL.ImageElement {
   return element.__typename === "ImageElement";
 }
 
 /**
  * Extract imageDataSource state from element
  */
-function extractImageDataSourceState(
-  element: GQL.CertificateElementUnion
-): ImageDataSourceFormState | null {
+function extractImageDataSourceState(element: GQL.CertificateElementUnion): ImageDataSourceFormState | null {
   if (isImageElement(element) && element.imageDataSource) {
     return {
       dataSource: imageDataSourceToInput(element.imageDataSource),
@@ -55,33 +51,23 @@ function extractImageDataSourceState(
 /**
  * Convert imageDataSource input to update input
  */
-function toUpdateInput(
-  elementId: number,
-  state: ImageDataSourceFormState
-): GQL.ImageDataSourceStandaloneUpdateInput {
+function toUpdateInput(elementId: number, state: ImageDataSourceFormState): GQL.ImageDataSourceStandaloneUpdateInput {
   return {
     elementId: elementId,
     dataSource: state.dataSource,
   };
 }
 
-export function useImageDataSourceState(
-  params: UseImageDataSourceStateParams
-): UseImageDataSourceStateReturn {
+export function useImageDataSourceState(params: UseImageDataSourceStateParams): UseImageDataSourceStateReturn {
   const { templateId, elements } = params;
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
 
-  const [updateImageElementDataSourceMutation] = useMutation(
-    updateImageElementDataSourceMutationDocument
-  );
+  const [updateImageElementDataSourceMutation] = useMutation(updateImageElementDataSourceMutationDocument);
 
   // Mutation function
   const mutationFn = React.useCallback(
-    async (
-      elementId: number,
-      state: ImageDataSourceFormState
-    ): Promise<void> => {
+    async (elementId: number, state: ImageDataSourceFormState): Promise<void> => {
       try {
         const updateInput = toUpdateInput(elementId, state);
         await updateImageElementDataSourceMutation({
@@ -90,8 +76,7 @@ export function useImageDataSourceState(
           },
         });
       } catch (error) {
-        const errorMessage =
-          errorStrings?.updateFailed || "Failed to update image data source";
+        const errorMessage = errorStrings?.updateFailed || "Failed to update image data source";
         logger.error("useImageDataSourceState: Mutation failed", {
           elementId,
           error,
@@ -147,10 +132,7 @@ export const useImageDataSource = (params: UseImageDataSourceParams) => {
 
   // Get state or initialize if not present (only initialize once)
   const { dataSource } = React.useMemo(() => {
-    return (
-      imageDataSourceStates.get(params.elementId) ??
-      initImageDataSourceState(params.elementId)
-    );
+    return imageDataSourceStates.get(params.elementId) ?? initImageDataSourceState(params.elementId);
   }, [imageDataSourceStates, params.elementId, initImageDataSourceState]);
 
   const updateImageDataSource = React.useCallback(

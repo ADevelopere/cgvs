@@ -10,9 +10,7 @@ interface TemplateNotFoundErrorProps {
   onBack: () => void;
 }
 
-export const TemplateNotFoundError: React.FC<TemplateNotFoundErrorProps> = ({
-  onBack,
-}) => {
+export const TemplateNotFoundError: React.FC<TemplateNotFoundErrorProps> = ({ onBack }) => {
   const { templateCategoryTranslations: strings } = useAppTranslation();
 
   return (
@@ -42,11 +40,7 @@ export const TemplateNotFoundError: React.FC<TemplateNotFoundErrorProps> = ({
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
           {strings.templateNotFoundMessage}
         </Typography>
-        <Button
-          variant="contained"
-          onClick={onBack}
-          startIcon={<ArrowBackIcon />}
-        >
+        <Button variant="contained" onClick={onBack} startIcon={<ArrowBackIcon />}>
           {strings.backToTemplates}
         </Button>
       </Paper>

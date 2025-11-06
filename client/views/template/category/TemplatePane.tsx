@@ -25,15 +25,8 @@ import { useQuery, useLazyQuery } from "@apollo/client/react";
 
 import { useAppTheme } from "@/client/contexts";
 import { useAppTranslation } from "@/client/locale";
-import {
-  EmptyStateIllustration,
-  EditableTypography,
-} from "@/client/components";
-import {
-  Template,
-  TemplateUpdateInput,
-  TemplateCategoryWithParentTree,
-} from "@/client/graphql/generated/gql/graphql";
+import { EmptyStateIllustration, EditableTypography } from "@/client/components";
+import { Template, TemplateUpdateInput, TemplateCategoryWithParentTree } from "@/client/graphql/generated/gql/graphql";
 import { TemplateDocuments, CategoryDocuments } from "../hooks";
 import { TemplateUtils } from "../utils";
 import TemplateEditDialog from "./TemplateEditDialog";
@@ -59,23 +52,22 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
 
   // Get query variables from store for the current category
   const queryVariables = React.useMemo(
-    () =>
-      currentCategory
-        ? getTemplateQueryVariables(currentCategory.id)
-        : undefined,
+    () => (currentCategory ? getTemplateQueryVariables(currentCategory.id) : undefined),
     [currentCategory, getTemplateQueryVariables]
   );
 
   // Fetch templates for current category
-  const { data: templatesByCategoryIdQuery, loading: regularTemplatesLoading } =
-    useQuery(TemplateDocuments.templatesByCategoryIdQueryDocument, {
+  const { data: templatesByCategoryIdQuery, loading: regularTemplatesLoading } = useQuery(
+    TemplateDocuments.templatesByCategoryIdQueryDocument,
+    {
       variables: {
         categoryId: currentCategory?.id,
         ...queryVariables,
       },
       skip: !currentCategory?.id,
       fetchPolicy: "cache-first",
-    });
+    }
+  );
 
   const templates = React.useMemo(
     () => templatesByCategoryIdQuery?.templatesByCategoryId?.data ?? [],
@@ -97,15 +89,12 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
   const { templateCategoryTranslations: strings } = useAppTranslation();
 
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
-  const [templateToEdit, setTemplateToEdit] = React.useState<Template | null>(
-    null
-  );
+  const [templateToEdit, setTemplateToEdit] = React.useState<Template | null>(null);
 
   // Category search for autocomplete
-  const [
-    searchCategories,
-    { data: searchCategoriesData, loading: searchLoading },
-  ] = useLazyQuery(CategoryDocuments.searchTemplateCategoriesQueryDocument);
+  const [searchCategories, { data: searchCategoriesData, loading: searchLoading }] = useLazyQuery(
+    CategoryDocuments.searchTemplateCategoriesQueryDocument
+  );
   const [categorySearchTerm, setCategorySearchTerm] = React.useState("");
   const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -193,19 +182,14 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
     }
   };
 
-  const handleTemplateNameEdit = async (
-    template: Template,
-    newName: string
-  ) => {
+  const handleTemplateNameEdit = async (template: Template, newName: string) => {
     const error = validateTemplateName(newName);
     if (error) {
       return error;
     }
 
     try {
-      updateTemplate(
-        TemplateUtils.mapTemplateToUpdateInput({ ...template, name: newName })
-      );
+      updateTemplate(TemplateUtils.mapTemplateToUpdateInput({ ...template, name: newName }));
       return ""; // success
     } catch (error: unknown) {
       return (error as Error).message || strings.templateUpdateFailed;
@@ -395,9 +379,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
                     sx: { minWidth: 150 },
                   }}
                   value={template?.name ?? ""}
-                  onSaveAction={newValue =>
-                    handleTemplateNameEdit(template, newValue)
-                  }
+                  onSaveAction={newValue => handleTemplateNameEdit(template, newValue)}
                   isValidAction={validateTemplateName}
                 />
               </Box>
@@ -405,11 +387,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
               <Box sx={{ flexGrow: 1 }} />
 
               <Tooltip title={strings.delete}>
-                <IconButton
-                  onClick={() => suspendTemplate(template.id)}
-                  color="error"
-                  disabled={false}
-                >
+                <IconButton onClick={() => suspendTemplate(template.id)} color="error" disabled={false}>
                   <DeleteIcon />
                 </IconButton>
               </Tooltip>
@@ -427,11 +405,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
               </Tooltip>
 
               <Tooltip title={strings.manage}>
-                <IconButton
-                  onClick={() => manageTemplate(template.id)}
-                  color="info"
-                  disabled={false}
-                >
+                <IconButton onClick={() => manageTemplate(template.id)} color="info" disabled={false}>
                   <SquareArrowOutUpRight />
                 </IconButton>
               </Tooltip>
@@ -510,8 +484,7 @@ const TemplateCategoryManagementTemplatePane: React.FC = () => {
         {/* Pagination info */}
         {pageInfo && pageInfo.total > 0 && (
           <Typography variant="body2" color="text.secondary">
-            {strings.showing} {pageInfo.firstItem ?? 0}-{pageInfo.lastItem ?? 0}{" "}
-            {strings.of} {pageInfo.total}
+            {strings.showing} {pageInfo.firstItem ?? 0}-{pageInfo.lastItem ?? 0} {strings.of} {pageInfo.total}
           </Typography>
         )}
 

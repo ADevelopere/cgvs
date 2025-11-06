@@ -61,9 +61,7 @@ export namespace DateElementUtils {
   ): ElType.DateElementInput => {
     return {
       base: input.base,
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
-        input.textProps
-      ),
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps),
       dataSource: mapDateDataSourceGraphqlToInput(input.dataSource),
       dateProps: input.dateProps,
     };
@@ -78,9 +76,7 @@ export namespace DateElementUtils {
     return {
       id: input.id,
       base: input.base,
-      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(
-        input.textProps
-      ),
+      textProps: CommonElementUtils.mapTextPropsGraphqlCreateToInput(input.textProps),
       dataSource: mapDateDataSourceGraphqlToInput(input.dataSource),
       dateProps: input.dateProps,
     };
@@ -95,9 +91,7 @@ export namespace DateElementUtils {
   const checkCalendarType = (calendarType: ElType.CalendarType): void => {
     const validTypes = Object.values(ElType.CalendarType);
     if (!validTypes.includes(calendarType)) {
-      throw new Error(
-        `Invalid calendar type: ${calendarType}. Must be one of: ${validTypes.join(", ")}`
-      );
+      throw new Error(`Invalid calendar type: ${calendarType}. Must be one of: ${validTypes.join(", ")}`);
     }
   };
 
@@ -136,16 +130,12 @@ export namespace DateElementUtils {
     const validTokens = /^[YMDHhmsaAZzTWwEedDo\s\-/:.,']+$/;
 
     if (!validTokens.test(format)) {
-      throw new Error(
-        "Invalid date format. Use valid date format tokens (e.g., YYYY-MM-DD, DD/MM/YYYY)"
-      );
+      throw new Error("Invalid date format. Use valid date format tokens (e.g., YYYY-MM-DD, DD/MM/YYYY)");
     }
 
     // Must contain at least one date component (Y, M, or D)
     if (!/[YMD]/.test(format)) {
-      throw new Error(
-        "Date format must contain at least one date component (Year, Month, or Day)"
-      );
+      throw new Error("Date format must contain at least one date component (Year, Month, or Day)");
     }
   };
 
@@ -156,14 +146,10 @@ export namespace DateElementUtils {
   /**
    * Validate transformation type
    */
-  const checkTransformation = (
-    transformation: ElType.DateTransformationType
-  ): void => {
+  const checkTransformation = (transformation: ElType.DateTransformationType): void => {
     const validTypes = Object.values(ElType.DateTransformationType);
     if (!validTypes.includes(transformation)) {
-      throw new Error(
-        `Invalid transformation type: ${transformation}. Must be one of: ${validTypes.join(", ")}`
-      );
+      throw new Error(`Invalid transformation type: ${transformation}. Must be one of: ${validTypes.join(", ")}`);
     }
   };
 
@@ -174,9 +160,7 @@ export namespace DateElementUtils {
   /**
    * Validate date data source based on type
    */
-  export const checkDataSource = async (
-    dataSource: ElType.DateDataSourceInput
-  ): Promise<void> => {
+  export const checkDataSource = async (dataSource: ElType.DateDataSourceInput): Promise<void> => {
     switch (dataSource.type) {
       case ElType.DateDataSourceType.STATIC:
         checkStaticDataSource(dataSource.value);
@@ -191,10 +175,7 @@ export namespace DateElementUtils {
         break;
 
       case ElType.DateDataSourceType.TEMPLATE_DATE_VARIABLE:
-        await checkTemplateVariable(
-          dataSource.variableId,
-          TemplateVariableType.DATE
-        );
+        await checkTemplateVariable(dataSource.variableId, TemplateVariableType.DATE);
         break;
 
       default:
@@ -213,9 +194,7 @@ export namespace DateElementUtils {
     // Validate ISO 8601 date format or basic date format
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) {
-      throw new TypeError(
-        "Invalid static date value. Use ISO 8601 format (e.g., 2024-01-15 or 2024-01-15T10:30:00Z)"
-      );
+      throw new TypeError("Invalid static date value. Use ISO 8601 format (e.g., 2024-01-15 or 2024-01-15T10:30:00Z)");
     }
   };
 
@@ -225,39 +204,28 @@ export namespace DateElementUtils {
   const checkStudentDateField = (field: ElType.StudentDateField): void => {
     const validFields = Object.values(ElType.StudentDateField);
     if (!validFields.includes(field)) {
-      throw new Error(
-        `Invalid student date field: ${field}. Must be one of: ${validFields.join(", ")}`
-      );
+      throw new Error(`Invalid student date field: ${field}. Must be one of: ${validFields.join(", ")}`);
     }
   };
 
   /**
    * Validate certificate date field enum
    */
-  const checkCertificateDateField = (
-    field: ElType.CertificateDateField
-  ): void => {
+  const checkCertificateDateField = (field: ElType.CertificateDateField): void => {
     const validFields = Object.values(ElType.CertificateDateField);
     if (!validFields.includes(field)) {
-      throw new Error(
-        `Invalid certificate date field: ${field}. Must be one of: ${validFields.join(", ")}`
-      );
+      throw new Error(`Invalid certificate date field: ${field}. Must be one of: ${validFields.join(", ")}`);
     }
   };
 
   /**
    * Validate template variable exists
    */
-  const checkTemplateVariable = async (
-    variableId: number,
-    type: TemplateVariableType
-  ): Promise<void> => {
+  const checkTemplateVariable = async (variableId: number, type: TemplateVariableType): Promise<void> => {
     await ElementRepository.checkTemplateVariableId(variableId, type);
   };
 
-  export const checkSpecProps = async (
-    dateProps: ElType.DateElementSpecPropsInput
-  ): Promise<void> => {
+  export const checkSpecProps = async (dateProps: ElType.DateElementSpecPropsInput): Promise<void> => {
     // Validate calendar type
     checkCalendarType(dateProps.calendarType);
 
@@ -271,10 +239,7 @@ export namespace DateElementUtils {
     checkDateFormat(dateProps.format);
 
     // Validate transformation (if provided)
-    if (
-      dateProps.transformation !== undefined &&
-      dateProps.transformation !== null
-    ) {
+    if (dateProps.transformation !== undefined && dateProps.transformation !== null) {
       checkTransformation(dateProps.transformation);
     }
   };
@@ -286,18 +251,9 @@ export namespace DateElementUtils {
   /**
    * Validate all fields for DATE element (create/update)
    */
-  export const checkInput = async (
-    input: ElType.DateElementInput
-  ): Promise<void> => {
-    if (
-      !input.base ||
-      !input.textProps ||
-      !input.dataSource ||
-      !input.dateProps
-    ) {
-      throw new Error(
-        "DateElementInput must include base, textProps, dataSource, and dateProps"
-      );
+  export const checkInput = async (input: ElType.DateElementInput): Promise<void> => {
+    if (!input.base || !input.textProps || !input.dataSource || !input.dateProps) {
+      throw new Error("DateElementInput must include base, textProps, dataSource, and dateProps");
     }
 
     // Validate base element properties
@@ -316,9 +272,7 @@ export namespace DateElementUtils {
    * Convert input data source format to output format
    * Input uses 'field' property, output uses 'studentField'/'certificateField'
    */
-  export const convertInputDataSourceToOutput = (
-    input: ElType.DateDataSourceInput
-  ): ElType.DateDataSource => {
+  export const convertInputDataSourceToOutput = (input: ElType.DateDataSourceInput): ElType.DateDataSource => {
     switch (input.type) {
       case ElType.DateDataSourceType.STATIC:
         return { type: input.type, value: input.value };
@@ -341,9 +295,7 @@ export namespace DateElementUtils {
    * Extract variableId from date data source (inline in repository)
    * Maps to correct TypeScript field name based on type
    */
-  export const extractVariableIdFromDataSource = (
-    dataSource: ElType.DateDataSourceInput
-  ): number | null => {
+  export const extractVariableIdFromDataSource = (dataSource: ElType.DateDataSourceInput): number | null => {
     if (dataSource.type === ElType.DateDataSourceType.TEMPLATE_DATE_VARIABLE) {
       return dataSource.variableId;
     }

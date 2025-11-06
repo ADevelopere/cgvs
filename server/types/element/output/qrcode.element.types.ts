@@ -23,10 +23,7 @@ export type QRCodeElementEntity = typeof qrCodeElement.$inferSelect;
 // Output Type (mirrors database - base + qr_code_element joined)
 // ============================================================================
 
-export type QRCodeElementSpecProps = Omit<
-  QRCodeElementEntity,
-  "errorCorrection"
-> & {
+export type QRCodeElementSpecProps = Omit<QRCodeElementEntity, "errorCorrection"> & {
   errorCorrection: QRCodeErrorCorrection;
 };
 

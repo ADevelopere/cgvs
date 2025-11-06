@@ -21,13 +21,11 @@ export interface TextFieldProps extends BaseFieldProps<string> {
 }
 
 // Date field specific props (value is string but validator uses Date)
-export interface DateFieldProps
-  extends Omit<BaseFieldProps<string>, "getIsValid"> {
+export interface DateFieldProps extends Omit<BaseFieldProps<string>, "getIsValid"> {
   getIsValid?: (value: Date) => string | null | undefined;
 }
 
 // Select/Gender field specific props
-export interface GenderFieldProps
-  extends BaseFieldProps<Gender | undefined | null> {
+export interface GenderFieldProps extends BaseFieldProps<Gender | undefined | null> {
   options: Array<{ value: Gender; label: string }>;
 }

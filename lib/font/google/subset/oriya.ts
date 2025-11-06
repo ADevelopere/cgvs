@@ -9,14 +9,10 @@ const data: GoogleFontItem[] = [
     version: "v5",
     lastModified: "2025-09-08",
     files: {
-      "500":
-        "https://fonts.gstatic.com/s/alkatra/v5/r05EGLZA5qhCYsyJbuChFuK48MedzngUu7cPrNDVemxE.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/alkatra/v5/r05EGLZA5qhCYsyJbuChFuK48Medznj4vLcPrNDVemxE.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/alkatra/v5/r05EGLZA5qhCYsyJbuChFuK48MedznjBvLcPrNDVemxE.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/alkatra/v5/r05EGLZA5qhCYsyJbuChFuK48Medzngmu7cPrNDVemxE.ttf",
+      "500": "https://fonts.gstatic.com/s/alkatra/v5/r05EGLZA5qhCYsyJbuChFuK48MedzngUu7cPrNDVemxE.ttf",
+      "600": "https://fonts.gstatic.com/s/alkatra/v5/r05EGLZA5qhCYsyJbuChFuK48Medznj4vLcPrNDVemxE.ttf",
+      "700": "https://fonts.gstatic.com/s/alkatra/v5/r05EGLZA5qhCYsyJbuChFuK48MedznjBvLcPrNDVemxE.ttf",
+      regular: "https://fonts.gstatic.com/s/alkatra/v5/r05EGLZA5qhCYsyJbuChFuK48Medzngmu7cPrNDVemxE.ttf",
     },
     category: "display",
     kind: "webfonts#webfont",
@@ -57,14 +53,10 @@ const data: GoogleFontItem[] = [
     version: "v29",
     lastModified: "2025-09-02",
     files: {
-      "500":
-        "https://fonts.gstatic.com/s/baloobhaina2/v29/qWc-B6yyq4P9Adr3RtoX1q6ySgbwusXwJjkOS-XEgMPvRfRLYWmZSA.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/baloobhaina2/v29/qWc-B6yyq4P9Adr3RtoX1q6ySgbwusXwJjkOS-XEbMTvRfRLYWmZSA.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/baloobhaina2/v29/qWc-B6yyq4P9Adr3RtoX1q6ySgbwusXwJjkOS-XEVcTvRfRLYWmZSA.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/baloobhaina2/v29/qWc-B6yyq4P9Adr3RtoX1q6ySgbwusXwJjkOS-XEMsTvRfRLYWmZSA.ttf",
+      "500": "https://fonts.gstatic.com/s/baloobhaina2/v29/qWc-B6yyq4P9Adr3RtoX1q6ySgbwusXwJjkOS-XEgMPvRfRLYWmZSA.ttf",
+      "600": "https://fonts.gstatic.com/s/baloobhaina2/v29/qWc-B6yyq4P9Adr3RtoX1q6ySgbwusXwJjkOS-XEbMTvRfRLYWmZSA.ttf",
+      "700": "https://fonts.gstatic.com/s/baloobhaina2/v29/qWc-B6yyq4P9Adr3RtoX1q6ySgbwusXwJjkOS-XEVcTvRfRLYWmZSA.ttf",
+      "800": "https://fonts.gstatic.com/s/baloobhaina2/v29/qWc-B6yyq4P9Adr3RtoX1q6ySgbwusXwJjkOS-XEMsTvRfRLYWmZSA.ttf",
       regular:
         "https://fonts.gstatic.com/s/baloobhaina2/v29/qWc-B6yyq4P9Adr3RtoX1q6ySgbwusXwJjkOS-XEssPvRfRLYWmZSA.ttf",
     },
@@ -74,17 +66,7 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Noto Sans Oriya",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
     subsets: ["latin", "latin-ext", "oriya"],
     version: "v33",
     lastModified: "2025-09-02",

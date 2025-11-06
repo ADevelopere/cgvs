@@ -1,28 +1,12 @@
 import * as Types from "@/server/types";
 import { OrderSortDirection } from "@/lib/enum";
 import { students } from "@/server/db/schema";
-import {
-  eq,
-  notLike,
-  like,
-  not,
-  or,
-  isNull,
-  gt,
-  gte,
-  lt,
-  lte,
-  asc,
-  desc,
-} from "drizzle-orm";
+import { eq, notLike, like, not, or, isNull, gt, gte, lt, lte, asc, desc } from "drizzle-orm";
 import { PgSelect } from "drizzle-orm/pg-core";
 import { fullTextSearch } from "@/server/db/query.extentions";
 
 export namespace StudentFilterUtils {
-  export function applyFilters<T extends PgSelect>(
-    qb: T,
-    args?: Types.StudentFilterArgs | null
-  ) {
+  export function applyFilters<T extends PgSelect>(qb: T, args?: Types.StudentFilterArgs | null) {
     if (!args) return qb;
     const ftsLang = "simple"; // Use "simple" for language-agnostic, or "english", "arabic" etc.
 
@@ -163,10 +147,7 @@ export namespace StudentFilterUtils {
     return qb;
   }
 
-  export function applyOrdering<T extends PgSelect>(
-    qb: T,
-    orderBy?: Types.StudentsOrderByClause[] | null
-  ) {
+  export function applyOrdering<T extends PgSelect>(qb: T, orderBy?: Types.StudentsOrderByClause[] | null) {
     if (!orderBy || orderBy.length === 0) return qb;
 
     orderBy.forEach(clause => {
@@ -196,9 +177,7 @@ export namespace StudentFilterUtils {
         default:
           return;
       }
-      qb = qb.orderBy(
-        clause.order === OrderSortDirection.ASC ? asc(column) : desc(column)
-      );
+      qb = qb.orderBy(clause.order === OrderSortDirection.ASC ? asc(column) : desc(column));
     });
     return qb;
   }

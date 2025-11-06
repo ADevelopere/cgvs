@@ -5,10 +5,7 @@ import { QrCodeElementForm } from "../../form/element/qrcode/QrCodeElementForm";
 import { useElementCreateMutations } from "../../form/hooks/useElementCreateMutations";
 import { validateBaseElementField } from "../../form/element/base/cretElementBaseValidator";
 import { validateQRCodeProps } from "../../form/element/qrcode/qrCodeValidators";
-import type {
-  QrCodeElementFormState,
-  QrCodeElementFormErrors,
-} from "../../form/element/qrcode/types";
+import type { QrCodeElementFormState, QrCodeElementFormErrors } from "../../form/element/qrcode/types";
 import type { UpdateBaseElementFn } from "../../form/element/base";
 import type { UpdateQRCodePropsFn } from "../../form/element/qrcode/types";
 import { logger } from "@/client/lib/logger";
@@ -31,16 +28,16 @@ interface CreateQRCodeElementWrapperProps {
 // COMPONENT
 // ============================================================================
 
-export const CreateQRCodeElementWrapper: React.FC<
-  CreateQRCodeElementWrapperProps
-> = ({
+export const CreateQRCodeElementWrapper: React.FC<CreateQRCodeElementWrapperProps> = ({
   templateId,
   initialElementName,
   open,
   onClose,
 }) => {
-    const { templateEditorTranslations: {addNodePanel: t} } = useAppTranslation();
-  
+  const {
+    templateEditorTranslations: { addNodePanel: t },
+  } = useAppTranslation();
+
   // Get mutation
   const { createQRCodeElementMutation } = useElementCreateMutations();
 
@@ -108,24 +105,27 @@ export const CreateQRCodeElementWrapper: React.FC<
     }));
   }, []);
 
-  const updateQrCodeProps: UpdateQRCodePropsFn = useCallback(action => {
-    setState(prev => ({
-      ...prev,
-      qrCodeProps: {
-        ...prev.qrCodeProps,
-        [action.key]: action.value,
-      },
-    }));
+  const updateQrCodeProps: UpdateQRCodePropsFn = useCallback(
+    action => {
+      setState(prev => ({
+        ...prev,
+        qrCodeProps: {
+          ...prev.qrCodeProps,
+          [action.key]: action.value,
+        },
+      }));
 
-    const error = qrCodePropsValidator(action);
-    setErrors(prev => ({
-      ...prev,
-      qrCodeProps: {
-        ...prev.qrCodeProps,
-        [action.key]: error,
-      },
-    }));
-  }, [qrCodePropsValidator]);
+      const error = qrCodePropsValidator(action);
+      setErrors(prev => ({
+        ...prev,
+        qrCodeProps: {
+          ...prev.qrCodeProps,
+          [action.key]: error,
+        },
+      }));
+    },
+    [qrCodePropsValidator]
+  );
 
   const hasError = useMemo(() => {
     return (

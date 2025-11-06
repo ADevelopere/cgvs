@@ -35,13 +35,7 @@ const RecipientGroupSelector: React.FC<RecipientGroupSelectorProps> = ({
       getOptionLabel={option => option.name || ""}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       noOptionsText={strings.noOptionsAvailable}
-      renderInput={params => (
-        <TextField
-          {...params}
-          label={strings.selectGroup}
-          placeholder={strings.selectGroup}
-        />
-      )}
+      renderInput={params => <TextField {...params} label={strings.selectGroup} placeholder={strings.selectGroup} />}
       renderOption={(props, option) => (
         <li {...props} key={option.id}>
           <Box
@@ -53,12 +47,7 @@ const RecipientGroupSelector: React.FC<RecipientGroupSelectorProps> = ({
             }}
           >
             <span>{option.name}</span>
-            <Chip
-              label={option.studentCount || 0}
-              size="small"
-              color="primary"
-              sx={{ ml: "auto" }}
-            />
+            <Chip label={option.studentCount || 0} size="small" color="primary" sx={{ ml: "auto" }} />
           </Box>
         </li>
       )}

@@ -2,12 +2,7 @@ import { useTheme } from "@mui/material/styles";
 import { CircularProgress, TablePagination } from "@mui/material";
 import type React from "react";
 import { useCallback, useMemo } from "react";
-import {
-  useTableLocale,
-  useTableColumnContext,
-  useTableContext,
-  useTableRowsContext,
-} from "../contexts";
+import { useTableLocale, useTableColumnContext, useTableContext, useTableRowsContext } from "../contexts";
 
 interface TableFooterProps {
   loadedRows?: number;
@@ -25,16 +20,11 @@ export const TableFooter: React.FC<TableFooterProps> = ({
 
   const { pageInfo, footerStartContent, footerEndContent } = useTableContext();
 
-  const {
-    totalRows = 0,
-    rowSelectionEnabled,
-    selectedRowIds,
-  } = useTableRowsContext();
+  const { totalRows = 0, rowSelectionEnabled, selectedRowIds } = useTableRowsContext();
 
   const { visibleColumns } = useTableColumnContext();
 
-  const { isLoading, onPageChange, onRowsPerPageChange, rowsPerPageOptions } =
-    useTableContext();
+  const { isLoading, onPageChange, onRowsPerPageChange, rowsPerPageOptions } = useTableContext();
 
   // Handle page change (MUI uses 0-indexed pages, our API uses 1-indexed)
   const handlePageChange = useCallback(
@@ -70,11 +60,7 @@ export const TableFooter: React.FC<TableFooterProps> = ({
   const labelDisplayedRows = useCallback(
     ({ from, to, count }: { from: number; to: number; count: number }) => {
       if (compact) return "";
-      return strings.pagination.displayedRows(
-        from,
-        to,
-        typeof count === "number" ? count : to
-      );
+      return strings.pagination.displayedRows(from, to, typeof count === "number" ? count : to);
     },
     [strings, compact]
   );
@@ -149,9 +135,7 @@ export const TableFooter: React.FC<TableFooterProps> = ({
               rowsPerPageOptions={hideRowsPerPage ? [] : rowsPerPageOptions}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
-              labelRowsPerPage={
-                hideRowsPerPage ? "" : strings.pagination.rowsPerPage
-              }
+              labelRowsPerPage={hideRowsPerPage ? "" : strings.pagination.rowsPerPage}
               labelDisplayedRows={labelDisplayedRows}
               getItemAriaLabel={getItemAriaLabel}
               sx={
@@ -198,10 +182,7 @@ export const TableFooter: React.FC<TableFooterProps> = ({
               <span>
                 {isLoading && (
                   <>
-                    <CircularProgress
-                      size={16}
-                      style={{ marginInlineEnd: 8, verticalAlign: "middle" }}
-                    />
+                    <CircularProgress size={16} style={{ marginInlineEnd: 8, verticalAlign: "middle" }} />
                     {strings.general.loading}
                   </>
                 )}

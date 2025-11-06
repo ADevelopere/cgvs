@@ -1,11 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import {
-  Box,
-  MenuItem,
-  InputAdornment,
-  IconButton,
-  useTheme,
-} from "@mui/material";
+import { Box, MenuItem, InputAdornment, IconButton, useTheme } from "@mui/material";
 import { Clear as ClearIcon } from "@mui/icons-material";
 import { GenderFieldProps } from "./types";
 import { createStyledTextField } from "./StyledBaseField";

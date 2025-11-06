@@ -69,9 +69,7 @@ export const updateQRCodeElementSpecPropsMutationDocument: TypedDocumentNode<
   Graphql.UpdateQrCodeElementSpecPropsMutation,
   Graphql.UpdateQrCodeElementSpecPropsMutationVariables
 > = gql`
-  mutation updateQRCodeElementSpecProps(
-    $input: QRCodeElementSpecPropsStandaloneUpdateInput!
-  ) {
+  mutation updateQRCodeElementSpecProps($input: QRCodeElementSpecPropsStandaloneUpdateInput!) {
     updateQRCodeElementSpecProps(input: $input) {
       elementId
       qrCodeProps {

@@ -1,7 +1,4 @@
-import type {
-  KeyValueCache,
-  KeyValueCacheSetOptions,
-} from "@apollo/utils.keyvaluecache";
+import type { KeyValueCache, KeyValueCacheSetOptions } from "@apollo/utils.keyvaluecache";
 import { cacheService } from "./CacheServiceFactory";
 
 /**
@@ -23,11 +20,7 @@ export class ApolloCacheAdapter implements KeyValueCache<string> {
    * Set a value in cache
    * Converts Apollo's TTL options to our cache service format
    */
-  async set(
-    key: string,
-    value: string,
-    options?: KeyValueCacheSetOptions
-  ): Promise<void> {
+  async set(key: string, value: string, options?: KeyValueCacheSetOptions): Promise<void> {
     // Convert Apollo's ttl option to our cache service's ex option
     const cacheOptions = options?.ttl ? { ex: options.ttl } : undefined;
     await cacheService.set(key, value, cacheOptions);

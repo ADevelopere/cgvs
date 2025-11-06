@@ -4,12 +4,9 @@ import type * as Types from "@/server/types";
 import { TemplatePothosObject } from "./template.pothos";
 import { TemplateRepository } from "@/server/db/repo";
 
-export const TemplateVariableTypePothosEnum = gqlSchemaBuilder.enumType(
-  "TemplateVariableType",
-  {
-    values: Object.values(templateVariableTypeEnum.enumValues),
-  }
-);
+export const TemplateVariableTypePothosEnum = gqlSchemaBuilder.enumType("TemplateVariableType", {
+  values: Object.values(templateVariableTypeEnum.enumValues),
+});
 
 export const TemplateVariablePothosInterface = gqlSchemaBuilder
   .interfaceRef<Types.TemplateVariablePothosDefinition>("TemplateVariable")
@@ -42,11 +39,7 @@ export const TemplateTextVariablePothosObjectType = gqlSchemaBuilder
   .objectRef<Types.TemplateTextVariablePothosDefinition>("TemplateTextVariable")
   .implement({
     interfaces: [TemplateVariablePothosInterface],
-    isTypeOf: item =>
-      typeof item === "object" &&
-      item !== null &&
-      "type" in item &&
-      item.type === "TEXT",
+    isTypeOf: item => typeof item === "object" && item !== null && "type" in item && item.type === "TEXT",
     fields: t => ({
       minLength: t.exposeInt("minLength", { nullable: true }),
       maxLength: t.exposeInt("maxLength", { nullable: true }),
@@ -55,16 +48,10 @@ export const TemplateTextVariablePothosObjectType = gqlSchemaBuilder
   });
 
 export const TemplateNumberVariablePothosObjectType = gqlSchemaBuilder
-  .objectRef<Types.TemplateNumberVariablePothosDefinition>(
-    "TemplateNumberVariable"
-  )
+  .objectRef<Types.TemplateNumberVariablePothosDefinition>("TemplateNumberVariable")
   .implement({
     interfaces: [TemplateVariablePothosInterface],
-    isTypeOf: item =>
-      typeof item === "object" &&
-      item !== null &&
-      "type" in item &&
-      item.type === "NUMBER",
+    isTypeOf: item => typeof item === "object" && item !== null && "type" in item && item.type === "NUMBER",
     fields: t => ({
       minValue: t.exposeFloat("minValue", { nullable: true }),
       maxValue: t.exposeFloat("maxValue", { nullable: true }),
@@ -76,11 +63,7 @@ export const TemplateDateVariablePothosObjectType = gqlSchemaBuilder
   .objectRef<Types.TemplateDateVariablePothosDefinition>("TemplateDateVariable")
   .implement({
     interfaces: [TemplateVariablePothosInterface],
-    isTypeOf: item =>
-      typeof item === "object" &&
-      item !== null &&
-      "type" in item &&
-      item.type === "DATE",
+    isTypeOf: item => typeof item === "object" && item !== null && "type" in item && item.type === "DATE",
     fields: t => ({
       minDate: t.expose("minDate", { type: "DateTime", nullable: true }),
       maxDate: t.expose("maxDate", { type: "DateTime", nullable: true }),
@@ -89,16 +72,10 @@ export const TemplateDateVariablePothosObjectType = gqlSchemaBuilder
   });
 
 export const TemplateSelectVariablePothosObjectType = gqlSchemaBuilder
-  .objectRef<Types.TemplateSelectVariablePothosDefinition>(
-    "TemplateSelectVariable"
-  )
+  .objectRef<Types.TemplateSelectVariablePothosDefinition>("TemplateSelectVariable")
   .implement({
     interfaces: [TemplateVariablePothosInterface],
-    isTypeOf: item =>
-      typeof item === "object" &&
-      item !== null &&
-      "type" in item &&
-      item.type === "SELECT",
+    isTypeOf: item => typeof item === "object" && item !== null && "type" in item && item.type === "SELECT",
     fields: t => ({
       options: t.expose("options", { type: ["String"] }),
       multiple: t.exposeBoolean("multiple", { nullable: true }),
@@ -107,9 +84,7 @@ export const TemplateSelectVariablePothosObjectType = gqlSchemaBuilder
 
 // Input types for creating template variables
 export const TemplateTextVariableCreateInputPothosObject = gqlSchemaBuilder
-  .inputRef<Types.TextTemplaeVariableCreateInput>(
-    "TemplateTextVariableCreateInput"
-  )
+  .inputRef<Types.TextTemplaeVariableCreateInput>("TemplateTextVariableCreateInput")
   .implement({
     fields: t => ({
       templateId: t.int({ required: true }),
@@ -124,9 +99,7 @@ export const TemplateTextVariableCreateInputPothosObject = gqlSchemaBuilder
   });
 
 export const TemplateTextVariableUpdateInputPothosObject = gqlSchemaBuilder
-  .inputRef<Types.TextTemplaeVariableUpdateInput>(
-    "TemplateTextVariableUpdateInput"
-  )
+  .inputRef<Types.TextTemplaeVariableUpdateInput>("TemplateTextVariableUpdateInput")
   .implement({
     fields: t => ({
       id: t.int({ required: true }),
@@ -141,9 +114,7 @@ export const TemplateTextVariableUpdateInputPothosObject = gqlSchemaBuilder
   });
 
 export const TemplateNumberVariableCreateInputPothosObject = gqlSchemaBuilder
-  .inputRef<Types.TemplateNumberVariableCreateInput>(
-    "TemplateNumberVariableCreateInput"
-  )
+  .inputRef<Types.TemplateNumberVariableCreateInput>("TemplateNumberVariableCreateInput")
   .implement({
     fields: t => ({
       templateId: t.int({ required: true }),
@@ -158,9 +129,7 @@ export const TemplateNumberVariableCreateInputPothosObject = gqlSchemaBuilder
   });
 
 export const TemplateNumberVariableUpdateInputPothosObject = gqlSchemaBuilder
-  .inputRef<Types.TemplateNumberVariableUpdateInput>(
-    "TemplateNumberVariableUpdateInput"
-  )
+  .inputRef<Types.TemplateNumberVariableUpdateInput>("TemplateNumberVariableUpdateInput")
   .implement({
     fields: t => ({
       id: t.int({ required: true }),
@@ -175,9 +144,7 @@ export const TemplateNumberVariableUpdateInputPothosObject = gqlSchemaBuilder
   });
 
 export const TemplateDateVariableCreateInputPothosObject = gqlSchemaBuilder
-  .inputRef<Types.TemplateDateVariableCreateInput>(
-    "TemplateDateVariableCreateInput"
-  )
+  .inputRef<Types.TemplateDateVariableCreateInput>("TemplateDateVariableCreateInput")
   .implement({
     fields: t => ({
       templateId: t.int({ required: true }),
@@ -192,9 +159,7 @@ export const TemplateDateVariableCreateInputPothosObject = gqlSchemaBuilder
   });
 
 export const TemplateDateVariableUpdateInputPothosObject = gqlSchemaBuilder
-  .inputRef<Types.TemplateDateVariableUpdateInput>(
-    "TemplateDateVariableUpdateInput"
-  )
+  .inputRef<Types.TemplateDateVariableUpdateInput>("TemplateDateVariableUpdateInput")
   .implement({
     fields: t => ({
       id: t.int({ required: true }),
@@ -209,9 +174,7 @@ export const TemplateDateVariableUpdateInputPothosObject = gqlSchemaBuilder
   });
 
 export const TemplateSelectVariableCreateInputPothosObject = gqlSchemaBuilder
-  .inputRef<Types.TemplateSelectVariableCreateInput>(
-    "TemplateSelectVariableCreateInput"
-  )
+  .inputRef<Types.TemplateSelectVariableCreateInput>("TemplateSelectVariableCreateInput")
   .implement({
     fields: t => ({
       templateId: t.int({ required: true }),
@@ -225,9 +188,7 @@ export const TemplateSelectVariableCreateInputPothosObject = gqlSchemaBuilder
   });
 
 export const TemplateSelectVariableUpdateInputPothosObject = gqlSchemaBuilder
-  .inputRef<Types.TemplateSelectVariableUpdateInput>(
-    "TemplateSelectVariableUpdateInput"
-  )
+  .inputRef<Types.TemplateSelectVariableUpdateInput>("TemplateSelectVariableUpdateInput")
   .implement({
     fields: t => ({
       id: t.int({ required: true }),

@@ -30,9 +30,7 @@ export namespace ElementUtils {
       return Promise.resolve("Element name cannot be empty.");
     }
     if (name.length < 3) {
-      return Promise.resolve(
-        "Element name must be at least 3 characters long."
-      );
+      return Promise.resolve("Element name must be at least 3 characters long.");
     }
     if (name.length > 255) {
       return Promise.resolve("Element name cannot exceed 255 characters.");
@@ -44,10 +42,7 @@ export namespace ElementUtils {
    * Validate element dimensions
    * @returns null if valid, error message if invalid
    */
-  export const validateDimensions = (
-    width: number,
-    height: number
-  ): Promise<string | null> => {
+  export const validateDimensions = (width: number, height: number): Promise<string | null> => {
     if (width <= 0) {
       return Promise.resolve("Element width must be greater than 0.");
     }
@@ -61,19 +56,12 @@ export namespace ElementUtils {
    * Validate element position
    * @returns null if valid, error message if invalid
    */
-  export const validatePosition = (
-    x: number,
-    y: number
-  ): Promise<string | null> => {
+  export const validatePosition = (x: number, y: number): Promise<string | null> => {
     if (x < 0) {
-      return Promise.resolve(
-        "Element position X must be greater than or equal to 0."
-      );
+      return Promise.resolve("Element position X must be greater than or equal to 0.");
     }
     if (y < 0) {
-      return Promise.resolve(
-        "Element position Y must be greater than or equal to 0."
-      );
+      return Promise.resolve("Element position Y must be greater than or equal to 0.");
     }
     return Promise.resolve(null);
   };
@@ -82,13 +70,9 @@ export namespace ElementUtils {
    * Validate render order
    * @returns null if valid, error message if invalid
    */
-  export const validateRenderOrder = (
-    renderOrder: number
-  ): Promise<string | null> => {
+  export const validateRenderOrder = (renderOrder: number): Promise<string | null> => {
     if (renderOrder < 0) {
-      return Promise.resolve(
-        "Render order must be greater than or equal to 0."
-      );
+      return Promise.resolve("Render order must be greater than or equal to 0.");
     }
     return Promise.resolve(null);
   };
@@ -105,9 +89,7 @@ export namespace ElementUtils {
    * Returns fontId if element has textProps and uses SELF_HOSTED font
    * Applies to: TEXT, DATE, NUMBER, COUNTRY, GENDER
    */
-  export const extractFontIdFromConfigTextProps = (
-    config?: FontRefConfig | null
-  ): number | null | undefined => {
+  export const extractFontIdFromConfigTextProps = (config?: FontRefConfig | null): number | null | undefined => {
     if (!config) return config;
 
     const { textProps } = config;
@@ -148,9 +130,7 @@ export namespace ElementUtils {
   };
 
   // to support partial updates, we return undefined when value is not present, so it will not be overwritten
-  export const extractStorageFileIdFromConfigTextProps = (
-    config?: FontRefConfig | null
-  ): number | null | undefined => {
+  export const extractStorageFileIdFromConfigTextProps = (config?: FontRefConfig | null): number | null | undefined => {
     if (!config) return config;
 
     const { textProps } = config;

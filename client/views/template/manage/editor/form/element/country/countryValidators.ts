@@ -18,10 +18,7 @@ export const validateRepresentation = (
     return strings.representationRequired;
   }
 
-  if (
-    representation !== CountryRepresentation.CountryName &&
-    representation !== CountryRepresentation.Nationality
-  ) {
+  if (representation !== CountryRepresentation.CountryName && representation !== CountryRepresentation.Nationality) {
     return strings.representationInvalid;
   }
 
@@ -32,10 +29,7 @@ export const validateCountryElementCountryProps = (strings: {
   representationRequired: string;
   representationInvalid: string;
 }): ValidateCountryPropsFn => {
-  const validate: ValidateCountryPropsFn = ({
-    key,
-    value,
-  }) => {
+  const validate: ValidateCountryPropsFn = ({ key, value }) => {
     if (key === "representation") {
       const representationError = validateRepresentation(value, strings);
       return representationError;

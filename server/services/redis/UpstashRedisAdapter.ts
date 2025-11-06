@@ -13,10 +13,7 @@ export class UpstashRedisAdapter implements IRedisService {
 
   constructor(url: string, token: string) {
     if (!url.startsWith("https://")) {
-      throw new Error(
-        "Upstash Redis requires HTTPS URL. " +
-          "Get your URL from https://console.upstash.com/"
-      );
+      throw new Error("Upstash Redis requires HTTPS URL. " + "Get your URL from https://console.upstash.com/");
     }
 
     if (!token) {
@@ -35,11 +32,7 @@ export class UpstashRedisAdapter implements IRedisService {
     return await this.client.get(key);
   }
 
-  async set(
-    key: string,
-    value: string,
-    options?: { ex?: number; px?: number }
-  ): Promise<void> {
+  async set(key: string, value: string, options?: { ex?: number; px?: number }): Promise<void> {
     if (options?.ex) {
       await this.client.set(key, value, { ex: options.ex });
     } else if (options?.px) {
@@ -65,9 +58,7 @@ export class UpstashRedisAdapter implements IRedisService {
     await this.client.del(key);
   }
 
-  async pipeline(
-    commands: Array<{ command: string; args: string[] | number[] }>
-  ): Promise<unknown[]> {
+  async pipeline(commands: Array<{ command: string; args: string[] | number[] }>): Promise<unknown[]> {
     const pipeline = this.client.pipeline();
 
     for (const cmd of commands) {

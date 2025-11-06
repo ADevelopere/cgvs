@@ -1,12 +1,8 @@
-
-
 Certainly. Here is the complete architectural plan you requested, formatted as a single markdown block for your convenience.
 
 Architectural Blueprint: Parallel pdfme Editor Integration for the cgvs Repository
 
-
 I. Executive Summary & Strategic Architectural Pillars
-
 
 A. Statement of Objective
 
@@ -36,7 +32,6 @@ bun i @pdfme/ui @pdfme/common @pdfme/schemas 2
 
 II. Prerequisite "Deep Search": Canonical Implementation Analysis
 
-
 A. Objective
 
 Before any integration code is written, the development team must conduct a focused code review of the official pdfme playground source code. The objective is to internalize the library creator's own "blessed" patterns for React integration, which will de-risk the project by providing a canonical reference for lifecycle management and state synchronization.
@@ -60,7 +55,6 @@ Relying on fragmented code examples from public GitHub issues is a high-risk str
 These patterns are acceptable for simple, "build-once" demos, but they are catastrophic in a production application featuring a toggle-based, mount/unmount lifecycle. The analysis of the playground code is therefore the single most important "search" in this plan. It will provide the authoritative, production-safe patterns for useEffect-based lifecycle management that are absent from the incomplete examples, saving significant debugging time related to memory leaks and state-desynchronization bugs.
 
 III. Parent Component Refactoring: src/tabs/EditorTab.tsx
-
 
 A. Objective
 
@@ -89,7 +83,6 @@ This unmounting behavior, however, is precisely what makes the lifecycle managem
 
 IV. Core Component Architecture: src/components/PdfmeEditorWrapper.tsx
 
-
 A. Objective
 
 To create the PdfmeEditorWrapper.tsx React component. This component serves as the "bridge" that encapsulates the imperative pdfme Designer instance, manages its lifecycle, and facilitates bidirectional data synchronization with the NodeDataProvider context.
@@ -117,7 +110,6 @@ This is necessary for cases where the shared state is modified by another part o
 This is achieved with a second useEffect hook that subscribes to the state.
 
 V. State Management Analysis: src/data/NodeDataProvider.ts
-
 
 A. Objective
 
@@ -152,7 +144,6 @@ The reducer also takes the reactFlowData from the payload (which was already con
 This approach ensures that regardless of where an edit originates, both state representations are updated in lockstep, ensuring the "other" editor will be correct when toggled.
 
 VI. The Lyncpin Service: src/services/templateConverter.ts
-
 
 A. Objective
 

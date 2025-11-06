@@ -11,18 +11,14 @@ import { useStorageOperations } from "./hooks/useStorageOperations";
 import { useStorageActions } from "./hooks/useStorageActions";
 import { useStorageUIStore } from "./stores/useStorageUIStore";
 import { useStorageDataStore } from "./stores/useStorageDataStore";
-import {
-  searchFilesQueryDocument,
-  listFilesQueryDocument,
-} from "./core/storage.documents";
+import { searchFilesQueryDocument, listFilesQueryDocument } from "./core/storage.documents";
 
 export const StorageBrowserView: React.FC = () => {
   const { searchMode, focusedItem } = useStorageUIStore();
   const { params } = useStorageDataStore();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { setSearchMode, clearSelection, setLastSelectedItem, setFocusedItem } =
-    useStorageActions();
+  const { setSearchMode, clearSelection, setLastSelectedItem, setFocusedItem } = useStorageActions();
 
   // Get operations from context
   const { navigateTo } = useStorageOperations();
@@ -37,17 +33,14 @@ export const StorageBrowserView: React.FC = () => {
   });
 
   // Search query - only runs when explicitly searching
-  const { data: searchData, loading: searchLoading } = useQuery(
-    searchFilesQueryDocument,
-    {
-      variables: {
-        searchTerm: searchTerm,
-        folder: "",
-        limit: 100,
-      },
-      skip: !searchMode || !searchTerm,
-    }
-  );
+  const { data: searchData, loading: searchLoading } = useQuery(searchFilesQueryDocument, {
+    variables: {
+      searchTerm: searchTerm,
+      folder: "",
+      limit: 100,
+    },
+    skip: !searchMode || !searchTerm,
+  });
 
   // Single useMemo to derive ALL data from Apollo query
   const { items, pagination, searchResults } = useMemo(() => {
@@ -61,12 +54,8 @@ export const StorageBrowserView: React.FC = () => {
           count: listData.listFiles.totalCount,
           perPage: listData.listFiles.limit,
           firstItem: listData.listFiles.offset,
-          currentPage:
-            Math.floor(listData.listFiles.offset / listData.listFiles.limit) +
-            1,
-          lastPage: Math.ceil(
-            listData.listFiles.totalCount / listData.listFiles.limit
-          ),
+          currentPage: Math.floor(listData.listFiles.offset / listData.listFiles.limit) + 1,
+          lastPage: Math.ceil(listData.listFiles.totalCount / listData.listFiles.limit),
         };
 
     const derivedSearchResults = searchData?.searchFiles?.items || [];

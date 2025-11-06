@@ -21,9 +21,7 @@ export const useTemplateOperations = () => {
    * Updates the store directly on success.
    */
   const updateTemplate = useCallback(
-    async (
-      input: Graphql.UpdateTemplateMutationVariables["input"]
-    ): Promise<Graphql.Template | undefined> => {
+    async (input: Graphql.UpdateTemplateMutationVariables["input"]): Promise<Graphql.Template | undefined> => {
       try {
         const result = await apollo.updateTemplateMutation({
           variables: { input },
@@ -46,10 +44,7 @@ export const useTemplateOperations = () => {
           message?: string;
           graphQLErrors?: Array<{ message: string }>;
         };
-        const errorMessage =
-          gqlError.graphQLErrors?.[0]?.message ||
-          gqlError.message ||
-          strings.templateUpdateFailed;
+        const errorMessage = gqlError.graphQLErrors?.[0]?.message || gqlError.message || strings.templateUpdateFailed;
 
         logger.error("Error updating template:", error);
         notifications.show(errorMessage, { severity: "error" });

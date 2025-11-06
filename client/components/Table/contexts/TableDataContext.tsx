@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useMemo,
-} from "react";
+import { createContext, useContext, useState, useCallback, useMemo } from "react";
 
 export type TableCellEditingState<TValue> = {
   isEditing: boolean;
@@ -14,10 +8,7 @@ export type TableCellEditingState<TValue> = {
 
 export type TableDataContextType = {
   // Cell Editing
-  getEditingState: <TValue>(
-    rowId: string | number,
-    columnId: string
-  ) => TableCellEditingState<TValue> | null;
+  getEditingState: <TValue>(rowId: string | number, columnId: string) => TableCellEditingState<TValue> | null;
   setEditingState: <TValue>(
     rowId: string | number,
     columnId: string,
@@ -33,9 +24,7 @@ export type TableDataProviderProps = {
 
 export const TableDataProvider = ({ children }: TableDataProviderProps) => {
   // Cell editing state management
-  const [editingCells, setEditingCells] = useState<
-    Record<string, TableCellEditingState<unknown>>
-  >({});
+  const [editingCells, setEditingCells] = useState<Record<string, TableCellEditingState<unknown>>>({});
 
   const getEditingState = useCallback(
     (rowId: string | number, columnId: string) => {
@@ -43,17 +32,10 @@ export const TableDataProvider = ({ children }: TableDataProviderProps) => {
       return editingCells[cellKey] ?? null;
     },
     [editingCells]
-  ) as <TValue>(
-    rowId: string | number,
-    columnId: string
-  ) => TableCellEditingState<TValue> | null;
+  ) as <TValue>(rowId: string | number, columnId: string) => TableCellEditingState<TValue> | null;
 
   const setEditingState = useCallback(
-    (
-      rowId: string | number,
-      columnId: string,
-      state: TableCellEditingState<unknown> | null
-    ) => {
+    (rowId: string | number, columnId: string, state: TableCellEditingState<unknown> | null) => {
       const cellKey = `${rowId}:${columnId}`;
       setEditingCells(prev => {
         if (state === null) {
@@ -64,11 +46,7 @@ export const TableDataProvider = ({ children }: TableDataProviderProps) => {
       });
     },
     []
-  ) as <TValue>(
-    rowId: string | number,
-    columnId: string,
-    state: TableCellEditingState<TValue> | null
-  ) => void;
+  ) as <TValue>(rowId: string | number, columnId: string, state: TableCellEditingState<TValue> | null) => void;
 
   const value: TableDataContextType = useMemo(
     () => ({
@@ -78,11 +56,7 @@ export const TableDataProvider = ({ children }: TableDataProviderProps) => {
     [getEditingState, setEditingState]
   );
 
-  return (
-    <TableDataContext.Provider value={value}>
-      {children}
-    </TableDataContext.Provider>
-  );
+  return <TableDataContext.Provider value={value}>{children}</TableDataContext.Provider>;
 };
 
 export const useTableDataContext = (): TableDataContextType => {

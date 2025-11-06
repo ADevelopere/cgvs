@@ -5,11 +5,7 @@ import type { NumberElementFormErrors, NumberElementFormState } from "./types";
 import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../component/ActionButtons";
-import {
-  Font,
-  NumberDataSourceInput,
-  TemplateNumberVariable,
-} from "@/client/graphql/generated/gql/graphql";
+import { Font, NumberDataSourceInput, TemplateNumberVariable } from "@/client/graphql/generated/gql/graphql";
 import { TemplateNumberVariableSelector } from "../variableSelector";
 import { NumberMappingInput } from "./NumberMappingInput";
 import { UpdateBaseElementFn } from "../base";
@@ -61,9 +57,7 @@ export const NumberElementForm: FC<NumberElementFormProps> = ({
             <Grid size={{ xs: 12, md: 6 }}>
               <TemplateNumberVariableSelector
                 value={state.dataSource.variableId}
-                onChange={variableId =>
-                  updateDataSource({ variableId: variableId ?? 0 })
-                }
+                onChange={variableId => updateDataSource({ variableId: variableId ?? 0 })}
                 numberVariables={numberVariables}
                 error={errors.dataSource?.variableId}
                 disabled={isSubmitting || numberVariables.length === 0}
@@ -109,12 +103,7 @@ export const NumberElementForm: FC<NumberElementFormProps> = ({
       </Box>
 
       {/* Row 3: Action Buttons (Fixed) */}
-      <ActionButtons
-        onSubmit={onSubmit}
-        onCancel={onCancel}
-        isSubmitting={isSubmitting}
-        submitLabel={submitLabel}
-      />
+      <ActionButtons onSubmit={onSubmit} onCancel={onCancel} isSubmitting={isSubmitting} submitLabel={submitLabel} />
     </Box>
   );
 };

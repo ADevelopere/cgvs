@@ -1,10 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import {
-  UploadBatchState,
-  UploadFileState,
-} from "../core/storage-upload.types";
+import { UploadBatchState, UploadFileState } from "../core/storage-upload.types";
 
 interface StorageUploadState {
   uploadBatch: UploadBatchState | undefined;
@@ -13,11 +10,7 @@ interface StorageUploadState {
 interface StorageUploadActions {
   setUploadBatch: (batch: UploadBatchState | undefined) => void;
   updateFileState: (fileKey: string, updates: Partial<UploadFileState>) => void;
-  updateBatchProgress: (
-    fileKey: string,
-    progress: number,
-    bytesUploaded: number
-  ) => void;
+  updateBatchProgress: (fileKey: string, progress: number, bytesUploaded: number) => void;
   clearUploadBatch: () => void;
   reset: () => void;
 }
@@ -26,9 +19,7 @@ const initialState: StorageUploadState = {
   uploadBatch: undefined,
 };
 
-export const useStorageUploadStore = create<
-  StorageUploadState & StorageUploadActions
->(set => ({
+export const useStorageUploadStore = create<StorageUploadState & StorageUploadActions>(set => ({
   ...initialState,
 
   setUploadBatch: batch => set({ uploadBatch: batch }),
@@ -69,9 +60,7 @@ export const useStorageUploadStore = create<
       });
 
       const totalProgress =
-        state.uploadBatch.totalSize > 0
-          ? Math.round((bytesUploaded / state.uploadBatch.totalSize) * 100)
-          : 0;
+        state.uploadBatch.totalSize > 0 ? Math.round((bytesUploaded / state.uploadBatch.totalSize) * 100) : 0;
 
       return {
         uploadBatch: {

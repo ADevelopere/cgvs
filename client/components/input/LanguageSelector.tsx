@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  SelectChangeEvent,
-} from "@mui/material";
+import { Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from "@mui/material";
 import { AppLanguage } from "@/client/graphql/generated/gql/graphql";
 import { useAppTranslation } from "@/client/locale";
 
@@ -16,12 +10,7 @@ interface LocaleSelectorProps {
   style?: React.CSSProperties;
 }
 
-export const LanguageSelector: React.FC<LocaleSelectorProps> = ({
-  value,
-  onChange,
-  disabled,
-  style,
-}) => {
+export const LanguageSelector: React.FC<LocaleSelectorProps> = ({ value, onChange, disabled, style }) => {
   const { languageTranslations: strings } = useAppTranslation();
 
   const handleChange = (event: SelectChangeEvent<string>) => {
@@ -48,12 +37,7 @@ export const LanguageSelector: React.FC<LocaleSelectorProps> = ({
   return (
     <FormControl fullWidth style={style}>
       <InputLabel>{strings.language}</InputLabel>
-      <Select
-        value={value}
-        onChange={handleChange}
-        disabled={disabled}
-        label={strings.language}
-      >
+      <Select value={value} onChange={handleChange} disabled={disabled} label={strings.language}>
         {languageOptions.map(option => (
           <MenuItem key={option.value} value={option.value}>
             {option.flag} {option.label}

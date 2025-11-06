@@ -5,12 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
 import { LinearProgress } from "@mui/material";
 import { ColumnVisibilityPanel } from "../components";
-import {
-  useTableContext,
-  useTableColumnContext,
-  useTableRowsContext,
-  useTableLocale,
-} from "../contexts";
+import { useTableContext, useTableColumnContext, useTableRowsContext, useTableLocale } from "../contexts";
 import { TABLE_CHECKBOX_CONTAINER_SIZE } from "../constants";
 import { TableHeader } from "./TableHeader";
 import { TableBody } from "./TableBody";
@@ -21,19 +16,16 @@ export interface TableRendererProps {
   creationRow?: React.ReactNode;
 }
 
-export const TableRenderer = <
-  TRowData,
-  TValue,
-  TRowId extends string | number = string | number,
->({
+export const TableRenderer = <TRowData, TValue, TRowId extends string | number = string | number>({
   style,
   creationRow,
 }: TableRendererProps) => {
   const { strings } = useTableLocale();
-  const { pageInfo, data, isLoading, hideRowsPerPage, compact } =
-    useTableContext<TRowData, TRowId>();
-  const { visibleColumns, columnWidths, indexColWidth, totalWidth, colSpan } =
-    useTableColumnContext<TRowData, TRowId>();
+  const { pageInfo, data, isLoading, hideRowsPerPage, compact } = useTableContext<TRowData, TRowId>();
+  const { visibleColumns, columnWidths, indexColWidth, totalWidth, colSpan } = useTableColumnContext<
+    TRowData,
+    TRowId
+  >();
   const { rowSelectionEnabled } = useTableRowsContext<TRowData, TRowId>();
 
   const theme = useTheme();
@@ -158,9 +150,7 @@ export const TableRenderer = <
                       opacity: isLoading ? 0.6 : 1,
                     }}
                   >
-                    {isLoading
-                      ? strings.general.loading
-                      : strings.general.noData}
+                    {isLoading ? strings.general.loading : strings.general.noData}
                   </div>
                 </td>
               </tr>
@@ -176,17 +166,11 @@ export const TableRenderer = <
           maxWidth: "100%",
         }}
       >
-        <TableFooter
-          loadedRows={data.length}
-          hideRowsPerPage={hideRowsPerPage}
-          compact={compact}
-        />
+        <TableFooter loadedRows={data.length} hideRowsPerPage={hideRowsPerPage} compact={compact} />
       </div>
 
       {/* Column Visibility Panel */}
-      {showVisibilityPanel && (
-        <ColumnVisibilityPanel onClose={() => setShowVisibilityPanel(false)} />
-      )}
+      {showVisibilityPanel && <ColumnVisibilityPanel onClose={() => setShowVisibilityPanel(false)} />}
     </div>
   );
 };

@@ -1,10 +1,6 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq } from "drizzle-orm";
-import {
-  certificateElement,
-  genderElement,
-  elementTextProps,
-} from "@/server/db/schema";
+import { certificateElement, genderElement, elementTextProps } from "@/server/db/schema";
 import {
   GenderElementInput,
   GenderElementUpdateInput,
@@ -37,9 +33,7 @@ export namespace GenderElementRepository {
    * 4. Insert into gender_element
    * 5. Return full output
    */
-  export const create = async (
-    input: GenderElementInput
-  ): Promise<GenderElementOutput> => {
+  export const create = async (input: GenderElementInput): Promise<GenderElementOutput> => {
     // 1. Validate input
     await GenderElementUtils.validateInput(input);
 
@@ -52,10 +46,7 @@ export namespace GenderElementRepository {
     };
 
     // 3. Insert into certificate_element (base table)
-    const [baseElement] = await db
-      .insert(certificateElement)
-      .values(baseInput)
-      .returning();
+    const baseElement = await ElementRepository.createInternal(baseInput);
 
     // 4. Insert into gender_element (type-specific table)
     const [_] = await db
@@ -66,9 +57,7 @@ export namespace GenderElementRepository {
       })
       .returning();
 
-    logger.info(
-      `GENDER element created: ${baseElement.name} (ID: ${baseElement.id})`
-    );
+    logger.info(`GENDER element created: ${baseElement.name} (ID: ${baseElement.id})`);
 
     // 5. Return full output
     return {
@@ -90,41 +79,31 @@ export namespace GenderElementRepository {
    * 4. Update element_text_props
    * 5. Return updated element (no gender_element specific fields to update)
    */
-  export const update = async (
-    input: GenderElementUpdateInput
-  ): Promise<GenderElementOutput> => {
+  export const update = async (input: GenderElementUpdateInput): Promise<GenderElementOutput> => {
     // 1. Load existing element
     const existing = await loadByIdOrThrow(input.id);
 
     // 2. Validate type
     if (existing.base.type !== ElementType.GENDER) {
-      throw new Error(
-        `Element ${input.id} is ${existing.base.type}, not GENDER. Use correct repository.`
-      );
+      throw new Error(`Element ${input.id} is ${existing.base.type}, not GENDER. Use correct repository.`);
     }
 
     // 3. Validate update input
     await GenderElementUtils.validateInput(input);
 
     // 4. Update certificate_element (base table)
-    const updatedBaseElement = await ElementRepository.updateBaseElement(
-      { ...input.base, id: input.id },
+    const updatedBaseElement = await ElementRepository.updateBaseElement({ ...input.base, id: input.id }, true);
+
+    // 5. Update element_text_props (full replace required)
+    const updatedTextProps: ElementTextPropsEntity = await TextPropsRepository.update(
+      {
+        ...input.textProps,
+        id: existing.textPropsEntity.id,
+      },
       true
     );
 
-    // 5. Update element_text_props (full replace required)
-    const updatedTextProps: ElementTextPropsEntity =
-      await TextPropsRepository.update(
-        {
-          ...input.textProps,
-          id: existing.textPropsEntity.id,
-        },
-        true
-      );
-
-    logger.info(
-      `GENDER element updated: ${updatedBaseElement.name} (ID: ${input.id})`
-    );
+    logger.info(`GENDER element updated: ${updatedBaseElement.name} (ID: ${input.id})`);
 
     // 6. Return updated element (gender_element has no updateable fields beyond FKs)
     return {
@@ -141,21 +120,13 @@ export namespace GenderElementRepository {
    * Load GENDER element by ID with all joined data
    * Joins: certificate_element + gender_element + element_text_props
    */
-  export const loadById = async (
-    id: number
-  ): Promise<GenderElementOutput | null> => {
+  export const loadById = async (id: number): Promise<GenderElementOutput | null> => {
     // Join all three tables
     const result = await db
       .select()
       .from(certificateElement)
-      .innerJoin(
-        genderElement,
-        eq(genderElement.elementId, certificateElement.id)
-      )
-      .innerJoin(
-        elementTextProps,
-        eq(elementTextProps.id, genderElement.textPropsId)
-      )
+      .innerJoin(genderElement, eq(genderElement.elementId, certificateElement.id))
+      .innerJoin(elementTextProps, eq(elementTextProps.id, genderElement.textPropsId))
       .where(eq(certificateElement.id, id))
       .limit(1);
 
@@ -170,22 +141,16 @@ export namespace GenderElementRepository {
     };
   };
 
-  export const loadByBase = async (
-    base: CertificateElementEntity
-  ): Promise<GenderElementOutput> => {
+  export const loadByBase = async (base: CertificateElementEntity): Promise<GenderElementOutput> => {
     // Join all three tables
     const result = await db
       .select()
       .from(genderElement)
-      .innerJoin(
-        elementTextProps,
-        eq(elementTextProps.id, genderElement.textPropsId)
-      )
+      .innerJoin(elementTextProps, eq(elementTextProps.id, genderElement.textPropsId))
       .where(eq(genderElement.elementId, base.id))
       .limit(1);
 
-    if (result.length === 0)
-      throw new Error(`GENDER element with base ID ${base.id} does not exist.`);
+    if (result.length === 0) throw new Error(`GENDER element with base ID ${base.id} does not exist.`);
 
     const row = result[0];
 
@@ -199,9 +164,7 @@ export namespace GenderElementRepository {
   /**
    * Load GENDER element by ID or throw error
    */
-  export const loadByIdOrThrow = async (
-    id: number
-  ): Promise<GenderElementOutput> => {
+  export const loadByIdOrThrow = async (id: number): Promise<GenderElementOutput> => {
     const element = await loadById(id);
     if (!element) {
       throw new Error(`GENDER element with ID ${id} does not exist.`);
@@ -213,9 +176,7 @@ export namespace GenderElementRepository {
    * Load GENDER elements by IDs for Pothos dataloader
    * Returns array with GenderElementOutput or Error per ID
    */
-  export const loadByIds = async (
-    ids: number[]
-  ): Promise<(GenderElementOutput | Error)[]> => {
+  export const loadByIds = async (ids: number[]): Promise<(GenderElementOutput | Error)[]> => {
     if (ids.length === 0) return [];
 
     // Load all elements
@@ -224,16 +185,12 @@ export namespace GenderElementRepository {
     // Map to maintain order and handle missing elements
     return results.map((element, index) => {
       if (!element) {
-        return new Error(
-          `GENDER element with ID ${ids[index]} does not exist.`
-        );
+        return new Error(`GENDER element with ID ${ids[index]} does not exist.`);
       }
 
       // Validate element type
       if (element.base.type !== ElementType.GENDER) {
-        return new Error(
-          `Element ${element.base.id} is ${element.base.type}, not GENDER`
-        );
+        return new Error(`Element ${element.base.id} is ${element.base.type}, not GENDER`);
       }
 
       return element;

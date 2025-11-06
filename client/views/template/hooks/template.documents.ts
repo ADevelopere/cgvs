@@ -1,10 +1,7 @@
 import { TypedDocumentNode, gql } from "@apollo/client";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
-export const templateQueryDocument: TypedDocumentNode<
-  Graphql.TemplateQuery,
-  Graphql.TemplateQueryVariables
-> = gql`
+export const templateQueryDocument: TypedDocumentNode<Graphql.TemplateQuery, Graphql.TemplateQueryVariables> = gql`
   query template($id: Int!) {
     template(id: $id) {
       id

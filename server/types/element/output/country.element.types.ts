@@ -33,10 +33,7 @@ export type CountryElementEntity = typeof countryElement.$inferSelect;
 // ============================================================================
 // Output Type (mirrors database - base + country_element + element_text_props joined)
 // ============================================================================
-export type CountryElementCountryProps = Omit<
-  CountryElementEntity,
-  "representation"
-> & {
+export type CountryElementCountryProps = Omit<CountryElementEntity, "representation"> & {
   representation: CountryRepresentation;
 };
 

@@ -44,9 +44,7 @@ const DEFAULT_QUERY_PARAMS: GQl.FontsQueryVariables = {
     first: 50,
     page: 1,
   },
-  orderBy: [
-    { column: GQl.FontsOrderByColumn.Name, order: GQl.OrderSortDirection.Asc },
-  ],
+  orderBy: [{ column: GQl.FontsOrderByColumn.Name, order: GQl.OrderSortDirection.Asc }],
   filterArgs: undefined,
 };
 

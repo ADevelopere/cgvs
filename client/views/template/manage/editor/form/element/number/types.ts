@@ -1,11 +1,5 @@
 import type * as GQL from "@/client/graphql/generated/gql/graphql";
-import {
-  Action,
-  FormErrors,
-  UpdateStateFn,
-  UpdateStateWithElementIdFn,
-  ValidateFieldFn,
-} from "../../types";
+import { Action, FormErrors, UpdateStateFn, UpdateStateWithElementIdFn, ValidateFieldFn } from "../../types";
 import { TextPropsFormErrors } from "../textProps";
 import { BaseElementFormErrors } from "../base";
 
@@ -34,9 +28,7 @@ export type NumberDataSourceFormErrors = {
 
 export type NumberMappingFormErrors = { [key: string]: string };
 
-export type NumberPropsFormErrors = FormErrors<
-  Omit<GQL.NumberElementSpecPropsInput, "mapping">
-> & {
+export type NumberPropsFormErrors = FormErrors<Omit<GQL.NumberElementSpecPropsInput, "mapping">> & {
   mapping?: NumberMappingFormErrors;
 };
 
@@ -52,24 +44,16 @@ export type NumberElementFormErrors = NumberDataSourceFormErrors & {
 
 export type UpdateNumberDataSourceFn = UpdateStateFn<NumberDataSourceFormState>;
 
-export type UpdateNumberDataSourceWithElementIdFn =
-  UpdateStateWithElementIdFn<NumberDataSourceFormState>;
+export type UpdateNumberDataSourceWithElementIdFn = UpdateStateWithElementIdFn<NumberDataSourceFormState>;
 
 export type NumberDataSourceUpdateAction = Action<NumberDataSourceFormState>;
 
 export type UpdateNumberPropsFn = UpdateStateFn<NumberPropsFormState>;
-export type UpdateNumberPropsWithElementIdFn =
-  UpdateStateWithElementIdFn<NumberPropsFormState>;
+export type UpdateNumberPropsWithElementIdFn = UpdateStateWithElementIdFn<NumberPropsFormState>;
 
-export type ValidateNumberDataSourceFn = ValidateFieldFn<
-  NumberDataSourceFormState,
-  NumberDataSourceFormErrors
->;
+export type ValidateNumberDataSourceFn = ValidateFieldFn<NumberDataSourceFormState, NumberDataSourceFormErrors>;
 
-export type ValidateNumberPropsFn = ValidateFieldFn<
-  NumberPropsFormState,
-  string | NumberMappingFormErrors | undefined
->;
+export type ValidateNumberPropsFn = ValidateFieldFn<NumberPropsFormState, string | NumberMappingFormErrors | undefined>;
 
 // ============================================================================
 // CONVERSION UTILITIES
@@ -78,9 +62,7 @@ export type ValidateNumberPropsFn = ValidateFieldFn<
 /**
  * Convert NumberDataSource (query type) to NumberDataSourceInput (input type)
  */
-export const numberDataSourceToInput = (
-  numberDataSource: GQL.NumberDataSource
-): GQL.NumberDataSourceInput => {
+export const numberDataSourceToInput = (numberDataSource: GQL.NumberDataSource): GQL.NumberDataSourceInput => {
   return {
     variableId: numberDataSource.numberVariableId ?? 0,
   };

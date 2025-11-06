@@ -5,16 +5,10 @@ import {
   TemplateCategoryUpdateInput,
   TemplateCategoryWithParentTree,
 } from "@/server/types";
-import {
-  TemplateRepository,
-  TemplateCategoryRepository,
-} from "@/server/db/repo";
+import { TemplateRepository, TemplateCategoryRepository } from "@/server/db/repo";
 import { TemplatePothosObject } from "./template.pothos";
 
-const TemplateCategoryObjectRef =
-  gqlSchemaBuilder.objectRef<TemplateCategoryPothosDefintion>(
-    "TemplateCategory"
-  );
+const TemplateCategoryObjectRef = gqlSchemaBuilder.objectRef<TemplateCategoryPothosDefintion>("TemplateCategory");
 
 export const TemplateCategoryPothosObject = gqlSchemaBuilder.loadableObject<
   TemplateCategoryPothosDefintion | Error, // LoadResult
@@ -22,8 +16,7 @@ export const TemplateCategoryPothosObject = gqlSchemaBuilder.loadableObject<
   [], // Interfaces
   typeof TemplateCategoryObjectRef // NameOrRef
 >(TemplateCategoryObjectRef, {
-  load: async (ids: number[]) =>
-    await TemplateCategoryRepository.loadByIds(ids),
+  load: async (ids: number[]) => await TemplateCategoryRepository.loadByIds(ids),
   sort: c => c.id,
   fields: t => ({
     id: t.exposeInt("id", { nullable: false }),
@@ -44,8 +37,7 @@ gqlSchemaBuilder.objectFields(TemplateCategoryPothosObject, t => ({
   }),
   parentCategory: t.loadable({
     type: TemplateCategoryPothosObject,
-    load: (ids: number[], ctx) =>
-      TemplateCategoryPothosObject.getDataloader(ctx).loadMany(ids),
+    load: (ids: number[], ctx) => TemplateCategoryPothosObject.getDataloader(ctx).loadMany(ids),
     resolve: templateCategory => templateCategory.parentCategoryId,
   }),
   subCategories: t.loadableList({
@@ -56,41 +48,35 @@ gqlSchemaBuilder.objectFields(TemplateCategoryPothosObject, t => ({
 }));
 
 const TemplateCategoryCreateInputRef =
-  gqlSchemaBuilder.inputRef<TemplateCategoryCreateInput>(
-    "TemplateCategoryCreateInput"
-  );
+  gqlSchemaBuilder.inputRef<TemplateCategoryCreateInput>("TemplateCategoryCreateInput");
 
-export const TemplateCategoryCreateInputPothosObject =
-  TemplateCategoryCreateInputRef.implement({
-    fields: t => ({
-      name: t.string({ required: true }),
-      description: t.string({ required: false }),
-      parentCategoryId: t.int({ required: false }),
-    }),
-  });
+export const TemplateCategoryCreateInputPothosObject = TemplateCategoryCreateInputRef.implement({
+  fields: t => ({
+    name: t.string({ required: true }),
+    description: t.string({ required: false }),
+    parentCategoryId: t.int({ required: false }),
+  }),
+});
 
 const TemplateCategoryUpdateInputRef =
-  gqlSchemaBuilder.inputRef<TemplateCategoryUpdateInput>(
-    "TemplateCategoryUpdateInput"
-  );
+  gqlSchemaBuilder.inputRef<TemplateCategoryUpdateInput>("TemplateCategoryUpdateInput");
 
-export const TemplateCategoryUpdateInputPothosObject =
-  TemplateCategoryUpdateInputRef.implement({
-    fields: t => ({
-      id: t.int({ required: true }),
-      name: t.string({ required: true }),
-      parentCategoryId: t.int({ required: false }),
-      description: t.string({ required: false }),
-    }),
-  });
+export const TemplateCategoryUpdateInputPothosObject = TemplateCategoryUpdateInputRef.implement({
+  fields: t => ({
+    id: t.int({ required: true }),
+    name: t.string({ required: true }),
+    parentCategoryId: t.int({ required: false }),
+    description: t.string({ required: false }),
+  }),
+});
 
-const TemplateCategoryWithParentTreeRef =
-  gqlSchemaBuilder.objectRef<TemplateCategoryWithParentTree>(
-    "TemplateCategoryWithParentTree"
-  );
+const TemplateCategoryWithParentTreeRef = gqlSchemaBuilder.objectRef<TemplateCategoryWithParentTree>(
+  "TemplateCategoryWithParentTree"
+);
 
-export const TemplateCategoryWithParentTreePothosObject =
-  gqlSchemaBuilder.objectType(TemplateCategoryWithParentTreeRef, {
+export const TemplateCategoryWithParentTreePothosObject = gqlSchemaBuilder.objectType(
+  TemplateCategoryWithParentTreeRef,
+  {
     fields: t => ({
       id: t.exposeInt("id", { nullable: false }),
       name: t.exposeString("name", { nullable: true }),
@@ -107,4 +93,5 @@ export const TemplateCategoryWithParentTreePothosObject =
       }),
       parentTree: t.exposeIntList("parentTree", { nullable: false }),
     }),
-  });
+  }
+);

@@ -27,10 +27,7 @@ export interface NavigationDividerItem {
   kind: "divider";
 }
 
-export type NavigationItem =
-  | NavigationPageItem
-  | NavigationSubheaderItem
-  | NavigationDividerItem;
+export type NavigationItem = NavigationPageItem | NavigationSubheaderItem | NavigationDividerItem;
 
 export type Navigation = NavigationItem[];
 
@@ -64,10 +61,7 @@ export type DashboardLayoutContextProps = {
   // sidebar states
   sidebarState: SidebarState;
   // slots
-  setDashboardSlot: (
-    slotName: SlotName,
-    component: React.ReactNode | null
-  ) => () => void;
+  setDashboardSlot: (slotName: SlotName, component: React.ReactNode | null) => () => void;
   resetSlots: () => void;
   // title actions
   setTitleSlot: (slot: React.ReactNode) => () => void;

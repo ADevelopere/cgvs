@@ -51,7 +51,8 @@ export function layoutTruncate(
   while (lo < hi) {
     const mid = Math.floor((lo + hi + 1) / 2);
     const w = ctx.measureText(text.substring(0, mid)).width;
-    if (w <= target) lo = mid; else hi = mid - 1;
+    if (w <= target) lo = mid;
+    else hi = mid - 1;
   }
   const truncated = text.substring(0, lo) + ellipsis;
   return { lines: [truncated], totalHeight: 0, fontSize };
@@ -157,17 +158,10 @@ export function drawLayout(
   if (ctx.textAlign === "center") drawX = element.x + element.width / 2;
   else if (ctx.textAlign === "right") drawX = element.x + element.width;
 
-  const blockTop = verticalBlockTop(
-    element.alignment,
-    element.y,
-    element.height,
-    totalHeight
-  );
+  const blockTop = verticalBlockTop(element.alignment, element.y, element.height, totalHeight);
 
   lines.forEach((line, idx) => {
     const y = blockTop + idx * lineHeight + baselineOffset;
     ctx.fillText(line, drawX, y);
   });
 }
-
-

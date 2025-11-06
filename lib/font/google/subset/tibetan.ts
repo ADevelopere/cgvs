@@ -9,8 +9,7 @@ const data: GoogleFontItem[] = [
     version: "v21",
     lastModified: "2025-09-10",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/jomolhari/v21/EvONzA1M1Iw_CBd2hsQCF1IZKq5INg.ttf",
+      regular: "https://fonts.gstatic.com/s/jomolhari/v21/EvONzA1M1Iw_CBd2hsQCF1IZKq5INg.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",
@@ -18,17 +17,7 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Noto Serif Tibetan",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
     subsets: ["latin", "latin-ext", "tibetan"],
     version: "v24",
     lastModified: "2025-09-05",
@@ -63,8 +52,7 @@ const data: GoogleFontItem[] = [
     version: "v11",
     lastModified: "2025-09-16",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/uchen/v11/nKKZ-GokGZ1baIaSEQGodLxA.ttf",
+      regular: "https://fonts.gstatic.com/s/uchen/v11/nKKZ-GokGZ1baIaSEQGodLxA.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",

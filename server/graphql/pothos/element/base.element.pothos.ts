@@ -3,10 +3,7 @@ import * as Types from "@/server/types/element";
 import { TemplateRepository, ElementRepository } from "@/server/db/repo";
 import { TemplatePothosObject } from "@/server/graphql/pothos/template.pothos";
 import type { InputFieldBuilder, SchemaTypes } from "@pothos/core";
-import {
-  ElementAlignmentPothosEnum,
-  ElementTypePothosEnum,
-} from "./elementEnum.pothos";
+import { ElementAlignmentPothosEnum, ElementTypePothosEnum } from "./elementEnum.pothos";
 
 // ============================================================================
 // Element Order Update Input (for batch operations)
@@ -34,7 +31,7 @@ export const createBaseElementInputFields = <Types extends SchemaTypes>(
   name: t.string({ required: true }),
   description: t.string({ required: true }),
   positionX: t.float({ required: true }),
-  positionY: t.float({ required: true,  }),
+  positionY: t.float({ required: true }),
   width: t.float({ required: true }),
   height: t.float({ required: true }),
   alignment: t.field({ type: ElementAlignmentPothosEnum, required: true }),
@@ -52,9 +49,7 @@ export const CertificateElementBaseInputObject = gqlSchemaBuilder
   });
 
 export const CertificateElementBaseUpdateInputObject = gqlSchemaBuilder
-  .inputRef<Types.CertificateElementBaseUpdateInput>(
-    "CertificateElementBaseUpdateInput"
-  )
+  .inputRef<Types.CertificateElementBaseUpdateInput>("CertificateElementBaseUpdateInput")
   .implement({
     fields: t => ({
       id: t.int({ required: true }),
@@ -106,30 +101,28 @@ export const UpdateElemenetBaseResponseObject = gqlSchemaBuilder
     }),
   });
 
-export const CertificateElementInterfaceObjectRef =
-  gqlSchemaBuilder.loadableInterfaceRef<
-    Types.CertificateElementInterface,
-    number
-  >("CertificateElement", {
-    load: async ids => await ElementRepository.loadByIds(ids),
-  });
+export const CertificateElementInterfaceObjectRef = gqlSchemaBuilder.loadableInterfaceRef<
+  Types.CertificateElementInterface,
+  number
+>("CertificateElement", {
+  load: async ids => await ElementRepository.loadByIds(ids),
+});
 
-export const CertificateElementPothosInterface =
-  gqlSchemaBuilder.loadableInterface<
-    Types.CertificateElementInterface,
-    number,
-    [],
-    typeof CertificateElementInterfaceObjectRef
-  >(CertificateElementInterfaceObjectRef, {
-    load: async ids => await ElementRepository.loadByIds(ids),
-    sort: e => e.base.id,
-    fields: t => ({
-      base: t.expose("base", {
-        type: CertificateElementBaseObject,
-        nullable: false,
-      }),
+export const CertificateElementPothosInterface = gqlSchemaBuilder.loadableInterface<
+  Types.CertificateElementInterface,
+  number,
+  [],
+  typeof CertificateElementInterfaceObjectRef
+>(CertificateElementInterfaceObjectRef, {
+  load: async ids => await ElementRepository.loadByIds(ids),
+  sort: e => e.base.id,
+  fields: t => ({
+    base: t.expose("base", {
+      type: CertificateElementBaseObject,
+      nullable: false,
     }),
-  });
+  }),
+});
 
 // Add template field using interfaceFields (separate from interface definition)
 gqlSchemaBuilder.interfaceFields(CertificateElementPothosInterface, t => ({
@@ -140,10 +133,7 @@ gqlSchemaBuilder.interfaceFields(CertificateElementPothosInterface, t => ({
   }),
 }));
 
-export const isOfElement = (
-  item: unknown,
-  type: Types.ElementType
-): item is Types.TextElementOutput => {
+export const isOfElement = (item: unknown, type: Types.ElementType): item is Types.TextElementOutput => {
   return (
     typeof item === "object" &&
     item !== null &&

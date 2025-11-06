@@ -30,12 +30,7 @@ const EmptyGroupsState: React.FC = () => {
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
         {strings.noGroupsDescription}
       </Typography>
-      <Button
-        variant="contained"
-        size="large"
-        startIcon={<AddIcon />}
-        onClick={openCreateDialog}
-      >
+      <Button variant="contained" size="large" startIcon={<AddIcon />} onClick={openCreateDialog}>
         {strings.createFirstGroup}
       </Button>
     </Box>

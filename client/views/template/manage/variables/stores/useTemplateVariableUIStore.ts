@@ -28,9 +28,7 @@ const initialState: TemplateVariableUIState = {
   operationErrors: {},
 };
 
-export const useTemplateVariableUIStore = create<
-  TemplateVariableUIState & TemplateVariableUIActions
->(set => ({
+export const useTemplateVariableUIStore = create<TemplateVariableUIState & TemplateVariableUIActions>(set => ({
   ...initialState,
 
   toggleSelect: id =>
@@ -38,13 +36,8 @@ export const useTemplateVariableUIStore = create<
       const isSelected = state.selectedVariables.includes(id);
       if (isSelected) {
         return {
-          selectedVariables: state.selectedVariables.filter(
-            variableId => variableId !== id
-          ),
-          lastSelectedVariable:
-            state.lastSelectedVariable === id
-              ? null
-              : state.lastSelectedVariable,
+          selectedVariables: state.selectedVariables.filter(variableId => variableId !== id),
+          lastSelectedVariable: state.lastSelectedVariable === id ? null : state.lastSelectedVariable,
         };
       } else {
         return {

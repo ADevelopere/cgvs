@@ -25,9 +25,7 @@
 export function isAbortError(error: unknown): boolean {
   return (
     error instanceof Error &&
-    (error.message.includes("aborted") ||
-      error.message.includes("AbortError") ||
-      error.name === "AbortError")
+    (error.message.includes("aborted") || error.message.includes("AbortError") || error.name === "AbortError")
   );
 }
 

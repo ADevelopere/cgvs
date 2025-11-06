@@ -26,14 +26,8 @@ type StorageOperations = {
   // File Operations (with loading states + refresh)
   renameItem: (path: string, newName: string) => Promise<boolean>;
   deleteItems: (paths: string[]) => Promise<boolean>;
-  moveItems: (
-    sourcePaths: string[],
-    destinationPath: string
-  ) => Promise<boolean>;
-  copyItemsTo: (
-    sourcePaths: string[],
-    destinationPath: string
-  ) => Promise<boolean>;
+  moveItems: (sourcePaths: string[], destinationPath: string) => Promise<boolean>;
+  copyItemsTo: (sourcePaths: string[], destinationPath: string) => Promise<boolean>;
 
   // Navigation Operations (now async)
   navigateTo: (path: string) => Promise<void>;
@@ -81,10 +75,7 @@ export const useStorageOperations = (): StorageOperations => {
 
   // Helper function to show notifications
   const showNotification = useCallback(
-    (
-      message: string,
-      severity: "success" | "error" | "info" | "warning" = "info"
-    ) => {
+    (message: string, severity: "success" | "error" | "info" | "warning" = "info") => {
       notifications.show(message, { severity });
     },
     [notifications]
@@ -126,20 +117,10 @@ export const useStorageOperations = (): StorageOperations => {
         });
 
         if (result.data?.renameFile?.success) {
-          showNotification(
-            managementTranslations.successfullyRenamedTo.replace(
-              "%{newName}",
-              newName
-            ),
-            "success"
-          );
+          showNotification(managementTranslations.successfullyRenamedTo.replace("%{newName}", newName), "success");
           return true;
         } else {
-          showNotification(
-            result.data?.renameFile?.message ||
-              managementTranslations.failedToRenameFile,
-            "error"
-          );
+          showNotification(result.data?.renameFile?.message || managementTranslations.failedToRenameFile, "error");
           return false;
         }
       } catch {
@@ -166,8 +147,7 @@ export const useStorageOperations = (): StorageOperations => {
 
           const safeSuccessCount = successCount ?? 0;
           const safeFailureCount = failureCount ?? 0;
-          const errorMessages =
-            failures?.map(f => f.error).filter(Boolean) ?? [];
+          const errorMessages = failures?.map(f => f.error).filter(Boolean) ?? [];
 
           if (safeFailureCount === 0) {
             showNotification(
@@ -209,10 +189,7 @@ export const useStorageOperations = (): StorageOperations => {
   );
 
   const move = useCallback(
-    async (
-      sourcePaths: string[],
-      destinationPath: string
-    ): Promise<boolean> => {
+    async (sourcePaths: string[], destinationPath: string): Promise<boolean> => {
       try {
         const result = await mutations.moveStorageItems({
           input: {
@@ -227,8 +204,7 @@ export const useStorageOperations = (): StorageOperations => {
 
           const safeSuccessCount = successCount ?? 0;
           const safeFailureCount = failureCount ?? 0;
-          const errorMessages =
-            failures?.map(f => f.error).filter(Boolean) ?? [];
+          const errorMessages = failures?.map(f => f.error).filter(Boolean) ?? [];
 
           if (safeFailureCount === 0) {
             showNotification(
@@ -270,10 +246,7 @@ export const useStorageOperations = (): StorageOperations => {
   );
 
   const copy = useCallback(
-    async (
-      sourcePaths: string[],
-      destinationPath: string
-    ): Promise<boolean> => {
+    async (sourcePaths: string[], destinationPath: string): Promise<boolean> => {
       try {
         const result = await mutations.copyStorageItems({
           input: {
@@ -288,8 +261,7 @@ export const useStorageOperations = (): StorageOperations => {
 
           const safeSuccessCount = successCount ?? 0;
           const safeFailureCount = failureCount ?? 0;
-          const errorMessages =
-            failures?.map(f => f.error).filter(Boolean) ?? [];
+          const errorMessages = failures?.map(f => f.error).filter(Boolean) ?? [];
 
           if (safeFailureCount === 0) {
             showNotification(
@@ -341,20 +313,10 @@ export const useStorageOperations = (): StorageOperations => {
         });
 
         if (result.data?.createFolder?.success) {
-          showNotification(
-            managementTranslations.successfullyCreatedFolder.replace(
-              "%{name}",
-              name
-            ),
-            "success"
-          );
+          showNotification(managementTranslations.successfullyCreatedFolder.replace("%{name}", name), "success");
           return true;
         } else {
-          showNotification(
-            result.data?.createFolder?.message ||
-              managementTranslations.failedToCreateFolder,
-            "error"
-          );
+          showNotification(result.data?.createFolder?.message || managementTranslations.failedToCreateFolder, "error");
           return false;
         }
       } catch {
@@ -396,10 +358,7 @@ export const useStorageOperations = (): StorageOperations => {
   );
 
   const moveItems = useCallback(
-    async (
-      sourcePaths: string[],
-      destinationPath: string
-    ): Promise<boolean> => {
+    async (sourcePaths: string[], destinationPath: string): Promise<boolean> => {
       const success = await move(sourcePaths, destinationPath);
       return success;
     },
@@ -407,10 +366,7 @@ export const useStorageOperations = (): StorageOperations => {
   );
 
   const copyItemsTo = useCallback(
-    async (
-      sourcePaths: string[],
-      destinationPath: string
-    ): Promise<boolean> => {
+    async (sourcePaths: string[], destinationPath: string): Promise<boolean> => {
       const success = await copy(sourcePaths, destinationPath);
       return success;
     },
@@ -452,8 +408,7 @@ export const useStorageOperations = (): StorageOperations => {
 
     const cleanPath = currentPath.replace(/\/+$/, "");
     const pathSegments = cleanPath.split("/").filter(segment => segment !== "");
-    const parentPath =
-      pathSegments.length > 1 ? pathSegments.slice(0, -1).join("/") : "";
+    const parentPath = pathSegments.length > 1 ? pathSegments.slice(0, -1).join("/") : "";
 
     await navigateTo(parentPath);
   }, [navigateTo]);
@@ -465,8 +420,7 @@ export const useStorageOperations = (): StorageOperations => {
   const pasteItems = useCallback(async (): Promise<boolean> => {
     if (!uiStoreRef.current?.clipboard) return false;
 
-    const sourcePaths =
-      uiStoreRef.current.clipboard.items.map(item => item.path) || [];
+    const sourcePaths = uiStoreRef.current.clipboard.items.map(item => item.path) || [];
     const destinationPath = dataStoreRef.current.params.path || "";
 
     if (uiStoreRef.current.clipboard.operation === "copy") {

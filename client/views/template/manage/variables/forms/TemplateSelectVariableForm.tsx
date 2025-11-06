@@ -1,16 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useMemo } from "react";
-import {
-  Box,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
-  Button,
-} from "@mui/material";
+import { Box, TextField, FormControlLabel, Checkbox, Select, MenuItem, SelectChangeEvent, Button } from "@mui/material";
 import TagInput from "@/client/components/input/TagInput";
 import { mapToTemplateSelectVariableCreateInput } from "@/client/utils/templateVariable";
 import { isSelectVariableDifferent } from "@/client/utils/templateVariable/templateVariable";
@@ -26,9 +17,7 @@ type TemplateSelectVariableFormProps = {
   templateId: number;
   variables: TemplateVariable[];
   onCreate: (data: TemplateSelectVariableCreateInput) => Promise<void>;
-  onUpdate: (
-    data: TemplateSelectVariableCreateInput & { id: number }
-  ) => Promise<void>;
+  onUpdate: (data: TemplateSelectVariableCreateInput & { id: number }) => Promise<void>;
 };
 
 const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
@@ -40,11 +29,7 @@ const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
 }) => {
   const editingVariable: TemplateSelectVariable | null = useMemo(() => {
     if (!editingVariableID) return null;
-    return (
-      (variables.find(
-        v => v.id === editingVariableID
-      ) as TemplateSelectVariable) || null
-    );
+    return (variables.find(v => v.id === editingVariableID) as TemplateSelectVariable) || null;
   }, [editingVariableID, variables]);
 
   const { templateVariableTranslations: strings } = useAppTranslation();
@@ -63,18 +48,14 @@ const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
   });
 
   const handleChange = useCallback(
-    (field: keyof TemplateSelectVariableCreateInput) =>
-      (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value =
-          event.target.type === "checkbox"
-            ? event.target.checked
-            : event.target.value;
+    (field: keyof TemplateSelectVariableCreateInput) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.type === "checkbox" ? event.target.checked : event.target.value;
 
-        setState(prevState => ({
-          ...prevState,
-          [field]: value,
-        }));
-      },
+      setState(prevState => ({
+        ...prevState,
+        [field]: value,
+      }));
+    },
     []
   );
 
@@ -85,15 +66,12 @@ const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
     }));
   }, []);
 
-  const handlePreviewValueChange = useCallback(
-    (event: SelectChangeEvent<string>) => {
-      setState(prevState => ({
-        ...prevState,
-        previewValue: event.target.value,
-      }));
-    },
-    []
-  );
+  const handlePreviewValueChange = useCallback((event: SelectChangeEvent<string>) => {
+    setState(prevState => ({
+      ...prevState,
+      previewValue: event.target.value,
+    }));
+  }, []);
 
   const handleSave = useCallback(async () => {
     try {
@@ -143,9 +121,7 @@ const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
 
       <TagInput
         label={strings?.options ?? "Options"}
-        placeholder={
-          strings?.addOptionPlaceholder ?? "Add option and press Enter"
-        }
+        placeholder={strings?.addOptionPlaceholder ?? "Add option and press Enter"}
         initialTags={state.options}
         onChange={handleOptionsChange}
       />
@@ -167,22 +143,12 @@ const TemplateSelectVariableForm: React.FC<TemplateSelectVariableFormProps> = ({
       )}
 
       <FormControlLabel
-        control={
-          <Checkbox
-            checked={state.multiple ?? false}
-            onChange={handleChange("multiple")}
-          />
-        }
+        control={<Checkbox checked={state.multiple ?? false} onChange={handleChange("multiple")} />}
         label={strings?.allowMultipleSelection ?? "Allow Multiple Selection"}
       />
 
       <FormControlLabel
-        control={
-          <Checkbox
-            checked={state.required ?? false}
-            onChange={handleChange("required")}
-          />
-        }
+        control={<Checkbox checked={state.required ?? false} onChange={handleChange("required")} />}
         label={strings?.required ?? "Required"}
       />
 

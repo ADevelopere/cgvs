@@ -23,9 +23,7 @@ export type TemplateConfigCreateFormContentProps = {
   strings: TemplateConfigTranslations;
 };
 
-export const TemplateConfigCreateFormContent: React.FC<
-  TemplateConfigCreateFormContentProps
-> = ({
+export const TemplateConfigCreateFormContent: React.FC<TemplateConfigCreateFormContentProps> = ({
   state,
   errors,
   creating,
@@ -46,19 +44,12 @@ export const TemplateConfigCreateFormContent: React.FC<
       sx={{ p: 2 }}
     >
       {/* title */}
-      <Typography variant="h6">
-        {strings.createTemplateConfiguration}
-      </Typography>
+      <Typography variant="h6">{strings.createTemplateConfiguration}</Typography>
 
       {/* This Box constrains the form's width and is centered by the Stack */}
       <Box sx={{ width: "100%", maxWidth: "600px" }}>
         {/* form */}
-        <TemplateConfigForm
-          state={state}
-          errors={errors}
-          updateFn={updater}
-          disabled={creating}
-        />
+        <TemplateConfigForm state={state} errors={errors} updateFn={updater} disabled={creating} />
       </Box>
 
       {/* error message */}
@@ -79,9 +70,7 @@ export const TemplateConfigCreateFormContent: React.FC<
   );
 };
 
-export const TemplateConfigCreateForm: React.FC<
-  TemplateConfigCreateFormProps
-> = ({ template }) => {
+export const TemplateConfigCreateForm: React.FC<TemplateConfigCreateFormProps> = ({ template }) => {
   const { templateConfigTranslations: strings } = useAppTranslation();
   const { createTemplateConfigMutation } = useTemplateConfigMutation();
   const [state, setState] = React.useState<GQL.TemplateConfigCreateInput>({
@@ -96,16 +85,16 @@ export const TemplateConfigCreateForm: React.FC<
   const [createError, setCreateError] = React.useState<string | null>(null);
   const validateAction = useTemplateConfigFormValidateFn(strings);
 
-  const updater: TemplateConfigFormUpdateFn = (action) => {
+  const updater: TemplateConfigFormUpdateFn = action => {
     const { key, value } = action;
     const errorMessage = validateAction(action);
 
-    setErrors((prev) => ({
+    setErrors(prev => ({
       ...prev,
       [key]: errorMessage,
     }));
 
-    setState((prev) => ({
+    setState(prev => ({
       ...prev,
       [key]: value,
     }));
@@ -121,20 +110,13 @@ export const TemplateConfigCreateForm: React.FC<
       });
     } catch (error) {
       setCreateError(strings.failedToCreateTemplateConfiguration);
-      logger.error(
-        "TemplateConfigCreateForm: Failed to create template config",
-        {
-          error,
-        }
-      );
+      logger.error("TemplateConfigCreateForm: Failed to create template config", {
+        error,
+      });
     } finally {
       setCreating(false);
     }
-  }, [
-    createTemplateConfigMutation,
-    state,
-    strings.failedToCreateTemplateConfiguration,
-  ]);
+  }, [createTemplateConfigMutation, state, strings.failedToCreateTemplateConfiguration]);
 
   return (
     <TemplateConfigCreateFormContent

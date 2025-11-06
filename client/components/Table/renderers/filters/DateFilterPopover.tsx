@@ -29,9 +29,7 @@ export interface DateFilterPopoverProps {
   columnId: string;
   columnLabel: string;
   value: FilterClause<DateFilterValue, DateFilterOperation> | null;
-  onApply: (
-    filterClause: FilterClause<DateFilterValue, DateFilterOperation>
-  ) => void;
+  onApply: (filterClause: FilterClause<DateFilterValue, DateFilterOperation>) => void;
   onClear: () => void;
 }
 
@@ -54,15 +52,9 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
     strings: { filter: filterStrings, dateFilterOps },
   } = useTableLocale();
 
-  const [operation, setOperation] = useState<DateFilterOperation>(
-    value?.operation || DateFilterOperation.is
-  );
-  const [startDate, setStartDate] = useState<Date | null>(
-    value?.value?.from ? new Date(value.value.from) : null
-  );
-  const [endDate, setEndDate] = useState<Date | null>(
-    value?.value?.to ? new Date(value.value.to) : null
-  );
+  const [operation, setOperation] = useState<DateFilterOperation>(value?.operation || DateFilterOperation.is);
+  const [startDate, setStartDate] = useState<Date | null>(value?.value?.from ? new Date(value.value.from) : null);
+  const [endDate, setEndDate] = useState<Date | null>(value?.value?.to ? new Date(value.value.to) : null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -78,23 +70,17 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
     setError(null);
   }, [value, open]);
 
-  const handleOperationChange = useCallback(
-    (event: SelectChangeEvent<DateFilterOperation>) => {
-      const newOperation = event.target.value as DateFilterOperation;
-      setOperation(newOperation);
-      if (!operationRequiresValue(newOperation)) {
-        setStartDate(null);
-        setEndDate(null);
-      }
-      setError(null);
-    },
-    []
-  );
+  const handleOperationChange = useCallback((event: SelectChangeEvent<DateFilterOperation>) => {
+    const newOperation = event.target.value as DateFilterOperation;
+    setOperation(newOperation);
+    if (!operationRequiresValue(newOperation)) {
+      setStartDate(null);
+      setEndDate(null);
+    }
+    setError(null);
+  }, []);
 
-  const valueRequired = useMemo(
-    () => operationRequiresValue(operation),
-    [operation]
-  );
+  const valueRequired = useMemo(() => operationRequiresValue(operation), [operation]);
 
   const handleApply = useCallback(() => {
     if (valueRequired) {
@@ -106,12 +92,7 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
         setError(filterStrings.endDateRequired);
         return;
       }
-      if (
-        operation === DateFilterOperation.between &&
-        startDate &&
-        endDate &&
-        startDate > endDate
-      ) {
+      if (operation === DateFilterOperation.between && startDate && endDate && startDate > endDate) {
         setError(filterStrings.startDateBeforeEnd);
         return;
       }
@@ -171,9 +152,7 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
         </Typography>
 
         <FormControl fullWidth sx={{ mt: 2 }}>
-          <InputLabel id="date-filter-operation-label">
-            {filterStrings.operation}
-          </InputLabel>
+          <InputLabel id="date-filter-operation-label">{filterStrings.operation}</InputLabel>
           <Select
             labelId="date-filter-operation-label"
             value={operation}
@@ -181,27 +160,13 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
             label={filterStrings.operation}
             size="small"
           >
-            <MenuItem value={DateFilterOperation.is}>
-              {dateFilterOps.is}
-            </MenuItem>
-            <MenuItem value={DateFilterOperation.isNot}>
-              {dateFilterOps.isNot}
-            </MenuItem>
-            <MenuItem value={DateFilterOperation.isBefore}>
-              {dateFilterOps.isBefore}
-            </MenuItem>
-            <MenuItem value={DateFilterOperation.isAfter}>
-              {dateFilterOps.isAfter}
-            </MenuItem>
-            <MenuItem value={DateFilterOperation.between}>
-              {dateFilterOps.between}
-            </MenuItem>
-            <MenuItem value={DateFilterOperation.isEmpty}>
-              {dateFilterOps.isEmpty}
-            </MenuItem>
-            <MenuItem value={DateFilterOperation.isNotEmpty}>
-              {dateFilterOps.isNotEmpty}
-            </MenuItem>
+            <MenuItem value={DateFilterOperation.is}>{dateFilterOps.is}</MenuItem>
+            <MenuItem value={DateFilterOperation.isNot}>{dateFilterOps.isNot}</MenuItem>
+            <MenuItem value={DateFilterOperation.isBefore}>{dateFilterOps.isBefore}</MenuItem>
+            <MenuItem value={DateFilterOperation.isAfter}>{dateFilterOps.isAfter}</MenuItem>
+            <MenuItem value={DateFilterOperation.between}>{dateFilterOps.between}</MenuItem>
+            <MenuItem value={DateFilterOperation.isEmpty}>{dateFilterOps.isEmpty}</MenuItem>
+            <MenuItem value={DateFilterOperation.isNotEmpty}>{dateFilterOps.isNotEmpty}</MenuItem>
           </Select>
         </FormControl>
 
@@ -209,11 +174,7 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Box sx={{ mt: 2 }}>
               <DatePicker
-                label={
-                  operation === DateFilterOperation.between
-                    ? filterStrings.startDate
-                    : filterStrings.date
-                }
+                label={operation === DateFilterOperation.between ? filterStrings.startDate : filterStrings.date}
                 value={startDate}
                 onChange={setStartDate}
                 slotProps={{
@@ -244,34 +205,18 @@ export const DateFilterPopover: React.FC<DateFilterPopoverProps> = ({
             )}
 
             {error && (
-              <Typography
-                variant="caption"
-                color="error"
-                sx={{ mt: 1, display: "block" }}
-              >
+              <Typography variant="caption" color="error" sx={{ mt: 1, display: "block" }}>
                 {error}
               </Typography>
             )}
           </LocalizationProvider>
         )}
 
-        <Box
-          sx={{ display: "flex", gap: 1, mt: 2, justifyContent: "flex-end" }}
-        >
-          <Button
-            size="small"
-            onClick={handleClear}
-            startIcon={<Clear />}
-            color="inherit"
-          >
+        <Box sx={{ display: "flex", gap: 1, mt: 2, justifyContent: "flex-end" }}>
+          <Button size="small" onClick={handleClear} startIcon={<Clear />} color="inherit">
             {filterStrings.clear}
           </Button>
-          <Button
-            size="small"
-            onClick={handleApply}
-            variant="contained"
-            startIcon={<Check />}
-          >
+          <Button size="small" onClick={handleApply} variant="contained" startIcon={<Check />}>
             {filterStrings.apply}
           </Button>
         </Box>

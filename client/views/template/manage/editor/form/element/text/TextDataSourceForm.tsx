@@ -1,14 +1,11 @@
 import React, { useMemo, type FC } from "react";
 import { Box, Stack } from "@mui/material";
-import type {  TextDataSourceFormErrors } from "./types";
+import type { TextDataSourceFormErrors } from "./types";
 import { DataSourceSelector } from "./TextDataSourceSelector";
 import { TextStaticSourceInput } from "./TextStaticSourceInput";
 import { StudentFieldSelector } from "./StudentTextFieldSelector";
 import { CertificateFieldSelector } from "./CertificateTextFieldSelector";
-import {
-  TemplateTextVariableSelector,
-  TemplateSelectVariableSelector,
-} from "../variableSelector";
+import { TemplateTextVariableSelector, TemplateSelectVariableSelector } from "../variableSelector";
 import {
   CertificateTextField,
   StudentTextField,
@@ -38,14 +35,11 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
   showSelector,
 }) => {
   const selectedType: TextDataSourceType = useMemo(() => {
-    if (dataSource.certificateField)
-      return TextDataSourceType.CertificateTextField;
+    if (dataSource.certificateField) return TextDataSourceType.CertificateTextField;
     if (dataSource.static) return TextDataSourceType.Static;
     if (dataSource.studentField) return TextDataSourceType.StudentTextField;
-    if (dataSource.templateTextVariable)
-      return TextDataSourceType.TemplateTextVariable;
-    if (dataSource.templateSelectVariable)
-      return TextDataSourceType.TemplateSelectVariable;
+    if (dataSource.templateTextVariable) return TextDataSourceType.TemplateTextVariable;
+    if (dataSource.templateSelectVariable) return TextDataSourceType.TemplateSelectVariable;
     throw new Error("Invalid data source type");
   }, [dataSource]);
 
@@ -93,9 +87,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
       case TextDataSourceType.StudentTextField:
         return (
           <StudentFieldSelector
-            value={
-              dataSource.studentField?.field || StudentTextField.StudentName
-            }
+            value={dataSource.studentField?.field || StudentTextField.StudentName}
             onChange={field => updateDataSource({ studentField: { field } })}
             error={errors.dataSource?.studentField}
             disabled={disabled}
@@ -105,13 +97,8 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
       case TextDataSourceType.CertificateTextField:
         return (
           <CertificateFieldSelector
-            value={
-              dataSource.certificateField?.field ||
-              CertificateTextField.VerificationCode
-            }
-            onChange={field =>
-              updateDataSource({ certificateField: { field } })
-            }
+            value={dataSource.certificateField?.field || CertificateTextField.VerificationCode}
+            onChange={field => updateDataSource({ certificateField: { field } })}
             error={errors.dataSource?.certificateField}
             disabled={disabled}
           />
@@ -122,9 +109,7 @@ export const DataSourceForm: FC<DataSourceFormProps> = ({
           <TemplateTextVariableSelector
             value={dataSource.templateTextVariable?.variableId}
             variables={textVariables}
-            onChange={variableId =>
-              updateDataSource({ templateTextVariable: { variableId } })
-            }
+            onChange={variableId => updateDataSource({ templateTextVariable: { variableId } })}
             error={errors.dataSource?.templateTextVariable}
             disabled={disabled}
           />

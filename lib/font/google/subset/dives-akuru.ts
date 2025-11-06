@@ -9,8 +9,7 @@ const data: GoogleFontItem[] = [
     version: "v8",
     lastModified: "2025-08-26",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/notoserifdivesakuru/v8/QldfNSVMqAsHtsJ_TnD3aT03sMgd57ibeeZT60DIyoV9Ejs.ttf",
+      regular: "https://fonts.gstatic.com/s/notoserifdivesakuru/v8/QldfNSVMqAsHtsJ_TnD3aT03sMgd57ibeeZT60DIyoV9Ejs.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",

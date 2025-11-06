@@ -2,16 +2,9 @@
 
 import React from "react";
 import * as Mui from "@mui/material";
-import {
-  AspectRatio as ContainIcon,
-  CropFree as CoverIcon,
-  Fullscreen as FillIcon,
-} from "@mui/icons-material";
+import { AspectRatio as ContainIcon, CropFree as CoverIcon, Fullscreen as FillIcon } from "@mui/icons-material";
 import { useAppTranslation } from "@/client/locale";
-import {
-  ElementImageFit,
-  ImageElementSpecPropsInput,
-} from "@/client/graphql/generated/gql/graphql";
+import { ElementImageFit, ImageElementSpecPropsInput } from "@/client/graphql/generated/gql/graphql";
 import { ImagePropsFormErrors, UpdateImagePropsFn } from "./types";
 
 export interface ImagePropsFormProps {
@@ -75,21 +68,14 @@ export const ImagePropsForm: React.FC<ImagePropsFormProps> = ({
               key={option.value}
               sx={{
                 border: 1,
-                borderColor:
-                  imageProps.fit === option.value ? "primary.main" : "divider",
+                borderColor: imageProps.fit === option.value ? "primary.main" : "divider",
                 borderRadius: 1,
                 p: 1.5,
                 mb: 1,
-                backgroundColor:
-                  imageProps.fit === option.value
-                    ? "action.selected"
-                    : "background.paper",
+                backgroundColor: imageProps.fit === option.value ? "action.selected" : "background.paper",
                 transition: "all 0.2s",
                 "&:hover": {
-                  borderColor:
-                    imageProps.fit === option.value
-                      ? "primary.main"
-                      : "primary.light",
+                  borderColor: imageProps.fit === option.value ? "primary.main" : "primary.light",
                   backgroundColor: "action.hover",
                 },
               }}
@@ -98,12 +84,8 @@ export const ImagePropsForm: React.FC<ImagePropsFormProps> = ({
                 value={option.value}
                 control={<Mui.Radio />}
                 label={
-                  <Mui.Box
-                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                  >
-                    <Mui.Box sx={{ color: "primary.main" }}>
-                      {option.icon}
-                    </Mui.Box>
+                  <Mui.Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Mui.Box sx={{ color: "primary.main" }}>{option.icon}</Mui.Box>
                     <Mui.Box>
                       <Mui.Typography variant="body2" fontWeight="medium">
                         {option.label}

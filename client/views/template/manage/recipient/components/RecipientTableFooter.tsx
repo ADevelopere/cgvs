@@ -39,15 +39,8 @@ export const RecipientTableFooterStart: React.FC<{
 
   // Get the appropriate selected IDs based on tab type
   const selectedRowIds = useMemo(
-    () =>
-      tabType === "add"
-        ? store.selectedStudentIdsNotInGroup
-        : store.selectedRecipientIdsInGroup,
-    [
-      tabType,
-      store.selectedStudentIdsNotInGroup,
-      store.selectedRecipientIdsInGroup,
-    ]
+    () => (tabType === "add" ? store.selectedStudentIdsNotInGroup : store.selectedRecipientIdsInGroup),
+    [tabType, store.selectedStudentIdsNotInGroup, store.selectedRecipientIdsInGroup]
   );
 
   const handleClearClick = useCallback(() => {
@@ -81,20 +74,13 @@ export const RecipientTableFooterStart: React.FC<{
         <Dialog open={openClearDialog} onClose={handleClearCancel}>
           <DialogTitle>{strings.confirmClearSelection}</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              {strings.confirmClearSelectionMessage}
-            </DialogContentText>
+            <DialogContentText>{strings.confirmClearSelectionMessage}</DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClearCancel} color="primary">
               {strings.cancel}
             </Button>
-            <Button
-              onClick={handleClearConfirm}
-              color="error"
-              variant="contained"
-              disabled={Boolean(isLoading)}
-            >
+            <Button onClick={handleClearConfirm} color="error" variant="contained" disabled={Boolean(isLoading)}>
               {strings.clearAllSelection}
             </Button>
           </DialogActions>
@@ -134,20 +120,13 @@ export const RecipientTableFooterStart: React.FC<{
       <Dialog open={openClearDialog} onClose={handleClearCancel}>
         <DialogTitle>{strings.confirmClearSelection}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            {strings.confirmClearSelectionMessage}
-          </DialogContentText>
+          <DialogContentText>{strings.confirmClearSelectionMessage}</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClearCancel} color="primary">
             {strings.cancel}
           </Button>
-          <Button
-            onClick={handleClearConfirm}
-            color="error"
-            variant="contained"
-            disabled={Boolean(isLoading)}
-          >
+          <Button onClick={handleClearConfirm} color="error" variant="contained" disabled={Boolean(isLoading)}>
             {strings.clearAllSelection}
           </Button>
         </DialogActions>
@@ -157,9 +136,7 @@ export const RecipientTableFooterStart: React.FC<{
 };
 
 // Footer end content component - shows action buttons
-export const RecipientTableFooterEnd: React.FC<
-  RecipientTableFooterEndProps
-> = ({
+export const RecipientTableFooterEnd: React.FC<RecipientTableFooterEndProps> = ({
   mode,
   onAction,
   actionButtonLabel,
@@ -174,22 +151,12 @@ export const RecipientTableFooterEnd: React.FC<
 
   // Get the appropriate selected IDs based on mode
   const selectedRowIds = useMemo(
-    () =>
-      mode === "add"
-        ? store.selectedStudentIdsNotInGroup
-        : store.selectedRecipientIdsInGroup,
-    [
-      mode,
-      store.selectedStudentIdsNotInGroup,
-      store.selectedRecipientIdsInGroup,
-    ]
+    () => (mode === "add" ? store.selectedStudentIdsNotInGroup : store.selectedRecipientIdsInGroup),
+    [mode, store.selectedStudentIdsNotInGroup, store.selectedRecipientIdsInGroup]
   );
 
   // Memoize the converted selected row IDs
-  const convertedSelectedRowIds = useMemo(
-    () => selectedRowIds.map(Number),
-    [selectedRowIds]
-  );
+  const convertedSelectedRowIds = useMemo(() => selectedRowIds.map(Number), [selectedRowIds]);
 
   const handleActionClick = useCallback(() => {
     setOpenActionDialog(true);
@@ -232,11 +199,7 @@ export const RecipientTableFooterEnd: React.FC<
               color={mode === "remove" ? "error" : "primary"}
               sx={{ minWidth: 36, p: 0.5 }}
             >
-              {mode === "add" ? (
-                <Add fontSize="small" />
-              ) : (
-                <Remove fontSize="small" />
-              )}
+              {mode === "add" ? <Add fontSize="small" /> : <Remove fontSize="small" />}
             </Button>
           </span>
         </Tooltip>

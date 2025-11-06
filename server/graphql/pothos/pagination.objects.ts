@@ -29,8 +29,7 @@ type PaginationArgs = {
   maxCount: number | null;
 };
 
-const PaginationArgsRef =
-  gqlSchemaBuilder.inputRef<PaginationArgs>("PaginationArgs");
+const PaginationArgsRef = gqlSchemaBuilder.inputRef<PaginationArgs>("PaginationArgs");
 
 export const PaginationArgsObject = PaginationArgsRef.implement({
   fields: t => ({

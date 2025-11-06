@@ -1,10 +1,6 @@
 import { TextPropsInput } from "./textProps.input";
 import { CertificateElementBaseInput } from "./base.element.input";
-import {
-  CertificateTextField,
-  StudentTextField,
-  TextDataSourceType,
-} from "../output";
+import { CertificateTextField, StudentTextField, TextDataSourceType } from "../output";
 import { textElement } from "@/server/db/schema";
 
 // ============================================================================

@@ -28,10 +28,7 @@ export type ElementTextPropsEntity = typeof elementTextProps.$inferSelect;
 // ============================================================================
 
 // Logical structure - NO database fields
-export type TextProps = Omit<
-  ElementTextPropsEntity,
-  "fontSource" | "fontId" | "googleFontIdentifier"
-> & {
+export type TextProps = Omit<ElementTextPropsEntity, "fontSource" | "fontId" | "googleFontIdentifier"> & {
   fontRef: FontReference;
   overflow: ElementOverflow;
 };

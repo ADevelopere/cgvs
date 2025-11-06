@@ -5,29 +5,15 @@ const data: GoogleFontItem[] = [
   {
     family: "Jura",
     variants: ["300", "regular", "500", "600", "700"],
-    subsets: [
-      "cyrillic",
-      "cyrillic-ext",
-      "greek",
-      "greek-ext",
-      "kayah-li",
-      "latin",
-      "latin-ext",
-      "vietnamese",
-    ],
+    subsets: ["cyrillic", "cyrillic-ext", "greek", "greek-ext", "kayah-li", "latin", "latin-ext", "vietnamese"],
     version: "v34",
     lastModified: "2025-09-16",
     files: {
-      "300":
-        "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP0D7auhTfmrH_rt.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP1v7auhTfmrH_rt.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP2D6quhTfmrH_rt.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP266quhTfmrH_rt.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP1d7auhTfmrH_rt.ttf",
+      "300": "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP0D7auhTfmrH_rt.ttf",
+      "500": "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP1v7auhTfmrH_rt.ttf",
+      "600": "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP2D6quhTfmrH_rt.ttf",
+      "700": "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP266quhTfmrH_rt.ttf",
+      regular: "https://fonts.gstatic.com/s/jura/v34/z7NOdRfiaC4Vd8hhoPzfb5vBTP1d7auhTfmrH_rt.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -40,14 +26,10 @@ const data: GoogleFontItem[] = [
     version: "v2",
     lastModified: "2025-05-30",
     files: {
-      "500":
-        "https://fonts.gstatic.com/s/kayphodu/v2/jizcREFPvGNOx-jhPwHR2B2OCDUy_zoyk18.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/kayphodu/v2/jizcREFPvGNOx-jhPwHR2DGJCDUy_zoyk18.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/kayphodu/v2/jizcREFPvGNOx-jhPwHR2FWICDUy_zoyk18.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/kayphodu/v2/jizfREFPvGNOx-jhPwHR4OmnLD0Z4zM.ttf",
+      "500": "https://fonts.gstatic.com/s/kayphodu/v2/jizcREFPvGNOx-jhPwHR2B2OCDUy_zoyk18.ttf",
+      "600": "https://fonts.gstatic.com/s/kayphodu/v2/jizcREFPvGNOx-jhPwHR2DGJCDUy_zoyk18.ttf",
+      "700": "https://fonts.gstatic.com/s/kayphodu/v2/jizcREFPvGNOx-jhPwHR2FWICDUy_zoyk18.ttf",
+      regular: "https://fonts.gstatic.com/s/kayphodu/v2/jizfREFPvGNOx-jhPwHR4OmnLD0Z4zM.ttf",
     },
     category: "serif",
     kind: "webfonts#webfont",

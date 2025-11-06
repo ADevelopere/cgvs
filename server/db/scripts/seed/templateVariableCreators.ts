@@ -89,13 +89,7 @@ export async function createProfessionalVariables(template: TemplateRecord) {
     description: "مجال التدريب",
     required: true,
     previewValue: "تقنية المعلومات",
-    options: [
-      "تقنية المعلومات",
-      "إدارة الأعمال",
-      "الموارد البشرية",
-      "التسويق الرقمي",
-      "إدارة المشاريع",
-    ],
+    options: ["تقنية المعلومات", "إدارة الأعمال", "الموارد البشرية", "التسويق الرقمي", "إدارة المشاريع"],
     multiple: false,
   });
 
@@ -201,10 +195,7 @@ export async function createVolunteerVariables(template: TemplateRecord) {
 /**
  * Creates all variables for a template based on its category
  */
-export async function createTemplateVariables(
-  template: TemplateRecord,
-  categoryName: string
-) {
+export async function createTemplateVariables(template: TemplateRecord, categoryName: string) {
   // Create common variables for all templates
   await createCommonVariables(template);
 

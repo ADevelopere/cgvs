@@ -4,17 +4,7 @@ import { GoogleFontItem } from "../types";
 const data: GoogleFontItem[] = [
   {
     family: "Noto Sans Lao",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
     subsets: ["lao", "latin", "latin-ext"],
     version: "v33",
     lastModified: "2025-09-02",
@@ -44,17 +34,7 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Noto Sans Lao Looped",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
     subsets: ["lao", "latin", "latin-ext"],
     version: "v10",
     lastModified: "2025-09-16",
@@ -84,17 +64,7 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Noto Serif Lao",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
     subsets: ["lao", "latin", "latin-ext"],
     version: "v29",
     lastModified: "2025-09-16",
@@ -129,10 +99,8 @@ const data: GoogleFontItem[] = [
     version: "v3",
     lastModified: "2025-09-17",
     files: {
-      "700":
-        "https://fonts.gstatic.com/s/phetsarath/v3/N0bT2SpTP-plK0uWayAYOWLSudf7ZZlIHD0.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/phetsarath/v3/N0bQ2SpTP-plK0uWayAYAd79nd_QeZA.ttf",
+      "700": "https://fonts.gstatic.com/s/phetsarath/v3/N0bT2SpTP-plK0uWayAYOWLSudf7ZZlIHD0.ttf",
+      regular: "https://fonts.gstatic.com/s/phetsarath/v3/N0bQ2SpTP-plK0uWayAYAd79nd_QeZA.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",

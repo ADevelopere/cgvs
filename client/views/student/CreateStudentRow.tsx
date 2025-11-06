@@ -1,22 +1,8 @@
 "use client";
 
-import React, {
-  useState,
-  useMemo,
-  useCallback,
-  useRef,
-  useEffect,
-} from "react";
-import {
-  useTheme,
-  CircularProgress,
-  Snackbar,
-  useMediaQuery,
-} from "@mui/material";
-import {
-  Error as ErrorIcon,
-  CheckCircle as CheckCircleIcon,
-} from "@mui/icons-material";
+import React, { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { useTheme, CircularProgress, Snackbar, useMediaQuery } from "@mui/material";
+import { Error as ErrorIcon, CheckCircle as CheckCircleIcon } from "@mui/icons-material";
 import { TextFilterOperation } from "@/client/types/filters";
 import { useAppTranslation } from "@/client/locale";
 import { useStudentOperations } from "./hook/useStudentOperations";
@@ -44,10 +30,7 @@ import {
   _StyledPaper,
 } from "./components/CreateStudentRow.styles";
 import { HammerIcon } from "lucide-react";
-import {
-  Gender,
-  StudentCreateInput,
-} from "@/client/graphql/generated/gql/graphql";
+import { Gender, StudentCreateInput } from "@/client/graphql/generated/gql/graphql";
 import logger from "@/client/lib/logger";
 
 const MemoizedTextField = React.memo(TextFieldComponent);
@@ -119,21 +102,15 @@ const initialStudentState: StudentCreateInput = {
 
 const CreateStudentRow = () => {
   const { createStudent, setSearchFilter } = useStudentOperations();
-  const {
-    studentTranslations: studentStrings,
-    genderTranslations: genderStrings,
-  } = useAppTranslation();
+  const { studentTranslations: studentStrings, genderTranslations: genderStrings } = useAppTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
 
   // Form state
-  const [newStudent, setNewStudent] =
-    useState<StudentCreateInput>(initialStudentState);
+  const [newStudent, setNewStudent] = useState<StudentCreateInput>(initialStudentState);
   // fieldValidity: string (field) -> string | null (error message, null if valid)
-  const [fieldValidity, setFieldValidity] = useState<
-    Record<string, string | null>
-  >({});
+  const [fieldValidity, setFieldValidity] = useState<Record<string, string | null>>({});
 
   // UI state
   const [isLoading, setIsLoading] = useState(false);
@@ -145,8 +122,7 @@ const CreateStudentRow = () => {
   // Form validation: valid if all required fields in fieldValidity are true
   const isFormValid = useMemo(() => {
     // 'name' field must exist and have no error
-    if (!("name" in fieldValidity) || fieldValidity["name"] !== null)
-      return false;
+    if (!("name" in fieldValidity) || fieldValidity["name"] !== null) return false;
     // All fields must be valid (errorMessage === null)
     return Object.values(fieldValidity).every(err => err === null);
   }, [fieldValidity]);
@@ -271,9 +247,7 @@ const CreateStudentRow = () => {
   const handleCreate = useCallback(async () => {
     if (!isFormValid) return;
 
-    logger.info(
-      "🔍 CreateStudentRow: handleCreate called - clearing filters before mutation"
-    );
+    logger.info("🔍 CreateStudentRow: handleCreate called - clearing filters before mutation");
 
     // Clear debounce timer BEFORE mutation to prevent race condition
     if (debounceTimer.current) {
@@ -302,9 +276,7 @@ const CreateStudentRow = () => {
       setShowSuccess(true);
     } catch (error) {
       logger.error("🔍 CreateStudentRow: createStudent mutation failed", error);
-      setErrorMessage(
-        error instanceof Error ? error.message : "حدث خطأ أثناء إنشاء الطالب"
-      );
+      setErrorMessage(error instanceof Error ? error.message : "حدث خطأ أثناء إنشاء الطالب");
       setShowError(true);
     } finally {
       setIsLoading(false);
@@ -326,29 +298,15 @@ const CreateStudentRow = () => {
       <_StyledPaper elevation={2} isMobile={isMobile} onKeyDown={handleKeyDown}>
         <_FieldsContainer isMobile={isMobile}>
           {CREATE_STUDENT_FIELDS.map(field => (
-            <_FieldWrapper
-              key={field.id}
-              isMobile={isMobile}
-              fieldWidth={getFieldWidth(field.type)}
-            >
+            <_FieldWrapper key={field.id} isMobile={isMobile} fieldWidth={getFieldWidth(field.type)}>
               {field.type === "text" && field.id === "name" && (
                 <MemoizedTextField
                   value={newStudent.name}
                   errorMessage={fieldValidity["name"]}
-                  label={
-                    studentStrings[field.label as keyof typeof studentStrings]
-                  }
-                  helperText={
-                    newStudent?.name?.trim() === "" && isDirty
-                      ? studentStrings.nameRequired
-                      : ""
-                  }
+                  label={studentStrings[field.label as keyof typeof studentStrings]}
+                  helperText={newStudent?.name?.trim() === "" && isDirty ? studentStrings.nameRequired : ""}
                   placeholder={
-                    field.placeholder
-                      ? studentStrings[
-                          field.placeholder as keyof typeof studentStrings
-                        ]
-                      : undefined
+                    field.placeholder ? studentStrings[field.placeholder as keyof typeof studentStrings] : undefined
                   }
                   required={field.required}
                   width="100%"
@@ -360,21 +318,13 @@ const CreateStudentRow = () => {
                 <MemoizedTextField
                   value={newStudent.email}
                   errorMessage={fieldValidity["email"] ?? ""}
-                  label={
-                    studentStrings[field.label as keyof typeof studentStrings]
-                  }
+                  label={studentStrings[field.label as keyof typeof studentStrings]}
                   placeholder={
-                    field.placeholder
-                      ? studentStrings[
-                          field.placeholder as keyof typeof studentStrings
-                        ]
-                      : undefined
+                    field.placeholder ? studentStrings[field.placeholder as keyof typeof studentStrings] : undefined
                   }
                   type={field.textType || "text"}
                   width="100%"
-                  onValueChange={(value, errorMessage) =>
-                    fieldChangeHandlers[field.id]?.(value, errorMessage)
-                  }
+                  onValueChange={(value, errorMessage) => fieldChangeHandlers[field.id]?.(value, errorMessage)}
                   getIsValid={field.validator}
                 />
               )}
@@ -382,9 +332,7 @@ const CreateStudentRow = () => {
                 <MemoizedDateField
                   value={newStudent.dateOfBirth}
                   errorMessage={fieldValidity[field.id] ?? ""}
-                  label={
-                    studentStrings[field.label as keyof typeof studentStrings]
-                  }
+                  label={studentStrings[field.label as keyof typeof studentStrings]}
                   width="100%"
                   onValueChange={fieldChangeHandlers[field.id]}
                   getIsValid={field.validator}
@@ -394,15 +342,9 @@ const CreateStudentRow = () => {
                 <MemoizedGenderField
                   value={newStudent.gender}
                   errorMessage={fieldValidity["gender"] ?? ""}
-                  label={
-                    studentStrings[field.label as keyof typeof studentStrings]
-                  }
+                  label={studentStrings[field.label as keyof typeof studentStrings]}
                   placeholder={
-                    field.placeholder
-                      ? studentStrings[
-                          field.placeholder as keyof typeof studentStrings
-                        ]
-                      : undefined
+                    field.placeholder ? studentStrings[field.placeholder as keyof typeof studentStrings] : undefined
                   }
                   options={genderOptions}
                   width="100%"
@@ -414,15 +356,9 @@ const CreateStudentRow = () => {
                 <MemoizedCountryField
                   value={newStudent.nationality ?? undefined}
                   errorMessage={fieldValidity[field.id] ?? ""}
-                  label={
-                    studentStrings[field.label as keyof typeof studentStrings]
-                  }
+                  label={studentStrings[field.label as keyof typeof studentStrings]}
                   placeholder={
-                    field.placeholder
-                      ? studentStrings[
-                          field.placeholder as keyof typeof studentStrings
-                        ]
-                      : undefined
+                    field.placeholder ? studentStrings[field.placeholder as keyof typeof studentStrings] : undefined
                   }
                   width="100%"
                   onValueChange={fieldChangeHandlers[field.id]}
@@ -433,9 +369,7 @@ const CreateStudentRow = () => {
                 <MemoizedPhoneField
                   value={newStudent.phoneNumber}
                   errorMessage={fieldValidity[field.id] ?? ""}
-                  label={
-                    studentStrings[field.label as keyof typeof studentStrings]
-                  }
+                  label={studentStrings[field.label as keyof typeof studentStrings]}
                   width="100%"
                   onValueChange={fieldChangeHandlers[field.id]}
                   getIsValid={field.validator}
@@ -450,20 +384,10 @@ const CreateStudentRow = () => {
             variant="contained"
             onClick={handleCreate}
             disabled={!isFormValid || isLoading}
-            startIcon={
-              isLoading ? (
-                <CircularProgress size={20} color="inherit" />
-              ) : (
-                <HammerIcon />
-              )
-            }
+            startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : <HammerIcon />}
             isMobile={isMobile}
             isFormValid={isFormValid}
-            title={
-              !isFormValid
-                ? studentStrings.fillRequiredFields
-                : studentStrings.createStudentShortcut
-            }
+            title={!isFormValid ? studentStrings.fillRequiredFields : studentStrings.createStudentShortcut}
           >
             {isLoading ? studentStrings.creating : studentStrings.create}
           </_CreateButton>
@@ -493,12 +417,7 @@ const CreateStudentRow = () => {
         onClose={() => setShowError(false)}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
-        <_StyledAlert
-          onClose={() => setShowError(false)}
-          severity="error"
-          variant="filled"
-          icon={<ErrorIcon />}
-        >
+        <_StyledAlert onClose={() => setShowError(false)} severity="error" variant="filled" icon={<ErrorIcon />}>
           {errorMessage || studentStrings.studentCreateError}
         </_StyledAlert>
       </Snackbar>

@@ -26,19 +26,11 @@ export namespace TextPropsRepository {
    * Converts TextPropsCreateInput → ElementTextPropsInsert
    * Always creates new row (no deduplication)
    */
-  export const create = async (
-    textProps: TextPropsInput
-  ): Promise<ElementTextPropsEntity> => {
+  export const create = async (textProps: TextPropsInput): Promise<ElementTextPropsEntity> => {
     // Extract fontId from fontRef
-    const fontId =
-      textProps.fontRef.type === FontSource.SELF_HOSTED
-        ? textProps.fontRef.fontId
-        : null;
+    const fontId = textProps.fontRef.type === FontSource.SELF_HOSTED ? textProps.fontRef.fontId : null;
 
-    const googleFontIdentifier =
-      textProps.fontRef.type === FontSource.GOOGLE
-        ? textProps.fontRef.identifier
-        : null;
+    const googleFontIdentifier = textProps.fontRef.type === FontSource.GOOGLE ? textProps.fontRef.identifier : null;
 
     // Insert
     const [created] = await db
@@ -79,14 +71,8 @@ export namespace TextPropsRepository {
     const updates: ElementTextPropsInsert = {
       ...input,
       fontSource: input.fontRef.type,
-      fontId:
-        input.fontRef.type === FontSource.SELF_HOSTED
-          ? input.fontRef.fontId
-          : null,
-      googleFontIdentifier:
-        input.fontRef.type === FontSource.GOOGLE
-          ? input.fontRef.identifier
-          : null,
+      fontId: input.fontRef.type === FontSource.SELF_HOSTED ? input.fontRef.fontId : null,
+      googleFontIdentifier: input.fontRef.type === FontSource.GOOGLE ? input.fontRef.identifier : null,
     };
 
     // Update
@@ -108,14 +94,8 @@ export namespace TextPropsRepository {
    * Find TextProps by ID
    * @returns TextProps entity or null if not found
    */
-  export const findById = async (
-    id: number
-  ): Promise<ElementTextPropsEntity | null> => {
-    const result = await db
-      .select()
-      .from(elementTextProps)
-      .where(eq(elementTextProps.id, id))
-      .limit(1);
+  export const findById = async (id: number): Promise<ElementTextPropsEntity | null> => {
+    const result = await db.select().from(elementTextProps).where(eq(elementTextProps.id, id)).limit(1);
     return result[0] || null;
   };
 
@@ -123,9 +103,7 @@ export namespace TextPropsRepository {
    * Find TextProps by ID or throw error
    * @throws Error if TextProps not found
    */
-  export const findByIdOrThrow = async (
-    id: number
-  ): Promise<ElementTextPropsEntity> => {
+  export const findByIdOrThrow = async (id: number): Promise<ElementTextPropsEntity> => {
     const entity = await findById(id);
     if (!entity) {
       throw new Error(`TextProps with ID ${id} does not exist.`);

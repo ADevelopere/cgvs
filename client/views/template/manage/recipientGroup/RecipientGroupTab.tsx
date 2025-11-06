@@ -24,13 +24,10 @@ const RecipientGroupTab: React.FC<RecipientGroupTabProps> = ({ template }) => {
   const dialogs = useRecipientGroupDialogs();
 
   // Use useQuery directly to fetch recipient groups
-  const { data, loading, error } = useQuery(
-    Document.templateRecipientGroupsByTemplateIdQueryDocument,
-    {
-      variables: { templateId: template.id },
-      skip: !template.id,
-    }
-  );
+  const { data, loading, error } = useQuery(Document.templateRecipientGroupsByTemplateIdQueryDocument, {
+    variables: { templateId: template.id },
+    skip: !template.id,
+  });
 
   const groups = data?.templateRecipientGroupsByTemplateId || [];
   const hasGroups = groups && groups.length > 0;

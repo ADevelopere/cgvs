@@ -70,16 +70,10 @@ const StorageSearch: React.FC<StorageSearchProps> = ({
 
   const updateSearchHistory = React.useCallback(
     (query: string) => {
-      const newHistory = [
-        query,
-        ...searchHistory.filter(item => item !== query),
-      ].slice(0, 10);
+      const newHistory = [query, ...searchHistory.filter(item => item !== query)].slice(0, 10);
       setSearchHistory(newHistory);
       try {
-        localStorage.setItem(
-          STORAGE_SEARCH_HISTORY_KEY,
-          JSON.stringify(newHistory)
-        );
+        localStorage.setItem(STORAGE_SEARCH_HISTORY_KEY, JSON.stringify(newHistory));
       } catch {
         // Ignore errors accessing localStorage
       }

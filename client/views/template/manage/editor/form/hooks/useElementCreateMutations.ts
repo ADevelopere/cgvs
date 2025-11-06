@@ -5,243 +5,201 @@ import { useMutation } from "@apollo/client/react";
 import * as Documents from "../../glqDocuments/element";
 
 export const useElementCreateMutations = () => {
-  const [createTextElementMutation] = useMutation(
-    Documents.createTextElementMutationDocument,
-    {
-      update(cache, { data: mutationResult }) {
-        const newElement = mutationResult?.createTextElement;
-        if (!newElement?.base?.templateId) {
-          return;
-        }
+  const [createTextElementMutation] = useMutation(Documents.createTextElementMutationDocument, {
+    update(cache, { data: mutationResult }) {
+      const newElement = mutationResult?.createTextElement;
+      if (!newElement?.base?.templateId) {
+        return;
+      }
 
-        const existingData = cache.readQuery({
+      const existingData = cache.readQuery({
+        query: Documents.elementsByTemplateIdQueryDocument,
+        variables: {
+          templateId: newElement.base.templateId,
+        },
+      });
+
+      if (existingData?.elementsByTemplateId) {
+        cache.writeQuery({
           query: Documents.elementsByTemplateIdQueryDocument,
           variables: {
             templateId: newElement.base.templateId,
           },
+          data: {
+            elementsByTemplateId: [...existingData.elementsByTemplateId, newElement],
+          },
         });
+      }
+    },
+  });
 
-        if (existingData?.elementsByTemplateId) {
-          cache.writeQuery({
-            query: Documents.elementsByTemplateIdQueryDocument,
-            variables: {
-              templateId: newElement.base.templateId,
-            },
-            data: {
-              elementsByTemplateId: [
-                ...existingData.elementsByTemplateId,
-                newElement,
-              ],
-            },
-          });
-        }
-      },
-    }
-  );
+  const [createImageElementMutation] = useMutation(Documents.createImageElementMutationDocument, {
+    update(cache, { data: mutationResult }) {
+      const newElement = mutationResult?.createImageElement;
+      if (!newElement?.base?.templateId) {
+        return;
+      }
 
-  const [createImageElementMutation] = useMutation(
-    Documents.createImageElementMutationDocument,
-    {
-      update(cache, { data: mutationResult }) {
-        const newElement = mutationResult?.createImageElement;
-        if (!newElement?.base?.templateId) {
-          return;
-        }
+      const existingData = cache.readQuery({
+        query: Documents.elementsByTemplateIdQueryDocument,
+        variables: {
+          templateId: newElement.base.templateId,
+        },
+      });
 
-        const existingData = cache.readQuery({
+      if (existingData?.elementsByTemplateId) {
+        cache.writeQuery({
           query: Documents.elementsByTemplateIdQueryDocument,
           variables: {
             templateId: newElement.base.templateId,
           },
+          data: {
+            elementsByTemplateId: [...existingData.elementsByTemplateId, newElement],
+          },
         });
+      }
+    },
+  });
 
-        if (existingData?.elementsByTemplateId) {
-          cache.writeQuery({
-            query: Documents.elementsByTemplateIdQueryDocument,
-            variables: {
-              templateId: newElement.base.templateId,
-            },
-            data: {
-              elementsByTemplateId: [
-                ...existingData.elementsByTemplateId,
-                newElement,
-              ],
-            },
-          });
-        }
-      },
-    }
-  );
+  const [createDateElementMutation] = useMutation(Documents.createDateElementMutationDocument, {
+    update(cache, { data: mutationResult }) {
+      const newElement = mutationResult?.createDateElement;
+      if (!newElement?.base?.templateId) {
+        return;
+      }
 
-  const [createDateElementMutation] = useMutation(
-    Documents.createDateElementMutationDocument,
-    {
-      update(cache, { data: mutationResult }) {
-        const newElement = mutationResult?.createDateElement;
-        if (!newElement?.base?.templateId) {
-          return;
-        }
+      const existingData = cache.readQuery({
+        query: Documents.elementsByTemplateIdQueryDocument,
+        variables: {
+          templateId: newElement.base.templateId,
+        },
+      });
 
-        const existingData = cache.readQuery({
+      if (existingData?.elementsByTemplateId) {
+        cache.writeQuery({
           query: Documents.elementsByTemplateIdQueryDocument,
           variables: {
             templateId: newElement.base.templateId,
           },
+          data: {
+            elementsByTemplateId: [...existingData.elementsByTemplateId, newElement],
+          },
         });
+      }
+    },
+  });
 
-        if (existingData?.elementsByTemplateId) {
-          cache.writeQuery({
-            query: Documents.elementsByTemplateIdQueryDocument,
-            variables: {
-              templateId: newElement.base.templateId,
-            },
-            data: {
-              elementsByTemplateId: [
-                ...existingData.elementsByTemplateId,
-                newElement,
-              ],
-            },
-          });
-        }
-      },
-    }
-  );
+  const [createCountryElementMutation] = useMutation(Documents.createCountryElementMutationDocument, {
+    update(cache, { data: mutationResult }) {
+      const newElement = mutationResult?.createCountryElement;
+      if (!newElement?.base?.templateId) {
+        return;
+      }
 
-  const [createCountryElementMutation] = useMutation(
-    Documents.createCountryElementMutationDocument,
-    {
-      update(cache, { data: mutationResult }) {
-        const newElement = mutationResult?.createCountryElement;
-        if (!newElement?.base?.templateId) {
-          return;
-        }
+      const existingData = cache.readQuery({
+        query: Documents.elementsByTemplateIdQueryDocument,
+        variables: {
+          templateId: newElement.base.templateId,
+        },
+      });
 
-        const existingData = cache.readQuery({
+      if (existingData?.elementsByTemplateId) {
+        cache.writeQuery({
           query: Documents.elementsByTemplateIdQueryDocument,
           variables: {
             templateId: newElement.base.templateId,
           },
+          data: {
+            elementsByTemplateId: [...existingData.elementsByTemplateId, newElement],
+          },
         });
+      }
+    },
+  });
 
-        if (existingData?.elementsByTemplateId) {
-          cache.writeQuery({
-            query: Documents.elementsByTemplateIdQueryDocument,
-            variables: {
-              templateId: newElement.base.templateId,
-            },
-            data: {
-              elementsByTemplateId: [
-                ...existingData.elementsByTemplateId,
-                newElement,
-              ],
-            },
-          });
-        }
-      },
-    }
-  );
+  const [createGenderElementMutation] = useMutation(Documents.createGenderElementMutationDocument, {
+    update(cache, { data: mutationResult }) {
+      const newElement = mutationResult?.createGenderElement;
+      if (!newElement?.base?.templateId) {
+        return;
+      }
 
-  const [createGenderElementMutation] = useMutation(
-    Documents.createGenderElementMutationDocument,
-    {
-      update(cache, { data: mutationResult }) {
-        const newElement = mutationResult?.createGenderElement;
-        if (!newElement?.base?.templateId) {
-          return;
-        }
+      const existingData = cache.readQuery({
+        query: Documents.elementsByTemplateIdQueryDocument,
+        variables: {
+          templateId: newElement.base.templateId,
+        },
+      });
 
-        const existingData = cache.readQuery({
+      if (existingData?.elementsByTemplateId) {
+        cache.writeQuery({
           query: Documents.elementsByTemplateIdQueryDocument,
           variables: {
             templateId: newElement.base.templateId,
           },
+          data: {
+            elementsByTemplateId: [...existingData.elementsByTemplateId, newElement],
+          },
         });
+      }
+    },
+  });
 
-        if (existingData?.elementsByTemplateId) {
-          cache.writeQuery({
-            query: Documents.elementsByTemplateIdQueryDocument,
-            variables: {
-              templateId: newElement.base.templateId,
-            },
-            data: {
-              elementsByTemplateId: [
-                ...existingData.elementsByTemplateId,
-                newElement,
-              ],
-            },
-          });
-        }
-      },
-    }
-  );
+  const [createNumberElementMutation] = useMutation(Documents.createNumberElementMutationDocument, {
+    update(cache, { data: mutationResult }) {
+      const newElement = mutationResult?.createNumberElement;
+      if (!newElement?.base?.templateId) {
+        return;
+      }
 
-  const [createNumberElementMutation] = useMutation(
-    Documents.createNumberElementMutationDocument,
-    {
-      update(cache, { data: mutationResult }) {
-        const newElement = mutationResult?.createNumberElement;
-        if (!newElement?.base?.templateId) {
-          return;
-        }
+      const existingData = cache.readQuery({
+        query: Documents.elementsByTemplateIdQueryDocument,
+        variables: {
+          templateId: newElement.base.templateId,
+        },
+      });
 
-        const existingData = cache.readQuery({
+      if (existingData?.elementsByTemplateId) {
+        cache.writeQuery({
           query: Documents.elementsByTemplateIdQueryDocument,
           variables: {
             templateId: newElement.base.templateId,
           },
+          data: {
+            elementsByTemplateId: [...existingData.elementsByTemplateId, newElement],
+          },
         });
+      }
+    },
+  });
 
-        if (existingData?.elementsByTemplateId) {
-          cache.writeQuery({
-            query: Documents.elementsByTemplateIdQueryDocument,
-            variables: {
-              templateId: newElement.base.templateId,
-            },
-            data: {
-              elementsByTemplateId: [
-                ...existingData.elementsByTemplateId,
-                newElement,
-              ],
-            },
-          });
-        }
-      },
-    }
-  );
+  const [createQRCodeElementMutation] = useMutation(Documents.createQRCodeElementMutationDocument, {
+    update(cache, { data: mutationResult }) {
+      const newElement = mutationResult?.createQRCodeElement;
+      if (!newElement?.base?.templateId) {
+        return;
+      }
 
-  const [createQRCodeElementMutation] = useMutation(
-    Documents.createQRCodeElementMutationDocument,
-    {
-      update(cache, { data: mutationResult }) {
-        const newElement = mutationResult?.createQRCodeElement;
-        if (!newElement?.base?.templateId) {
-          return;
-        }
+      const existingData = cache.readQuery({
+        query: Documents.elementsByTemplateIdQueryDocument,
+        variables: {
+          templateId: newElement.base.templateId,
+        },
+      });
 
-        const existingData = cache.readQuery({
+      if (existingData?.elementsByTemplateId) {
+        cache.writeQuery({
           query: Documents.elementsByTemplateIdQueryDocument,
           variables: {
             templateId: newElement.base.templateId,
           },
+          data: {
+            elementsByTemplateId: [...existingData.elementsByTemplateId, newElement],
+          },
         });
-
-        if (existingData?.elementsByTemplateId) {
-          cache.writeQuery({
-            query: Documents.elementsByTemplateIdQueryDocument,
-            variables: {
-              templateId: newElement.base.templateId,
-            },
-            data: {
-              elementsByTemplateId: [
-                ...existingData.elementsByTemplateId,
-                newElement,
-              ],
-            },
-          });
-        }
-      },
-    }
-  );
+      }
+    },
+  });
 
   return React.useMemo(
     () => ({

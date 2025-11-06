@@ -31,9 +31,7 @@ export namespace FontRepository {
   /**
    * Find font by ID
    */
-  export const findById = async (
-    id: number
-  ): Promise<FontSelectType | null> => {
+  export const findById = async (id: number): Promise<FontSelectType | null> => {
     const result = await db.select().from(font).where(eq(font.id, id)).limit(1);
     return result[0] || null;
   };
@@ -69,15 +67,9 @@ export namespace FontRepository {
     const results = await processedQuery;
 
     const total = (results[0] as { total: number })?.total ?? 0;
-    const items: FontSelectType[] = results.map(
-      r => (r as { font: FontSelectType }).font
-    );
+    const items: FontSelectType[] = results.map(r => (r as { font: FontSelectType }).font);
 
-    const pageInfo = PaginationUtils.buildPageInfoFromArgs(
-      paginationArgs,
-      items.length,
-      total
-    );
+    const pageInfo = PaginationUtils.buildPageInfoFromArgs(paginationArgs, items.length, total);
 
     return { data: items, pageInfo };
   };
@@ -86,21 +78,14 @@ export namespace FontRepository {
    * Check if font exists by ID
    */
   export const existsById = async (id: number): Promise<boolean> => {
-    const result = await db
-      .select({ id: font.id })
-      .from(font)
-      .where(eq(font.id, id))
-      .limit(1);
+    const result = await db.select({ id: font.id }).from(font).where(eq(font.id, id)).limit(1);
     return result.length > 0;
   };
 
   /**
    * Search fonts by name (case-insensitive, paginated)
    */
-  export const searchByName = async (
-    searchTerm: string,
-    limit: number = 50
-  ): Promise<FontSelectType[]> => {
+  export const searchByName = async (searchTerm: string, limit: number = 50): Promise<FontSelectType[]> => {
     return db
       .select()
       .from(font)
@@ -112,9 +97,7 @@ export namespace FontRepository {
   /**
    * Find fonts by storage file ID
    */
-  export const findByStorageFileId = async (
-    fileId: number
-  ): Promise<FontSelectType[]> => {
+  export const findByStorageFileId = async (fileId: number): Promise<FontSelectType[]> => {
     return db.select().from(font).where(eq(font.storageFileId, fileId));
   };
 
@@ -122,9 +105,7 @@ export namespace FontRepository {
    * Get or create storage file ID by path
    * Returns the database ID for the given file path
    */
-  const getOrCreateStorageFileId = async (
-    filePath: string
-  ): Promise<number> => {
+  const getOrCreateStorageFileId = async (filePath: string): Promise<number> => {
     // First, try to find existing storage file record
     const existingFile = await db
       .select({ id: storageFiles.id })
@@ -147,9 +128,7 @@ export namespace FontRepository {
       .returning();
 
     if (!newFile) {
-      throw new Error(
-        `Failed to create storage file record for path: ${filePath}`
-      );
+      throw new Error(`Failed to create storage file record for path: ${filePath}`);
     }
 
     return Number(newFile.id);
@@ -164,27 +143,11 @@ export namespace FontRepository {
     }
 
     // Validate locale codes (basic validation)
-    const validLocales = [
-      "all",
-      "ar",
-      "en",
-      "fr",
-      "de",
-      "es",
-      "zh",
-      "ja",
-      "ru",
-      "pt",
-      "it",
-      "ko",
-      "tr",
-    ];
+    const validLocales = ["all", "ar", "en", "fr", "de", "es", "zh", "ja", "ru", "pt", "it", "ko", "tr"];
     const invalidLocales = locale.filter(l => !validLocales.includes(l));
 
     if (invalidLocales.length > 0) {
-      logger.warn(
-        `Invalid locale codes detected: ${invalidLocales.join(", ")}`
-      );
+      logger.warn(`Invalid locale codes detected: ${invalidLocales.join(", ")}`);
       // Don't throw, just warn - allow flexibility
     }
   };
@@ -204,9 +167,7 @@ export namespace FontRepository {
   /**
    * Create a new font
    */
-  export const create = async (
-    input: FontCreateInput
-  ): Promise<FontSelectType> => {
+  export const create = async (input: FontCreateInput): Promise<FontSelectType> => {
     // Validate inputs
     validateName(input.name);
     validateLocale(input.locale);
@@ -236,9 +197,7 @@ export namespace FontRepository {
   /**
    * Update an existing font
    */
-  export const update = async (
-    input: FontUpdateInput
-  ): Promise<FontSelectType> => {
+  export const update = async (input: FontUpdateInput): Promise<FontSelectType> => {
     const existingFont = await findById(input.id);
     if (!existingFont) {
       throw new Error(`Font with ID ${input.id} does not exist.`);
@@ -274,9 +233,7 @@ export namespace FontRepository {
    * Check font usage in certificate elements
    * Fonts are stored in element_text_props table via fontId FK
    */
-  export const checkUsage = async (
-    id: number
-  ): Promise<FontUsageCheckResult> => {
+  export const checkUsage = async (id: number): Promise<FontUsageCheckResult> => {
     try {
       // Step 1: Find all elementTextProps that use this font
       const textPropsWithFont = await db
@@ -297,13 +254,7 @@ export namespace FontRepository {
 
       // Step 2: Find all elements using these textProps across all element types
       // Query each element type table and join with certificate_element
-      const [
-        textElements,
-        dateElements,
-        numberElements,
-        countryElements,
-        genderElements,
-      ] = await Promise.all([
+      const [textElements, dateElements, numberElements, countryElements, genderElements] = await Promise.all([
         // Text elements
         db
           .select({
@@ -312,10 +263,7 @@ export namespace FontRepository {
             templateId: certificateElement.templateId,
           })
           .from(textElement)
-          .innerJoin(
-            certificateElement,
-            eq(certificateElement.id, textElement.elementId)
-          )
+          .innerJoin(certificateElement, eq(certificateElement.id, textElement.elementId))
           .where(inArray(textElement.textPropsId, textPropsIds)),
 
         // Date elements
@@ -326,10 +274,7 @@ export namespace FontRepository {
             templateId: certificateElement.templateId,
           })
           .from(dateElement)
-          .innerJoin(
-            certificateElement,
-            eq(certificateElement.id, dateElement.elementId)
-          )
+          .innerJoin(certificateElement, eq(certificateElement.id, dateElement.elementId))
           .where(inArray(dateElement.textPropsId, textPropsIds)),
 
         // Number elements
@@ -340,10 +285,7 @@ export namespace FontRepository {
             templateId: certificateElement.templateId,
           })
           .from(numberElement)
-          .innerJoin(
-            certificateElement,
-            eq(certificateElement.id, numberElement.elementId)
-          )
+          .innerJoin(certificateElement, eq(certificateElement.id, numberElement.elementId))
           .where(inArray(numberElement.textPropsId, textPropsIds)),
 
         // Country elements
@@ -354,10 +296,7 @@ export namespace FontRepository {
             templateId: certificateElement.templateId,
           })
           .from(countryElement)
-          .innerJoin(
-            certificateElement,
-            eq(certificateElement.id, countryElement.elementId)
-          )
+          .innerJoin(certificateElement, eq(certificateElement.id, countryElement.elementId))
           .where(inArray(countryElement.textPropsId, textPropsIds)),
 
         // Gender elements
@@ -368,21 +307,12 @@ export namespace FontRepository {
             templateId: certificateElement.templateId,
           })
           .from(genderElement)
-          .innerJoin(
-            certificateElement,
-            eq(certificateElement.id, genderElement.elementId)
-          )
+          .innerJoin(certificateElement, eq(certificateElement.id, genderElement.elementId))
           .where(inArray(genderElement.textPropsId, textPropsIds)),
       ]);
 
       // Combine all usages
-      const allUsages = [
-        ...textElements,
-        ...dateElements,
-        ...numberElements,
-        ...countryElements,
-        ...genderElements,
-      ];
+      const allUsages = [...textElements, ...dateElements, ...numberElements, ...countryElements, ...genderElements];
 
       if (allUsages.length === 0) {
         return {
@@ -394,9 +324,7 @@ export namespace FontRepository {
       }
 
       // Get template names for context
-      const templateIds = allUsages
-        .map(u => u.templateId)
-        .filter((id): id is number => id !== null);
+      const templateIds = allUsages.map(u => u.templateId).filter((id): id is number => id !== null);
 
       const uniqueTemplateIds = [...new Set(templateIds)];
 
@@ -418,9 +346,7 @@ export namespace FontRepository {
         elementId: usage.elementId,
         elementType: usage.type,
         templateId: usage.templateId,
-        templateName: usage.templateId
-          ? templateMap.get(usage.templateId) || null
-          : null,
+        templateName: usage.templateId ? templateMap.get(usage.templateId) || null : null,
       }));
 
       return {
@@ -437,8 +363,7 @@ export namespace FontRepository {
         usageCount: 0,
         usedBy: [],
         canDelete: false,
-        deleteBlockReason:
-          "Unable to verify font usage. Deletion blocked for safety." + error,
+        deleteBlockReason: "Unable to verify font usage. Deletion blocked for safety." + error,
       };
     }
   };
@@ -455,17 +380,11 @@ export namespace FontRepository {
     // Check if font is in use
     const usageCheck = await checkUsage(id);
     if (usageCheck.isInUse) {
-      throw new Error(
-        usageCheck.deleteBlockReason ||
-          "Cannot delete font: it is currently in use."
-      );
+      throw new Error(usageCheck.deleteBlockReason || "Cannot delete font: it is currently in use.");
     }
 
     // Proceed with deletion
-    const [deletedFont] = await db
-      .delete(font)
-      .where(eq(font.id, id))
-      .returning();
+    const [deletedFont] = await db.delete(font).where(eq(font.id, id)).returning();
 
     if (!deletedFont) {
       throw new Error("Failed to delete font.");
@@ -478,9 +397,7 @@ export namespace FontRepository {
   /**
    * Load fonts by IDs (for Pothos dataloader)
    */
-  export const loadByIds = async (
-    ids: number[]
-  ): Promise<(FontSelectType | Error)[]> => {
+  export const loadByIds = async (ids: number[]): Promise<(FontSelectType | Error)[]> => {
     if (ids.length === 0) return [];
 
     const fonts = await db.select().from(font).where(inArray(font.id, ids));

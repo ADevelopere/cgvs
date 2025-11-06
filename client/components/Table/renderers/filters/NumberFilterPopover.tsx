@@ -11,11 +11,7 @@ import {
   Popover,
   type SelectChangeEvent,
 } from "@mui/material";
-import {
-  type FilterClause,
-  NumberFilterOperation,
-  operationRequiresValue,
-} from "@/client/types/filters";
+import { type FilterClause, NumberFilterOperation, operationRequiresValue } from "@/client/types/filters";
 import { Check, Clear } from "@mui/icons-material";
 import { useTableLocale } from "../../contexts";
 
@@ -51,12 +47,8 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
     strings: { filter: filterStrings, numberFilterOps },
   } = useTableLocale();
 
-  const [operation, setOperation] = useState<NumberFilterOperation>(
-    value?.operation || NumberFilterOperation.equals
-  );
-  const [filterValue, setFilterValue] = useState<string>(
-    value?.value !== undefined ? String(value.value) : ""
-  );
+  const [operation, setOperation] = useState<NumberFilterOperation>(value?.operation || NumberFilterOperation.equals);
+  const [filterValue, setFilterValue] = useState<string>(value?.value !== undefined ? String(value.value) : "");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -70,30 +62,21 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
     setError(null);
   }, [value, open]);
 
-  const handleOperationChange = useCallback(
-    (event: SelectChangeEvent<NumberFilterOperation>) => {
-      const newOperation = event.target.value as NumberFilterOperation;
-      setOperation(newOperation);
-      if (!operationRequiresValue(newOperation)) {
-        setFilterValue("");
-      }
-      setError(null);
-    },
-    []
-  );
+  const handleOperationChange = useCallback((event: SelectChangeEvent<NumberFilterOperation>) => {
+    const newOperation = event.target.value as NumberFilterOperation;
+    setOperation(newOperation);
+    if (!operationRequiresValue(newOperation)) {
+      setFilterValue("");
+    }
+    setError(null);
+  }, []);
 
-  const handleValueChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setFilterValue(event.target.value);
-      setError(null);
-    },
-    []
-  );
+  const handleValueChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilterValue(event.target.value);
+    setError(null);
+  }, []);
 
-  const valueRequired = useMemo(
-    () => operationRequiresValue(operation),
-    [operation]
-  );
+  const valueRequired = useMemo(() => operationRequiresValue(operation), [operation]);
 
   const handleApply = useCallback(() => {
     if (valueRequired) {
@@ -165,9 +148,7 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
         </Typography>
 
         <FormControl fullWidth sx={{ mt: 2 }}>
-          <InputLabel id="number-filter-operation-label">
-            {filterStrings.operation}
-          </InputLabel>
+          <InputLabel id="number-filter-operation-label">{filterStrings.operation}</InputLabel>
           <Select
             labelId="number-filter-operation-label"
             value={operation}
@@ -175,30 +156,14 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
             label={filterStrings.operation}
             size="small"
           >
-            <MenuItem value={NumberFilterOperation.equals}>
-              {numberFilterOps.equals}
-            </MenuItem>
-            <MenuItem value={NumberFilterOperation.notEquals}>
-              {numberFilterOps.notEquals}
-            </MenuItem>
-            <MenuItem value={NumberFilterOperation.greaterThan}>
-              {numberFilterOps.greaterThan}
-            </MenuItem>
-            <MenuItem value={NumberFilterOperation.greaterThanOrEqual}>
-              {numberFilterOps.greaterThanOrEqual}
-            </MenuItem>
-            <MenuItem value={NumberFilterOperation.lessThan}>
-              {numberFilterOps.lessThan}
-            </MenuItem>
-            <MenuItem value={NumberFilterOperation.lessThanOrEqual}>
-              {numberFilterOps.lessThanOrEqual}
-            </MenuItem>
-            <MenuItem value={NumberFilterOperation.isNull}>
-              {numberFilterOps.isEmpty}
-            </MenuItem>
-            <MenuItem value={NumberFilterOperation.isNotNull}>
-              {numberFilterOps.isNotEmpty}
-            </MenuItem>
+            <MenuItem value={NumberFilterOperation.equals}>{numberFilterOps.equals}</MenuItem>
+            <MenuItem value={NumberFilterOperation.notEquals}>{numberFilterOps.notEquals}</MenuItem>
+            <MenuItem value={NumberFilterOperation.greaterThan}>{numberFilterOps.greaterThan}</MenuItem>
+            <MenuItem value={NumberFilterOperation.greaterThanOrEqual}>{numberFilterOps.greaterThanOrEqual}</MenuItem>
+            <MenuItem value={NumberFilterOperation.lessThan}>{numberFilterOps.lessThan}</MenuItem>
+            <MenuItem value={NumberFilterOperation.lessThanOrEqual}>{numberFilterOps.lessThanOrEqual}</MenuItem>
+            <MenuItem value={NumberFilterOperation.isNull}>{numberFilterOps.isEmpty}</MenuItem>
+            <MenuItem value={NumberFilterOperation.isNotNull}>{numberFilterOps.isNotEmpty}</MenuItem>
           </Select>
         </FormControl>
 
@@ -218,23 +183,11 @@ export const NumberFilterPopover: React.FC<NumberFilterPopoverProps> = ({
           />
         )}
 
-        <Box
-          sx={{ display: "flex", gap: 1, mt: 2, justifyContent: "flex-end" }}
-        >
-          <Button
-            size="small"
-            onClick={handleClear}
-            startIcon={<Clear />}
-            color="inherit"
-          >
+        <Box sx={{ display: "flex", gap: 1, mt: 2, justifyContent: "flex-end" }}>
+          <Button size="small" onClick={handleClear} startIcon={<Clear />} color="inherit">
             {filterStrings.clear}
           </Button>
-          <Button
-            size="small"
-            onClick={handleApply}
-            variant="contained"
-            startIcon={<Check />}
-          >
+          <Button size="small" onClick={handleApply} variant="contained" startIcon={<Check />}>
             {filterStrings.apply}
           </Button>
         </Box>

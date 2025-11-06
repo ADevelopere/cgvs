@@ -51,7 +51,7 @@ export namespace ImageElementRepository {
     };
 
     // 3. Insert into certificate_element (base table)
-    const [baseElement] = await db.insert(certificateElement).values(baseInput).returning();
+    const baseElement = await ElementRepository.createInternal(baseInput);
 
     const storageService = await getStorageService();
     const file = await storageService.fileInfoByPath(input.dataSource.storageFilePath);

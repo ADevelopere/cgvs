@@ -195,8 +195,7 @@ export async function checkRateLimit(
 }> {
   const isDev = process.env.NODE_ENV === "development";
   try {
-    const { success, limit, remaining, reset } =
-      await limiter.limitSimple(identifier);
+    const { success, limit, remaining, reset } = await limiter.limitSimple(identifier);
     if (isDev) {
       if (!success) {
         logger.warn(
@@ -230,8 +229,7 @@ export function getClientIdentifier(request: Request): string {
   const cfConnectingIp = request.headers.get("cf-connecting-ip"); // Cloudflare
 
   // Use the first available IP
-  const ip =
-    cfConnectingIp || realIp || forwardedFor?.split(",")[0] || "unknown";
+  const ip = cfConnectingIp || realIp || forwardedFor?.split(",")[0] || "unknown";
 
   return ip.trim();
 }

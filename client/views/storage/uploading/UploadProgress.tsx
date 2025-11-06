@@ -59,17 +59,9 @@ const UploadProgress: React.FC = () => {
             onClose={onClose}
           />
 
-          <UploadProgressSummary
-            timeRemaining={timeRemaining}
-            isCollapsed={isCollapsed}
-            onCancelAll={onCancelAll}
-          />
+          <UploadProgressSummary timeRemaining={timeRemaining} isCollapsed={isCollapsed} onCancelAll={onCancelAll} />
 
-          <UploadProgressFileList
-            files={files}
-            isCollapsed={isCollapsed}
-            onCancelFile={onCancelFile}
-          />
+          <UploadProgressFileList files={files} isCollapsed={isCollapsed} onCancelFile={onCancelFile} />
         </Card>
       </Box>
 

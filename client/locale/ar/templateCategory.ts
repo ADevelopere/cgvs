@@ -99,8 +99,7 @@ export const templateCategory: TemplateCategoryTranslation = {
   selectCategoryFirst: "الرجاء تحديد فئة أولاً",
   createCategoryFirst: "الرجاء إنشاء فئة أولاً",
   confirmSwitchCategory: "هل أنت متأكد أنك تريد تبديل الفئات؟",
-  switchCategoryWhileAddingTemplate:
-    "أنت تقوم حاليًا بإضافة قالب. هل أنت متأكد أنك تريد تبديل الفئات؟",
+  switchCategoryWhileAddingTemplate: "أنت تقوم حاليًا بإضافة قالب. هل أنت متأكد أنك تريد تبديل الفئات؟",
 
   // Error messages from context
   invalidDataFormat: "تم استلام بيانات غير صالحة من واجهة برمجة التطبيقات",
@@ -177,7 +176,6 @@ export const templateCategory: TemplateCategoryTranslation = {
   // Template loading and error states
   loadingTemplate: "جاري تحميل القالب...",
   templateNotFoundTitle: "القالب غير موجود",
-  templateNotFoundMessage:
-    "لم يتم العثور على القالب المطلوب. يرجى العودة لاستكشاف قوالب أخرى.",
+  templateNotFoundMessage: "لم يتم العثور على القالب المطلوب. يرجى العودة لاستكشاف قوالب أخرى.",
   backToTemplates: "العودة إلى القوالب",
 };

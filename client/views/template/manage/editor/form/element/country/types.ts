@@ -1,12 +1,7 @@
 import type * as GQL from "@/client/graphql/generated/gql/graphql";
 import { BaseElementFormErrors } from "../base/types";
 import { TextPropsFormErrors } from "../textProps/types";
-import {
-  ValidateFieldFn,
-  UpdateStateWithElementIdFn,
-  FormErrors,
-  UpdateStateFn,
-} from "../../types";
+import { ValidateFieldFn, UpdateStateWithElementIdFn, FormErrors, UpdateStateFn } from "../../types";
 
 // ============================================================================
 // CREATE STATE
@@ -20,8 +15,7 @@ export type CountryPropsFormState = GQL.CountryElementCountryPropsInput;
 // ERROR TYPES
 // ============================================================================
 
-export type CountryPropsFormErrors =
-  FormErrors<GQL.CountryElementCountryPropsInput>;
+export type CountryPropsFormErrors = FormErrors<GQL.CountryElementCountryPropsInput>;
 
 export type CountryElementFormErrors = {
   base: BaseElementFormErrors;
@@ -35,10 +29,6 @@ export type CountryElementFormErrors = {
 
 export type UpdateCountryPropsFn = UpdateStateFn<CountryPropsFormState>;
 
-export type UpdateCountryPropsWithElementIdFn =
-  UpdateStateWithElementIdFn<CountryPropsFormState>;
+export type UpdateCountryPropsWithElementIdFn = UpdateStateWithElementIdFn<CountryPropsFormState>;
 
-export type ValidateCountryPropsFn = ValidateFieldFn<
-  CountryPropsFormState,
-  string | undefined
->;
+export type ValidateCountryPropsFn = ValidateFieldFn<CountryPropsFormState, string | undefined>;

@@ -1,23 +1,10 @@
 "use client";
 
 import React from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  Box,
-  Autocomplete,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, Autocomplete } from "@mui/material";
 import { useLazyQuery } from "@apollo/client/react";
 import { useAppTranslation } from "@/client/locale";
-import {
-  Template,
-  TemplateUpdateInput,
-  TemplateCategoryWithParentTree,
-} from "@/client/graphql/generated/gql/graphql";
+import { Template, TemplateUpdateInput, TemplateCategoryWithParentTree } from "@/client/graphql/generated/gql/graphql";
 import { CategoryDocuments } from "../hooks";
 
 interface Props {
@@ -28,26 +15,17 @@ interface Props {
   parentCategoryId: number;
 }
 
-const TemplateEditDialog: React.FC<Props> = ({
-  open,
-  template,
-  onClose,
-  onSave,
-  parentCategoryId,
-}) => {
+const TemplateEditDialog: React.FC<Props> = ({ open, template, onClose, onSave, parentCategoryId }) => {
   const { templateCategoryTranslations: strings } = useAppTranslation();
   const [name, setName] = React.useState(template?.name ?? "");
-  const [description, setDescription] = React.useState<
-    string | undefined | null
-  >(template?.description);
+  const [description, setDescription] = React.useState<string | undefined | null>(template?.description);
   const [categoryId, setCategoryId] = React.useState<number>(parentCategoryId);
   const [error, setError] = React.useState("");
 
   // Category search for autocomplete
-  const [
-    searchCategories,
-    { data: searchCategoriesData, loading: searchLoading },
-  ] = useLazyQuery(CategoryDocuments.searchTemplateCategoriesQueryDocument);
+  const [searchCategories, { data: searchCategoriesData, loading: searchLoading }] = useLazyQuery(
+    CategoryDocuments.searchTemplateCategoriesQueryDocument
+  );
   const [categorySearchTerm, setCategorySearchTerm] = React.useState("");
   const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -178,11 +156,7 @@ const TemplateEditDialog: React.FC<Props> = ({
             loadingText={strings.loading}
             noOptionsText={strings.noCategories}
             renderInput={params => (
-              <TextField
-                {...params}
-                label={strings.parentCategory}
-                placeholder={strings.selectCategory}
-              />
+              <TextField {...params} label={strings.parentCategory} placeholder={strings.selectCategory} />
             )}
             isOptionEqualToValue={(option, value) => option.id === value.id}
           />

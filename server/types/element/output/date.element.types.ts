@@ -60,10 +60,7 @@ export type DateElementEntity = typeof dateElement.$inferSelect;
 // Output Type (mirrors database - base + date_element + element_text_props joined)
 // ============================================================================
 
-export type DateElementSpecProps = Omit<
-  DateElementEntity,
-  "calendarType" | "transformation" | "dateDataSource"
-> & {
+export type DateElementSpecProps = Omit<DateElementEntity, "calendarType" | "transformation" | "dateDataSource"> & {
   calendarType: CalendarType;
   transformation: DateTransformationType | null;
 };

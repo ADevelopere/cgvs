@@ -7,45 +7,31 @@ import {
   isOfElement,
 } from "./base.element.pothos";
 import { InputFieldBuilder, SchemaTypes } from "@pothos/core";
-import {
-  createTextPropsFieldFromEntity,
-  TextPropsInputObject,
-} from "./textProps.pothos";
+import { createTextPropsFieldFromEntity, TextPropsInputObject } from "./textProps.pothos";
 import logger from "@/server/lib/logger";
 
 // ============================================================================
 // Enums
 // ============================================================================
 
-export const TextDataSourceTypePothosEnum = gqlSchemaBuilder.enumType(
-  "TextDataSourceType",
-  {
-    values: Object.values(Types.TextDataSourceType),
-  }
-);
+export const TextDataSourceTypePothosEnum = gqlSchemaBuilder.enumType("TextDataSourceType", {
+  values: Object.values(Types.TextDataSourceType),
+});
 
-export const StudentTextFieldPothosEnum = gqlSchemaBuilder.enumType(
-  "StudentTextField",
-  {
-    values: Object.values(Types.StudentTextField),
-  }
-);
+export const StudentTextFieldPothosEnum = gqlSchemaBuilder.enumType("StudentTextField", {
+  values: Object.values(Types.StudentTextField),
+});
 
-export const CertificateTextFieldPothosEnum = gqlSchemaBuilder.enumType(
-  "CertificateTextField",
-  {
-    values: Object.values(Types.CertificateTextField),
-  }
-);
+export const CertificateTextFieldPothosEnum = gqlSchemaBuilder.enumType("CertificateTextField", {
+  values: Object.values(Types.CertificateTextField),
+});
 
 // ============================================================================
 // Data Source Objects (Output)
 // ============================================================================
 
 export const TextDataSourceStaticObject = gqlSchemaBuilder
-  .objectRef<
-    Extract<Types.TextDataSource, { type: Types.TextDataSourceType.STATIC }>
-  >("TextDataSourceStatic")
+  .objectRef<Extract<Types.TextDataSource, { type: Types.TextDataSourceType.STATIC }>>("TextDataSourceStatic")
   .implement({
     fields: t => ({
       type: t.expose("type", { type: TextDataSourceTypePothosEnum }),
@@ -55,10 +41,7 @@ export const TextDataSourceStaticObject = gqlSchemaBuilder
 
 export const TextDataSourceStudentFieldObject = gqlSchemaBuilder
   .objectRef<
-    Extract<
-      Types.TextDataSource,
-      { type: Types.TextDataSourceType.STUDENT_TEXT_FIELD }
-    >
+    Extract<Types.TextDataSource, { type: Types.TextDataSourceType.STUDENT_TEXT_FIELD }>
   >("TextDataSourceStudentField")
   .implement({
     fields: t => ({
@@ -71,10 +54,7 @@ export const TextDataSourceStudentFieldObject = gqlSchemaBuilder
 
 export const TextDataSourceCertificateFieldObject = gqlSchemaBuilder
   .objectRef<
-    Extract<
-      Types.TextDataSource,
-      { type: Types.TextDataSourceType.CERTIFICATE_TEXT_FIELD }
-    >
+    Extract<Types.TextDataSource, { type: Types.TextDataSourceType.CERTIFICATE_TEXT_FIELD }>
   >("TextDataSourceCertificateField")
   .implement({
     fields: t => ({
@@ -87,10 +67,7 @@ export const TextDataSourceCertificateFieldObject = gqlSchemaBuilder
 
 export const TextDataSourceTemplateTextVariableObject = gqlSchemaBuilder
   .objectRef<
-    Extract<
-      Types.TextDataSource,
-      { type: Types.TextDataSourceType.TEMPLATE_TEXT_VARIABLE }
-    >
+    Extract<Types.TextDataSource, { type: Types.TextDataSourceType.TEMPLATE_TEXT_VARIABLE }>
   >("TextDataSourceTemplateTextVariable")
   .implement({
     fields: t => ({
@@ -101,10 +78,7 @@ export const TextDataSourceTemplateTextVariableObject = gqlSchemaBuilder
 
 export const TextDataSourceTemplateSelectVariableObject = gqlSchemaBuilder
   .objectRef<
-    Extract<
-      Types.TextDataSource,
-      { type: Types.TextDataSourceType.TEMPLATE_SELECT_VARIABLE }
-    >
+    Extract<Types.TextDataSource, { type: Types.TextDataSourceType.TEMPLATE_SELECT_VARIABLE }>
   >("TextDataSourceTemplateSelectVariable")
   .implement({
     fields: t => ({
@@ -117,38 +91,33 @@ export const TextDataSourceTemplateSelectVariableObject = gqlSchemaBuilder
 // Data Source Union (Output)
 // ============================================================================
 
-export const TextDataSourceUnion = gqlSchemaBuilder.unionType(
-  "TextDataSource",
-  {
-    types: [
-      TextDataSourceStaticObject,
-      TextDataSourceStudentFieldObject,
-      TextDataSourceCertificateFieldObject,
-      TextDataSourceTemplateTextVariableObject,
-      TextDataSourceTemplateSelectVariableObject,
-    ],
-    resolveType: ds => {
-      switch (ds.type) {
-        case Types.TextDataSourceType.STATIC:
-          return "TextDataSourceStatic";
-        case Types.TextDataSourceType.STUDENT_TEXT_FIELD:
-          return "TextDataSourceStudentField";
-        case Types.TextDataSourceType.CERTIFICATE_TEXT_FIELD:
-          return "TextDataSourceCertificateField";
-        case Types.TextDataSourceType.TEMPLATE_TEXT_VARIABLE:
-          return "TextDataSourceTemplateTextVariable";
-        case Types.TextDataSourceType.TEMPLATE_SELECT_VARIABLE:
-          return "TextDataSourceTemplateSelectVariable";
-        default: {
-          const exhaustiveCheck: never = ds;
-          throw new Error(
-            `Unknown TextDataSource type: ${(exhaustiveCheck as { type: string }).type}`
-          );
-        }
+export const TextDataSourceUnion = gqlSchemaBuilder.unionType("TextDataSource", {
+  types: [
+    TextDataSourceStaticObject,
+    TextDataSourceStudentFieldObject,
+    TextDataSourceCertificateFieldObject,
+    TextDataSourceTemplateTextVariableObject,
+    TextDataSourceTemplateSelectVariableObject,
+  ],
+  resolveType: ds => {
+    switch (ds.type) {
+      case Types.TextDataSourceType.STATIC:
+        return "TextDataSourceStatic";
+      case Types.TextDataSourceType.STUDENT_TEXT_FIELD:
+        return "TextDataSourceStudentField";
+      case Types.TextDataSourceType.CERTIFICATE_TEXT_FIELD:
+        return "TextDataSourceCertificateField";
+      case Types.TextDataSourceType.TEMPLATE_TEXT_VARIABLE:
+        return "TextDataSourceTemplateTextVariable";
+      case Types.TextDataSourceType.TEMPLATE_SELECT_VARIABLE:
+        return "TextDataSourceTemplateSelectVariable";
+      default: {
+        const exhaustiveCheck: never = ds;
+        throw new Error(`Unknown TextDataSource type: ${(exhaustiveCheck as { type: string }).type}`);
       }
-    },
-  }
-);
+    }
+  },
+});
 
 // ============================================================================
 // Data Source Input Objects (isOneOf Pattern)
@@ -163,9 +132,7 @@ export const TextDataSourceStaticInputObject = gqlSchemaBuilder
   });
 
 export const TextDataSourceStudentFieldInputObject = gqlSchemaBuilder
-  .inputRef<Types.TextDataSourceStudentFieldInputGraphql>(
-    "TextDataSourceStudentFieldInput"
-  )
+  .inputRef<Types.TextDataSourceStudentFieldInputGraphql>("TextDataSourceStudentFieldInput")
   .implement({
     fields: t => ({
       field: t.field({ type: StudentTextFieldPothosEnum, required: true }),
@@ -173,9 +140,7 @@ export const TextDataSourceStudentFieldInputObject = gqlSchemaBuilder
   });
 
 export const TextDataSourceCertificateFieldInputObject = gqlSchemaBuilder
-  .inputRef<Types.TextDataSourceCertificateFieldInputGraphql>(
-    "TextDataSourceCertificateFieldInput"
-  )
+  .inputRef<Types.TextDataSourceCertificateFieldInputGraphql>("TextDataSourceCertificateFieldInput")
   .implement({
     fields: t => ({
       field: t.field({
@@ -186,9 +151,7 @@ export const TextDataSourceCertificateFieldInputObject = gqlSchemaBuilder
   });
 
 export const TextDataSourceTemplateTextVariableInputObject = gqlSchemaBuilder
-  .inputRef<Types.TextDataSourceTemplateTextVariableInputGraphql>(
-    "TextDataSourceTemplateTextVariableInput"
-  )
+  .inputRef<Types.TextDataSourceTemplateTextVariableInputGraphql>("TextDataSourceTemplateTextVariableInput")
   .implement({
     fields: t => ({
       variableId: t.int({ required: true }),
@@ -196,38 +159,33 @@ export const TextDataSourceTemplateTextVariableInputObject = gqlSchemaBuilder
   });
 
 export const TextDataSourceTemplateSelectVariableInputObject = gqlSchemaBuilder
-  .inputRef<Types.TextDataSourceTemplateSelectVariableInputGraphql>(
-    "TextDataSourceTemplateSelectVariableInput"
-  )
+  .inputRef<Types.TextDataSourceTemplateSelectVariableInputGraphql>("TextDataSourceTemplateSelectVariableInput")
   .implement({
     fields: t => ({
       variableId: t.int({ required: true }),
     }),
   });
 
-export const TextDataSourceInputObject = gqlSchemaBuilder.inputType(
-  "TextDataSourceInput",
-  {
-    isOneOf: true,
-    fields: t => ({
-      static: t.field({
-        type: TextDataSourceStaticInputObject,
-      }),
-      studentField: t.field({
-        type: TextDataSourceStudentFieldInputObject,
-      }),
-      certificateField: t.field({
-        type: TextDataSourceCertificateFieldInputObject,
-      }),
-      templateTextVariable: t.field({
-        type: TextDataSourceTemplateTextVariableInputObject,
-      }),
-      templateSelectVariable: t.field({
-        type: TextDataSourceTemplateSelectVariableInputObject,
-      }),
+export const TextDataSourceInputObject = gqlSchemaBuilder.inputType("TextDataSourceInput", {
+  isOneOf: true,
+  fields: t => ({
+    static: t.field({
+      type: TextDataSourceStaticInputObject,
     }),
-  }
-);
+    studentField: t.field({
+      type: TextDataSourceStudentFieldInputObject,
+    }),
+    certificateField: t.field({
+      type: TextDataSourceCertificateFieldInputObject,
+    }),
+    templateTextVariable: t.field({
+      type: TextDataSourceTemplateTextVariableInputObject,
+    }),
+    templateSelectVariable: t.field({
+      type: TextDataSourceTemplateSelectVariableInputObject,
+    }),
+  }),
+});
 
 export const TextDataSourceUpdateResponsePothosObject = gqlSchemaBuilder
   .objectRef<Types.TextDataSourceUpdateResponse>("TextDataSourceUpdateResponse")
@@ -246,9 +204,7 @@ export const TextDataSourceUpdateResponsePothosObject = gqlSchemaBuilder
 // Mutation Inputs
 // ============================================================================
 export const TextDataSourceStandaloneInputPothosObject = gqlSchemaBuilder
-  .inputRef<Types.TextDataSourceStandaloneInputGraphql>(
-    "TextDataSourceStandaloneInput"
-  )
+  .inputRef<Types.TextDataSourceStandaloneInputGraphql>("TextDataSourceStandaloneInput")
   .implement({
     fields: t => ({
       elementId: t.int({ required: true }),
@@ -259,9 +215,7 @@ export const TextDataSourceStandaloneInputPothosObject = gqlSchemaBuilder
     }),
   });
 
-const createTextElementInputFields = <Types extends SchemaTypes>(
-  t: InputFieldBuilder<Types, "InputObject">
-) => ({
+const createTextElementInputFields = <Types extends SchemaTypes>(t: InputFieldBuilder<Types, "InputObject">) => ({
   base: t.field({
     type: CertificateElementBaseInputObject,
     required: true,
@@ -301,8 +255,7 @@ export const TextElementSpecPropsObject = gqlSchemaBuilder
     }),
   });
 
-const TextElementObjectRef =
-  gqlSchemaBuilder.objectRef<Types.TextElementOutput>("TextElement");
+const TextElementObjectRef = gqlSchemaBuilder.objectRef<Types.TextElementOutput>("TextElement");
 
 export const TextElementObject = gqlSchemaBuilder.loadableObject<
   Types.TextElementOutput | Error,
@@ -312,12 +265,8 @@ export const TextElementObject = gqlSchemaBuilder.loadableObject<
 >(TextElementObjectRef, {
   load: async ids => {
     const results = await TextElementRepository.loadByIds(ids);
-    logger.info(
-      `[TextElementObject] Loaded ${results.length} TEXT element(s) for Pothos object`
-    );
-    logger.debug(
-      `[TextElementObject] Loaded elements: ${JSON.stringify(results)}`
-    );
+    logger.info(`[TextElementObject] Loaded ${results.length} TEXT element(s) for Pothos object`);
+    logger.debug(`[TextElementObject] Loaded elements: ${JSON.stringify(results)}`);
     return results;
   },
   sort: e => e.base.id,

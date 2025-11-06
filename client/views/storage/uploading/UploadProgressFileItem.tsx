@@ -2,13 +2,7 @@
 
 import React from "react";
 import { useAppTranslation } from "@/client/locale";
-import {
-  Box,
-  Typography,
-  IconButton,
-  CircularProgress,
-  useTheme,
-} from "@mui/material";
+import { Box, Typography, IconButton, CircularProgress, useTheme } from "@mui/material";
 import {
   InsertDriveFile as FileIcon,
   Image as ImageIcon,
@@ -29,13 +23,7 @@ export interface UploadProgressFileItemProps {
   fileName: string;
   fileType: string;
   progress: number;
-  status:
-    | "pending"
-    | "uploading"
-    | "completed"
-    | "success"
-    | "error"
-    | "cancelled";
+  status: "pending" | "uploading" | "completed" | "success" | "error" | "cancelled";
   error?: string;
   onCancel: (fileKey: string) => void;
 }
@@ -134,10 +122,7 @@ const UploadProgressFileItem: React.FC<UploadProgressFileItemProps> = ({
             <IconButton
               size="small"
               onClick={() => onCancel(fileKey)}
-              aria-label={translations.cancelUploadOf.replace(
-                "%{fileName}",
-                fileName
-              )}
+              aria-label={translations.cancelUploadOf.replace("%{fileName}", fileName)}
               sx={{
                 padding: 0,
                 color: theme.palette.text.secondary,
@@ -164,14 +149,8 @@ const UploadProgressFileItem: React.FC<UploadProgressFileItemProps> = ({
     const extension = name.split(".").pop();
     const nameWithoutExtension = name.substring(0, name.lastIndexOf("."));
 
-    if (
-      extension &&
-      nameWithoutExtension.length > maxLength - extension.length - 4
-    ) {
-      const truncated = nameWithoutExtension.substring(
-        0,
-        maxLength - extension.length - 4
-      );
+    if (extension && nameWithoutExtension.length > maxLength - extension.length - 4) {
+      const truncated = nameWithoutExtension.substring(0, maxLength - extension.length - 4);
       return `${truncated}...${extension}`;
     }
 

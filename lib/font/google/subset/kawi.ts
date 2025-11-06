@@ -9,14 +9,10 @@ const data: GoogleFontItem[] = [
     version: "v5",
     lastModified: "2025-09-11",
     files: {
-      "500":
-        "https://fonts.gstatic.com/s/notosanskawi/v5/92zBtBJLNqsg7tCciW0EPHNNh1ZgbtGWiTYDjvnK0ghmCpRyMjXVsQ.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/notosanskawi/v5/92zBtBJLNqsg7tCciW0EPHNNh1ZgbtGWiTYDjvnKPg9mCpRyMjXVsQ.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/notosanskawi/v5/92zBtBJLNqsg7tCciW0EPHNNh1ZgbtGWiTYDjvnKBw9mCpRyMjXVsQ.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/notosanskawi/v5/92zBtBJLNqsg7tCciW0EPHNNh1ZgbtGWiTYDjvnK4AhmCpRyMjXVsQ.ttf",
+      "500": "https://fonts.gstatic.com/s/notosanskawi/v5/92zBtBJLNqsg7tCciW0EPHNNh1ZgbtGWiTYDjvnK0ghmCpRyMjXVsQ.ttf",
+      "600": "https://fonts.gstatic.com/s/notosanskawi/v5/92zBtBJLNqsg7tCciW0EPHNNh1ZgbtGWiTYDjvnKPg9mCpRyMjXVsQ.ttf",
+      "700": "https://fonts.gstatic.com/s/notosanskawi/v5/92zBtBJLNqsg7tCciW0EPHNNh1ZgbtGWiTYDjvnKBw9mCpRyMjXVsQ.ttf",
+      regular: "https://fonts.gstatic.com/s/notosanskawi/v5/92zBtBJLNqsg7tCciW0EPHNNh1ZgbtGWiTYDjvnK4AhmCpRyMjXVsQ.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",

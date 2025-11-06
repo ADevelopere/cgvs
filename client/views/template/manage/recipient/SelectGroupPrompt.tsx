@@ -28,10 +28,7 @@ const SelectGroupPrompt: React.FC<{
             {strings.invalidGroupSelected}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {strings.groupNotFoundInTemplate.replace(
-              "{groupId}",
-              invalidGroupId.toString()
-            )}
+            {strings.groupNotFoundInTemplate.replace("{groupId}", invalidGroupId.toString())}
           </Typography>
         </>
       ) : (

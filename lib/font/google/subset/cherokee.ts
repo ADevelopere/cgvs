@@ -9,8 +9,7 @@ const data: GoogleFontItem[] = [
     version: "v11",
     lastModified: "2025-09-05",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/explora/v11/tsstApxFfjUH4wrvc1qPonC3vqc.ttf",
+      regular: "https://fonts.gstatic.com/s/explora/v11/tsstApxFfjUH4wrvc1qPonC3vqc.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",
@@ -42,42 +41,24 @@ const data: GoogleFontItem[] = [
     version: "v16",
     lastModified: "2025-09-16",
     files: {
-      "100":
-        "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwVqknorUK6K7ZsAg.ttf",
-      "200":
-        "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwVKkjorUK6K7ZsAg.ttf",
-      "300":
-        "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwV9EjorUK6K7ZsAg.ttf",
-      "500":
-        "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwVmEjorUK6K7ZsAg.ttf",
-      "600":
-        "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwVdE_orUK6K7ZsAg.ttf",
-      "700":
-        "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwVTU_orUK6K7ZsAg.ttf",
-      "800":
-        "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwVKk_orUK6K7ZsAg.ttf",
-      "900":
-        "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwVA0_orUK6K7ZsAg.ttf",
-      regular:
-        "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwVqkjorUK6K7ZsAg.ttf",
-      "100italic":
-        "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYgsA70i-CbN8Ard7.ttf",
-      "200italic":
-        "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYguA7ki-CbN8Ard7.ttf",
-      "300italic":
-        "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYgte7ki-CbN8Ard7.ttf",
-      italic:
-        "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYgsA7ki-CbN8Ard7.ttf",
-      "500italic":
-        "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYgsy7ki-CbN8Ard7.ttf",
-      "600italic":
-        "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYgve6Ui-CbN8Ard7.ttf",
-      "700italic":
-        "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYgvn6Ui-CbN8Ard7.ttf",
-      "800italic":
-        "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYguA6Ui-CbN8Ard7.ttf",
-      "900italic":
-        "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYgup6Ui-CbN8Ard7.ttf",
+      "100": "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwVqknorUK6K7ZsAg.ttf",
+      "200": "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwVKkjorUK6K7ZsAg.ttf",
+      "300": "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwV9EjorUK6K7ZsAg.ttf",
+      "500": "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwVmEjorUK6K7ZsAg.ttf",
+      "600": "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwVdE_orUK6K7ZsAg.ttf",
+      "700": "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwVTU_orUK6K7ZsAg.ttf",
+      "800": "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwVKk_orUK6K7ZsAg.ttf",
+      "900": "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwVA0_orUK6K7ZsAg.ttf",
+      regular: "https://fonts.gstatic.com/s/genos/v16/SlGNmQqPqpUOYTYjacb0Hc91fTwVqkjorUK6K7ZsAg.ttf",
+      "100italic": "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYgsA70i-CbN8Ard7.ttf",
+      "200italic": "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYguA7ki-CbN8Ard7.ttf",
+      "300italic": "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYgte7ki-CbN8Ard7.ttf",
+      italic: "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYgsA7ki-CbN8Ard7.ttf",
+      "500italic": "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYgsy7ki-CbN8Ard7.ttf",
+      "600italic": "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYgve6Ui-CbN8Ard7.ttf",
+      "700italic": "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYgvn6Ui-CbN8Ard7.ttf",
+      "800italic": "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYguA6Ui-CbN8Ard7.ttf",
+      "900italic": "https://fonts.gstatic.com/s/genos/v16/SlGPmQqPqpUOYRwqWzksdKTv0zsAYgup6Ui-CbN8Ard7.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",
@@ -146,17 +127,7 @@ const data: GoogleFontItem[] = [
   },
   {
     family: "Noto Sans Cherokee",
-    variants: [
-      "100",
-      "200",
-      "300",
-      "regular",
-      "500",
-      "600",
-      "700",
-      "800",
-      "900",
-    ],
+    variants: ["100", "200", "300", "regular", "500", "600", "700", "800", "900"],
     subsets: ["cherokee", "latin", "latin-ext"],
     version: "v25",
     lastModified: "2025-09-05",

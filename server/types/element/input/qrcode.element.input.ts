@@ -7,10 +7,7 @@ import { qrCodeElement } from "@/server/db/schema";
 // ============================================================================
 
 export type QRCodeElementEntityInput = typeof qrCodeElement.$inferInsert;
-export type QRCodeElementSpecPropsInput = Omit<
-  QRCodeElementEntityInput,
-  "elementId" | "errorCorrection"
-> & {
+export type QRCodeElementSpecPropsInput = Omit<QRCodeElementEntityInput, "elementId" | "errorCorrection"> & {
   errorCorrection: QRCodeErrorCorrection;
 };
 

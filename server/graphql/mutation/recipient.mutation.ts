@@ -28,8 +28,7 @@ gqlSchemaBuilder.mutationFields(t => ({
         required: true,
       }),
     },
-    resolve: async (_, args) =>
-      await RecipientRepository.createList(args.input),
+    resolve: async (_, args) => await RecipientRepository.createList(args.input),
   }),
 
   deleteRecipient: t.field({
@@ -47,7 +46,6 @@ gqlSchemaBuilder.mutationFields(t => ({
     args: {
       ids: t.arg.intList({ required: true }),
     },
-    resolve: async (_, args) =>
-      await RecipientRepository.deleteSetByIds(args.ids),
+    resolve: async (_, args) => await RecipientRepository.deleteSetByIds(args.ids),
   }),
 }));

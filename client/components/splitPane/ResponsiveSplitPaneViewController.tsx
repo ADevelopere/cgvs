@@ -246,9 +246,7 @@ type ResponsiveSplitPaneViewControllerProps = {
  * @param props - Component configuration options
  * @returns Responsive split pane component
  */
-export const ResponsiveSplitPaneViewController: React.FC<
-  ResponsiveSplitPaneViewControllerProps
-> = ({
+export const ResponsiveSplitPaneViewController: React.FC<ResponsiveSplitPaneViewControllerProps> = ({
   title,
   firstPane,
   secondPane,
@@ -279,8 +277,7 @@ export const ResponsiveSplitPaneViewController: React.FC<
 
   // Determine effective z-index values
   const effectiveDrawerZIndex = drawerZIndex ?? theme.zIndex.drawer;
-  const effectiveToggleButtonZIndex =
-    toggleButtonZIndex ?? theme.zIndex.drawer + 1;
+  const effectiveToggleButtonZIndex = toggleButtonZIndex ?? theme.zIndex.drawer + 1;
 
   // Calculate if we're in drawer mode
   const isDrawerMode = containerWidth < breakpointWidth;
@@ -331,9 +328,7 @@ export const ResponsiveSplitPaneViewController: React.FC<
    * @returns Rendered pane content
    */
   const renderPane = useCallback(
-    (
-      pane: React.ReactNode | ((props: PaneRenderProps) => React.ReactNode)
-    ): React.ReactNode => {
+    (pane: React.ReactNode | ((props: PaneRenderProps) => React.ReactNode)): React.ReactNode => {
       if (typeof pane === "function") {
         return pane({
           togglePane: toggleHidablePane,
@@ -373,12 +368,8 @@ export const ResponsiveSplitPaneViewController: React.FC<
    * - In drawer mode: hidable pane goes in drawer, other pane in main area
    * - Panes are rendered through renderPane to support both static and callback patterns
    */
-  const drawerPaneContent = renderPane(
-    hidablePane === "first" ? firstPane : secondPane
-  );
-  const mainPaneContent = renderPane(
-    hidablePane === "first" ? secondPane : firstPane
-  );
+  const drawerPaneContent = renderPane(hidablePane === "first" ? firstPane : secondPane);
+  const mainPaneContent = renderPane(hidablePane === "first" ? secondPane : firstPane);
 
   /**
    * SPLIT MODE RENDER (width >= breakpoint)
@@ -406,12 +397,8 @@ export const ResponsiveSplitPaneViewController: React.FC<
             title={title}
             firstPaneButtonDisabled={hidablePane === "second"}
             secondPaneButtonDisabled={hidablePane === "first"}
-            firstPaneButtonTooltip={
-              hidablePane === "first" ? hidablePaneTooltip : ""
-            }
-            secondPaneButtonTooltip={
-              hidablePane === "second" ? hidablePaneTooltip : ""
-            }
+            firstPaneButtonTooltip={hidablePane === "first" ? hidablePaneTooltip : ""}
+            secondPaneButtonTooltip={hidablePane === "second" ? hidablePaneTooltip : ""}
             firstPane={renderPane(firstPane)}
             secondPane={renderPane(secondPane)}
             firstPaneProps={firstPaneProps}
@@ -500,9 +487,7 @@ export const ResponsiveSplitPaneViewController: React.FC<
             </Tooltip>
             {/* Non-hidable pane button (disabled) */}
             <Tooltip title="">
-              <IconButton disabled={true}>
-                {hidablePane === "first" ? <PanelLeft /> : <PanelRight />}
-              </IconButton>
+              <IconButton disabled={true}>{hidablePane === "first" ? <PanelLeft /> : <PanelRight />}</IconButton>
             </Tooltip>
           </Box>
         </Box>

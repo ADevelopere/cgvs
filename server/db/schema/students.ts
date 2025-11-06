@@ -1,10 +1,4 @@
-import {
-  pgTable,
-  serial,
-  varchar,
-  timestamp,
-  index,
-} from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, timestamp, index } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { countryCodeEnum, genderEnum } from "./enums";
 
@@ -23,15 +17,9 @@ export const students = pgTable(
   },
   table => [
     // GIN index for Full-Text Search on 'name' column
-    index("idx_students_name_fts").using(
-      "gin",
-      sql`to_tsvector('simple', ${table.name})`
-    ),
+    index("idx_students_name_fts").using("gin", sql`to_tsvector('simple', ${table.name})`),
 
     // GiST index for faster LIKE/ILIKE on name using pg_trgm
-    index("idx_students_name_trgm").using(
-      "gist",
-      table.name.op("gist_trgm_ops")
-    ),
+    index("idx_students_name_trgm").using("gist", table.name.op("gist_trgm_ops")),
   ]
 );

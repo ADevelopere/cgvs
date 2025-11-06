@@ -15,14 +15,9 @@ import {
  * IMAGE only has one data source type: STORAGE_FILE
  */
 export const validateImageDataSource = (): ValidateImageDataSourceFn => {
-  const validate: ValidateImageDataSourceFn = ({
-    value: source,
-  }): ImageDataSourceFieldErrors => {
+  const validate: ValidateImageDataSourceFn = ({ value: source }): ImageDataSourceFieldErrors => {
     if (source.storageFile) {
-      if (
-        !source.storageFile.storageFileId ||
-        source.storageFile.storageFileId <= 0
-      ) {
+      if (!source.storageFile.storageFileId || source.storageFile.storageFileId <= 0) {
         return { storageFile: "Please select an image file" };
       }
     } else {

@@ -4,10 +4,7 @@ import FilePreview from "./FilePreview";
 import FileMenu from "../menu/FileMenu";
 import FolderMenu from "../menu/FolderMenu";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import {
-  StorageItemUnion,
-  StorageClipboardState,
-} from "@/client/views/storage/core/storage.type";
+import { StorageItemUnion, StorageClipboardState } from "@/client/views/storage/core/storage.type";
 
 interface StorageItemGridProps {
   item: StorageItemUnion;
@@ -28,9 +25,7 @@ interface StorageItemGridProps {
   onDeleteItems: (paths: string[]) => Promise<boolean>;
 }
 
-function isDirectoryItem(
-  item: StorageItemUnion
-): item is Graphql.DirectoryInfo {
+function isDirectoryItem(item: StorageItemUnion): item is Graphql.DirectoryInfo {
   return item.__typename === "DirectoryInfo";
 }
 

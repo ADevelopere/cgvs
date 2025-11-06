@@ -13,9 +13,12 @@ export type TemplateConfigAutoUpdateFormInternalProps = {
   updater: TemplateConfigFormUpdateFn;
 };
 
-export const TemplateConfigAutoUpdateFormContent: React.FC<
-  TemplateConfigAutoUpdateFormInternalProps
-> = ({ updating, state, errors, updater }) => {
+export const TemplateConfigAutoUpdateFormContent: React.FC<TemplateConfigAutoUpdateFormInternalProps> = ({
+  updating,
+  state,
+  errors,
+  updater,
+}) => {
   const { templateConfigTranslations: strings } = useAppTranslation();
   return (
     <Stack
@@ -29,11 +32,7 @@ export const TemplateConfigAutoUpdateFormContent: React.FC<
       }}
     >
       {/* title and current updating/saved icon */}
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent={"space-between"}
-      >
+      <Stack direction="row" alignItems="center" justifyContent={"space-between"}>
         <Typography
           variant="h6"
           sx={{
@@ -54,12 +53,7 @@ export const TemplateConfigAutoUpdateFormContent: React.FC<
           width: "100%",
         }}
       >
-        <TemplateConfigForm
-          state={state}
-          errors={errors}
-          updateFn={updater}
-          disabled={false}
-        />
+        <TemplateConfigForm state={state} errors={errors} updateFn={updater} disabled={false} />
       </div>
     </Stack>
   );
@@ -70,12 +64,5 @@ export const TemplateConfigAutoUpdateForm: React.FC = () => {
     config: { state, updateFn, errors, updating },
   } = useCertificateElementStates();
 
-  return (
-    <TemplateConfigAutoUpdateFormContent
-      updating={updating}
-      state={state}
-      errors={errors}
-      updater={updateFn}
-    />
-  );
+  return <TemplateConfigAutoUpdateFormContent updating={updating} state={state} errors={errors} updater={updateFn} />;
 };

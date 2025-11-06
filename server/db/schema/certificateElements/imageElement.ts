@@ -9,9 +9,7 @@ export const imageElement = pgTable("image_element", {
     .primaryKey()
     .references(() => certificateElement.id, { onDelete: "cascade" }),
   fit: elementImageFitEnum("fit").notNull(), // COVER | CONTAIN | FILL
-  imageDataSource: jsonb("image_data_source")
-    .$type<ImageDataSource>()
-    .notNull(),
+  imageDataSource: jsonb("image_data_source").$type<ImageDataSource>().notNull(),
   // Mirrored from data_source.storageFileId
   storageFileId: bigint("storage_file_id", { mode: "bigint" })
     .notNull()

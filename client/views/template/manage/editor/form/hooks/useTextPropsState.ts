@@ -32,9 +32,7 @@ export type UseTextPropsStateReturn = {
 /**
  * Convert FontReference (output) to FontReferenceInput (input)
  */
-function mapFontRefToFontRefInput(
-  fontRef: GQL.FontReference
-): GQL.FontReferenceInput {
+function mapFontRefToFontRefInput(fontRef: GQL.FontReference): GQL.FontReferenceInput {
   if (fontRef.__typename === "FontReferenceGoogle") {
     const googleRef = fontRef;
     return {
@@ -72,9 +70,7 @@ export function hasTextProps(
 /**
  * Extract textProps state from element
  */
-function extractTextPropsState(
-  element: GQL.CertificateElementUnion
-): TextPropsFormState | null {
+function extractTextPropsState(element: GQL.CertificateElementUnion): TextPropsFormState | null {
   if (!hasTextProps(element) || !element.textProps) {
     return null;
   }
@@ -90,10 +86,7 @@ function extractTextPropsState(
 /**
  * Convert textProps input to update input
  */
-function toUpdateInput(
-  textPropsId: number,
-  state: TextPropsFormState
-): GQL.TextPropsUpdateInput {
+function toUpdateInput(textPropsId: number, state: TextPropsFormState): GQL.TextPropsUpdateInput {
   return {
     id: textPropsId,
     color: state.color,
@@ -103,16 +96,12 @@ function toUpdateInput(
   };
 }
 
-export function useTextPropsState(
-  params: UseTextPropsStateParams
-): UseTextPropsStateReturn {
+export function useTextPropsState(params: UseTextPropsStateParams): UseTextPropsStateReturn {
   const { templateId, elements } = params;
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
 
-  const [updateTextPropsMutation] = useMutation(
-    updateElementTextPropsMutationDocument
-  );
+  const [updateTextPropsMutation] = useMutation(updateElementTextPropsMutationDocument);
 
   // Get textPropsId from element - we need to track this per elementId
   // Store mapping of elementId -> textPropsId
@@ -123,11 +112,7 @@ export function useTextPropsState(
     const map = new Map<number, number>();
     if (elements) {
       for (const element of elements) {
-        if (
-          hasTextProps(element) &&
-          element.textProps?.id &&
-          element.base?.id
-        ) {
+        if (hasTextProps(element) && element.textProps?.id && element.base?.id) {
           map.set(element.base.id, element.textProps.id);
         }
       }
@@ -151,8 +136,7 @@ export function useTextPropsState(
           },
         });
       } catch (error) {
-        const errorMessage =
-          errorStrings?.updateFailed || "Failed to update text properties";
+        const errorMessage = errorStrings?.updateFailed || "Failed to update text properties";
         logger.error("useTextPropsState: Mutation failed", {
           elementId,
           error,
@@ -203,11 +187,9 @@ export type UseTextPropsReturn = {
   textPropsErrors: TextPropsFormErrors;
 };
 
-export type TextPropsHook = (
-  params: UseTextPropsParams
-) => UseTextPropsReturn;
+export type TextPropsHook = (params: UseTextPropsParams) => UseTextPropsReturn;
 
-export const useTextProps: TextPropsHook = (params) => {
+export const useTextProps: TextPropsHook = params => {
   const {
     textProps: {
       textPropsStates,

@@ -31,9 +31,7 @@ export type UseQRCodePropsStateReturn = {
 /**
  * Extract qrCodeProps state from QRCodeElement
  */
-function extractQRCodePropsState(
-  element: GQL.CertificateElementUnion
-): QRCodePropsFormState | null {
+function extractQRCodePropsState(element: GQL.CertificateElementUnion): QRCodePropsFormState | null {
   if (element.__typename !== "QRCodeElement" || !element.qrCodeProps) {
     return null;
   }
@@ -41,9 +39,7 @@ function extractQRCodePropsState(
   return {
     backgroundColor: element.qrCodeProps.backgroundColor ?? "#FFFFFF",
     foregroundColor: element.qrCodeProps.foregroundColor ?? "#000000",
-    errorCorrection:
-      (element.qrCodeProps.errorCorrection as GQL.QrCodeErrorCorrection) ??
-      GQL.QrCodeErrorCorrection.L,
+    errorCorrection: (element.qrCodeProps.errorCorrection as GQL.QrCodeErrorCorrection) ?? GQL.QrCodeErrorCorrection.L,
   };
 }
 
@@ -60,16 +56,12 @@ function toUpdateInput(
   };
 }
 
-export function useQRCodePropsState(
-  params: UseQRCodePropsStateParams
-): UseQRCodePropsStateReturn {
+export function useQRCodePropsState(params: UseQRCodePropsStateParams): UseQRCodePropsStateReturn {
   const { templateId, elements } = params;
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
 
-  const [updateQRCodeElementSpecPropsMutation] = useMutation(
-    updateQRCodeElementSpecPropsMutationDocument
-  );
+  const [updateQRCodeElementSpecPropsMutation] = useMutation(updateQRCodeElementSpecPropsMutationDocument);
 
   // Get validator
   const validator = validateQRCodeProps();
@@ -85,8 +77,7 @@ export function useQRCodePropsState(
           },
         });
       } catch (error) {
-        const errorMessage =
-          errorStrings?.updateFailed || "Failed to update QR code properties";
+        const errorMessage = errorStrings?.updateFailed || "Failed to update QR code properties";
         logger.error("useQRCodePropsState: Mutation failed", {
           elementId,
           error,
@@ -141,10 +132,7 @@ export const useQRCodeProps = (params: UseQRCodePropsParams) => {
 
   // Get state or initialize if not present (only initialize once)
   const qrCodeProps: QRCodePropsFormState = React.useMemo(() => {
-    return (
-      qrCodePropsStates.get(params.elementId) ??
-      initQRCodePropsState(params.elementId)
-    );
+    return qrCodePropsStates.get(params.elementId) ?? initQRCodePropsState(params.elementId);
   }, [qrCodePropsStates, params.elementId, initQRCodePropsState]);
 
   const updateQRCodeProps: UpdateQRCodePropsFn = React.useCallback(

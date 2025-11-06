@@ -1,6 +1,4 @@
-import {
-  FontReferenceInput,
-} from "@/client/graphql/generated/gql/graphql";
+import { FontReferenceInput } from "@/client/graphql/generated/gql/graphql";
 import { ValidateTextPropsFieldFn } from "./types";
 
 // ============================================================================
@@ -13,8 +11,7 @@ export const validateTextPropsField = () => {
       case "color": {
         const colorValue = value;
         if (!colorValue) return "Color is required";
-        if (!/^#[0-9A-Fa-f]{6}$/.test(colorValue))
-          return "Invalid color format";
+        if (!/^#[0-9A-Fa-f]{6}$/.test(colorValue)) return "Invalid color format";
         return undefined;
       }
 
@@ -39,9 +36,7 @@ export const validateTextPropsField = () => {
 };
 
 // Font reference validator (matches backend logic)
-export const validateFontReference = (
-  fontRef: FontReferenceInput
-): string | undefined => {
+export const validateFontReference = (fontRef: FontReferenceInput): string | undefined => {
   if (fontRef.google) {
     const identifier = fontRef.google.identifier;
     if (!identifier || identifier.trim().length === 0) {

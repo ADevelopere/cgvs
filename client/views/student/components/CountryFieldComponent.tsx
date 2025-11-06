@@ -28,10 +28,7 @@ const CountryFieldComponent: React.FC<BaseFieldProps<CountryCode>> = ({
     [theme.palette.success.main]
   );
 
-  const selectedCountry = useMemo(
-    () => (value ? countries.find(c => c.code === value) : null),
-    [value]
-  );
+  const selectedCountry = useMemo(() => (value ? countries.find(c => c.code === value) : null), [value]);
 
   const handleChange = useCallback(
     (_: unknown, newValue: CountryType | null) => {

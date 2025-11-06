@@ -16,11 +16,7 @@ export type AuthContexts = {
   role: BaseContext & { user: object };
 };
 
-export async function createContext({
-  userId,
-}: {
-  userId?: number | null;
-}): Promise<BaseContext> {
+export async function createContext({ userId }: { userId?: number | null }): Promise<BaseContext> {
   if (!userId) {
     return {
       roles: [],

@@ -13,24 +13,16 @@ interface DeleteFontDialogProps {
   fontName: string;
 }
 
-export const DeleteFontDialog: React.FC<DeleteFontDialogProps> = ({
-  open,
-  onClose,
-  fontId,
-  fontName,
-}) => {
+export const DeleteFontDialog: React.FC<DeleteFontDialogProps> = ({ open, onClose, fontId, fontName }) => {
   const { fontManagementTranslations: strings } = useAppTranslation();
   const { deleteFont } = useFontOperations();
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Query usage check - only when dialog is open
-  const { data: usageData, loading: checkingUsage } = useQuery(
-    checkFontUsageQueryDocument,
-    {
-      variables: { id: fontId },
-      skip: !open,
-    }
-  );
+  const { data: usageData, loading: checkingUsage } = useQuery(checkFontUsageQueryDocument, {
+    variables: { id: fontId },
+    skip: !open,
+  });
 
   // Derive usage info from query
   const usageInfo = useMemo(() => {
@@ -87,10 +79,7 @@ export const DeleteFontDialog: React.FC<DeleteFontDialogProps> = ({
             <MUI.AlertTitle>{strings.cannotDeleteFont}</MUI.AlertTitle>
             <MUI.Typography variant="body2">
               {usageInfo.deleteBlockReason ||
-                strings.fontUsedInElements.replace(
-                  "%{count}",
-                  usageInfo.usageCount.toString()
-                )}
+                strings.fontUsedInElements.replace("%{count}", usageInfo.usageCount.toString())}
             </MUI.Typography>
           </MUI.Alert>
         ) : (
@@ -109,11 +98,7 @@ export const DeleteFontDialog: React.FC<DeleteFontDialogProps> = ({
           variant="contained"
           color="error"
           onClick={handleDelete}
-          disabled={
-            isDeleting ||
-            checkingUsage ||
-            (usageInfo !== null && !usageInfo.canDelete)
-          }
+          disabled={isDeleting || checkingUsage || (usageInfo !== null && !usageInfo.canDelete)}
         >
           {isDeleting ? strings.deletingFont : strings.deleteFont}
         </MUI.Button>

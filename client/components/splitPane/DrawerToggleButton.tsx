@@ -10,13 +10,7 @@ interface DrawerToggleButtonProps {
   isRtl: boolean;
 }
 
-const DrawerToggleButton: React.FC<DrawerToggleButtonProps> = ({
-  open,
-  onClick,
-  title,
-  zIndex,
-  isRtl,
-}) => {
+const DrawerToggleButton: React.FC<DrawerToggleButtonProps> = ({ open, onClick, title, zIndex, isRtl }) => {
   return (
     <Box
       sx={{
@@ -40,8 +34,7 @@ const DrawerToggleButton: React.FC<DrawerToggleButtonProps> = ({
             boxShadow: 2,
             border: "1px solid",
             borderColor: "divider",
-            transition:
-              "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+            transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
             transform: open ? "rotate(180deg)" : "rotate(0deg)",
             "&:hover": {
               boxShadow: 4,
@@ -49,17 +42,7 @@ const DrawerToggleButton: React.FC<DrawerToggleButtonProps> = ({
             },
           }}
         >
-          {isRtl ? (
-            open ? (
-              <PanelLeft />
-            ) : (
-              <PanelRight />
-            )
-          ) : open ? (
-            <PanelRight />
-          ) : (
-            <PanelLeft />
-          )}
+          {isRtl ? open ? <PanelLeft /> : <PanelRight /> : open ? <PanelRight /> : <PanelLeft />}
         </IconButton>
       </Tooltip>
     </Box>

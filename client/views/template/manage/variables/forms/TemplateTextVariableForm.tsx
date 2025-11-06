@@ -1,13 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useMemo } from "react";
-import {
-  Box,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  Button,
-} from "@mui/material";
+import { Box, TextField, FormControlLabel, Checkbox, Button } from "@mui/material";
 import { mapToTemplateTextVariableCreateInput } from "@/client/utils/templateVariable";
 import { isTextVariableDifferent } from "@/client/utils/templateVariable/templateVariable";
 import { useAppTranslation } from "@/client/locale";
@@ -22,9 +16,7 @@ type TemplateTextVariableFormProps = {
   templateId: number;
   variables: TemplateVariable[];
   onCreate: (data: TemplateTextVariableCreateInput) => Promise<void>;
-  onUpdate: (
-    data: TemplateTextVariableCreateInput & { id: number }
-  ) => Promise<void>;
+  onUpdate: (data: TemplateTextVariableCreateInput & { id: number }) => Promise<void>;
 };
 
 const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
@@ -36,11 +28,7 @@ const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
 }) => {
   const editingVariable: TemplateTextVariable | null = useMemo(() => {
     if (!editingVariableID) return null;
-    return (
-      (variables.find(
-        v => v.id === editingVariableID
-      ) as TemplateTextVariable) || null
-    );
+    return (variables.find(v => v.id === editingVariableID) as TemplateTextVariable) || null;
   }, [editingVariableID, variables]);
 
   const { templateVariableTranslations: strings } = useAppTranslation();
@@ -57,35 +45,31 @@ const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
   });
 
   const handleChange = useCallback(
-    (field: keyof TemplateTextVariableCreateInput) =>
-      (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value =
-          event.target.type === "checkbox"
-            ? event.target.checked
-            : event.target.value;
+    (field: keyof TemplateTextVariableCreateInput) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.type === "checkbox" ? event.target.checked : event.target.value;
 
-        setState(prevState => {
-          if (field === "minLength" || field === "maxLength") {
-            return {
-              ...prevState,
-              [field]: value === "" ? undefined : Number(value),
-            };
-          }
-
-          if (field === "required") {
-            return {
-              ...prevState,
-              required: value as boolean,
-            };
-          }
-
-          // Handle string fields
+      setState(prevState => {
+        if (field === "minLength" || field === "maxLength") {
           return {
             ...prevState,
-            [field]: value as string,
+            [field]: value === "" ? undefined : Number(value),
           };
-        });
-      },
+        }
+
+        if (field === "required") {
+          return {
+            ...prevState,
+            required: value as boolean,
+          };
+        }
+
+        // Handle string fields
+        return {
+          ...prevState,
+          [field]: value as string,
+        };
+      });
+    },
     []
   );
 
@@ -156,10 +140,7 @@ const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
         value={state.pattern ?? ""}
         onChange={handleChange("pattern")}
         fullWidth
-        helperText={
-          strings?.patternHelperText ??
-          "Regular expression pattern for validation"
-        }
+        helperText={strings?.patternHelperText ?? "Regular expression pattern for validation"}
       />
 
       <TextField
@@ -170,12 +151,7 @@ const TemplateTextVariableForm: React.FC<TemplateTextVariableFormProps> = ({
       />
 
       <FormControlLabel
-        control={
-          <Checkbox
-            checked={state.required ?? false}
-            onChange={handleChange("required")}
-          />
-        }
+        control={<Checkbox checked={state.required ?? false} onChange={handleChange("required")} />}
         label={strings?.required ?? "Required"}
       />
 

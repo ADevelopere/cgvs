@@ -3,10 +3,7 @@ import { Tooltip, Box, IconButton } from "@mui/material";
 import { CheckCircle, Cancel } from "@mui/icons-material";
 import { isRecipientReady } from "@/client/views/template/manage/data/utils/validation";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import {
-  RecipientVariableDataTranslation,
-  useAppTranslation,
-} from "@/client/locale";
+import { RecipientVariableDataTranslation, useAppTranslation } from "@/client/locale";
 
 interface ReadyStatusViewRendererProps {
   variableValues: Record<string, unknown>;
@@ -30,17 +27,10 @@ const getTooltipMessage = (
 
   for (const variable of requiredVariables) {
     const value = variableValues[variable.id?.toString() || ""];
-    const varName =
-      variable.name ||
-      strings.variableWithId.replace("{id}", String(variable.id));
+    const varName = variable.name || strings.variableWithId.replace("{id}", String(variable.id));
 
     // Check if value exists
-    if (
-      value === null ||
-      value === undefined ||
-      value === "" ||
-      (Array.isArray(value) && value.length === 0)
-    ) {
+    if (value === null || value === undefined || value === "" || (Array.isArray(value) && value.length === 0)) {
       missingFields.push(varName);
       continue;
     }
@@ -53,15 +43,9 @@ const getTooltipMessage = (
         const textVar = variable as Graphql.TemplateTextVariable;
         const textValue = typeof value === "string" ? value : String(value);
         if (textVar.minLength && textValue.length < textVar.minLength) {
-          validationError = strings.textTooShort.replace(
-            "{min}",
-            String(textVar.minLength)
-          );
+          validationError = strings.textTooShort.replace("{min}", String(textVar.minLength));
         } else if (textVar.maxLength && textValue.length > textVar.maxLength) {
-          validationError = strings.textTooLong.replace(
-            "{max}",
-            String(textVar.maxLength)
-          );
+          validationError = strings.textTooLong.replace("{max}", String(textVar.maxLength));
         } else if (textVar.pattern) {
           const regex = new RegExp(textVar.pattern);
           if (!regex.test(textValue)) {
@@ -73,50 +57,25 @@ const getTooltipMessage = (
       case "NUMBER": {
         const numberVar = variable as Graphql.TemplateNumberVariable;
         const numValue =
-          typeof value === "number"
-            ? value
-            : typeof value === "string"
-              ? parseFloat(value)
-              : Number(value);
+          typeof value === "number" ? value : typeof value === "string" ? parseFloat(value) : Number(value);
         if (isNaN(numValue)) {
           validationError = strings.invalidNumber;
-        } else if (
-          numberVar.minValue !== null &&
-          numberVar.minValue !== undefined &&
-          numValue < numberVar.minValue
-        ) {
-          validationError = strings.numberTooLow.replace(
-            "{min}",
-            String(numberVar.minValue)
-          );
-        } else if (
-          numberVar.maxValue !== null &&
-          numberVar.maxValue !== undefined &&
-          numValue > numberVar.maxValue
-        ) {
-          validationError = strings.numberTooHigh.replace(
-            "{max}",
-            String(numberVar.maxValue)
-          );
+        } else if (numberVar.minValue !== null && numberVar.minValue !== undefined && numValue < numberVar.minValue) {
+          validationError = strings.numberTooLow.replace("{min}", String(numberVar.minValue));
+        } else if (numberVar.maxValue !== null && numberVar.maxValue !== undefined && numValue > numberVar.maxValue) {
+          validationError = strings.numberTooHigh.replace("{max}", String(numberVar.maxValue));
         }
         break;
       }
       case "DATE": {
         const dateVar = variable as Graphql.TemplateDateVariable;
-        const dateValue =
-          value instanceof Date ? value : new Date(String(value));
+        const dateValue = value instanceof Date ? value : new Date(String(value));
         if (isNaN(dateValue.getTime())) {
           validationError = strings.invalidDate;
         } else if (dateVar.minDate && dateValue < new Date(dateVar.minDate)) {
-          validationError = strings.dateTooEarly.replace(
-            "{min}",
-            new Date(dateVar.minDate).toLocaleDateString()
-          );
+          validationError = strings.dateTooEarly.replace("{min}", new Date(dateVar.minDate).toLocaleDateString());
         } else if (dateVar.maxDate && dateValue > new Date(dateVar.maxDate)) {
-          validationError = strings.dateTooLate.replace(
-            "{max}",
-            new Date(dateVar.maxDate).toLocaleDateString()
-          );
+          validationError = strings.dateTooLate.replace("{max}", new Date(dateVar.maxDate).toLocaleDateString());
         }
         break;
       }
@@ -147,10 +106,7 @@ const getTooltipMessage = (
       .replace("{missing}", missingFields.join(", "))
       .replace("{invalid}", invalidFields.join(", "));
   } else if (missingFields.length > 0) {
-    return strings.missingRequiredFields.replace(
-      "{fields}",
-      missingFields.join(", ")
-    );
+    return strings.missingRequiredFields.replace("{fields}", missingFields.join(", "));
   } else if (invalidFields.length > 0) {
     return strings.invalidValues.replace("{fields}", invalidFields.join(", "));
   }
@@ -164,9 +120,7 @@ const getTooltipMessage = (
  * Displays a validation status icon (CheckCircle or Cancel) with a tooltip
  * showing detailed validation results for template variable values.
  */
-export const ReadyStatusViewRenderer: React.FC<
-  ReadyStatusViewRendererProps
-> = ({ variableValues, variables }) => {
+export const ReadyStatusViewRenderer: React.FC<ReadyStatusViewRendererProps> = ({ variableValues, variables }) => {
   const { recipientVariableDataTranslations: strings } = useAppTranslation();
   // Calculate ready status (memoized)
   const isReady = useMemo(
@@ -201,11 +155,7 @@ export const ReadyStatusViewRenderer: React.FC<
             },
           }}
         >
-          {isReady ? (
-            <CheckCircle fontSize="small" />
-          ) : (
-            <Cancel fontSize="small" />
-          )}
+          {isReady ? <CheckCircle fontSize="small" /> : <Cancel fontSize="small" />}
         </IconButton>
       </Tooltip>
     </Box>

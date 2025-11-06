@@ -5,11 +5,7 @@ import { useTableLocale } from "../../contexts";
 
 type ResizeHandleProps = {
   enabled: boolean;
-  onResize: (
-    event:
-      | React.MouseEvent<HTMLButtonElement>
-      | React.TouchEvent<HTMLButtonElement>
-  ) => void;
+  onResize: (event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => void;
 };
 
 const buttonStyle = {
@@ -28,10 +24,7 @@ const buttonStyle = {
   zIndex: 10,
 };
 
-export const ResizeHandle: React.FC<ResizeHandleProps> = ({
-  enabled,
-  onResize,
-}) => {
+export const ResizeHandle: React.FC<ResizeHandleProps> = ({ enabled, onResize }) => {
   const { isRtl, theme } = useAppTheme();
   const { strings } = useTableLocale();
   const [isResizing, setIsResizing] = useState(false);
@@ -39,11 +32,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
   // Start resizing on mousedown or touchstart
 
   const startResizing = useCallback(
-    (
-      event:
-        | React.MouseEvent<HTMLButtonElement>
-        | React.TouchEvent<HTMLButtonElement>
-    ) => {
+    (event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
       if (!enabled) return;
       event.preventDefault();
       event.stopPropagation();
@@ -77,9 +66,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
   const [backgroundColor, setBackgroundColor] = useState(theme.palette.divider);
 
   useEffect(() => {
-    setBackgroundColor(
-      isResizing ? theme.palette.primary.main : theme.palette.divider
-    );
+    setBackgroundColor(isResizing ? theme.palette.primary.main : theme.palette.divider);
   }, [isResizing, theme]);
 
   return (

@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import * as MUI from "@mui/material";
-import {
-  Description as FileIcon,
-  CloudUpload as UploadIcon,
-  Close as CloseIcon,
-} from "@mui/icons-material";
+import { Description as FileIcon, CloudUpload as UploadIcon, Close as CloseIcon } from "@mui/icons-material";
 import FilePickerDialog from "@/client/views/storage/dialogs/FilePickerDialog";
 import { useAppTranslation } from "@/client/locale";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
@@ -25,11 +21,7 @@ interface FontFilePickerProps {
   disabled?: boolean;
 }
 
-export const FontFilePicker: React.FC<FontFilePickerProps> = ({
-  value,
-  onChange,
-  disabled = false,
-}) => {
+export const FontFilePicker: React.FC<FontFilePickerProps> = ({ value, onChange, disabled = false }) => {
   const { fontManagementTranslations: strings } = useAppTranslation();
   const [isPickerOpen, setIsPickerOpen] = useState(false);
 
@@ -80,19 +72,10 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({
                   </MUI.Box>
                 </MUI.Box>
                 <MUI.Box sx={{ display: "flex", gap: 1 }}>
-                  <MUI.Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() => setIsPickerOpen(true)}
-                    disabled={disabled}
-                  >
+                  <MUI.Button variant="outlined" size="small" onClick={() => setIsPickerOpen(true)} disabled={disabled}>
                     {strings.change}
                   </MUI.Button>
-                  <MUI.IconButton
-                    size="small"
-                    onClick={handleClear}
-                    disabled={disabled}
-                  >
+                  <MUI.IconButton size="small" onClick={handleClear} disabled={disabled}>
                     <CloseIcon fontSize="small" />
                   </MUI.IconButton>
                 </MUI.Box>
@@ -113,9 +96,7 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({
             }}
           >
             <UploadIcon sx={{ fontSize: 32, color: "text.secondary" }} />
-            <MUI.Typography variant="body2">
-              {strings.selectFontFile}
-            </MUI.Typography>
+            <MUI.Typography variant="body2">{strings.selectFontFile}</MUI.Typography>
             <MUI.Typography variant="caption" color="text.secondary">
               {strings.fontFileFormats}
             </MUI.Typography>

@@ -21,10 +21,7 @@ const TextFieldComponent: React.FC<TextFieldProps> = ({
   const theme = useTheme();
 
   const StyledComponent = useMemo(() => {
-    const focusColor =
-      type === "email"
-        ? theme.palette.secondary.main
-        : theme.palette.primary.main;
+    const focusColor = type === "email" ? theme.palette.secondary.main : theme.palette.primary.main;
     return createStyledTextField(focusColor);
   }, [type, theme.palette.primary.main, theme.palette.secondary.main]);
 

@@ -19,8 +19,7 @@ interface RecipientGroupItemProps {
 
 const RecipientGroupItem: React.FC<RecipientGroupItemProps> = ({ group }) => {
   const { recipientGroupTranslations: strings } = useAppTranslation();
-  const { openInfoDialog, openSettingsDialog, openDeleteDialog } =
-    useRecipientGroupDialogs();
+  const { openInfoDialog, openSettingsDialog, openDeleteDialog } = useRecipientGroupDialogs();
   const { updateGroup } = useRecipientGroupOperations();
 
   const handleNameSave = useCallback(
@@ -87,12 +86,7 @@ const RecipientGroupItem: React.FC<RecipientGroupItemProps> = ({ group }) => {
 
       {/* Student Count Badge */}
       <Tooltip title={strings.studentCount}>
-        <Chip
-          label={group.studentCount || 0}
-          color="primary"
-          size="medium"
-          sx={{ minWidth: 60 }}
-        />
+        <Chip label={group.studentCount || 0} color="primary" size="medium" sx={{ minWidth: 60 }} />
       </Tooltip>
 
       {/* Action Buttons */}
@@ -119,22 +113,12 @@ const RecipientGroupItem: React.FC<RecipientGroupItemProps> = ({ group }) => {
           </IconButton>
         </Tooltip>
 
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={handleManageClick}
-          sx={{ minWidth: 100 }}
-          disabled={!group.id}
-        >
+        <Button variant="outlined" size="small" onClick={handleManageClick} sx={{ minWidth: 100 }} disabled={!group.id}>
           {strings.manage}
         </Button>
 
         <Tooltip
-          title={
-            group.studentCount && group.studentCount > 0
-              ? strings.cannotDeleteGroupWithStudents
-              : strings.delete
-          }
+          title={group.studentCount && group.studentCount > 0 ? strings.cannotDeleteGroupWithStudents : strings.delete}
         >
           <span>
             <IconButton
@@ -142,10 +126,7 @@ const RecipientGroupItem: React.FC<RecipientGroupItemProps> = ({ group }) => {
               onClick={() => group.id && openDeleteDialog(group.id)}
               color="error"
               disabled={
-                !group.id ||
-                (group.studentCount !== null &&
-                  group.studentCount !== undefined &&
-                  group.studentCount > 0)
+                !group.id || (group.studentCount !== null && group.studentCount !== undefined && group.studentCount > 0)
               }
             >
               <DeleteIcon />

@@ -4,10 +4,7 @@ import type { ValidateQRCodePropsFn } from "./types";
  * Field-level validation for QR code-specific properties
  */
 export const validateQRCodeProps = (): ValidateQRCodePropsFn => {
-  const validate: ValidateQRCodePropsFn = ({
-    key,
-    value,
-  }): string | undefined => {
+  const validate: ValidateQRCodePropsFn = ({ key, value }): string | undefined => {
     switch (key) {
       case "foregroundColor":
         if (!value) {

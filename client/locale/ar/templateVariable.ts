@@ -30,8 +30,7 @@ export const templateVariable: TemplateVariableTranslation = {
   delete: "حذف",
   cancel: "إلغاء",
   confirm: "تأكيد",
-  confirmDelete:
-    "هل أنت متأكد أنك تريد حذف هذا المتغير؟ لا يمكن التراجع عن هذا الإجراء.",
+  confirmDelete: "هل أنت متأكد أنك تريد حذف هذا المتغير؟ لا يمكن التراجع عن هذا الإجراء.",
 
   // create variable
   createVariable: "إنشاء متغير",

@@ -11,11 +11,7 @@ interface ProtectedRouteProps {
   redirectTo?: string;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
-  children,
-  requireAdmin = false,
-  redirectTo = "/login",
-}) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = false, redirectTo = "/login" }) => {
   const { isAuthenticated, user, isLoading } = useAuth();
   const router = useRouter();
 

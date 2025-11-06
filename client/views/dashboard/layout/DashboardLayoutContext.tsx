@@ -1,13 +1,6 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useMemo,
-  useEffect,
-} from "react";
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   Dashboard as DashboardIcon,
@@ -33,13 +26,14 @@ import { loadFromLocalStorage } from "@/client/utils/localStorage";
 import { useNavigationStateStore } from "./useNavigationStateStore";
 import { useAppTranslation } from "@/client/locale";
 
-const DashboardLayoutContext = createContext<
-  DashboardLayoutContextProps | undefined
->(undefined);
+const DashboardLayoutContext = createContext<DashboardLayoutContextProps | undefined>(undefined);
 
-export const DashboardLayoutProvider: React.FC<
-  DashboardLayoutProviderProps
-> = ({ initialTitle, initialNavigation, initialSlots, children }) => {
+export const DashboardLayoutProvider: React.FC<DashboardLayoutProviderProps> = ({
+  initialTitle,
+  initialNavigation,
+  initialSlots,
+  children,
+}) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -47,20 +41,14 @@ export const DashboardLayoutProvider: React.FC<
   const { dashboardLayoutTranslations: strings } = useAppTranslation();
 
   // Navigation state store
-  const {
-    savePageState,
-    saveLastVisitedChild,
-    clearLastVisitedChild,
-    restoreLastVisitedChild,
-  } = useNavigationStateStore();
+  const { savePageState, saveLastVisitedChild, clearLastVisitedChild, restoreLastVisitedChild } =
+    useNavigationStateStore();
 
   const [slots, setSlots] = useState<DashboardLayoutSlots>({
     ...initialSlots,
   });
 
-  const [titleState, setTitleState] = useState<Title | undefined>(
-    initialTitle || undefined
-  );
+  const [titleState, setTitleState] = useState<Title | undefined>(initialTitle || undefined);
 
   const [sidebarState, setSidebarState] = useState<SidebarState>(() => {
     const saved = loadFromLocalStorage(SIDEBAR_STATE_STORAGE_KEY);
@@ -152,9 +140,7 @@ export const DashboardLayoutProvider: React.FC<
       }
 
       const baseSegment = navItem.segment || "";
-      const basePath = baseSegment.startsWith("/")
-        ? baseSegment
-        : `/${baseSegment}`;
+      const basePath = baseSegment.startsWith("/") ? baseSegment : `/${baseSegment}`;
 
       // If we're currently on this exact parent path, use base segment (keep original)
       if (normalizedPathname === basePath) {
@@ -175,9 +161,7 @@ export const DashboardLayoutProvider: React.FC<
 
       if (savedChild) {
         // Remove leading slash from savedChild if it exists
-        const childSegment = savedChild.startsWith("/")
-          ? savedChild.substring(1)
-          : savedChild;
+        const childSegment = savedChild.startsWith("/") ? savedChild.substring(1) : savedChild;
 
         return {
           ...navItem,
@@ -220,13 +204,7 @@ export const DashboardLayoutProvider: React.FC<
       // Clear the saved child completely
       clearLastVisitedChild(parentPath);
     }
-  }, [
-    pathname,
-    searchParams,
-    savePageState,
-    saveLastVisitedChild,
-    clearLastVisitedChild,
-  ]);
+  }, [pathname, searchParams, savePageState, saveLastVisitedChild, clearLastVisitedChild]);
 
   const toggleSidebar = useCallback(() => {
     setSidebarState(current => {
@@ -237,26 +215,23 @@ export const DashboardLayoutProvider: React.FC<
     });
   }, []);
 
-  const setDashboardSlot = useCallback(
-    (slotName: SlotName, component: React.ReactNode | null) => {
-      setSlots(prevSlots => {
-        const newSlots = {
-          ...prevSlots,
-          [slotName]: component || undefined,
-        };
-
-        return newSlots;
-      });
-
-      return () => {
-        setSlots(prevSlots => {
-          const { [slotName]: _, ...rest } = prevSlots;
-          return rest;
-        });
+  const setDashboardSlot = useCallback((slotName: SlotName, component: React.ReactNode | null) => {
+    setSlots(prevSlots => {
+      const newSlots = {
+        ...prevSlots,
+        [slotName]: component || undefined,
       };
-    },
-    []
-  );
+
+      return newSlots;
+    });
+
+    return () => {
+      setSlots(prevSlots => {
+        const { [slotName]: _, ...rest } = prevSlots;
+        return rest;
+      });
+    };
+  }, []);
 
   const resetSlots = useCallback(() => {
     setSlots(prevSlots => {
@@ -344,19 +319,13 @@ export const DashboardLayoutProvider: React.FC<
     restoreLastVisitedChild,
   ]);
 
-  return (
-    <DashboardLayoutContext.Provider value={value}>
-      {children}
-    </DashboardLayoutContext.Provider>
-  );
+  return <DashboardLayoutContext.Provider value={value}>{children}</DashboardLayoutContext.Provider>;
 };
 
 export const useDashboardLayout = () => {
   const context = useContext(DashboardLayoutContext);
   if (!context) {
-    throw new Error(
-      "useDashboardLayout must be used within a DashboardLayoutProvider"
-    );
+    throw new Error("useDashboardLayout must be used within a DashboardLayoutProvider");
   }
   return context;
 };

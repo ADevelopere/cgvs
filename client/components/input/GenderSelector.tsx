@@ -27,12 +27,7 @@ export type GenderSelectorProps = {
  * @param {GenderSelectorProps} props - The props for the component.
  * @returns {JSX.Element} The rendered GenderSelector component.
  */
-export const GenderSelector: React.FC<GenderSelectorProps> = ({
-  gender,
-  setGender,
-  error,
-  setError,
-}) => {
+export const GenderSelector: React.FC<GenderSelectorProps> = ({ gender, setGender, error, setError }) => {
   const { genderTranslations: strings } = useAppTranslation();
   return (
     <Box

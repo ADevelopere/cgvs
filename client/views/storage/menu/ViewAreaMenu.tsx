@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  useTheme,
-  Divider,
-} from "@mui/material";
+import { Menu, MenuItem, ListItemIcon, ListItemText, useTheme, Divider } from "@mui/material";
 import {
   ContentPaste as PasteIcon,
   CloudUpload as UploadIcon,
@@ -84,9 +77,7 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
       const files = (event.target as HTMLInputElement).files;
       if (files && files.length > 0) {
         try {
-          logger.info(
-            `Starting upload of ${files.length} files to ${params.path}`
-          );
+          logger.info(`Starting upload of ${files.length} files to ${params.path}`);
 
           logger.info("About to call startUpload from context menu", {
             fileCount: files.length,
@@ -135,10 +126,7 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
   }, [onClose, selectAll]);
 
   // Check if paste is available
-  const isPasteAvailable = React.useMemo(
-    () => clipboard && clipboard.items.length > 0,
-    [clipboard]
-  );
+  const isPasteAvailable = React.useMemo(() => clipboard && clipboard.items.length > 0, [clipboard]);
 
   return (
     <>
@@ -171,16 +159,11 @@ const ViewAreaMenu: React.FC<ViewAreaMenuProps> = ({
           horizontal: "left",
         }}
       >
-        <MenuItem
-          onClick={handlePaste}
-          disabled={!isPasteAvailable || isPasting}
-        >
+        <MenuItem onClick={handlePaste} disabled={!isPasteAvailable || isPasting}>
           <ListItemIcon>
             <PasteIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>
-            {isPasting ? translations.loading : translations.paste}
-          </ListItemText>
+          <ListItemText>{isPasting ? translations.loading : translations.paste}</ListItemText>
         </MenuItem>
 
         <Divider />

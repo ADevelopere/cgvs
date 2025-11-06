@@ -8,15 +8,7 @@ import { useAppTranslation } from "@/client/locale";
 import { useAuthToken } from "./AppApolloProvider";
 import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useMutation } from "@apollo/client/react";
 
 // A simple UI for the initial loading state
@@ -59,25 +51,18 @@ export type AuthContextType = {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  login: (
-    credentials: Graphql.MutationLoginArgs,
-    redirectUrl?: string | null
-  ) => Promise<boolean>;
+  login: (credentials: Graphql.MutationLoginArgs, redirectUrl?: string | null) => Promise<boolean>;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { authTranslations: strings } = useAppTranslation();
   const { updateAuthToken, clearAuthData } = useAuthToken();
   const [loginMutation] = useMutation(Document.loginMutationDocument);
   const [logoutMutation] = useMutation(Document.logoutMutationDocument);
-  const [refreshTokenMutation] = useMutation(
-    Document.refreshTokenMutationDocument
-  );
+  const [refreshTokenMutation] = useMutation(Document.refreshTokenMutationDocument);
 
   const [user, setUser] = useState<Graphql.User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -116,10 +101,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [logoutMutation, clearAuthData]);
 
   const login = useCallback(
-    async (
-      credentials: Graphql.MutationLoginArgs,
-      redirectUrl: string | null = null
-    ): Promise<boolean> => {
+    async (credentials: Graphql.MutationLoginArgs, redirectUrl: string | null = null): Promise<boolean> => {
       setError(null);
       try {
         const { data } = await loginMutation({
@@ -147,12 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         return false;
       }
     },
-    [
-      loginMutation,
-      strings.invalidLoginResponse,
-      strings.signinFailed,
-      updateAuthToken,
-    ]
+    [loginMutation, strings.invalidLoginResponse, strings.signinFailed, updateAuthToken]
   );
 
   useEffect(() => {
@@ -175,9 +152,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return <LoadingUI onRetry={checkAuth} error={error} strings={strings} />;
   }
 
-  return (
-    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = (): AuthContextType => {

@@ -66,8 +66,7 @@ const enLocale: TableLocale = {
   },
   pagination: {
     rowsPerPage: "Rows per page:",
-    displayedRows: (from, to, count) =>
-      `${from}-${to} of ${count > -1 ? count : "more than " + to}`,
+    displayedRows: (from, to, count) => `${from}-${to} of ${count > -1 ? count : "more than " + to}`,
     firstPage: "Go to first page",
     previousPage: "Go to previous page",
     nextPage: "Go to next page",
@@ -111,8 +110,7 @@ const enLocale: TableLocale = {
     invalidDate: "Invalid date",
     minValue: min => `Value must be at least ${min}`,
     maxValue: max => `Value must be at most ${max}`,
-    maxDecimals: decimals =>
-      `Maximum ${decimals} decimal place${decimals === 1 ? "" : "s"} allowed`,
+    maxDecimals: decimals => `Maximum ${decimals} decimal place${decimals === 1 ? "" : "s"} allowed`,
     minDate: date => `Date must be after ${date}`,
     maxDate: date => `Date must be before ${date}`,
   },
@@ -184,8 +182,7 @@ const arLocale: TableLocale = {
   },
   pagination: {
     rowsPerPage: "عدد الصفوف في الصفحة:",
-    displayedRows: (from, to, count) =>
-      `${from}-${to} من ${count > -1 ? count : "أكثر من " + to}`,
+    displayedRows: (from, to, count) => `${from}-${to} من ${count > -1 ? count : "أكثر من " + to}`,
     firstPage: "الصفحة الأولى",
     previousPage: "الصفحة السابقة",
     nextPage: "الصفحة التالية",
@@ -229,8 +226,7 @@ const arLocale: TableLocale = {
     invalidDate: "تاريخ غير صالح",
     minValue: min => `يجب أن تكون القيمة على الأقل ${min}`,
     maxValue: max => `يجب أن تكون القيمة على الأكثر ${max}`,
-    maxDecimals: decimals =>
-      `الحد الأقصى ${decimals} منزلة${decimals === 1 ? "" : ""} عشرية مسموح بها`,
+    maxDecimals: decimals => `الحد الأقصى ${decimals} منزلة${decimals === 1 ? "" : ""} عشرية مسموح بها`,
     minDate: date => `يجب أن يكون التاريخ بعد ${date}`,
     maxDate: date => `يجب أن يكون التاريخ قبل ${date}`,
   },

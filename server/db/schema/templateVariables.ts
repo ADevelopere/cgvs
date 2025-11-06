@@ -13,10 +13,7 @@ import {
 import { TemplateVariableType } from "@/server/types/templateVariable.types";
 import { createPgEnumFromEnum } from "../../utils/db.utils";
 
-export const templateVariableTypeEnum = createPgEnumFromEnum(
-  "template_variable_type",
-  TemplateVariableType
-);
+export const templateVariableTypeEnum = createPgEnumFromEnum("template_variable_type", TemplateVariableType);
 
 export const templateVariableBases = pgTable(
   "template_variable_base",
@@ -32,12 +29,7 @@ export const templateVariableBases = pgTable(
     createdAt: timestamp("created_at", { precision: 3 }).notNull(),
     updatedAt: timestamp("updated_at", { precision: 3 }).notNull(),
   },
-  table => [
-    uniqueIndex("template_base_variable_template_id_name_key").on(
-      table.templateId,
-      table.name
-    ),
-  ]
+  table => [uniqueIndex("template_base_variable_template_id_name_key").on(table.templateId, table.name)]
 );
 
 export const templateTextVariables = pgTable("template_text_variable", {

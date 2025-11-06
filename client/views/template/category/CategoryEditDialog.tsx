@@ -1,16 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  Box,
-  Autocomplete,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, Autocomplete } from "@mui/material";
 import { useLazyQuery } from "@apollo/client/react";
 import { useAppTranslation } from "@/client/locale";
 import { TemplateCategoryWithParentTree } from "@/client/graphql/generated/gql/graphql";
@@ -20,34 +11,20 @@ interface Props {
   open: boolean;
   categoryToEdit: TemplateCategoryWithParentTree | null;
   onClose: () => void;
-  onSave: (data: {
-    name: string;
-    description?: string;
-    parentId?: number | null;
-  }) => void;
+  onSave: (data: { name: string; description?: string; parentId?: number | null }) => void;
 }
 
-const CategoryEditDialog: React.FC<Props> = ({
-  open,
-  categoryToEdit,
-  onClose,
-  onSave,
-}) => {
+const CategoryEditDialog: React.FC<Props> = ({ open, categoryToEdit, onClose, onSave }) => {
   const { templateCategoryTranslations: strings } = useAppTranslation();
   const [name, setName] = useState(categoryToEdit?.name ?? "");
-  const [description, setDescription] = useState(
-    categoryToEdit?.description ?? ""
-  );
-  const [parentId, setParentId] = useState<number | null>(
-    categoryToEdit?.parentTree[0] ?? null
-  );
+  const [description, setDescription] = useState(categoryToEdit?.description ?? "");
+  const [parentId, setParentId] = useState<number | null>(categoryToEdit?.parentTree[0] ?? null);
   const [error, setError] = useState("");
 
   // Category search for autocomplete
-  const [
-    searchCategories,
-    { data: searchCategoriesData, loading: searchLoading },
-  ] = useLazyQuery(CategoryDocuments.searchTemplateCategoriesQueryDocument);
+  const [searchCategories, { data: searchCategoriesData, loading: searchLoading }] = useLazyQuery(
+    CategoryDocuments.searchTemplateCategoriesQueryDocument
+  );
   const [categorySearchTerm, setCategorySearchTerm] = useState("");
   const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -170,9 +147,7 @@ const CategoryEditDialog: React.FC<Props> = ({
           {!categoryToEdit?.specialType && (
             <Autocomplete
               value={selectedParentCategory}
-              onChange={(_, newValue: TemplateCategoryWithParentTree | null) =>
-                setParentId(newValue?.id ?? null)
-              }
+              onChange={(_, newValue: TemplateCategoryWithParentTree | null) => setParentId(newValue?.id ?? null)}
               inputValue={categorySearchTerm}
               onInputChange={(_, newInputValue) => {
                 handleCategorySearch(newInputValue);
@@ -183,11 +158,7 @@ const CategoryEditDialog: React.FC<Props> = ({
               loadingText={strings.loading}
               noOptionsText={strings.noCategories}
               renderInput={params => (
-                <TextField
-                  {...params}
-                  label={strings.parentCategory}
-                  placeholder={strings.selectCategory}
-                />
+                <TextField {...params} label={strings.parentCategory} placeholder={strings.selectCategory} />
               )}
               isOptionEqualToValue={(option, value) => option.id === value.id}
             />

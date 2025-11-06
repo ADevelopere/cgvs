@@ -27,23 +27,18 @@ function validateJwtSecret(): string {
   if (!jwtSecret) {
     if (process.env.NODE_ENV === "production") {
       throw new Error(
-        "CRITICAL: JWT_SECRET is not set in production environment. " +
-          "This is required for secure authentication."
+        "CRITICAL: JWT_SECRET is not set in production environment. " + "This is required for secure authentication."
       );
     } else {
       // Use a default in development (not recommended for production)
-      logger.warn(
-        "⚠️  JWT_SECRET not set. Using default for development. " +
-          "DO NOT use this in production!"
-      );
+      logger.warn("⚠️  JWT_SECRET not set. Using default for development. " + "DO NOT use this in production!");
       return "development-secret-change-me-in-production";
     }
   }
 
   if (process.env.NODE_ENV === "production" && jwtSecret.length < 32) {
     throw new Error(
-      "CRITICAL: JWT_SECRET must be at least 32 characters in production. " +
-        `Current length: ${jwtSecret.length}`
+      "CRITICAL: JWT_SECRET must be at least 32 characters in production. " + `Current length: ${jwtSecret.length}`
     );
   }
 
@@ -58,9 +53,7 @@ function validateDatabaseUrl(): string {
 
   if (!databaseUrl) {
     if (process.env.NODE_ENV === "production") {
-      throw new Error(
-        "CRITICAL: DATABASE_URL is not set in production environment."
-      );
+      throw new Error("CRITICAL: DATABASE_URL is not set in production environment.");
     } else {
       logger.warn("⚠️  DATABASE_URL not set. Database operations may fail.");
       return "";
@@ -68,13 +61,8 @@ function validateDatabaseUrl(): string {
   }
 
   // Basic validation for PostgreSQL URL format
-  if (
-    !databaseUrl.startsWith("postgresql://") &&
-    !databaseUrl.startsWith("postgres://")
-  ) {
-    logger.warn(
-      "⚠️  DATABASE_URL may not be a valid PostgreSQL connection string."
-    );
+  if (!databaseUrl.startsWith("postgresql://") && !databaseUrl.startsWith("postgres://")) {
+    logger.warn("⚠️  DATABASE_URL may not be a valid PostgreSQL connection string.");
   }
 
   return databaseUrl;
@@ -84,10 +72,7 @@ function validateDatabaseUrl(): string {
  * Validate CACHE_PROVIDER
  */
 function validateCacheProvider(): "redis" | "postgres" {
-  const provider = process.env.CACHE_PROVIDER?.toLowerCase() as
-    | "redis"
-    | "postgres"
-    | undefined;
+  const provider = process.env.CACHE_PROVIDER?.toLowerCase() as "redis" | "postgres" | undefined;
 
   if (!provider) {
     // Default to redis for development
@@ -95,9 +80,7 @@ function validateCacheProvider(): "redis" | "postgres" {
   }
 
   if (provider !== "redis" && provider !== "postgres") {
-    logger.warn(
-      `⚠️  Invalid CACHE_PROVIDER: ${provider}. Must be 'redis' or 'postgres'. Using 'redis'.`
-    );
+    logger.warn(`⚠️  Invalid CACHE_PROVIDER: ${provider}. Must be 'redis' or 'postgres'. Using 'redis'.`);
     return "redis";
   }
 
@@ -108,10 +91,7 @@ function validateCacheProvider(): "redis" | "postgres" {
  * Validate REDIS_PROVIDER
  */
 function validateRedisProvider(): "local" | "upstash" {
-  const provider = process.env.REDIS_PROVIDER?.toLowerCase() as
-    | "local"
-    | "upstash"
-    | undefined;
+  const provider = process.env.REDIS_PROVIDER?.toLowerCase() as "local" | "upstash" | undefined;
 
   if (!provider) {
     // Default to local for development
@@ -119,9 +99,7 @@ function validateRedisProvider(): "local" | "upstash" {
   }
 
   if (provider !== "local" && provider !== "upstash") {
-    logger.warn(
-      `⚠️  Invalid REDIS_PROVIDER: ${provider}. Must be 'local' or 'upstash'. Using 'local'.`
-    );
+    logger.warn(`⚠️  Invalid REDIS_PROVIDER: ${provider}. Must be 'local' or 'upstash'. Using 'local'.`);
     return "local";
   }
 
@@ -156,9 +134,7 @@ function validateRedisConfig(): {
           "Get these from https://console.upstash.com/"
       );
     } else {
-      logger.warn(
-        "⚠️  Upstash Redis selected but credentials missing. Falling back to local Redis."
-      );
+      logger.warn("⚠️  Upstash Redis selected but credentials missing. Falling back to local Redis.");
       return {
         redisProvider: "local",
         redisUrl: process.env.REDIS_URL || "redis://localhost:6379",
@@ -182,10 +158,7 @@ function validateAllowedOrigin(): string | undefined {
   const allowedOrigin = process.env.ALLOWED_ORIGIN;
 
   if (process.env.NODE_ENV === "production" && !allowedOrigin) {
-    logger.warn(
-      "⚠️  ALLOWED_ORIGIN not set in production. " +
-        "CORS will use default. Set this for security."
-    );
+    logger.warn("⚠️  ALLOWED_ORIGIN not set in production. " + "CORS will use default. Set this for security.");
   }
 
   return allowedOrigin;
@@ -227,20 +200,14 @@ export function validateEnvironment(): EnvironmentConfig {
       logger.log("Configuration:");
       logger.log(`  NODE_ENV: ${config.nodeEnv}`);
       logger.log(`  JWT_SECRET: ${config.jwtSecret ? "[SET]" : "[NOT SET]"}`);
-      logger.log(
-        `  DATABASE_URL: ${config.databaseUrl ? "[SET]" : "[NOT SET]"}`
-      );
+      logger.log(`  DATABASE_URL: ${config.databaseUrl ? "[SET]" : "[NOT SET]"}`);
       logger.log(`  CACHE_PROVIDER: ${config.cacheProvider}`);
       logger.log(`  REDIS_PROVIDER: ${config.redisProvider}`);
       if (config.redisProvider === "local") {
         logger.log(`  REDIS_URL: ${config.redisUrl}`);
       } else {
-        logger.log(
-          `  UPSTASH_REDIS_REST_URL: ${config.upstashRedisUrl ? "[SET]" : "[NOT SET]"}`
-        );
-        logger.log(
-          `  UPSTASH_REDIS_REST_TOKEN: ${config.upstashRedisToken ? "[SET]" : "[NOT SET]"}`
-        );
+        logger.log(`  UPSTASH_REDIS_REST_URL: ${config.upstashRedisUrl ? "[SET]" : "[NOT SET]"}`);
+        logger.log(`  UPSTASH_REDIS_REST_TOKEN: ${config.upstashRedisToken ? "[SET]" : "[NOT SET]"}`);
       }
       logger.log(`  ALLOWED_ORIGIN: ${config.allowedOrigin || "[DEFAULT]"}`);
     }

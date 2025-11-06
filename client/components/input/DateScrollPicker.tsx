@@ -56,17 +56,13 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
   });
 
   const maxGregorianDate = useMemo(() => {
-    return maxDate &&
-      maxDate.isValid() &&
-      maxDate.isBefore(maxPossibleGregorianDate)
+    return maxDate && maxDate.isValid() && maxDate.isBefore(maxPossibleGregorianDate)
       ? maxDate.clone()
       : maxPossibleGregorianDate.clone();
   }, [maxDate]);
 
   const minGregorianDate: moment.Moment = useMemo(() => {
-    return minDate &&
-      minDate.isValid() &&
-      minDate.isAfter(minPossibleGregorianDate)
+    return minDate && minDate.isValid() && minDate.isAfter(minPossibleGregorianDate)
       ? minDate.clone()
       : minPossibleGregorianDate.clone();
   }, [minDate]);
@@ -79,10 +75,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
       minYear = minGregorianDate.iYear();
     }
 
-    return Array.from(
-      { length: maxYear - minYear + 1 },
-      (_, i) => minYear + i
-    ).reverse();
+    return Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i).reverse();
   }, [maxGregorianDate, minGregorianDate, calendar]);
 
   const months = useMemo(() => Array.from({ length: 12 }, (_, i) => i + 1), []);
@@ -92,10 +85,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
     if (calendar === Calendar.Gregorian) {
       daysCount = selectedDate.daysInMonth();
     } else {
-      daysCount = moment.iDaysInMonth(
-        selectedDate.iYear(),
-        selectedDate.iMonth()
-      );
+      daysCount = moment.iDaysInMonth(selectedDate.iYear(), selectedDate.iMonth());
     }
 
     return Array.from({ length: daysCount }, (_, i) => i + 1);
@@ -154,19 +144,13 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
   const yearInputRef = useRef<HTMLInputElement>(null);
 
   const [dayInputValue, setDayInputValue] = useState<string>(
-    calendar === Calendar.Gregorian
-      ? selectedDate.date().toString()
-      : selectedDate.iDate().toString()
+    calendar === Calendar.Gregorian ? selectedDate.date().toString() : selectedDate.iDate().toString()
   );
   const [monthInputValue, setMonthInputValue] = useState<string>(
-    calendar === Calendar.Gregorian
-      ? (selectedDate.month() + 1).toString()
-      : (selectedDate.iMonth() + 1).toString()
+    calendar === Calendar.Gregorian ? (selectedDate.month() + 1).toString() : (selectedDate.iMonth() + 1).toString()
   );
   const [yearInputValue, setYearInputValue] = useState<string>(
-    calendar === Calendar.Gregorian
-      ? selectedDate.year().toString()
-      : selectedDate.iYear().toString()
+    calendar === Calendar.Gregorian ? selectedDate.year().toString() : selectedDate.iYear().toString()
   );
 
   // Event handlers for opening menus
@@ -247,9 +231,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
     }
   };
 
-  const handleMonthInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleMonthInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const month = event.target.value;
     setMonthInputValue(month);
     const monthNumber = Number(month);
@@ -260,10 +242,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
       let newDate;
       let updateInputFunction: () => void;
       if (calendar === Calendar.Hijri) {
-        newDate = selectedDate
-          .clone()
-          .endOf("iYear")
-          .add(extraMonths, "iMonth");
+        newDate = selectedDate.clone().endOf("iYear").add(extraMonths, "iMonth");
         updateInputFunction = updateInputValuesHijri;
       } else {
         newDate = selectedDate.clone().endOf("year").add(extraMonths, "months");
@@ -278,9 +257,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
     }
   };
 
-  const handleYearInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleYearInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const year = event.target.value;
     setYearInputValue(year);
     const yearNumber = Number(year);
@@ -292,9 +269,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
   const handleDayInputBlur = () => {
     if (dayInputValue === "" || !daysInMonth.includes(Number(dayInputValue))) {
       setDayInputValue(
-        calendar === Calendar.Gregorian
-          ? selectedDate.date().toString()
-          : selectedDate.iDate().toString()
+        calendar === Calendar.Gregorian ? selectedDate.date().toString() : selectedDate.iDate().toString()
       );
     }
   };
@@ -302,9 +277,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
   const handleMonthInputBlur = () => {
     if (monthInputValue === "" || !months.includes(Number(monthInputValue))) {
       setMonthInputValue(
-        calendar === Calendar.Gregorian
-          ? (selectedDate.month() + 1).toString()
-          : (selectedDate.iMonth() + 1).toString()
+        calendar === Calendar.Gregorian ? (selectedDate.month() + 1).toString() : (selectedDate.iMonth() + 1).toString()
       );
     }
   };
@@ -312,9 +285,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
   const handleYearInputBlur = () => {
     if (yearInputValue === "" || !years.includes(Number(yearInputValue))) {
       setYearInputValue(
-        calendar === Calendar.Gregorian
-          ? selectedDate.year().toString()
-          : selectedDate.iYear().toString()
+        calendar === Calendar.Gregorian ? selectedDate.year().toString() : selectedDate.iYear().toString()
       );
     }
   };
@@ -441,10 +412,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
             },
             input: {
               endAdornment: (
-                <InputAdornment
-                  position="end"
-                  sx={{ marginInlineStart: 0, marginInlineEnd: 0 }}
-                >
+                <InputAdornment position="end" sx={{ marginInlineStart: 0, marginInlineEnd: 0 }}>
                   <IconButton onClick={handleOpenDayMenu}>
                     <ArrowDropDownIcon />
                   </IconButton>
@@ -475,11 +443,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
           {daysInMonth.map(day => (
             <MenuItem
               key={day}
-              selected={
-                calendar === Calendar.Gregorian
-                  ? selectedDate.date() === day
-                  : selectedDate.iDate() === day
-              }
+              selected={calendar === Calendar.Gregorian ? selectedDate.date() === day : selectedDate.iDate() === day}
               onClick={() => {
                 handleDayChange(day);
                 handleCloseDayMenu();
@@ -507,10 +471,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
             },
             input: {
               endAdornment: (
-                <InputAdornment
-                  position="end"
-                  sx={{ marginInlineStart: 0, marginInlineEnd: 0 }}
-                >
+                <InputAdornment position="end" sx={{ marginInlineStart: 0, marginInlineEnd: 0 }}>
                   <IconButton onClick={handleOpenMonthMenu}>
                     <ArrowDropDownIcon />
                   </IconButton>
@@ -571,10 +532,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
             },
             input: {
               endAdornment: (
-                <InputAdornment
-                  position="end"
-                  sx={{ marginInlineStart: 0, marginInlineEnd: 0 }}
-                >
+                <InputAdornment position="end" sx={{ marginInlineStart: 0, marginInlineEnd: 0 }}>
                   <IconButton onClick={handleOpenYearMenu}>
                     <ArrowDropDownIcon />
                   </IconButton>
@@ -605,11 +563,7 @@ export const DateScrollPicker: React.FC<DateScrollPickerProps> = ({
           {years.map(year => (
             <MenuItem
               key={year}
-              selected={
-                calendar === Calendar.Gregorian
-                  ? selectedDate.year() === year
-                  : selectedDate.iYear() === year
-              }
+              selected={calendar === Calendar.Gregorian ? selectedDate.year() === year : selectedDate.iYear() === year}
               onClick={() => {
                 handleYearChange(year);
                 handleCloseYearMenu();

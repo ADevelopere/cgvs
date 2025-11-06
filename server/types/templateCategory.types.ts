@@ -1,15 +1,10 @@
-import {
-  templateCategories,
-  templatecategorySpecialTypeEnum,
-} from "@/server/db/schema";
+import { templateCategories, templatecategorySpecialTypeEnum } from "@/server/db/schema";
 import { TemplatePothosDefintion } from "@/server/types";
 
-export type TemplateSpecialCategoryType =
-  (typeof templatecategorySpecialTypeEnum.enumValues)[number];
+export type TemplateSpecialCategoryType = (typeof templatecategorySpecialTypeEnum.enumValues)[number];
 
 export type TemplateCategorySelectType = typeof templateCategories.$inferSelect;
-export type TemplateCategoryInsertInput =
-  typeof templateCategories.$inferInsert;
+export type TemplateCategoryInsertInput = typeof templateCategories.$inferInsert;
 
 export type TemplateCategoryPothosDefintion = TemplateCategorySelectType & {
   templates?: TemplatePothosDefintion[];

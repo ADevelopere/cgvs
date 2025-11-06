@@ -8,10 +8,7 @@ import { useElementCreateMutations } from "../../form/hooks/useElementCreateMuta
 import { fontsQueryDocument } from "@/client/views/font/hooks/font.documents";
 import { validateBaseElementField } from "../../form/element/base/cretElementBaseValidator";
 import { validateTextPropsField } from "../../form/element/textProps/textPropsValidator";
-import type {
-  GenderElementFormState,
-  GenderElementFormErrors,
-} from "../../form/element/gender/types";
+import type { GenderElementFormState, GenderElementFormErrors } from "../../form/element/gender/types";
 import type { UpdateBaseElementFn } from "../../form/element/base";
 import type { UpdateTextPropsFn } from "../../form/element/textProps";
 import { logger } from "@/client/lib/logger";
@@ -34,16 +31,16 @@ interface CreateGenderElementWrapperProps {
 // COMPONENT
 // ============================================================================
 
-export const CreateGenderElementWrapper: React.FC<
-  CreateGenderElementWrapperProps
-> = ({
+export const CreateGenderElementWrapper: React.FC<CreateGenderElementWrapperProps> = ({
   templateId,
   initialElementName,
   open,
   onClose,
 }) => {
-    const { templateEditorTranslations: {addNodePanel: t} } = useAppTranslation();
-  
+  const {
+    templateEditorTranslations: { addNodePanel: t },
+  } = useAppTranslation();
+
   // Get context data
   const { config } = useCertificateElementStates();
   const language = config.state.language;

@@ -28,11 +28,7 @@ function getAbsolutePath(relativePath: string): string {
 /**
  * Stream request body to file while calculating MD5
  */
-async function streamToFile(
-  stream: ReadableStream<Uint8Array>,
-  filePath: string,
-  expectedMd5: string
-): Promise<void> {
+async function streamToFile(stream: ReadableStream<Uint8Array>, filePath: string, expectedMd5: string): Promise<void> {
   const hash = crypto.createHash("md5");
   const writeStream = createWriteStream(filePath);
   const reader = stream.getReader();
@@ -77,10 +73,7 @@ async function streamToFile(
  * Handle signed URL file uploads
  * PUT /api/storage/upload/[id]
  */
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: tokenId } = await params;
 
@@ -89,10 +82,7 @@ export async function PUT(
 
     if (!signedUrl) {
       logger.warn("Invalid or expired signed URL token", { tokenId });
-      return NextResponse.json(
-        { error: "Invalid, expired, or already used token" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Invalid, expired, or already used token" }, { status: 403 });
     }
 
     logger.info("🔍 [API DEBUG] Claimed signed URL", {
@@ -146,10 +136,7 @@ export async function PUT(
 
     if (!contentMd5) {
       logger.warn("Missing Content-MD5 header", { tokenId });
-      return NextResponse.json(
-        { error: "Content-MD5 header is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Content-MD5 header is required" }, { status: 400 });
     }
 
     if (contentMd5 !== signedUrl.contentMd5) {
@@ -187,10 +174,7 @@ export async function PUT(
 
     // Step 5: Stream to disk with MD5 verification
     if (!request.body) {
-      return NextResponse.json(
-        { error: "Request body is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Request body is required" }, { status: 400 });
     }
 
     try {
@@ -203,8 +187,7 @@ export async function PUT(
       });
       return NextResponse.json(
         {
-          error:
-            error instanceof Error ? error.message : "Failed to write file",
+          error: error instanceof Error ? error.message : "Failed to write file",
         },
         { status: 400 }
       );
@@ -212,14 +195,10 @@ export async function PUT(
 
     // Step 6: Create file record with transaction safety
     try {
-      const fileEntity = await StorageDbRepository.createFile(
-        signedUrl.filePath,
-        false
-      );
+      const fileEntity = await StorageDbRepository.createFile(signedUrl.filePath, false);
 
       const stats = await fs.stat(absolutePath);
-      const baseUrl =
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
       logger.info("🔍 [API DEBUG] File uploaded successfully via signed URL", {
         tokenId,
@@ -255,10 +234,7 @@ export async function PUT(
         error: error instanceof Error ? error.message : String(error),
       });
 
-      return NextResponse.json(
-        { error: "Failed to create file record" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Failed to create file record" }, { status: 500 });
     }
   } catch (error) {
     logger.error("Unexpected error in upload handler", {
@@ -266,9 +242,6 @@ export async function PUT(
       stack: error instanceof Error ? error.stack : undefined,
     });
 
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

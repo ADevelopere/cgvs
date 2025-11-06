@@ -1,11 +1,4 @@
-import {
-  describe,
-  it,
-  expect,
-  beforeAll,
-  afterAll,
-  beforeEach,
-} from "@jest/globals";
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from "@jest/globals";
 import fs from "fs/promises";
 import path from "path";
 
@@ -32,10 +25,7 @@ try {
 }
 
 // Create storage test directory structure
-const testStorageDir = path.resolve(
-  process.cwd(),
-  process.env.LOCAL_STORAGE_PATH || "./tests/fixtures/storage-test"
-);
+const testStorageDir = path.resolve(process.cwd(), process.env.LOCAL_STORAGE_PATH || "./tests/fixtures/storage-test");
 
 // Set up storage test directories
 (async () => {
@@ -81,10 +71,7 @@ await (async () => {
 // Import the adapter (env vars already set in setup.ts via .env.test)
 import { createLocalAdapter } from "@/server/storage/disk/local";
 import type { StorageService } from "@/server/storage/disk/storage.service.interface";
-import {
-  type FileInfo,
-  type DirectoryInfo,
-} from "@/server/types/storage.types";
+import { type FileInfo, type DirectoryInfo } from "@/server/types/storage.types";
 import { db } from "@/server/db/drizzleDb";
 import { storageFiles, storageDirectories } from "@/server/db/schema/storage";
 
@@ -93,10 +80,7 @@ describe("Local Storage Adapter", () => {
   let testDir: string;
 
   beforeAll(async () => {
-    testDir = path.resolve(
-      process.cwd(),
-      process.env.LOCAL_STORAGE_PATH || "./tests/fixtures/storage-test"
-    );
+    testDir = path.resolve(process.cwd(), process.env.LOCAL_STORAGE_PATH || "./tests/fixtures/storage-test");
 
     testLogger.info("🔧 beforeAll: Creating local adapter");
     testLogger.info("⚠️  Pool status: checking if pool is still available");
@@ -140,9 +124,7 @@ describe("Local Storage Adapter", () => {
       const originalVercel = process.env.VERCEL;
       process.env.VERCEL = "1";
 
-      await expect(createLocalAdapter()).rejects.toThrow(
-        /FATAL.*local.*storage provider.*serverless/i
-      );
+      await expect(createLocalAdapter()).rejects.toThrow(/FATAL.*local.*storage provider.*serverless/i);
 
       // Restore
       if (originalVercel !== undefined) {
@@ -156,9 +138,7 @@ describe("Local Storage Adapter", () => {
       const originalLambda = process.env.AWS_LAMBDA_FUNCTION_NAME;
       process.env.AWS_LAMBDA_FUNCTION_NAME = "test-function";
 
-      await expect(createLocalAdapter()).rejects.toThrow(
-        /FATAL.*local.*storage provider.*serverless/i
-      );
+      await expect(createLocalAdapter()).rejects.toThrow(/FATAL.*local.*storage provider.*serverless/i);
 
       // Restore
       if (originalLambda !== undefined) {
@@ -172,9 +152,7 @@ describe("Local Storage Adapter", () => {
       const originalKService = process.env.K_SERVICE;
       process.env.K_SERVICE = "cloud-run-service";
 
-      await expect(createLocalAdapter()).rejects.toThrow(
-        /FATAL.*local.*storage provider.*serverless/i
-      );
+      await expect(createLocalAdapter()).rejects.toThrow(/FATAL.*local.*storage provider.*serverless/i);
 
       // Restore
       if (originalKService !== undefined) {
@@ -199,9 +177,7 @@ describe("Local Storage Adapter", () => {
     });
 
     it("should reject complex traversal patterns", async () => {
-      const result = await adapter.fileInfoByPath(
-        "public/../private/secret.txt"
-      );
+      const result = await adapter.fileInfoByPath("public/../private/secret.txt");
       // Complex traversal should return null (file not accessible)
       expect(result).toBeNull();
     });
@@ -222,11 +198,7 @@ describe("Local Storage Adapter", () => {
       testLogger.info("📤 Test: Uploading file public/test.txt");
       const buffer = Buffer.from("test content");
       testLogger.info("📤 Calling adapter.uploadFile...");
-      const result = await adapter.uploadFile(
-        "public/test.txt",
-        "text/plain",
-        buffer
-      );
+      const result = await adapter.uploadFile("public/test.txt", "text/plain", buffer);
       testLogger.info("📤 Upload result:", {
         success: result.success,
         message: result.message,
@@ -243,11 +215,7 @@ describe("Local Storage Adapter", () => {
 
     it("should create parent directories automatically", async () => {
       const buffer = Buffer.from("nested content");
-      const result = await adapter.uploadFile(
-        "public/deep/nested/path/file.txt",
-        "text/plain",
-        buffer
-      );
+      const result = await adapter.uploadFile("public/deep/nested/path/file.txt", "text/plain", buffer);
 
       expect(result.success).toBe(true);
 
@@ -259,11 +227,7 @@ describe("Local Storage Adapter", () => {
 
     it("should handle binary data correctly", async () => {
       const binaryData = Buffer.from([0x00, 0x01, 0x02, 0xff, 0xfe, 0xfd]);
-      const result = await adapter.uploadFile(
-        "public/binary.dat",
-        "application/zip",
-        binaryData
-      );
+      const result = await adapter.uploadFile("public/binary.dat", "application/zip", binaryData);
 
       expect(result.success).toBe(true);
 
@@ -277,10 +241,7 @@ describe("Local Storage Adapter", () => {
   describe("File Deletion Operations", () => {
     beforeEach(async () => {
       // Create test files for deletion
-      await fs.writeFile(
-        path.join(testDir, "public", "delete-me.txt"),
-        "to be deleted"
-      );
+      await fs.writeFile(path.join(testDir, "public", "delete-me.txt"), "to be deleted");
     });
 
     it("should delete existing file", async () => {
@@ -302,10 +263,7 @@ describe("Local Storage Adapter", () => {
 
   describe("File Rename Operations", () => {
     beforeEach(async () => {
-      await fs.writeFile(
-        path.join(testDir, "public", "old-name.txt"),
-        "content"
-      );
+      await fs.writeFile(path.join(testDir, "public", "old-name.txt"), "content");
     });
 
     it("should rename file successfully", async () => {
@@ -369,16 +327,8 @@ describe("Local Storage Adapter", () => {
       const result = await adapter.listFiles({ path: "public" });
 
       expect(result.items.length).toBeGreaterThanOrEqual(2);
-      expect(
-        result.items.some(
-          (f: FileInfo | DirectoryInfo) => f.name === "file1.txt"
-        )
-      ).toBe(true);
-      expect(
-        result.items.some(
-          (f: FileInfo | DirectoryInfo) => f.name === "file2.txt"
-        )
-      ).toBe(true);
+      expect(result.items.some((f: FileInfo | DirectoryInfo) => f.name === "file1.txt")).toBe(true);
+      expect(result.items.some((f: FileInfo | DirectoryInfo) => f.name === "file2.txt")).toBe(true);
     });
 
     it("should fetch immediate child directories only (no files)", async () => {
@@ -390,26 +340,17 @@ describe("Local Storage Adapter", () => {
         recursive: true,
       });
       await fs.writeFile(path.join(testDir, "public", "root.txt"), "root");
-      await fs.writeFile(
-        path.join(testDir, "public", "nested", "child.txt"),
-        "child"
-      );
+      await fs.writeFile(path.join(testDir, "public", "nested", "child.txt"), "child");
 
       const result = await adapter.fetchDirectoryChildren("public");
 
       // fetchDirectoryChildren returns ONLY directories, not files (matching GCP behavior)
       expect(result.some((c: DirectoryInfo) => c.name === "nested")).toBe(true);
-      expect(result.some((c: DirectoryInfo) => c.name === "another")).toBe(
-        true
-      );
+      expect(result.some((c: DirectoryInfo) => c.name === "another")).toBe(true);
       // Should NOT include files like root.txt
-      expect(result.some((c: DirectoryInfo) => c.name === "root.txt")).toBe(
-        false
-      );
+      expect(result.some((c: DirectoryInfo) => c.name === "root.txt")).toBe(false);
       // Should NOT include nested children
-      expect(result.some((c: DirectoryInfo) => c.name === "child.txt")).toBe(
-        false
-      );
+      expect(result.some((c: DirectoryInfo) => c.name === "child.txt")).toBe(false);
     });
   });
 
@@ -424,9 +365,7 @@ describe("Local Storage Adapter", () => {
 
     it("should move multiple files", async () => {
       testLogger.info("🔄 Test: Moving multiple files");
-      testLogger.info(
-        "🔄 About to call adapter.moveItems with database operations"
-      );
+      testLogger.info("🔄 About to call adapter.moveItems with database operations");
       const result = await adapter.moveItems({
         sourcePaths: ["source/file1.txt", "source/file2.txt"],
         destinationPath: "dest",
@@ -441,9 +380,7 @@ describe("Local Storage Adapter", () => {
       expect(result.successCount).toBe(2);
 
       // Verify files moved
-      await expect(
-        fs.access(path.join(testDir, "source", "file1.txt"))
-      ).rejects.toThrow();
+      await expect(fs.access(path.join(testDir, "source", "file1.txt"))).rejects.toThrow();
       const destFile = path.join(testDir, "dest", "file1.txt");
       // fs.access() resolves to undefined on success, rejects on failure
       await fs.access(destFile); // Will throw if file doesn't exist
@@ -477,22 +414,15 @@ describe("Local Storage Adapter", () => {
       expect(result.successCount).toBe(2);
 
       // Verify files deleted
-      await expect(
-        fs.access(path.join(testDir, "source", "file1.txt"))
-      ).rejects.toThrow();
-      await expect(
-        fs.access(path.join(testDir, "source", "file2.txt"))
-      ).rejects.toThrow();
+      await expect(fs.access(path.join(testDir, "source", "file1.txt"))).rejects.toThrow();
+      await expect(fs.access(path.join(testDir, "source", "file2.txt"))).rejects.toThrow();
     });
   });
 
   describe("Storage Statistics", () => {
     beforeEach(async () => {
       await fs.writeFile(path.join(testDir, "public", "small.txt"), "hi");
-      await fs.writeFile(
-        path.join(testDir, "public", "large.txt"),
-        "x".repeat(10000)
-      );
+      await fs.writeFile(path.join(testDir, "public", "large.txt"), "x".repeat(10000));
     });
 
     it("should calculate storage statistics", async () => {

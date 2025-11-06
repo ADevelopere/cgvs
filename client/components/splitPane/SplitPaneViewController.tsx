@@ -18,9 +18,7 @@ export type SplitPaneViewControllerProps = {
   secondPaneProps?: Partial<Omit<PaneProps, "visible">>;
 };
 
-export const SplitPaneViewController: React.FC<
-  SplitPaneViewControllerProps
-> = ({
+export const SplitPaneViewController: React.FC<SplitPaneViewControllerProps> = ({
   title,
   firstPaneButtonDisabled,
   secondPaneButtonDisabled,
@@ -71,19 +69,13 @@ export const SplitPaneViewController: React.FC<
         <Box>
           {/* first pane visibility button*/}
           <Tooltip title={firstPaneButtonTooltip}>
-            <IconButton
-              onClick={handleFirstPaneVisibility}
-              disabled={firstPaneButtonDisabled || !secondPaneVisible}
-            >
+            <IconButton onClick={handleFirstPaneVisibility} disabled={firstPaneButtonDisabled || !secondPaneVisible}>
               <PanelRight />
             </IconButton>
           </Tooltip>
           {/* second pane visibility button */}
           <Tooltip title={secondPaneButtonTooltip}>
-            <IconButton
-              onClick={handleSecondPaneVisibility}
-              disabled={secondPaneButtonDisabled || !firstPaneVisible}
-            >
+            <IconButton onClick={handleSecondPaneVisibility} disabled={secondPaneButtonDisabled || !firstPaneVisible}>
               <PanelLeft />
             </IconButton>
           </Tooltip>

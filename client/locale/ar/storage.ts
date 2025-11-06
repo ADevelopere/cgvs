@@ -3,11 +3,9 @@ import { StorageTranslations } from "../components";
 export const storage: StorageTranslations = {
   uploading: {
     cancelAllUploads: "إلغاء جميع التحميلات",
-    cancelAllUploadsMessage:
-      "هل أنت متأكد أنك تريد إلغاء جميع التحميلات؟ لا يمكن التراجع عن هذا الإجراء.",
+    cancelAllUploadsMessage: "هل أنت متأكد أنك تريد إلغاء جميع التحميلات؟ لا يمكن التراجع عن هذا الإجراء.",
     cancelFileUpload: "إلغاء تحميل الملف",
-    cancelFileUploadMessage:
-      'هل أنت متأكد أنك تريد إلغاء تحميل "%{fileName}"? لا يمكن التراجع عن هذا الإجراء.',
+    cancelFileUploadMessage: 'هل أنت متأكد أنك تريد إلغاء تحميل "%{fileName}"? لا يمكن التراجع عن هذا الإجراء.',
     keepUploading: "متابعة التحميل",
     cancelUpload: "إلغاء التحميل",
     cancelUploadOf: "إلغاء تحميل %{fileName}",
@@ -47,24 +45,19 @@ export const storage: StorageTranslations = {
     successfullyCreatedFolder: 'تم إنشاء المجلد "%{name}" بنجاح',
     successfullyDeleted: "تم حذف %{count} عنصر بنجاح",
     successfullyMoved: "تم نقل %{count} عنصر بنجاح",
-    successfullyMovedPartial:
-      "تم نقل %{successCount} عنصر، فشل في نقل %{failureCount}. الأخطاء: %{errors}",
+    successfullyMovedPartial: "تم نقل %{successCount} عنصر، فشل في نقل %{failureCount}. الأخطاء: %{errors}",
     successfullyCopied: "تم نسخ %{count} عنصر بنجاح",
-    successfullyCopiedPartial:
-      "تم نسخ %{successCount} عنصر، فشل في نسخ %{failureCount}. الأخطاء: %{errors}",
+    successfullyCopiedPartial: "تم نسخ %{successCount} عنصر، فشل في نسخ %{failureCount}. الأخطاء: %{errors}",
 
     // File operation error messages
     failedToRenameFile: "فشل في إعادة تسمية الملف",
     failedToCreateFolder: "فشل في إنشاء المجلد",
     failedToDeleteItems: "فشل في حذف العناصر",
-    deletedPartial:
-      "تم حذف %{successCount} عنصر، فشل في حذف %{failureCount}. الأخطاء: %{errors}",
+    deletedPartial: "تم حذف %{successCount} عنصر، فشل في حذف %{failureCount}. الأخطاء: %{errors}",
     failedToMoveItems: "فشل في نقل العناصر",
-    movedPartial:
-      "تم نقل %{successCount} عنصر، فشل في نقل %{failureCount}. الأخطاء: %{errors}",
+    movedPartial: "تم نقل %{successCount} عنصر، فشل في نقل %{failureCount}. الأخطاء: %{errors}",
     failedToCopyItems: "فشل في نسخ العناصر",
-    copiedPartial:
-      "تم نسخ %{successCount} عنصر، فشل في نسخ %{failureCount}. الأخطاء: %{errors}",
+    copiedPartial: "تم نسخ %{successCount} عنصر، فشل في نسخ %{failureCount}. الأخطاء: %{errors}",
     failedToSearchFiles: "فشل في البحث عن الملفات",
 
     // Generic terms
@@ -149,8 +142,7 @@ export const storage: StorageTranslations = {
 
     // Accessibility
     focusedItem: "العنصر المحدد: %{itemName}",
-    navigationInstructions:
-      "استخدم مفاتيح الأسهم للتنقل، مسافة للتحديد، Enter للفتح",
+    navigationInstructions: "استخدم مفاتيح الأسهم للتنقل، مسافة للتحديد، Enter للفتح",
     keyboardShortcuts: "اختصارات لوحة المفاتيح",
 
     // Context menu actions
@@ -169,8 +161,7 @@ export const storage: StorageTranslations = {
 
     // Dialog messages
     deleteConfirmation: 'حذف "%{fileName}"',
-    deleteConfirmationMessage:
-      'هل أنت متأكد أنك تريد حذف "%{fileName}"؟ لا يمكن التراجع عن هذا الإجراء.',
+    deleteConfirmationMessage: 'هل أنت متأكد أنك تريد حذف "%{fileName}"؟ لا يمكن التراجع عن هذا الإجراء.',
 
     // Rename dialog
     renameDialogTitle: "إعادة تسمية",
@@ -179,8 +170,7 @@ export const storage: StorageTranslations = {
     renameDialogCancel: "إلغاء",
     renameDialogEmpty: "الاسم لا يمكن أن يكون فارغاً",
     renameDialogInvalid: "الاسم يحتوي على أحرف غير صالحة",
-    renameDialogFailedToRename:
-      "فشل في إعادة تسمية العنصر. يرجى المحاولة مرة أخرى.",
+    renameDialogFailedToRename: "فشل في إعادة تسمية العنصر. يرجى المحاولة مرة أخرى.",
     renameDialogUnexpectedError: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
     //rename dialog end
 
@@ -196,10 +186,8 @@ export const storage: StorageTranslations = {
     createFolderDialogCancel: "إلغاء",
     createFolderDialogEmpty: "اسم المجلد لا يمكن أن يكون فارغاً",
     createFolderDialogInvalid: "اسم المجلد يحتوي على أحرف أو أنماط غير صالحة",
-    createFolderDialogFailedToCreate:
-      "فشل في إنشاء المجلد. يرجى المحاولة مرة أخرى.",
-    createFolderDialogUnexpectedError:
-      "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+    createFolderDialogFailedToCreate: "فشل في إنشاء المجلد. يرجى المحاولة مرة أخرى.",
+    createFolderDialogUnexpectedError: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
     // Create folder dialog end
 
     // Move to dialog

@@ -18,10 +18,7 @@ export const textFilterOperationLabels: Record<TextFilterOperation, string> = {
 };
 
 // Labels for number filter operations
-export const numberFilterOperationLabels: Record<
-  NumberFilterOperation,
-  string
-> = {
+export const numberFilterOperationLabels: Record<NumberFilterOperation, string> = {
   [NumberFilterOperation.equals]: "Equals",
   [NumberFilterOperation.notEquals]: "Does not equal",
   [NumberFilterOperation.greaterThan]: "Greater than",

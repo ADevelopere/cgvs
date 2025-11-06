@@ -1,11 +1,5 @@
 import React, { type FC } from "react";
-import {
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
-} from "@mui/material";
+import { FormControl, FormHelperText, InputLabel, MenuItem, Select } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import { CertificateDateField } from "@/client/graphql/generated/gql/graphql";
 
@@ -16,9 +10,12 @@ interface CertificateDateFieldSelectorProps {
   disabled?: boolean;
 }
 
-export const CertificateDateFieldSelector: FC<
-  CertificateDateFieldSelectorProps
-> = ({ value, onChange, error, disabled }) => {
+export const CertificateDateFieldSelector: FC<CertificateDateFieldSelectorProps> = ({
+  value,
+  onChange,
+  error,
+  disabled,
+}) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
 
   return (
@@ -29,9 +26,7 @@ export const CertificateDateFieldSelector: FC<
         label={strings.dateElement.certificateFieldLabel}
         onChange={e => onChange(e.target.value as CertificateDateField)}
       >
-        <MenuItem value={CertificateDateField.ReleaseDate}>
-          {strings.dateElement.certificateFieldReleaseDate}
-        </MenuItem>
+        <MenuItem value={CertificateDateField.ReleaseDate}>{strings.dateElement.certificateFieldReleaseDate}</MenuItem>
       </Select>
       {error && <FormHelperText>{error}</FormHelperText>}
     </FormControl>

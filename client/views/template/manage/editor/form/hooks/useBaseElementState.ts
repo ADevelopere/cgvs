@@ -33,9 +33,7 @@ export type UseBaseElementStateReturn = {
 /**
  * Extract base state from element
  */
-function extractBaseState(
-  element: GQL.CertificateElementUnion
-): BaseCertificateElementFormState | null {
+function extractBaseState(element: GQL.CertificateElementUnion): BaseCertificateElementFormState | null {
   if (!element.base?.templateId) {
     return null;
   }
@@ -74,17 +72,13 @@ function toUpdateInput(
   };
 }
 
-export function useBaseElementState(
-  params: UseBaseElementStateParams
-): UseBaseElementStateReturn {
+export function useBaseElementState(params: UseBaseElementStateParams): UseBaseElementStateReturn {
   const { templateId, elements } = params;
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
-  const {updateBaseNodeData} = useNodesState();
+  const { updateBaseNodeData } = useNodesState();
 
-  const [updateElementCommonPropertiesMutation] = useMutation(
-    updateElementCommonPropertiesMutationDocument
-  );
+  const [updateElementCommonPropertiesMutation] = useMutation(updateElementCommonPropertiesMutationDocument);
 
   // Mutation function
   const mutationFn = React.useCallback(
@@ -97,8 +91,7 @@ export function useBaseElementState(
           },
         });
       } catch (error) {
-        const errorMessage =
-          errorStrings?.updateFailed || "Failed to update element";
+        const errorMessage = errorStrings?.updateFailed || "Failed to update element";
         logger.error("useBaseElementState: Mutation failed", {
           elementId,
           error,
@@ -142,7 +135,7 @@ export function useBaseElementState(
 
       // Update the nodes store
       const { key, value } = action;
-      
+
       // Map form state keys to node data properties
       if (key === "positionX" || key === "positionY" || key === "width" || key === "height") {
         updateBaseNodeData(elementId, {

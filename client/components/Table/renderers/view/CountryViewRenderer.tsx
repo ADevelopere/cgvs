@@ -15,9 +15,7 @@ export interface CountryViewRendererProps {
  * Displays a country flag and translated country name.
  * Used for rendering country values in table cells.
  */
-export const CountryViewRenderer: React.FC<CountryViewRendererProps> = ({
-  value,
-}) => {
+export const CountryViewRenderer: React.FC<CountryViewRendererProps> = ({ value }) => {
   const { countryTranslations: countryStrings } = useAppTranslation();
 
   if (!value) {

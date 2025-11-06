@@ -1,23 +1,8 @@
 "use client";
 
 import type React from "react";
-import {
-  useState,
-  useRef,
-  type KeyboardEvent,
-  type MouseEvent,
-  useEffect,
-  useCallback,
-} from "react";
-import {
-  Box,
-  Chip,
-  Typography,
-  Paper,
-  InputBase,
-  styled,
-  useTheme,
-} from "@mui/material";
+import { useState, useRef, type KeyboardEvent, type MouseEvent, useEffect, useCallback } from "react";
+import { Box, Chip, Typography, Paper, InputBase, styled, useTheme } from "@mui/material";
 
 interface TagInputProps {
   readonly label?: string;
@@ -35,10 +20,7 @@ const TagContainer = styled(Paper)(({ theme }) => ({
   cursor: "text",
   border: `1px solid ${theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.23)" : "rgba(0, 0, 0, 0.23)"}`,
   borderRadius: theme.shape.borderRadius,
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? "rgba(255, 255, 255, 0.05)"
-      : "rgba(0, 0, 0, 0.02)",
+  backgroundColor: theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.02)",
   transition: theme.transitions.create(["border-color", "box-shadow"]),
   "&:focus-within": {
     borderColor: theme.palette.primary.main,
@@ -99,19 +81,13 @@ export default function TagInput({
     }
   }, []);
 
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setInputValue(e.target.value);
-    },
-    []
-  );
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  }, []);
 
-  const handleEditInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setEditingValue(e.target.value);
-    },
-    []
-  );
+  const handleEditInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditingValue(e.target.value);
+  }, []);
 
   const addTag = useCallback(
     (tag: string) => {
@@ -161,10 +137,7 @@ export default function TagInput({
   );
 
   const handleEditKeyDown = useCallback(
-    (
-      e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
-      index: number
-    ) => {
+    (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
       if (e.key === "Enter") {
         e.preventDefault();
         updateTag(index);
@@ -197,10 +170,7 @@ export default function TagInput({
   const handleBlur = useCallback(
     (e: React.FocusEvent) => {
       // Only add tag on blur if there's a value and we're not clicking inside the container
-      if (
-        inputValue &&
-        !containerRef.current?.contains(e.relatedTarget as Node)
-      ) {
+      if (inputValue && !containerRef.current?.contains(e.relatedTarget as Node)) {
         addTag(inputValue);
       }
     },
@@ -227,11 +197,7 @@ export default function TagInput({
         {label}
       </Typography>
 
-      <TagContainer
-        ref={containerRef}
-        onClick={handleContainerClick}
-        elevation={0}
-      >
+      <TagContainer ref={containerRef} onClick={handleContainerClick} elevation={0}>
         {tags.map((tag, index) =>
           editingIndex === index ? (
             <ChipEditInput

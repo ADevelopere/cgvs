@@ -431,12 +431,7 @@ Create a file named `cors-config.json` with the following content:
     "maxAgeSeconds": 3600,
     "method": ["PUT", "GET", "OPTIONS"],
     "origin": ["http://localhost:3000", "https://your-production-domain.com"],
-    "responseHeader": [
-      "Content-Type",
-      "Content-MD5",
-      "x-goog-resumable",
-      "Access-Control-Allow-Origin"
-    ]
+    "responseHeader": ["Content-Type", "Content-MD5", "x-goog-resumable", "Access-Control-Allow-Origin"]
   }
 ]
 ```

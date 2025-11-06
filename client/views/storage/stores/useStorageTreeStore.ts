@@ -96,11 +96,7 @@ export const useStorageTreeStore = create<StorageTreeStore>()(
 
       updateCurrentDirectory: dir => {
         set(state => {
-          if (
-            !state.currentDirectory ||
-            !dir ||
-            state.currentDirectory.path !== dir.path
-          ) {
+          if (!state.currentDirectory || !dir || state.currentDirectory.path !== dir.path) {
             return state;
           }
           // Update with fresh data from Apollo cache
@@ -148,8 +144,7 @@ export const useStorageTreeStore = create<StorageTreeStore>()(
         const typedPersisted = persistedState as Partial<StorageTreeState>;
 
         // Derive expandedNodes and fetchedNodes from currentDirectory.path
-        const currentDirectory =
-          typedPersisted.currentDirectory || currentState.currentDirectory;
+        const currentDirectory = typedPersisted.currentDirectory || currentState.currentDirectory;
 
         const expandedNodes = new Set<string>();
         const fetchedNodes = new Set<string>();

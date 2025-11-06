@@ -1,10 +1,7 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { TextPropsForm } from "./TextPropsForm";
 import type { TextPropsFormErrors } from "./types";
-import {
-  ElementOverflow,
-  type TextPropsInput,
-} from "@/client/graphql/generated/gql/graphql";
+import { ElementOverflow, type TextPropsInput } from "@/client/graphql/generated/gql/graphql";
 import { logger } from "@/client/lib/logger";
 import { mockSelfHostedFonts } from "../story.util";
 
@@ -31,8 +28,7 @@ export const Default: Story = {
     textProps: defaultTextProps,
     language: "en",
     selfHostedFonts: mockSelfHostedFonts,
-    onTextPropsChange: ({ key, value }) =>
-      logger.info("Text prop changed:", key, value),
+    onTextPropsChange: ({ key, value }) => logger.info("Text prop changed:", key, value),
     errors: defaultErrors,
     disabled: false,
   },
@@ -48,8 +44,7 @@ export const ArabicLocale: Story = {
     },
     language: "ar",
     selfHostedFonts: mockSelfHostedFonts,
-    onTextPropsChange: ({ key, value }) =>
-      logger.info("Text prop changed:", key, value),
+    onTextPropsChange: ({ key, value }) => logger.info("Text prop changed:", key, value),
     errors: defaultErrors,
     disabled: false,
   },
@@ -60,8 +55,7 @@ export const WithErrors: Story = {
     textProps: { ...defaultTextProps, fontSize: 0, color: "invalid" },
     language: "en",
     selfHostedFonts: mockSelfHostedFonts,
-    onTextPropsChange: ({ key, value }) =>
-      logger.info("Text prop changed:", key, value),
+    onTextPropsChange: ({ key, value }) => logger.info("Text prop changed:", key, value),
     errors: {
       fontSize: "Font size must be positive",
       color: "Invalid color format",
@@ -75,8 +69,7 @@ export const Disabled: Story = {
     textProps: defaultTextProps,
     language: "en",
     selfHostedFonts: mockSelfHostedFonts,
-    onTextPropsChange: ({ key, value }) =>
-      logger.info("Text prop changed:", key, value),
+    onTextPropsChange: ({ key, value }) => logger.info("Text prop changed:", key, value),
     errors: defaultErrors,
     disabled: true,
   },

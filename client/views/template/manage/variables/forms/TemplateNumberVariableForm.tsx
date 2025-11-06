@@ -1,18 +1,9 @@
 "use client";
 
 import React, { useState, useCallback, useMemo } from "react";
-import {
-  Box,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  Button,
-} from "@mui/material";
+import { Box, TextField, FormControlLabel, Checkbox, Button } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
-import {
-  isNumberVariableDifferent,
-  mapToTemplateNumberVariableCreateInput,
-} from "@/client/utils/templateVariable";
+import { isNumberVariableDifferent, mapToTemplateNumberVariableCreateInput } from "@/client/utils/templateVariable";
 import {
   TemplateNumberVariable,
   TemplateNumberVariableCreateInput,
@@ -24,9 +15,7 @@ type TemplateNumberVariableFormProps = {
   templateId: number;
   variables: TemplateVariable[];
   onCreate: (data: TemplateNumberVariableCreateInput) => Promise<void>;
-  onUpdate: (
-    data: TemplateNumberVariableCreateInput & { id: number }
-  ) => Promise<void>;
+  onUpdate: (data: TemplateNumberVariableCreateInput & { id: number }) => Promise<void>;
 };
 
 const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
@@ -38,11 +27,7 @@ const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
 }) => {
   const editingVariable: TemplateNumberVariable | null = useMemo(() => {
     if (!editingVariableID) return null;
-    return (
-      (variables.find(
-        v => v.id === editingVariableID
-      ) as TemplateNumberVariable) || null
-    );
+    return (variables.find(v => v.id === editingVariableID) as TemplateNumberVariable) || null;
   }, [editingVariableID, variables]);
 
   const { templateVariableTranslations: strings } = useAppTranslation();
@@ -59,32 +44,27 @@ const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
   });
 
   const handleChange = useCallback(
-    (field: keyof TemplateNumberVariableCreateInput) =>
-      (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value =
-          event.target.type === "checkbox"
-            ? event.target.checked
-            : event.target.value;
+    (field: keyof TemplateNumberVariableCreateInput) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.type === "checkbox" ? event.target.checked : event.target.value;
 
-        setState(prevState => ({
-          ...prevState,
-          [field]: value,
-        }));
-      },
+      setState(prevState => ({
+        ...prevState,
+        [field]: value,
+      }));
+    },
     []
   );
 
   const handleNumericChange = useCallback(
-    (field: "minValue" | "maxValue" | "decimalPlaces") =>
-      (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
-        const numericValue = value === "" ? null : Number(value);
+    (field: "minValue" | "maxValue" | "decimalPlaces") => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      const numericValue = value === "" ? null : Number(value);
 
-        setState(prevState => ({
-          ...prevState,
-          [field]: numericValue,
-        }));
-      },
+      setState(prevState => ({
+        ...prevState,
+        [field]: numericValue,
+      }));
+    },
     []
   );
 
@@ -112,12 +92,7 @@ const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
   const hasChanges = editingVariableID ? isDifferentFromOriginal() : true;
 
   return (
-    <Box
-      component="form"
-      noValidate
-      autoComplete="off"
-      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-    >
+    <Box component="form" noValidate autoComplete="off" sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <TextField
         label={strings?.minimumValue ?? "Minimum Value"}
         value={state.name}
@@ -159,12 +134,7 @@ const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
         onChange={handleChange("previewValue")}
       />
       <FormControlLabel
-        control={
-          <Checkbox
-            checked={state.required ?? false}
-            onChange={handleChange("required")}
-          />
-        }
+        control={<Checkbox checked={state.required ?? false} onChange={handleChange("required")} />}
         label={strings?.required ?? "Required"}
       />
       {/* <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
@@ -178,12 +148,7 @@ const TemplateNumberVariableForm: React.FC<TemplateNumberVariableFormProps> = ({
                 </Button>
             </Box> */}
 
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleSave}
-        disabled={hasValidationError || !hasChanges}
-      >
+      <Button variant="contained" color="primary" onClick={handleSave} disabled={hasValidationError || !hasChanges}>
         {editingVariableID
           ? (strings?.updateVariable ?? "Update Variable")
           : (strings?.createVariable ?? "Create Variable")}

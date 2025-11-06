@@ -4,11 +4,7 @@ import { useCallback, useMemo, useRef, useEffect } from "react";
 import { useStorageUploadStore } from "../stores/useStorageUploadStore";
 import { useNotifications } from "@toolpad/core/useNotifications";
 import { useAppTranslation } from "@/client/locale";
-import {
-  inferContentType,
-  getFileKey,
-  generateFileMD5,
-} from "../core/storage.util";
+import { inferContentType, getFileKey, generateFileMD5 } from "../core/storage.util";
 import { getStoragePath } from "../core/storage.location";
 import logger from "@/client/lib/logger";
 import { UploadFileState } from "../core/storage-upload.types";
@@ -23,16 +19,9 @@ import {
 } from "../core/storage.cache";
 
 export const useStorageUploadOperations = () => {
-  const {
-    uploadBatch,
-    setUploadBatch,
-    updateFileState,
-    updateBatchProgress,
-    clearUploadBatch,
-  } = useStorageUploadStore();
-  const generateUploadSignedUrl = useMutationWrapper(
-    useMutation(generateUploadSignedUrlMutationDocument)
-  );
+  const { uploadBatch, setUploadBatch, updateFileState, updateBatchProgress, clearUploadBatch } =
+    useStorageUploadStore();
+  const generateUploadSignedUrl = useMutationWrapper(useMutation(generateUploadSignedUrlMutationDocument));
   const apolloClient = useApolloClient();
   const { params } = useStorageDataStore();
   const notifications = useNotifications();
@@ -136,11 +125,7 @@ export const useStorageUploadOperations = () => {
 
         await new Promise<void>((resolve, reject) => {
           loadListener = () => {
-            if (
-              !currentXhr ||
-              currentXhr.readyState !== XMLHttpRequest.DONE ||
-              currentXhr.status === 0
-            ) {
+            if (!currentXhr || currentXhr.readyState !== XMLHttpRequest.DONE || currentXhr.status === 0) {
               logger.warn("Upload cancelled or incomplete", {
                 fileKey,
                 fileName: file.name,
@@ -175,10 +160,7 @@ export const useStorageUploadOperations = () => {
                 browserFileType: file.type,
                 inferredContentType: contentType,
               });
-              const errorMsg = translations.uploadFailedWithStatus.replace(
-                "%{status}",
-                String(currentXhr.status)
-              );
+              const errorMsg = translations.uploadFailedWithStatus.replace("%{status}", String(currentXhr.status));
               handleError(errorMsg);
               uploadXhrsRef.current.delete(fileKey);
               reject(new Error(errorMsg));
@@ -206,16 +188,12 @@ export const useStorageUploadOperations = () => {
             // Provide more specific error message based on status
             let errorMessage = translations.uploadFailed;
             if (currentXhr?.status === 0) {
-              errorMessage =
-                "Network error or CORS issue - check browser console for details";
-              logger.error(
-                "Upload failed with status 0 - likely CORS or network issue",
-                {
-                  fileKey,
-                  fileName: file.name,
-                  signedUrl: signedUrl.substring(0, 200) + "...",
-                }
-              );
+              errorMessage = "Network error or CORS issue - check browser console for details";
+              logger.error("Upload failed with status 0 - likely CORS or network issue", {
+                fileKey,
+                fileName: file.name,
+                signedUrl: signedUrl.substring(0, 200) + "...",
+              });
             }
 
             handleError(errorMessage);
@@ -257,32 +235,22 @@ export const useStorageUploadOperations = () => {
         });
         updateFileState(fileKey, {
           status: "error",
-          error:
-            error instanceof Error ? error.message : translations.uploadFailed,
+          error: error instanceof Error ? error.message : translations.uploadFailed,
           xhr: undefined,
         });
       } finally {
         try {
-          if (xhr && loadListener)
-            xhr.removeEventListener("load", loadListener);
-          if (xhr && errorListener)
-            xhr.removeEventListener("error", errorListener);
-          if (xhr && abortListener)
-            xhr.removeEventListener("abort", abortListener);
-          if (xhr && timeoutListener)
-            xhr.removeEventListener("timeout", timeoutListener);
+          if (xhr && loadListener) xhr.removeEventListener("load", loadListener);
+          if (xhr && errorListener) xhr.removeEventListener("error", errorListener);
+          if (xhr && abortListener) xhr.removeEventListener("abort", abortListener);
+          if (xhr && timeoutListener) xhr.removeEventListener("timeout", timeoutListener);
         } catch {
           /* ignore */
         }
         uploadXhrsRef.current.delete(fileKey);
       }
     },
-    [
-      generateUploadSignedUrl,
-      updateFileState,
-      updateBatchProgress,
-      translations,
-    ]
+    [generateUploadSignedUrl, updateFileState, updateBatchProgress, translations]
   );
 
   const startUpload = useCallback(
@@ -378,41 +346,28 @@ export const useStorageUploadOperations = () => {
 
           // Evict cache if any files were successfully uploaded
           if (successCount > 0) {
-            logger.info(
-              "Evicting listFiles and directoryChildren caches for target path",
-              {
-                targetPath,
-                params: paramsRef.current,
-              }
-            );
-            // Evict listFiles and directoryChildren caches for target path
-            evictListFilesCacheUtil(
-              apolloClient,
+            logger.info("Evicting listFiles and directoryChildren caches for target path", {
               targetPath,
-              paramsRef.current
-            );
+              params: paramsRef.current,
+            });
+            // Evict listFiles and directoryChildren caches for target path
+            evictListFilesCacheUtil(apolloClient, targetPath, paramsRef.current);
             evictDirectoryChildrenCacheUtil(apolloClient, targetPath);
           }
 
           setTimeout(() => {
             if (successCount > 0) {
-              notifications.show(
-                translations.uploadSuccessCount.replace(
-                  "%{count}",
-                  String(successCount)
-                ),
-                { severity: "success", autoHideDuration: 3000 }
-              );
+              notifications.show(translations.uploadSuccessCount.replace("%{count}", String(successCount)), {
+                severity: "success",
+                autoHideDuration: 3000,
+              });
               callbacks?.onComplete?.();
             }
             if (errorCount > 0) {
-              notifications.show(
-                translations.uploadFailedCount.replace(
-                  "%{count}",
-                  String(errorCount)
-                ),
-                { severity: "warning", autoHideDuration: 5000 }
-              );
+              notifications.show(translations.uploadFailedCount.replace("%{count}", String(errorCount)), {
+                severity: "warning",
+                autoHideDuration: 5000,
+              });
             }
           }, 0);
 
@@ -429,14 +384,7 @@ export const useStorageUploadOperations = () => {
         }
       }
     },
-    [
-      notifications,
-      translations,
-      uploadSingleFile,
-      setUploadBatch,
-      uploadBatch,
-      apolloClient,
-    ]
+    [notifications, translations, uploadSingleFile, setUploadBatch, uploadBatch, apolloClient]
   );
 
   const cancelUpload = useCallback(
@@ -554,9 +502,7 @@ export const useStorageUploadOperations = () => {
       }
 
       for (const chunk of chunks) {
-        await Promise.all(
-          chunk.map(file => uploadSingleFile(file, uploadBatch.targetPath))
-        );
+        await Promise.all(chunk.map(file => uploadSingleFile(file, uploadBatch.targetPath)));
       }
       notifications.show(translations.retryCompletedUploads, {
         severity: "success",
@@ -568,13 +514,7 @@ export const useStorageUploadOperations = () => {
         autoHideDuration: 3000,
       });
     }
-  }, [
-    uploadBatch,
-    notifications,
-    translations,
-    updateFileState,
-    uploadSingleFile,
-  ]);
+  }, [uploadBatch, notifications, translations, updateFileState, uploadSingleFile]);
 
   return useMemo(
     () => ({
@@ -585,13 +525,6 @@ export const useStorageUploadOperations = () => {
       retryFile,
       clearUploadBatch,
     }),
-    [
-      uploadBatch,
-      startUpload,
-      cancelUpload,
-      retryFailedUploads,
-      retryFile,
-      clearUploadBatch,
-    ]
+    [uploadBatch, startUpload, cancelUpload, retryFailedUploads, retryFile, clearUploadBatch]
   );
 };

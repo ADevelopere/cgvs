@@ -1,24 +1,12 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  ReactNode,
-  useState,
-  useCallback,
-  useMemo,
-  useEffect,
-  useRef,
-} from "react";
+import { createContext, useContext, ReactNode, useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { AnyColumn, PinPosition } from "../types";
 import { useTableContext } from "./TableContext";
 import { useTheme } from "@mui/material";
 import { TABLE_CHECKBOX_CONTAINER_SIZE } from "../constants";
 
-export type TableColumnContextType<
-  TRowData,
-  TRowId extends string | number = string | number,
-> = {
+export type TableColumnContextType<TRowData, TRowId extends string | number = string | number> = {
   // Table data and configuration
   allColumns: readonly AnyColumn<TRowData, TRowId>[];
   columnWidths: Record<string, number>;
@@ -57,10 +45,7 @@ export type TableColumnsProviderProps = {
   onAutosizeColumnAction?: (columnId: string) => void;
 };
 
-export const TableColumnsProvider = <
-  TRowData,
-  TRowId extends string | number = string | number,
->({
+export const TableColumnsProvider = <TRowData, TRowId extends string | number = string | number>({
   children,
   initialWidths,
   containerRef,
@@ -74,9 +59,7 @@ export const TableColumnsProvider = <
   const theme = useTheme();
   const { columns, data, pageInfo } = useTableContext<TRowData, TRowId>();
 
-  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(
-    () => initialWidths
-  );
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() => initialWidths);
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const previousContainerWidthRef = useRef<number>(0);
 
@@ -113,8 +96,7 @@ export const TableColumnsProvider = <
     const containerWidthValue = containerRef.current.offsetWidth;
     if (containerWidthValue === 0) return; // Wait for proper measurement
 
-    const fixedWidth =
-      indexColWidth + (rowSelectionEnabled ? TABLE_CHECKBOX_CONTAINER_SIZE : 0);
+    const fixedWidth = indexColWidth + (rowSelectionEnabled ? TABLE_CHECKBOX_CONTAINER_SIZE : 0);
     const availableWidth = containerWidthValue - fixedWidth - 20; // minus scrollbar
 
     const newWidths: Record<string, number> = {};
@@ -141,27 +123,17 @@ export const TableColumnsProvider = <
 
       if (hasInitialWidths) {
         // Ratio-based calculation: scale initialWidth proportionally to fill available space
-        const totalRatio = columnsToCalculate.reduce(
-          (sum, col) => sum + (col.initialWidth || 100),
-          0
-        );
+        const totalRatio = columnsToCalculate.reduce((sum, col) => sum + (col.initialWidth || 100), 0);
         const remainingWidth = Math.max(availableWidth - totalFixedWidth, 0);
 
         columnsToCalculate.forEach(column => {
           const ratio = (column.initialWidth || 100) / totalRatio;
-          newWidths[column.id] = Math.max(
-            Math.floor(remainingWidth * ratio),
-            50
-          );
+          newWidths[column.id] = Math.max(Math.floor(remainingWidth * ratio), 50);
         });
       } else {
         // Equal distribution: separate resizable from non-resizable
-        const nonResizableColumns = columnsToCalculate.filter(
-          col => col.resizable === false
-        );
-        const resizableColumns = columnsToCalculate.filter(
-          col => col.resizable !== false
-        );
+        const nonResizableColumns = columnsToCalculate.filter(col => col.resizable === false);
+        const resizableColumns = columnsToCalculate.filter(col => col.resizable !== false);
 
         // Handle non-resizable columns
         nonResizableColumns.forEach(column => {
@@ -173,9 +145,7 @@ export const TableColumnsProvider = <
         // Distribute remaining width among resizable columns
         if (resizableColumns.length > 0) {
           const remainingWidth = Math.max(availableWidth - totalFixedWidth, 0);
-          const widthPerColumn = Math.floor(
-            remainingWidth / resizableColumns.length
-          );
+          const widthPerColumn = Math.floor(remainingWidth / resizableColumns.length);
 
           resizableColumns.forEach(column => {
             newWidths[column.id] = Math.max(widthPerColumn, 50);
@@ -228,10 +198,7 @@ export const TableColumnsProvider = <
 
   // Effect to handle container width changes and proportional column scaling
   useEffect(() => {
-    if (
-      !containerWidth ||
-      containerWidth === previousContainerWidthRef.current
-    ) {
+    if (!containerWidth || containerWidth === previousContainerWidthRef.current) {
       return;
     }
 
@@ -243,8 +210,7 @@ export const TableColumnsProvider = <
     }
 
     // Calculate fixed widths (index column + checkbox column if enabled)
-    const fixedWidth =
-      indexColWidth + (rowSelectionEnabled ? TABLE_CHECKBOX_CONTAINER_SIZE : 0);
+    const fixedWidth = indexColWidth + (rowSelectionEnabled ? TABLE_CHECKBOX_CONTAINER_SIZE : 0);
 
     // Calculate current total column widths (excluding fixed columns)
     const currentColumnsWidth = visibleColumnsForScaling.reduce(
@@ -257,11 +223,7 @@ export const TableColumnsProvider = <
     const currentAvailableWidth = containerWidth - fixedWidth;
 
     // Only scale if we have valid widths
-    if (
-      currentColumnsWidth > 0 &&
-      previousAvailableWidth > 0 &&
-      currentAvailableWidth > 0
-    ) {
+    if (currentColumnsWidth > 0 && previousAvailableWidth > 0 && currentAvailableWidth > 0) {
       const scale = currentAvailableWidth / previousAvailableWidth;
 
       // Scale all column widths proportionally
@@ -277,13 +239,7 @@ export const TableColumnsProvider = <
     }
 
     previousContainerWidthRef.current = containerWidth;
-  }, [
-    containerWidth,
-    visibleColumnsForScaling,
-    columnWidths,
-    indexColWidth,
-    rowSelectionEnabled,
-  ]);
+  }, [containerWidth, visibleColumnsForScaling, columnWidths, indexColWidth, rowSelectionEnabled]);
 
   // Handle saving column width to localStorage
   const setColumnWidth = useCallback(
@@ -300,9 +256,7 @@ export const TableColumnsProvider = <
     [columns]
   );
 
-  const [pinnedColumns, setPinnedColumns] = useState<
-    Record<string, PinPosition>
-  >({} as Record<string, PinPosition>);
+  const [pinnedColumns, setPinnedColumns] = useState<Record<string, PinPosition>>({} as Record<string, PinPosition>);
 
   // Column management methods
   const resizeColumn = useCallback(
@@ -349,12 +303,8 @@ export const TableColumnsProvider = <
       // Use requestAnimationFrame to ensure DOM is ready
       requestAnimationFrame(() => {
         // Try to find actual DOM elements to measure
-        const headerCell = document.querySelector(
-          `th[data-column-id="${columnId}"]`
-        );
-        const cells = document.querySelectorAll(
-          `td[data-column-id="${columnId}"]`
-        );
+        const headerCell = document.querySelector(`th[data-column-id="${columnId}"]`);
+        const cells = document.querySelectorAll(`td[data-column-id="${columnId}"]`);
 
         let maxWidth = 50; // Minimum width
 
@@ -389,9 +339,7 @@ export const TableColumnsProvider = <
   }, [visibleColumns, pinnedColumns]);
 
   const rightPinnedColumns = useMemo(() => {
-    return visibleColumns.filter(
-      column => pinnedColumns[column.id] === "right"
-    );
+    return visibleColumns.filter(column => pinnedColumns[column.id] === "right");
   }, [visibleColumns, pinnedColumns]);
 
   // const unpinnedColumns = useMemo(() => {
@@ -418,8 +366,7 @@ export const TableColumnsProvider = <
       position: "sticky" as const,
       left: 0,
       zIndex: 2,
-      boxShadow:
-        leftPinnedColumns.length > 0 ? "2px 0 4px rgba(0,0,0,0.1)" : "none",
+      boxShadow: leftPinnedColumns.length > 0 ? "2px 0 4px rgba(0,0,0,0.1)" : "none",
       backgroundColor: theme.palette.background.paper,
     };
   }, [leftPinnedColumns, theme.palette.background.paper]);
@@ -429,29 +376,16 @@ export const TableColumnsProvider = <
       position: "sticky" as const,
       right: 0,
       zIndex: 2,
-      boxShadow:
-        rightPinnedColumns.length > 0 ? "-2px 0 4px rgba(0,0,0,0.1)" : "none",
+      boxShadow: rightPinnedColumns.length > 0 ? "-2px 0 4px rgba(0,0,0,0.1)" : "none",
       backgroundColor: theme.palette.background.paper,
     };
   }, [rightPinnedColumns, theme.palette.background.paper]);
 
   // Calculate total width of the table
   const totalWidth = useMemo(() => {
-    const columnsWidth = visibleColumnsForScaling.reduce(
-      (sum, column) => sum + (columnWidths[column.id] || 0),
-      0
-    );
-    return (
-      columnsWidth +
-      indexColWidth +
-      (rowSelectionEnabled ? TABLE_CHECKBOX_CONTAINER_SIZE : 0)
-    );
-  }, [
-    visibleColumnsForScaling,
-    columnWidths,
-    rowSelectionEnabled,
-    indexColWidth,
-  ]);
+    const columnsWidth = visibleColumnsForScaling.reduce((sum, column) => sum + (columnWidths[column.id] || 0), 0);
+    return columnsWidth + indexColWidth + (rowSelectionEnabled ? TABLE_CHECKBOX_CONTAINER_SIZE : 0);
+  }, [visibleColumnsForScaling, columnWidths, rowSelectionEnabled, indexColWidth]);
 
   // Calculate column span for empty rows
   const colSpan = useMemo(() => {
@@ -463,9 +397,7 @@ export const TableColumnsProvider = <
       // Provided props with defaults
       columnWidths,
       allColumns: columns,
-      visibleColumns: columns.filter(
-        column => !hiddenColumns.includes(column.id)
-      ),
+      visibleColumns: columns.filter(column => !hiddenColumns.includes(column.id)),
       hiddenColumns,
       pinnedColumns,
       pinnedLeftStyle,
@@ -504,26 +436,16 @@ export const TableColumnsProvider = <
     ]
   );
 
-  return (
-    <TableColumnContext.Provider value={value}>
-      {children}
-    </TableColumnContext.Provider>
-  );
+  return <TableColumnContext.Provider value={value}>{children}</TableColumnContext.Provider>;
 };
 
 export const useTableColumnContext = <
   TRowData,
   TRowId extends string | number = string | number,
 >(): TableColumnContextType<TRowData, TRowId> => {
-  const context = useContext(
-    TableColumnContext as React.Context<
-      TableColumnContextType<TRowData, TRowId>
-    >
-  );
+  const context = useContext(TableColumnContext as React.Context<TableColumnContextType<TRowData, TRowId>>);
   if (!context) {
-    throw new Error(
-      "useTableColumnContext must be used within a TableProvider"
-    );
+    throw new Error("useTableColumnContext must be used within a TableProvider");
   }
   return context;
 };

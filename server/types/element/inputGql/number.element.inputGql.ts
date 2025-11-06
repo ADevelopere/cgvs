@@ -1,7 +1,4 @@
-import {
-  CertificateElementBaseInput,
-  NumberElementSpecPropsInput,
-} from "../input";
+import { CertificateElementBaseInput, NumberElementSpecPropsInput } from "../input";
 import { TextPropsInputGraphql } from "./config.element.inputGql";
 
 // ============================================================================

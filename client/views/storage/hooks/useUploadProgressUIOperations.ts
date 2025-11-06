@@ -3,10 +3,7 @@
 import { useCallback, useMemo } from "react";
 import { useStorageUploadOperations } from "./useStorageUploadOperations";
 import { useUploadProgressUIStore } from "../stores/useUploadProgressUIStore";
-import {
-  UploadFileState,
-  UploadFileDisplayInfo,
-} from "../core/storage-upload.types";
+import { UploadFileState, UploadFileDisplayInfo } from "../core/storage-upload.types";
 
 // Helper function to determine file type from file name
 const getFileTypeFromName = (fileName: string): string => {
@@ -38,21 +35,7 @@ const getFileTypeFromName = (fileName: string): string => {
   }
 
   // Code types
-  if (
-    [
-      "js",
-      "ts",
-      "jsx",
-      "tsx",
-      "py",
-      "java",
-      "cpp",
-      "c",
-      "css",
-      "html",
-      "php",
-    ].includes(extension)
-  ) {
+  if (["js", "ts", "jsx", "tsx", "py", "java", "cpp", "c", "css", "html", "php"].includes(extension)) {
     return "code";
   }
 
@@ -142,10 +125,7 @@ export const useUploadProgressUIOperations = () => {
   }, [clearCancelDialog]);
 
   // Stabilize primitive values with useMemo
-  const totalCount = useMemo(
-    () => storageUpload.uploadBatch?.totalCount || 0,
-    [storageUpload.uploadBatch?.totalCount]
-  );
+  const totalCount = useMemo(() => storageUpload.uploadBatch?.totalCount || 0, [storageUpload.uploadBatch?.totalCount]);
   const completedCount = useMemo(
     () => storageUpload.uploadBatch?.completedCount || 0,
     [storageUpload.uploadBatch?.completedCount]
@@ -163,10 +143,7 @@ export const useUploadProgressUIOperations = () => {
     [storageUpload.uploadBatch?.isUploading]
   );
   const stableIsCollapsed = useMemo(() => isCollapsed, [isCollapsed]);
-  const stableShowCancelDialog = useMemo(
-    () => showCancelDialog,
-    [showCancelDialog]
-  );
+  const stableShowCancelDialog = useMemo(() => showCancelDialog, [showCancelDialog]);
   const stableCancelTarget = useMemo(() => cancelTarget, [cancelTarget]);
 
   return useMemo(

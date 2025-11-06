@@ -13,11 +13,7 @@ export interface BooleanEditRendererProps {
  *
  * Checkbox that immediately saves on toggle.
  */
-export const BooleanEditRenderer: React.FC<BooleanEditRendererProps> = ({
-  value,
-  onSave,
-  onCancel,
-}) => {
+export const BooleanEditRenderer: React.FC<BooleanEditRendererProps> = ({ value, onSave, onCancel }) => {
   const handleChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = event.target.checked;

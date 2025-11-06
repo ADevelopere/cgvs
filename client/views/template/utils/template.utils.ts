@@ -1,11 +1,6 @@
-import {
-  Template,
-  TemplateUpdateInput,
-} from "@/client/graphql/generated/gql/graphql";
+import { Template, TemplateUpdateInput } from "@/client/graphql/generated/gql/graphql";
 
-export const mapTemplateToUpdateInput = (
-  template: Template
-): TemplateUpdateInput => {
+export const mapTemplateToUpdateInput = (template: Template): TemplateUpdateInput => {
   if (!template.category) {
     throw new Error("Template category is required");
   }
@@ -32,17 +27,12 @@ type TemplateParam = {
  * @param isDark - Whether the current theme is dark mode
  * @returns The template's imageUrl or a theme-appropriate placeholder
  */
-export function getTemplateImageUrl(
-  template: TemplateParam,
-  isDark: boolean
-): string {
+export function getTemplateImageUrl(template: TemplateParam, isDark: boolean): string {
   // If template has an imageUrl, use it
   if (template.imageUrl) {
     return template.imageUrl;
   }
 
   // Otherwise, return theme-appropriate placeholder
-  return isDark
-    ? "/templateCover/placeholder_dark.png"
-    : "/templateCover/placeholder_light.png";
+  return isDark ? "/templateCover/placeholder_dark.png" : "/templateCover/placeholder_light.png";
 }

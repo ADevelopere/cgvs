@@ -12,11 +12,7 @@ export interface IRedisService {
   /**
    * Set a value in Redis
    */
-  set(
-    key: string,
-    value: string,
-    options?: { ex?: number; px?: number }
-  ): Promise<void>;
+  set(key: string, value: string, options?: { ex?: number; px?: number }): Promise<void>;
 
   /**
    * Increment a value in Redis
@@ -41,9 +37,7 @@ export interface IRedisService {
   /**
    * Execute a pipeline of commands (for atomic operations)
    */
-  pipeline(
-    commands: Array<{ command: string; args: (string | number)[] }>
-  ): Promise<unknown[]>;
+  pipeline(commands: Array<{ command: string; args: (string | number)[] }>): Promise<unknown[]>;
 
   /**
    * Check if Redis connection is healthy

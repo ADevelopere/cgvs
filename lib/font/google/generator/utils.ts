@@ -7,9 +7,7 @@ import { GoogleFontItem, GoogleFontList } from "../types";
  * @returns A Map where each key is a subset name (e.g., "latin", "cyrillic")
  * and the value is an array of GoogleFontItem objects that support that subset.
  */
-export function processFontList(
-  jsonString: string
-): Map<string, GoogleFontItem[]> {
+export function processFontList(jsonString: string): Map<string, GoogleFontItem[]> {
   // 1. Parse the JSON string into our GoogleFontList type
   const fontList: GoogleFontList = JSON.parse(jsonString);
 

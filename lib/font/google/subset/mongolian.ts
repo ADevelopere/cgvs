@@ -9,8 +9,7 @@ const data: GoogleFontItem[] = [
     version: "v23",
     lastModified: "2025-09-16",
     files: {
-      regular:
-        "https://fonts.gstatic.com/s/notosansmongolian/v23/VdGCAYADGIwE0EopZx8xQfHlgEAMsrToxLsg6-av1x0.ttf",
+      regular: "https://fonts.gstatic.com/s/notosansmongolian/v23/VdGCAYADGIwE0EopZx8xQfHlgEAMsrToxLsg6-av1x0.ttf",
     },
     category: "sans-serif",
     kind: "webfonts#webfont",

@@ -5,10 +5,7 @@ import { useDashboardLayout } from "@/client/views/dashboard/layout/DashboardLay
 
 export type ToggleSideBarButtonProps = Omit<IconButtonProps, "onClick">;
 
-export const ToggleSideBarButton = forwardRef<
-  HTMLButtonElement,
-  ToggleSideBarButtonProps
->((props, ref) => {
+export const ToggleSideBarButton = forwardRef<HTMLButtonElement, ToggleSideBarButtonProps>((props, ref) => {
   const { sidebarState, toggleSidebar } = useDashboardLayout();
 
   return (
@@ -30,8 +27,7 @@ export const ToggleSideBarButton = forwardRef<
         aria-label="toggle sidebar"
         sx={{
           transition: "transform 0.3s ease-in-out",
-          transform:
-            sidebarState === "expanded" ? "rotate(180deg)" : "rotate(0deg)",
+          transform: sidebarState === "expanded" ? "rotate(180deg)" : "rotate(0deg)",
           ...props.sx,
         }}
       >

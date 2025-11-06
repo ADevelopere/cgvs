@@ -31,11 +31,7 @@ export interface SelectEditRendererProps<TValue> {
  * Uses Autocomplete for better popup positioning and width control.
  */
 export const SelectEditRenderer = <
-  TValue extends string | number | null | undefined =
-    | string
-    | number
-    | null
-    | undefined,
+  TValue extends string | number | null | undefined = string | number | null | undefined,
 >({
   value,
   options,
@@ -50,10 +46,7 @@ export const SelectEditRenderer = <
   const currentOption = options.find(opt => opt.value === value) || null;
 
   const handleChange = useCallback(
-    (
-      _event: React.SyntheticEvent,
-      newValue: { label: string; value: TValue | null | undefined } | null
-    ) => {
+    (_event: React.SyntheticEvent, newValue: { label: string; value: TValue | null | undefined } | null) => {
       const newVal = newValue?.value;
 
       // Only save if the value has actually changed
@@ -153,9 +146,7 @@ export const SelectEditRenderer = <
               }}
             />
           )}
-          clearIcon={
-            <>{value && <ClearIcon fontSize="small" onClick={handleClear} />}</>
-          }
+          clearIcon={<>{value && <ClearIcon fontSize="small" onClick={handleClear} />}</>}
           clearText={general.delete}
           closeText={general.cancel}
         />

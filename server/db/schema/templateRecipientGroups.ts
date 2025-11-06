@@ -1,14 +1,4 @@
-import {
-  pgTable,
-  serial,
-  integer,
-  timestamp,
-  varchar,
-  text,
-  uniqueIndex,
-  index,
-  jsonb,
-} from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, timestamp, varchar, text, uniqueIndex, index, jsonb } from "drizzle-orm/pg-core";
 
 export const templateRecipientGroups = pgTable("template_recipient_group", {
   id: serial("id").primaryKey(),
@@ -29,12 +19,7 @@ export const templateRecipientGroupItems = pgTable(
     createdAt: timestamp("created_at", { precision: 3 }).notNull(),
     updatedAt: timestamp("updated_at", { precision: 3 }).notNull(),
   },
-  table => [
-    uniqueIndex("trgi_student_group_unique").on(
-      table.studentId,
-      table.recipientGroupId
-    ),
-  ]
+  table => [uniqueIndex("trgi_student_group_unique").on(table.studentId, table.recipientGroupId)]
 );
 
 // Type definition for the JSONB structure
@@ -51,9 +36,7 @@ export const recipientGroupItemVariableValues = pgTable(
     id: serial("id").primaryKey(),
 
     // Links to recipient
-    templateRecipientGroupItemId: integer(
-      "template_recipient_group_item_id"
-    ).notNull(),
+    templateRecipientGroupItemId: integer("template_recipient_group_item_id").notNull(),
 
     // Denormalized for direct queries (avoid joins)
     templateId: integer("template_id").notNull(),
@@ -61,10 +44,7 @@ export const recipientGroupItemVariableValues = pgTable(
     studentId: integer("student_id").notNull(),
 
     // All variables in JSONB
-    variableValues: jsonb("variable_values")
-      .$type<TemplateVariableValuesMap>()
-      .notNull()
-      .default({}),
+    variableValues: jsonb("variable_values").$type<TemplateVariableValuesMap>().notNull().default({}),
 
     // Metadata
     createdAt: timestamp("created_at", { precision: 3 }).notNull(),
@@ -72,9 +52,7 @@ export const recipientGroupItemVariableValues = pgTable(
   },
   table => [
     // One row per recipient
-    uniqueIndex("rgiv_group_item_unique").on(
-      table.templateRecipientGroupItemId
-    ),
+    uniqueIndex("rgiv_group_item_unique").on(table.templateRecipientGroupItemId),
 
     // Fast lookups
     index("rgiv_student_idx").on(table.studentId),

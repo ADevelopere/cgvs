@@ -118,7 +118,7 @@ export class TemplateConverter {
         fontSize: textPropsState.fontSize,
         fontColor: textPropsState.color,
         // Store element ID for reverse mapping
-        id: elementId, 
+        id: elementId,
         name: base.name,
         // Store render order for sorting
         renderOrder: base.renderOrder,

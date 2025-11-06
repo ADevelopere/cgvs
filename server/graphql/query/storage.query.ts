@@ -51,8 +51,7 @@ gqlSchemaBuilder.queryFields(t => ({
       }),
       folder: t.arg.string({
         required: false,
-        description:
-          "Folder to search in (optional, searches entire bucket if not specified)",
+        description: "Folder to search in (optional, searches entire bucket if not specified)",
       }),
       limit: t.arg.int({
         required: false,
@@ -77,8 +76,7 @@ gqlSchemaBuilder.queryFields(t => ({
     args: {
       path: t.arg.string({
         required: false,
-        description:
-          "Folder path to get stats for (optional, gets stats for entire bucket if not specified)",
+        description: "Folder path to get stats for (optional, gets stats for entire bucket if not specified)",
       }),
     },
     resolve: async (_parent, { path }) => {
@@ -110,7 +108,6 @@ gqlSchemaBuilder.queryFields(t => ({
         required: true,
       }),
     },
-    resolve: async (_parent, { input }) =>
-      await StorageDbRepository.checkFileUsage(input),
+    resolve: async (_parent, { input }) => await StorageDbRepository.checkFileUsage(input),
   }),
 }));

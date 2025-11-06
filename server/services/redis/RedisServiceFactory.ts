@@ -36,9 +36,7 @@ export class RedisServiceFactory {
         return this.createUpstashRedis();
 
       default:
-        logger.warn(
-          `Unknown Redis provider: ${provider}, falling back to local`
-        );
+        logger.warn(`Unknown Redis provider: ${provider}, falling back to local`);
         return this.createLocalRedis();
     }
   }

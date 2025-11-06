@@ -1,9 +1,5 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
-import {
-  PartialStudentUpdateInputPothosObject,
-  StudentCreateInputPothosObject,
-  StudentPothosObject,
-} from "../pothos";
+import { PartialStudentUpdateInputPothosObject, StudentCreateInputPothosObject, StudentPothosObject } from "../pothos";
 import { StudentRepository } from "@/server/db/repo";
 import { StudentUtils } from "@/server/utils";
 import * as Types from "@/server/types";
@@ -34,9 +30,9 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_query, args) =>
-      await StudentRepository.partiallyUpdate(
-        args.input as Types.PartialStudentUpdateInput
-      ).then(s => StudentUtils.mapEntityToDto(s)),
+      await StudentRepository.partiallyUpdate(args.input as Types.PartialStudentUpdateInput).then(s =>
+        StudentUtils.mapEntityToDto(s)
+      ),
   }),
 
   deleteStudent: t.field({
@@ -45,8 +41,6 @@ gqlSchemaBuilder.mutationFields(t => ({
       id: t.arg.int({ required: true }),
     },
     resolve: async (_query, args) =>
-      await StudentRepository.deleteById(args.id).then(s =>
-        StudentUtils.mapEntityToDto(s)
-      ),
+      await StudentRepository.deleteById(args.id).then(s => StudentUtils.mapEntityToDto(s)),
   }),
 }));

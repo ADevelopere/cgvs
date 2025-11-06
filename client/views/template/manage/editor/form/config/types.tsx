@@ -15,7 +15,4 @@ export type TemplateConfigFormErrors = FormErrors<TemplateConfigFormState>;
 
 export type TemplateConfigFormUpdateFn = UpdateStateFn<TemplateConfigFormState>;
 
-export type TemplateConfigFormValidateFn = ValidateFieldFn<
-  TemplateConfigFormState,
-  string | undefined
->;
+export type TemplateConfigFormValidateFn = ValidateFieldFn<TemplateConfigFormState, string | undefined>;

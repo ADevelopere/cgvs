@@ -169,9 +169,7 @@ export const updateDateElementSpecPropsMutationDocument: TypedDocumentNode<
   Graphql.UpdateDateElementSpecPropsMutation,
   Graphql.UpdateDateElementSpecPropsMutationVariables
 > = gql`
-  mutation updateDateElementSpecProps(
-    $input: DateElementSpecPropsStandaloneInput!
-  ) {
+  mutation updateDateElementSpecProps($input: DateElementSpecPropsStandaloneInput!) {
     updateDateElementSpecProps(input: $input) {
       dateProps {
         calendarType

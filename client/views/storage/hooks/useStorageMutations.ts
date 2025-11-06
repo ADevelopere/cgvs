@@ -18,17 +18,13 @@ type StorageMutations = {
   createFolder: (variables: {
     input: Graphql.FolderCreateInput;
   }) => Promise<ApolloClient.MutateResult<Graphql.CreateFolderMutation>>;
-  deleteFile: (variables: {
-    path: string;
-  }) => Promise<ApolloClient.MutateResult<Graphql.DeleteFileMutation>>;
+  deleteFile: (variables: { path: string }) => Promise<ApolloClient.MutateResult<Graphql.DeleteFileMutation>>;
   deleteStorageItems: (variables: {
     input: Graphql.StorageItemsDeleteInput;
   }) => Promise<ApolloClient.MutateResult<Graphql.DeleteStorageItemsMutation>>;
   generateUploadSignedUrl: (variables: {
     input: Graphql.UploadSignedUrlGenerateInput;
-  }) => Promise<
-    ApolloClient.MutateResult<Graphql.GenerateUploadSignedUrlMutation>
-  >;
+  }) => Promise<ApolloClient.MutateResult<Graphql.GenerateUploadSignedUrlMutation>>;
   moveStorageItems: (variables: {
     input: Graphql.StorageItemsMoveInput;
   }) => Promise<ApolloClient.MutateResult<Graphql.MoveStorageItemsMutation>>;
@@ -37,14 +33,10 @@ type StorageMutations = {
   }) => Promise<ApolloClient.MutateResult<Graphql.RenameFileMutation>>;
   setStorageItemProtection: (variables: {
     input: Graphql.StorageItemProtectionUpdateInput;
-  }) => Promise<
-    ApolloClient.MutateResult<Graphql.SetStorageItemProtectionMutation>
-  >;
+  }) => Promise<ApolloClient.MutateResult<Graphql.SetStorageItemProtectionMutation>>;
   updateDirectoryPermissions: (variables: {
     input: Graphql.DirectoryPermissionsUpdateInput;
-  }) => Promise<
-    ApolloClient.MutateResult<Graphql.UpdateDirectoryPermissionsMutation>
-  >;
+  }) => Promise<ApolloClient.MutateResult<Graphql.UpdateDirectoryPermissionsMutation>>;
   evictListFilesCache: (path?: string) => void;
   evictDirectoryChildrenCache: (path?: string) => void;
 };
@@ -75,29 +67,15 @@ export const useStorageMutations = (): StorageMutations => {
   );
   // Create mutation hooks - extract just the mutation function (first element)
   // The mutation function from useMutation is stable and doesn't recreate
-  const [copyStorageItemsMutation] = useMutation(
-    Document.copyStorageItemsMutationDocument
-  );
-  const [createFolderMutation] = useMutation(
-    Document.createFolderMutationDocument
-  );
+  const [copyStorageItemsMutation] = useMutation(Document.copyStorageItemsMutationDocument);
+  const [createFolderMutation] = useMutation(Document.createFolderMutationDocument);
   const [deleteFileMutation] = useMutation(Document.deleteFileMutationDocument);
-  const [deleteStorageItemsMutation] = useMutation(
-    Document.deleteStorageItemsMutationDocument
-  );
-  const [generateUploadSignedUrlMutation] = useMutation(
-    Document.generateUploadSignedUrlMutationDocument
-  );
-  const [moveStorageItemsMutation] = useMutation(
-    Document.moveStorageItemsMutationDocument
-  );
+  const [deleteStorageItemsMutation] = useMutation(Document.deleteStorageItemsMutationDocument);
+  const [generateUploadSignedUrlMutation] = useMutation(Document.generateUploadSignedUrlMutationDocument);
+  const [moveStorageItemsMutation] = useMutation(Document.moveStorageItemsMutationDocument);
   const [renameFileMutation] = useMutation(Document.renameFileMutationDocument);
-  const [setStorageItemProtectionMutation] = useMutation(
-    Document.setStorageItemProtectionMutationDocument
-  );
-  const [updateDirectoryPermissionsMutation] = useMutation(
-    Document.updateDirectoryPermissionsMutationDocument
-  );
+  const [setStorageItemProtectionMutation] = useMutation(Document.setStorageItemProtectionMutationDocument);
+  const [updateDirectoryPermissionsMutation] = useMutation(Document.updateDirectoryPermissionsMutationDocument);
 
   const copyStorageItems = useCallback(
     async (variables: { input: Graphql.StorageItemsCopyInput }) => {
@@ -109,10 +87,9 @@ export const useStorageMutations = (): StorageMutations => {
 
       // Only evict directory children cache if we copied any directories
       // Evict the destination parent's directoryChildren cache
-      const hasCopiedDirectory =
-        result.data?.copyStorageItems?.successfulItems?.some(
-          item => item.__typename === "DirectoryInfo"
-        );
+      const hasCopiedDirectory = result.data?.copyStorageItems?.successfulItems?.some(
+        item => item.__typename === "DirectoryInfo"
+      );
 
       if (hasCopiedDirectory) {
         evictDirectoryChildrenCache(destinationPath);
@@ -129,10 +106,7 @@ export const useStorageMutations = (): StorageMutations => {
 
       // Evict cache for parent directory where folder was created
       // input.path is the full path of the new folder, so extract parent
-      const parentPath = variables.input.path.substring(
-        0,
-        variables.input.path.lastIndexOf("/")
-      );
+      const parentPath = variables.input.path.substring(0, variables.input.path.lastIndexOf("/"));
       evictListFilesCache(parentPath);
       evictDirectoryChildrenCache(parentPath);
 
@@ -146,10 +120,7 @@ export const useStorageMutations = (): StorageMutations => {
       const result = await deleteFileMutation({ variables });
 
       // Evict cache for parent directory
-      const parentPath = variables.path.substring(
-        0,
-        variables.path.lastIndexOf("/")
-      );
+      const parentPath = variables.path.substring(0, variables.path.lastIndexOf("/"));
       evictListFilesCache(parentPath);
 
       return result;
@@ -190,11 +161,7 @@ export const useStorageMutations = (): StorageMutations => {
 
       return result;
     },
-    [
-      deleteStorageItemsMutation,
-      evictListFilesCache,
-      evictDirectoryChildrenCache,
-    ]
+    [deleteStorageItemsMutation, evictListFilesCache, evictDirectoryChildrenCache]
   );
 
   const generateUploadSignedUrl = useCallback(
@@ -210,24 +177,18 @@ export const useStorageMutations = (): StorageMutations => {
 
       // Track parent directories of moved directories
       const sourceParentsOfMovedDirectories = new Set<string>();
-      const hasMovedDirectory =
-        result.data?.moveStorageItems?.successfulItems?.some(item => {
-          if (item.__typename === "DirectoryInfo") {
-            // Find the original path for this item
-            const originalPath = variables.input.sourcePaths.find(
-              p => p.endsWith(`/${item.name}`) || p === item.name
-            );
-            if (originalPath) {
-              const sourceParent = originalPath.substring(
-                0,
-                originalPath.lastIndexOf("/")
-              );
-              sourceParentsOfMovedDirectories.add(sourceParent);
-            }
-            return true;
+      const hasMovedDirectory = result.data?.moveStorageItems?.successfulItems?.some(item => {
+        if (item.__typename === "DirectoryInfo") {
+          // Find the original path for this item
+          const originalPath = variables.input.sourcePaths.find(p => p.endsWith(`/${item.name}`) || p === item.name);
+          if (originalPath) {
+            const sourceParent = originalPath.substring(0, originalPath.lastIndexOf("/"));
+            sourceParentsOfMovedDirectories.add(sourceParent);
           }
-          return false;
-        });
+          return true;
+        }
+        return false;
+      });
 
       // Evict cache for source parent directories
       const uniqueSourcePaths = new Set<string>();
@@ -264,10 +225,7 @@ export const useStorageMutations = (): StorageMutations => {
       const result = await renameFileMutation({ variables });
 
       // Evict cache for parent directory
-      const parentPath = variables.input.currentPath.substring(
-        0,
-        variables.input.currentPath.lastIndexOf("/")
-      );
+      const parentPath = variables.input.currentPath.substring(0, variables.input.currentPath.lastIndexOf("/"));
       evictListFilesCache(parentPath);
 
       // Only evict directory children if the renamed item was a directory

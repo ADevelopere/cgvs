@@ -40,14 +40,7 @@ const NavItem: React.FC<{
   const [open, setOpen] = useState<boolean>(initiallyOpen);
 
   const linkPath = React.useMemo(() => {
-    return (
-      item.pattern ||
-      (item.segment
-        ? item.segment.startsWith("/")
-          ? item.segment
-          : `/${item.segment}`
-        : "#")
-    );
+    return item.pattern || (item.segment ? (item.segment.startsWith("/") ? item.segment : `/${item.segment}`) : "#");
   }, [item.pattern, item.segment]);
 
   const itemIsActive = React.useMemo(() => {
@@ -98,20 +91,14 @@ const NavItem: React.FC<{
             }}
             onClick={handleClick}
           >
-            {item.icon && (
-              <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>
-                {item.icon}
-              </ListItemIcon>
-            )}
+            {item.icon && <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>{item.icon}</ListItemIcon>}
             <ListItemText
               primary={item.title}
               slotProps={{
                 primary: {
                   sx: {
                     fontSize: "0.875rem",
-                    fontWeight: itemIsActive
-                      ? "fontWeightMedium"
-                      : "fontWeightRegular",
+                    fontWeight: itemIsActive ? "fontWeightMedium" : "fontWeightRegular",
                     textAlign: "start",
                   },
                 },
@@ -140,11 +127,7 @@ const NavItem: React.FC<{
             }}
             onClick={handleClick}
           >
-            {item.icon && (
-              <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>
-                {item.icon}
-              </ListItemIcon>
-            )}
+            {item.icon && <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>{item.icon}</ListItemIcon>}
             <ListItemText
               primary={item.title}
               slotProps={{
@@ -243,12 +226,7 @@ export const ExpandedDashboardSidebar: React.FC = () => {
     >
       <List component="nav" sx={{ p: 0 }}>
         {navigation.map((item, index) => (
-          <RenderNavItem
-            key={index}
-            item={item}
-            level={0}
-            pathname={pathname}
-          />
+          <RenderNavItem key={index} item={item} level={0} pathname={pathname} />
         ))}
       </List>
     </Box>

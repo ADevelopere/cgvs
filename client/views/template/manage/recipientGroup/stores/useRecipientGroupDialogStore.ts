@@ -30,9 +30,7 @@ const initialState: RecipientGroupDialogState = {
   selectedGroupId: null,
 };
 
-export const useRecipientGroupDialogStore = create<
-  RecipientGroupDialogState & RecipientGroupDialogActions
->(set => ({
+export const useRecipientGroupDialogStore = create<RecipientGroupDialogState & RecipientGroupDialogActions>(set => ({
   ...initialState,
 
   openCreateDialog: () => set({ createDialogOpen: true }),

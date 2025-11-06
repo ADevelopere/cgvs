@@ -1,11 +1,5 @@
 import type * as GQL from "@/client/graphql/generated/gql/graphql";
-import {
-  Action,
-  FormErrors,
-  UpdateStateFn,
-  UpdateStateWithElementIdFn,
-  ValidateFieldFn,
-} from "../../types";
+import { Action, FormErrors, UpdateStateFn, UpdateStateWithElementIdFn, ValidateFieldFn } from "../../types";
 import { TextPropsFormErrors } from "../textProps";
 import { BaseElementFormErrors } from "../base";
 
@@ -27,7 +21,7 @@ export type TextDataSourceFormState = {
 // ============================================================================
 export type TextDataSourceFieldErrors = FormErrors<GQL.TextDataSourceInput> | undefined;
 export type TextDataSourceFormErrors = {
-  dataSource?: TextDataSourceFieldErrors
+  dataSource?: TextDataSourceFieldErrors;
 };
 
 export type TextElementFormErrors = TextDataSourceFormErrors & {
@@ -40,8 +34,7 @@ export type TextElementFormErrors = TextDataSourceFormErrors & {
 // ============================================================================
 
 export type UpdateTextDataSourceFn = UpdateStateFn<TextDataSourceFormState>;
-export type UpdateTextDataSourceWithElementIdFn =
-  UpdateStateWithElementIdFn<TextDataSourceFormState>;
+export type UpdateTextDataSourceWithElementIdFn = UpdateStateWithElementIdFn<TextDataSourceFormState>;
 
 export type TextDataSourceUpdateAction = Action<TextDataSourceFormState>;
 
@@ -49,19 +42,14 @@ export type TextDataSourceUpdateAction = Action<TextDataSourceFormState>;
 // SANITIZED STATE TYPES
 // ============================================================================
 
-export type validateTextDataSourceFn = ValidateFieldFn<
-  TextDataSourceFormState,
-  TextDataSourceFieldErrors
->;
+export type validateTextDataSourceFn = ValidateFieldFn<TextDataSourceFormState, TextDataSourceFieldErrors>;
 
 // ============================================================================
 // CONVERSION UTILITIES
 // ============================================================================
 
 // Convert working state to GraphQL input
-export const textDataSourceToInput = (
-  state: GQL.TextDataSource
-): GQL.TextDataSourceInput => {
+export const textDataSourceToInput = (state: GQL.TextDataSource): GQL.TextDataSourceInput => {
   switch (state.__typename) {
     case "TextDataSourceStatic":
       return { static: { value: state.value ?? "" } };
@@ -82,9 +70,7 @@ export const textDataSourceToInput = (
   }
 };
 
-export const textDataSourceActionInputToInput = (
-  action: TextDataSourceUpdateAction
-): GQL.TextDataSourceInput => {
+export const textDataSourceActionInputToInput = (action: TextDataSourceUpdateAction): GQL.TextDataSourceInput => {
   const { value: source } = action;
 
   if (source.static) {

@@ -26,14 +26,10 @@ export const DateDataSourceForm: FC<DateDataSourceFormProps> = ({
   showSelector,
 }) => {
   const selectedType: GQL.DateDataSourceType = useMemo(() => {
-    if (dataSource.certificateField?.field)
-      return GQL.DateDataSourceType.CertificateDateField;
-    if (dataSource.static?.value !== undefined)
-      return GQL.DateDataSourceType.Static;
-    if (dataSource.studentField?.field)
-      return GQL.DateDataSourceType.StudentDateField;
-    if (dataSource.templateVariable?.variableId)
-      return GQL.DateDataSourceType.TemplateDateVariable;
+    if (dataSource.certificateField?.field) return GQL.DateDataSourceType.CertificateDateField;
+    if (dataSource.static?.value !== undefined) return GQL.DateDataSourceType.Static;
+    if (dataSource.studentField?.field) return GQL.DateDataSourceType.StudentDateField;
+    if (dataSource.templateVariable?.variableId) return GQL.DateDataSourceType.TemplateDateVariable;
     return GQL.DateDataSourceType.Static;
   }, [dataSource]);
 
@@ -76,9 +72,7 @@ export const DateDataSourceForm: FC<DateDataSourceFormProps> = ({
       case GQL.DateDataSourceType.StudentDateField:
         return (
           <StudentDateFieldSelector
-            value={
-              dataSource.studentField?.field || GQL.StudentDateField.DateOfBirth
-            }
+            value={dataSource.studentField?.field || GQL.StudentDateField.DateOfBirth}
             onChange={field => onDataSourceChange({ studentField: { field } })}
             error={errors?.studentField}
             disabled={disabled}
@@ -88,13 +82,8 @@ export const DateDataSourceForm: FC<DateDataSourceFormProps> = ({
       case GQL.DateDataSourceType.CertificateDateField:
         return (
           <CertificateDateFieldSelector
-            value={
-              dataSource.certificateField?.field ||
-              GQL.CertificateDateField.ReleaseDate
-            }
-            onChange={field =>
-              onDataSourceChange({ certificateField: { field } })
-            }
+            value={dataSource.certificateField?.field || GQL.CertificateDateField.ReleaseDate}
+            onChange={field => onDataSourceChange({ certificateField: { field } })}
             error={errors?.certificateField}
             disabled={disabled}
           />
@@ -105,9 +94,7 @@ export const DateDataSourceForm: FC<DateDataSourceFormProps> = ({
           <TemplateDateVariableSelector
             value={dataSource.templateVariable?.variableId}
             variables={dateVariables}
-            onChange={variableId =>
-              onDataSourceChange({ templateVariable: { variableId } })
-            }
+            onChange={variableId => onDataSourceChange({ templateVariable: { variableId } })}
             error={errors?.templateVariable}
             disabled={disabled}
           />

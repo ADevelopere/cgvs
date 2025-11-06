@@ -6,19 +6,11 @@ import DashboardEndActions from "@/client/views/dashboard/layout/DashboardEndAct
 import { DashboardLayoutProvider } from "@/client/views/dashboard/layout/DashboardLayoutContext";
 import { TableLocaleProvider } from "@/client/components/Table/contexts/TableLocaleContext";
 
-const AdminLayoutContent: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+const AdminLayoutContent: React.FC<{ children: React.ReactNode }> = ({ children }: { children: React.ReactNode }) => {
   return <DashboardLayout>{children}</DashboardLayout>;
 };
 
-const AdminLayout: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }: { children: React.ReactNode }) => {
   return (
     <DashboardLayoutProvider
       initialSlots={{

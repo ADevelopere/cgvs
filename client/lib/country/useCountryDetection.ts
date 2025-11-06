@@ -32,25 +32,15 @@ const detectCountry = async (
   } catch {
     setError("Failed to detect country");
     if (typeof localStorage !== "undefined") {
-      localStorage.setItem(
-        "countryCodeRequestCount",
-        MAX_REQUESTS_PER_DAY.toString()
-      );
+      localStorage.setItem("countryCodeRequestCount", MAX_REQUESTS_PER_DAY.toString());
       localStorage.setItem("countryCode", defaultCountryCode);
     }
     setCountryCode(defaultCountryCode);
   } finally {
     if (typeof localStorage !== "undefined") {
-      const storedRequestCount = loadFromLocalStorage<string>(
-        "countryCodeRequestCount"
-      );
-      const requestCount = storedRequestCount
-        ? parseInt(storedRequestCount, 10)
-        : 0;
-      localStorage.setItem(
-        "countryCodeRequestCount",
-        (requestCount + 1).toString()
-      );
+      const storedRequestCount = loadFromLocalStorage<string>("countryCodeRequestCount");
+      const requestCount = storedRequestCount ? parseInt(storedRequestCount, 10) : 0;
+      localStorage.setItem("countryCodeRequestCount", (requestCount + 1).toString());
     }
     setLoading(false);
   }
@@ -64,37 +54,21 @@ const fetchCountryCode = (
 ) => {
   if (typeof localStorage !== "undefined") {
     const storedCountryCode = loadFromLocalStorage<string>("countryCode");
-    const storedFetchDate = loadFromLocalStorage<string>(
-      "countryCodeFetchDate"
-    );
-    const storedRequestCount = loadFromLocalStorage<string>(
-      "countryCodeRequestCount"
-    );
+    const storedFetchDate = loadFromLocalStorage<string>("countryCodeFetchDate");
+    const storedRequestCount = loadFromLocalStorage<string>("countryCodeRequestCount");
     const fetchDate = storedFetchDate ? new Date(storedFetchDate) : null;
     const now = new Date();
-    const requestCount = storedRequestCount
-      ? parseInt(storedRequestCount, 10)
-      : 0;
+    const requestCount = storedRequestCount ? parseInt(storedRequestCount, 10) : 0;
 
-    if (
-      storedCountryCode &&
-      fetchDate &&
-      now.getDate() === fetchDate.getDate()
-    ) {
+    if (storedCountryCode && fetchDate && now.getDate() === fetchDate.getDate()) {
       if (requestCount < MAX_REQUESTS_PER_DAY) {
-        localStorage.setItem(
-          "countryCodeRequestCount",
-          (requestCount + 1).toString()
-        );
+        localStorage.setItem("countryCodeRequestCount", (requestCount + 1).toString());
         setCountryCode(storedCountryCode);
         setLoading(false);
         return;
       } else {
         setError("Request limit reached for today");
-        localStorage.setItem(
-          "countryCodeRequestCount",
-          MAX_REQUESTS_PER_DAY.toString()
-        );
+        localStorage.setItem("countryCodeRequestCount", MAX_REQUESTS_PER_DAY.toString());
         setLoading(false);
         return;
       }
@@ -109,10 +83,7 @@ const fetchCountryCode = (
   detectCountry(setCountryCode, setError, setLoading, defaultCountryCode);
 };
 
-const useCountryDetection = (
-  timeout: number = 2000,
-  defaultCountryCode: string = "SA"
-): CountryDetectionResult => {
+const useCountryDetection = (timeout: number = 2000, defaultCountryCode: string = "SA"): CountryDetectionResult => {
   const [countryCode, setCountryCode] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -127,34 +98,18 @@ const useCountryDetection = (
 
     if (typeof localStorage !== "undefined") {
       const storedCountryCode = loadFromLocalStorage<string>("countryCode");
-      const storedFetchDate = loadFromLocalStorage<string>(
-        "countryCodeFetchDate"
-      );
+      const storedFetchDate = loadFromLocalStorage<string>("countryCodeFetchDate");
       const fetchDate = storedFetchDate ? new Date(storedFetchDate) : null;
       const now = new Date();
 
-      if (
-        storedCountryCode &&
-        fetchDate &&
-        now.getDate() === fetchDate.getDate()
-      ) {
+      if (storedCountryCode && fetchDate && now.getDate() === fetchDate.getDate()) {
         setCountryCode(storedCountryCode);
         setLoading(false);
       } else {
-        fetchCountryCode(
-          setCountryCode,
-          setError,
-          setLoading,
-          defaultCountryCode
-        );
+        fetchCountryCode(setCountryCode, setError, setLoading, defaultCountryCode);
       }
     } else {
-      fetchCountryCode(
-        setCountryCode,
-        setError,
-        setLoading,
-        defaultCountryCode
-      );
+      fetchCountryCode(setCountryCode, setError, setLoading, defaultCountryCode);
     }
 
     return () => clearTimeout(timeoutId);

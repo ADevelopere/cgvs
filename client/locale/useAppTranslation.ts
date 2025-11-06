@@ -17,7 +17,6 @@ export const useAppTranslation = () => {
   return ts;
 };
 
-
 export const useAppTranslationForLanguage = (language: AppLanguage) => {
   const ts = useMemo(() => {
     // Check if language exists in translations

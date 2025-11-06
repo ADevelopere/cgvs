@@ -16,9 +16,7 @@ export const EmailScalar = new GraphQLScalarType({
       try {
         return new Email(value);
       } catch (err) {
-        throw new TypeError(
-          `Invalid email address: ${value}: ${(err as Error).message}`
-        );
+        throw new TypeError(`Invalid email address: ${value}: ${(err as Error).message}`);
       }
     }
     throw new TypeError(`Expected string for Email, got: ${typeof value}`);
@@ -28,9 +26,7 @@ export const EmailScalar = new GraphQLScalarType({
       try {
         return new Email(ast.value);
       } catch (err) {
-        throw new TypeError(
-          `Invalid email address literal: ${ast.value}: ${(err as Error).message}`
-        );
+        throw new TypeError(`Invalid email address literal: ${ast.value}: ${(err as Error).message}`);
       }
     }
     throw new TypeError("Email literal must be a string");

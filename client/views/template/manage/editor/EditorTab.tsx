@@ -20,7 +20,8 @@ import { PdfmeStoreProvider } from "./PdfmeStoreProvider";
 import AddNodePanel from "./addNewNode/AddNodePanel";
 import {
   //  EditorToggle,
-   EditorType } from "./components/EditorToggle";
+  EditorType,
+} from "./components/EditorToggle";
 
 export type EditorTabProps = {
   template: Template;

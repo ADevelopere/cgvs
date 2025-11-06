@@ -1,13 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useMemo } from "react";
-import {
-  Box,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  Button,
-} from "@mui/material";
+import { Box, TextField, FormControlLabel, Checkbox, Button } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useAppTranslation } from "@/client/locale";
 import {
@@ -15,10 +9,7 @@ import {
   TemplateDateVariableCreateInput,
   TemplateVariable,
 } from "@/client/graphql/generated/gql/graphql";
-import {
-  mapToTemplateDateVariableCreateInput,
-  isDateVariableDifferent,
-} from "@/client/utils/templateVariable";
+import { mapToTemplateDateVariableCreateInput, isDateVariableDifferent } from "@/client/utils/templateVariable";
 
 // Helper function for date validation
 const isDateValid = (dateStr: string | null): boolean => {
@@ -32,9 +23,7 @@ type TemplateDateVariableFormProps = {
   templateId: number;
   variables: TemplateVariable[];
   onCreate: (data: TemplateDateVariableCreateInput) => Promise<void>;
-  onUpdate: (
-    data: TemplateDateVariableCreateInput & { id: number }
-  ) => Promise<void>;
+  onUpdate: (data: TemplateDateVariableCreateInput & { id: number }) => Promise<void>;
 };
 
 const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
@@ -46,11 +35,7 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
 }) => {
   const editingVariable: TemplateDateVariable | null = useMemo(() => {
     if (!editingVariableID) return null;
-    return (
-      (variables.find(
-        v => v.id === editingVariableID
-      ) as TemplateDateVariable) || null
-    );
+    return (variables.find(v => v.id === editingVariableID) as TemplateDateVariable) || null;
   }, [editingVariableID, variables]);
 
   const { templateVariableTranslations: strings } = useAppTranslation();
@@ -67,18 +52,14 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
   });
 
   const handleChange = useCallback(
-    (field: keyof TemplateDateVariableCreateInput) =>
-      (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value =
-          event.target.type === "checkbox"
-            ? event.target.checked
-            : event.target.value;
+    (field: keyof TemplateDateVariableCreateInput) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.type === "checkbox" ? event.target.checked : event.target.value;
 
-        setState(prevState => ({
-          ...prevState,
-          [field]: value,
-        }));
-      },
+      setState(prevState => ({
+        ...prevState,
+        [field]: value,
+      }));
+    },
     []
   );
 
@@ -121,20 +102,14 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
   const previewValueError =
     state.previewValue &&
     (!isDateValid(state.previewValue) ||
-      (state.minDate &&
-        new Date(state.previewValue) < new Date(state.minDate)) ||
-      (state.maxDate &&
-        new Date(state.previewValue) > new Date(state.maxDate)));
+      (state.minDate && new Date(state.previewValue) < new Date(state.minDate)) ||
+      (state.maxDate && new Date(state.previewValue) > new Date(state.maxDate)));
 
-  const hasValidationError =
-    !state.name || minDateError || maxDateError || previewValueError;
+  const hasValidationError = !state.name || minDateError || maxDateError || previewValueError;
   const hasChanges = editingVariableID ? isDifferentFromOriginal() : true;
 
   return (
-    <Box
-      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-      tabIndex={-1}
-    >
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }} tabIndex={-1}>
       <TextField
         label={strings?.name ?? "Name"}
         value={state.name}
@@ -157,10 +132,7 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
         value={state.format}
         onChange={handleChange("format")}
         fullWidth
-        helperText={
-          strings?.formatHelperText ??
-          "Date format (e.g., YYYY-MM-DD, DD.MM.YYYY)"
-        }
+        helperText={strings?.formatHelperText ?? "Date format (e.g., YYYY-MM-DD, DD.MM.YYYY)"}
       />
 
       <DatePicker
@@ -171,9 +143,7 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
           textField: {
             fullWidth: true,
             error: minDateError,
-            helperText: minDateError
-              ? (strings?.invalidDateError ?? "Invalid date format")
-              : undefined,
+            helperText: minDateError ? (strings?.invalidDateError ?? "Invalid date format") : undefined,
           },
         }}
       />
@@ -186,9 +156,7 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
           textField: {
             fullWidth: true,
             error: maxDateError,
-            helperText: maxDateError
-              ? (strings?.invalidDateError ?? "Invalid date format")
-              : undefined,
+            helperText: maxDateError ? (strings?.invalidDateError ?? "Invalid date format") : undefined,
           },
         }}
       />
@@ -204,29 +172,18 @@ const TemplateDateVariableForm: React.FC<TemplateDateVariableFormProps> = ({
             fullWidth: true,
             error: previewValueError,
             helperText: previewValueError
-              ? (strings?.invalidDateError ??
-                "Preview date must be within min and max dates")
+              ? (strings?.invalidDateError ?? "Preview date must be within min and max dates")
               : undefined,
           },
         }}
       />
 
       <FormControlLabel
-        control={
-          <Checkbox
-            checked={state.required ?? false}
-            onChange={handleChange("required")}
-          />
-        }
+        control={<Checkbox checked={state.required ?? false} onChange={handleChange("required")} />}
         label={strings?.required ?? "Required"}
       />
 
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleSave}
-        disabled={hasValidationError || !hasChanges}
-      >
+      <Button variant="contained" color="primary" onClick={handleSave} disabled={hasValidationError || !hasChanges}>
         {editingVariableID
           ? (strings?.updateVariable ?? "Update Variable")
           : (strings?.createVariable ?? "Create Variable")}

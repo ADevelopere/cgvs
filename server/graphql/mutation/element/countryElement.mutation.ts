@@ -15,9 +15,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = CountryElementUtils.mapCountryElementCreateGraphqlToInput(
-        args.input
-      );
+      const input = CountryElementUtils.mapCountryElementCreateGraphqlToInput(args.input);
       return await CountryElementRepository.create(input);
     },
   }),
@@ -31,9 +29,7 @@ gqlSchemaBuilder.mutationFields(t => ({
       }),
     },
     resolve: async (_, args) => {
-      const input = CountryElementUtils.mapCountryElementUpdateGraphqlToInput(
-        args.input
-      );
+      const input = CountryElementUtils.mapCountryElementUpdateGraphqlToInput(args.input);
       return await CountryElementRepository.update(input);
     },
   }),

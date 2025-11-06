@@ -1,11 +1,5 @@
 import { useAppTheme } from "@/client/contexts/ThemeContext";
-import React, {
-  MouseEvent,
-  TouchEvent,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { MouseEvent, TouchEvent, useCallback, useEffect, useState } from "react";
 
 type EditorPaneResizerProps = {
   allowResize: boolean;
@@ -22,17 +16,8 @@ type EditorPaneResizerProps = {
 const EditorPaneResizer: React.FC<EditorPaneResizerProps> = props => {
   const [isResizing, setIsResizing] = useState(false);
   const { theme } = useAppTheme();
-  const {
-    allowResize,
-    orientation,
-    className,
-    onClick,
-    onDoubleClick,
-    onMouseDown,
-    onTouchEnd,
-    onTouchStart,
-    style,
-  } = props;
+  const { allowResize, orientation, className, onClick, onDoubleClick, onMouseDown, onTouchEnd, onTouchStart, style } =
+    props;
 
   const handleMouseDown = useCallback(
     (e: MouseEvent<HTMLSpanElement>) => {
@@ -94,9 +79,7 @@ const EditorPaneResizer: React.FC<EditorPaneResizerProps> = props => {
           left: "50%",
           transform: "translateX(-50%)",
           width: isResizing ? 4 : 2,
-          backgroundColor: isResizing
-            ? theme.palette.primary.main
-            : theme.palette.divider,
+          backgroundColor: isResizing ? theme.palette.primary.main : theme.palette.divider,
           transition: "width 0.2s, background-color 0.2s",
         }}
       />

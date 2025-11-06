@@ -1,10 +1,6 @@
 import { useCallback, useMemo } from "react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
-import {
-  StorageItemUnion,
-  ViewMode,
-  StorageActions,
-} from "../core/storage.type";
+import { StorageItemUnion, ViewMode, StorageActions } from "../core/storage.type";
 import { useStorageDataStore } from "../stores/useStorageDataStore";
 import { useStorageUIStore } from "../stores/useStorageUIStore";
 
@@ -26,28 +22,20 @@ export const useStorageActions = (): StorageActions => {
     useStorageDataStore.getState().setParams(params);
   }, []);
 
-  const updateParams = useCallback(
-    (partial: Partial<Graphql.FilesListInput>) => {
-      const currentParams = useStorageDataStore.getState().params;
-      useStorageDataStore
-        .getState()
-        .setParams({ ...currentParams, ...partial });
-    },
-    []
-  );
+  const updateParams = useCallback((partial: Partial<Graphql.FilesListInput>) => {
+    const currentParams = useStorageDataStore.getState().params;
+    useStorageDataStore.getState().setParams({ ...currentParams, ...partial });
+  }, []);
 
   // ============================================================================
   // SELECTION ACTIONS
   // ============================================================================
 
   const toggleSelect = useCallback((path: string) => {
-    const { selectedItems, setSelectedItems, setLastSelectedItem } =
-      useStorageUIStore.getState();
+    const { selectedItems, setSelectedItems, setLastSelectedItem } = useStorageUIStore.getState();
 
     const isSelected = selectedItems.includes(path);
-    const newSelection = isSelected
-      ? selectedItems.filter(p => p !== path)
-      : [...selectedItems, path];
+    const newSelection = isSelected ? selectedItems.filter(p => p !== path) : [...selectedItems, path];
 
     setSelectedItems(newSelection);
     setLastSelectedItem(path);
@@ -63,29 +51,25 @@ export const useStorageActions = (): StorageActions => {
   }, []);
 
   const clearSelection = useCallback(() => {
-    const { setSelectedItems, setLastSelectedItem } =
-      useStorageUIStore.getState();
+    const { setSelectedItems, setLastSelectedItem } = useStorageUIStore.getState();
     setSelectedItems([]);
     setLastSelectedItem(null);
   }, []);
 
-  const selectRange = useCallback(
-    (fromPath: string, toPath: string, items: StorageItemUnion[]) => {
-      const fromIndex = items.findIndex(item => item.path === fromPath);
-      const toIndex = items.findIndex(item => item.path === toPath);
+  const selectRange = useCallback((fromPath: string, toPath: string, items: StorageItemUnion[]) => {
+    const fromIndex = items.findIndex(item => item.path === fromPath);
+    const toIndex = items.findIndex(item => item.path === toPath);
 
-      if (fromIndex === -1 || toIndex === -1) return;
+    if (fromIndex === -1 || toIndex === -1) return;
 
-      const start = Math.min(fromIndex, toIndex);
-      const end = Math.max(fromIndex, toIndex);
-      const rangePaths = items.slice(start, end + 1).map(item => item.path);
+    const start = Math.min(fromIndex, toIndex);
+    const end = Math.max(fromIndex, toIndex);
+    const rangePaths = items.slice(start, end + 1).map(item => item.path);
 
-      const { selectedItems, setSelectedItems } = useStorageUIStore.getState();
-      const newSelection = new Set([...selectedItems, ...rangePaths]);
-      setSelectedItems(Array.from(newSelection));
-    },
-    []
-  );
+    const { selectedItems, setSelectedItems } = useStorageUIStore.getState();
+    const newSelection = new Set([...selectedItems, ...rangePaths]);
+    setSelectedItems(Array.from(newSelection));
+  }, []);
 
   const setLastSelectedItem = useCallback((path: string | null) => {
     useStorageUIStore.getState().setLastSelectedItem(path);
@@ -131,69 +115,60 @@ export const useStorageActions = (): StorageActions => {
     useStorageUIStore.getState().setSortBy(field);
   }, []);
 
-  const setSortDirection = useCallback(
-    (direction: Graphql.OrderSortDirection) => {
-      useStorageUIStore.getState().setSortDirection(direction);
-    },
-    []
-  );
+  const setSortDirection = useCallback((direction: Graphql.OrderSortDirection) => {
+    useStorageUIStore.getState().setSortDirection(direction);
+  }, []);
 
-  const getSortedItems = useCallback(
-    (items: StorageItemUnion[]): StorageItemUnion[] => {
-      const { searchMode, searchResults, sortBy, sortDirection } =
-        useStorageUIStore.getState();
+  const getSortedItems = useCallback((items: StorageItemUnion[]): StorageItemUnion[] => {
+    const { searchMode, searchResults, sortBy, sortDirection } = useStorageUIStore.getState();
 
-      const currentItems = searchMode ? searchResults : items;
+    const currentItems = searchMode ? searchResults : items;
 
-      return [...currentItems].sort((a, b) => {
-        let aValue: string | number;
-        let bValue: string | number;
+    return [...currentItems].sort((a, b) => {
+      let aValue: string | number;
+      let bValue: string | number;
 
-        switch (sortBy) {
-          case "name":
-            aValue = a.name ?? a.path.split("/").pop() ?? "";
-            bValue = b.name ?? b.path.split("/").pop() ?? "";
-            break;
-          case "size":
-            // FileInfo has size, DirectoryInfo has totalSize
-            if (a.__typename === "FileInfo") {
-              aValue = a.size;
-            } else if (a.__typename === "DirectoryInfo") {
-              aValue = a.totalSize || 0;
-            } else {
-              aValue = 0;
-            }
+      switch (sortBy) {
+        case "name":
+          aValue = a.name ?? a.path.split("/").pop() ?? "";
+          bValue = b.name ?? b.path.split("/").pop() ?? "";
+          break;
+        case "size":
+          // FileInfo has size, DirectoryInfo has totalSize
+          if (a.__typename === "FileInfo") {
+            aValue = a.size;
+          } else if (a.__typename === "DirectoryInfo") {
+            aValue = a.totalSize || 0;
+          } else {
+            aValue = 0;
+          }
 
-            if (b.__typename === "FileInfo") {
-              bValue = b.size;
-            } else if (b.__typename === "DirectoryInfo") {
-              bValue = b.totalSize || 0;
-            } else {
-              bValue = 0;
-            }
-            break;
-          case "lastModified":
-            aValue =
-              (a as unknown as { lastModified?: number }).lastModified ?? 0;
-            bValue =
-              (b as unknown as { lastModified?: number }).lastModified ?? 0;
-            break;
-          case "created":
-            aValue = (a as unknown as { created?: number }).created ?? 0;
-            bValue = (b as unknown as { created?: number }).created ?? 0;
-            break;
-          default:
-            aValue = a.name ?? a.path.split("/").pop() ?? "";
-            bValue = b.name ?? b.path.split("/").pop() ?? "";
-        }
+          if (b.__typename === "FileInfo") {
+            bValue = b.size;
+          } else if (b.__typename === "DirectoryInfo") {
+            bValue = b.totalSize || 0;
+          } else {
+            bValue = 0;
+          }
+          break;
+        case "lastModified":
+          aValue = (a as unknown as { lastModified?: number }).lastModified ?? 0;
+          bValue = (b as unknown as { lastModified?: number }).lastModified ?? 0;
+          break;
+        case "created":
+          aValue = (a as unknown as { created?: number }).created ?? 0;
+          bValue = (b as unknown as { created?: number }).created ?? 0;
+          break;
+        default:
+          aValue = a.name ?? a.path.split("/").pop() ?? "";
+          bValue = b.name ?? b.path.split("/").pop() ?? "";
+      }
 
-        if (aValue < bValue) return sortDirection === "ASC" ? -1 : 1;
-        if (aValue > bValue) return sortDirection === "ASC" ? 1 : -1;
-        return 0;
-      });
-    },
-    []
-  );
+      if (aValue < bValue) return sortDirection === "ASC" ? -1 : 1;
+      if (aValue > bValue) return sortDirection === "ASC" ? 1 : -1;
+      return 0;
+    });
+  }, []);
 
   // ============================================================================
   // RESET ACTIONS

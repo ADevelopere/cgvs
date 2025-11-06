@@ -5,11 +5,7 @@ import { mockSelfHostedFonts, mockNumberVariables } from "../story.util";
 import type { NumberElementFormState, NumberElementFormErrors } from "./types";
 import { UpdateBaseElementFn } from "../base";
 import { UpdateTextPropsFn } from "../textProps";
-import {
-  AppLanguage,
-  ElementAlignment,
-  ElementOverflow,
-} from "@/client/graphql/generated/gql/graphql";
+import { AppLanguage, ElementAlignment, ElementOverflow } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof NumberElementForm> = {
   title: "Template/Editor/Form/Element/Number/NumberElementForm",
@@ -70,8 +66,7 @@ export const Default: Story = {
         key,
         value,
       })) satisfies UpdateTextPropsFn,
-    updateDataSource: dataSource =>
-      logger.info("Data source updated:", dataSource),
+    updateDataSource: dataSource => logger.info("Data source updated:", dataSource),
     updateMapping: mapping => logger.info("Mapping updated:", mapping),
     language: AppLanguage.Ar,
     numberVariables: mockNumberVariables,
@@ -116,8 +111,7 @@ export const WithErrors: Story = {
         key,
         value,
       })) satisfies UpdateTextPropsFn,
-    updateDataSource: dataSource =>
-      logger.info("Data source updated:", dataSource),
+    updateDataSource: dataSource => logger.info("Data source updated:", dataSource),
     updateMapping: mapping => logger.info("Mapping updated:", mapping),
     language: AppLanguage.Ar,
     numberVariables: mockNumberVariables,
@@ -143,8 +137,7 @@ export const Submitting: Story = {
         key,
         value,
       })) satisfies UpdateTextPropsFn,
-    updateDataSource: dataSource =>
-      logger.info("Data source updated:", dataSource),
+    updateDataSource: dataSource => logger.info("Data source updated:", dataSource),
     updateMapping: mapping => logger.info("Mapping updated:", mapping),
     language: AppLanguage.Ar,
     numberVariables: mockNumberVariables,
@@ -176,8 +169,7 @@ export const MultipleLocales: Story = {
         key,
         value,
       })) satisfies UpdateTextPropsFn,
-    updateDataSource: dataSource =>
-      logger.info("Data source updated:", dataSource),
+    updateDataSource: dataSource => logger.info("Data source updated:", dataSource),
     updateMapping: mapping => logger.info("Mapping updated:", mapping),
     language: AppLanguage.En,
     numberVariables: mockNumberVariables,

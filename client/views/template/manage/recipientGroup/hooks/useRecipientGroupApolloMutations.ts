@@ -11,106 +11,88 @@ import * as Document from "./recipientGroup.documents";
  */
 export const useRecipientGroupApolloMutations = () => {
   // Create recipient group mutation
-  const [createTemplateRecipientGroupMutation] = useMutation(
-    Document.createTemplateRecipientGroupMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.createTemplateRecipientGroup) return;
-        const newGroup = data.createTemplateRecipientGroup;
-        const templateId = newGroup.template?.id;
+  const [createTemplateRecipientGroupMutation] = useMutation(Document.createTemplateRecipientGroupMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.createTemplateRecipientGroup) return;
+      const newGroup = data.createTemplateRecipientGroup;
+      const templateId = newGroup.template?.id;
 
-        if (!templateId) return;
+      if (!templateId) return;
 
-        // Add to template's recipient groups query cache
-        cache.updateQuery<Graphql.TemplateRecipientGroupsByTemplateIdQuery>(
-          {
-            query: Document.templateRecipientGroupsByTemplateIdQueryDocument,
-            variables: { templateId },
-          },
-          existing => {
-            if (!existing?.templateRecipientGroupsByTemplateId) return existing;
-            return {
-              templateRecipientGroupsByTemplateId: [
-                ...existing.templateRecipientGroupsByTemplateId,
-                newGroup,
-              ],
-            };
-          }
-        );
-      },
-    }
-  );
+      // Add to template's recipient groups query cache
+      cache.updateQuery<Graphql.TemplateRecipientGroupsByTemplateIdQuery>(
+        {
+          query: Document.templateRecipientGroupsByTemplateIdQueryDocument,
+          variables: { templateId },
+        },
+        existing => {
+          if (!existing?.templateRecipientGroupsByTemplateId) return existing;
+          return {
+            templateRecipientGroupsByTemplateId: [...existing.templateRecipientGroupsByTemplateId, newGroup],
+          };
+        }
+      );
+    },
+  });
 
   // Update recipient group mutation
-  const [updateTemplateRecipientGroupMutation] = useMutation(
-    Document.updateTemplateRecipientGroupMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.updateTemplateRecipientGroup) return;
-        const updated = data.updateTemplateRecipientGroup;
-        const templateId = updated.template?.id;
+  const [updateTemplateRecipientGroupMutation] = useMutation(Document.updateTemplateRecipientGroupMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.updateTemplateRecipientGroup) return;
+      const updated = data.updateTemplateRecipientGroup;
+      const templateId = updated.template?.id;
 
-        if (!templateId) return;
+      if (!templateId) return;
 
-        // Update in template's recipient groups query cache
-        cache.updateQuery<Graphql.TemplateRecipientGroupsByTemplateIdQuery>(
-          {
-            query: Document.templateRecipientGroupsByTemplateIdQueryDocument,
-            variables: { templateId },
-          },
-          existing => {
-            if (!existing?.templateRecipientGroupsByTemplateId) return existing;
-            const existingIndex =
-              existing.templateRecipientGroupsByTemplateId.findIndex(
-                g => g.id === updated.id
-              );
-            if (existingIndex > -1) {
-              const newGroups = [
-                ...existing.templateRecipientGroupsByTemplateId,
-              ];
-              newGroups[existingIndex] = {
-                ...newGroups[existingIndex],
-                ...updated,
-              };
-              return { templateRecipientGroupsByTemplateId: newGroups };
-            }
-            return existing;
+      // Update in template's recipient groups query cache
+      cache.updateQuery<Graphql.TemplateRecipientGroupsByTemplateIdQuery>(
+        {
+          query: Document.templateRecipientGroupsByTemplateIdQueryDocument,
+          variables: { templateId },
+        },
+        existing => {
+          if (!existing?.templateRecipientGroupsByTemplateId) return existing;
+          const existingIndex = existing.templateRecipientGroupsByTemplateId.findIndex(g => g.id === updated.id);
+          if (existingIndex > -1) {
+            const newGroups = [...existing.templateRecipientGroupsByTemplateId];
+            newGroups[existingIndex] = {
+              ...newGroups[existingIndex],
+              ...updated,
+            };
+            return { templateRecipientGroupsByTemplateId: newGroups };
           }
-        );
-      },
-    }
-  );
+          return existing;
+        }
+      );
+    },
+  });
 
   // Delete recipient group mutation
-  const [deleteTemplateRecipientGroupMutation] = useMutation(
-    Document.deleteTemplateRecipientGroupMutationDocument,
-    {
-      update(cache, { data }) {
-        if (!data?.deleteTemplateRecipientGroup) return;
-        const deleted = data.deleteTemplateRecipientGroup;
-        const templateId = deleted.template?.id;
+  const [deleteTemplateRecipientGroupMutation] = useMutation(Document.deleteTemplateRecipientGroupMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.deleteTemplateRecipientGroup) return;
+      const deleted = data.deleteTemplateRecipientGroup;
+      const templateId = deleted.template?.id;
 
-        if (!templateId) return;
+      if (!templateId) return;
 
-        // Remove from template's recipient groups query cache
-        cache.updateQuery<Graphql.TemplateRecipientGroupsByTemplateIdQuery>(
-          {
-            query: Document.templateRecipientGroupsByTemplateIdQueryDocument,
-            variables: { templateId },
-          },
-          existing => {
-            if (!existing?.templateRecipientGroupsByTemplateId) return existing;
-            return {
-              templateRecipientGroupsByTemplateId:
-                existing.templateRecipientGroupsByTemplateId.filter(
-                  g => g.id !== deleted.id
-                ),
-            };
-          }
-        );
-      },
-    }
-  );
+      // Remove from template's recipient groups query cache
+      cache.updateQuery<Graphql.TemplateRecipientGroupsByTemplateIdQuery>(
+        {
+          query: Document.templateRecipientGroupsByTemplateIdQueryDocument,
+          variables: { templateId },
+        },
+        existing => {
+          if (!existing?.templateRecipientGroupsByTemplateId) return existing;
+          return {
+            templateRecipientGroupsByTemplateId: existing.templateRecipientGroupsByTemplateId.filter(
+              g => g.id !== deleted.id
+            ),
+          };
+        }
+      );
+    },
+  });
 
   // useMemo ensures the hook returns a stable object, preventing unnecessary re-renders
   return React.useMemo(
@@ -131,10 +113,6 @@ export const useRecipientGroupApolloMutations = () => {
        */
       deleteTemplateRecipientGroupMutation,
     }),
-    [
-      createTemplateRecipientGroupMutation,
-      updateTemplateRecipientGroupMutation,
-      deleteTemplateRecipientGroupMutation,
-    ]
+    [createTemplateRecipientGroupMutation, updateTemplateRecipientGroupMutation, deleteTemplateRecipientGroupMutation]
   );
 };

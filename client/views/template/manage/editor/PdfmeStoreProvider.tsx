@@ -52,20 +52,16 @@ export const PdfmeStoreProvider: React.FC<{
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<Error | null>(null);
   const [initialized, setInitialized] = React.useState(false);
-  const [isUpdatingFromPdfme, setIsUpdatingFromPdfme] =
-    React.useState<boolean>(false);
+  const [isUpdatingFromPdfme, setIsUpdatingFromPdfme] = React.useState<boolean>(false);
 
   // Get config from certificate element context
   const { config } = useCertificateElementStates();
 
   // Fetch elements directly
-  const { data: elementsData, loading: elementsLoading } = useQuery(
-    elementsByTemplateIdQueryDocument,
-    {
-      variables: { templateId },
-      fetchPolicy: "cache-first",
-    }
-  );
+  const { data: elementsData, loading: elementsLoading } = useQuery(elementsByTemplateIdQueryDocument, {
+    variables: { templateId },
+    fetchPolicy: "cache-first",
+  });
 
   const elements: GQL.CertificateElementUnion[] = React.useMemo(
     () => elementsData?.elementsByTemplateId || [],
@@ -75,7 +71,7 @@ export const PdfmeStoreProvider: React.FC<{
   // Track last elements to detect actual changes
   const lastElementsRef = React.useRef<string>("");
 
-  const {bases, textProps, textDataSource} = useCertificateElementStates();
+  const { bases, textProps, textDataSource } = useCertificateElementStates();
 
   // Convert element states to PDFMe template whenever they change
   React.useEffect(() => {
@@ -100,13 +96,7 @@ export const PdfmeStoreProvider: React.FC<{
       setError(null);
 
       // Convert elements to PDFMe template
-      const newTemplate = TemplateConverter.toPdfmeTemplate(
-        elements,
-        config.state,
-        bases,
-        textProps,
-        textDataSource
-      );
+      const newTemplate = TemplateConverter.toPdfmeTemplate(elements, config.state, bases, textProps, textDataSource);
 
       setTemplate(newTemplate);
       setLoading(false);
@@ -124,13 +114,7 @@ export const PdfmeStoreProvider: React.FC<{
       setError(err instanceof Error ? err : new Error(String(err)));
       setLoading(false);
     }
-  }, [
-    elements,
-    config.state,
-    templateId,
-    isUpdatingFromPdfme,
-    elementsLoading,
-  ]);
+  }, [elements, config.state, templateId, isUpdatingFromPdfme, elementsLoading]);
 
   const value: UsePdfmeStoreReturn = React.useMemo(
     () => ({
@@ -145,11 +129,7 @@ export const PdfmeStoreProvider: React.FC<{
     [template, loading, error, templateId, isUpdatingFromPdfme, initialized]
   );
 
-  return (
-    <PdfmeStoreContext.Provider value={value}>
-      {children}
-    </PdfmeStoreContext.Provider>
-  );
+  return <PdfmeStoreContext.Provider value={value}>{children}</PdfmeStoreContext.Provider>;
 };
 
 /**

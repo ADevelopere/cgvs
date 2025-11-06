@@ -95,14 +95,8 @@ export const Resizer: React.FC<ResizerProps> = props => {
           bottom: 0,
           left: "50%",
           transform: "translateX(-50%)",
-          width:
-            isResizing || columnResizing
-              ? whileResizingWidth || 4
-              : normalWidth || 2,
-          backgroundColor:
-            isResizing || columnResizing
-              ? theme.palette.primary.main
-              : theme.palette.divider,
+          width: isResizing || columnResizing ? whileResizingWidth || 4 : normalWidth || 2,
+          backgroundColor: isResizing || columnResizing ? theme.palette.primary.main : theme.palette.divider,
           transition: "width 0.2s, background-color 0.2s",
           ...internalStyle,
         }}

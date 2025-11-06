@@ -1,21 +1,13 @@
 import React, { type FC } from "react";
 import { Box, Grid, Paper } from "@mui/material";
-import type {
-  DateElementFormErrors,
-  DateElementFormState,
-  UpdateDatePropsFn,
-} from "./types";
+import type { DateElementFormErrors, DateElementFormState, UpdateDatePropsFn } from "./types";
 import { DateDataSourceForm } from "./DateDataSourceForm";
 import { DatePropsForm } from "./DatePropsForm";
 import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../component/ActionButtons";
 import { UpdateBaseElementFn } from "../base";
-import {
-  DateDataSourceInput,
-  Font,
-  TemplateDateVariable,
-} from "@/client/graphql/generated/gql/graphql";
+import { DateDataSourceInput, Font, TemplateDateVariable } from "@/client/graphql/generated/gql/graphql";
 import { UpdateTextPropsFn } from "../textProps";
 
 interface DateElementFormProps {
@@ -103,12 +95,7 @@ export const DateElementForm: FC<DateElementFormProps> = ({
       </Box>
 
       {/* Row 3: Action Buttons (Fixed) */}
-      <ActionButtons
-        onSubmit={onSubmit}
-        onCancel={onCancel}
-        isSubmitting={isSubmitting}
-        submitLabel={submitLabel}
-      />
+      <ActionButtons onSubmit={onSubmit} onCancel={onCancel} isSubmitting={isSubmitting} submitLabel={submitLabel} />
     </Box>
   );
 };

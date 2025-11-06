@@ -21,12 +21,8 @@ type State = {
 };
 type Actions = {
   // Category selection actions
-  selectCategory: (
-    category: Graphql.TemplateCategoryWithParentTree | null
-  ) => void;
-  updateSelectedCategory: (
-    category: Graphql.TemplateCategoryWithParentTree | null
-  ) => void;
+  selectCategory: (category: Graphql.TemplateCategoryWithParentTree | null) => void;
+  updateSelectedCategory: (category: Graphql.TemplateCategoryWithParentTree | null) => void;
 
   // Lazy loading actions
   setExpandedCategoryIds: (ids: Set<number>) => void;
@@ -35,13 +31,9 @@ type Actions = {
   isFetched: (id: number) => boolean;
 
   // Template query variables actions
-  setTemplateQueryVariables: (
-    vars: Graphql.TemplatesByCategoryIdQueryVariables
-  ) => void;
+  setTemplateQueryVariables: (vars: Graphql.TemplatesByCategoryIdQueryVariables) => void;
   updateTemplateQueryVariables: (
-    updater: (
-      current: Graphql.TemplatesByCategoryIdQueryVariables
-    ) => Graphql.TemplatesByCategoryIdQueryVariables
+    updater: (current: Graphql.TemplatesByCategoryIdQueryVariables) => Graphql.TemplatesByCategoryIdQueryVariables
   ) => void;
 
   // View mode actions
@@ -52,16 +44,15 @@ type Actions = {
 
 type TemplateListState = State & Actions;
 
-const initialTemplateQueryVariables: Graphql.TemplatesByCategoryIdQueryVariables =
-  {
-    categoryId: null,
-    paginationArgs: {
-      first: 25,
-      page: 1,
-    },
-    filterArgs: {},
-    orderBy: [],
-  };
+const initialTemplateQueryVariables: Graphql.TemplatesByCategoryIdQueryVariables = {
+  categoryId: null,
+  paginationArgs: {
+    first: 25,
+    page: 1,
+  },
+  filterArgs: {},
+  orderBy: [],
+};
 
 const initialState: State = {
   currentCategory: null,
@@ -124,11 +115,7 @@ export const useTemplateListStore = create<TemplateListState>()(
           logger.log("updateSelectedCategory", category);
           logger.log("state.currentCategory", state.currentCategory);
           // Only update if we have a current category and the new category has the same ID
-          if (
-            !state.currentCategory ||
-            !category ||
-            state.currentCategory.id !== category.id
-          ) {
+          if (!state.currentCategory || !category || state.currentCategory.id !== category.id) {
             return state;
           }
 
@@ -197,12 +184,10 @@ export const useTemplateListStore = create<TemplateListState>()(
       }),
       // Custom merge to handle Set conversion
       merge: (persistedState, currentState) => {
-        const typedPersistedState =
-          persistedState as Partial<TemplateListState>;
+        const typedPersistedState = persistedState as Partial<TemplateListState>;
 
         // Initialize expandedCategoryIds from current category's parent tree
-        const currentCategory =
-          typedPersistedState?.currentCategory || currentState.currentCategory;
+        const currentCategory = typedPersistedState?.currentCategory || currentState.currentCategory;
         const expandedCategoryIds = new Set<number>();
         const fetchedCategoryIds = new Set<number>();
 

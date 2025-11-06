@@ -38,9 +38,7 @@ export type UseEditorPaneLayoutReturn = {
  * @param storageKey - Unique key for this pane's store
  * @returns Object with calculation functions
  */
-export const useEditorPaneLayout = (
-  storageKey: string
-): UseEditorPaneLayoutReturn => {
+export const useEditorPaneLayout = (storageKey: string): UseEditorPaneLayoutReturn => {
   // Get store reference (stable across renders)
   const store = useMemo(() => getEditorPaneStore(storageKey), [storageKey]);
 
@@ -69,11 +67,7 @@ export const useEditorPaneLayout = (
        */
       handleManualResize: (resizerIndex: 1 | 2, delta: number) => {
         const currentState = store.getState();
-        const newState = calculateManualResize(
-          resizerIndex,
-          delta,
-          currentState
-        );
+        const newState = calculateManualResize(resizerIndex, delta, currentState);
         store.getState().setPaneState(newState);
       },
 

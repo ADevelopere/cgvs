@@ -36,10 +36,7 @@ function getContentType(filePath: string): string {
 /**
  * Parse range header
  */
-function parseRange(
-  rangeHeader: string,
-  fileSize: number
-): { start: number; end: number } | null {
+function parseRange(rangeHeader: string, fileSize: number): { start: number; end: number } | null {
   const match = rangeHeader.match(/bytes=(\d+)-(\d*)/);
   if (!match) return null;
 
@@ -57,22 +54,14 @@ function parseRange(
  * Handle file downloads and streaming
  * GET /api/storage/files/[[...path]]
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ path?: string[] }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ path?: string[] }> }) {
   try {
     // Step 1: Await params and reconstruct relative file path
     const resolvedParams = await params;
-    const relativePath = resolvedParams.path
-      ? resolvedParams.path.join("/")
-      : "";
+    const relativePath = resolvedParams.path ? resolvedParams.path.join("/") : "";
 
     if (!relativePath) {
-      return NextResponse.json(
-        { error: "File path is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "File path is required" }, { status: 400 });
     }
 
     // Step 2: Secure path resolution
@@ -204,9 +193,6 @@ export async function GET(
       stack: error instanceof Error ? error.stack : undefined,
     });
 
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

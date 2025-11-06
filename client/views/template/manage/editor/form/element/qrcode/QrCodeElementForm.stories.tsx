@@ -1,16 +1,9 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/logger";
 import { QrCodeElementForm } from "./QrCodeElementForm";
-import type {
-  QrCodeElementFormErrors,
-  QrCodeElementFormState,
-  UpdateQRCodePropsFn,
-} from "./types";
+import type { QrCodeElementFormErrors, QrCodeElementFormState, UpdateQRCodePropsFn } from "./types";
 import { UpdateBaseElementFn } from "../base";
-import {
-  ElementAlignment,
-  QrCodeErrorCorrection,
-} from "@/client/graphql/generated/gql/graphql";
+import { ElementAlignment, QrCodeErrorCorrection } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof QrCodeElementForm> = {
   title: "Template/Editor/Form/Element/QrCode/QrCodeElementForm",

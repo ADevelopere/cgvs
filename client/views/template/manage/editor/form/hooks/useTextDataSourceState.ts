@@ -32,18 +32,14 @@ export type UseTextDataSourceStateReturn = {
 /**
  * Type guard to check if element is TextElement
  */
-function isTextElement(
-  element: GQL.CertificateElementUnion
-): element is GQL.TextElement {
+function isTextElement(element: GQL.CertificateElementUnion): element is GQL.TextElement {
   return element.__typename === "TextElement";
 }
 
 /**
  * Extract textDataSource state from element
  */
-function extractTextDataSourceState(
-  element: GQL.CertificateElementUnion
-): TextDataSourceFormState | null {
+function extractTextDataSourceState(element: GQL.CertificateElementUnion): TextDataSourceFormState | null {
   if (isTextElement(element) && element.textDataSource) {
     return {
       dataSource: textDataSourceToInput(element.textDataSource),
@@ -55,33 +51,23 @@ function extractTextDataSourceState(
 /**
  * Convert textDataSource input to update input
  */
-function toUpdateInput(
-  elementId: number,
-  state: TextDataSourceFormState
-): GQL.TextDataSourceStandaloneInput {
+function toUpdateInput(elementId: number, state: TextDataSourceFormState): GQL.TextDataSourceStandaloneInput {
   return {
     elementId: elementId,
     dataSource: state.dataSource,
   };
 }
 
-export function useTextDataSourceState(
-  params: UseTextDataSourceStateParams
-): UseTextDataSourceStateReturn {
+export function useTextDataSourceState(params: UseTextDataSourceStateParams): UseTextDataSourceStateReturn {
   const { templateId, elements } = params;
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
 
-  const [updateTextElementDataSourceMutation] = useMutation(
-    updateTextElementDataSourceMutationDocument
-  );
+  const [updateTextElementDataSourceMutation] = useMutation(updateTextElementDataSourceMutationDocument);
 
   // Mutation function
   const mutationFn = React.useCallback(
-    async (
-      elementId: number,
-      state: TextDataSourceFormState
-    ): Promise<void> => {
+    async (elementId: number, state: TextDataSourceFormState): Promise<void> => {
       try {
         const updateInput = toUpdateInput(elementId, state);
         await updateTextElementDataSourceMutation({
@@ -90,8 +76,7 @@ export function useTextDataSourceState(
           },
         });
       } catch (error) {
-        const errorMessage =
-          errorStrings?.updateFailed || "Failed to update text data source";
+        const errorMessage = errorStrings?.updateFailed || "Failed to update text data source";
         logger.error("useTextDataSourceState: Mutation failed", {
           elementId,
           error,
@@ -134,16 +119,14 @@ export type UseTextDataSourceParams = {
   elementId: number;
 };
 
-export type TextDataSourceHook = (
-  params: UseTextDataSourceParams
-) => {
+export type TextDataSourceHook = (params: UseTextDataSourceParams) => {
   textDataSourceState: GQL.TextDataSourceInput;
   updateTextDataSource: (dataSource: GQL.TextDataSourceInput) => void;
   pushTextDataSourceUpdate: () => Promise<void>;
   textDataSourceErrors: TextDataSourceFormErrors;
 };
 
-export const useTextDataSource: TextDataSourceHook = (params) => {
+export const useTextDataSource: TextDataSourceHook = params => {
   const {
     textDataSource: {
       textDataSourceStates,
@@ -156,10 +139,7 @@ export const useTextDataSource: TextDataSourceHook = (params) => {
 
   // Get state or initialize if not present (only initialize once)
   const { dataSource } = React.useMemo(() => {
-    return (
-      textDataSourceStates.get(params.elementId) ??
-      initTextDataSourceState(params.elementId)
-    );
+    return textDataSourceStates.get(params.elementId) ?? initTextDataSourceState(params.elementId);
   }, [textDataSourceStates, params.elementId, initTextDataSourceState]);
 
   const updateTextDataSource = React.useCallback(

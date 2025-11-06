@@ -9,8 +9,7 @@ gqlSchemaBuilder.queryFields(t => ({
     args: {
       id: t.arg.int({ required: true }),
     },
-    resolve: async (_query, args) =>
-      await TemplateConfigRepository.findById(args.id),
+    resolve: async (_query, args) => await TemplateConfigRepository.findById(args.id),
   }),
 
   templateConfigByTemplateId: t.field({
@@ -19,7 +18,6 @@ gqlSchemaBuilder.queryFields(t => ({
     args: {
       templateId: t.arg.int({ required: true }),
     },
-    resolve: async (_query, args) =>
-      await TemplateConfigRepository.findByTemplateId(args.templateId),
+    resolve: async (_query, args) => await TemplateConfigRepository.findByTemplateId(args.templateId),
   }),
 }));
