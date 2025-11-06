@@ -28,6 +28,8 @@ const enAddNodePanel: AddNodePanelTranslations = {
   createImageElement: "Create Image Element",
   createQrCodeElement: "Create QR Code Element",
 
+  failedToCreateElement: "Failed to create element",
+
   items: {
     student: "Student",
     certificate: "Certificate",

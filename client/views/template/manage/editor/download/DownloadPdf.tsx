@@ -205,11 +205,12 @@ export const DownloadPdf: React.FC = () => {
       return;
     }
 
-    const password = prompt("Enter a password to protect the PDF:");
-    if (!password) {
-      logger.info("PDF generation cancelled: No password provided.");
-      return;
-    }
+    const password = "123"
+    //  prompt("Enter a password to protect the PDF:");
+    // if (!password) {
+    //   logger.info("PDF generation cancelled: No password provided.");
+    //   return;
+    // }
 
     setIsGenerating(true);
 
