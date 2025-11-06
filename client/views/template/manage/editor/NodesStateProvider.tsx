@@ -6,10 +6,7 @@ import { TextElementNodeData } from "./nodeRenderer/TextElementNode";
 import { ContainerNodeData, ElementBaseNodeData } from "./types";
 import { logger } from "@/client/lib/logger";
 import { useLazyQuery } from "@apollo/client/react";
-import {
-  elementsByTemplateIdQueryDocument,
-  templateConfigByTemplateIdQueryDocument,
-} from "./glqDocuments";
+import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "./glqDocuments";
 import React from "react";
 import { isAbortError } from "@/client/utils/errorUtils";
 
@@ -40,18 +37,11 @@ export interface UseNodesStoreReturn {
 
   addTextNode: (textElement: GQL.TextElement) => void;
 
-
   // Update base node data (position, size, etc.)
-  updateBaseNodeData: (
-    elementId: number,
-    updates: Partial<ElementBaseNodeData>
-  ) => void;
+  updateBaseNodeData: (elementId: number, updates: Partial<ElementBaseNodeData>) => void;
 
   // Update text node data
-  updateTextNodeData: (
-    elementId: number,
-    updates: Partial<TextElementNodeData>
-  ) => void;
+  updateTextNodeData: (elementId: number, updates: Partial<TextElementNodeData>) => void;
 
   // Update container node
   updateContainerNode: (updates: Partial<ContainerNodeData>) => void;
@@ -60,9 +50,7 @@ export interface UseNodesStoreReturn {
   updateNode: (nodeId: string, updates: Partial<Node>) => void;
 
   // Batch update multiple nodes
-  batchUpdateNodes: (
-    updates: Array<{ nodeId: string; updates: Partial<Node> }>
-  ) => void;
+  batchUpdateNodes: (updates: Array<{ nodeId: string; updates: Partial<Node> }>) => void;
 
   nodesInitialized: boolean;
 }
@@ -70,9 +58,7 @@ export interface UseNodesStoreReturn {
 /**
  * Create a text element node from a CertificateElementUnion
  */
-function createTextNode(
-  element: GQL.CertificateElementUnion
-): Node<TextElementNodeData> | null {
+function createTextNode(element: GQL.TextElement): Node<TextElementNodeData> | null {
   if (element.base.type !== GQL.ElementType.Text) {
     return null;
   }
@@ -93,16 +79,34 @@ function createTextNode(
     data,
     connectable: false,
     resizing: true,
+    handles: undefined,
+  };
+}
+
+function createImageNode(element: GQL.ImageElement): Node | null {
+  const data = {
+    elementId: element.base.id,
+  };
+
+  return {
+    id: element.base.id.toString(),
+    type: "image",
+    position: {
+      x: element.base.positionX,
+      y: element.base.positionY,
+    },
+    width: element.base.width,
+    height: element.base.height,
+    data,
+    connectable: false,
+    resizing: true,
   };
 }
 
 /**
  * Create container node
  */
-function createContainerNode(config: {
-  width: number;
-  height: number;
-}): Node<ContainerNodeData> {
+function createContainerNode(config: { width: number; height: number }): Node<ContainerNodeData> {
   return {
     id: "container",
     type: "container",
@@ -132,7 +136,10 @@ function initializeNodesFromData(
   const elementNodes: Node[] = elements
     .map(element => {
       if (element.base.type === GQL.ElementType.Text) {
-        return createTextNode(element);
+        return createTextNode(element as GQL.TextElement);
+      }
+      if (element.base.type === GQL.ElementType.Image) {
+        return createImageNode(element as GQL.ImageElement);
       }
       // Add other element types here as needed
       return null;
@@ -161,19 +168,13 @@ export const NodesStoreProvider: React.FC<{
   const [error, setError] = React.useState<Error | null>(null);
 
   // Setup lazy queries
-  const [fetchElements, { error: elementsError }] = useLazyQuery(
-    elementsByTemplateIdQueryDocument,
-    {
-      fetchPolicy: "cache-first",
-    }
-  );
+  const [fetchElements, { error: elementsError }] = useLazyQuery(elementsByTemplateIdQueryDocument, {
+    fetchPolicy: "cache-first",
+  });
 
-  const [fetchConfig, { error: configError }] = useLazyQuery(
-    templateConfigByTemplateIdQueryDocument,
-    {
-      fetchPolicy: "cache-first",
-    }
-  );
+  const [fetchConfig, { error: configError }] = useLazyQuery(templateConfigByTemplateIdQueryDocument, {
+    fetchPolicy: "cache-first",
+  });
 
   const [initialized, setInitialized] = React.useState(false);
 
@@ -201,10 +202,7 @@ export const NodesStoreProvider: React.FC<{
 
         // Check for errors
         if (elementsResult.error || configResult.error) {
-          const errorMsg =
-            elementsResult.error?.message ||
-            configResult.error?.message ||
-            "Unknown error";
+          const errorMsg = elementsResult.error?.message || configResult.error?.message || "Unknown error";
           setError(new Error(errorMsg));
           setLoading(false);
           return;
@@ -255,8 +253,7 @@ export const NodesStoreProvider: React.FC<{
   // Update error state if queries have errors
   React.useEffect(() => {
     if (elementsError || configError) {
-      const errorMsg =
-        elementsError?.message || configError?.message || "Query error";
+      const errorMsg = elementsError?.message || configError?.message || "Query error";
       setError(new Error(errorMsg));
     }
   }, [elementsError, configError]);
@@ -282,138 +279,120 @@ export const NodesStoreProvider: React.FC<{
   }, []);
 
   // Action: Update base node data
-  const updateBaseNodeData = React.useCallback(
-    (elementId: number, updates: Partial<ElementBaseNodeData>) => {
-      setNodesState(prev => {
-        const nodeId = elementId.toString();
+  const updateBaseNodeData = React.useCallback((elementId: number, updates: Partial<ElementBaseNodeData>) => {
+    setNodesState(prev => {
+      const nodeId = elementId.toString();
 
-        return prev.map(node => {
-          if (node.id !== nodeId) {
-            return node;
-          }
+      return prev.map(node => {
+        if (node.id !== nodeId) {
+          return node;
+        }
 
-          const nodeUpdates: Partial<Node> = {};
+        const nodeUpdates: Partial<Node> = {};
 
-          if (
-            updates.positionX !== undefined ||
-            updates.positionY !== undefined
-          ) {
-            nodeUpdates.position = {
-              x: updates.positionX ?? node.position.x,
-              y: updates.positionY ?? node.position.y,
-            };
-          }
-
-          if (updates.width !== undefined) {
-            nodeUpdates.width = updates.width;
-          }
-
-          if (updates.height !== undefined) {
-            nodeUpdates.height = updates.height;
-          }
-
-          return {
-            ...node,
-            ...nodeUpdates,
+        if (updates.positionX !== undefined || updates.positionY !== undefined) {
+          nodeUpdates.position = {
+            x: updates.positionX ?? node.position.x,
+            y: updates.positionY ?? node.position.y,
           };
-        });
+        }
+
+        if (updates.width !== undefined) {
+          nodeUpdates.width = updates.width;
+        }
+
+        if (updates.height !== undefined) {
+          nodeUpdates.height = updates.height;
+        }
+
+        return {
+          ...node,
+          ...nodeUpdates,
+        };
       });
-    },
-    []
-  );
+    });
+  }, []);
 
   // Action: Update text node data
-  const updateTextNodeData = React.useCallback(
-    (elementId: number, updates: Partial<TextElementNodeData>) => {
-      setNodesState(prev => {
-        const nodeId = elementId.toString();
+  const updateTextNodeData = React.useCallback((elementId: number, updates: Partial<TextElementNodeData>) => {
+    setNodesState(prev => {
+      const nodeId = elementId.toString();
 
-        return prev.map(node => {
-          if (node.id !== nodeId || node.type !== "text") {
-            return node;
-          }
+      return prev.map(node => {
+        if (node.id !== nodeId || node.type !== "text") {
+          return node;
+        }
 
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              ...updates,
-            } as TextElementNodeData,
-          };
-        });
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            ...updates,
+          } as TextElementNodeData,
+        };
       });
-    },
-    []
-  );
+    });
+  }, []);
 
   // Action: Update container node
-  const updateContainerNode = React.useCallback(
-    (updates: Partial<ContainerNodeData>) => {
-      setNodesState(prev => {
-        return prev.map(node => {
-          if (node.id !== "container") {
-            return node;
-          }
+  const updateContainerNode = React.useCallback((updates: Partial<ContainerNodeData>) => {
+    setNodesState(prev => {
+      return prev.map(node => {
+        if (node.id !== "container") {
+          return node;
+        }
 
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              ...updates,
-            } as ContainerNodeData,
-          };
-        });
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            ...updates,
+          } as ContainerNodeData,
+        };
       });
-    },
-    []
-  );
+    });
+  }, []);
 
   // Action: Update a single node
-  const updateNode = React.useCallback(
-    (nodeId: string, updates: Partial<Node>) => {
-      setNodesState(prev => {
-        return prev.map(node => {
-          if (node.id !== nodeId) {
-            return node;
-          }
+  const updateNode = React.useCallback((nodeId: string, updates: Partial<Node>) => {
+    setNodesState(prev => {
+      return prev.map(node => {
+        if (node.id !== nodeId) {
+          return node;
+        }
 
-          return {
-            ...node,
-            ...updates,
-          };
-        });
+        return {
+          ...node,
+          ...updates,
+        };
       });
-    },
-    []
-  );
+    });
+  }, []);
 
   // Action: Batch update nodes
-  const batchUpdateNodes = React.useCallback(
-    (updates: Array<{ nodeId: string; updates: Partial<Node> }>) => {
-      setNodesState(prev => {
-        const updateMap = new Map(updates.map(u => [u.nodeId, u.updates]));
+  const batchUpdateNodes = React.useCallback((updates: Array<{ nodeId: string; updates: Partial<Node> }>) => {
+    setNodesState(prev => {
+      const updateMap = new Map(updates.map(u => [u.nodeId, u.updates]));
 
-        return prev.map(node => {
-          const nodeUpdates = updateMap.get(node.id);
-          if (!nodeUpdates) {
-            return node;
-          }
+      return prev.map(node => {
+        const nodeUpdates = updateMap.get(node.id);
+        if (!nodeUpdates) {
+          return node;
+        }
 
-          return {
-            ...node,
-            ...nodeUpdates,
-          };
-        });
+        return {
+          ...node,
+          ...nodeUpdates,
+        };
       });
-    },
-    []
-  );
+    });
+  }, []);
 
   const addTextNode = React.useCallback((textElement: GQL.TextElement) => {
     const textNode = createTextNode(textElement);
     if (textNode) {
-      setNodesState((prev) => [...prev, textNode]);
-    } 
+      setNodesState(prev => [...prev, textNode]);
+    }
   }, []);
 
   const value: UseNodesStoreReturn = React.useMemo(
@@ -425,7 +404,7 @@ export const NodesStoreProvider: React.FC<{
       setNodes,
       clearNodes,
       addNode,
-      addTextNode, 
+      addTextNode,
       deleteNode,
       updateBaseNodeData,
       updateTextNodeData,
@@ -441,7 +420,7 @@ export const NodesStoreProvider: React.FC<{
       templateId,
       setNodes,
       clearNodes,
-      addTextNode, 
+      addTextNode,
       addNode,
       deleteNode,
       updateBaseNodeData,
@@ -453,11 +432,7 @@ export const NodesStoreProvider: React.FC<{
     ]
   );
 
-  return (
-    <NodesStoreContext.Provider value={value}>
-      {children}
-    </NodesStoreContext.Provider>
-  );
+  return <NodesStoreContext.Provider value={value}>{children}</NodesStoreContext.Provider>;
 };
 
 /**

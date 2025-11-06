@@ -27,6 +27,7 @@ export const createImageElementMutationDocument: TypedDocumentNode<
         ... on ImageDataSourceStorageFile {
           storageFileId
           type
+          imageUrl
         }
       }
       imageProps {
@@ -64,6 +65,7 @@ export const updateImageElementMutationDocument: TypedDocumentNode<
         ... on ImageDataSourceStorageFile {
           storageFileId
           type
+          imageUrl
         }
       }
       imageProps {
@@ -88,6 +90,26 @@ export const updateImageElementSpecPropsMutationDocument: TypedDocumentNode<
         elementId
         fit
         storageFileId
+      }
+    }
+  }
+`;
+
+export const updateImageElementDataSourceMutationDocument: TypedDocumentNode<
+  Graphql.UpdateImageElementDataSourceMutation,
+  Graphql.UpdateImageElementDataSourceMutationVariables
+> = gql`
+  mutation UpdateImageElementDataSource(
+    $input: ImageDataSourceStandaloneUpdateInput!
+  ) {
+    updateImageElementDataSource(input: $input) {
+      elementId
+      imageDataSource {
+        ... on ImageDataSourceStorageFile {
+          storageFileId
+          type
+          imageUrl
+        }
       }
     }
   }

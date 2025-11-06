@@ -1,5 +1,10 @@
 import { ImageDataSourceInput } from "@/client/graphql/generated/gql/graphql";
-import { DataSourceFormErrors, ValidateImagePropsFn } from "./types";
+import {
+  DataSourceFormErrors,
+  ValidateImagePropsFn,
+  ValidateImageDataSourceFn,
+  ImageDataSourceFieldErrors,
+} from "./types";
 
 // ============================================================================
 // Data Source Validation
@@ -9,23 +14,23 @@ import { DataSourceFormErrors, ValidateImagePropsFn } from "./types";
  * Validate ImageDataSourceInput (OneOf pattern)
  * IMAGE only has one data source type: STORAGE_FILE
  */
-export const validateImageDataSource = (
-  dataSource: ImageDataSourceInput
-): DataSourceFormErrors => {
-  const errors: DataSourceFormErrors = {};
-
-  if (dataSource.storageFile) {
-    if (
-      !dataSource.storageFile.storageFileId ||
-      dataSource.storageFile.storageFileId <= 0
-    ) {
-      errors.storageFile = "Please select an image file";
+export const validateImageDataSource = (): ValidateImageDataSourceFn => {
+  const validate: ValidateImageDataSourceFn = ({
+    value: source,
+  }): ImageDataSourceFieldErrors => {
+    if (source.storageFile) {
+      if (
+        !source.storageFile.storageFileId ||
+        source.storageFile.storageFileId <= 0
+      ) {
+        return { storageFile: "Please select an image file" };
+      }
+    } else {
+      return { storageFile: "Image file is required" };
     }
-  } else {
-    errors.storageFile = "Image file is required";
-  }
-
-  return errors;
+    return {};
+  };
+  return validate;
 };
 
 // ============================================================================

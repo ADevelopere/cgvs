@@ -36,3 +36,8 @@ export type ImageElementSpecPropsStandaloneUpdateInput = {
   elementId: number;
   imageProps: ImageElementSpecPropsInput;
 };
+
+export type ImageDataSourceStandaloneUpdateInput = {
+  elementId: number;
+  dataSource: ImageDataSourceInput;
+};

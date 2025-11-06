@@ -52,3 +52,8 @@ export type ImageElementSpecPropsStandaloneUpdateResponse = {
   elementId: number;
   imageProps: ImageElementSpecProps;
 };
+
+export type ImageDataSourceStandaloneUpdateResponse = {
+  elementId: number;
+  imageDataSource: ImageDataSource;
+};

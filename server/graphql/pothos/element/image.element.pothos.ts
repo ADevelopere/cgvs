@@ -1,25 +1,21 @@
 import { gqlSchemaBuilder } from "@/server/graphql/gqlSchemaBuilder";
 import * as Types from "@/server/types/element";
 import { ImageElementRepository } from "@/server/db/repo/element";
-import {
-  CertificateElementBaseInputObject,
-  CertificateElementPothosInterface,
-} from "./base.element.pothos";
+import { CertificateElementBaseInputObject, CertificateElementPothosInterface } from "./base.element.pothos";
 import { InputFieldBuilder, SchemaTypes } from "@pothos/core";
+import { getStorageService } from "@/server/storage/storage.service";
 
 // ============================================================================
 // Enums
 // ============================================================================
 
-export const ImageDataSourceTypePothosEnum = gqlSchemaBuilder.enumType(
-  "ImageDataSourceType",
-  { values: Object.values(Types.ImageDataSourceType) }
-);
+export const ImageDataSourceTypePothosEnum = gqlSchemaBuilder.enumType("ImageDataSourceType", {
+  values: Object.values(Types.ImageDataSourceType),
+});
 
-export const ElementImageFitPothosEnum = gqlSchemaBuilder.enumType(
-  "ElementImageFit",
-  { values: Object.values(Types.ElementImageFit) }
-);
+export const ElementImageFitPothosEnum = gqlSchemaBuilder.enumType("ElementImageFit", {
+  values: Object.values(Types.ElementImageFit),
+});
 
 // ============================================================================
 // Data Source Object (Output) - Single variant
@@ -27,15 +23,22 @@ export const ElementImageFitPothosEnum = gqlSchemaBuilder.enumType(
 
 export const ImageDataSourceStorageFileObject = gqlSchemaBuilder
   .objectRef<
-    Extract<
-      Types.ImageDataSource,
-      { type: Types.ImageDataSourceType.STORAGE_FILE }
-    >
+    Extract<Types.ImageDataSource, { type: Types.ImageDataSourceType.STORAGE_FILE }>
   >("ImageDataSourceStorageFile")
   .implement({
     fields: t => ({
       type: t.expose("type", { type: ImageDataSourceTypePothosEnum }),
       storageFileId: t.exposeInt("storageFileId"),
+      imageUrl: t.string({
+        nullable: true,
+        resolve: async image => {
+          if (image.storageFileId) {
+            const imageFileInfo = await (await getStorageService()).fileInfoByDbFileId(BigInt(image.storageFileId));
+            return imageFileInfo?.url;
+          }
+          return null;
+        },
+      }),
     }),
   });
 
@@ -43,47 +46,37 @@ export const ImageDataSourceStorageFileObject = gqlSchemaBuilder
 // Data Source Union (Output) - Only one type but still a union for consistency
 // ============================================================================
 
-export const ImageDataSourceUnion = gqlSchemaBuilder.unionType(
-  "ImageDataSource",
-  {
-    types: [ImageDataSourceStorageFileObject],
-    resolveType: ds => {
-      if (ds.type === Types.ImageDataSourceType.STORAGE_FILE) {
-        return "ImageDataSourceStorageFile";
-      }
-      throw new Error(
-        `Unknown ImageDataSource type: ${(ds as { type: string }).type}`
-      );
-    },
-  }
-);
+export const ImageDataSourceUnion = gqlSchemaBuilder.unionType("ImageDataSource", {
+  types: [ImageDataSourceStorageFileObject],
+  resolveType: ds => {
+    if (ds.type === Types.ImageDataSourceType.STORAGE_FILE) {
+      return "ImageDataSourceStorageFile";
+    }
+    throw new Error(`Unknown ImageDataSource type: ${(ds as { type: string }).type}`);
+  },
+});
 
 // ============================================================================
 // Data Source Input Object (isOneOf Pattern)
 // ============================================================================
 
 export const ImageDataSourceStorageFileInputObject = gqlSchemaBuilder
-  .inputRef<Types.ImageDataSourceStorageFileInputGraphql>(
-    "ImageDataSourceStorageFileInput"
-  )
+  .inputRef<Types.ImageDataSourceStorageFileInputGraphql>("ImageDataSourceStorageFileInput")
   .implement({
     fields: t => ({
       storageFileId: t.int({ required: true }),
     }),
   });
 
-export const ImageDataSourceInputObject = gqlSchemaBuilder.inputType(
-  "ImageDataSourceInput",
-  {
-    isOneOf: true,
-    fields: t => ({
-      storageFile: t.field({
-        type: ImageDataSourceStorageFileInputObject,
-        required: false,
-      }),
+export const ImageDataSourceInputObject = gqlSchemaBuilder.inputType("ImageDataSourceInput", {
+  isOneOf: true,
+  fields: t => ({
+    storageFile: t.field({
+      type: ImageDataSourceStorageFileInputObject,
+      required: false,
     }),
-  }
-);
+  }),
+});
 
 // ============================================================================
 // Mutation Inputs
@@ -103,9 +96,7 @@ export const ImageElementSpecPropsInputObject = gqlSchemaBuilder
     }),
   });
 
-const createImageElementInputFields = <Types extends SchemaTypes>(
-  t: InputFieldBuilder<Types, "InputObject">
-) => ({
+const createImageElementInputFields = <Types extends SchemaTypes>(t: InputFieldBuilder<Types, "InputObject">) => ({
   base: t.field({
     type: CertificateElementBaseInputObject,
     required: true,
@@ -134,20 +125,29 @@ export const ImageElementUpdateInputObject = gqlSchemaBuilder
     }),
   });
 
-export const ImageElementSpecPropsStandaloneUpdateInputObject =
-  gqlSchemaBuilder
-    .inputRef<Types.ImageElementSpecPropsStandaloneUpdateInput>(
-      "ImageElementSpecPropsStandaloneUpdateInput"
-    )
-    .implement({
-      fields: t => ({
-        elementId: t.int({ required: true }),
-        imageProps: t.field({
-          type: ImageElementSpecPropsInputObject,
-          required: true,
-        }),
+export const ImageElementSpecPropsStandaloneUpdateInputObject = gqlSchemaBuilder
+  .inputRef<Types.ImageElementSpecPropsStandaloneUpdateInput>("ImageElementSpecPropsStandaloneUpdateInput")
+  .implement({
+    fields: t => ({
+      elementId: t.int({ required: true }),
+      imageProps: t.field({
+        type: ImageElementSpecPropsInputObject,
+        required: true,
       }),
-    });
+    }),
+  });
+
+export const ImageDataSourceStandaloneUpdateInputObject = gqlSchemaBuilder
+  .inputRef<Types.ImageDataSourceStandaloneUpdateInputGraphql>("ImageDataSourceStandaloneUpdateInput")
+  .implement({
+    fields: t => ({
+      elementId: t.int({ required: true }),
+      dataSource: t.field({
+        type: ImageDataSourceInputObject,
+        required: true,
+      }),
+    }),
+  });
 
 // ============================================================================
 // Loadable Element Object
@@ -163,22 +163,29 @@ export const ImageElementSpecPropsObject = gqlSchemaBuilder
     }),
   });
 
-export const ImageElementSpecPropsStandaloneUpdateResponseObject =
-  gqlSchemaBuilder
-    .objectRef<Types.ImageElementSpecPropsStandaloneUpdateResponse>(
-      "ImageElementSpecPropsStandaloneUpdateResponse"
-    )
-    .implement({
-      fields: t => ({
-        elementId: t.expose("elementId", { type: "Int" }),
-        imageProps: t.expose("imageProps", {
-          type: ImageElementSpecPropsObject,
-        }),
+export const ImageElementSpecPropsStandaloneUpdateResponseObject = gqlSchemaBuilder
+  .objectRef<Types.ImageElementSpecPropsStandaloneUpdateResponse>("ImageElementSpecPropsStandaloneUpdateResponse")
+  .implement({
+    fields: t => ({
+      elementId: t.expose("elementId", { type: "Int" }),
+      imageProps: t.expose("imageProps", {
+        type: ImageElementSpecPropsObject,
       }),
-    });
+    }),
+  });
 
-const ImageElementObjectRef =
-  gqlSchemaBuilder.objectRef<Types.ImageElementOutput>("ImageElement");
+export const ImageDataSourceStandaloneUpdateResponseObject = gqlSchemaBuilder
+  .objectRef<Types.ImageDataSourceStandaloneUpdateResponse>("ImageDataSourceStandaloneUpdateResponse")
+  .implement({
+    fields: t => ({
+      elementId: t.expose("elementId", { type: "Int" }),
+      imageDataSource: t.expose("imageDataSource", {
+        type: ImageDataSourceUnion,
+      }),
+    }),
+  });
+
+const ImageElementObjectRef = gqlSchemaBuilder.objectRef<Types.ImageElementOutput>("ImageElement");
 
 export const ImageElementObject = gqlSchemaBuilder.loadableObject<
   Types.ImageElementOutput | Error,

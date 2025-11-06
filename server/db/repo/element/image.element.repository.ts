@@ -12,6 +12,8 @@ import {
   CertificateElementEntity,
   ImageElementSpecPropsStandaloneUpdateInput,
   ImageElementSpecPropsStandaloneUpdateResponse,
+  ImageDataSourceStandaloneUpdateInput,
+  ImageDataSourceStandaloneUpdateResponse,
 } from "@/server/types/element";
 import { ImageElementUtils } from "@/server/utils";
 import logger from "@/server/lib/logger";
@@ -340,6 +342,41 @@ export namespace ImageElementRepository {
         storageFileId: updatedImageElement[0].storageFileId,
         fit: updatedImageElement[0].fit as ElementImageFit,
       },
+    };
+  };
+
+  /**
+   * Update only imageDataSource of an IMAGE element
+   * Pattern: Load element → validate → update image_element table → return response
+   */
+  export const updateImageElementDataSource = async (
+    input: ImageDataSourceStandaloneUpdateInput
+  ): Promise<ImageDataSourceStandaloneUpdateResponse> => {
+    // 1. Load existing element
+    await findByIdOrThrow(input.elementId);
+
+    // 2. Convert and validate data source
+    const newDataSource = ImageElementUtils.convertInputDataSourceToOutput(
+      input.dataSource
+    );
+
+    // 3. Update image_element (type-specific table)
+    const [updatedImageElement] = await db
+      .update(imageElement)
+      .set({
+        imageDataSource: newDataSource,
+        storageFileId: newDataSource.storageFileId,
+      })
+      .where(eq(imageElement.elementId, input.elementId))
+      .returning();
+
+    logger.info(
+      `IMAGE element dataSource updated: (ID: ${input.elementId})`
+    );
+
+    return {
+      elementId: input.elementId,
+      imageDataSource: updatedImageElement.imageDataSource,
     };
   };
 }

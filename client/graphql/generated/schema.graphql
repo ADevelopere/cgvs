@@ -809,7 +809,18 @@ input ImageDataSourceInput @oneOf {
   storageFile: ImageDataSourceStorageFileInput
 }
 
+input ImageDataSourceStandaloneUpdateInput {
+  dataSource: ImageDataSourceInput!
+  elementId: Int!
+}
+
+type ImageDataSourceStandaloneUpdateResponse {
+  elementId: Int
+  imageDataSource: ImageDataSource
+}
+
 type ImageDataSourceStorageFile {
+  imageUrl: String
   storageFileId: Int
   type: ImageDataSourceType
 }
@@ -934,6 +945,7 @@ type Mutation {
   updateFont(input: FontUpdateInput!): Font!
   updateGenderElement(input: GenderElementUpdateInput!): GenderElement
   updateImageElement(input: ImageElementUpdateInput!): ImageElement
+  updateImageElementDataSource(input: ImageDataSourceStandaloneUpdateInput!): ImageDataSourceStandaloneUpdateResponse
   updateImageElementSpecProps(input: ImageElementSpecPropsStandaloneUpdateInput!): ImageElementSpecPropsStandaloneUpdateResponse
   updateNumberElement(input: NumberElementUpdateInput!): NumberElement
   updateNumberElementDataSource(input: NumberElementDataSourceStandaloneUpdateInput!): NumberElementDataSourceUpdateResponse

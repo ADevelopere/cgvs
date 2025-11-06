@@ -9,6 +9,8 @@ import {
   ImageElementUpdateInputGraphql,
   ImageDataSource,
   ImageElementSpecPropsInput,
+  ImageDataSourceStandaloneUpdateInputGraphql,
+  ImageDataSourceStandaloneUpdateInput,
 } from "@/server/types/element";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { CommonElementUtils } from "./common.element.utils";
@@ -76,6 +78,24 @@ export namespace ImageElementUtils {
       dataSource: mapImageDataSourceGraphqlToInput(input.dataSource),
     };
   };
+
+  /**
+   * Map GraphQL ImageDataSource standalone update input to repository input
+   */
+  export const mapDataSourceStandaloneGqlToInput = (
+    input: ImageDataSourceStandaloneUpdateInputGraphql
+  ): ImageDataSourceStandaloneUpdateInput => {
+    if (!input || !input.dataSource) {
+      throw new Error(
+        "ImageDataSourceStandaloneUpdateInputGraphql must include dataSource"
+      );
+    }
+    return {
+      elementId: input.elementId,
+      dataSource: mapImageDataSourceGraphqlToInput(input.dataSource),
+    };
+  };
+
   // ============================================================================
   // Data Source Validation
   // ============================================================================

@@ -12,6 +12,24 @@ export type UpdateImageDataSourceFn = (
 ) => void;
 
 // ============================================================================
+// Image Data Source State
+// ============================================================================
+
+export type ImageDataSourceFormState = {
+  dataSource: GQL.ImageDataSourceInput;
+};
+
+export type ImageDataSourceFieldErrors =
+  FormErrors<GQL.ImageDataSourceInput> | undefined;
+
+export type ImageDataSourceFormErrors = {
+  dataSource?: ImageDataSourceFieldErrors;
+};
+
+export type UpdateImageDataSourceWithElementIdFn =
+  UpdateStateWithElementIdFn<ImageDataSourceFormState>;
+
+// ============================================================================
 // Image-specific Props State
 // ============================================================================
 
@@ -37,7 +55,7 @@ export type DataSourceFormErrors = FormErrors<GQL.ImageDataSourceInput>;
 
 export type ImageElementFormErrors = ImagePropsFormErrors & {
   base: BaseElementFormErrors;
-  dataSource: DataSourceFormErrors;
+  dataSource: ImageDataSourceFormErrors;
   imageProps: ImagePropsFormErrors;
 };
 
@@ -45,3 +63,24 @@ export type ValidateImagePropsFn = ValidateFieldFn<
   ImagePropsFormState,
   string | undefined
 >;
+
+export type ValidateImageDataSourceFn = ValidateFieldFn<
+  ImageDataSourceFormState,
+  ImageDataSourceFieldErrors
+>;
+
+// ============================================================================
+// Conversion Utilities
+// ============================================================================
+
+/**
+ * Convert ImageDataSource (query union type) to ImageDataSourceInput (OneOf input type)
+ */
+export const imageDataSourceToInput = (
+  state: GQL.ImageDataSource
+): GQL.ImageDataSourceInput => {
+  if (state.__typename === "ImageDataSourceStorageFile") {
+    return { storageFile: { storageFileId: state.storageFileId ?? -1 } };
+  }
+  throw new Error(`Unknown ImageDataSource type: ${state.__typename}`);
+};

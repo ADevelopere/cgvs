@@ -52,4 +52,20 @@ gqlSchemaBuilder.mutationFields(t => ({
       return await ImageElementRepository.updateSpecProps(args.input);
     },
   }),
+
+  updateImageElementDataSource: t.field({
+    type: ElementPothos.ImageDataSourceStandaloneUpdateResponseObject,
+    args: {
+      input: t.arg({
+        type: ElementPothos.ImageDataSourceStandaloneUpdateInputObject,
+        required: true,
+      }),
+    },
+    resolve: async (_, args) => {
+      const input = ImageElementUtils.mapDataSourceStandaloneGqlToInput(
+        args.input
+      );
+      return await ImageElementRepository.updateImageElementDataSource(input);
+    },
+  }),
 }));

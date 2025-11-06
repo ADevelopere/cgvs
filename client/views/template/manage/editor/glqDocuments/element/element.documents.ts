@@ -109,6 +109,7 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
           ... on ImageDataSourceStorageFile {
             storageFileId
             type
+            imageUrl
           }
         }
         imageProps {

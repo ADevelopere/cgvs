@@ -1,21 +1,21 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { NodeProps } from "@xyflow/react";
+import { useImageProps } from "../form/hooks/useImagePropsState";
 
-type ImageNodeData = {
-  imageUrl: string;
+export type ImageElementNodeData = {
+  elementId: number;
 };
+
 
 type ImageNodeProps = NodeProps & {
-  data: ImageNodeData;
+  data: ImageElementNodeData;
 };
 
-const ImageNode: React.FC<ImageNodeProps> = ({ data: { imageUrl } }) => {
-  const [dimensions, setDimensions] = useState({
-    width: 20,
-    height: 20,
-  });
+
+const ImageNode: React.FC<ImageNodeProps> = ({ data: { elementId } }) => {
+  const {imagePropsState} = useImageProps({ elementId });
 
   useEffect(() => {
     if (imageUrl) {

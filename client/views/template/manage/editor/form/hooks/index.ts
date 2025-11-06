@@ -61,4 +61,13 @@ export type {
   UseNumberDataSourceStateReturn,
 } from "./useNumberDataSourceState";
 
+export {
+  useImageDataSourceState,
+  useImageDataSource,
+} from "./useImageDataSourceState";
+export type {
+  UseImageDataSourceStateParams,
+  UseImageDataSourceStateReturn,
+} from "./useImageDataSourceState";
+
 export { useElementCreateMutations } from "./useElementCreateMutations";

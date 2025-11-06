@@ -24,6 +24,7 @@ export interface CertificateElementContextValue {
   textDataSource: ElState.UseTextDataSourceStateReturn;
   dateDataSource: ElState.UseDateDataSourceStateReturn;
   numberDataSource: ElState.UseNumberDataSourceStateReturn;
+  imageDataSource: ElState.UseImageDataSourceStateReturn;
   // props
   dateProps: ElState.UseDatePropsStateReturn;
   countryProps: ElState.UseCountryPropsStateReturn;
@@ -100,6 +101,7 @@ export const CertificateElementProvider: React.FC<{
   const textDataSource = ElState.useTextDataSourceState({ elements });
   const dateDataSource = ElState.useDateDataSourceState({ elements });
   const numberDataSource = ElState.useNumberDataSourceState({ elements });
+  const imageDataSource = ElState.useImageDataSourceState({ elements });
   const dateProps = ElState.useDatePropsState({ elements });
   const countryProps = ElState.useCountryPropsState({ elements });
   const imageProps = ElState.useImagePropsState({ elements });
@@ -142,6 +144,7 @@ export const CertificateElementProvider: React.FC<{
       textDataSource,
       dateDataSource,
       numberDataSource,
+      imageDataSource,
       dateProps,
       countryProps,
       imageProps,

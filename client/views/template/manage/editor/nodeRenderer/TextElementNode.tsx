@@ -1,6 +1,6 @@
 "use client";
 
-import { NodeProps, Handle, Position } from "@xyflow/react";
+import { NodeProps } from "@xyflow/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { useBaseElement } from "../form/hooks/useBaseElementState";
 import { useTextProps } from "../form/hooks/useTextPropsState";
@@ -16,6 +16,7 @@ export type TextElementNodeData = {
   // templateId: number;
   elementId: number;
 };
+
 
 type TextElementNodeProps = NodeProps & {
   data: TextElementNodeData;
@@ -128,9 +129,7 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
   }
   return (
     <div style={style}>
-      <Handle type="target" position={Position.Top} />
       {text}
-      <Handle type="source" position={Position.Bottom} />
     </div>
   );
 };

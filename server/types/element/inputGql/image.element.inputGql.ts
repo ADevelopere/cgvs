@@ -31,3 +31,9 @@ export type ImageElementInputGraphql = {
 export type ImageElementUpdateInputGraphql = ImageElementInputGraphql & {
   id: number;
 };
+
+// GraphQL standalone data source update input type
+export type ImageDataSourceStandaloneUpdateInputGraphql = {
+  elementId: number;
+  dataSource: ImageDataSourceInputGraphql;
+};
