@@ -146,7 +146,7 @@ function createContainerNode(config: { width: number; height: number }): Node<Co
     position: { x: 0, y: 0 },
     draggable: false,
     selectable: false,
-    zIndex: -1,
+    zIndex: 0,
   };
 }
 
@@ -337,6 +337,10 @@ export const NodesProvider: React.FC<{
 
         if (updates.height !== undefined) {
           nodeUpdates.height = updates.height;
+        }
+
+        if( updates.zIndex !== undefined) {
+          nodeUpdates.zIndex = updates.zIndex;
         }
 
         return {

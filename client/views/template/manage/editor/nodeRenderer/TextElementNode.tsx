@@ -11,6 +11,7 @@ import { useTextDataSource } from "../form/hooks";
 import { useCertificateElementStates } from "../CertificateElementContext";
 import { useAppTranslationForLanguage } from "@/client/locale";
 import { getFontFamilyString, getFlexAlignment } from "../nodeRenderer/utils";
+import { NodeResizer } from '@xyflow/react';
 
 export type TextElementNodeData = {
   // templateId: number;
@@ -119,5 +120,10 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
   if (!textPropsState || !baseElementState) {
     return <div>Loading...</div>;
   }
-  return <div style={style}>{text}</div>;
+  return (
+    <>
+      <NodeResizer minWidth={10} minHeight={10} />
+      <div style={style}>{text}</div>
+    </>
+  );
 };

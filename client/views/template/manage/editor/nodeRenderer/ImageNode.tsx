@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { NodeProps } from "@xyflow/react";
 import { useImageProps } from "../form/hooks/useImagePropsState";
 import { useImageDataSource } from "../form/hooks";
+import { NodeResizer } from '@xyflow/react';
 
 export type ImageElementNodeData = {
   elementId: number;
@@ -26,6 +27,8 @@ const ImageNode: React.FC<ImageNodeProps> = ({ data: { elementId, width, height 
   }, [imageUrl]);
 
   return (
+    <>
+    <NodeResizer minWidth={10} minHeight={10} />
     <div
       style={{
         height: `${height}px`,
@@ -36,7 +39,7 @@ const ImageNode: React.FC<ImageNodeProps> = ({ data: { elementId, width, height 
         backgroundSize: `${imagePropsState?.fit || "contain"}`,
         backgroundPosition: "center",
       }}
-    ></div>
+    ></div></>
   );
 };
 

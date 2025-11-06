@@ -15,7 +15,7 @@ import { useAppTranslation } from "@/client/locale";
 import { useQuery, useApolloClient } from "@apollo/client/react";
 import { NodesProvider } from "./NodesStateProvider";
 import { CertificateElementProvider } from "./CertificateElementContext";
-import { PdfmeStoreProvider } from "./PdfmeStoreProvider";
+// import { PdfmeStoreProvider } from "./PdfmeStoreProvider";
 // import { PdfmeEditorWrapper } from "./PdfmeEditorWrapper";
 import AddNodePanel from "./addNewNode/AddNodePanel";
 import {
@@ -151,7 +151,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
     <>
       <NodesProvider templateId={template.id}>
         <CertificateElementProvider templateId={template.id}>
-          <PdfmeStoreProvider templateId={template.id}>
+          {/* <PdfmeStoreProvider templateId={template.id}> */}
             {/* <EditorToggle
               activeEditor={activeEditor}
               onToggle={setActiveEditor}
@@ -205,7 +205,7 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
               storageKey="templateManagementEditor"
             />
             <FloatingLoadingIndicator loading={configLoading || elementsLoading} />
-          </PdfmeStoreProvider>
+          {/* </PdfmeStoreProvider> */}
         </CertificateElementProvider>
       </NodesProvider>
     </>
