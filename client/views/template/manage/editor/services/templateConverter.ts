@@ -4,7 +4,14 @@ import { logger } from "@/client/lib/logger";
 
 /**
  * Service for converting between CGVS element data and PDFMe template format
- * Currently supports text elements only
+ * 
+ * Currently supports:
+ * - Text elements (position, size, font, color, alignment)
+ * - Text content display (read-only in PDFMe)
+ * 
+ * Limitations:
+ * - Text content editing in PDFMe is not synced back (would require textDataSource updates)
+ * - Only text elements supported (Image, QRCode, etc. not yet implemented)
  */
 export class TemplateConverter {
   /**
@@ -72,9 +79,10 @@ export class TemplateConverter {
       // Convert alignment
       const alignment = this.convertAlignment(base.alignment);
 
-      // Create schema
+      // Create schema with text content
       const schema: Schema & { renderOrder?: number } = {
         type: "text",
+        content: content, // Add the actual text content
         position: {
           x: base.positionX,
           y: base.positionY,
