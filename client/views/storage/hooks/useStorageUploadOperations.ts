@@ -66,6 +66,11 @@ export const useStorageUploadOperations = () => {
         });
 
         const signedUrl = signedUrlRes.data?.generateUploadSignedUrl;
+        logger.info({ caller: "useStorageUploadOperations" }, "Generated signed URL for upload", {
+          fileKey,
+          fileName: file.name,
+          signedUrl: signedUrl,
+        });
         if (!signedUrl) {
           logger.error({ caller: "useStorageUploadOperations" }, "Failed to get signed URL from response", {
             fileKey,
@@ -238,8 +243,7 @@ export const useStorageUploadOperations = () => {
         logger.error({ caller: "useStorageUploadOperations" }, "Upload failed with exception", {
           fileKey,
           fileName: file.name,
-          error: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
+          error,
         });
         updateFileState(fileKey, {
           status: "error",

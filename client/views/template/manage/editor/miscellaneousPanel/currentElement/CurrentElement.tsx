@@ -1,18 +1,14 @@
-import {
-  CertificateElementUnion,
-  ElementType,
-  TextElement,
-  TemplateConfig,
-} from "@/client/graphql/generated/gql/graphql";
+import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { Stack, Typography } from "@mui/material";
 import { CertificateElementIcon } from "../elements/ElementIcon";
 import { CurrentTextElement } from "./CurrentTextElement";
+import { CurrentImageElement } from "./CurrenImageElement";
 import { useEditorStore } from "../../useEditorStore";
 import React from "react";
 
 export type CertificateElementCurrentItemSettingsProps = {
-  elements: CertificateElementUnion[];
-  templateConfig: TemplateConfig;
+  elements: GQL.CertificateElementUnion[];
+  templateConfig: GQL.TemplateConfig;
 };
 
 export const CertificateElementCurrentItemSettings: React.FC<CertificateElementCurrentItemSettingsProps> = ({
@@ -30,8 +26,10 @@ export const CertificateElementCurrentItemSettings: React.FC<CertificateElementC
       return null;
     }
     switch (currentElement.base.type) {
-      case ElementType.Text:
-        return <CurrentTextElement element={currentElement as TextElement} templateConfig={templateConfig} />;
+      case GQL.ElementType.Text:
+        return <CurrentTextElement element={currentElement as GQL.TextElement} templateConfig={templateConfig} />;
+      case GQL.ElementType.Image:
+        return <CurrentImageElement element={currentElement as GQL.ImageElement} />;
       default:
         return null;
     }

@@ -16,6 +16,7 @@ import { UserRepository } from "@/server/db/repo";
 import { Email } from "@/server/lib";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { HttpLink } from "@apollo/client/link/http";
+import { GRAPHQL_ENDPOINT } from "@/server/lib/server";
 
 // Load test environment first
 config({ path: resolve(__dirname, "../../.env.test") });
@@ -26,14 +27,11 @@ if (!dbUrl) {
   testLogger.error("DATABASE_URL is not set in .env.test");
   process.exit(1);
 }
-const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-const GRAPHQL_PATH = process.env.GRAPHQL_PATH || "/api/graphql";
-const graphqlEndpoint = `${NEXT_PUBLIC_BASE_URL.replace(/\/+$/, "")}${GRAPHQL_PATH}`;
 
 // Set test environment variables
 Object.assign(process.env, {
   NODE_ENV: "test",
-  GRAPHQL_ENDPOINT: graphqlEndpoint,
+  GRAPHQL_ENDPOINT: GRAPHQL_ENDPOINT,
   STORAGE_PROVIDER: "local",
 });
 

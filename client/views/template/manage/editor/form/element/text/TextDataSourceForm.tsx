@@ -15,7 +15,7 @@ import {
   TextDataSourceType,
 } from "@/client/graphql/generated/gql/graphql";
 
-interface DataSourceFormProps {
+interface TextDataSourceFormProps {
   dataSource: TextDataSourceInput;
   textVariables: TemplateTextVariable[];
   selectVariables: TemplateSelectVariable[];
@@ -25,7 +25,7 @@ interface DataSourceFormProps {
   showSelector: boolean;
 }
 
-export const DataSourceForm: FC<DataSourceFormProps> = ({
+export const TextDataSourceForm: FC<TextDataSourceFormProps> = ({
   dataSource,
   textVariables,
   selectVariables,

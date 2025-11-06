@@ -149,7 +149,7 @@ export const useImageDataSource = (params: UseImageDataSourceParams) => {
     await pushImageDataSourceStateUpdate(params.elementId);
   }, [params.elementId, pushImageDataSourceStateUpdate]);
 
-  const { dataSource: errors } = React.useMemo(() => {
+  const errors: ImageDataSourceFormErrors = React.useMemo(() => {
     return (
       imageDataSourceStateErrors.get(params.elementId) || {
         dataSource: {},

@@ -1,17 +1,17 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/console";
-import { DataSourceForm } from "./TextDataSourceForm";
+import { TextDataSourceForm } from "./TextDataSourceForm";
 import { mockTextVariables, mockSelectVariables } from "../story.util";
 import { CertificateTextField, StudentTextField } from "@/client/graphql/generated/gql/graphql";
 
-const meta: Meta<typeof DataSourceForm> = {
+const meta: Meta<typeof TextDataSourceForm> = {
   title: "Template/Editor/Form/Element/Text/DataSourceForm",
-  component: DataSourceForm,
+  component: TextDataSourceForm,
   tags: ["autodocs"],
 };
 
 export default meta;
-type Story = StoryObj<typeof DataSourceForm>;
+type Story = StoryObj<typeof TextDataSourceForm>;
 
 export const StaticSource: Story = {
   args: {

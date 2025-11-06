@@ -9,6 +9,7 @@ import { StorageDbRepository, SignedUrlRepository } from "@/server/db/repo";
 import { StorageUtils } from "@/server/utils";
 import { OrderSortDirection } from "@/lib/enum";
 import { extToMime } from "@/utils/storage.utils";
+import { NEXT_PUBLIC_BASE_URL } from "@/server/lib/server";
 
 /**
  * Clean path for local storage - removes leading slashes and normalizes
@@ -35,7 +36,7 @@ class LocalAdapter implements StorageService {
   constructor() {
     // Read environment variables in constructor for testability
     const storagePath = process.env.LOCAL_STORAGE_PATH || "./storage/";
-    this.baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    this.baseUrl = NEXT_PUBLIC_BASE_URL;
     this.basePath = path.resolve(process.cwd(), storagePath);
     logger.info(`Local storage initialized at: ${this.basePath}`);
   }

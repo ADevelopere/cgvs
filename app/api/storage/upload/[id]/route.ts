@@ -6,6 +6,7 @@ import { createWriteStream } from "fs";
 import crypto from "crypto";
 import path from "path";
 import logger from "@/server/lib/logger";
+import { NEXT_PUBLIC_BASE_URL } from "@/server/lib/server";
 
 const storagePath = process.env.LOCAL_STORAGE_PATH || "./storage/";
 

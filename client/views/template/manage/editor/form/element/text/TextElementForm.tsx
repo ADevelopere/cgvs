@@ -1,7 +1,7 @@
 import React, { type FC } from "react";
 import { Box, Grid, Paper, Typography } from "@mui/material";
 import type { TextElementFormErrors, TextElementFormState } from "./types";
-import { DataSourceForm } from "./TextDataSourceForm";
+import { TextDataSourceForm } from "./TextDataSourceForm";
 import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../component/ActionButtons";
@@ -53,7 +53,7 @@ export const TextElementForm: FC<TextElementFormProps> = ({
       <Box sx={{ flexGrow: 1, overflow: "auto", pb: 2 }}>
         {/* Row 1: Data Source */}
         <Paper sx={{ p: 3, mb: 2 }}>
-          <DataSourceForm
+          <TextDataSourceForm
             dataSource={state.dataSource}
             textVariables={textVariables}
             selectVariables={selectVariables}

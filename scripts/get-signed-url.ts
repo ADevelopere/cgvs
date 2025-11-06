@@ -17,13 +17,11 @@ import { HttpLink } from "@apollo/client/link/http";
 import { generateUploadSignedUrlMutationDocument } from "@/client/views/storage/core/storage.documents";
 import { testLogger } from "@/lib/testlogger";
 import { extToMime } from "@/utils/storage.utils";
+import { GRAPHQL_ENDPOINT } from "@/server/lib/server";
 
-const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-const GRAPHQL_PATH = process.env.GRAPHQL_PATH || "/api/graphql";
-const graphqlEndpoint = `${NEXT_PUBLIC_BASE_URL.replace(/\/+$/, "")}${GRAPHQL_PATH}`;
 // GraphQL client setup
 const httpLink = new HttpLink({
-  uri: graphqlEndpoint,
+  uri: GRAPHQL_ENDPOINT,
   credentials: "include",
 });
 
