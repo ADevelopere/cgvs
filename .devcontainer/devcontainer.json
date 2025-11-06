@@ -13,9 +13,9 @@
   // Features add additional features to your environment. See https://containers.dev/features
   // Beware: features are not supported on all platforms and may have unintended side-effects.
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker": {
-      "moby": false
-    },
+    // "ghcr.io/devcontainers/features/docker-in-docker": {
+    //   "moby": false
+    // },
     "ghcr.io/devcontainers/features/sshd:1": {
       "version": "latest"
     }
@@ -23,6 +23,7 @@
   // Commands to run after the container is created (runs once)
   "postCreateCommand": {
     "install-bun": "bash /workspaces/${localWorkspaceFolderBasename}/scripts/install_bun.sh",
-    "install-ohmyzsh": "bash /workspaces/${localWorkspaceFolderBasename}/scripts/install_ohmyzsh.sh"
+    "install-ohmyzsh": "bash /workspaces/${localWorkspaceFolderBasename}/scripts/install_ohmyzsh.sh",
+    "start-and-configure-postgres": "sudo service postgresql start && sudo -u postgres psql -c \"ALTER USER postgres WITH PASSWORD 'postgres';\""
   }
 }
