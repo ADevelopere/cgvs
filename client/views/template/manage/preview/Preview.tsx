@@ -4,19 +4,17 @@ import * as MuiIcons from "@mui/icons-material";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import DownloadImage from "../editor/download/DownloadImage";
 import ClientCanvasGenerator from "./ClientCanvasGenerator";
+import { usePreviewStore } from "./usePreviewStore";
 
 type PreviewProps = {
   templateId: number;
 };
 
 export const Preview: React.FC<PreviewProps> = ({ templateId }) => {
-  const [showDebugBorders, setShowDebugBorders] = React.useState(false);
-  const [renderScale, setRenderScale] = React.useState(5);
-
-  const handleScaleChange = (scale: number) => {
-    if (scale < 0.5 || scale > 10) return;
-    setRenderScale(scale);
-  };
+  const showDebugBorders = usePreviewStore(state => state.showDebugBorders);
+  const renderScale = usePreviewStore(state => state.renderScale);
+  const setShowDebugBorders = usePreviewStore(state => state.setShowDebugBorders);
+  const setRenderScale = usePreviewStore(state => state.setRenderScale);
 
   return (
     <Box
@@ -65,7 +63,7 @@ export const Preview: React.FC<PreviewProps> = ({ templateId }) => {
                 type="number"
                 size="small"
                 value={renderScale ?? "1"}
-                onChange={e => handleScaleChange(Number(e.target.value))}
+                onChange={e => setRenderScale(Number(e.target.value))}
                 slotProps={{
                   htmlInput: {
                     min: 0.5,
@@ -118,7 +116,7 @@ export const Preview: React.FC<PreviewProps> = ({ templateId }) => {
                 <IconButton
                   color="primary"
                   onClick={() => {
-                    setShowDebugBorders(prev => !prev);
+                    setShowDebugBorders(!showDebugBorders);
                   }}
                   size="small"
                   sx={{ minWidth: "auto", px: 1 }}
