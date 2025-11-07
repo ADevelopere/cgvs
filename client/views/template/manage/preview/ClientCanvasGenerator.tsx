@@ -20,6 +20,8 @@ import { TemplateConfig } from "@/client/graphql/generated/gql/graphql";
  */
 export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, ClientCanvasGeneratorProps>(
   ({ templateId, onExport, onReady, showDebugBorders = true, renderScale = 1, timeoutMs, onTimeout }, ref) => {
+    const canvasRendererRef = React.useRef<ClientCanvasGeneratorRef>(null);
+    
     const { data: configData, error: configError } = useQuery(templateConfigByTemplateIdQueryDocument, {
       variables: { templateId },
       fetchPolicy: "cache-first",
@@ -107,15 +109,46 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
       }, [dataHash])
     );
 
+    // Early check: if we have a hash and cache immediately, no need to render canvas at all
+    const { getCache } = useCanvasCacheStore();
+    const earlyCache = dataHash ? getCache(dataHash) : null;
+
+    // Notify ready when using cached image
+    React.useEffect(() => {
+      if ((cachedCanvasFromStore || earlyCache) && onReady) {
+        logger.debug({ caller: "ClientCanvasGenerator" }, "Calling onReady for cached canvas", { hash: dataHash });
+        onReady({ canvasGenerationTime: 0, hashGenerationTime: hashGenerationTimeRef.current });
+      }
+    }, [cachedCanvasFromStore, earlyCache, onReady, dataHash]);
+
+    // Expose download method that works with cached images
+    React.useImperativeHandle(ref, () => ({
+      download: () => {
+        const finalCache = cachedCanvasFromStore || earlyCache;
+        if (finalCache) {
+          // Download from cache
+          logger.debug({ caller: "ClientCanvasGenerator" }, "Downloading from cache", { hash: dataHash });
+          const a = document.createElement("a");
+          a.setAttribute("download", "certificate.png");
+          a.setAttribute("href", finalCache);
+          a.click();
+        } else if (canvasRendererRef.current) {
+          // Download from canvas renderer
+          canvasRendererRef.current.download();
+        }
+      }
+    }), [cachedCanvasFromStore, earlyCache, dataHash]);
+
     if (!config || !elements) {
       logger.debug({ caller: "ClientCanvasGenerator" }, "Early return: missing config or elements");
       return null;
     }
 
-    // Use the memoized cache value that updates when store changes
-    if (cachedCanvasFromStore) {
+    // Use the memoized cache value that updates when store changes, or early cache check
+    const finalCache = cachedCanvasFromStore || earlyCache;
+    if (finalCache) {
       logger.debug({ caller: "ClientCanvasGenerator" }, "Rendering from cache", { hash: dataHash });
-      return renderCachedImage(cachedCanvasFromStore, config);
+      return renderCachedImage(finalCache, config);
     }
 
     logger.debug({ caller: "ClientCanvasGenerator" }, "Rendering CanvasRenderer (no cache)", { 
@@ -130,7 +163,7 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
     return (
       <FontProvider families={families}>
         <CanvasRendererWithRef
-          ref={ref}
+          ref={canvasRendererRef}
           templateId={templateId}
           elements={elements}
           config={config}

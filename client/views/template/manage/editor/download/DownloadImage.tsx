@@ -84,13 +84,6 @@ export const DownloadImage: React.FC<DownloadImageProps> = ({
             templateId={templateId}
             showDebugBorders={showDebugBorders}
             onReady={handleReady}
-            onExport={(dataUrl: string) => {
-              // Keep existing behavior: trigger a download immediately as a fallback
-              const a = document.createElement("a");
-              a.setAttribute("download", "certificate.png");
-              a.setAttribute("href", dataUrl);
-              a.click();
-            }}
           />
         </div>
       )}
