@@ -14,8 +14,8 @@ import {
   ValidateBaseElementFieldFn,
   UpdateBaseElementFn,
 } from "../element/base";
-import { useCertificateElementStates } from "../../CertificateElementContext";
-import { useNode } from "../../NodesStateProvider";
+import { useCertificateElementStates } from "../../context/CertificateElementContext";
+import { useNode } from "../../context/NodesStateProvider";
 
 export type UseBaseElementStateParams = {
   templateId?: number;

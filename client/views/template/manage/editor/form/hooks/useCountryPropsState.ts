@@ -13,7 +13,7 @@ import {
   UpdateCountryPropsWithElementIdFn,
   UpdateCountryPropsFn,
 } from "../element/country";
-import { useCertificateElementStates } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../context/CertificateElementContext";
 
 export type UseCountryPropsStateParams = {
   templateId?: number;

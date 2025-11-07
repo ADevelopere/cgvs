@@ -14,7 +14,7 @@ import {
   UpdateNumberPropsFn,
 } from "../element/number";
 import { validateNumberProps } from "../element/number/numberValidators";
-import { useCertificateElementStates } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../context/CertificateElementContext";
 
 export type UseNumberPropsStateParams = {
   templateId?: number;

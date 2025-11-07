@@ -14,7 +14,7 @@ import {
   ImageDataSourceFieldErrors,
 } from "../element/image/types";
 import { useElementState } from "./useElementState";
-import { useCertificateElementStates } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../context/CertificateElementContext";
 
 export type UseImageDataSourceStateParams = {
   templateId?: number;

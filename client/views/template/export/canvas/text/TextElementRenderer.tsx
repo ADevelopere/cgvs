@@ -1,10 +1,10 @@
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import type { Font as OpentypeFont } from "opentype.js";
-import { resolveTextContent } from "../../demo/textResolvers";
+import { resolveTextContent } from "../../demo/textDemo";
 import { getFontFamilyFromElement } from "./fontUtils";
 import { drawDebugBorder } from "../util/debugUtils";
 import { RenderBox } from "../types";
-import { layoutResizeDown, layoutTruncate, layoutWrap, drawLayout, TextLayoutResult } from "../../../manage/preview/textLayout";
+import { layoutResizeDown, layoutTruncate, layoutWrap, drawLayout, TextLayoutResult } from "./textLayout";
 
 /**
  * Render a text element on canvas

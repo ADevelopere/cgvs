@@ -4,7 +4,7 @@ import { TemplateConfigFormErrors, TemplateConfigFormUpdateFn } from "./types";
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import { TemplateConfigForm } from "./TemplateConfigForm";
 import { useAppTranslation } from "@/client/locale";
-import { useCertificateElementStates } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../context/CertificateElementContext";
 
 export type TemplateConfigAutoUpdateFormInternalProps = {
   updating: boolean;

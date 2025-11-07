@@ -7,7 +7,7 @@ import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale";
 import { TemplateConfigFormErrors, TemplateConfigFormUpdateFn, TemplateConfigUpdateAction } from "./types";
 import { useTemplateConfigFormValidateFn } from "./templateConfigValidator";
-import { useNode } from "../../NodesStateProvider";
+import { useNode } from "../../context/NodesStateProvider";
 
 const updateDebounceDelayMs = 10000; // 10 seconds
 

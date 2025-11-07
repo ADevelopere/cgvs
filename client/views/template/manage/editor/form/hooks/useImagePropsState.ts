@@ -13,7 +13,7 @@ import {
   UpdateImagePropsWithElementIdFn,
   UpdateImagePropsFn,
 } from "../element/image";
-import { useCertificateElementStates } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../context/CertificateElementContext";
 
 export type UseImagePropsStateParams = {
   templateId?: number;

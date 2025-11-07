@@ -3,10 +3,10 @@
 import React from "react";
 import { Box, CircularProgress } from "@mui/material";
 import logger from "@/client/lib/logger";
-import { FontContext } from "../../manage/preview/FontContext";
-import { useOpentypeMetrics } from "../../manage/preview/useOpentypeMetrics";
+import { FontContext } from "./text/FontContext";
+import { useOpentypeMetrics } from "./hooks/useOpentypeMetrics";
 import { useImageLoader } from "./image/useImageLoader";
-import { useCanvasDrawing } from "./useCanvasDrawing";
+import { useCanvasDrawing } from "./hooks/useCanvasDrawing";
 import { calculateCanvasDimensions, createDownsampledCanvas, downloadCanvas } from "./util/canvasUtils";
 import { CanvasRendererProps, ClientCanvasGeneratorRef } from "./types";
 import { useCanvasRenderStore } from "./stores/useCanvasRenderStore";

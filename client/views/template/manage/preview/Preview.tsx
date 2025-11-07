@@ -2,8 +2,8 @@ import React from "react";
 import { Box, IconButton, Tooltip, TextField, Paper } from "@mui/material";
 import * as MuiIcons from "@mui/icons-material";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import DownloadImage from "../editor/download/DownloadImage";
-import ClientCanvasGenerator from "./ClientCanvasGenerator";
+import DownloadImage from "../../export/demo/DownloadImage";
+import ClientCanvasGenerator from "../../export/canvas/ClientCanvasGenerator";
 import { usePreviewStore } from "./usePreviewStore";
 
 type PreviewProps = {

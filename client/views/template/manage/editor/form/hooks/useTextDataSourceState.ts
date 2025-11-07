@@ -14,7 +14,7 @@ import {
   TextDataSourceFieldErrors,
 } from "../element/text/types";
 import { useElementState } from "./useElementState";
-import { useCertificateElementStates } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../context/CertificateElementContext";
 
 export type UseTextDataSourceStateParams = {
   templateId?: number;

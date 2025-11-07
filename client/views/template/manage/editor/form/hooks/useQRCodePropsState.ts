@@ -13,7 +13,7 @@ import {
   UpdateQRCodePropsWithElementIdFn,
   UpdateQRCodePropsFn,
 } from "../element/qrcode";
-import { useCertificateElementStates } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../context/CertificateElementContext";
 
 export type UseQRCodePropsStateParams = {
   templateId?: number;

@@ -3,21 +3,21 @@
 import React from "react";
 import { Box, CircularProgress, Typography, IconButton } from "@mui/material";
 import { Refresh as RefreshIcon } from "@mui/icons-material";
-import CertificateReactFlowEditor from "./ReactFlowEditor";
+import CertificateReactFlowEditor from "./reactFLow/ReactFlowEditor";
 import EditorPaneViewController from "@/client/components/editorPane/EditorPaneViewController";
 import { Template } from "@/client/graphql/generated/gql/graphql";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { ApolloClient } from "@apollo/client";
 import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "./glqDocuments";
 import { TemplateConfigCreateForm } from "./form/config/TemplateConfigCreateForm";
-import { MiscellaneousPanel } from "./miscellaneousPanel/MiscellaneousPanel";
+import { MiscellaneousPanel } from "./configPanel/MiscellaneousPanel";
 import { useAppTranslation } from "@/client/locale";
 import { useQuery, useApolloClient } from "@apollo/client/react";
-import { NodesProvider } from "./NodesStateProvider";
-import { CertificateElementProvider } from "./CertificateElementContext";
+import { NodesProvider } from "./context/NodesStateProvider";
+import { CertificateElementProvider } from "./context/CertificateElementContext";
 // import { PdfmeStoreProvider } from "./PdfmeStoreProvider";
 // import { PdfmeEditorWrapper } from "./PdfmeEditorWrapper";
-import AddNodePanel from "./addNewNode/AddNodePanel";
+import AddNodePanel from "./addNewNodePanel/AddNodePanel";
 import {
   //  EditorToggle,
   EditorType,

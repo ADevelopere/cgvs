@@ -13,7 +13,7 @@ import {
   UpdateDatePropsWithElementIdFn,
   UpdateDatePropsFn,
 } from "../element/date";
-import { useCertificateElementStates } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../context/CertificateElementContext";
 
 export type UseDatePropsStateParams = {
   templateId?: number;

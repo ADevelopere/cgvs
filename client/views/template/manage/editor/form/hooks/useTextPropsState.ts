@@ -11,7 +11,7 @@ import {
   ValidateTextPropsFieldFn,
 } from "../element/textProps";
 import { Action } from "../types";
-import { useCertificateElementStates } from "@/client/views/template/manage/editor/CertificateElementContext";
+import { useCertificateElementStates } from "@/client/views/template/manage/editor/context/CertificateElementContext";
 import logger from "@/client/lib/logger";
 import { useMutation } from "@apollo/client/react";
 import { updateElementTextPropsMutationDocument } from "../../glqDocuments";

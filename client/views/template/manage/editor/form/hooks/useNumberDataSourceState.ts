@@ -12,7 +12,7 @@ import {
   numberDataSourceToInput,
 } from "../element/number/types";
 import { useElementState } from "./useElementState";
-import { useCertificateElementStates } from "../../CertificateElementContext";
+import { useCertificateElementStates } from "../../context/CertificateElementContext";
 import { useNotifications } from "@toolpad/core/useNotifications";
 
 export type UseNumberDataSourceStateParams = {

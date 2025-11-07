@@ -8,9 +8,9 @@ import {
 } from "@xyflow/react";
 import { useFlowUpdater } from "./useNodeUpdater";
 import { useEditorStore } from "./useEditorStore";
-import { getHelperLines } from "../other/utils";
-import { useCertificateElementStates } from "../CertificateElementContext";
-import { useNode } from "../NodesStateProvider";
+import { getHelperLines } from "../reactFLow/utils/utils";
+import { useCertificateElementStates } from "../context/CertificateElementContext";
+import { useNode } from "../context/NodesStateProvider";
 import {logger} from "@/client/lib/console"
 
 type HelperLinesResult = {

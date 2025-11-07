@@ -15,7 +15,7 @@ export * from "./ElementRenderer";
 
 // Hooks
 export * from "./image/useImageLoader";
-export * from "./useCanvasDrawing";
+export * from "./hooks/useCanvasDrawing";
 
 // Components
 export * from "./CanvasRenderer";
