@@ -1,6 +1,6 @@
 import React from "react";
-import { Box, Typography, IconButton, Tooltip, Button, TextField } from "@mui/material";
-import { ZoomIn, ZoomOut, RestartAlt } from "@mui/icons-material";
+import { Box, IconButton, Tooltip, TextField, Paper } from "@mui/material";
+import * as MuiIcons from "@mui/icons-material";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import DownloadImage from "../editor/download/DownloadImage";
 import ClientCanvasGenerator from "./ClientCanvasGenerator";
@@ -21,87 +21,118 @@ export const Preview: React.FC<PreviewProps> = ({ templateId }) => {
   return (
     <Box
       sx={{
+        position: "relative",
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         height: "100%",
         width: "100%",
-        overflow: "hidden",
       }}
     >
       <TransformWrapper initialScale={1} initialPositionX={0} initialPositionY={0}>
         {({ zoomIn, zoomOut, resetTransform }) => (
           <React.Fragment>
-            {/* header */}
-            <Box
+            {/* Canvas to render template */}
+            <TransformComponent>
+              <Box sx={{overflow: "auto", width: "fit-content", height: "fit-content" }}>
+                <ClientCanvasGenerator
+                  templateId={templateId}
+                  showDebugBorders={showDebugBorders}
+                  renderScale={renderScale}
+                />
+              </Box>
+            </TransformComponent>
+
+            {/* Floating toolbar */}
+            <Paper
               sx={{
+                position: "absolute",
+                bottom: 16,
+                right: 16,
                 display: "flex",
-                justifyContent: "space-between",
+                flexDirection: "column",
+                gap: 2,
+                borderRadius: 2,
+                padding: 2,
+                minHeight: 300,
                 alignItems: "center",
-                borderBottom: "1px solid",
-                borderColor: "divider",
-                padding: "1rem",
-                width: { xs: "100%", md: "50%" },
+                justifyContent: "center",
+                zIndex: 1000,
               }}
             >
-              {/* title */}
-              <Typography variant="h4">Preview</Typography>
-              {/* Canvas to render template */}
-
-              <Box>
-                <TextField
-                  variant="standard"
-                  label="Scale"
-                  type="number"
-                  value={renderScale ?? "1"}
-                  onChange={e => handleScaleChange(Number(e.target.value))}
-                  slotProps={{
-                    htmlInput: {
-                      min: 0.5,
-                      max: 10,
-                      step: 0.1,
-                    },
-                  }}
-                />
-                <Tooltip title="Zoom In">
-                  <IconButton onClick={() => zoomIn()} sx={{ color: "white" }}>
-                    <ZoomIn />
+              <TextField
+                variant="outlined"
+                type="number"
+                size="small"
+                value={renderScale ?? "1"}
+                onChange={e => handleScaleChange(Number(e.target.value))}
+                slotProps={{
+                  htmlInput: {
+                    min: 0.5,
+                    max: 10,
+                    step: 0.1,
+                  },
+                }}
+                sx={{
+                  width: 50,
+                  // Hide spin buttons on number input
+                  "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button": {
+                    WebkitAppearance: "none",
+                    margin: 0,
+                  },
+                  "& input[type=number]": {
+                    MozAppearance: "textfield",
+                  },
+                }}
+              />
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 1,
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "100%",
+                  border: "1px solid",
+                  borderColor: "primary.main",
+                  borderRadius: 2,
+                }}
+              >
+                <Tooltip title="Zoom In" placement="left">
+                  <IconButton onClick={() => zoomIn()} size="small">
+                    <MuiIcons.ZoomIn />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Zoom Out">
-                  <IconButton onClick={() => zoomOut()} sx={{ color: "white" }}>
-                    <ZoomOut />
+                <Tooltip title="Zoom Out" placement="left">
+                  <IconButton onClick={() => zoomOut()} size="small">
+                    <MuiIcons.ZoomOut />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Reset">
-                  <IconButton onClick={() => resetTransform()} sx={{ color: "white" }}>
-                    <RestartAlt />
+                <Tooltip title="Reset" placement="left">
+                  <IconButton onClick={() => resetTransform()} size="small" color="primary">
+                    <MuiIcons.RestartAlt />
                   </IconButton>
                 </Tooltip>
-                {/* Button to download the preview */}
-                <Button
+              </Box>
+              <Tooltip title={showDebugBorders ? "Hide Debug Borders" : "Show Debug Borders"} placement="left">
+                <IconButton
                   color="primary"
                   onClick={() => {
                     setShowDebugBorders(prev => !prev);
                   }}
-                  variant="contained"
+                  size="small"
+                  sx={{ minWidth: "auto", px: 1 }}
                 >
-                  {showDebugBorders ? "Hide Debug Borders" : "Show Debug Borders"}
-                </Button>
-
-                <DownloadImage templateId={templateId} showDebugBorders={showDebugBorders} />
-              </Box>
-            </Box>
-
-            {/* Canvas to render template */}
-            <TransformComponent>
-              <ClientCanvasGenerator
+                  <MuiIcons.BugReport color={showDebugBorders ? "warning" : "action"} />
+                </IconButton>
+              </Tooltip>
+              <DownloadImage
                 templateId={templateId}
                 showDebugBorders={showDebugBorders}
-                renderScale={renderScale}
+                inReactFlowEditor={false}
+                label={<MuiIcons.Download />}
               />
-            </TransformComponent>
+            </Paper>
           </React.Fragment>
         )}
       </TransformWrapper>

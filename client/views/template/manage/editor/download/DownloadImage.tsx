@@ -9,9 +9,16 @@ import type { ClientCanvasGeneratorRef } from "@/client/views/template/manage/pr
 type DownloadImageProps = {
   templateId: number;
   showDebugBorders?: boolean;
+  inReactFlowEditor?: boolean;
+  label?: React.ReactNode;
 };
 
-export const DownloadImage: React.FC<DownloadImageProps> = ({ templateId, showDebugBorders = true }) => {
+export const DownloadImage: React.FC<DownloadImageProps> = ({
+  templateId,
+  showDebugBorders = true,
+  inReactFlowEditor = true,
+  label = "Download",
+}) => {
   const theme = useTheme();
   const [isGenerating, setIsGenerating] = React.useState(false);
   const [showGenerator, setShowGenerator] = React.useState(false);
@@ -38,26 +45,30 @@ export const DownloadImage: React.FC<DownloadImageProps> = ({ templateId, showDe
     setShowGenerator(true);
   }, [templateId, isGenerating]);
 
+  const content = React.useMemo(() => {
+    return (
+      <button
+        className="download-btn xy-theme__button"
+        onClick={onClick}
+        disabled={isGenerating}
+        style={{
+          padding: "8px 16px",
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
+          border: "none",
+          borderRadius: theme.shape.borderRadius,
+          cursor: isGenerating ? "not-allowed" : "pointer",
+          opacity: isGenerating ? 0.6 : 1,
+        }}
+      >
+        {isGenerating ? <CircularProgress size={16} color="inherit" /> : label}
+      </button>
+    );
+  }, [isGenerating, onClick, theme]);
+
   return (
     <>
-      <Panel position="top-right">
-        <button
-          className="download-btn xy-theme__button"
-          onClick={onClick}
-          disabled={isGenerating}
-          style={{
-            padding: "8px 16px",
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
-            border: "none",
-            borderRadius: theme.shape.borderRadius,
-            cursor: isGenerating ? "not-allowed" : "pointer",
-            opacity: isGenerating ? 0.6 : 1,
-          }}
-        >
-          {isGenerating ? <CircularProgress size={16} color="inherit" /> : "Download Image"}
-        </button>
-      </Panel>
+      {inReactFlowEditor ? <Panel position="top-right">{content}</Panel> : content}
 
       {showGenerator && templateId && (
         <div

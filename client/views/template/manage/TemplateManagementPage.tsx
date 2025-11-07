@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, startTransition, lazy, Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
-import { Box, Fade, Slide, CircularProgress } from "@mui/material";
+import { Box, Fade, Slide, CircularProgress, styled } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import { templateQueryDocument } from "../hooks/template.documents";
@@ -53,6 +53,17 @@ const TAB_ORDER: TemplateManagementTabType[] = [
   "editor",
   "preview",
 ];
+
+const StyledTabPanel = styled(TabPanel)(() => ({
+  width: "100%",
+  height: "100%",
+  overflow: "hidden",
+}));
+
+const TabContent = styled(Box)(() => ({
+  width: "100%",
+  height: "100%",
+}));
 
 export const TemplateManagementPageContent: React.FC = () => {
   const pathParams = useParams<{ id: string }>();
@@ -148,80 +159,73 @@ export const TemplateManagementPageContent: React.FC = () => {
     // Render actual tab content when template is available
     return (
       <TabContext value={activeTab}>
-        <TabPanel value="basic" sx={{ width: "100%", height: "100%" }}>
+        <StyledTabPanel value="basic">
           <Fade in={activeTab === "basic"} timeout={300}>
             <Slide direction={slideDirection} in={activeTab === "basic"} timeout={250}>
-              <Box sx={{ width: "100%", height: "100%" }}>
+              <TabContent>
                 <BasicInfoTab template={template} />
-              </Box>
+              </TabContent>
             </Slide>
           </Fade>
-        </TabPanel>
-        <TabPanel value="variables" sx={{ width: "100%", height: "100%" }}>
+        </StyledTabPanel>
+        <StyledTabPanel value="variables">
           <Fade in={activeTab === "variables"} timeout={300}>
             <Slide direction={slideDirection} in={activeTab === "variables"} timeout={250}>
-              <Box sx={{ width: "100%", height: "100%" }}>
+              <TabContent>
                 <TemplateVariableManagement template={template} />
-              </Box>
+              </TabContent>
             </Slide>
           </Fade>
-        </TabPanel>
-        <TabPanel value="recipients" sx={{ width: "100%", height: "100%" }}>
+        </StyledTabPanel>
+        <StyledTabPanel value="recipients">
           <Fade in={activeTab === "recipients"} timeout={300}>
             <Slide direction={slideDirection} in={activeTab === "recipients"} timeout={250}>
-              <Box sx={{ width: "100%", height: "100%" }}>
+              <TabContent>
                 <RecipientGroupTab template={template} />
-              </Box>
+              </TabContent>
             </Slide>
           </Fade>
-        </TabPanel>
-        <TabPanel value="recipientsManagement" sx={{ width: "100%", height: "100%" }}>
+        </StyledTabPanel>
+        <StyledTabPanel value="recipientsManagement">
           <Suspense fallback={<TabLoadingFallback />}>
             <Fade in={activeTab === "recipientsManagement"} timeout={300}>
               <Slide direction={slideDirection} in={activeTab === "recipientsManagement"} timeout={250}>
-                <Box sx={{ width: "100%", height: "100%" }}>
+                <TabContent>
                   <RecipientsManagementTab template={template} />
-                </Box>
+                </TabContent>
               </Slide>
             </Fade>
           </Suspense>
-        </TabPanel>
-        <TabPanel value="data" sx={{ width: "100%", height: "100%" }}>
+        </StyledTabPanel>
+        <StyledTabPanel value="data">
           <Suspense fallback={<TabLoadingFallback />}>
             <Fade in={activeTab === "data"} timeout={300}>
               <Slide direction={slideDirection} in={activeTab === "data"} timeout={250}>
-                <Box sx={{ width: "100%", height: "100%" }}>
+                <TabContent>
                   <RecipientVariableDataTab template={template} />
-                </Box>
+                </TabContent>
               </Slide>
             </Fade>
           </Suspense>
-        </TabPanel>
-        <TabPanel value="editor" sx={{ width: "100%", height: "100%" }}>
+        </StyledTabPanel>
+        <StyledTabPanel value="editor">
           <Fade in={activeTab === "editor"} timeout={300}>
             <Slide direction={slideDirection} in={activeTab === "editor"} timeout={250}>
-              <Box sx={{ width: "100%", height: "100%" }}>
+              <TabContent>
                 <EditorTab template={template} />
-              </Box>
+              </TabContent>
             </Slide>
           </Fade>
-        </TabPanel>
-        <TabPanel value="preview">
+        </StyledTabPanel>
+        <StyledTabPanel value="preview" sx={{ width: "100%", height: "100%", overflow: "hidden" }}>
           <Fade in={activeTab === "preview"} timeout={300}>
             <Slide direction={slideDirection} in={activeTab === "preview"} timeout={250}>
-              <Box
-                sx={{
-                  p: 2,
-                  width: "100%",
-                  height: "100%",
-                  borderColor: "red",
-                }}
-              >
+              <TabContent>
                 <Preview templateId={template.id} />
-              </Box>
+              </TabContent>
             </Slide>
           </Fade>
-        </TabPanel>
+        </StyledTabPanel>
       </TabContext>
     );
   };

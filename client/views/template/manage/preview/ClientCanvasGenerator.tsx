@@ -9,6 +9,7 @@ import { useOpentypeMetrics } from "./useOpentypeMetrics";
 import { layoutResizeDown, layoutTruncate, layoutWrap, drawLayout } from "./textLayout";
 import { resolveTextContent } from "../editor/download/imageRenderer/textResolvers";
 import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "../editor/glqDocuments";
+import { Box, CircularProgress } from "@mui/material";
 
 export interface ClientCanvasGeneratorProps {
   templateId: number;
@@ -118,11 +119,7 @@ function calculateImageDimensions(
 /**
  * Draw debug border around element bounding box
  */
-function drawDebugBorder(
-  ctx: CanvasRenderingContext2D,
-  element: GQL.CertificateElementBase,
-  color = "red"
-): void {
+function drawDebugBorder(ctx: CanvasRenderingContext2D, element: GQL.CertificateElementBase, color = "red"): void {
   ctx.save();
   ctx.strokeStyle = color;
   ctx.lineWidth = 1;
@@ -158,15 +155,13 @@ function CanvasInner(
   // Load all images
   React.useEffect(() => {
     const imageElements = elements.filter((e): e is GQL.ImageElement => e.__typename === "ImageElement");
-    
+
     if (imageElements.length === 0) {
       setImagesLoaded(true);
       return;
     }
 
-    const imageUrls = imageElements
-      .map(el => el.imageDataSource?.imageUrl)
-      .filter((url): url is string => !!url);
+    const imageUrls = imageElements.map(el => el.imageDataSource?.imageUrl).filter((url): url is string => !!url);
 
     Promise.all(imageUrls.map(url => loadImage(url)))
       .then(images => {
@@ -190,7 +185,7 @@ function CanvasInner(
     const { width, height } = config;
     const renderWidth = width * renderScale;
     const renderHeight = height * renderScale;
-    
+
     // Clear and scale context for high-resolution rendering
     ctx.clearRect(0, 0, renderWidth, renderHeight);
     ctx.save();
@@ -211,17 +206,16 @@ function CanvasInner(
         if (!img) continue;
 
         const fit = el.imageProps?.fit || GQL.ElementImageFit.Contain;
-        const { width: imgWidth, height: imgHeight, x: offsetX, y: offsetY } = calculateImageDimensions(
-          img.naturalWidth,
-          img.naturalHeight,
-          el.base.width,
-          el.base.height,
-          fit
-        );
+        const {
+          width: imgWidth,
+          height: imgHeight,
+          x: offsetX,
+          y: offsetY,
+        } = calculateImageDimensions(img.naturalWidth, img.naturalHeight, el.base.width, el.base.height, fit);
 
         // Save context for clipping
         ctx.save();
-        
+
         // Clip to element bounds for COVER mode
         if (fit === GQL.ElementImageFit.Cover) {
           ctx.beginPath();
@@ -229,57 +223,51 @@ function CanvasInner(
           ctx.clip();
         }
 
-        ctx.drawImage(
-          img,
-          el.base.positionX + offsetX,
-          el.base.positionY + offsetY,
-          imgWidth,
-          imgHeight
-        );
+        ctx.drawImage(img, el.base.positionX + offsetX, el.base.positionY + offsetY, imgWidth, imgHeight);
 
         ctx.restore();
       } else if (el.__typename === "TextElement") {
         // Render text element
-      const text = resolveTextContent(el.textDataSource, config.language, "Text");
-      const family =
-        el.textProps.fontRef.__typename === "FontReferenceGoogle" && el.textProps.fontRef.identifier
-          ? el.textProps.fontRef.identifier
-          : "Roboto";
-      const fontSize = el.textProps.fontSize;
-      const color = el.textProps.color || "#000";
-      const font = getFont(family);
+        const text = resolveTextContent(el.textDataSource, config.language, "Text");
+        const family =
+          el.textProps.fontRef.__typename === "FontReferenceGoogle" && el.textProps.fontRef.identifier
+            ? el.textProps.fontRef.identifier
+            : "Roboto";
+        const fontSize = el.textProps.fontSize;
+        const color = el.textProps.color || "#000";
+        const font = getFont(family);
 
-      ctx.font = `${fontSize}px ${family}`;
-      ctx.textBaseline = "alphabetic";
+        ctx.font = `${fontSize}px ${family}`;
+        ctx.textBaseline = "alphabetic";
 
-      let layout;
-      if (el.textProps.overflow === GQL.ElementOverflow.Wrap) {
-        layout = layoutWrap(ctx, text, el.base.width, font, fontSize);
-      } else if (
-        el.textProps.overflow === GQL.ElementOverflow.Ellipse ||
-        el.textProps.overflow === GQL.ElementOverflow.Truncate
-      ) {
-        layout = layoutTruncate(ctx, text, el.base.width, fontSize, el.textProps.overflow, font);
-      } else if (el.textProps.overflow === GQL.ElementOverflow.ResizeDown) {
-        layout = layoutResizeDown(ctx, text, el.base.width, el.base.height, font, fontSize, family);
-      } else {
-        layout = layoutTruncate(ctx, text, el.base.width, fontSize, GQL.ElementOverflow.Truncate, font);
-      }
+        let layout;
+        if (el.textProps.overflow === GQL.ElementOverflow.Wrap) {
+          layout = layoutWrap(ctx, text, el.base.width, font, fontSize);
+        } else if (
+          el.textProps.overflow === GQL.ElementOverflow.Ellipse ||
+          el.textProps.overflow === GQL.ElementOverflow.Truncate
+        ) {
+          layout = layoutTruncate(ctx, text, el.base.width, fontSize, el.textProps.overflow, font);
+        } else if (el.textProps.overflow === GQL.ElementOverflow.ResizeDown) {
+          layout = layoutResizeDown(ctx, text, el.base.width, el.base.height, font, fontSize, family);
+        } else {
+          layout = layoutTruncate(ctx, text, el.base.width, fontSize, GQL.ElementOverflow.Truncate, font);
+        }
 
-      drawLayout(
-        ctx,
-        {
-          x: el.base.positionX,
-          y: el.base.positionY,
-          width: el.base.width,
-          height: el.base.height,
-          color,
-          alignment: el.base.alignment,
-        },
-        layout,
-        font,
-        family
-      );
+        drawLayout(
+          ctx,
+          {
+            x: el.base.positionX,
+            y: el.base.positionY,
+            width: el.base.width,
+            height: el.base.height,
+            color,
+            alignment: el.base.alignment,
+          },
+          layout,
+          font,
+          family
+        );
       }
 
       // Draw debug border if enabled
@@ -287,7 +275,7 @@ function CanvasInner(
         drawDebugBorder(ctx, el.base);
       }
     }
-    
+
     ctx.restore();
   }, [elements, config, fontsLoaded, metricsReady, imagesLoaded, getFont, showDebugBorders, renderScale]);
 
@@ -303,27 +291,27 @@ function CanvasInner(
   const download = React.useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     let exportCanvas = canvas;
-    
+
     // If rendered at higher resolution, downsample for optimal quality
     if (renderScale > 1) {
       const outputCanvas = document.createElement("canvas");
       outputCanvas.width = config.width;
       outputCanvas.height = config.height;
       const outputCtx = outputCanvas.getContext("2d");
-      
+
       if (outputCtx) {
         // Enable high-quality image smoothing for downsampling
         outputCtx.imageSmoothingEnabled = true;
         outputCtx.imageSmoothingQuality = "high";
-        
+
         // Draw scaled-down version
         outputCtx.drawImage(canvas, 0, 0, config.width, config.height);
         exportCanvas = outputCanvas;
       }
     }
-    
+
     const dataUrl = exportCanvas.toDataURL("image/png");
     onExport?.(dataUrl);
     const link = document.createElement("a");
@@ -338,7 +326,15 @@ function CanvasInner(
 
   const renderWidth = config.width * renderScale;
   const renderHeight = config.height * renderScale;
-  
+
+  if (!didReady.current) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
+        <CircularProgress color="info" size={20} />
+      </Box>
+    );
+  }
+
   return (
     <canvas
       ref={canvasRef}
@@ -388,12 +384,12 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
 
     return (
       <FontProvider families={families}>
-        <CanvasInnerWithRef 
-          ref={ref} 
-          elements={elements} 
-          config={config} 
-          onExport={onExport} 
-          onReady={onReady} 
+        <CanvasInnerWithRef
+          ref={ref}
+          elements={elements}
+          config={config}
+          onExport={onExport}
+          onReady={onReady}
           showDebugBorders={showDebugBorders}
           renderScale={renderScale}
         />
