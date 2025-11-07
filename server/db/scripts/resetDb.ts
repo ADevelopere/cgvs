@@ -3,16 +3,31 @@ import logger from "@/server/lib/logger";
 import { runMigrations } from "./migrate";
 
 function parseDatabaseUrl(url: string) {
-  // Example: postgres://user:password@host:port/dbname or postgresql://user:password@host:port/dbname
-  const match = url.match(/^postgres(?:ql)?:\/\/(.*?):(.*?)@(.*?):(\d+)\/(.*)$/);
-  if (!match) throw new Error("Invalid DATABASE_URL format");
-  return {
-    user: match[1],
-    password: match[2],
-    host: match[3],
-    port: match[4],
-    database: match[5],
-  };
+  // Example: postgres://user:password@host:port/dbname or postgresql://user:password@host/dbname?params
+  const matchWithPort = url.match(/^postgres(?:ql)?:\/\/(.*?):(.*?)@(.*?):(\d+)\/(.*)$/);
+  if (matchWithPort) {
+    return {
+      user: matchWithPort[1],
+      password: matchWithPort[2],
+      host: matchWithPort[3],
+      port: matchWithPort[4],
+      database: matchWithPort[5].split('?')[0],
+    };
+  }
+  
+  // Try without port: postgres://user:password@host/dbname?params
+  const matchWithoutPort = url.match(/^postgres(?:ql)?:\/\/(.*?):(.*?)@(.*?)\/(.*)$/);
+  if (matchWithoutPort) {
+    return {
+      user: matchWithoutPort[1],
+      password: matchWithoutPort[2],
+      host: matchWithoutPort[3],
+      port: process.env.PGPORT || "5432",
+      database: matchWithoutPort[4].split('?')[0],
+    };
+  }
+  
+  throw new Error("Invalid DATABASE_URL format");
 }
 
 async function resetDatabase() {
