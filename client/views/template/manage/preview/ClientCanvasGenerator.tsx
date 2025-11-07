@@ -10,13 +10,17 @@ import { layoutResizeDown, layoutTruncate, layoutWrap, drawLayout } from "./text
 import { resolveTextContent } from "../editor/download/imageRenderer/textResolvers";
 import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "../editor/glqDocuments";
 import { Box, CircularProgress } from "@mui/material";
+import { useCanvasCacheStore } from "./canvasCacheStore";
+import { createHash } from "crypto";
 
 export interface ClientCanvasGeneratorProps {
   templateId: number;
   onExport?: (dataUrl: string) => void;
-  onReady?: () => void;
+  onReady?: (timings: { canvasGenerationTime: number; hashGenerationTime: number }) => void;
   showDebugBorders?: boolean;
   renderScale?: number; // Multiplier for high-quality rendering (e.g., 2 = 2x resolution)
+  timeoutMs?: number; // Maximum time allowed for generation in milliseconds
+  onTimeout?: () => void; // Callback when generation exceeds timeout
 }
 
 export type ClientCanvasGeneratorRef = {
@@ -135,13 +139,21 @@ function CanvasInner(
     onReady,
     showDebugBorders = true,
     renderScale = 1,
+    onDrawComplete,
+    timeoutMs,
+    onTimeout,
+    hashGenerationTimeRef,
   }: {
     elements: GQL.CertificateElementUnion[];
     config: GQL.TemplateConfig;
     onExport?: (d: string) => void;
-    onReady?: () => void;
+    onReady?: (timings: { canvasGenerationTime: number; hashGenerationTime: number }) => void;
     showDebugBorders?: boolean;
     renderScale?: number;
+    onDrawComplete?: (dataUrl: string) => void;
+    timeoutMs?: number;
+    onTimeout?: () => void;
+    hashGenerationTimeRef?: React.MutableRefObject<number>;
   },
   ref: React.Ref<ClientCanvasGeneratorRef>
 ) {
@@ -151,6 +163,8 @@ function CanvasInner(
   const didReady = React.useRef(false);
   const [imagesLoaded, setImagesLoaded] = React.useState(false);
   const imageCache = React.useRef<Map<string, HTMLImageElement>>(new Map());
+  const timeoutIdRef = React.useRef<NodeJS.Timeout | null>(null);
+  const canvasGenerationTimeRef = React.useRef<number>(0);
 
   // Load all images
   React.useEffect(() => {
@@ -177,6 +191,7 @@ function CanvasInner(
   }, [elements]);
 
   const draw = React.useCallback(() => {
+    const drawStartTime = performance.now();
     const canvas = canvasRef.current;
     if (!canvas || !fontsLoaded || !metricsReady || !imagesLoaded) return;
     const ctx = canvas.getContext("2d");
@@ -277,16 +292,66 @@ function CanvasInner(
     }
 
     ctx.restore();
-  }, [elements, config, fontsLoaded, metricsReady, imagesLoaded, getFont, showDebugBorders, renderScale]);
+
+    const drawEndTime = performance.now();
+    const generationTime = drawEndTime - drawStartTime;
+    canvasGenerationTimeRef.current = generationTime;
+
+    if (onDrawComplete) {
+      const dataUrl = canvas.toDataURL("image/png");
+      onDrawComplete(dataUrl);
+    }
+  }, [
+    elements,
+    config,
+    fontsLoaded,
+    metricsReady,
+    imagesLoaded,
+    getFont,
+    showDebugBorders,
+    renderScale,
+    onDrawComplete,
+  ]);
 
   React.useEffect(() => {
     if (!fontsLoaded || !metricsReady || !imagesLoaded) return;
+
+    // Set up timeout if timeoutMs is provided
+    if (timeoutMs && !timeoutIdRef.current) {
+      timeoutIdRef.current = setTimeout(() => {
+        logger.warn({ caller: "ClientCanvasGenerator" }, "Canvas generation timeout exceeded", {
+          timeoutMs,
+        });
+        onTimeout?.();
+        timeoutIdRef.current = null;
+      }, timeoutMs);
+    }
+
     draw();
+
     if (!didReady.current) {
       didReady.current = true;
-      onReady?.();
+      onReady?.({
+        canvasGenerationTime: canvasGenerationTimeRef.current,
+        hashGenerationTime: hashGenerationTimeRef?.current || 0,
+      });
+
+      // Clear timeout on successful completion
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current);
+        timeoutIdRef.current = null;
+      }
     }
-  }, [draw, fontsLoaded, metricsReady, imagesLoaded, onReady]);
+  }, [draw, fontsLoaded, metricsReady, imagesLoaded, onReady, timeoutMs, onTimeout]);
+
+  // Cleanup timeout on unmount
+  React.useEffect(() => {
+    return () => {
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current);
+      }
+    };
+  }, []);
 
   const download = React.useCallback(() => {
     const canvas = canvasRef.current;
@@ -351,14 +416,32 @@ const CanvasInnerWithRef = React.forwardRef<
     elements: GQL.CertificateElementUnion[];
     config: GQL.TemplateConfig;
     onExport?: (d: string) => void;
-    onReady?: () => void;
+    onReady?: (timings: { canvasGenerationTime: number; hashGenerationTime: number }) => void;
     showDebugBorders?: boolean;
     renderScale?: number;
+    onDrawComplete?: (dataUrl: string) => void;
+    timeoutMs?: number;
+    onTimeout?: () => void;
+    hashGenerationTimeRef?: React.MutableRefObject<number>;
   }
 >(CanvasInner);
 
+function generateDataHash(
+  elements: GQL.CertificateElementUnion[],
+  config: GQL.TemplateConfig,
+  showDebugBorders: boolean,
+  renderScale: number
+): { hash: string; hashGenerationTime: number } {
+  const startTime = performance.now();
+  const dataString = JSON.stringify({ elements, config, showDebugBorders, renderScale });
+  const hash = createHash("sha256").update(dataString).digest("hex");
+  const hashGenerationTime = performance.now() - startTime;
+  
+  return { hash, hashGenerationTime };
+}
+
 export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, ClientCanvasGeneratorProps>(
-  ({ templateId, onExport, onReady, showDebugBorders = true, renderScale = 1 }, ref) => {
+  ({ templateId, onExport, onReady, showDebugBorders = true, renderScale = 1, timeoutMs, onTimeout }, ref) => {
     const { data: configData, error: configError } = useQuery(templateConfigByTemplateIdQueryDocument, {
       variables: { templateId },
       fetchPolicy: "cache-first",
@@ -378,7 +461,37 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
     const config = configData?.templateConfigByTemplateId;
     const elements = elementsData?.elementsByTemplateId;
 
+    const { getCache, setCache } = useCanvasCacheStore();
+    const hashGenerationTimeRef = React.useRef<number>(0);
+    const dataHash = React.useMemo(() => {
+      if (!config || !elements) return null;
+      const result = generateDataHash(elements, config, showDebugBorders, renderScale);
+      hashGenerationTimeRef.current = result.hashGenerationTime;
+      return result.hash;
+    }, [elements, config, showDebugBorders, renderScale]);
+
+    const cachedCanvas = dataHash ? getCache(dataHash) : null;
+
+    const handleDrawComplete = React.useCallback(
+      (dataUrl: string) => {
+        if (dataHash) {
+          setCache(dataHash, dataUrl);
+        }
+      },
+      [dataHash, setCache]
+    );
+
     if (!config || !elements) return null;
+
+    if (cachedCanvas) {
+      return (
+        <img
+          src={cachedCanvas}
+          alt="Certificate Preview"
+          style={{ width: `${config.width}px`, height: `${config.height}px`, border: "1px solid #ccc" }}
+        />
+      );
+    }
 
     const families = collectFontFamilies(elements);
 
@@ -392,6 +505,10 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
           onReady={onReady}
           showDebugBorders={showDebugBorders}
           renderScale={renderScale}
+          onDrawComplete={handleDrawComplete}
+          timeoutMs={timeoutMs}
+          onTimeout={onTimeout}
+          hashGenerationTimeRef={hashGenerationTimeRef}
         />
       </FontProvider>
     );
