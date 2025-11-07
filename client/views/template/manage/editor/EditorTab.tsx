@@ -152,59 +152,59 @@ export const EditorTab: React.FC<EditorTabProps> = ({ template }) => {
       <NodesProvider templateId={template.id}>
         <CertificateElementProvider templateId={template.id}>
           {/* <PdfmeStoreProvider templateId={template.id}> */}
-            {/* <EditorToggle
+          {/* <EditorToggle
               activeEditor={activeEditor}
               onToggle={setActiveEditor}
             /> */}
-            <EditorPaneViewController
-              firstPane={{
-                title: (
+          <EditorPaneViewController
+            firstPane={{
+              title: (
+                <Typography
+                  variant="h6"
+                  sx={{
+                    px: 2,
+                  }}
+                >
+                  {strings.addNodePane}
+                </Typography>
+              ),
+              content: ({ collapsed }) => <AddNodePanel compact={collapsed} templateId={template.id} />,
+              buttonTooltip: "Toggle Add Node Panel",
+              buttonDisabled: false,
+              showCollapseButtonInHeader: true,
+              minRatio: 0.15,
+            }}
+            middlePane={
+              <>
+                {activeEditor === "reactflow" && <CertificateReactFlowEditor />}
+                {/* {activeEditor === "pdfme" && <PdfmeEditorWrapper />} */}
+              </>
+            }
+            thirdPane={{
+              title: (
+                <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Typography
                     variant="h6"
                     sx={{
                       px: 2,
                     }}
                   >
-                    {strings.addNodePane}
+                    {strings.miscellaneousPane}
                   </Typography>
-                ),
-                content: ({ collapsed }) => <AddNodePanel compact={collapsed} templateId={template.id} />,
-                buttonTooltip: "Toggle Add Node Panel",
-                buttonDisabled: false,
-                showCollapseButtonInHeader: true,
-                minRatio: 0.15,
-              }}
-              middlePane={
-                <>
-                  {activeEditor === "reactflow" && <CertificateReactFlowEditor />}
-                  {/* {activeEditor === "pdfme" && <PdfmeEditorWrapper />} */}
-                </>
-              }
-              thirdPane={{
-                title: (
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        px: 2,
-                      }}
-                    >
-                      {strings.miscellaneousPane}
-                    </Typography>
-                    <IconButton onClick={refreshData} size="small" sx={{ ml: 1 }} title="Refresh Data">
-                      <RefreshIcon />
-                    </IconButton>
-                  </Box>
-                ),
-                content: <MiscellaneousPanel elements={elements} templateConfig={templateConfig} />,
-                buttonTooltip: "Toggle Miscellaneous Panel",
-                buttonDisabled: false,
-                showCollapseButtonInHeader: true,
-                minRatio: 0.15,
-              }}
-              storageKey="templateManagementEditor"
-            />
-            <FloatingLoadingIndicator loading={configLoading || elementsLoading} />
+                  <IconButton onClick={refreshData} size="small" sx={{ ml: 1 }} title="Refresh Data">
+                    <RefreshIcon />
+                  </IconButton>
+                </Box>
+              ),
+              content: <MiscellaneousPanel elements={elements} templateConfig={templateConfig} />,
+              buttonTooltip: "Toggle Miscellaneous Panel",
+              buttonDisabled: false,
+              showCollapseButtonInHeader: true,
+              minRatio: 0.15,
+            }}
+            storageKey="templateManagementEditor"
+          />
+          <FloatingLoadingIndicator loading={configLoading || elementsLoading} />
           {/* </PdfmeStoreProvider> */}
         </CertificateElementProvider>
       </NodesProvider>

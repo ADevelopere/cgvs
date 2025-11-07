@@ -1,4 +1,3 @@
-
 /**
  * MiscellaneousPanel
  *
@@ -18,7 +17,7 @@
 
 import React from "react";
 import { Box, Tab } from "@mui/material";
-import { TabContext, TabPanel, } from "@mui/lab";
+import { TabContext, TabPanel } from "@mui/lab";
 import { useEditorStore } from "../hooks/useEditorStore";
 import { MiscellaneousPanelTab } from "./types";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
@@ -27,7 +26,6 @@ import { useAppTranslation } from "@/client/locale";
 import { ElementsTab } from "./elements/ElementsTab";
 import { CertificateElementCurrentItemSettings } from "./currentElement/CurrentElement";
 import { WheelTabList } from "@/client/components";
-
 
 /**
  * Props for MiscellaneousPanel component.

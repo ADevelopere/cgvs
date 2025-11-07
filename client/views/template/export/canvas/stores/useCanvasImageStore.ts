@@ -5,7 +5,7 @@ interface CanvasImageState {
   imageCache: Map<string, HTMLImageElement>;
   // Map of URL to loading promise
   imageInflight: Map<string, Promise<HTMLImageElement>>;
-  
+
   getImage: (url: string) => HTMLImageElement | undefined;
   setImage: (url: string, image: HTMLImageElement) => void;
   getInflight: (url: string) => Promise<HTMLImageElement> | undefined;
@@ -17,11 +17,11 @@ interface CanvasImageState {
 export const useCanvasImageStore = create<CanvasImageState>((set, get) => ({
   imageCache: new Map(),
   imageInflight: new Map(),
-  
+
   getImage: (url: string) => {
     return get().imageCache.get(url);
   },
-  
+
   setImage: (url: string, image: HTMLImageElement) => {
     set(state => {
       const newCache = new Map(state.imageCache);
@@ -29,11 +29,11 @@ export const useCanvasImageStore = create<CanvasImageState>((set, get) => ({
       return { imageCache: newCache };
     });
   },
-  
+
   getInflight: (url: string) => {
     return get().imageInflight.get(url);
   },
-  
+
   setInflight: (url: string, promise: Promise<HTMLImageElement>) => {
     set(state => {
       const newInflight = new Map(state.imageInflight);
@@ -41,7 +41,7 @@ export const useCanvasImageStore = create<CanvasImageState>((set, get) => ({
       return { imageInflight: newInflight };
     });
   },
-  
+
   removeInflight: (url: string) => {
     set(state => {
       const newInflight = new Map(state.imageInflight);
@@ -49,7 +49,7 @@ export const useCanvasImageStore = create<CanvasImageState>((set, get) => ({
       return { imageInflight: newInflight };
     });
   },
-  
+
   hasImage: (url: string) => {
     return get().imageCache.has(url);
   },

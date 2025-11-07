@@ -32,10 +32,10 @@ export function calculateImageDimensions(
   switch (fit) {
     case GQL.ElementImageFit.Fill:
       return calculateFillDimensions(containerWidth, containerHeight);
-    
+
     case GQL.ElementImageFit.Cover:
       return calculateCoverDimensions(imageAspect, containerAspect, containerWidth, containerHeight);
-    
+
     case GQL.ElementImageFit.Contain:
     default:
       return calculateContainDimensions(imageAspect, containerAspect, containerWidth, containerHeight);
@@ -130,8 +130,6 @@ export function extractImageUrls(elements: GQL.CertificateElementUnion[]): strin
   const imageElements = elements.filter(
     (e): e is GQL.ImageElement => e.__typename === "ImageElement" && !e.base.hidden
   );
-  
-  return imageElements
-    .map(el => el.imageDataSource?.imageUrl)
-    .filter((url): url is string => !!url);
+
+  return imageElements.map(el => el.imageDataSource?.imageUrl).filter((url): url is string => !!url);
 }

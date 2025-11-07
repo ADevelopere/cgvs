@@ -12,10 +12,7 @@ export interface CanvasDimensions {
  * Calculate canvas dimensions with render scale
  * Complexity: 2 (multiplication operations)
  */
-export function calculateCanvasDimensions(
-  config: GQL.TemplateConfig,
-  renderScale: number
-): CanvasDimensions {
+export function calculateCanvasDimensions(config: GQL.TemplateConfig, renderScale: number): CanvasDimensions {
   return {
     renderWidth: config.width * renderScale,
     renderHeight: config.height * renderScale,
@@ -26,10 +23,7 @@ export function calculateCanvasDimensions(
  * Setup canvas context with scale transformation
  * Complexity: 3 (save + scale operations)
  */
-export function setupCanvasContext(
-  ctx: CanvasRenderingContext2D,
-  renderScale: number
-): void {
+export function setupCanvasContext(ctx: CanvasRenderingContext2D, renderScale: number): void {
   ctx.save();
   ctx.scale(renderScale, renderScale);
 }
@@ -38,11 +32,7 @@ export function setupCanvasContext(
  * Clear canvas before drawing
  * Complexity: 2 (clearRect operation)
  */
-export function clearCanvas(
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number
-): void {
+export function clearCanvas(ctx: CanvasRenderingContext2D, width: number, height: number): void {
   ctx.clearRect(0, 0, width, height);
 }
 
@@ -50,9 +40,7 @@ export function clearCanvas(
  * Sort elements by zIndex for proper layering
  * Complexity: 3 (slice + sort)
  */
-export function sortElementsByZIndex(
-  elements: GQL.CertificateElementUnion[]
-): GQL.CertificateElementUnion[] {
+export function sortElementsByZIndex(elements: GQL.CertificateElementUnion[]): GQL.CertificateElementUnion[] {
   return elements.slice().sort((a, b) => a.base.zIndex - b.base.zIndex);
 }
 
@@ -68,15 +56,15 @@ export function createDownsampledCanvas(
   const outputCanvas = document.createElement("canvas");
   outputCanvas.width = targetWidth;
   outputCanvas.height = targetHeight;
-  
+
   const outputCtx = outputCanvas.getContext("2d");
   if (!outputCtx) {
     return sourceCanvas;
   }
-  
+
   setupImageSmoothing(outputCtx);
   outputCtx.drawImage(sourceCanvas, 0, 0, targetWidth, targetHeight);
-  
+
   return outputCanvas;
 }
 

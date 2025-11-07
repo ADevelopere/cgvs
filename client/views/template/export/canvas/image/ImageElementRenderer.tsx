@@ -19,7 +19,7 @@ export function renderImageElement(
   if (!img) return;
 
   const fit = element.imageProps?.fit || GQL.ElementImageFit.Contain;
-  
+
   drawImageWithFit(ctx, img, element, fit);
 
   if (showDebugBorder) {
@@ -47,12 +47,12 @@ function drawImageWithFit(
   );
 
   ctx.save();
-  
+
   // Get current transform to extract scale
   const transform = ctx.getTransform();
   const scaleX = transform.a;
   const scaleY = transform.d;
-  
+
   // Reset transform for native resolution rendering
   ctx.setTransform(1, 0, 0, 1, 0, 0);
 
@@ -72,7 +72,10 @@ function drawImageWithFit(
   // Apply scale to coordinates but use full image data
   ctx.drawImage(
     img,
-    0, 0, img.naturalWidth, img.naturalHeight, // source: full image
+    0,
+    0,
+    img.naturalWidth,
+    img.naturalHeight, // source: full image
     (element.base.positionX + dimensions.x) * scaleX,
     (element.base.positionY + dimensions.y) * scaleY,
     dimensions.width * scaleX,

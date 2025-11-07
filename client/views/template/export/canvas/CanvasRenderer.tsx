@@ -36,18 +36,18 @@ function CanvasRenderer(
 ) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const { fontsLoaded, families } = React.useContext(FontContext);
-  
+
   // Start OpenType metrics and image loading in parallel (they're independent)
   const { metricsReady, getFont } = useOpentypeMetrics(families);
   const { imagesLoaded, imageCache } = useImageLoader(elements);
-  
+
   // Use Zustand store for persistence across remounts
   const { isReady: isReadyInStore, setReady: setReadyInStore, setGenerationTime } = useCanvasRenderStore();
   const storeReady = isReadyInStore(templateId, renderScale, showDebugBorders);
-  
+
   // Use local state to trigger re-renders, sync with store
   const [isReady, setIsReady] = React.useState(storeReady);
-  
+
   const hasNotifiedReady = React.useRef(false);
   const timeoutIdRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -63,11 +63,11 @@ function CanvasRenderer(
 
   // Reset ready state when key dependencies change
   React.useEffect(() => {
-    logger.debug({ caller: "CanvasRenderer" }, "Resetting ready state", { 
-      templateId, 
-      renderScale, 
+    logger.debug({ caller: "CanvasRenderer" }, "Resetting ready state", {
+      templateId,
+      renderScale,
       showDebugBorders,
-      elementCount: elements.length 
+      elementCount: elements.length,
     });
     setIsReady(false);
     setReadyInStore(templateId, renderScale, showDebugBorders, false);
@@ -90,19 +90,19 @@ function CanvasRenderer(
 
   // Main drawing effect - canvas displays immediately, cache happens in background
   React.useEffect(() => {
-    logger.debug({ caller: "CanvasRenderer" }, "Drawing effect triggered", { 
-      fontsLoaded, 
-      metricsReady, 
+    logger.debug({ caller: "CanvasRenderer" }, "Drawing effect triggered", {
+      fontsLoaded,
+      metricsReady,
       imagesLoaded,
       isReady,
-      templateId 
+      templateId,
     });
-    
+
     if (!fontsLoaded || !metricsReady || !imagesLoaded) {
       logger.debug({ caller: "CanvasRenderer" }, "Resources not ready, waiting...", {
         fontsLoaded,
         metricsReady,
-        imagesLoaded
+        imagesLoaded,
       });
       if (isReady) {
         setIsReady(false);
@@ -130,13 +130,13 @@ function CanvasRenderer(
     }
 
     setupTimeout();
-    
+
     // Always draw if dependencies change, even if store says it's ready
     // This ensures canvas content is up-to-date with new elements/config
     logger.debug({ caller: "CanvasRenderer" }, "Starting canvas draw", { templateId });
     draw(); // Synchronous drawing
     logger.debug({ caller: "CanvasRenderer" }, "Canvas draw completed", { templateId });
-    
+
     // Store generation times (happens after draw completes)
     Promise.resolve().then(() => {
       setGenerationTime(
@@ -147,7 +147,7 @@ function CanvasRenderer(
         hashGenerationTimeRef?.current || 0
       );
     });
-    
+
     // Notify ready on next tick (after render)
     if (!hasNotifiedReady.current) {
       Promise.resolve().then(() => {
@@ -156,7 +156,18 @@ function CanvasRenderer(
     }
 
     return cleanup;
-  }, [draw, fontsLoaded, metricsReady, imagesLoaded, templateId, renderScale, showDebugBorders, setReadyInStore, setGenerationTime, isReady]);
+  }, [
+    draw,
+    fontsLoaded,
+    metricsReady,
+    imagesLoaded,
+    templateId,
+    renderScale,
+    showDebugBorders,
+    setReadyInStore,
+    setGenerationTime,
+    isReady,
+  ]);
 
   /**
    * Setup generation timeout
@@ -237,13 +248,13 @@ function CanvasRenderer(
     );
   }
 
-  logger.debug({ caller: "CanvasRenderer" }, "Rendering canvas element", { 
-    templateId, 
-    renderWidth, 
+  logger.debug({ caller: "CanvasRenderer" }, "Rendering canvas element", {
+    templateId,
+    renderWidth,
     renderHeight,
     canvasRefCurrent: !!canvasRef.current,
   });
-  
+
   return (
     <canvas
       ref={canvasRef}
@@ -254,6 +265,4 @@ function CanvasRenderer(
   );
 }
 
-export const CanvasRendererWithRef = React.forwardRef<ClientCanvasGeneratorRef, CanvasRendererProps>(
-  CanvasRenderer
-);
+export const CanvasRendererWithRef = React.forwardRef<ClientCanvasGeneratorRef, CanvasRendererProps>(CanvasRenderer);

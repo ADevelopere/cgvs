@@ -11,7 +11,7 @@ import { useEditorStore } from "./useEditorStore";
 import { getHelperLines } from "../reactFLow/utils/utils";
 import { useCertificateElementStates } from "../context/CertificateElementContext";
 import { useNode } from "../context/NodesStateProvider";
-import {logger} from "@/client/lib/console"
+import { logger } from "@/client/lib/console";
 
 type HelperLinesResult = {
   horizontal: number | undefined;
@@ -40,7 +40,7 @@ export const useApplyNodeChange = () => {
     vertical: number | undefined;
   }>({ horizontal: undefined, vertical: undefined });
   const updateHelperLinesTimeoutRef = useRef<number | null>(null);
-  
+
   // Track dimension changes during resize to use updated dimensions for boundary constraints
   const resizeDimensionsRef = useRef<Map<string, { width: number; height: number }>>(new Map());
 
@@ -249,17 +249,17 @@ export const useApplyNodeChange = () => {
         if (constrainedChange.type === "dimensions" && constrainedChange.dimensions) {
           const width = constrainedChange.dimensions.width;
           const height = constrainedChange.dimensions.height;
-          
+
           if (constrainedChange.resizing) {
             // Store current dimensions during resize for use in position constraint calculations
             resizeDimensionsRef.current.set(constrainedChange.id, { width, height });
-            
+
             // Update with isResizing=true for visual feedback
             updateElementSize(elementId, width, height, true);
           } else {
             // Clear stored dimensions when resize ends
             resizeDimensionsRef.current.delete(constrainedChange.id);
-            
+
             // Use queueMicrotask for better performance than setTimeout
             queueMicrotask(() => {
               // Update with isResizing=false to add to history

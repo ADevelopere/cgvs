@@ -28,7 +28,7 @@ export function useOpentypeMetrics(families: string[]) {
 
   React.useEffect(() => {
     let cancelled = false;
-    
+
     const ensureFontInternal = async (family: string): Promise<void> => {
       if (hasFont(family)) return;
       const existingInflight = getInflight(family);
@@ -65,14 +65,14 @@ export function useOpentypeMetrics(families: string[]) {
     (async () => {
       setReady(false);
       const uniq = Array.from(new Set(families)).filter(Boolean);
-      
+
       // Start all font fetches immediately in parallel (don't wait for WebFont)
       // This is safe because we're just preloading the font files
       await Promise.all(uniq.map(f => ensureFontInternal(f)));
-      
+
       if (!cancelled) setReady(true);
     })();
-    
+
     return () => {
       cancelled = true;
     };

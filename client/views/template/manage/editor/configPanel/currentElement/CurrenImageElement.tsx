@@ -1,5 +1,5 @@
 import React from "react";
-import {  ImageElement } from "@/client/graphql/generated/gql/graphql";
+import { ImageElement } from "@/client/graphql/generated/gql/graphql";
 import { Stack, Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { BaseCertificateElementForm } from "../../form/element/base";

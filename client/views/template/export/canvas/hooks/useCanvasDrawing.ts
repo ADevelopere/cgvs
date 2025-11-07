@@ -1,12 +1,7 @@
 import React from "react";
 import type { Font as OpentypeFont } from "opentype.js";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import {
-  calculateCanvasDimensions,
-  setupCanvasContext,
-  clearCanvas,
-  sortElementsByZIndex,
-} from "../util/canvasUtils";
+import { calculateCanvasDimensions, setupCanvasContext, clearCanvas, sortElementsByZIndex } from "../util/canvasUtils";
 import { renderAllElements } from "../ElementRenderer";
 import { logger } from "@/client/lib/logger";
 
@@ -87,37 +82,40 @@ export function useCanvasDrawing(
 
     // Move expensive toDataURL() to idle callback to avoid blocking at high scales
     if (onDrawComplete) {
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(() => {
-          // For high scales (>2x), use downsampled version for cache to reduce memory
-          let cacheCanvas = canvas;
-          if (renderScale > 2) {
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = config.width * 2; // Cache at max 2x scale
-            tempCanvas.height = config.height * 2;
-            const tempCtx = tempCanvas.getContext('2d');
-            if (tempCtx) {
-              tempCtx.imageSmoothingEnabled = true;
-              tempCtx.imageSmoothingQuality = 'high';
-              tempCtx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
-              cacheCanvas = tempCanvas;
+      if ("requestIdleCallback" in window) {
+        requestIdleCallback(
+          () => {
+            // For high scales (>2x), use downsampled version for cache to reduce memory
+            let cacheCanvas = canvas;
+            if (renderScale > 2) {
+              const tempCanvas = document.createElement("canvas");
+              tempCanvas.width = config.width * 2; // Cache at max 2x scale
+              tempCanvas.height = config.height * 2;
+              const tempCtx = tempCanvas.getContext("2d");
+              if (tempCtx) {
+                tempCtx.imageSmoothingEnabled = true;
+                tempCtx.imageSmoothingQuality = "high";
+                tempCtx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
+                cacheCanvas = tempCanvas;
+              }
             }
-          }
-          const dataUrl = cacheCanvas.toDataURL("image/png");
-          onDrawComplete(dataUrl);
-        }, { timeout: 2000 });
+            const dataUrl = cacheCanvas.toDataURL("image/png");
+            onDrawComplete(dataUrl);
+          },
+          { timeout: 2000 }
+        );
       } else {
         // Fallback for browsers without requestIdleCallback
         setTimeout(() => {
           let cacheCanvas = canvas;
           if (renderScale > 2) {
-            const tempCanvas = document.createElement('canvas');
+            const tempCanvas = document.createElement("canvas");
             tempCanvas.width = config.width * 2;
             tempCanvas.height = config.height * 2;
-            const tempCtx = tempCanvas.getContext('2d');
+            const tempCtx = tempCanvas.getContext("2d");
             if (tempCtx) {
               tempCtx.imageSmoothingEnabled = true;
-              tempCtx.imageSmoothingQuality = 'high';
+              tempCtx.imageSmoothingQuality = "high";
               tempCtx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
               cacheCanvas = tempCanvas;
             }

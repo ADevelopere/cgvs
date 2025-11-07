@@ -11,7 +11,7 @@ import { useTextDataSource } from "../../form/hooks";
 import { useCertificateElementStates } from "../../context/CertificateElementContext";
 import { useAppTranslationForLanguage } from "@/client/locale";
 import { getFontFamilyString, getFlexAlignment } from "./utils";
-import { NodeResizer } from '@xyflow/react';
+import { NodeResizer } from "@xyflow/react";
 
 export type TextElementNodeData = {
   // templateId: number;

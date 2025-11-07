@@ -1,12 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2021",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext",
-      "ES2021"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext", "ES2021"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -29,13 +24,9 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     },
-    "types": [
-      "jest"
-    ]
+    "types": ["jest"]
   },
   "include": [
     "next-env.d.ts",
@@ -46,7 +37,5 @@
     ".storybook/**/*.tsx",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

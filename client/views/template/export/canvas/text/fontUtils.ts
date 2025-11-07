@@ -7,14 +7,14 @@ import * as GQL from "@/client/graphql/generated/gql/graphql";
  */
 export function collectFontFamilies(elements: GQL.CertificateElementUnion[]): string[] {
   const families = new Set<string>();
-  
+
   for (const el of elements) {
     if (el.__typename === "TextElement" && !el.base.hidden) {
       const fontFamily = extractFontFamily(el.textProps.fontRef);
       families.add(fontFamily);
     }
   }
-  
+
   return Array.from(families);
 }
 

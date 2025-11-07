@@ -13,7 +13,6 @@ import {
 import { extractBaseStateInputFromElement } from "../../form/hooks/useBaseElementState";
 import { useCertificateElementStates } from "../../context/CertificateElementContext";
 import { useNode } from "../../context/NodesStateProvider";
-import logger from "@/client/lib/logger";
 import { useNotifications } from "@toolpad/core/useNotifications";
 
 export type ElementsTabProps = {
@@ -116,7 +115,7 @@ export const ElementsTab: React.FC<ElementsTabProps> = ({ elements }) => {
       });
 
       const updatedElement = result?.data?.updateElementCommonProperties;
-      if(updatedElement) {
+      if (updatedElement) {
         baseElements.updateBaseElementStateFn(id, { key: "hidden", value: updatedElement.base.hidden });
       }
     },

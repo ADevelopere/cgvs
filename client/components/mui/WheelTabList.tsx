@@ -15,41 +15,41 @@ type WheelTabListProps = React.ComponentProps<typeof MuiTabList>;
  *
  * @param props - All props supported by MUI's TabList
  */
-export const WheelTabList: React.FC<WheelTabListProps> = (props) => {
-    /**
-     * Ref for the tab list container element.
-     */
-    const listContainer = useRef<HTMLDivElement>(null);
+export const WheelTabList: React.FC<WheelTabListProps> = props => {
+  /**
+   * Ref for the tab list container element.
+   */
+  const listContainer = useRef<HTMLDivElement>(null);
 
-    /**
-     * Maps vertical wheel scroll events to horizontal scrolling of the tab list.
-     * @param e - The wheel event
-     */
-    const mapVerticalToHorizontalScroll = (e: React.WheelEvent) => {
-        if (listContainer.current) {
-            const scrollableElement = listContainer.current.parentElement;
-            if (scrollableElement) {
-                // Scroll horizontally instead of vertically
-                scrollableElement.scrollLeft += e.deltaY;
-            }
-        }
-    };
+  /**
+   * Maps vertical wheel scroll events to horizontal scrolling of the tab list.
+   * @param e - The wheel event
+   */
+  const mapVerticalToHorizontalScroll = (e: React.WheelEvent) => {
+    if (listContainer.current) {
+      const scrollableElement = listContainer.current.parentElement;
+      if (scrollableElement) {
+        // Scroll horizontally instead of vertically
+        scrollableElement.scrollLeft += e.deltaY;
+      }
+    }
+  };
 
-    return (
-        <MuiTabList
-            {...props}
-            slotProps={{
-                ...props.slotProps,
-                list: {
-                    ref: listContainer,
-                },
-            }}
-            /**
-             * Intercepts wheel events to enable horizontal scrolling.
-             */
-            onWheel={(e: React.WheelEvent) => {
-                mapVerticalToHorizontalScroll(e);
-            }}
-        />
-    );
+  return (
+    <MuiTabList
+      {...props}
+      slotProps={{
+        ...props.slotProps,
+        list: {
+          ref: listContainer,
+        },
+      }}
+      /**
+       * Intercepts wheel events to enable horizontal scrolling.
+       */
+      onWheel={(e: React.WheelEvent) => {
+        mapVerticalToHorizontalScroll(e);
+      }}
+    />
+  );
 };

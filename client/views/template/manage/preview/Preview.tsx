@@ -32,7 +32,7 @@ export const Preview: React.FC<PreviewProps> = ({ templateId }) => {
           <React.Fragment>
             {/* Canvas to render template */}
             <TransformComponent>
-              <Box sx={{overflow: "auto", width: "fit-content", height: "fit-content" }}>
+              <Box sx={{ overflow: "auto", width: "fit-content", height: "fit-content" }}>
                 <ClientCanvasGenerator
                   templateId={templateId}
                   showDebugBorders={showDebugBorders}

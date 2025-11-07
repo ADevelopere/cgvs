@@ -21,9 +21,8 @@ export type FlowEditorProps = {
   templateId: number;
   nodes: Node[];
   setNodes: (nodes: Node[]) => void;
-  config: TemplateConfig
+  config: TemplateConfig;
 };
-
 
 const Flow: React.FC<FlowEditorProps> = ({ templateId, nodes, setNodes, config }) => {
   const { theme } = useAppTheme();
@@ -55,7 +54,10 @@ const Flow: React.FC<FlowEditorProps> = ({ templateId, nodes, setNodes, config }
         nodes={nodes}
         panOnScroll
         panOnDrag={panOnDrag}
-        translateExtent={[[0, 0], [config.width, config.height]]}
+        translateExtent={[
+          [0, 0],
+          [config.width, config.height],
+        ]}
         minZoom={-1000} // Minimum zoom level
         // maxZoom={2} // Maximum zoom level
         // translateExtent={[
@@ -106,7 +108,7 @@ const Flow: React.FC<FlowEditorProps> = ({ templateId, nodes, setNodes, config }
           }}
         >
           <DownloadImage templateId={templateId} />
-          <DownloadPdf  templateId={templateId} />
+          <DownloadPdf templateId={templateId} />
         </Box>
       </ReactFlow>
     </Box>
@@ -127,7 +129,10 @@ function FlowDebug() {
 
 const CertificateReactFlowEditor: React.FC = () => {
   const { nodesInitialized, setNodes, nodes } = useNode();
-  const {templateId, config: {state: configState}} = useCertificateElementStates()
+  const {
+    templateId,
+    config: { state: configState },
+  } = useCertificateElementStates();
 
   if (!nodesInitialized) {
     return <CircularProgress />;

@@ -6,10 +6,10 @@ import { create } from "zustand";
 interface CanvasRenderState {
   // Map of "templateId:scale:debugBorders" to ready state
   readyStates: Map<string, boolean>;
-  
+
   // Track which canvas configurations are currently loading
   loadingStates: Map<string, boolean>;
-  
+
   // Generation times for performance tracking
   generationTimes: Map<string, { canvas: number; hash: number }>;
 }
@@ -20,14 +20,12 @@ interface CanvasRenderStore extends CanvasRenderState {
   setReady: (templateId: number, scale: number, debugBorders: boolean, ready: boolean) => void;
   isLoading: (templateId: number, scale: number, debugBorders: boolean) => boolean;
   setLoading: (templateId: number, scale: number, debugBorders: boolean, loading: boolean) => void;
-  setGenerationTime: (
+  setGenerationTime: (templateId: number, scale: number, debugBorders: boolean, canvas: number, hash: number) => void;
+  getGenerationTime: (
     templateId: number,
     scale: number,
-    debugBorders: boolean,
-    canvas: number,
-    hash: number
-  ) => void;
-  getGenerationTime: (templateId: number, scale: number, debugBorders: boolean) => { canvas: number; hash: number } | undefined;
+    debugBorders: boolean
+  ) => { canvas: number; hash: number } | undefined;
 }
 
 export const useCanvasRenderStore = create<CanvasRenderStore>((set, get) => ({
@@ -67,13 +65,7 @@ export const useCanvasRenderStore = create<CanvasRenderStore>((set, get) => ({
     });
   },
 
-  setGenerationTime: (
-    templateId: number,
-    scale: number,
-    debugBorders: boolean,
-    canvas: number,
-    hash: number
-  ) => {
+  setGenerationTime: (templateId: number, scale: number, debugBorders: boolean, canvas: number, hash: number) => {
     const key = get().getKey(templateId, scale, debugBorders);
     set(state => {
       const newTimes = new Map(state.generationTimes);

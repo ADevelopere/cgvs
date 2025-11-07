@@ -21,12 +21,12 @@ export async function generateDataHash(
   renderScale: number
 ): Promise<HashGenerationResult> {
   const startTime = performance.now();
-  
+
   const dataString = createHashInput(elements, config, showDebugBorders, renderScale);
   const hash = await sha256(dataString);
-  
+
   const hashGenerationTime = performance.now() - startTime;
-  
+
   return { hash, hashGenerationTime };
 }
 

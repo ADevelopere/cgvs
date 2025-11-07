@@ -9,7 +9,10 @@ import { collectFontFamilies } from "./text/fontUtils";
 import { generateDataHash } from "./util/hashUtils";
 import { useCanvasCacheStore } from "./stores/canvasCacheStore";
 import { ClientCanvasGeneratorProps, ClientCanvasGeneratorRef } from "./types";
-import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "../../manage/editor/glqDocuments";
+import {
+  elementsByTemplateIdQueryDocument,
+  templateConfigByTemplateIdQueryDocument,
+} from "../../manage/editor/glqDocuments";
 import { ErrorLike } from "@apollo/client";
 import { TemplateConfig } from "@/client/graphql/generated/gql/graphql";
 
@@ -49,7 +52,10 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
     // Generate hash asynchronously without blocking render
     React.useEffect(() => {
       if (!config || !elements) {
-        logger.debug({ caller: "ClientCanvasGenerator" }, "Config or elements missing", { config: !!config, elements: !!elements });
+        logger.debug({ caller: "ClientCanvasGenerator" }, "Config or elements missing", {
+          config: !!config,
+          elements: !!elements,
+        });
         setDataHash(null);
         return;
       }
@@ -59,10 +65,10 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
         templateId,
         elementCount: elements.length,
         renderScale,
-        showDebugBorders
+        showDebugBorders,
       });
 
-      generateDataHash(elements, config, showDebugBorders, renderScale).then((result) => {
+      generateDataHash(elements, config, showDebugBorders, renderScale).then(result => {
         if (!cancelled) {
           hashGenerationTimeRef.current = result.hashGenerationTime;
           setDataHash(result.hash);
@@ -79,7 +85,7 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
       (dataUrl: string) => {
         logger.debug({ caller: "ClientCanvasGenerator" }, "handleDrawComplete called", {
           dataHash,
-          dataUrlLength: dataUrl.length
+          dataUrlLength: dataUrl.length,
         });
         if (dataHash) {
           setCache(dataHash, dataUrl);
@@ -94,19 +100,22 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
     // Subscribe to cache changes to re-render when cache is populated
     // Use selector to only subscribe to changes for THIS specific hash
     const cachedCanvasFromStore = useCanvasCacheStore(
-      React.useCallback((state) => {
-        if (!dataHash) {
-          logger.debug({ caller: "ClientCanvasGenerator" }, "No dataHash for cache lookup");
-          return null;
-        }
-        const cached = state.cache.get(dataHash);
-        logger.debug({ caller: "ClientCanvasGenerator" }, "Cache lookup", {
-          hash: dataHash,
-          found: !!cached,
-          cacheSize: state.cache.size
-        });
-        return cached ?? null;
-      }, [dataHash])
+      React.useCallback(
+        state => {
+          if (!dataHash) {
+            logger.debug({ caller: "ClientCanvasGenerator" }, "No dataHash for cache lookup");
+            return null;
+          }
+          const cached = state.cache.get(dataHash);
+          logger.debug({ caller: "ClientCanvasGenerator" }, "Cache lookup", {
+            hash: dataHash,
+            found: !!cached,
+            cacheSize: state.cache.size,
+          });
+          return cached ?? null;
+        },
+        [dataHash]
+      )
     );
 
     // Early check: if we have a hash and cache immediately, no need to render canvas at all
@@ -122,22 +131,26 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
     }, [cachedCanvasFromStore, earlyCache, onReady, dataHash]);
 
     // Expose download method that works with cached images
-    React.useImperativeHandle(ref, () => ({
-      download: () => {
-        const finalCache = cachedCanvasFromStore || earlyCache;
-        if (finalCache) {
-          // Download from cache
-          logger.debug({ caller: "ClientCanvasGenerator" }, "Downloading from cache", { hash: dataHash });
-          const a = document.createElement("a");
-          a.setAttribute("download", "certificate.png");
-          a.setAttribute("href", finalCache);
-          a.click();
-        } else if (canvasRendererRef.current) {
-          // Download from canvas renderer
-          canvasRendererRef.current.download();
-        }
-      }
-    }), [cachedCanvasFromStore, earlyCache, dataHash]);
+    React.useImperativeHandle(
+      ref,
+      () => ({
+        download: () => {
+          const finalCache = cachedCanvasFromStore || earlyCache;
+          if (finalCache) {
+            // Download from cache
+            logger.debug({ caller: "ClientCanvasGenerator" }, "Downloading from cache", { hash: dataHash });
+            const a = document.createElement("a");
+            a.setAttribute("download", "certificate.png");
+            a.setAttribute("href", finalCache);
+            a.click();
+          } else if (canvasRendererRef.current) {
+            // Download from canvas renderer
+            canvasRendererRef.current.download();
+          }
+        },
+      }),
+      [cachedCanvasFromStore, earlyCache, dataHash]
+    );
 
     if (!config || !elements) {
       logger.debug({ caller: "ClientCanvasGenerator" }, "Early return: missing config or elements");
@@ -155,7 +168,7 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
       templateId,
       dataHash,
       renderScale,
-      showDebugBorders
+      showDebugBorders,
     });
 
     // FontProvider starts loading fonts immediately when families are available

@@ -5,29 +5,27 @@ import Image from "next/image";
 import { NodeProps } from "@xyflow/react";
 import { useImageProps } from "../../form/hooks/useImagePropsState";
 import { useBaseElement, useImageDataSource } from "../../form/hooks";
-import { NodeResizer } from '@xyflow/react';
+import { NodeResizer } from "@xyflow/react";
 
 export enum ElementImageFit {
-  Contain = 'CONTAIN',
-  Cover = 'COVER',
-  Fill = 'FILL'
+  Contain = "CONTAIN",
+  Cover = "COVER",
+  Fill = "FILL",
 }
 
 /**
  * Maps ElementImageFit enum values to CSS object-fit property values
  */
-export const mapImageFitToCss = (
-  fit: ElementImageFit
-): "contain" | "cover" | "fill" => {
+export const mapImageFitToCss = (fit: ElementImageFit): "contain" | "cover" | "fill" => {
   switch (fit) {
     case ElementImageFit.Contain:
-      return 'contain';
+      return "contain";
     case ElementImageFit.Cover:
-      return 'cover';
+      return "cover";
     case ElementImageFit.Fill:
-      return 'fill';
+      return "fill";
     default:
-      return 'contain';
+      return "contain";
   }
 };
 
@@ -40,7 +38,9 @@ type ImageNodeProps = NodeProps & {
 };
 
 const ImageNode: React.FC<ImageNodeProps> = ({ data: { elementId } }) => {
-  const {baseElementState: { width, height }} = useBaseElement({ elementId });
+  const {
+    baseElementState: { width, height },
+  } = useBaseElement({ elementId });
   const { imageDataSourceState: source } = useImageDataSource({ elementId });
   const { imagePropsState } = useImageProps({ elementId });
   const imageUrl = source.storageFile.url;
@@ -53,8 +53,8 @@ const ImageNode: React.FC<ImageNodeProps> = ({ data: { elementId } }) => {
         style={{
           width: `${width}px`,
           height: `${height}px`,
-          position: 'relative',
-          overflow: 'hidden',
+          position: "relative",
+          overflow: "hidden",
         }}
       >
         <Image
@@ -64,7 +64,7 @@ const ImageNode: React.FC<ImageNodeProps> = ({ data: { elementId } }) => {
           unoptimized
           style={{
             objectFit: mapImageFitToCss(fit),
-            objectPosition: 'center',
+            objectPosition: "center",
           }}
         />
       </div>

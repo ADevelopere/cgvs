@@ -7,7 +7,10 @@ import logger from "@/client/lib/logger";
 import { CircularProgress } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "../../manage/editor/glqDocuments";
+import {
+  elementsByTemplateIdQueryDocument,
+  templateConfigByTemplateIdQueryDocument,
+} from "../../manage/editor/glqDocuments";
 import { resolveTextContent } from "./textDemo";
 import { FontFamily, getFontByFamily } from "@/lib/font/google";
 
@@ -451,11 +454,7 @@ async function renderImageElement(
         // Fall back to JPEG
         image = await pdfDoc.embedJpg(imageBytes);
       } catch (error) {
-        logger.error(
-          { caller: "DownloadPdf" },
-          `Unsupported image format for element ${element.base.id}:`,
-          error
-        );
+        logger.error({ caller: "DownloadPdf" }, `Unsupported image format for element ${element.base.id}:`, error);
         return;
       }
     }
@@ -474,13 +473,12 @@ async function renderImageElement(
     const yTop = pageHeight - elY;
 
     // Calculate image dimensions based on fit mode
-    const { width, height, x: offsetX, y: offsetY } = calculateImageDimensions(
-      imageWidth,
-      imageHeight,
-      containerWidth,
-      containerHeight,
-      fit
-    );
+    const {
+      width,
+      height,
+      x: offsetX,
+      y: offsetY,
+    } = calculateImageDimensions(imageWidth, imageHeight, containerWidth, containerHeight, fit);
 
     // Draw image
     // Note: For COVER mode, we may need to clip the image
@@ -492,11 +490,7 @@ async function renderImageElement(
       height,
     });
   } catch (error) {
-    logger.error(
-      { caller: "DownloadPdf" },
-      `Error rendering image element ${element.base.id}:`,
-      error
-    );
+    logger.error({ caller: "DownloadPdf" }, `Error rendering image element ${element.base.id}:`, error);
   }
 }
 
@@ -608,10 +602,7 @@ async function embedFontsForPdf(pdfDoc: PDFDocument, fontFamilies: FontFamily[])
       // Get font URL (prioritize "regular" variant)
       const fontUrl = fontItem.files.regular || Object.values(fontItem.files)[0];
       if (!fontUrl) {
-        logger.error(
-          { caller: "DownloadPdf" },
-          `No font file found for family "${family}", using fallback`
-        );
+        logger.error({ caller: "DownloadPdf" }, `No font file found for family "${family}", using fallback`);
         fontMap.set(family, fallbackFont);
         continue;
       }

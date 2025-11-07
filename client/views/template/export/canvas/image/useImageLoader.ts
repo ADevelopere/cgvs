@@ -16,7 +16,7 @@ export function useImageLoader(elements: GQL.CertificateElementUnion[]) {
 
   // Memoize visible image URLs to detect changes in hidden state
   const imageUrls = React.useMemo(() => extractImageUrls(elements), [elements]);
-  const imageUrlsKey = imageUrls.join('|');
+  const imageUrlsKey = imageUrls.join("|");
 
   React.useEffect(() => {
     if (imageUrls.length === 0) {

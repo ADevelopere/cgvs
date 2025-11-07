@@ -73,7 +73,7 @@ export function useBaseElementState(params: UseBaseElementStateParams): UseBaseE
   const { templateId, elements } = params;
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
-  const { updateBaseNodeData,showNode, hideNode } = useNode();
+  const { updateBaseNodeData, showNode, hideNode } = useNode();
 
   const [updateElementCommonPropertiesMutation] = useMutation(updateElementCommonPropertiesMutationDocument);
 
