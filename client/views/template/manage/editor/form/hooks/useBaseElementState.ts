@@ -73,7 +73,7 @@ export function useBaseElementState(params: UseBaseElementStateParams): UseBaseE
   const { templateId, elements } = params;
   const notifications = useNotifications();
   const { errorTranslations: errorStrings } = useAppTranslation();
-  const { updateBaseNodeData } = useNode();
+  const { updateBaseNodeData,showNode, hideNode } = useNode();
 
   const [updateElementCommonPropertiesMutation] = useMutation(updateElementCommonPropertiesMutationDocument);
 
@@ -139,8 +139,16 @@ export function useBaseElementState(params: UseBaseElementStateParams): UseBaseE
           [key]: value,
         });
       }
+
+      if (key === "hidden") {
+        if (value) {
+          hideNode(elementId);
+        } else {
+          showNode(elementId);
+        }
+      }
     },
-    [updateFn, updateBaseNodeData]
+    [updateFn, updateBaseNodeData, hideNode, showNode]
   );
 
   return {

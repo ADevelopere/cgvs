@@ -262,12 +262,8 @@ export const deleteElementsByIdsMutationDocument: TypedDocumentNode<
 `;
 
 export const updateElementCommonPropertiesMutationDocument: TypedDocumentNode<
-  {
-    updateElementCommonProperties?: GQL.CertificateElement | null;
-  },
-  {
-    input: GQL.CertificateElementBaseUpdateInput;
-  }
+  GQL.UpdateElementCommonPropertiesMutation,
+  GQL.UpdateElementCommonPropertiesMutationVariables
 > = gql`
   mutation UpdateElementCommonProperties($input: CertificateElementBaseUpdateInput!) {
     updateElementCommonProperties(input: $input) {

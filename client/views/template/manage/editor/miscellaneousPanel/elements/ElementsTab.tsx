@@ -13,6 +13,8 @@ import {
 import { extractBaseStateInputFromElement } from "../../form/hooks/useBaseElementState";
 import { useCertificateElementStates } from "../../CertificateElementContext";
 import { useNode } from "../../NodesStateProvider";
+import logger from "@/client/lib/logger";
+import { useNotifications } from "@toolpad/core/useNotifications";
 
 export type ElementsTabProps = {
   elements: GQL.CertificateElementUnion[];
@@ -25,6 +27,11 @@ export const ElementsTab: React.FC<ElementsTabProps> = ({ elements }) => {
   const [updateElementMutation] = useMutation(updateElementCommonPropertiesMutationDocument);
   const { bases: baseElements } = useCertificateElementStates();
   const { reorderNodes, toggleNodeVisibility } = useNode();
+  const notifications = useNotifications();
+
+  useEffect(() => {
+    logger.info({ caller: "ElementsTab" }, "Rendering ElementsTab with elements:", elements);
+  }, [elements]);
 
   // Sort elements by zIndex and sync with local state
   useEffect(() => {
@@ -45,6 +52,7 @@ export const ElementsTab: React.FC<ElementsTabProps> = ({ elements }) => {
       const result = await moveElementMutation({ variables: { input: { elementId, newZIndex } } }).catch(() => {
         // Revert on error
         setLocalElements(localElements);
+        notifications.show("Failed to move element", { severity: "error", autoHideDuration: 3000 });
       });
       const movedElement = result?.data?.moveElement;
       if (movedElement) {
@@ -98,21 +106,22 @@ export const ElementsTab: React.FC<ElementsTabProps> = ({ elements }) => {
       if (!element) return;
 
       const state = extractBaseStateInputFromElement(element);
-      try {
-        await updateElementMutation({
-          variables: {
-            input: {
-              id,
-              ...state,
-              hidden: !element.base.hidden,
-            },
+      const result = await updateElementMutation({
+        variables: {
+          input: {
+            id,
+            ...state,
+            hidden: element.base.hidden ? false : true,
           },
-        });
+        },
+      }).catch(() => {
+        notifications.show("Failed to update element visibility.", { severity: "error", autoHideDuration: 3000 });
+        // Revert on error
+      });
 
-        // Update node visibility in canvas
-        toggleNodeVisibility(id);
-      } catch (_error) {
-        // Error handling
+      const updatedElement = result?.data?.updateElementCommonProperties;
+      if(updatedElement) {
+        baseElements.updateBaseElementStateFn(id, { key: "hidden", value: updatedElement.base.hidden });
       }
     },
     [localElements, updateElementMutation, toggleNodeVisibility]

@@ -75,6 +75,11 @@ input CertificateElementBaseUpdateInput {
   positionX: Float!
   positionY: Float!
   width: Float!
+
+  """
+  This field is only for UI state management and will not affect server-side data.
+  """
+  zIndex: Int
 }
 
 union CertificateElementUnion = CountryElement | DateElement | GenderElement | ImageElement | NumberElement | QRCodeElement | TextElement

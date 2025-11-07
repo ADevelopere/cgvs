@@ -105,6 +105,8 @@ export type CertificateElementBaseUpdateInput = {
   positionX: Scalars['Float']['input'];
   positionY: Scalars['Float']['input'];
   width: Scalars['Float']['input'];
+  /** This field is only for UI state management and will not affect server-side data. */
+  zIndex?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type CertificateElementUnion = CountryElement | DateElement | GenderElement | ImageElement | NumberElement | QrCodeElement | TextElement;

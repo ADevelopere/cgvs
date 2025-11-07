@@ -104,6 +104,7 @@ function createTextNode(element: GQL.TextElement): Node<TextElementNodeData> | n
     resizing: true,
     handles: undefined,
     zIndex: element.base.zIndex,
+    hidden: element.base.hidden ? true : false,
   };
 }
 
@@ -125,6 +126,7 @@ function createImageNode(element: GQL.ImageElement): Node | null {
     connectable: false,
     resizing: true,
     zIndex: element.base.zIndex,
+    hidden: element.base.hidden ? true : false,
   };
 }
 
@@ -257,13 +259,22 @@ export const NodesProvider: React.FC<{
           height: config.height,
         });
 
-        setNodesState(initializedNodes);
-        setLoading(false);
+        logger.info({ caller: "NodesProvider" }, "Nodes initialized", JSON.stringify(initializedNodes));
 
-        logger.debug({ caller: "NodesProvider" }, "Nodes initialized successfully", {
-          templateId,
-          nodeCount: initializedNodes.length,
-        });
+        const hiddenNodesMap = initializedNodes
+          .filter(node => node.hidden)
+          .reduce((map, node) => {
+            // Ensure hidden property is explicitly set to true
+            map.set(node.id, { ...node, hidden: true });
+            return map;
+          }, new Map<string, Node>());
+        logger.info({ caller: "NodesProvider" }, "Hidden nodes", JSON.stringify(hiddenNodesMap));
+        setHiddenNodes(hiddenNodesMap);
+
+        const visibleNodes = initializedNodes.filter(node => !node.hidden);
+        logger.info({ caller: "NodesProvider" }, "Visible nodes", JSON.stringify(visibleNodes));
+        setNodesState(visibleNodes);
+        setLoading(false);
       } catch (err) {
         if (!isAbortError(err)) {
           logger.error({ caller: "NodesProvider" }, "Error initializing nodes", {
@@ -335,7 +346,7 @@ export const NodesProvider: React.FC<{
           nodeUpdates.height = updates.height;
         }
 
-        if( updates.zIndex !== undefined) {
+        if (updates.zIndex !== undefined) {
           nodeUpdates.zIndex = updates.zIndex;
         }
 
@@ -475,8 +486,17 @@ export const NodesProvider: React.FC<{
         return prev;
       }
 
-      // Store in hidden nodes
-      setHiddenNodes(hidden => new Map(hidden).set(nodeId, nodeToHide));
+      // Store in hidden nodes with hidden property set to true
+      const hiddenNode = { ...nodeToHide, hidden: true };
+      setHiddenNodes(hidden => {
+        const newHidden = new Map(hidden);
+        newHidden.set(nodeId, hiddenNode);
+        logger.debug({ caller: "NodesProvider" }, "Node hidden", { 
+          elementId, 
+          hiddenMapSize: newHidden.size 
+        });
+        return newHidden;
+      });
 
       // Remove from visible nodes
       return prev.filter(n => n.id !== nodeId);
@@ -490,16 +510,31 @@ export const NodesProvider: React.FC<{
     setHiddenNodes(prev => {
       const nodeToShow = prev.get(nodeId);
       if (!nodeToShow) {
-        logger.warn({ caller: "NodesProvider" }, "Cannot show node - not in hidden nodes", { elementId });
+        logger.warn({ caller: "NodesProvider" }, "Cannot show node - not in hidden nodes", { 
+          elementId,
+          hiddenMapSize: prev.size,
+          hiddenNodeIds: Array.from(prev.keys())
+        });
         return prev;
       }
 
-      // Add back to visible nodes
-      setNodesState(nodes => [...nodes, nodeToShow]);
+      // Add back to visible nodes with hidden property set to false
+      const visibleNode = { ...nodeToShow, hidden: false };
+      setNodesState(nodes => {
+        logger.debug({ caller: "NodesProvider" }, "Node shown", { 
+          elementId, 
+          newVisibleCount: nodes.length + 1 
+        });
+        return [...nodes, visibleNode];
+      });
 
       // Remove from hidden nodes
       const newHidden = new Map(prev);
       newHidden.delete(nodeId);
+      logger.debug({ caller: "NodesProvider" }, "Removed from hidden map", { 
+        elementId, 
+        newHiddenMapSize: newHidden.size 
+      });
       return newHidden;
     });
   }, []);
@@ -508,15 +543,58 @@ export const NodesProvider: React.FC<{
   const toggleNodeVisibility = React.useCallback(
     (elementId: number) => {
       const nodeId = elementId.toString();
-      const isHidden = hiddenNodes.has(nodeId);
+      
+      // Check in current state using functional updates
+      setHiddenNodes(prevHidden => {
+        const isHidden = prevHidden.has(nodeId);
+        
+        logger.debug({ caller: "NodesProvider" }, "Toggle visibility", { 
+          elementId, 
+          isHidden,
+          hiddenMapSize: prevHidden.size 
+        });
 
-      if (isHidden) {
-        showNode(elementId);
-      } else {
-        hideNode(elementId);
-      }
+        if (isHidden) {
+          // Show the node
+          const nodeToShow = prevHidden.get(nodeId);
+          if (!nodeToShow) {
+            logger.warn({ caller: "NodesProvider" }, "Cannot show node - not in hidden nodes", { elementId });
+            return prevHidden;
+          }
+
+          // Add back to visible nodes
+          const visibleNode = { ...nodeToShow, hidden: false };
+          setNodesState(nodes => [...nodes, visibleNode]);
+
+          // Remove from hidden nodes
+          const newHidden = new Map(prevHidden);
+          newHidden.delete(nodeId);
+          return newHidden;
+        } else {
+          // Hide the node
+          setNodesState(prevNodes => {
+            const nodeToHide = prevNodes.find(n => n.id === nodeId);
+            if (!nodeToHide) {
+              logger.warn({ caller: "NodesProvider" }, "Cannot hide node - not found", { elementId });
+              return prevNodes;
+            }
+
+            // Store in hidden nodes
+            const hiddenNode = { ...nodeToHide, hidden: true };
+            const newHidden = new Map(prevHidden);
+            newHidden.set(nodeId, hiddenNode);
+            setHiddenNodes(newHidden);
+
+            // Remove from visible nodes
+            return prevNodes.filter(n => n.id !== nodeId);
+          });
+
+          // Return unchanged since we handle it in setNodesState callback
+          return prevHidden;
+        }
+      });
     },
-    [hiddenNodes, showNode, hideNode]
+    []
   );
 
   // Utility: Check if a node is hidden

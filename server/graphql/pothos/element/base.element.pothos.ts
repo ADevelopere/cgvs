@@ -59,6 +59,10 @@ export const createBaseElementInputFields = <Types extends SchemaTypes>(
   height: t.float({ required: true }),
   alignment: t.field({ type: ElementAlignmentPothosEnum, required: true }),
   hidden: t.boolean({ required: false }),
+  zIndex: t.int({
+    required: false,
+    description: "This field is only for UI state management and will not affect server-side data.",
+  }),
 });
 
 export const CertificateElementBaseInputObject = gqlSchemaBuilder
@@ -66,10 +70,6 @@ export const CertificateElementBaseInputObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       templateId: t.int({ required: true }),
-      zIndex: t.int({
-        required: false,
-        description: "This field is only for UI state management and will not affect server-side data.",
-      }),
       ...createBaseElementInputFields(t),
     }),
   });

@@ -21,7 +21,13 @@ export const CertificateElementsTabItem: React.FC<CertificateElementsTabItemProp
   decreaseOrder,
 }) => {
   return (
-    <Stack direction={"row"} sx={{ alignItems: "center" }}>
+    <Stack
+      direction={"row"}
+      sx={{
+        alignItems: "center",
+        backgroundColor: element.base.hidden ? "action.disabledBackground" : undefined,
+      }}
+    >
       {/* increaseOrder */}
       <IconButton disabled={element.base.zIndex === 1} onClick={increaseOrder}>
         <MuiICons.ArrowUpward />
