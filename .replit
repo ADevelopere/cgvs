@@ -4,6 +4,7 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
+packages = ["fzf"]
 
 [workflows]
 runButton = "Project"
@@ -28,6 +29,15 @@ waitForPort = 5000
 
 [workflows.workflow.metadata]
 outputType = "webview"
+
+[[workflows.workflow]]
+name = "bash"
+mode = "sequential"
+author = 8269970
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bash"
 
 [[ports]]
 localPort = 5000
