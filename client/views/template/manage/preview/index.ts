@@ -1,3 +1,3 @@
 export { FontProvider, FontContext } from "./FontContext";
-export { default as ClientCanvasGenerator } from "./ClientCanvasGeneratorOld";
-export type { ClientCanvasGeneratorRef } from "./ClientCanvasGeneratorOld";
+export { default as ClientCanvasGenerator } from "./ClientCanvasGenerator";
+export type { ClientCanvasGeneratorRef } from "./canvas/types";

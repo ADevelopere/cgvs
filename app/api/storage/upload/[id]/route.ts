@@ -199,7 +199,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       const fileEntity = await StorageDbRepository.createFile(signedUrl.filePath, false);
 
       const stats = await fs.stat(absolutePath);
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+      const baseUrl = NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
       logger.info("🔍 [API DEBUG] File uploaded successfully via signed URL", {
         tokenId,

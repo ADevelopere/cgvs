@@ -4,7 +4,6 @@ import fontkit from "@pdf-lib/fontkit";
 import { useTheme } from "@mui/material/styles";
 import React from "react";
 import logger from "@/client/lib/logger";
-import { useFlowUpdater } from "../useNodeUpdater";
 import { CircularProgress } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
@@ -17,6 +16,7 @@ import { FontFamily, getFontByFamily } from "@/lib/font/google";
 // ============================================================================
 
 interface DownloadPdfExperimentalProps {
+  templateId: number;
   showDebugBorders?: boolean;
 }
 
@@ -679,9 +679,8 @@ async function downloadPdf(pdfBytes: Uint8Array, filename: string = "certificate
 // COMPONENT
 // ============================================================================
 
-export const DownloadPdfExperimental: React.FC<DownloadPdfExperimentalProps> = ({ showDebugBorders = true }) => {
+export const DownloadPdfExperimental: React.FC<DownloadPdfExperimentalProps> = ({ templateId, showDebugBorders = true }) => {
   const theme = useTheme();
-  const { templateId } = useFlowUpdater();
   const [isGenerating, setIsGenerating] = React.useState(false);
 
   const {

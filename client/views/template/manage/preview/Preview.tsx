@@ -3,7 +3,7 @@ import { Box, IconButton, Tooltip, TextField, Paper } from "@mui/material";
 import * as MuiIcons from "@mui/icons-material";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import DownloadImage from "../editor/download/DownloadImage";
-import ClientCanvasGenerator from "./ClientCanvasGeneratorOld";
+import ClientCanvasGenerator from "./ClientCanvasGenerator";
 
 type PreviewProps = {
   templateId: number;

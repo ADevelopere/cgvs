@@ -107,8 +107,8 @@ const Flow: React.FC<FlowEditorProps> = ({ templateId, nodes, setNodes, config }
           }}
         >
           <DownloadImage templateId={templateId} />
-          <DownloadPdf />
-          <DownloadPdfExperimental />
+          <DownloadPdf templateId={templateId} />
+          <DownloadPdfExperimental  templateId={templateId} />
         </Box>
       </ReactFlow>
     </Box>
