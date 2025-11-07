@@ -51,6 +51,16 @@ function CanvasRenderer(
   const hasNotifiedReady = React.useRef(false);
   const timeoutIdRef = React.useRef<NodeJS.Timeout | null>(null);
 
+  logger.debug({ caller: "CanvasRenderer" }, "Render", {
+    templateId,
+    renderScale,
+    storeReady,
+    isReady,
+    fontsLoaded,
+    metricsReady,
+    imagesLoaded,
+  });
+
   // Reset ready state when key dependencies change
   React.useEffect(() => {
     logger.debug({ caller: "CanvasRenderer" }, "Resetting ready state", { 
@@ -99,17 +109,39 @@ function CanvasRenderer(
       return;
     }
 
+    // Set ready first to render the canvas element
+    logger.debug({ caller: "CanvasRenderer" }, "Setting isReady to true for canvas mount", {
+      templateId,
+    });
+    setIsReady(true);
+    setReadyInStore(templateId, renderScale, showDebugBorders, true);
+
+    return cleanup;
+  }, [draw, fontsLoaded, metricsReady, imagesLoaded, templateId, renderScale, showDebugBorders, setReadyInStore, setGenerationTime, canvasGenerationTime]);
+
+  // Separate effect to draw on canvas AFTER it's mounted
+  React.useEffect(() => {
+    if (!isReady || !canvasRef.current) {
+      logger.debug({ caller: "CanvasRenderer" }, "Waiting for canvas mount", {
+        isReady,
+        hasCanvas: !!canvasRef.current,
+      });
+      return;
+    }
+    if (!fontsLoaded || !metricsReady || !imagesLoaded) return;
+
+    logger.debug({ caller: "CanvasRenderer" }, "Canvas mounted, starting draw", {
+      templateId,
+      hasCanvas: !!canvasRef.current,
+    });
+
+    setupTimeout();
+    
     // Always draw if dependencies change, even if store says it's ready
     // This ensures canvas content is up-to-date with new elements/config
     logger.debug({ caller: "CanvasRenderer" }, "Starting canvas draw", { templateId });
-    setupTimeout();
     draw(); // Synchronous drawing
     logger.debug({ caller: "CanvasRenderer" }, "Canvas draw completed", { templateId });
-    
-    // Show canvas immediately after drawing and persist to store
-    logger.debug({ caller: "CanvasRenderer" }, "Setting isReady to true", { templateId, wasReady: isReady });
-    setIsReady(true);
-    setReadyInStore(templateId, renderScale, showDebugBorders, true);
     
     // Store generation times
     setGenerationTime(
@@ -126,9 +158,7 @@ function CanvasRenderer(
         notifyReady();
       });
     }
-
-    return cleanup;
-  }, [draw, fontsLoaded, metricsReady, imagesLoaded, templateId, renderScale, showDebugBorders, setReadyInStore, setGenerationTime, canvasGenerationTime]);
+  }, [isReady, canvasRef.current, draw, fontsLoaded, metricsReady, imagesLoaded, templateId, renderScale, showDebugBorders, setGenerationTime, canvasGenerationTime]);
 
   /**
    * Setup generation timeout
@@ -209,7 +239,13 @@ function CanvasRenderer(
     );
   }
 
-  logger.debug({ caller: "CanvasRenderer" }, "Rendering canvas element", { templateId, renderWidth, renderHeight });
+  logger.debug({ caller: "CanvasRenderer" }, "Rendering canvas element", { 
+    templateId, 
+    renderWidth, 
+    renderHeight,
+    canvasRefCurrent: !!canvasRef.current,
+  });
+  
   return (
     <canvas
       ref={canvasRef}

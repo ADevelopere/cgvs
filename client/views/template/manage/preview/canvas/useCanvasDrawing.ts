@@ -8,6 +8,7 @@ import {
   sortElementsByZIndex,
 } from "./util/canvasUtils";
 import { renderAllElements } from "./ElementRenderer";
+import { logger } from "@/client/lib/logger";
 
 /**
  * Custom hook for canvas drawing operations
@@ -32,23 +33,57 @@ export function useCanvasDrawing(
     const drawStartTime = performance.now();
     const canvas = canvasRef.current;
 
-    if (!canvas || !fontsLoaded || !metricsReady || !imagesLoaded) return;
+    logger.debug({ caller: "useCanvasDrawing" }, "draw() called", {
+      hasCanvas: !!canvas,
+      fontsLoaded,
+      metricsReady,
+      imagesLoaded,
+    });
+
+    if (!canvas || !fontsLoaded || !metricsReady || !imagesLoaded) {
+      logger.warn({ caller: "useCanvasDrawing" }, "draw() early return", {
+        hasCanvas: !!canvas,
+        fontsLoaded,
+        metricsReady,
+        imagesLoaded,
+      });
+      return;
+    }
 
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) {
+      logger.error({ caller: "useCanvasDrawing" }, "Failed to get 2d context");
+      return;
+    }
 
     const { renderWidth, renderHeight } = calculateCanvasDimensions(config, renderScale);
+
+    logger.debug({ caller: "useCanvasDrawing" }, "Canvas dimensions", {
+      renderWidth,
+      renderHeight,
+      canvasWidth: canvas.width,
+      canvasHeight: canvas.height,
+    });
 
     clearCanvas(ctx, renderWidth, renderHeight);
     setupCanvasContext(ctx, renderScale);
 
     const sortedElements = sortElementsByZIndex(elements);
+    logger.debug({ caller: "useCanvasDrawing" }, "Rendering elements", {
+      elementCount: sortedElements.length,
+      elements: sortedElements.map(e => ({ type: e.__typename, hidden: e.base.hidden })),
+    });
+
     renderAllElements(sortedElements, ctx, config, imageCache.current, getFont, showDebugBorders);
 
     ctx.restore();
 
     const drawEndTime = performance.now();
     canvasGenerationTimeRef.current = drawEndTime - drawStartTime;
+
+    logger.debug({ caller: "useCanvasDrawing" }, "Canvas draw complete", {
+      generationTime: canvasGenerationTimeRef.current,
+    });
 
     // Move expensive toDataURL() to idle callback to avoid blocking at high scales
     if (onDrawComplete) {
