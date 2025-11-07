@@ -9,14 +9,18 @@ import { useImageLoader } from "./image/useImageLoader";
 import { useCanvasDrawing } from "./useCanvasDrawing";
 import { calculateCanvasDimensions, createDownsampledCanvas, downloadCanvas } from "./util/canvasUtils";
 import { CanvasRendererProps, ClientCanvasGeneratorRef } from "./types";
+import { useCanvasRenderStore } from "./stores/useCanvasRenderStore";
 
 /**
  * Main canvas rendering component
  * Complexity: 14 (state + effects + timeout handling + imperative handle)
  * Optimized: Fonts, metrics, and images load in parallel
+ * Canvas displays immediately, cache generation happens in background
+ * Uses Zustand store for persistence across tab switches and remounts
  */
 function CanvasRenderer(
   {
+    templateId,
     elements,
     config,
     onExport,
@@ -37,8 +41,28 @@ function CanvasRenderer(
   const { metricsReady, getFont } = useOpentypeMetrics(families);
   const { imagesLoaded, imageCache } = useImageLoader(elements);
   
-  const didReady = React.useRef(false);
+  // Use Zustand store for persistence across remounts
+  const { isReady: isReadyInStore, setReady: setReadyInStore, setGenerationTime } = useCanvasRenderStore();
+  const storeReady = isReadyInStore(templateId, renderScale, showDebugBorders);
+  
+  // Use local state to trigger re-renders, sync with store
+  const [isReady, setIsReady] = React.useState(storeReady);
+  
+  const hasNotifiedReady = React.useRef(false);
   const timeoutIdRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  // Reset ready state when key dependencies change
+  React.useEffect(() => {
+    logger.debug({ caller: "CanvasRenderer" }, "Resetting ready state", { 
+      templateId, 
+      renderScale, 
+      showDebugBorders,
+      elementCount: elements.length 
+    });
+    setIsReady(false);
+    setReadyInStore(templateId, renderScale, showDebugBorders, false);
+    hasNotifiedReady.current = false;
+  }, [templateId, renderScale, showDebugBorders, setReadyInStore, elements, config]);
 
   const { draw, canvasGenerationTime } = useCanvasDrawing(
     canvasRef,
@@ -54,16 +78,57 @@ function CanvasRenderer(
     onDrawComplete
   );
 
-  // Main drawing effect
+  // Main drawing effect - canvas displays immediately, cache happens in background
   React.useEffect(() => {
-    if (!fontsLoaded || !metricsReady || !imagesLoaded) return;
+    logger.debug({ caller: "CanvasRenderer" }, "Drawing effect triggered", { 
+      fontsLoaded, 
+      metricsReady, 
+      imagesLoaded,
+      isReady,
+      templateId 
+    });
+    
+    if (!fontsLoaded || !metricsReady || !imagesLoaded) {
+      logger.debug({ caller: "CanvasRenderer" }, "Resources not ready, waiting...", {
+        fontsLoaded,
+        metricsReady,
+        imagesLoaded
+      });
+      setIsReady(false);
+      setReadyInStore(templateId, renderScale, showDebugBorders, false);
+      return;
+    }
 
+    // Always draw if dependencies change, even if store says it's ready
+    // This ensures canvas content is up-to-date with new elements/config
+    logger.debug({ caller: "CanvasRenderer" }, "Starting canvas draw", { templateId });
     setupTimeout();
-    draw();
-    notifyReady();
+    draw(); // Synchronous drawing
+    logger.debug({ caller: "CanvasRenderer" }, "Canvas draw completed", { templateId });
+    
+    // Show canvas immediately after drawing and persist to store
+    logger.debug({ caller: "CanvasRenderer" }, "Setting isReady to true", { templateId, wasReady: isReady });
+    setIsReady(true);
+    setReadyInStore(templateId, renderScale, showDebugBorders, true);
+    
+    // Store generation times
+    setGenerationTime(
+      templateId,
+      renderScale,
+      showDebugBorders,
+      canvasGenerationTime,
+      hashGenerationTimeRef?.current || 0
+    );
+    
+    // Notify ready on next tick (after render)
+    if (!hasNotifiedReady.current) {
+      Promise.resolve().then(() => {
+        notifyReady();
+      });
+    }
 
     return cleanup;
-  }, [draw, fontsLoaded, metricsReady, imagesLoaded]);
+  }, [draw, fontsLoaded, metricsReady, imagesLoaded, templateId, renderScale, showDebugBorders, setReadyInStore, setGenerationTime, canvasGenerationTime]);
 
   /**
    * Setup generation timeout
@@ -86,8 +151,8 @@ function CanvasRenderer(
    * Complexity: 5 (conditional + callback + timeout clear)
    */
   const notifyReady = () => {
-    if (!didReady.current) {
-      didReady.current = true;
+    if (!hasNotifiedReady.current) {
+      hasNotifiedReady.current = true;
       onReady?.({
         canvasGenerationTime,
         hashGenerationTime: hashGenerationTimeRef?.current || 0,
@@ -133,7 +198,10 @@ function CanvasRenderer(
 
   const { renderWidth, renderHeight } = calculateCanvasDimensions(config, renderScale);
 
-  if (!didReady.current) {
+  logger.debug({ caller: "CanvasRenderer" }, "Render decision", { isReady, templateId, renderWidth, renderHeight });
+
+  if (!isReady) {
+    logger.debug({ caller: "CanvasRenderer" }, "Rendering loading spinner", { templateId });
     return (
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
         <CircularProgress color="info" size={20} />
@@ -141,6 +209,7 @@ function CanvasRenderer(
     );
   }
 
+  logger.debug({ caller: "CanvasRenderer" }, "Rendering canvas element", { templateId, renderWidth, renderHeight });
   return (
     <canvas
       ref={canvasRef}

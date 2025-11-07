@@ -40,46 +40,90 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
       return elements ? collectFontFamilies(elements) : [];
     }, [elements]);
 
-    const { getCache, setCache } = useCanvasCacheStore();
+    const { setCache } = useCanvasCacheStore();
     const hashGenerationTimeRef = React.useRef<number>(0);
     const [dataHash, setDataHash] = React.useState<string | null>(null);
 
     // Generate hash asynchronously without blocking render
     React.useEffect(() => {
       if (!config || !elements) {
+        logger.debug({ caller: "ClientCanvasGenerator" }, "Config or elements missing", { config: !!config, elements: !!elements });
         setDataHash(null);
         return;
       }
 
       let cancelled = false;
+      logger.debug({ caller: "ClientCanvasGenerator" }, "Starting hash generation", { 
+        templateId, 
+        elementCount: elements.length, 
+        renderScale, 
+        showDebugBorders 
+      });
+      
       generateDataHash(elements, config, showDebugBorders, renderScale).then((result) => {
         if (!cancelled) {
           hashGenerationTimeRef.current = result.hashGenerationTime;
           setDataHash(result.hash);
+          logger.debug({ caller: "ClientCanvasGenerator" }, "Hash generated", { hash: result.hash });
         }
       });
 
       return () => {
         cancelled = true;
       };
-    }, [elements, config, showDebugBorders, renderScale]);
-
-    const cachedCanvas = dataHash ? getCache(dataHash) : null;
+    }, [elements, config, showDebugBorders, renderScale, templateId]);
 
     const handleDrawComplete = React.useCallback(
       (dataUrl: string) => {
+        logger.debug({ caller: "ClientCanvasGenerator" }, "handleDrawComplete called", { 
+          dataHash, 
+          dataUrlLength: dataUrl.length 
+        });
         if (dataHash) {
           setCache(dataHash, dataUrl);
+          logger.debug({ caller: "ClientCanvasGenerator" }, "Cache set", { hash: dataHash });
+        } else {
+          logger.warn({ caller: "ClientCanvasGenerator" }, "handleDrawComplete called but no dataHash");
         }
       },
       [dataHash, setCache]
     );
 
-    if (!config || !elements) return null;
+    // Subscribe to cache changes to re-render when cache is populated
+    // Use selector to only subscribe to changes for THIS specific hash
+    const cachedCanvasFromStore = useCanvasCacheStore(
+      React.useCallback((state) => {
+        if (!dataHash) {
+          logger.debug({ caller: "ClientCanvasGenerator" }, "No dataHash for cache lookup");
+          return null;
+        }
+        const cached = state.cache.get(dataHash);
+        logger.debug({ caller: "ClientCanvasGenerator" }, "Cache lookup", { 
+          hash: dataHash, 
+          found: !!cached,
+          cacheSize: state.cache.size 
+        });
+        return cached ?? null;
+      }, [dataHash])
+    );
 
-    if (cachedCanvas) {
-      return renderCachedImage(cachedCanvas, config);
+    if (!config || !elements) {
+      logger.debug({ caller: "ClientCanvasGenerator" }, "Early return: missing config or elements");
+      return null;
     }
+
+    // Use the memoized cache value that updates when store changes
+    if (cachedCanvasFromStore) {
+      logger.debug({ caller: "ClientCanvasGenerator" }, "Rendering from cache", { hash: dataHash });
+      return renderCachedImage(cachedCanvasFromStore, config);
+    }
+
+    logger.debug({ caller: "ClientCanvasGenerator" }, "Rendering CanvasRenderer (no cache)", { 
+      templateId, 
+      dataHash, 
+      renderScale, 
+      showDebugBorders 
+    });
 
     // FontProvider starts loading fonts immediately when families are available
     // This runs in parallel with config query completion
@@ -87,6 +131,7 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
       <FontProvider families={families}>
         <CanvasRendererWithRef
           ref={ref}
+          templateId={templateId}
           elements={elements}
           config={config}
           onExport={onExport}

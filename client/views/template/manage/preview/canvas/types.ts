@@ -55,6 +55,7 @@ export interface RenderBox {
  * Canvas renderer props
  */
 export interface CanvasRendererProps {
+  templateId: number;
   elements: GQL.CertificateElementUnion[];
   config: GQL.TemplateConfig;
   onExport?: (dataUrl: string) => void;
