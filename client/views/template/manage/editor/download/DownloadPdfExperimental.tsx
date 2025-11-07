@@ -9,12 +9,16 @@ import { CircularProgress } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "../glqDocuments";
-import { resolveTextContent } from "../imageRenderer/textResolvers";
+import { resolveTextContent } from "./imageRenderer/textResolvers";
 import { FontFamily, getFontByFamily } from "@/lib/font/google";
 
 // ============================================================================
 // TYPES
 // ============================================================================
+
+interface DownloadPdfExperimentalProps {
+  showDebugBorders?: boolean;
+}
 
 interface TextMetrics {
   lines: string[];
@@ -299,8 +303,202 @@ function calculateTextPosition(
 }
 
 // ============================================================================
+// DEBUG UTILITIES
+// ============================================================================
+
+/**
+ * Draw debug border around element bounding box
+ */
+function drawDebugBorder(
+  page: PDFPage,
+  element: GQL.CertificateElementBase,
+  pageHeight: number,
+  color = rgb(1, 0, 0) // Red by default
+): void {
+  const elX = element.positionX * 0.75; // pixels to points
+  const elY = element.positionY * 0.75;
+  const elWidth = element.width * 0.75;
+  const elHeight = element.height * 0.75;
+
+  // PDF coordinate system: origin at bottom-left
+  const yTop = pageHeight - elY;
+
+  page.drawRectangle({
+    x: elX,
+    y: yTop - elHeight,
+    width: elWidth,
+    height: elHeight,
+    borderColor: color,
+    borderWidth: 1,
+  });
+}
+
+// ============================================================================
+// IMAGE UTILITIES
+// ============================================================================
+
+/**
+ * Fetch image from URL and return as Uint8Array
+ */
+async function fetchImageBytes(url: string): Promise<Uint8Array> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch image: ${response.statusText}`);
+  }
+  const blob = await response.blob();
+  return new Uint8Array(await blob.arrayBuffer());
+}
+
+/**
+ * Calculate image dimensions based on fit mode
+ */
+function calculateImageDimensions(
+  imageWidth: number,
+  imageHeight: number,
+  containerWidth: number,
+  containerHeight: number,
+  fit: GQL.ElementImageFit
+): { width: number; height: number; x: number; y: number } {
+  const imageAspect = imageWidth / imageHeight;
+  const containerAspect = containerWidth / containerHeight;
+
+  let finalWidth = containerWidth;
+  let finalHeight = containerHeight;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  switch (fit) {
+    case GQL.ElementImageFit.Fill:
+      // Fill: stretch to container (no aspect ratio preservation)
+      finalWidth = containerWidth;
+      finalHeight = containerHeight;
+      break;
+
+    case GQL.ElementImageFit.Cover:
+      // Cover: fill container, crop excess (preserve aspect ratio)
+      if (imageAspect > containerAspect) {
+        // Image is wider - fit height and crop width
+        finalHeight = containerHeight;
+        finalWidth = containerHeight * imageAspect;
+        offsetX = -(finalWidth - containerWidth) / 2;
+      } else {
+        // Image is taller - fit width and crop height
+        finalWidth = containerWidth;
+        finalHeight = containerWidth / imageAspect;
+        offsetY = -(finalHeight - containerHeight) / 2;
+      }
+      break;
+
+    case GQL.ElementImageFit.Contain:
+    default:
+      // Contain: fit inside container, show all (preserve aspect ratio)
+      if (imageAspect > containerAspect) {
+        // Image is wider - fit width
+        finalWidth = containerWidth;
+        finalHeight = containerWidth / imageAspect;
+        offsetY = (containerHeight - finalHeight) / 2;
+      } else {
+        // Image is taller - fit height
+        finalHeight = containerHeight;
+        finalWidth = containerHeight * imageAspect;
+        offsetX = (containerWidth - finalWidth) / 2;
+      }
+      break;
+  }
+
+  return {
+    width: finalWidth,
+    height: finalHeight,
+    x: offsetX,
+    y: offsetY,
+  };
+}
+
+// ============================================================================
 // RENDERING
 // ============================================================================
+
+/**
+ * Render image element with proper fit mode and alignment
+ */
+async function renderImageElement(
+  element: GQL.ImageElement,
+  page: PDFPage,
+  pdfDoc: PDFDocument,
+  pageHeight: number
+): Promise<void> {
+  if (element.base.hidden) return;
+
+  const imageUrl = element.imageDataSource?.imageUrl;
+  if (!imageUrl) {
+    logger.error({ caller: "DownloadPdfExperimental" }, `Image element ${element.base.id} has no imageUrl`);
+    return;
+  }
+
+  const fit = element.imageProps?.fit || GQL.ElementImageFit.Contain;
+
+  try {
+    // Fetch image bytes
+    const imageBytes = await fetchImageBytes(imageUrl);
+
+    // Embed image in PDF (supports PNG and JPEG)
+    let image;
+    try {
+      // Try PNG first
+      image = await pdfDoc.embedPng(imageBytes);
+    } catch {
+      try {
+        // Fall back to JPEG
+        image = await pdfDoc.embedJpg(imageBytes);
+      } catch (error) {
+        logger.error(
+          { caller: "DownloadPdfExperimental" },
+          `Unsupported image format for element ${element.base.id}:`,
+          error
+        );
+        return;
+      }
+    }
+
+    // Get intrinsic image dimensions
+    const imageWidth = image.width;
+    const imageHeight = image.height;
+
+    // Convert element dimensions to PDF points
+    const containerWidth = element.base.width * 0.75;
+    const containerHeight = element.base.height * 0.75;
+    const elX = element.base.positionX * 0.75;
+    const elY = element.base.positionY * 0.75;
+
+    // PDF coordinate system: origin at bottom-left
+    const yTop = pageHeight - elY;
+
+    // Calculate image dimensions based on fit mode
+    const { width, height, x: offsetX, y: offsetY } = calculateImageDimensions(
+      imageWidth,
+      imageHeight,
+      containerWidth,
+      containerHeight,
+      fit
+    );
+
+    // Draw image
+    // Note: For COVER mode, we may need to clip the image
+    // pdf-lib doesn't have native clipping, so we adjust positioning
+    page.drawImage(image, {
+      x: elX + offsetX,
+      y: yTop - containerHeight + offsetY,
+      width,
+      height,
+    });
+  } catch (error) {
+    logger.error(
+      { caller: "DownloadPdfExperimental" },
+      `Error rendering image element ${element.base.id}:`,
+      error
+    );
+  }
+}
 
 /**
  * Render text element with proper overflow and alignment handling
@@ -481,7 +679,7 @@ async function downloadPdf(pdfBytes: Uint8Array, filename: string = "certificate
 // COMPONENT
 // ============================================================================
 
-export const DownloadPdfExperimental: React.FC = () => {
+export const DownloadPdfExperimental: React.FC<DownloadPdfExperimentalProps> = ({ showDebugBorders = true }) => {
   const theme = useTheme();
   const { templateId } = useFlowUpdater();
   const [isGenerating, setIsGenerating] = React.useState(false);
@@ -566,23 +764,31 @@ export const DownloadPdfExperimental: React.FC = () => {
       const pageHeight = config.height * 0.75;
 
       const page = pdfDoc.addPage([pageWidth, pageHeight]);
+      const { height: pageHeightPdf } = page.getSize();
 
-      // Filter and sort text elements
-      const textElements = elements
-        .filter((e): e is GQL.TextElement => e.__typename === "TextElement")
-        .slice()
-        .sort((a, b) => a.base.zIndex - b.base.zIndex);
+      // Sort all elements by zIndex to maintain proper layering
+      const sortedElements = elements.slice().sort((a, b) => a.base.zIndex - b.base.zIndex);
 
-      // Render text elements
-      for (const el of textElements) {
-        const family =
-          el.textProps.fontRef.__typename === "FontReferenceGoogle" && el.textProps.fontRef.identifier
-            ? (el.textProps.fontRef.identifier as FontFamily)
-            : FontFamily.ROBOTO;
+      // Render elements in order
+      for (const element of sortedElements) {
+        if (element.__typename === "TextElement") {
+          const family =
+            element.textProps.fontRef.__typename === "FontReferenceGoogle" && element.textProps.fontRef.identifier
+              ? (element.textProps.fontRef.identifier as FontFamily)
+              : FontFamily.ROBOTO;
 
-        const font = fontMap.get(family) || fontMap.get(FontFamily.ROBOTO)!;
+          const font = fontMap.get(family) || fontMap.get(FontFamily.ROBOTO)!;
 
-        renderTextElement(el, page, font, config);
+          renderTextElement(element, page, font, config);
+        } else if (element.__typename === "ImageElement") {
+          await renderImageElement(element, page, pdfDoc, pageHeightPdf);
+        }
+        // TODO: Add support for other element types (DateElement, CountryElement, etc.)
+
+        // Draw debug border if enabled
+        if (showDebugBorders) {
+          drawDebugBorder(page, element.base, pageHeightPdf);
+        }
       }
 
       // Save PDF (with password protection if supported)
@@ -602,7 +808,7 @@ export const DownloadPdfExperimental: React.FC = () => {
 
       await downloadPdf(pdfBytes, `certificate-${templateId}_experimental.pdf`);
 
-      logger.error({ caller: "DownloadPdfExperimental" }, "PDF generated successfully (experimental)");
+      logger.info({ caller: "DownloadPdfExperimental" }, "PDF generated successfully (experimental)");
     } catch (error) {
       logger.error({ caller: "DownloadPdfExperimental" }, "Error generating PDF (experimental):", error);
     } finally {

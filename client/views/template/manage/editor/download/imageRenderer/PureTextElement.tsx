@@ -1,6 +1,6 @@
 import React from "react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
-import { getFlexAlignment } from "../nodeRenderer/utils";
+import { getFlexAlignment } from "../../nodeRenderer/utils";
 
 export interface PureTextElementProps {
   base: GQL.CertificateElementBase;

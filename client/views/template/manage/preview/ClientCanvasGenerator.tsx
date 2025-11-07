@@ -7,13 +7,14 @@ import logger from "@/client/lib/logger";
 import { FontProvider, FontContext } from "./FontContext";
 import { useOpentypeMetrics } from "./useOpentypeMetrics";
 import { layoutResizeDown, layoutTruncate, layoutWrap, drawLayout } from "./textLayout";
-import { resolveTextContent } from "../editor/imageRenderer/textResolvers";
+import { resolveTextContent } from "../editor/download/imageRenderer/textResolvers";
 import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "../editor/glqDocuments";
 
 export interface ClientCanvasGeneratorProps {
   templateId: number;
   onExport?: (dataUrl: string) => void;
   onReady?: () => void;
+  showDebugBorders?: boolean;
 }
 
 export type ClientCanvasGeneratorRef = {
@@ -35,17 +36,112 @@ function collectFontFamilies(elements: GQL.CertificateElementUnion[]): string[] 
   return Array.from(families);
 }
 
+/**
+ * Load an image from URL and return as HTMLImageElement
+ */
+function loadImage(url: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous"; // Enable CORS for images
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
+/**
+ * Calculate image dimensions based on fit mode
+ */
+function calculateImageDimensions(
+  imageWidth: number,
+  imageHeight: number,
+  containerWidth: number,
+  containerHeight: number,
+  fit: GQL.ElementImageFit
+): { width: number; height: number; x: number; y: number } {
+  const imageAspect = imageWidth / imageHeight;
+  const containerAspect = containerWidth / containerHeight;
+
+  let finalWidth = containerWidth;
+  let finalHeight = containerHeight;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  switch (fit) {
+    case GQL.ElementImageFit.Fill:
+      // Fill: stretch to container (no aspect ratio preservation)
+      finalWidth = containerWidth;
+      finalHeight = containerHeight;
+      break;
+
+    case GQL.ElementImageFit.Cover:
+      // Cover: fill container, crop excess (preserve aspect ratio)
+      if (imageAspect > containerAspect) {
+        // Image is wider - fit height and crop width
+        finalHeight = containerHeight;
+        finalWidth = containerHeight * imageAspect;
+        offsetX = -(finalWidth - containerWidth) / 2;
+      } else {
+        // Image is taller - fit width and crop height
+        finalWidth = containerWidth;
+        finalHeight = containerWidth / imageAspect;
+        offsetY = -(finalHeight - containerHeight) / 2;
+      }
+      break;
+
+    case GQL.ElementImageFit.Contain:
+    default:
+      // Contain: fit inside container, show all (preserve aspect ratio)
+      if (imageAspect > containerAspect) {
+        // Image is wider - fit width
+        finalWidth = containerWidth;
+        finalHeight = containerWidth / imageAspect;
+        offsetY = (containerHeight - finalHeight) / 2;
+      } else {
+        // Image is taller - fit height
+        finalHeight = containerHeight;
+        finalWidth = containerHeight * imageAspect;
+        offsetX = (containerWidth - finalWidth) / 2;
+      }
+      break;
+  }
+
+  return {
+    width: finalWidth,
+    height: finalHeight,
+    x: offsetX,
+    y: offsetY,
+  };
+}
+
+/**
+ * Draw debug border around element bounding box
+ */
+function drawDebugBorder(
+  ctx: CanvasRenderingContext2D,
+  element: GQL.CertificateElementBase,
+  color = "red"
+): void {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.strokeRect(element.positionX, element.positionY, element.width, element.height);
+  ctx.restore();
+}
+
 function CanvasInner(
   {
     elements,
     config,
     onExport,
     onReady,
+    showDebugBorders = true,
   }: {
     elements: GQL.CertificateElementUnion[];
     config: GQL.TemplateConfig;
     onExport?: (d: string) => void;
     onReady?: () => void;
+    showDebugBorders?: boolean;
   },
   ref: React.Ref<ClientCanvasGeneratorRef>
 ) {
@@ -53,22 +149,88 @@ function CanvasInner(
   const { fontsLoaded, families } = React.useContext(FontContext);
   const { metricsReady, getFont } = useOpentypeMetrics(families);
   const didReady = React.useRef(false);
+  const [imagesLoaded, setImagesLoaded] = React.useState(false);
+  const imageCache = React.useRef<Map<string, HTMLImageElement>>(new Map());
+
+  // Load all images
+  React.useEffect(() => {
+    const imageElements = elements.filter((e): e is GQL.ImageElement => e.__typename === "ImageElement");
+    
+    if (imageElements.length === 0) {
+      setImagesLoaded(true);
+      return;
+    }
+
+    const imageUrls = imageElements
+      .map(el => el.imageDataSource?.imageUrl)
+      .filter((url): url is string => !!url);
+
+    Promise.all(imageUrls.map(url => loadImage(url)))
+      .then(images => {
+        imageUrls.forEach((url, idx) => {
+          imageCache.current.set(url, images[idx]);
+        });
+        setImagesLoaded(true);
+      })
+      .catch(error => {
+        logger.error({ caller: "ClientCanvasGenerator" }, "Failed to load images", { error });
+        setImagesLoaded(true); // Continue even if images fail to load
+      });
+  }, [elements]);
 
   const draw = React.useCallback(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !fontsLoaded || !metricsReady) return;
+    if (!canvas || !fontsLoaded || !metricsReady || !imagesLoaded) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     const { width, height } = config;
     ctx.clearRect(0, 0, width, height);
 
-    const textElements = elements
-      .filter((e): e is GQL.TextElement => e.__typename === "TextElement")
-      .slice()
-      .sort((a, b) => a.base.zIndex - b.base.zIndex);
+    // Sort all elements by zIndex for proper layering
+    const sortedElements = elements.slice().sort((a, b) => a.base.zIndex - b.base.zIndex);
 
-    for (const el of textElements) {
+    for (const el of sortedElements) {
+      if (el.base.hidden) continue;
+
+      if (el.__typename === "ImageElement") {
+        // Render image element
+        const imageUrl = el.imageDataSource?.imageUrl;
+        if (!imageUrl) continue;
+
+        const img = imageCache.current.get(imageUrl);
+        if (!img) continue;
+
+        const fit = el.imageProps?.fit || GQL.ElementImageFit.Contain;
+        const { width: imgWidth, height: imgHeight, x: offsetX, y: offsetY } = calculateImageDimensions(
+          img.naturalWidth,
+          img.naturalHeight,
+          el.base.width,
+          el.base.height,
+          fit
+        );
+
+        // Save context for clipping
+        ctx.save();
+        
+        // Clip to element bounds for COVER mode
+        if (fit === GQL.ElementImageFit.Cover) {
+          ctx.beginPath();
+          ctx.rect(el.base.positionX, el.base.positionY, el.base.width, el.base.height);
+          ctx.clip();
+        }
+
+        ctx.drawImage(
+          img,
+          el.base.positionX + offsetX,
+          el.base.positionY + offsetY,
+          imgWidth,
+          imgHeight
+        );
+
+        ctx.restore();
+      } else if (el.__typename === "TextElement") {
+        // Render text element
       const text = resolveTextContent(el.textDataSource, config.language, "Text");
       const family =
         el.textProps.fontRef.__typename === "FontReferenceGoogle" && el.textProps.fontRef.identifier
@@ -109,17 +271,23 @@ function CanvasInner(
         font,
         family
       );
+      }
+
+      // Draw debug border if enabled
+      if (showDebugBorders) {
+        drawDebugBorder(ctx, el.base);
+      }
     }
-  }, [elements, config, fontsLoaded, metricsReady, getFont]);
+  }, [elements, config, fontsLoaded, metricsReady, imagesLoaded, getFont, showDebugBorders]);
 
   React.useEffect(() => {
-    if (!fontsLoaded || !metricsReady) return;
+    if (!fontsLoaded || !metricsReady || !imagesLoaded) return;
     draw();
     if (!didReady.current) {
       didReady.current = true;
       onReady?.();
     }
-  }, [draw, fontsLoaded, metricsReady, onReady]);
+  }, [draw, fontsLoaded, metricsReady, imagesLoaded, onReady]);
 
   const download = React.useCallback(() => {
     const canvas = canvasRef.current;
@@ -153,11 +321,12 @@ const CanvasInnerWithRef = React.forwardRef<
     config: GQL.TemplateConfig;
     onExport?: (d: string) => void;
     onReady?: () => void;
+    showDebugBorders?: boolean;
   }
 >(CanvasInner);
 
 export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, ClientCanvasGeneratorProps>(
-  ({ templateId, onExport, onReady }, ref) => {
+  ({ templateId, onExport, onReady, showDebugBorders = true }, ref) => {
     const { data: configData, error: configError } = useQuery(templateConfigByTemplateIdQueryDocument, {
       variables: { templateId },
       fetchPolicy: "cache-first",
@@ -183,7 +352,7 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
 
     return (
       <FontProvider families={families}>
-        <CanvasInnerWithRef ref={ref} elements={elements} config={config} onExport={onExport} onReady={onReady} />
+        <CanvasInnerWithRef ref={ref} elements={elements} config={config} onExport={onExport} onReady={onReady} showDebugBorders={showDebugBorders} />
       </FontProvider>
     );
   }

@@ -112,8 +112,6 @@ function createTextNode(element: GQL.TextElement): Node<TextElementNodeData> | n
 function createImageNode(element: GQL.ImageElement): Node | null {
   const data: ImageElementNodeData = {
     elementId: element.base.id,
-    width: element.base.width,
-    height: element.base.height,
   };
 
   return {

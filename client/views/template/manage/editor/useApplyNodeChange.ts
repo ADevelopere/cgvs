@@ -11,6 +11,7 @@ import { useEditorStore } from "./useEditorStore";
 import { getHelperLines } from "./other/utils";
 import { useCertificateElementStates } from "./CertificateElementContext";
 import { useNode } from "./NodesStateProvider";
+import {logger} from "@/client/lib/console"
 
 type HelperLinesResult = {
   horizontal: number | undefined;
@@ -39,6 +40,9 @@ export const useApplyNodeChange = () => {
     vertical: number | undefined;
   }>({ horizontal: undefined, vertical: undefined });
   const updateHelperLinesTimeoutRef = useRef<number | null>(null);
+  
+  // Track dimension changes during resize to use updated dimensions for boundary constraints
+  const resizeDimensionsRef = useRef<Map<string, { width: number; height: number }>>(new Map());
 
   /**
    * Apply helper lines for snapping during drag
@@ -71,20 +75,89 @@ export const useApplyNodeChange = () => {
   }, []);
 
   /**
+   * Apply dimension constraints to keep node size within container bounds
+   * Rules:
+   * 1. When increasing size: Element cannot exceed container dimensions
+   * 2. When decreasing size: Always allowed (helps fix oversized elements after container shrinks)
+   * 3. Element size must account for its current position to stay within bounds
+   * Complexity: ~12
+   */
+  const applyDimensionConstraints = useCallback(
+    (change: NodeDimensionChange, nodes: Node[]): NodeDimensionChange => {
+      try {
+        if (change.type === "dimensions" && change.dimensions) {
+          const node = nodes.find(n => n.id === change.id);
+          if (!node) {
+            return change;
+          }
+
+          const currentWidth = node.measured?.width ?? 0;
+          const currentHeight = node.measured?.height ?? 0;
+          const newWidth = change.dimensions.width;
+          const newHeight = change.dimensions.height;
+
+          // Get node position
+          const nodeX = node.position?.x ?? 0;
+          const nodeY = node.position?.y ?? 0;
+
+          // Check if we're increasing or decreasing dimensions
+          const isIncreasingWidth = newWidth > currentWidth;
+          const isIncreasingHeight = newHeight > currentHeight;
+
+          // When increasing: constrain to container bounds
+          // When decreasing: always allow (helps fix oversized elements after container shrinks)
+          if (isIncreasingWidth) {
+            // Maximum width = container width - element's X position
+            // This ensures element stays within container bounds
+            const maxWidth = containerWidth - nodeX;
+            if (newWidth > maxWidth) {
+              change.dimensions.width = Math.max(maxWidth, 0);
+            }
+          }
+
+          if (isIncreasingHeight) {
+            // Maximum height = container height - element's Y position
+            // This ensures element stays within container bounds
+            const maxHeight = containerHeight - nodeY;
+            if (newHeight > maxHeight) {
+              change.dimensions.height = Math.max(maxHeight, 0);
+            }
+          }
+
+          // When decreasing: no constraints applied
+          // This allows users to shrink oversized elements that resulted from
+          // container size reduction or manual resizing beyond bounds
+        }
+      } catch {
+        // If dimension constraints fail, return unchanged
+        return change;
+      }
+
+      return change;
+    },
+    [containerWidth, containerHeight]
+  );
+
+  /**
    * Apply boundary constraints to keep node within container
    * Complexity: ~10
    */
   const applyBoundaryConstraints = useCallback(
     (change: NodePositionChange, nodes: Node[]): NodePositionChange => {
       try {
-        if (change.type === "position" && change.dragging && change.position) {
+        logger.log("Applying boundary constraints");
+        if (change.type === "position" && change.position) {
+          logger.log("Container dimensions:", containerWidth, containerHeight);
+          logger.log("change.position before constraints:", change.position);
           const node = nodes.find(n => n.id === change.id);
           if (!node) {
             return change;
           }
 
-          const nodeWidth = node.measured?.width ?? 0;
-          const nodeHeight = node.measured?.height ?? 0;
+          // Use updated dimensions from resize if available, otherwise use measured dimensions
+          const resizeDimensions = resizeDimensionsRef.current.get(change.id);
+          const nodeWidth = resizeDimensions?.width ?? node.measured?.width ?? 0;
+          const nodeHeight = resizeDimensions?.height ?? node.measured?.height ?? 0;
 
           const maxX = containerWidth - nodeWidth;
           const maxY = containerHeight - nodeHeight;
@@ -102,6 +175,8 @@ export const useApplyNodeChange = () => {
           } else if (change.position.y > maxY) {
             change.position.y = maxY;
           }
+
+          logger.log("change.position after constraints:", change.position);
         }
       } catch {
         // If boundary constraints fail, return unchanged
@@ -119,6 +194,7 @@ export const useApplyNodeChange = () => {
    */
   const handlePositionChange = useCallback(
     (change: NodePositionChange, nodes: Node[]): NodePositionChange => {
+      logger.log("Position change:", change);
       try {
         // Apply boundary constraints during drag
         const constrainedChange = applyBoundaryConstraints(change, nodes);
@@ -142,7 +218,6 @@ export const useApplyNodeChange = () => {
           const y = constrainedChange.position.y;
           // Use queueMicrotask for better performance than setTimeout
           queueMicrotask(() => {
-            // Update with isDragging=false to add to history
             updateElementPosition(elementId, x, y, false);
           });
         }
@@ -156,43 +231,51 @@ export const useApplyNodeChange = () => {
   );
 
   /**
-   * Handle dimension changes - update state when resize ends
-   * Complexity: ~6
+   * Handle dimension changes - apply constraints and update state when resize ends
+   * Complexity: ~8
    */
   const handleDimensionChange = useCallback(
-    (change: NodeDimensionChange): NodeDimensionChange => {
+    (change: NodeDimensionChange, nodes: Node[]): NodeDimensionChange => {
+      logger.log("Dimension change:", change);
       try {
         const elementId = Number.parseInt(change.id, 10);
         if (Number.isNaN(elementId)) {
           return change;
         }
 
-        // Update size during resize (with isResizing flag)
-        if (change.type === "dimensions" && change.resizing && change.dimensions) {
-          const width = change.dimensions.width;
-          const height = change.dimensions.height;
-          // Update with isResizing=true for visual feedback
-          updateElementSize(elementId, width, height, true);
+        // Apply dimension constraints to keep element within container bounds
+        const constrainedChange = applyDimensionConstraints(change, nodes);
+
+        // Track dimensions during resize for boundary constraint calculations
+        if (constrainedChange.type === "dimensions" && constrainedChange.dimensions) {
+          const width = constrainedChange.dimensions.width;
+          const height = constrainedChange.dimensions.height;
+          
+          if (constrainedChange.resizing) {
+            // Store current dimensions during resize for use in position constraint calculations
+            resizeDimensionsRef.current.set(constrainedChange.id, { width, height });
+            
+            // Update with isResizing=true for visual feedback
+            updateElementSize(elementId, width, height, true);
+          } else {
+            // Clear stored dimensions when resize ends
+            resizeDimensionsRef.current.delete(constrainedChange.id);
+            
+            // Use queueMicrotask for better performance than setTimeout
+            queueMicrotask(() => {
+              // Update with isResizing=false to add to history
+              updateElementSize(elementId, width, height, false);
+            });
+          }
         }
 
-        // Update size when resize ends
-        if (change.type === "dimensions" && !change.resizing && change.dimensions) {
-          const width = change.dimensions.width;
-          const height = change.dimensions.height;
-          // Use queueMicrotask for better performance than setTimeout
-          queueMicrotask(() => {
-            // Update with isResizing=false to add to history
-            updateElementSize(elementId, width, height, false);
-          });
-        }
+        return constrainedChange;
       } catch {
         // If dimension change fails, return unchanged
         return change;
       }
-
-      return change;
     },
-    [updateElementSize]
+    [applyDimensionConstraints, updateElementSize]
   );
 
   /**
@@ -231,7 +314,7 @@ export const useApplyNodeChange = () => {
         }
 
         if (change.type === "dimensions") {
-          return handleDimensionChange(change);
+          return handleDimensionChange(change, nodes);
         }
 
         if (change.type === "select") {
