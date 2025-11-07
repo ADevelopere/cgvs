@@ -1,4 +1,4 @@
-import { createHash } from "crypto";
+import { sha256 } from "crypto-hash";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 
 /**
@@ -12,17 +12,18 @@ export interface HashGenerationResult {
 /**
  * Generate SHA-256 hash from canvas generation data
  * Complexity: 4 (timing + stringify + hash generation)
+ * Uses browser-compatible crypto-hash for better performance
  */
-export function generateDataHash(
+export async function generateDataHash(
   elements: GQL.CertificateElementUnion[],
   config: GQL.TemplateConfig,
   showDebugBorders: boolean,
   renderScale: number
-): HashGenerationResult {
+): Promise<HashGenerationResult> {
   const startTime = performance.now();
   
   const dataString = createHashInput(elements, config, showDebugBorders, renderScale);
-  const hash = createHash("sha256").update(dataString).digest("hex");
+  const hash = await sha256(dataString);
   
   const hashGenerationTime = performance.now() - startTime;
   

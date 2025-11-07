@@ -30,6 +30,7 @@ export function renderImageElement(
 /**
  * Draw image with appropriate fit mode
  * Complexity: 7 (dimension calculation + clipping + drawing)
+ * Images render at native resolution without canvas scale transformation
  */
 function drawImageWithFit(
   ctx: CanvasRenderingContext2D,
@@ -46,28 +47,37 @@ function drawImageWithFit(
   );
 
   ctx.save();
+  
+  // Get current transform to extract scale
+  const transform = ctx.getTransform();
+  const scaleX = transform.a;
+  const scaleY = transform.d;
+  
+  // Reset transform for native resolution rendering
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
 
   if (fit === GQL.ElementImageFit.Cover) {
-    applyClipping(ctx, element.base);
+    // Apply clipping with scaled coordinates
+    ctx.beginPath();
+    ctx.rect(
+      element.base.positionX * scaleX,
+      element.base.positionY * scaleY,
+      element.base.width * scaleX,
+      element.base.height * scaleY
+    );
+    ctx.clip();
   }
 
+  // Draw image at native resolution using full source image
+  // Apply scale to coordinates but use full image data
   ctx.drawImage(
     img,
-    element.base.positionX + dimensions.x,
-    element.base.positionY + dimensions.y,
-    dimensions.width,
-    dimensions.height
+    0, 0, img.naturalWidth, img.naturalHeight, // source: full image
+    (element.base.positionX + dimensions.x) * scaleX,
+    (element.base.positionY + dimensions.y) * scaleY,
+    dimensions.width * scaleX,
+    dimensions.height * scaleY
   );
 
   ctx.restore();
-}
-
-/**
- * Apply clipping rectangle to canvas context
- * Complexity: 3 (beginPath + rect + clip)
- */
-function applyClipping(ctx: CanvasRenderingContext2D, base: GQL.CertificateElementBase): void {
-  ctx.beginPath();
-  ctx.rect(base.positionX, base.positionY, base.width, base.height);
-  ctx.clip();
 }

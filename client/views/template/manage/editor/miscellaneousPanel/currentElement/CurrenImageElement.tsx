@@ -31,7 +31,7 @@ export const CurrentImageElement: React.FC<CurrentImageElementProps> = ({ elemen
     <Stack>
       <Accordion defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>{strings.textElement.dataSourceLabel}</Typography>
+          <Typography>{strings.imageElement.dataSourceLabel}</Typography>
         </AccordionSummary>
         <AccordionDetails sx={{ backgroundColor: "background.default", pt: 2 }}>
           <ImageDataSourceForm

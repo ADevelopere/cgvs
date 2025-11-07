@@ -4,9 +4,7 @@ import React from "react";
 import logger from "@/client/lib/logger";
 import { FontFamily, getFontByFamily } from "@/lib/font/google";
 import type { Font as OpentypeFont } from "opentype.js";
-
-const cache = new Map<string, OpentypeFont>();
-const inflight = new Map<string, Promise<void>>();
+import { useCanvasFontStore } from "./canvas/stores/useCanvasFontStore";
 
 type OpentypeModule = typeof import("opentype.js");
 
@@ -24,57 +22,61 @@ async function fetchFontBuffer(url: string): Promise<ArrayBuffer> {
   return await res.arrayBuffer();
 }
 
-async function ensureFontInternal(family: string): Promise<void> {
-  if (cache.has(family)) return;
-  if (inflight.has(family)) return inflight.get(family)!;
-
-  const promise = (async () => {
-    try {
-      const fontItem = getFontByFamily(family as FontFamily);
-      if (!fontItem) {
-        logger.warn({ caller: "useOpentypeMetrics" }, "Unknown font family, skipping", { family });
-        return;
-      }
-      const fileUrl = fontItem.files.regular || Object.values(fontItem.files)[0];
-      if (!fileUrl) {
-        logger.warn({ caller: "useOpentypeMetrics" }, "No file URL for family", { family });
-        return;
-      }
-      const buffer = await fetchFontBuffer(fileUrl);
-      const opentype = await loadOpentype();
-      const font: OpentypeFont = opentype.parse(buffer);
-      cache.set(family, font);
-      logger.debug({ caller: "useOpentypeMetrics" }, "Parsed font", { family });
-    } catch (error) {
-      logger.error({ caller: "useOpentypeMetrics" }, "Failed ensuring font", { family, error });
-    } finally {
-      inflight.delete(family);
-    }
-  })();
-
-  inflight.set(family, promise);
-  return promise;
-}
-
 export function useOpentypeMetrics(families: string[]) {
   const [ready, setReady] = React.useState(false);
+  const { getFont, hasFont, setFont, getInflight, setInflight, removeInflight } = useCanvasFontStore();
 
   React.useEffect(() => {
     let cancelled = false;
+    
+    const ensureFontInternal = async (family: string): Promise<void> => {
+      if (hasFont(family)) return;
+      const existingInflight = getInflight(family);
+      if (existingInflight) return existingInflight;
+
+      const promise = (async () => {
+        try {
+          const fontItem = getFontByFamily(family as FontFamily);
+          if (!fontItem) {
+            logger.warn({ caller: "useOpentypeMetrics" }, "Unknown font family, skipping", { family });
+            return;
+          }
+          const fileUrl = fontItem.files.regular || Object.values(fontItem.files)[0];
+          if (!fileUrl) {
+            logger.warn({ caller: "useOpentypeMetrics" }, "No file URL for family", { family });
+            return;
+          }
+          const buffer = await fetchFontBuffer(fileUrl);
+          const opentype = await loadOpentype();
+          const font: OpentypeFont = opentype.parse(buffer);
+          setFont(family, font);
+          logger.debug({ caller: "useOpentypeMetrics" }, "Parsed font", { family });
+        } catch (error) {
+          logger.error({ caller: "useOpentypeMetrics" }, "Failed ensuring font", { family, error });
+        } finally {
+          removeInflight(family);
+        }
+      })();
+
+      setInflight(family, promise);
+      return promise;
+    };
+
     (async () => {
       setReady(false);
       const uniq = Array.from(new Set(families)).filter(Boolean);
+      
+      // Start all font fetches immediately in parallel (don't wait for WebFont)
+      // This is safe because we're just preloading the font files
       await Promise.all(uniq.map(f => ensureFontInternal(f)));
+      
       if (!cancelled) setReady(true);
     })();
+    
     return () => {
       cancelled = true;
     };
-  }, [families.join("|")]);
-
-  const getFont = React.useCallback((family: string): OpentypeFont | undefined => {
-    return cache.get(family);
-  }, []);
+  }, [families.join("|"), getFont, hasFont, setFont, getInflight, setInflight, removeInflight]);
 
   return { metricsReady: ready, getFont };
 }

@@ -16,6 +16,7 @@ import { TemplateConfig } from "@/client/graphql/generated/gql/graphql";
 /**
  * Main ClientCanvasGenerator component with caching
  * Complexity: 12 (queries + memo + caching + error handling)
+ * Optimized: Parallel resource loading (fonts, images, metrics)
  */
 export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, ClientCanvasGeneratorProps>(
   ({ templateId, onExport, onReady, showDebugBorders = true, renderScale = 1, timeoutMs, onTimeout }, ref) => {
@@ -34,14 +35,33 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
     const config = configData?.templateConfigByTemplateId;
     const elements = elementsData?.elementsByTemplateId;
 
+    // Extract font families immediately when elements arrive (parallel optimization)
+    const families = React.useMemo(() => {
+      return elements ? collectFontFamilies(elements) : [];
+    }, [elements]);
+
     const { getCache, setCache } = useCanvasCacheStore();
     const hashGenerationTimeRef = React.useRef<number>(0);
+    const [dataHash, setDataHash] = React.useState<string | null>(null);
 
-    const dataHash = React.useMemo(() => {
-      if (!config || !elements) return null;
-      const result = generateDataHash(elements, config, showDebugBorders, renderScale);
-      hashGenerationTimeRef.current = result.hashGenerationTime;
-      return result.hash;
+    // Generate hash asynchronously without blocking render
+    React.useEffect(() => {
+      if (!config || !elements) {
+        setDataHash(null);
+        return;
+      }
+
+      let cancelled = false;
+      generateDataHash(elements, config, showDebugBorders, renderScale).then((result) => {
+        if (!cancelled) {
+          hashGenerationTimeRef.current = result.hashGenerationTime;
+          setDataHash(result.hash);
+        }
+      });
+
+      return () => {
+        cancelled = true;
+      };
     }, [elements, config, showDebugBorders, renderScale]);
 
     const cachedCanvas = dataHash ? getCache(dataHash) : null;
@@ -61,8 +81,8 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
       return renderCachedImage(cachedCanvas, config);
     }
 
-    const families = collectFontFamilies(elements);
-
+    // FontProvider starts loading fonts immediately when families are available
+    // This runs in parallel with config query completion
     return (
       <FontProvider families={families}>
         <CanvasRendererWithRef

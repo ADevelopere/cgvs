@@ -124,10 +124,11 @@ function calculateContainDimensions(
 /**
  * Extract image URLs from image elements
  * Complexity: 4 (filter + map + filter)
+ * Skips hidden elements to avoid loading unnecessary images
  */
 export function extractImageUrls(elements: GQL.CertificateElementUnion[]): string[] {
   const imageElements = elements.filter(
-    (e): e is GQL.ImageElement => e.__typename === "ImageElement"
+    (e): e is GQL.ImageElement => e.__typename === "ImageElement" && !e.base.hidden
   );
   
   return imageElements

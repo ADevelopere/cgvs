@@ -13,6 +13,7 @@ import { CanvasRendererProps, ClientCanvasGeneratorRef } from "./types";
 /**
  * Main canvas rendering component
  * Complexity: 14 (state + effects + timeout handling + imperative handle)
+ * Optimized: Fonts, metrics, and images load in parallel
  */
 function CanvasRenderer(
   {
@@ -31,8 +32,11 @@ function CanvasRenderer(
 ) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const { fontsLoaded, families } = React.useContext(FontContext);
+  
+  // Start OpenType metrics and image loading in parallel (they're independent)
   const { metricsReady, getFont } = useOpentypeMetrics(families);
   const { imagesLoaded, imageCache } = useImageLoader(elements);
+  
   const didReady = React.useRef(false);
   const timeoutIdRef = React.useRef<NodeJS.Timeout | null>(null);
 

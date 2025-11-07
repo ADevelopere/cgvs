@@ -155,9 +155,6 @@ function initializeNodesFromData(
   elements: GQL.CertificateElementUnion[],
   containerConfig: { width: number; height: number }
 ): Node[] {
-  logger.debug({ caller: "NodesProvider" }, "Initializing nodes", {
-    elementCount: elements.length,
-  });
 
   const containerNode = createContainerNode(containerConfig);
 
@@ -222,10 +219,6 @@ export const NodesProvider: React.FC<{
         setLoading(true);
         setError(null);
 
-        logger.debug({ caller: "NodesProvider" }, "Fetching data for template", {
-          templateId,
-        });
-
         // Fetch both queries
         const [elementsResult, configResult] = await Promise.all([
           fetchElements({ variables: { templateId } }),
@@ -259,8 +252,6 @@ export const NodesProvider: React.FC<{
           height: config.height,
         });
 
-        logger.info({ caller: "NodesProvider" }, "Nodes initialized", JSON.stringify(initializedNodes));
-
         const hiddenNodesMap = initializedNodes
           .filter(node => node.hidden)
           .reduce((map, node) => {
@@ -268,11 +259,9 @@ export const NodesProvider: React.FC<{
             map.set(node.id, { ...node, hidden: true });
             return map;
           }, new Map<string, Node>());
-        logger.info({ caller: "NodesProvider" }, "Hidden nodes", JSON.stringify(hiddenNodesMap));
         setHiddenNodes(hiddenNodesMap);
 
         const visibleNodes = initializedNodes.filter(node => !node.hidden);
-        logger.info({ caller: "NodesProvider" }, "Visible nodes", JSON.stringify(visibleNodes));
         setNodesState(visibleNodes);
         setLoading(false);
       } catch (err) {
@@ -491,10 +480,6 @@ export const NodesProvider: React.FC<{
       setHiddenNodes(hidden => {
         const newHidden = new Map(hidden);
         newHidden.set(nodeId, hiddenNode);
-        logger.debug({ caller: "NodesProvider" }, "Node hidden", { 
-          elementId, 
-          hiddenMapSize: newHidden.size 
-        });
         return newHidden;
       });
 
@@ -521,20 +506,12 @@ export const NodesProvider: React.FC<{
       // Add back to visible nodes with hidden property set to false
       const visibleNode = { ...nodeToShow, hidden: false };
       setNodesState(nodes => {
-        logger.debug({ caller: "NodesProvider" }, "Node shown", { 
-          elementId, 
-          newVisibleCount: nodes.length + 1 
-        });
         return [...nodes, visibleNode];
       });
 
       // Remove from hidden nodes
       const newHidden = new Map(prev);
       newHidden.delete(nodeId);
-      logger.debug({ caller: "NodesProvider" }, "Removed from hidden map", { 
-        elementId, 
-        newHiddenMapSize: newHidden.size 
-      });
       return newHidden;
     });
   }, []);
@@ -547,12 +524,6 @@ export const NodesProvider: React.FC<{
       // Check in current state using functional updates
       setHiddenNodes(prevHidden => {
         const isHidden = prevHidden.has(nodeId);
-        
-        logger.debug({ caller: "NodesProvider" }, "Toggle visibility", { 
-          elementId, 
-          isHidden,
-          hiddenMapSize: prevHidden.size 
-        });
 
         if (isHidden) {
           // Show the node

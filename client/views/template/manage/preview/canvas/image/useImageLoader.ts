@@ -2,63 +2,74 @@ import React from "react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import logger from "@/client/lib/logger";
 import { extractImageUrls, loadImage } from "./imageUtils";
+import { useCanvasImageStore } from "../stores/useCanvasImageStore";
 
 /**
  * Custom hook for loading and caching images
  * Complexity: 12 (effect + promise handling + error handling)
+ * Only loads images for visible (non-hidden) elements
+ * Uses Zustand store for persistence across tab switches
  */
 export function useImageLoader(elements: GQL.CertificateElementUnion[]) {
   const [imagesLoaded, setImagesLoaded] = React.useState(false);
-  const imageCache = React.useRef<Map<string, HTMLImageElement>>(new Map());
+  const { getImage, hasImage, setImage, getInflight, setInflight, removeInflight } = useCanvasImageStore();
+
+  // Memoize visible image URLs to detect changes in hidden state
+  const imageUrls = React.useMemo(() => extractImageUrls(elements), [elements]);
+  const imageUrlsKey = imageUrls.join('|');
 
   React.useEffect(() => {
-    const imageUrls = extractImageUrls(elements);
-
     if (imageUrls.length === 0) {
       setImagesLoaded(true);
       return;
     }
 
-    loadAllImages(imageUrls)
-      .then(images => {
-        cacheImages(imageUrls, images, imageCache.current);
+    setImagesLoaded(false);
+
+    const loadImageWithCache = async (url: string): Promise<void> => {
+      if (hasImage(url)) return;
+      const existingInflight = getInflight(url);
+      if (existingInflight) {
+        await existingInflight;
+        return;
+      }
+
+      const promise = loadImage(url)
+        .then(img => {
+          setImage(url, img);
+          return img;
+        })
+        .catch(error => {
+          logger.error({ caller: "useImageLoader" }, "Failed to load image", { url, error });
+          throw error;
+        })
+        .finally(() => {
+          removeInflight(url);
+        });
+
+      setInflight(url, promise);
+      await promise;
+    };
+
+    Promise.all(imageUrls.map(url => loadImageWithCache(url)))
+      .then(() => {
         setImagesLoaded(true);
       })
       .catch(error => {
-        handleLoadError(error);
+        logger.error({ caller: "useImageLoader" }, "Failed to load images", { error });
         setImagesLoaded(true);
       });
-  }, [elements]);
+  }, [imageUrlsKey, getImage, hasImage, setImage, getInflight, setInflight, removeInflight]);
+
+  // Create imageCache ref that returns current store state
+  const imageCache = React.useMemo(() => {
+    const cache = new Map<string, HTMLImageElement>();
+    imageUrls.forEach(url => {
+      const img = getImage(url);
+      if (img) cache.set(url, img);
+    });
+    return { current: cache };
+  }, [imageUrls, getImage, imagesLoaded]);
 
   return { imagesLoaded, imageCache };
-}
-
-/**
- * Load all images from URLs
- * Complexity: 2 (Promise.all + map)
- */
-function loadAllImages(urls: string[]): Promise<HTMLImageElement[]> {
-  return Promise.all(urls.map(url => loadImage(url)));
-}
-
-/**
- * Cache loaded images by URL
- * Complexity: 2 (forEach + map set)
- */
-function cacheImages(
-  urls: string[],
-  images: HTMLImageElement[],
-  cache: Map<string, HTMLImageElement>
-): void {
-  urls.forEach((url, idx) => {
-    cache.set(url, images[idx]);
-  });
-}
-
-/**
- * Handle image loading errors
- * Complexity: 2 (error logging)
- */
-function handleLoadError(error: unknown): void {
-  logger.error({ caller: "useImageLoader" }, "Failed to load images", { error });
 }
