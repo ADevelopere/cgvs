@@ -4,11 +4,11 @@ import React from "react";
 import { useQuery } from "@apollo/client/react";
 import logger from "@/client/lib/logger";
 import { FontProvider } from "./FontContext";
-import { CanvasRendererWithRef } from "./canvas/CanvasRenderer";
-import { collectFontFamilies } from "./canvas/text/fontUtils";
-import { generateDataHash } from "./canvas/util/hashUtils";
+import { CanvasRendererWithRef } from "../../export/canvas/CanvasRenderer";
+import { collectFontFamilies } from "../../export/canvas/text/fontUtils";
+import { generateDataHash } from "../../export/canvas/util/hashUtils";
 import { useCanvasCacheStore } from "./canvasCacheStore";
-import { ClientCanvasGeneratorProps, ClientCanvasGeneratorRef } from "./canvas/types";
+import { ClientCanvasGeneratorProps, ClientCanvasGeneratorRef } from "../../export/canvas/types";
 import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "../editor/glqDocuments";
 import { ErrorLike } from "@apollo/client";
 import { TemplateConfig } from "@/client/graphql/generated/gql/graphql";
@@ -21,7 +21,7 @@ import { TemplateConfig } from "@/client/graphql/generated/gql/graphql";
 export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, ClientCanvasGeneratorProps>(
   ({ templateId, onExport, onReady, showDebugBorders = true, renderScale = 1, timeoutMs, onTimeout }, ref) => {
     const canvasRendererRef = React.useRef<ClientCanvasGeneratorRef>(null);
-    
+
     const { data: configData, error: configError } = useQuery(templateConfigByTemplateIdQueryDocument, {
       variables: { templateId },
       fetchPolicy: "cache-first",
@@ -55,13 +55,13 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
       }
 
       let cancelled = false;
-      logger.debug({ caller: "ClientCanvasGenerator" }, "Starting hash generation", { 
-        templateId, 
-        elementCount: elements.length, 
-        renderScale, 
-        showDebugBorders 
+      logger.debug({ caller: "ClientCanvasGenerator" }, "Starting hash generation", {
+        templateId,
+        elementCount: elements.length,
+        renderScale,
+        showDebugBorders
       });
-      
+
       generateDataHash(elements, config, showDebugBorders, renderScale).then((result) => {
         if (!cancelled) {
           hashGenerationTimeRef.current = result.hashGenerationTime;
@@ -77,9 +77,9 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
 
     const handleDrawComplete = React.useCallback(
       (dataUrl: string) => {
-        logger.debug({ caller: "ClientCanvasGenerator" }, "handleDrawComplete called", { 
-          dataHash, 
-          dataUrlLength: dataUrl.length 
+        logger.debug({ caller: "ClientCanvasGenerator" }, "handleDrawComplete called", {
+          dataHash,
+          dataUrlLength: dataUrl.length
         });
         if (dataHash) {
           setCache(dataHash, dataUrl);
@@ -100,10 +100,10 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
           return null;
         }
         const cached = state.cache.get(dataHash);
-        logger.debug({ caller: "ClientCanvasGenerator" }, "Cache lookup", { 
-          hash: dataHash, 
+        logger.debug({ caller: "ClientCanvasGenerator" }, "Cache lookup", {
+          hash: dataHash,
           found: !!cached,
-          cacheSize: state.cache.size 
+          cacheSize: state.cache.size
         });
         return cached ?? null;
       }, [dataHash])
@@ -151,11 +151,11 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
       return renderCachedImage(finalCache, config);
     }
 
-    logger.debug({ caller: "ClientCanvasGenerator" }, "Rendering CanvasRenderer (no cache)", { 
-      templateId, 
-      dataHash, 
-      renderScale, 
-      showDebugBorders 
+    logger.debug({ caller: "ClientCanvasGenerator" }, "Rendering CanvasRenderer (no cache)", {
+      templateId,
+      dataHash,
+      renderScale,
+      showDebugBorders
     });
 
     // FontProvider starts loading fonts immediately when families are available

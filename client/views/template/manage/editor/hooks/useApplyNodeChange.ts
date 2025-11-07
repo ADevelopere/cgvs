@@ -8,9 +8,9 @@ import {
 } from "@xyflow/react";
 import { useFlowUpdater } from "./useNodeUpdater";
 import { useEditorStore } from "./useEditorStore";
-import { getHelperLines } from "./other/utils";
-import { useCertificateElementStates } from "./CertificateElementContext";
-import { useNode } from "./NodesStateProvider";
+import { getHelperLines } from "../other/utils";
+import { useCertificateElementStates } from "../CertificateElementContext";
+import { useNode } from "../NodesStateProvider";
 import {logger} from "@/client/lib/console"
 
 type HelperLinesResult = {
@@ -236,7 +236,6 @@ export const useApplyNodeChange = () => {
    */
   const handleDimensionChange = useCallback(
     (change: NodeDimensionChange, nodes: Node[]): NodeDimensionChange => {
-      logger.log("Dimension change:", change);
       try {
         const elementId = Number.parseInt(change.id, 10);
         if (Number.isNaN(elementId)) {

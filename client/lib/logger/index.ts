@@ -23,7 +23,7 @@ class ClientLogger {
       enabled,
       apiEndpoint: "/api/logs",
       sessionId: this.sessionId,
-      batchInterval: 300, // 300ms
+      batchInterval: 2000, // 2s
     };
   }
 

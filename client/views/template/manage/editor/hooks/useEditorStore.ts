@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { MiscellaneousPanelTab } from "./miscellaneousPanel/types";
+import { MiscellaneousPanelTab } from "../miscellaneousPanel/types";
 
 type BaseElementChange = {
   elementId: number;

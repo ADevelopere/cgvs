@@ -9,7 +9,7 @@ import DownloadImage from "./download/DownloadImage";
 import HelperLines from "./other/HelperLines";
 import { nodeTypes } from "./other/constants";
 import { useAppTheme } from "@/client/contexts";
-import { useApplyNodeChange } from "./useApplyNodeChange";
+import { useApplyNodeChange } from "./hooks/useApplyNodeChange";
 import { useNode } from "./NodesStateProvider";
 import DownloadPdf from "./download/DownloadPdf";
 import DownloadPdfExperimental from "./download/DownloadPdfExperimental";

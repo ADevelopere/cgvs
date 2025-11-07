@@ -7,7 +7,7 @@ import logger from "@/client/lib/logger";
 import { FontProvider, FontContext } from "./FontContext";
 import { useOpentypeMetrics } from "./useOpentypeMetrics";
 import { layoutResizeDown, layoutTruncate, layoutWrap, drawLayout } from "./textLayout";
-import { resolveTextContent } from "../editor/download/imageRenderer/textResolvers";
+import { resolveTextContent } from "../../export/demo/textResolvers";
 import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "../editor/glqDocuments";
 import { Box, CircularProgress } from "@mui/material";
 import { useCanvasCacheStore } from "./canvasCacheStore";

@@ -8,7 +8,7 @@ import { CircularProgress } from "@mui/material";
 import { useQuery } from "@apollo/client/react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { elementsByTemplateIdQueryDocument, templateConfigByTemplateIdQueryDocument } from "../glqDocuments";
-import { resolveTextContent } from "./imageRenderer/textResolvers";
+import { resolveTextContent } from "../../../export/demo/textResolvers";
 import { FontFamily, getFontByFamily } from "@/lib/font/google";
 import { ElementAlignment } from "@/client/graphql/generated/gql/graphql";
 

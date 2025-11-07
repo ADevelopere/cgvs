@@ -4,7 +4,7 @@ import React from "react";
 import logger from "@/client/lib/logger";
 import { FontFamily, getFontByFamily } from "@/lib/font/google";
 import type { Font as OpentypeFont } from "opentype.js";
-import { useCanvasFontStore } from "./canvas/stores/useCanvasFontStore";
+import { useCanvasFontStore } from "../../export/canvas/stores/useCanvasFontStore";
 
 type OpentypeModule = typeof import("opentype.js");
 

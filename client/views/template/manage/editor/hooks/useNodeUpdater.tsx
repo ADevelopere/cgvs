@@ -1,6 +1,6 @@
 import React from "react";
 import { useEditorStore } from "./useEditorStore";
-import { useCertificateElementStates } from "./CertificateElementContext";
+import { useCertificateElementStates } from "../CertificateElementContext";
 
 /**
  * Return type for useNodeData hook

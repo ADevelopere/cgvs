@@ -29,10 +29,6 @@ export const ElementsTab: React.FC<ElementsTabProps> = ({ elements }) => {
   const { reorderNodes, toggleNodeVisibility } = useNode();
   const notifications = useNotifications();
 
-  useEffect(() => {
-    logger.info({ caller: "ElementsTab" }, "Rendering ElementsTab with elements:", elements);
-  }, [elements]);
-
   // Sort elements by zIndex and sync with local state
   useEffect(() => {
     const sortedElements = [...elements].sort((a, b) => a.base.zIndex - b.base.zIndex);

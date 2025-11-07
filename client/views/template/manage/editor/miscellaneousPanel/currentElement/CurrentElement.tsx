@@ -3,7 +3,7 @@ import { Stack, Typography } from "@mui/material";
 import { CertificateElementIcon } from "../elements/ElementIcon";
 import { CurrentTextElement } from "./CurrentTextElement";
 import { CurrentImageElement } from "./CurrenImageElement";
-import { useEditorStore } from "../../useEditorStore";
+import { useEditorStore } from "../../hooks/useEditorStore";
 import React from "react";
 
 export type CertificateElementCurrentItemSettingsProps = {

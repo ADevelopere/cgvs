@@ -1,7 +1,7 @@
 import React from "react";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { PureTextElement } from "./PureTextElement";
-import { resolveTextContent } from "./textResolvers";
+import { resolveTextContent } from "../../../../export/demo/textResolvers";
 import { FontFamily } from "@/lib/font/google";
 import { embedGoogleFonts } from "@/lib/font/fontUtils";
 

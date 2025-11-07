@@ -4,9 +4,9 @@ import React from "react";
 import { Box, LinearProgress } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import { TabContext } from "@mui/lab";
-import { TabList as MuiTabList } from "@mui/lab";
 import { Tab } from "@mui/material";
 import { TemplateManagementTabType } from "./useTemplateManagementStore";
+import { WheelTabList } from "@/client/components";
 
 interface ManagementTabListProps {
   onChange: (event: React.SyntheticEvent, newValue: TemplateManagementTabType) => void;
@@ -31,7 +31,7 @@ export const ManagementTabList: React.FC<ManagementTabListProps> = ({ onChange, 
         }}
       >
         <TabContext value={activeTab}>
-          <MuiTabList
+          <WheelTabList
             onChange={onChange}
             aria-label="template management tabs"
             variant="scrollable"
@@ -82,7 +82,7 @@ export const ManagementTabList: React.FC<ManagementTabListProps> = ({ onChange, 
             <Tab label={strings.tabDataManagement} value="data" />
             <Tab label={strings.tabEditor} value="editor" />
             <Tab label={strings.tabPreview} value="preview" />
-          </MuiTabList>
+          </WheelTabList>
         </TabContext>
       </Box>
 
