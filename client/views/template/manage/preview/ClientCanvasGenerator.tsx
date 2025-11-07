@@ -15,6 +15,7 @@ export interface ClientCanvasGeneratorProps {
   onExport?: (dataUrl: string) => void;
   onReady?: () => void;
   showDebugBorders?: boolean;
+  renderScale?: number; // Multiplier for high-quality rendering (e.g., 2 = 2x resolution)
 }
 
 export type ClientCanvasGeneratorRef = {
@@ -136,12 +137,14 @@ function CanvasInner(
     onExport,
     onReady,
     showDebugBorders = true,
+    renderScale = 1,
   }: {
     elements: GQL.CertificateElementUnion[];
     config: GQL.TemplateConfig;
     onExport?: (d: string) => void;
     onReady?: () => void;
     showDebugBorders?: boolean;
+    renderScale?: number;
   },
   ref: React.Ref<ClientCanvasGeneratorRef>
 ) {
@@ -185,7 +188,13 @@ function CanvasInner(
     if (!ctx) return;
 
     const { width, height } = config;
-    ctx.clearRect(0, 0, width, height);
+    const renderWidth = width * renderScale;
+    const renderHeight = height * renderScale;
+    
+    // Clear and scale context for high-resolution rendering
+    ctx.clearRect(0, 0, renderWidth, renderHeight);
+    ctx.save();
+    ctx.scale(renderScale, renderScale);
 
     // Sort all elements by zIndex for proper layering
     const sortedElements = elements.slice().sort((a, b) => a.base.zIndex - b.base.zIndex);
@@ -250,11 +259,11 @@ function CanvasInner(
         el.textProps.overflow === GQL.ElementOverflow.Ellipse ||
         el.textProps.overflow === GQL.ElementOverflow.Truncate
       ) {
-        layout = layoutTruncate(ctx, text, el.base.width, fontSize);
+        layout = layoutTruncate(ctx, text, el.base.width, fontSize, el.textProps.overflow, font);
       } else if (el.textProps.overflow === GQL.ElementOverflow.ResizeDown) {
         layout = layoutResizeDown(ctx, text, el.base.width, el.base.height, font, fontSize, family);
       } else {
-        layout = layoutTruncate(ctx, text, el.base.width, fontSize);
+        layout = layoutTruncate(ctx, text, el.base.width, fontSize, GQL.ElementOverflow.Truncate, font);
       }
 
       drawLayout(
@@ -278,7 +287,9 @@ function CanvasInner(
         drawDebugBorder(ctx, el.base);
       }
     }
-  }, [elements, config, fontsLoaded, metricsReady, imagesLoaded, getFont, showDebugBorders]);
+    
+    ctx.restore();
+  }, [elements, config, fontsLoaded, metricsReady, imagesLoaded, getFont, showDebugBorders, renderScale]);
 
   React.useEffect(() => {
     if (!fontsLoaded || !metricsReady || !imagesLoaded) return;
@@ -292,7 +303,28 @@ function CanvasInner(
   const download = React.useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const dataUrl = canvas.toDataURL("image/png");
+    
+    let exportCanvas = canvas;
+    
+    // If rendered at higher resolution, downsample for optimal quality
+    if (renderScale > 1) {
+      const outputCanvas = document.createElement("canvas");
+      outputCanvas.width = config.width;
+      outputCanvas.height = config.height;
+      const outputCtx = outputCanvas.getContext("2d");
+      
+      if (outputCtx) {
+        // Enable high-quality image smoothing for downsampling
+        outputCtx.imageSmoothingEnabled = true;
+        outputCtx.imageSmoothingQuality = "high";
+        
+        // Draw scaled-down version
+        outputCtx.drawImage(canvas, 0, 0, config.width, config.height);
+        exportCanvas = outputCanvas;
+      }
+    }
+    
+    const dataUrl = exportCanvas.toDataURL("image/png");
     onExport?.(dataUrl);
     const link = document.createElement("a");
     link.href = dataUrl;
@@ -300,15 +332,18 @@ function CanvasInner(
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  }, [onExport]);
+  }, [onExport, renderScale, config.width, config.height]);
 
   React.useImperativeHandle(ref, () => ({ download }), [download]);
 
+  const renderWidth = config.width * renderScale;
+  const renderHeight = config.height * renderScale;
+  
   return (
     <canvas
       ref={canvasRef}
-      width={config.width}
-      height={config.height}
+      width={renderWidth}
+      height={renderHeight}
       style={{ width: `${config.width}px`, height: `${config.height}px`, border: "1px solid #ccc" }}
     />
   );
@@ -322,11 +357,12 @@ const CanvasInnerWithRef = React.forwardRef<
     onExport?: (d: string) => void;
     onReady?: () => void;
     showDebugBorders?: boolean;
+    renderScale?: number;
   }
 >(CanvasInner);
 
 export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, ClientCanvasGeneratorProps>(
-  ({ templateId, onExport, onReady, showDebugBorders = true }, ref) => {
+  ({ templateId, onExport, onReady, showDebugBorders = true, renderScale = 1 }, ref) => {
     const { data: configData, error: configError } = useQuery(templateConfigByTemplateIdQueryDocument, {
       variables: { templateId },
       fetchPolicy: "cache-first",
@@ -352,7 +388,15 @@ export const ClientCanvasGenerator = React.forwardRef<ClientCanvasGeneratorRef, 
 
     return (
       <FontProvider families={families}>
-        <CanvasInnerWithRef ref={ref} elements={elements} config={config} onExport={onExport} onReady={onReady} showDebugBorders={showDebugBorders} />
+        <CanvasInnerWithRef 
+          ref={ref} 
+          elements={elements} 
+          config={config} 
+          onExport={onExport} 
+          onReady={onReady} 
+          showDebugBorders={showDebugBorders}
+          renderScale={renderScale}
+        />
       </FontProvider>
     );
   }

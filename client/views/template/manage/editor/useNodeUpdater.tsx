@@ -6,7 +6,6 @@ import { useCertificateElementStates } from "./CertificateElementContext";
  * Return type for useNodeData hook
  */
 export interface UseFlowUpdaterReturn {
-  templateId: number | null;
   updateElementPosition: (elementId: number, x: number, y: number, isDragging?: boolean) => void;
   updateElementSize: (elementId: number, width: number, height: number, isResizing?: boolean) => void;
   undo: () => void;
@@ -20,7 +19,7 @@ export interface UseFlowUpdaterReturn {
  */
 export function useFlowUpdater(): UseFlowUpdaterReturn {
   // Get bases and config from certificate element context
-  const { bases, templateId } = useCertificateElementStates();
+  const { bases } = useCertificateElementStates();
 
   const addToHistory = useEditorStore(state => state.addToHistory);
   const undoFromStore = useEditorStore(state => state.undo);
@@ -131,7 +130,6 @@ export function useFlowUpdater(): UseFlowUpdaterReturn {
   }, [redoFromStore, bases.updateBaseElementStateFn]);
 
   return {
-    templateId,
     updateElementPosition,
     updateElementSize,
     undo,

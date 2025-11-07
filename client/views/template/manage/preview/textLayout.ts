@@ -37,13 +37,17 @@ export function layoutTruncate(
   ctx: CanvasRenderingContext2D,
   text: string,
   maxWidth: number,
-  fontSize: number
+  fontSize: number,
+  overflow: GQL.ElementOverflow,
+  font: OpentypeFont | undefined
 ): TextLayoutResult {
+  const { lineHeight } = getTrueFontMetrics(font, fontSize);
+  const useEllipsis = overflow === GQL.ElementOverflow.Ellipse;
   const ellipsis = "...";
-  const ellipsisWidth = ctx.measureText(ellipsis).width;
+  const ellipsisWidth = useEllipsis ? ctx.measureText(ellipsis).width : 0;
   const fullWidth = ctx.measureText(text).width;
   if (fullWidth <= maxWidth) {
-    return { lines: [text], totalHeight: 0, fontSize };
+    return { lines: [text], totalHeight: lineHeight, fontSize };
   }
   const target = Math.max(0, maxWidth - ellipsisWidth);
   let lo = 0;
@@ -54,8 +58,8 @@ export function layoutTruncate(
     if (w <= target) lo = mid;
     else hi = mid - 1;
   }
-  const truncated = text.substring(0, lo) + ellipsis;
-  return { lines: [truncated], totalHeight: 0, fontSize };
+  const truncated = text.substring(0, lo) + (useEllipsis ? ellipsis : "");
+  return { lines: [truncated], totalHeight: lineHeight, fontSize };
 }
 
 export function layoutResizeDown(

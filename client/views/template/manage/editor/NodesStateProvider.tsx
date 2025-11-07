@@ -23,8 +23,6 @@ export interface UseNodesStoreReturn {
   loading: boolean;
   // Error state
   error: Error | null;
-  // Template ID
-  templateId: number;
 
   // Set all nodes
   setNodes: (nodes: Node[]) => void;
@@ -535,7 +533,6 @@ export const NodesProvider: React.FC<{
       hiddenNodes,
       loading,
       error,
-      templateId,
       setNodes,
       clearNodes,
       addNode,
@@ -565,7 +562,6 @@ export const NodesProvider: React.FC<{
       hiddenNodes,
       loading,
       error,
-      templateId,
       setNodes,
       clearNodes,
       addTextNode,

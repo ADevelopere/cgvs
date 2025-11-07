@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactFlow, Controls, Background, OnNodesChange, ReactFlowProvider } from "@xyflow/react";
+import { ReactFlow, Controls, Background, OnNodesChange, ReactFlowProvider, Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import React, { useCallback } from "react";
 import "./other/EditorTab.module.css";
@@ -9,15 +9,24 @@ import DownloadImage from "./download/DownloadImage";
 import HelperLines from "./other/HelperLines";
 import { nodeTypes } from "./other/constants";
 import { useAppTheme } from "@/client/contexts";
-import { FlowEditorProps } from "./types";
 import { useApplyNodeChange } from "./useApplyNodeChange";
 import { useNode } from "./NodesStateProvider";
 import DownloadPdf from "./download/DownloadPdf";
 import DownloadPdfExperimental from "./download/DownloadPdfExperimental";
+import { useCertificateElementStates } from "./CertificateElementContext";
+import { TemplateConfig } from "@/client/graphql/generated/gql/graphql";
 
 const panOnDrag = [1, 2];
 
-const Flow: React.FC<FlowEditorProps> = ({ nodes, setNodes }) => {
+export type FlowEditorProps = {
+  templateId: number;
+  nodes: Node[];
+  setNodes: (nodes: Node[]) => void;
+  config: TemplateConfig
+};
+
+
+const Flow: React.FC<FlowEditorProps> = ({ templateId, nodes, setNodes, config }) => {
   const { theme } = useAppTheme();
   const { helperLineHorizontal, helperLineVertical } = useNode();
   const { applyNodeChanges } = useApplyNodeChange();
@@ -47,6 +56,7 @@ const Flow: React.FC<FlowEditorProps> = ({ nodes, setNodes }) => {
         nodes={nodes}
         panOnScroll
         panOnDrag={panOnDrag}
+        translateExtent={[[0, 0], [config.width, config.height]]}
         minZoom={-1000} // Minimum zoom level
         // maxZoom={2} // Maximum zoom level
         // translateExtent={[
@@ -96,7 +106,7 @@ const Flow: React.FC<FlowEditorProps> = ({ nodes, setNodes }) => {
             justifyContent: "space-between",
           }}
         >
-          <DownloadImage />
+          <DownloadImage templateId={templateId} />
           <DownloadPdf />
           <DownloadPdfExperimental />
         </Box>
@@ -119,6 +129,7 @@ function FlowDebug() {
 
 const CertificateReactFlowEditor: React.FC = () => {
   const { nodesInitialized, setNodes, nodes } = useNode();
+  const {templateId, config: {state: configState}} = useCertificateElementStates()
 
   if (!nodesInitialized) {
     return <CircularProgress />;
@@ -137,7 +148,7 @@ const CertificateReactFlowEditor: React.FC = () => {
           width: "-webkit-fill-available",
         }}
       >
-        <Flow nodes={nodes} setNodes={setNodes} />
+        <Flow templateId={templateId} nodes={nodes} setNodes={setNodes} config={configState} />
       </Box>
     </ReactFlowProvider>
   );

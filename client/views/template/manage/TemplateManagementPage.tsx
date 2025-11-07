@@ -18,7 +18,7 @@ import { TemplateManagementHeader } from "./components/TemplateManagementHeader"
 import { TemplateNotFoundError } from "./components/TemplateNotFoundError";
 import { TemplateContentSkeleton } from "./components/TemplateContentSkeleton";
 import { useAppTheme } from "@/client/contexts";
-import { ClientCanvasGenerator } from "./preview/ClientCanvasGenerator";
+import { Preview } from "./preview/Preview";
 
 // Lazy load heavy components that block on mount
 const RecipientsManagementTab = lazy(() => import("./recipient/RecipientsManagementTab "));
@@ -217,7 +217,7 @@ export const TemplateManagementPageContent: React.FC = () => {
                   borderColor: "red",
                 }}
               >
-                <ClientCanvasGenerator templateId={template.id} />
+                <Preview templateId={template.id} />
               </Box>
             </Slide>
           </Fade>

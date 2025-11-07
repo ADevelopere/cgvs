@@ -1,5 +1,4 @@
 import { ElementType } from "@/client/graphql/generated/gql/graphql";
-import { Node } from "@xyflow/react";
 
 export type ElementBaseNodeData = {
   positionX: number;
@@ -17,9 +16,4 @@ export type ElementNodeData = ElementBaseNodeData & {
 export type ContainerNodeData = {
   width: number;
   height: number;
-};
-
-export type FlowEditorProps = {
-  nodes: Node[];
-  setNodes: (nodes: Node[]) => void;
 };

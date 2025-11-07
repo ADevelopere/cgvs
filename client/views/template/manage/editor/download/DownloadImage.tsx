@@ -2,14 +2,17 @@ import { Panel } from "@xyflow/react";
 import { useTheme } from "@mui/material/styles";
 import logger from "@/client/lib/logger";
 import React from "react";
-import { useFlowUpdater } from "../useNodeUpdater";
 import { CircularProgress } from "@mui/material";
 import { ClientCanvasGenerator } from "@/client/views/template/manage/preview";
 import type { ClientCanvasGeneratorRef } from "@/client/views/template/manage/preview";
 
-export const DownloadImage: React.FC = () => {
+type DownloadImageProps = {
+  templateId: number;
+  showDebugBorders?: boolean;
+};
+
+export const DownloadImage: React.FC<DownloadImageProps> = ({ templateId, showDebugBorders = true }) => {
   const theme = useTheme();
-  const { templateId } = useFlowUpdater();
   const [isGenerating, setIsGenerating] = React.useState(false);
   const [showGenerator, setShowGenerator] = React.useState(false);
   const generatorRef = React.useRef<ClientCanvasGeneratorRef>(null);
@@ -68,6 +71,7 @@ export const DownloadImage: React.FC = () => {
           <ClientCanvasGenerator
             ref={generatorRef}
             templateId={templateId}
+            showDebugBorders={showDebugBorders}
             onReady={handleReady}
             onExport={(dataUrl: string) => {
               // Keep existing behavior: trigger a download immediately as a fallback
