@@ -7,6 +7,6 @@ class ServerLogger extends BaseLogger {
 }
 
 // Create singleton instance
-const logger = new ServerLogger();
+export const logger = new ServerLogger();
 
 export default logger;

@@ -63,6 +63,11 @@ declare global {
       RAILWAY_ENVIRONMENT?: string;
 
       GOOGLE_FONTS_API_KEY?: string;
+
+      /**
+       * Blob Read/Write Token for secure access to vercel blob storage
+       */
+      BLOB_READ_WRITE_TOKEN?: string;
     }
   }
 }

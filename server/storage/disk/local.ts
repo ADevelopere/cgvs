@@ -1344,18 +1344,18 @@ class LocalAdapter implements StorageService {
       input.force
         ? Promise.resolve([])
         : Promise.all(
-            input.paths.map(filePath =>
-              StorageDbRepository.checkFileUsage({
+          input.paths.map(filePath =>
+            StorageDbRepository.checkFileUsage({
+              path: filePath,
+            })
+              .then(result => ({ path: filePath, ...result }))
+              .catch(() => ({
                 path: filePath,
-              })
-                .then(result => ({ path: filePath, ...result }))
-                .catch(() => ({
-                  path: filePath,
-                  isInUse: false,
-                  deleteBlockReason: null,
-                }))
-            )
-          ),
+                isInUse: false,
+                deleteBlockReason: null,
+              }))
+          )
+        ),
     ]);
 
     // Create lookup maps for O(1) access
@@ -1519,9 +1519,9 @@ export async function createLocalAdapter(): Promise<StorageService> {
 
     throw new Error(
       "FATAL: The 'local' storage provider is enabled in a serverless environment. " +
-        "This is not supported and will lead to data loss. " +
-        "Use a compatible cloud provider (e.g., 'gcp', 's3') in your environment configuration. " +
-        `Detected environment: ${detectedEnvs.join(", ")}`
+      "This is not supported and will lead to data loss. " +
+      "Use a compatible cloud provider (e.g., 'gcp', 's3') in your environment configuration. " +
+      `Detected environment: ${detectedEnvs.join(", ")}`
     );
   }
 
