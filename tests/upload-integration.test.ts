@@ -15,7 +15,7 @@ import { spawn, ChildProcess } from "child_process";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { HttpLink } from "@apollo/client/link/http";
 import { generateFileMD5Browser } from "./browser-md5";
-import { generateUploadSignedUrlMutationDocument } from "@/client/views/storage/core/storage.documents";
+import { prepareUploadMutationDocument } from "@/client/views/storage/core/storage.documents";
 import { testLogger } from "@/lib/testlogger";
 
 // Global variables for dev server
@@ -213,7 +213,7 @@ describe("Upload Integration Test", () => {
     testLogger.info("Sending GraphQL request to generate signed URL...");
 
     const result = await client.mutate({
-      mutation: generateUploadSignedUrlMutationDocument,
+      mutation: prepareUploadMutationDocument,
       variables: {
         input: {
           path: fullPath,
@@ -229,7 +229,7 @@ describe("Upload Integration Test", () => {
       throw new Error(`GraphQL errors: ${JSON.stringify(result.error)}`);
     }
 
-    const signedUrl = result.data?.generateUploadSignedUrl;
+    const signedUrl = result.data?.prepareUpload?.url;
     if (!signedUrl) {
       throw new Error("No signed URL returned from GraphQL mutation");
     }
@@ -334,7 +334,7 @@ describe("Upload Integration Test", () => {
 
     // Send GraphQL request with invalid MD5
     const result = await client.mutate({
-      mutation: generateUploadSignedUrlMutationDocument,
+      mutation: prepareUploadMutationDocument,
       variables: {
         input: {
           path: fullPath,
@@ -353,7 +353,7 @@ describe("Upload Integration Test", () => {
       return;
     }
 
-    const signedUrl = result.data?.generateUploadSignedUrl;
+    const signedUrl = result.data?.prepareUpload?.url;
     if (!signedUrl) {
       testLogger.info("No signed URL returned (expected with invalid MD5)");
       return;

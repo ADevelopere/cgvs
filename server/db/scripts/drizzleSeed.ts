@@ -164,7 +164,7 @@ async function initializeFileSystem() {
     await fileInitService.initializeFileSystem();
 
     // Get demo file IDs
-    const fileIds = await fileInitService.getDemoFileIds();
+    const fileIds = await fileInitService.getTemplateCoverDemoFileIds();
 
     logger.log(`   ✅ File system initialized with ${fileIds.length} demo files.`);
     return { fileInitService, fileIds };

@@ -174,7 +174,7 @@ export interface FilesListSearchInput {
   sortDirection?: OrderSortDirection | null;
 }
 
-export interface UploadSignedUrlGenerateInput {
+export interface UploadPreparationInput {
   path: string;
   contentType: string;
   fileSize: number;
@@ -230,3 +230,38 @@ export type BlobMetadata = {
   mediaLink?: string;
   md5Hash?: string;
 };
+
+/**
+ * Upload type discriminator
+ * - SIGNED_URL: Traditional flow (GCP, Local) - client uploads to signed URL
+ * - VERCEL_BLOB_CLIENT: Vercel Blob flow - client uploads directly using Vercel SDK
+ */
+export enum UploadType {
+  SIGNED_URL = "SIGNED_URL",
+  VERCEL_BLOB_CLIENT = "VERCEL_BLOB_CLIENT",
+}
+
+/**
+ * Upload preparation result
+ * Contains instructions for how the client should perform the upload
+ */
+export interface UploadPreparationResult {
+  /**
+   * Unique identifier for this upload session
+   * - For SIGNED_URL: token ID stored in signed_urls table
+   * - For VERCEL_BLOB_CLIENT: upload session ID for tracking
+   */
+  id: string;
+
+  /**
+   * URL or endpoint for upload
+   * - For SIGNED_URL: the signed URL to PUT the file to
+   * - For VERCEL_BLOB_CLIENT: API endpoint for the Vercel SDK to call
+   */
+  url: string;
+
+  /**
+   * Upload flow type
+   */
+  uploadType: UploadType;
+}

@@ -227,10 +227,7 @@ const LoginForm: React.FC = () => {
           disabled={isLoading || !email || !password}
         >
           {isLoading ? (
-            <MUI.Box sx={{ display: "flex", alignItems: "center" }}>
-              <MUI.CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
-              {strings.checking}
-            </MUI.Box>
+            <MUI.CircularProgress size={24} color="inherit" />
           ) : (
             strings.signin
           )}

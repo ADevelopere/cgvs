@@ -10,24 +10,28 @@ import logger from "@/client/lib/logger";
 import { UploadFileState } from "../core/storage-upload.types";
 import { useMutation, useApolloClient } from "@apollo/client/react";
 import { useMutationWrapper } from "@/client/graphql/utils";
-import { generateUploadSignedUrlMutationDocument } from "../core/storage.documents";
+import { prepareUploadMutationDocument } from "../core/storage.documents";
 import { useStorageDataStore } from "../stores/useStorageDataStore";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import {
   evictListFilesCache as evictListFilesCacheUtil,
   evictDirectoryChildrenCache as evictDirectoryChildrenCacheUtil,
 } from "../core/storage.cache";
+import { upload as vercelUpload } from "@vercel/blob/client";
+import { useAuthToken } from "@/client/contexts/AppApolloProvider";
+import { VercelUploadUrlClientPlayload } from "@/app/api/storage/vercel-upload/route";
 
 export const useStorageUploadOperations = () => {
   const { uploadBatch, setUploadBatch, updateFileState, updateBatchProgress, clearUploadBatch } =
     useStorageUploadStore();
-  const generateUploadSignedUrl = useMutationWrapper(useMutation(generateUploadSignedUrlMutationDocument));
+  const prepareUpload = useMutationWrapper(useMutation(prepareUploadMutationDocument));
   const apolloClient = useApolloClient();
   const { params } = useStorageDataStore();
   const notifications = useNotifications();
   const {
     storageTranslations: { uploading: translations },
   } = useAppTranslation();
+  const { authToken } = useAuthToken();
   const uploadXhrsRef = useRef<Map<string, XMLHttpRequest>>(new Map());
   const uploadStartTimeRef = useRef<number | null>(null);
   const paramsRef = useRef<Graphql.FilesListInput>(params);
@@ -37,10 +41,9 @@ export const useStorageUploadOperations = () => {
     paramsRef.current = params;
   }, [params]);
 
-  const uploadSingleFile = useCallback(
-    async (file: File, targetPath: string): Promise<void> => {
+  const uploadViaSignedUrl = useCallback(
+    async (file: File, signedUrl: string, contentType: string, contentMd5: string): Promise<void> => {
       const fileKey = getFileKey(file);
-      const contentType = inferContentType(file);
       let loadListener: ((ev: Event) => void) | null = null;
       let errorListener: ((ev: Event) => void) | null = null;
       let abortListener: ((ev: Event) => void) | null = null;
@@ -48,38 +51,6 @@ export const useStorageUploadOperations = () => {
       let xhr: XMLHttpRequest | undefined = undefined;
 
       try {
-        updateFileState(fileKey, {
-          status: "uploading",
-          progress: 0,
-        });
-
-        // Generate MD5 hash for the file
-        const contentMd5 = await generateFileMD5(file);
-
-        const signedUrlRes = await generateUploadSignedUrl({
-          input: {
-            path: getStoragePath(targetPath) + "/" + file.name,
-            contentType,
-            fileSize: file.size,
-            contentMd5,
-          },
-        });
-
-        const signedUrl = signedUrlRes.data?.generateUploadSignedUrl;
-        logger.info({ caller: "useStorageUploadOperations" }, "Generated signed URL for upload", {
-          fileKey,
-          fileName: file.name,
-          signedUrl: signedUrl,
-        });
-        if (!signedUrl) {
-          logger.error({ caller: "useStorageUploadOperations" }, "Failed to get signed URL from response", {
-            fileKey,
-            fileName: file.name,
-            response: signedUrlRes.data,
-          });
-          throw new Error(translations.failedGenerateSignedUrl);
-        }
-
         updateFileState(fileKey, { signedUrl });
 
         xhr = new XMLHttpRequest();
@@ -95,8 +66,6 @@ export const useStorageUploadOperations = () => {
         currentXhr.upload.onprogress = event => {
           if (event.lengthComputable) {
             const progress = Math.round((event.loaded / event.total) * 100);
-
-            // Calculate bytes uploaded for this file
             const bytesUploaded = (progress / 100) * file.size;
             updateBatchProgress(fileKey, progress, bytesUploaded);
           }
@@ -118,14 +87,10 @@ export const useStorageUploadOperations = () => {
           });
         };
 
-        // contentType is already a MIME type string
         currentXhr.open("PUT", signedUrl);
         currentXhr.setRequestHeader("Content-Type", contentType);
         currentXhr.setRequestHeader("Content-MD5", contentMd5);
-
-        // Set timeout for the request (5 minutes)
         currentXhr.timeout = 5 * 60 * 1000;
-
         currentXhr.send(file);
 
         await new Promise<void>((resolve, reject) => {
@@ -136,12 +101,6 @@ export const useStorageUploadOperations = () => {
                 fileName: file.name,
                 readyState: currentXhr?.readyState,
                 status: currentXhr?.status,
-                statusText: currentXhr?.statusText,
-                responseText: currentXhr?.responseText,
-                responseHeaders: currentXhr?.getAllResponseHeaders(),
-                signedUrl: signedUrl.substring(0, 200) + "...",
-                contentMd5,
-                contentType: file.type,
               });
               handleError(translations.uploadCancelled);
               uploadXhrsRef.current.delete(fileKey);
@@ -152,83 +111,32 @@ export const useStorageUploadOperations = () => {
               handleSuccess();
               resolve();
             } else {
-              logger.error(
-                { caller: "useStorageUploadOperations" },
-                "🔍 [UPLOAD DEBUG] Upload failed with HTTP error",
-                {
-                  fileKey,
-                  fileName: file.name,
-                  status: currentXhr.status,
-                  statusText: currentXhr.statusText,
-                  responseText: currentXhr.responseText,
-                  responseHeaders: currentXhr.getAllResponseHeaders(),
-                  signedUrl: signedUrl.substring(0, 200) + "...",
-                  sentContentMd5: contentMd5,
-                  sentContentType: contentType,
-                  browserFileType: file.type,
-                  inferredContentType: contentType,
-                }
-              );
+              logger.error({ caller: "useStorageUploadOperations" }, "Upload failed with HTTP error", {
+                fileKey,
+                fileName: file.name,
+                status: currentXhr.status,
+              });
               const errorMsg = translations.uploadFailedWithStatus.replace("%{status}", String(currentXhr.status));
               handleError(errorMsg);
               uploadXhrsRef.current.delete(fileKey);
               reject(new Error(errorMsg));
             }
           };
-          errorListener = e => {
-            logger.error({ caller: "useStorageUploadOperations" }, "XMLHttpRequest error event", {
-              fileKey,
-              fileName: file.name,
-              readyState: currentXhr?.readyState,
-              status: currentXhr?.status,
-              statusText: currentXhr?.statusText,
-              responseText: currentXhr?.responseText,
-              responseHeaders: currentXhr?.getAllResponseHeaders(),
-              signedUrl: signedUrl.substring(0, 200) + "...",
-              contentMd5,
-              contentType: file.type,
-              errorType: e.type,
-              errorTarget: e.target,
-            });
-            logger.error({ caller: "useStorageUploadOperations" }, "XMLHttpRequest error event", {
-              error: e,
-            });
-
-            // Provide more specific error message based on status
-            let errorMessage = translations.uploadFailed;
-            if (currentXhr?.status === 0) {
-              errorMessage = "Network error or CORS issue - check browser console for details";
-              logger.error(
-                { caller: "useStorageUploadOperations" },
-                "Upload failed with status 0 - likely CORS or network issue",
-                {
-                  fileKey,
-                  fileName: file.name,
-                  signedUrl: signedUrl.substring(0, 200) + "...",
-                }
-              );
-            }
-
+          errorListener = () => {
+            const errorMessage =
+              currentXhr?.status === 0
+                ? "Network error or CORS issue - check browser console for details"
+                : translations.uploadFailed;
             handleError(errorMessage);
             uploadXhrsRef.current.delete(fileKey);
             reject(new Error(errorMessage));
           };
           abortListener = () => {
-            logger.warn({ caller: "useStorageUploadOperations" }, "XMLHttpRequest abort event", {
-              fileKey,
-              fileName: file.name,
-            });
             handleError(translations.uploadCancelled);
             uploadXhrsRef.current.delete(fileKey);
             reject(new Error(translations.uploadCancelled));
           };
-
           timeoutListener = () => {
-            logger.error({ caller: "useStorageUploadOperations" }, "XMLHttpRequest timeout event", {
-              fileKey,
-              fileName: file.name,
-              timeout: currentXhr?.timeout,
-            });
             handleError("Upload timeout - please try again");
             uploadXhrsRef.current.delete(fileKey);
             reject(new Error("Upload timeout - please try again"));
@@ -238,17 +146,6 @@ export const useStorageUploadOperations = () => {
           currentXhr.addEventListener("error", errorListener);
           currentXhr.addEventListener("abort", abortListener);
           currentXhr.addEventListener("timeout", timeoutListener);
-        });
-      } catch (error) {
-        logger.error({ caller: "useStorageUploadOperations" }, "Upload failed with exception", {
-          fileKey,
-          fileName: file.name,
-          error,
-        });
-        updateFileState(fileKey, {
-          status: "error",
-          error: error instanceof Error ? error.message : translations.uploadFailed,
-          xhr: undefined,
         });
       } finally {
         try {
@@ -262,7 +159,136 @@ export const useStorageUploadOperations = () => {
         uploadXhrsRef.current.delete(fileKey);
       }
     },
-    [generateUploadSignedUrl, updateFileState, updateBatchProgress, translations]
+    [updateFileState, updateBatchProgress, translations]
+  );
+
+  const uploadViaVercelSDK = useCallback(
+    async (file: File, apiEndpoint: string, sessionId: string, pathname: string): Promise<void> => {
+      const fileKey = getFileKey(file);
+
+      try {
+        updateFileState(fileKey, {
+          status: "uploading",
+          progress: 0,
+        });
+
+        logger.info({ caller: "useStorageUploadOperations" }, "Starting Vercel upload", {
+          fileKey,
+          fileName: file.name,
+          apiEndpoint,
+          pathname: pathname,
+        });
+
+        const clientPlayload: VercelUploadUrlClientPlayload = {
+          sessionId,
+          fileSize: file.size,
+          contentType: inferContentType(file),
+        }
+
+        const blob = await vercelUpload(pathname, file, {
+          access: "public",
+          handleUploadUrl: apiEndpoint,
+          clientPayload: JSON.stringify(clientPlayload),
+          headers: {
+            authorization: `Bearer ${authToken}`,
+          },
+          onUploadProgress: progressEvent => {
+            if (progressEvent.total) {
+              const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+              const bytesUploaded = (progress / 100) * file.size;
+              updateBatchProgress(fileKey, progress, bytesUploaded);
+            }
+          },
+        });
+
+        logger.info({ caller: "useStorageUploadOperations" }, "Vercel upload completed", {
+          fileKey,
+          fileName: file.name,
+          blobUrl: blob.url,
+        });
+
+        updateFileState(fileKey, {
+          status: "success",
+          progress: 100,
+        });
+      } catch (error) {
+        logger.error({ caller: "useStorageUploadOperations" }, "Vercel upload failed", {
+          fileKey,
+          fileName: file.name,
+          error: error instanceof Error ? error.message : String(error),
+        });
+
+        updateFileState(fileKey, {
+          status: "error",
+          error: error instanceof Error ? error.message : translations.uploadFailed,
+        });
+
+        throw error;
+      }
+    },
+    [updateFileState, updateBatchProgress, translations]
+  );
+
+  const uploadSingleFile = useCallback(
+    async (file: File, targetPath: string): Promise<void> => {
+      const fileKey = getFileKey(file);
+      const contentType = inferContentType(file);
+
+      const pathName = getStoragePath(targetPath) + file.name
+
+      try {
+        updateFileState(fileKey, {
+          status: "uploading",
+          progress: 0,
+        });
+
+        const contentMd5 = await generateFileMD5(file);
+
+        const prepRes = await prepareUpload({
+          input: {
+            path: pathName,
+            contentType,
+            fileSize: file.size,
+            contentMd5,
+          },
+        });
+
+        const prep = prepRes.data?.prepareUpload;
+        if (!prep) {
+          throw new Error(translations.failedGenerateSignedUrl);
+        }
+
+        logger.info({ caller: "useStorageUploadOperations" }, "Upload prepared", {
+          fileKey,
+          fileName: file.name,
+          uploadType: prep.uploadType,
+          sessionId: prep.id,
+        });
+
+        if (prep.uploadType === "SIGNED_URL") {
+          await uploadViaSignedUrl(file, prep.url, contentType, contentMd5);
+        } else if (prep.uploadType === "VERCEL_BLOB_CLIENT") {
+          await uploadViaVercelSDK(file, prep.url, prep.id, pathName);
+        } else {
+          throw new Error(`Unknown upload type: ${prep.uploadType}`);
+        }
+      } catch (error) {
+        logger.error({ caller: "useStorageUploadOperations" }, "Upload failed", {
+          fileKey,
+          fileName: file.name,
+          error,
+        });
+
+        updateFileState(fileKey, {
+          status: "error",
+          error: error instanceof Error ? error.message : translations.uploadFailed,
+          xhr: undefined,
+        });
+
+        throw error;
+      }
+    },
+    [prepareUpload, uploadViaSignedUrl, uploadViaVercelSDK, updateFileState, translations]
   );
 
   const startUpload = useCallback(

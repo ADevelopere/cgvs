@@ -323,12 +323,16 @@ export const deleteStorageItemsMutationDocument: TypedDocumentNode<
   }
 `;
 
-export const generateUploadSignedUrlMutationDocument: TypedDocumentNode<
-  Graphql.GenerateUploadSignedUrlMutation,
-  Graphql.GenerateUploadSignedUrlMutationVariables
+export const prepareUploadMutationDocument: TypedDocumentNode<
+  Graphql.PrepareUploadMutation,
+  Graphql.PrepareUploadMutationVariables
 > = gql`
-  mutation generateUploadSignedUrl($input: UploadSignedUrlGenerateInput!) {
-    generateUploadSignedUrl(input: $input)
+  mutation prepareUpload($input: UploadPreparationInput!) {
+    prepareUpload(input: $input) {
+      id
+      url
+      uploadType
+    }
   }
 `;
 

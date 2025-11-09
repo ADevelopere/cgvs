@@ -14,9 +14,10 @@ export interface StorageService {
   fileExists(path: string): Promise<boolean>;
 
   /**
-   * Generate a signed URL for file upload
+   * Prepare upload by generating upload instructions
+   * Returns upload preparation result with URL and upload type
    */
-  generateUploadSignedUrl(input: Types.UploadSignedUrlGenerateInput): Promise<string>;
+  prepareUpload(input: Types.UploadPreparationInput): Promise<Types.UploadPreparationResult>;
 
   /**
    * Upload a file to cloud storage

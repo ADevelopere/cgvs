@@ -942,13 +942,13 @@ type Mutation {
   deleteTemplateCategory(id: Int!): TemplateCategory!
   deleteTemplateRecipientGroup(id: Int!): TemplateRecipientGroup
   deleteTemplateVariable(id: Int!): TemplateVariable
-  generateUploadSignedUrl(input: UploadSignedUrlGenerateInput!): String
   increaseElementOrder(input: IncreaseElementOrderInput!): [UpdateElementBaseResponse!]
   login(input: LoginInput!): LoginResponse
   logout: Boolean
   moveElement(input: ElementMoveInput!): [UpdateElementBaseResponse!]
   moveStorageItems(input: StorageItemsMoveInput!): BulkOperationResult
   partiallyUpdateStudent(input: PartialStudentUpdateInput!): Student
+  prepareUpload(input: UploadPreparationInput!): UploadPreparation
   refreshToken: RefreshTokenResponse
   renameFile(input: FileRenameInput!): FileOperationResult
 
@@ -1849,11 +1849,22 @@ type UpdateElementBaseResponse {
   base: CertificateElementBase!
 }
 
-input UploadSignedUrlGenerateInput {
+type UploadPreparation {
+  id: String!
+  uploadType: UploadType!
+  url: String!
+}
+
+input UploadPreparationInput {
   contentMd5: String!
   contentType: String!
   fileSize: Int!
   path: String!
+}
+
+enum UploadType {
+  SIGNED_URL
+  VERCEL_BLOB_CLIENT
 }
 
 type User {

@@ -1,4 +1,5 @@
 import { Storage, Bucket, GetFilesResponse } from "@google-cloud/storage";
+import crypto from "crypto";
 import logger from "@/server/lib/logger";
 import * as Types from "@/server/types";
 import { StorageService, StorageValidationError, STORAGE_CONFIG } from "./storage.service.interface";
@@ -58,9 +59,9 @@ class GcpAdapter implements StorageService {
     }
   }
 
-  async generateUploadSignedUrl(input: Types.UploadSignedUrlGenerateInput): Promise<string> {
+  async prepareUpload(input: Types.UploadPreparationInput): Promise<Types.UploadPreparationResult> {
     try {
-      logger.info("Generating signed URL", {
+      logger.info("Preparing upload", {
         path: input.path,
         fileSize: input.fileSize,
       });
@@ -79,9 +80,24 @@ class GcpAdapter implements StorageService {
         contentMd5: input.contentMd5,
       });
 
-      return result[0];
+      const signedUrl = result[0];
+
+      // Generate a unique ID for tracking this upload
+      const uploadId = crypto.randomUUID();
+
+      logger.info("Prepared upload successfully", {
+        uploadId,
+        path: input.path,
+        uploadType: Types.UploadType.SIGNED_URL,
+      });
+
+      return {
+        id: uploadId,
+        url: signedUrl,
+        uploadType: Types.UploadType.SIGNED_URL,
+      };
     } catch (error) {
-      logger.error("Failed to generate upload signed URL", {
+      logger.error("Failed to prepare upload", {
         path: input.path,
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,

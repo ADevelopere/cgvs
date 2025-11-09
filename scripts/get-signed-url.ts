@@ -14,7 +14,7 @@ import { readFileSync } from "fs";
 import { spawn } from "child_process";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { HttpLink } from "@apollo/client/link/http";
-import { generateUploadSignedUrlMutationDocument } from "@/client/views/storage/core/storage.documents";
+import { prepareUploadMutationDocument } from "@/client/views/storage/core/storage.documents";
 import { testLogger } from "@/lib/testlogger";
 import { extToMime } from "@/utils/storage.utils";
 import { GRAPHQL_ENDPOINT } from "@/server/lib/server";
@@ -127,7 +127,7 @@ async function generateSignedUrl(filePath: string, uploadPath: string, contentTy
     testLogger.info("Sending GraphQL request to generate signed URL...");
 
     const { data, error } = await client.mutate({
-      mutation: generateUploadSignedUrlMutationDocument,
+      mutation: prepareUploadMutationDocument,
       variables: {
         input: {
           path: uploadPath,
@@ -143,7 +143,7 @@ async function generateSignedUrl(filePath: string, uploadPath: string, contentTy
       throw new Error(`GraphQL errors: ${JSON.stringify(error)}`);
     }
 
-    const signedUrl = data?.generateUploadSignedUrl;
+    const signedUrl = data?.prepareUpload?.url;
     if (!signedUrl) {
       throw new Error("No signed URL returned from GraphQL mutation");
     }

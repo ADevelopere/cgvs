@@ -7,6 +7,25 @@ export const FileTypePothosObject = gqlSchemaBuilder.enumType("FileType", {
   values: Object.values(Types.FileTypes),
 });
 
+// Upload type enum
+export const UploadTypePothosObject = gqlSchemaBuilder.enumType("UploadType", {
+  values: Object.values(Types.UploadType),
+});
+
+// Upload preparation result
+export const UploadPreparationPothosObject = gqlSchemaBuilder
+  .objectRef<Types.UploadPreparationResult>("UploadPreparation")
+  .implement({
+    fields: t => ({
+      id: t.exposeString("id", { nullable: false }),
+      url: t.exposeString("url", { nullable: false }),
+      uploadType: t.expose("uploadType", {
+        type: UploadTypePothosObject,
+        nullable: false,
+      }),
+    }),
+  });
+
 // Directory permissions object
 export const DirectoryPermissionsPothosObject = gqlSchemaBuilder
   .objectRef<Types.DirectoryPermissions>("DirectoryPermissions")
@@ -244,9 +263,9 @@ export const FileRenameInputPothosObject = gqlSchemaBuilder
     }),
   });
 
-// Generate upload signed URL input
-export const GenerateUploadSignedUrlInputPothosObject = gqlSchemaBuilder
-  .inputRef<Types.UploadSignedUrlGenerateInput>("UploadSignedUrlGenerateInput")
+// Upload preparation input
+export const UploadPreparationInputPothosObject = gqlSchemaBuilder
+  .inputRef<Types.UploadPreparationInput>("UploadPreparationInput")
   .implement({
     fields: t => ({
       path: t.string({ required: true }),

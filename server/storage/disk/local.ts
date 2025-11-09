@@ -183,7 +183,7 @@ class LocalAdapter implements StorageService {
     }
   }
 
-  async generateUploadSignedUrl(input: Types.UploadSignedUrlGenerateInput): Promise<string> {
+  async prepareUpload(input: Types.UploadPreparationInput): Promise<Types.UploadPreparationResult> {
     try {
       // Clean the path
       const cleanedPath = cleanLocalPath(input.path);
@@ -191,7 +191,7 @@ class LocalAdapter implements StorageService {
       // The contentType is already a MIME type
       const mimeType = input.contentType;
 
-      logger.info("🔍 [SERVER DEBUG] Generating signed URL", {
+      logger.info("🔍 [SERVER DEBUG] Preparing upload", {
         path: cleanedPath,
         fileSize: input.fileSize,
         contentType: mimeType,
@@ -245,15 +245,20 @@ class LocalAdapter implements StorageService {
       // Return API route URL
       const signedUrl = `${this.baseUrl}/api/storage/upload/${tokenId}`;
 
-      logger.info("Generated signed URL successfully", {
+      logger.info("Prepared upload successfully", {
         tokenId,
         path: cleanedPath,
         expiresAt,
+        uploadType: Types.UploadType.SIGNED_URL,
       });
 
-      return signedUrl;
+      return {
+        id: tokenId,
+        url: signedUrl,
+        uploadType: Types.UploadType.SIGNED_URL,
+      };
     } catch (error) {
-      logger.error("Failed to generate upload signed URL", {
+      logger.error("Failed to prepare upload", {
         path: input.path,
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
@@ -1344,18 +1349,18 @@ class LocalAdapter implements StorageService {
       input.force
         ? Promise.resolve([])
         : Promise.all(
-          input.paths.map(filePath =>
-            StorageDbRepository.checkFileUsage({
-              path: filePath,
-            })
-              .then(result => ({ path: filePath, ...result }))
-              .catch(() => ({
+            input.paths.map(filePath =>
+              StorageDbRepository.checkFileUsage({
                 path: filePath,
-                isInUse: false,
-                deleteBlockReason: null,
-              }))
-          )
-        ),
+              })
+                .then(result => ({ path: filePath, ...result }))
+                .catch(() => ({
+                  path: filePath,
+                  isInUse: false,
+                  deleteBlockReason: null,
+                }))
+            )
+          ),
     ]);
 
     // Create lookup maps for O(1) access
@@ -1519,9 +1524,9 @@ export async function createLocalAdapter(): Promise<StorageService> {
 
     throw new Error(
       "FATAL: The 'local' storage provider is enabled in a serverless environment. " +
-      "This is not supported and will lead to data loss. " +
-      "Use a compatible cloud provider (e.g., 'gcp', 's3') in your environment configuration. " +
-      `Detected environment: ${detectedEnvs.join(", ")}`
+        "This is not supported and will lead to data loss. " +
+        "Use a compatible cloud provider (e.g., 'gcp', 's3') in your environment configuration. " +
+        `Detected environment: ${detectedEnvs.join(", ")}`
     );
   }
 

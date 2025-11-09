@@ -22,9 +22,6 @@ type StorageMutations = {
   deleteStorageItems: (variables: {
     input: Graphql.StorageItemsDeleteInput;
   }) => Promise<ApolloClient.MutateResult<Graphql.DeleteStorageItemsMutation>>;
-  generateUploadSignedUrl: (variables: {
-    input: Graphql.UploadSignedUrlGenerateInput;
-  }) => Promise<ApolloClient.MutateResult<Graphql.GenerateUploadSignedUrlMutation>>;
   moveStorageItems: (variables: {
     input: Graphql.StorageItemsMoveInput;
   }) => Promise<ApolloClient.MutateResult<Graphql.MoveStorageItemsMutation>>;
@@ -71,7 +68,6 @@ export const useStorageMutations = (): StorageMutations => {
   const [createFolderMutation] = useMutation(Document.createFolderMutationDocument);
   const [deleteFileMutation] = useMutation(Document.deleteFileMutationDocument);
   const [deleteStorageItemsMutation] = useMutation(Document.deleteStorageItemsMutationDocument);
-  const [generateUploadSignedUrlMutation] = useMutation(Document.generateUploadSignedUrlMutationDocument);
   const [moveStorageItemsMutation] = useMutation(Document.moveStorageItemsMutationDocument);
   const [renameFileMutation] = useMutation(Document.renameFileMutationDocument);
   const [setStorageItemProtectionMutation] = useMutation(Document.setStorageItemProtectionMutationDocument);
@@ -164,13 +160,6 @@ export const useStorageMutations = (): StorageMutations => {
     [deleteStorageItemsMutation, evictListFilesCache, evictDirectoryChildrenCache]
   );
 
-  const generateUploadSignedUrl = useCallback(
-    async (variables: { input: Graphql.UploadSignedUrlGenerateInput }) => {
-      return generateUploadSignedUrlMutation({ variables });
-    },
-    [generateUploadSignedUrlMutation]
-  );
-
   const moveStorageItems = useCallback(
     async (variables: { input: Graphql.StorageItemsMoveInput }) => {
       const result = await moveStorageItemsMutation({ variables });
@@ -258,7 +247,6 @@ export const useStorageMutations = (): StorageMutations => {
       createFolder,
       deleteFile,
       deleteStorageItems,
-      generateUploadSignedUrl,
       moveStorageItems,
       renameFile,
       setStorageItemProtection,
@@ -271,7 +259,6 @@ export const useStorageMutations = (): StorageMutations => {
       createFolder,
       deleteFile,
       deleteStorageItems,
-      generateUploadSignedUrl,
       moveStorageItems,
       renameFile,
       setStorageItemProtection,

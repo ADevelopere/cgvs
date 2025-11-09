@@ -1,6 +1,7 @@
 import { StorageService } from "./disk/storage.service.interface";
 import { createGcpAdapter } from "./disk/gcp";
 import { createLocalAdapter } from "./disk/local";
+import { createVercelAdapter } from "./disk/vercel";
 import logger from "@/server/lib/logger";
 
 /**
@@ -83,7 +84,7 @@ class StorageServiceFactory {
         return await createLocalAdapter();
 
       case "vercel":
-        throw new Error("Vercel storage adapter not implemented yet");
+        return await createVercelAdapter();
 
       case "s3":
         throw new Error("S3 storage adapter not implemented yet");

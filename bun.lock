@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "nextjs",
@@ -50,6 +51,7 @@
         "@yaacovcr/transform": "^0.0.3",
         "axios": "^1.13.1",
         "bcryptjs": "^3.0.3",
+        "crypto": "^1.0.1",
         "crypto-hash": "^4.0.0",
         "crypto-js": "^4.2.0",
         "dataloader": "^2.2.3",
@@ -1438,6 +1440,8 @@
     "cross-inspect": ["cross-inspect@1.0.1", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-Pcw1JTvZLSJH83iiGWt6fRcT+BjZlCDRVwYLbUcHzv/CRpB7r0MlSrGbIyQvVSNyGnbt7G4AXuyCiDR3POvZ1A=="],
 
     "cross-spawn": ["cross-spawn@7.0.6", "", { "dependencies": { "path-key": "^3.1.0", "shebang-command": "^2.0.0", "which": "^2.0.1" } }, "sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA=="],
+
+    "crypto": ["crypto@1.0.1", "", {}, "sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig=="],
 
     "crypto-hash": ["crypto-hash@4.0.0", "", {}, "sha512-KkkFriWj2teXIJOmftIRavBL4q8A7EZV24Nn9sWhIR4hdeS8u+q2A2p0tWZ1m4xVoP1zs3VJjVwwAUnztBb8uw=="],
 

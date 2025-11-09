@@ -30,19 +30,19 @@ gqlSchemaBuilder.mutationFields(t => ({
     },
   }),
 
-  generateUploadSignedUrl: t.field({
-    type: "String",
+  prepareUpload: t.field({
+    type: StoragePothos.UploadPreparationPothosObject,
     args: {
       input: t.arg({
-        type: StoragePothos.GenerateUploadSignedUrlInputPothosObject,
+        type: StoragePothos.UploadPreparationInputPothosObject,
         required: true,
       }),
     },
     resolve: async (_parent, { input }) => {
-      logger.info("GraphQL mutation: generateUploadSignedUrl", { input });
+      logger.info("GraphQL mutation: prepareUpload", { input });
       const storageService = await getStorageService();
-      const result = await storageService.generateUploadSignedUrl(input);
-      logger.info("GraphQL mutation: generateUploadSignedUrl completed");
+      const result = await storageService.prepareUpload(input);
+      logger.info("GraphQL mutation: prepareUpload completed", { uploadType: result.uploadType });
       return result;
     },
   }),

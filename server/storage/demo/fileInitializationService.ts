@@ -43,7 +43,7 @@ export interface IFileInitializationService {
    * Files are automatically registered in the database when uploaded via StorageService
    * This method retrieves their database IDs for use in templates
    */
-  getDemoFileIds(): Promise<bigint[]>;
+  getTemplateCoverDemoFileIds(): Promise<bigint[]>;
 
   /**
    * Register file usage for template covers
@@ -128,7 +128,7 @@ export class FileInitializationService implements IFileInitializationService {
   }
 
   async uploadDemoFileIfNotExists(fileName: string): Promise<void> {
-    const bucketPath = `public/templates/covers/${fileName}`;
+    const bucketPath = `public/img/${fileName}`;
 
     try {
       // Check if file exists in storage
@@ -169,19 +169,19 @@ export class FileInitializationService implements IFileInitializationService {
     const demoFiles = [
       {
         fileName: "demo1.jpg",
-        bucketPath: "public/templates/covers/demo1.jpg",
+        bucketPath: "public/img/demo1.jpg",
       },
       {
         fileName: "demo2.jpg",
-        bucketPath: "public/templates/covers/demo2.jpg",
+        bucketPath: "public/img/demo2.jpg",
       },
       {
         fileName: "demo3.jpg",
-        bucketPath: "public/templates/covers/demo3.jpg",
+        bucketPath: "public/img/demo3.jpg",
       },
       {
         fileName: "demo4.jpg",
-        bucketPath: "public/templates/covers/demo4.jpg",
+        bucketPath: "public/img/demo4.jpg",
       },
     ];
 
@@ -199,12 +199,12 @@ export class FileInitializationService implements IFileInitializationService {
     }
   }
 
-  async getDemoFileIds(): Promise<bigint[]> {
+  async getTemplateCoverDemoFileIds(): Promise<bigint[]> {
     const demoFiles = [
-      "public/templates/covers/demo1.jpg",
-      "public/templates/covers/demo2.jpg",
-      "public/templates/covers/demo3.jpg",
-      "public/templates/covers/demo4.jpg",
+      "public/img/demo1.jpg",
+      "public/img/demo2.jpg",
+      "public/img/demo3.jpg",
+      "public/img/demo4.jpg",
     ];
 
     logger.info("   🔍 Checking for demo files and registering as needed...");

@@ -37,7 +37,7 @@ type Documents = {
     "\n  mutation createFolder($input: FolderCreateInput!) {\n    createFolder(input: $input) {\n      data {\n        isProtected\n        name\n        path\n      }\n      message\n      success\n    }\n  }\n": typeof types.CreateFolderDocument,
     "\n  mutation deleteFile($path: String!) {\n    deleteFile(path: $path) {\n      data {\n        isProtected\n        name\n        path\n      }\n      message\n      success\n    }\n  }\n": typeof types.DeleteFileDocument,
     "\n  mutation deleteStorageItems($input: StorageItemsDeleteInput!) {\n    deleteStorageItems(input: $input) {\n      message\n      success\n      failureCount\n      failures {\n        error\n        path\n      }\n      successCount\n      successfulItems {\n        isProtected\n        name\n        path\n      }\n    }\n  }\n": typeof types.DeleteStorageItemsDocument,
-    "\n  mutation generateUploadSignedUrl($input: UploadSignedUrlGenerateInput!) {\n    generateUploadSignedUrl(input: $input)\n  }\n": typeof types.GenerateUploadSignedUrlDocument,
+    "\n  mutation prepareUpload($input: UploadPreparationInput!) {\n    prepareUpload(input: $input) {\n      id\n      url\n      uploadType\n    }\n  }\n": typeof types.PrepareUploadDocument,
     "\n  mutation moveStorageItems($input: StorageItemsMoveInput!) {\n    moveStorageItems(input: $input) {\n      message\n      success\n      failureCount\n      failures {\n        error\n        path\n      }\n      successCount\n      successfulItems {\n        isProtected\n        name\n        path\n      }\n    }\n  }\n": typeof types.MoveStorageItemsDocument,
     "\n  mutation renameFile($input: FileRenameInput!) {\n    renameFile(input: $input) {\n      data {\n        isProtected\n        name\n        path\n      }\n      message\n      success\n    }\n  }\n": typeof types.RenameFileDocument,
     "\n  mutation setStorageItemProtection($input: StorageItemProtectionUpdateInput!) {\n    setStorageItemProtection(input: $input) {\n      data {\n        isProtected\n        name\n        path\n      }\n      message\n      success\n    }\n  }\n": typeof types.SetStorageItemProtectionDocument,
@@ -151,7 +151,7 @@ const documents: Documents = {
     "\n  mutation createFolder($input: FolderCreateInput!) {\n    createFolder(input: $input) {\n      data {\n        isProtected\n        name\n        path\n      }\n      message\n      success\n    }\n  }\n": types.CreateFolderDocument,
     "\n  mutation deleteFile($path: String!) {\n    deleteFile(path: $path) {\n      data {\n        isProtected\n        name\n        path\n      }\n      message\n      success\n    }\n  }\n": types.DeleteFileDocument,
     "\n  mutation deleteStorageItems($input: StorageItemsDeleteInput!) {\n    deleteStorageItems(input: $input) {\n      message\n      success\n      failureCount\n      failures {\n        error\n        path\n      }\n      successCount\n      successfulItems {\n        isProtected\n        name\n        path\n      }\n    }\n  }\n": types.DeleteStorageItemsDocument,
-    "\n  mutation generateUploadSignedUrl($input: UploadSignedUrlGenerateInput!) {\n    generateUploadSignedUrl(input: $input)\n  }\n": types.GenerateUploadSignedUrlDocument,
+    "\n  mutation prepareUpload($input: UploadPreparationInput!) {\n    prepareUpload(input: $input) {\n      id\n      url\n      uploadType\n    }\n  }\n": types.PrepareUploadDocument,
     "\n  mutation moveStorageItems($input: StorageItemsMoveInput!) {\n    moveStorageItems(input: $input) {\n      message\n      success\n      failureCount\n      failures {\n        error\n        path\n      }\n      successCount\n      successfulItems {\n        isProtected\n        name\n        path\n      }\n    }\n  }\n": types.MoveStorageItemsDocument,
     "\n  mutation renameFile($input: FileRenameInput!) {\n    renameFile(input: $input) {\n      data {\n        isProtected\n        name\n        path\n      }\n      message\n      success\n    }\n  }\n": types.RenameFileDocument,
     "\n  mutation setStorageItemProtection($input: StorageItemProtectionUpdateInput!) {\n    setStorageItemProtection(input: $input) {\n      data {\n        isProtected\n        name\n        path\n      }\n      message\n      success\n    }\n  }\n": types.SetStorageItemProtectionDocument,
@@ -351,7 +351,7 @@ export function graphql(source: "\n  mutation deleteStorageItems($input: Storage
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation generateUploadSignedUrl($input: UploadSignedUrlGenerateInput!) {\n    generateUploadSignedUrl(input: $input)\n  }\n"): (typeof documents)["\n  mutation generateUploadSignedUrl($input: UploadSignedUrlGenerateInput!) {\n    generateUploadSignedUrl(input: $input)\n  }\n"];
+export function graphql(source: "\n  mutation prepareUpload($input: UploadPreparationInput!) {\n    prepareUpload(input: $input) {\n      id\n      url\n      uploadType\n    }\n  }\n"): (typeof documents)["\n  mutation prepareUpload($input: UploadPreparationInput!) {\n    prepareUpload(input: $input) {\n      id\n      url\n      uploadType\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
