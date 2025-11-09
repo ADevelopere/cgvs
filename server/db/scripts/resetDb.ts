@@ -36,6 +36,14 @@ async function resetDatabase() {
     process.exit(1);
   }
 
+  const provider = process.env.DB_PROVIDER || "postgres";
+  
+  if (provider === "neon") {
+    logger.error("Database reset is not supported for Neon provider");
+    logger.error("Please reset your Neon database manually through the Neon console");
+    process.exit(1);
+  }
+
   const dbUrl = process.env.DATABASE_URL;
   logger.debug(`Resetting database: ${dbUrl}`);
 

@@ -23,6 +23,7 @@ declare global {
       GCP_SECRET_ID?: string;
 
       // Database Configuration
+      DB_PROVIDER?: "postgres" | "neon";
       DATABASE_URL: string;
 
       // JWT Configuration

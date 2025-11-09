@@ -1,4 +1,6 @@
 import logger from "@/server/lib/logger";
+import { createDatabase, createPool } from "./factory";
+import { relations } from "./drizzleRelations";
 
 // Verify DATABASE_URL is loaded
 if (!process.env.DATABASE_URL) {
@@ -8,18 +10,8 @@ if (!process.env.DATABASE_URL) {
 } else {
   logger.log("server/db/drizzleDb.ts Environment variables loaded successfully");
   logger.log(`   DATABASE_URL=${process.env.DATABASE_URL?.substring(0, 20)}...`);
+  logger.log(`   DB_PROVIDER=${process.env.DB_PROVIDER || "postgres"}`);
 }
-
-import { relations } from "./drizzleRelations";
-import { Pool } from "pg";
-import { drizzle } from "drizzle-orm/node-postgres";
-// import { DefaultLogger, type LogWriter } from "drizzle-orm/logger";
-
-export const drizzleDbPool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  max: 10,
-  // other pool options...
-});
 
 export const drizzleLogs: string[] = [];
 
@@ -27,21 +19,17 @@ export function clearDrizzleLogs() {
   drizzleLogs.length = 0;
 }
 
-// class MyLogWriter implements LogWriter {
-//     write(message: string) {
-//         if (!process.env.VITEST) {
-//             console.log(message);
-//         } else {
-//             drizzleLogs.push(message);
-//         }
-//     }
-// }
+// Create database connection using factory
+export const db = createDatabase();
 
-// const logger = new DefaultLogger({ writer: new MyLogWriter() });
-export const db = drizzle(drizzleDbPool, {
-  relations,
-  // logger
-});
+// Create pool for PostgreSQL (throws error for Neon)
+export const drizzleDbPool = (() => {
+  try {
+    return createPool();
+  } catch {
+    return null; // Neon doesn't support pools
+  }
+})();
 
 export { relations };
 
