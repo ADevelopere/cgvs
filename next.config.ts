@@ -4,7 +4,20 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   compress: true, // Enable gzip compression
   images: {
-    domains: ["storage.googleapis.com", "flagcdn.com", "localhost"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+      },
+      {
+        protocol: "https",
+        hostname: "flagcdn.com",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
+    ],
     unoptimized: true, // Disable optimization for external images
   },
   // async headers() {
