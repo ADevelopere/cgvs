@@ -3,7 +3,7 @@
 import { ReactFlow, Controls, Background, OnNodesChange, ReactFlowProvider, Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import React, { useCallback } from "react";
-import "./other/EditorTab.module.css";
+import "./EditorTab.module.css";
 import { Box, CircularProgress } from "@mui/material";
 import DownloadImage from "../../../export/demo/DownloadImage";
 import HelperLines from "./HelperLines";

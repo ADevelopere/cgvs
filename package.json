@@ -64,6 +64,7 @@
     "@upstash/ratelimit": "^2.0.6",
     "@upstash/redis": "^1.35.6",
     "@vercel/blob": "^2.0.0",
+    "@vercel/speed-insights": "^1.2.0",
     "@xyflow/react": "^12.9.2",
     "@yaacovcr/transform": "^0.0.3",
     "axios": "^1.13.1",
