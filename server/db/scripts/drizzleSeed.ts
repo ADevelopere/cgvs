@@ -395,6 +395,8 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    await drizzleDbPool.end();
+    if (drizzleDbPool) {
+      await drizzleDbPool.end();
+    }
     process.exit(0);
   });

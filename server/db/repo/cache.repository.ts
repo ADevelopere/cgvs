@@ -122,7 +122,7 @@ export namespace CacheDbRepository {
   export const deleteExpired = async (): Promise<number> => {
     try {
       const now = new Date();
-      const result = await db.delete(cache).where(lt(cache.expiresAt, now)).returning({ key: cache.key });
+      const result = await db.delete(cache).where(lt(cache.expiresAt, now)).returning();
 
       const deletedCount = result.length;
       if (deletedCount > 0) {

@@ -7,9 +7,30 @@ import logger from "@/server/lib/logger";
 
 export type DatabaseProvider = "postgres" | "neon";
 
-export function createDatabase() {
+const createNeonDb = () => {
+  logger.log("Initializing Neon serverless connection");
+  const sql = neon(process.env.DATABASE_URL);
+  const db = drizzleNeon(sql, { relations });
+  return db;
+}
+
+export type NeonDbType = ReturnType<typeof createNeonDb>;
+
+const createPostgresDb = () => {
+  logger.log("Initializing PostgreSQL connection pool");
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    max: 10,
+  });
+  const db = drizzlePostgres(pool, { relations });
+  return db;
+}
+
+export type PostgresDbType = ReturnType<typeof createPostgresDb>;
+
+export function createDatabase(): NeonDbType | PostgresDbType {
   const provider = (process.env.DB_PROVIDER || "postgres") as DatabaseProvider;
-  
+
   if (!process.env.DATABASE_URL) {
     logger.error("DATABASE_URL is not set in environment variables");
     process.exit(1);
@@ -19,29 +40,22 @@ export function createDatabase() {
 
   switch (provider) {
     case "neon": {
-      logger.log("Initializing Neon serverless connection");
-      const sql = neon(process.env.DATABASE_URL);
-      return drizzleNeon(sql, { relations });
+      return createNeonDb();
     }
     case "postgres":
     default: {
-      logger.log("Initializing PostgreSQL connection pool");
-      const pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
-        max: 10,
-      });
-      return drizzlePostgres(pool, { relations });
+      return createPostgresDb();
     }
   }
 }
 
 export function createPool() {
   const provider = (process.env.DB_PROVIDER || "postgres") as DatabaseProvider;
-  
+
   if (provider === "neon") {
     throw new Error("Pool creation not supported for Neon provider");
   }
-  
+
   return new Pool({
     connectionString: process.env.DATABASE_URL,
     max: 10,

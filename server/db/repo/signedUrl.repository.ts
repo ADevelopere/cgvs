@@ -74,7 +74,7 @@ export namespace SignedUrlRepository {
   export const deleteExpired = async (): Promise<number> => {
     try {
       const now = new Date();
-      const deleted = await db.delete(signedUrls).where(lt(signedUrls.expiresAt, now)).returning({ id: signedUrls.id });
+      const deleted = await db.delete(signedUrls).where(lt(signedUrls.expiresAt, now)).returning();
 
       const count = deleted.length;
       if (count > 0) {
