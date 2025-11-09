@@ -493,40 +493,42 @@ export const ResponsiveSplitPaneViewController: React.FC<ResponsiveSplitPaneView
         </Box>
       )}
 
-      {/* MUI Drawer */}
-      <Drawer
-        anchor={effectiveDrawerAnchor}
-        open={hidablePaneVisible}
-        onClose={handleDrawerClose}
-        variant={drawerVariant}
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          zIndex: effectiveDrawerZIndex,
-          "& .MuiDrawer-paper": {
+      {/* MUI Drawer - Only render in drawer mode */}
+      {isDrawerMode && (
+        <Drawer
+          anchor={effectiveDrawerAnchor}
+          open={hidablePaneVisible}
+          onClose={handleDrawerClose}
+          variant={drawerVariant}
+          sx={{
             width: drawerWidth,
-            boxSizing: "border-box",
-          },
-        }}
-      >
-        {/* Header in drawer (if title is defined and headerBehavior is 'in-drawer') */}
-        {title !== undefined && headerBehavior === "in-drawer" && (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              borderBottom: "1px solid",
-              borderColor: theme.palette.divider,
-              mb: 2,
-              p: 2,
-            }}
-          >
-            {title}
-          </Box>
-        )}
-        {/* Drawer pane content */}
-        <Box sx={{ height: "100%", overflow: "auto" }}>{drawerPaneContent}</Box>
-      </Drawer>
+            flexShrink: 0,
+            zIndex: effectiveDrawerZIndex,
+            "& .MuiDrawer-paper": {
+              width: drawerWidth,
+              boxSizing: "border-box",
+            },
+          }}
+        >
+          {/* Header in drawer (if title is defined and headerBehavior is 'in-drawer') */}
+          {title !== undefined && headerBehavior === "in-drawer" && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                borderBottom: "1px solid",
+                borderColor: theme.palette.divider,
+                mb: 2,
+                p: 2,
+              }}
+            >
+              {title}
+            </Box>
+          )}
+          {/* Drawer pane content */}
+          <Box sx={{ height: "100%", overflow: "auto" }}>{drawerPaneContent}</Box>
+        </Drawer>
+      )}
 
       {/* Main content area */}
       <Box

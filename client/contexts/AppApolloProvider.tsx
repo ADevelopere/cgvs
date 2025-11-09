@@ -12,8 +12,13 @@ import { Box, CircularProgress, Button, Typography } from "@mui/material";
 import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
 // import { connectApolloClientToVSCodeDevTools } from "@apollo/client-devtools-vscode";
 import { PersistedQueryLink } from "@apollo/client/link/persisted-queries";
-import { sha256 } from "crypto-hash"; // Or your preferred SHA256 implementation
+import CryptoJS from "crypto-js";
 import logger from "@/client/lib/logger";
+
+// Browser-compatible SHA256 function for persisted queries
+const sha256 = async (data: string): Promise<string> => {
+  return CryptoJS.SHA256(data).toString();
+};
 
 // Loading UI shown during initial connectivity check
 const InitializingUI: React.FC<{

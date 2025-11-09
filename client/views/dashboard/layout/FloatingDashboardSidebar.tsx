@@ -18,7 +18,7 @@ export const FloatingDashboardSidebar: React.FC<FloatingDashboardSidebarProps> =
       open={open}
       onClose={onClose}
       ModalProps={{
-        keepMounted: true, // Better mobile performance
+        keepMounted: false,
       }}
       slotProps={{
         transition: {},

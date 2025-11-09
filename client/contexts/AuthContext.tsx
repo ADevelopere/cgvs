@@ -10,6 +10,7 @@ import { ErrorOutline as ErrorIcon } from "@mui/icons-material";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useMutation } from "@apollo/client/react";
+import logger from "../lib/logger";
 
 // A simple UI for the initial loading state
 const LoadingUI: React.FC<{
@@ -120,10 +121,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           window.location.href = redirectUrl || "/admin/dashboard";
           return true;
         } else {
+          logger.error({ caller: "AuthProvider.login" }, "Login failed: No token or user in response");
           setError(strings.signinFailed);
           return false;
         }
-      } catch {
+      } catch (error) {
+        logger.error({ caller: "AuthProvider.login"}, "Login mutation error", error);
         // Log error for debugging without using console
         setError(strings.invalidLoginResponse);
         return false;

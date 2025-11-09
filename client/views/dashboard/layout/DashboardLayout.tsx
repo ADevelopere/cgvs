@@ -114,6 +114,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           py: 0,
           borderBottom: 1,
           borderColor: "divider",
+          minHeight: { xs: 56, sm: 64 },
         }}
       >
         {/* sidebar toggle */}
@@ -123,12 +124,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         <DashboardTitleRenderer ref={titleRef} />
 
         {/* middle actions */}
-        <Box ref={middleActionsRef} sx={{ ml: 2, flex: 1 }}>
+        <Box ref={middleActionsRef} sx={{ ml: { xs: 1, sm: 2 }, flex: 1, minWidth: 0, overflow: "hidden" }}>
           {slots.middleActions}
         </Box>
 
         {/* end actions */}
-        <Box ref={endActionsRef}>{slots.endActions}</Box>
+        <Box ref={endActionsRef} sx={{ flexShrink: 0 }}>{slots.endActions}</Box>
       </Box>
       <Box sx={{ display: "flex", flex: 1, overflow: "hidden" }}>
         {/* collapsed sidebar */}
@@ -186,11 +187,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       </Box>
 
       {/* floating sidebar for mobile */}
-      <FloatingDashboardSidebar
-        open={isFloatingSidebarVisible}
-        onClose={handleFloatingSidebarClose}
-        headerHeight={headerHeight}
-      />
+      {/* Only render when both mobile AND visible to prevent invisible backdrop from blocking touch events */}
+      {isMobile && isFloatingSidebarVisible && (
+        <FloatingDashboardSidebar
+          open={true}
+          onClose={handleFloatingSidebarClose}
+          headerHeight={headerHeight}
+        />
+      )}
     </Box>
   );
 };
