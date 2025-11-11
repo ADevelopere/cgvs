@@ -4,14 +4,15 @@ export const mapFontRefInputToFontRef = (fontRefInput: GQL.FontReferenceInput): 
   if (fontRefInput.google) {
     const g: GQL.FontReferenceGoogle = {
       __typename: "FontReferenceGoogle",
-      identifier: fontRefInput.google.identifier,
+      family: fontRefInput.google.family,
+      variant: fontRefInput.google.variant,
       type: GQL.FontSource.Google,
     };
     return g;
   } else if (fontRefInput.selfHosted) {
     const s: GQL.FontReferenceSelfHosted = {
       __typename: "FontReferenceSelfHosted",
-      fontId: fontRefInput.selfHosted.fontId,
+      fontVariantId: fontRefInput.selfHosted.fontVariantId,
       type: GQL.FontSource.SelfHosted,
     };
     return s;

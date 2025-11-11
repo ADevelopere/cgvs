@@ -1,162 +1,98 @@
 "use client";
 
 import { useMutation, useApolloClient } from "@apollo/client/react";
-import { gql } from "@apollo/client";
-import * as Graphql from "@/client/graphql/generated/gql/graphql";
 import * as Document from "./font.documents";
 import { useFontStore } from "../stores/useFontStore";
 import logger from "@/client/lib/logger";
 
 /**
  * Apollo mutations hook for font operations
- * Handles cache updates and optimistic responses
+ * Handles cache updates
  */
 export const useFontApolloMutations = () => {
   const store = useFontStore();
   const client = useApolloClient();
 
   /**
-   * Evict fonts cache to force refetch
+   * Evict font families cache to force refetch
    */
-  const evictFontsCache = () => {
-    logger.info({ caller: "useFontApolloMutations" }, "Evicting fonts cache");
-
-    // Evict fonts query
-    client.cache.evict({
-      id: "ROOT_QUERY",
-      fieldName: "fonts",
-    });
-
-    // Evict search results
-    client.cache.evict({
-      id: "ROOT_QUERY",
-      fieldName: "searchFonts",
-    });
-
-    // Run garbage collection
+  const evictFontFamiliesCache = () => {
+    logger.info({ caller: "useFontApolloMutations" }, "Evicting font families cache");
+    client.cache.evict({ id: "ROOT_QUERY", fieldName: "fontFamilies" });
     client.cache.gc();
   };
 
   /**
-   * Create font mutation
+   * Evict font variants cache to force refetch
    */
-  const [createMutation] = useMutation(Document.createFontMutationDocument, {
-    update(cache, { data }) {
-      if (!data?.createFont) return;
+  const evictFontVariantsCache = () => {
+    logger.info({ caller: "useFontApolloMutations" }, "Evicting font variants cache");
+    client.cache.evict({ id: "ROOT_QUERY", fieldName: "fontVariants" });
+    client.cache.gc();
+  };
 
-      logger.info({ caller: "useFontApolloMutations" }, "Font created, updating cache:", data.createFont);
-
-      // Evict cache to force refetch
-      evictFontsCache();
-    },
-    onError(error) {
-      logger.error({ caller: "useFontApolloMutations" }, "Create font mutation error:", error);
+  // Font Family Mutations
+  const [createFamilyMutation] = useMutation(Document.createFontFamilyMutationDocument, {
+    update() {
+      evictFontFamiliesCache();
     },
   });
 
-  /**
-   * Update font mutation with optimistic response
-   */
-  const [updateMutation] = useMutation(Document.updateFontMutationDocument, {
-    optimisticResponse: vars => {
-      logger.info({ caller: "useFontApolloMutations" }, "Optimistic update for font:", vars.input.id);
-
-      try {
-        // Read existing font from cache
-        const existingFont = client.cache.readFragment<Graphql.FontQuery["font"]>({
-          id: client.cache.identify({
-            __typename: "Font",
-            id: vars.input.id,
-          }),
-          fragment: gql`
-            fragment FontFields on Font {
-              id
-              name
-              locale
-              storageFilePath
-              createdAt
-              updatedAt
-            }
-          `,
-        });
-
-        // Return optimistic response
-        return {
-          __typename: "Mutation" as const,
-          updateFont: {
-            __typename: "Font" as const,
-            id: vars.input.id,
-            name: vars.input.name,
-            locale: vars.input.locale,
-            storageFilePath: vars.input.storageFilePath,
-            createdAt: existingFont?.createdAt || new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-        };
-      } catch (error) {
-        logger.error({ caller: "useFontApolloMutations" }, "Error creating optimistic response:", error);
-        // Return partial data if cache read fails
-        return {
-          __typename: "Mutation" as const,
-          updateFont: {
-            __typename: "Font" as const,
-            id: vars.input.id,
-            name: vars.input.name,
-            locale: vars.input.locale,
-            storageFilePath: vars.input.storageFilePath,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-        };
-      }
-    },
-    update(cache, { data }) {
-      if (!data?.updateFont) return;
-
-      logger.info({ caller: "useFontApolloMutations" }, "Font updated, evicting cache:", data.updateFont);
-
-      // Evict fonts list to refetch with updated data
-      evictFontsCache();
-    },
-    onError(error) {
-      logger.error({ caller: "useFontApolloMutations" }, "Update font mutation error:", error);
+  const [updateFamilyMutation] = useMutation(Document.updateFontFamilyMutationDocument, {
+    update() {
+      evictFontFamiliesCache();
     },
   });
 
-  /**
-   * Delete font mutation
-   */
-  const [deleteMutation] = useMutation(Document.deleteFontMutationDocument, {
+  const [deleteFamilyMutation] = useMutation(Document.deleteFontFamilyMutationDocument, {
     update(cache, { data }) {
-      if (!data?.deleteFont) return;
-
-      logger.info({ caller: "useFontApolloMutations" }, "Font deleted, updating cache:", data.deleteFont);
-
-      // Remove from cache
-      cache.evict({
-        id: cache.identify({
-          __typename: "Font",
-          id: data.deleteFont.id,
-        }),
-      });
-
-      // Evict fonts list
-      evictFontsCache();
-
-      // Clear selection if deleted font was selected
-      if (store.selectedFont?.id === data.deleteFont.id) {
-        store.setSelectedFont(null);
+      if (!data?.deleteFontFamily) return;
+      cache.evict({ id: cache.identify({ __typename: "FontFamily", id: data.deleteFontFamily.id }) });
+      evictFontFamiliesCache();
+      if (store.selectedFamilyId === data.deleteFontFamily.id) {
+        store.setSelectedFamilyId(null);
       }
     },
-    onError(error) {
-      logger.error({ caller: "useFontApolloMutations" }, "Delete font mutation error:", error);
+  });
+
+  // Font Variant Mutations
+  const [createVariantMutation] = useMutation(Document.createFontVariantMutationDocument, {
+    update() {
+      evictFontVariantsCache();
+    },
+  });
+
+  const [updateVariantMutation] = useMutation(Document.updateFontVariantMutationDocument, {
+    update() {
+      evictFontVariantsCache();
+    },
+  });
+
+  const [deleteVariantMutation] = useMutation(Document.deleteFontVariantMutationDocument, {
+    update(cache, { data }) {
+      if (!data?.deleteFontVariant) return;
+      cache.evict({ id: cache.identify({ __typename: "FontVariant", id: data.deleteFontVariant.id }) });
+      evictFontVariantsCache();
+      if (store.selectedVariantId === data.deleteFontVariant.id) {
+        store.setSelectedVariantId(null);
+      }
+    },
+  });
+
+  const [createWithFamilyMutation] = useMutation(Document.createFontWithFamilyMutationDocument, {
+    update() {
+      evictFontFamiliesCache();
+      evictFontVariantsCache();
     },
   });
 
   return {
-    createFontMutation: createMutation,
-    updateFontMutation: updateMutation,
-    deleteFontMutation: deleteMutation,
-    evictFontsCache,
+    createFontFamilyMutation: createFamilyMutation,
+    updateFontFamilyMutation: updateFamilyMutation,
+    deleteFontFamilyMutation: deleteFamilyMutation,
+    createFontVariantMutation: createVariantMutation,
+    updateFontVariantMutation: updateVariantMutation,
+    deleteFontVariantMutation: deleteVariantMutation,
+    createFontWithFamilyMutation: createWithFamilyMutation,
   };
 };

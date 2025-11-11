@@ -6,7 +6,7 @@ import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../component/ActionButtons";
 import { UpdateBaseElementFn } from "../base";
-import { Font, CountryRepresentation } from "@/client/graphql/generated/gql/graphql";
+import { FontFamily, CountryRepresentation } from "@/client/graphql/generated/gql/graphql";
 import { UpdateTextPropsFn } from "../textProps";
 
 interface CountryElementFormProps {
@@ -16,7 +16,7 @@ interface CountryElementFormProps {
   updateTextProps: UpdateTextPropsFn;
   updateRepresentation: (value: CountryRepresentation) => void;
   locale: string;
-  selfHostedFonts: Font[];
+  fontFamilies: FontFamily[];
   onSubmit: () => void;
   onCancel: () => void;
   isSubmitting: boolean;
@@ -30,7 +30,7 @@ export const CountryElementForm: FC<CountryElementFormProps> = ({
   updateTextProps,
   updateRepresentation,
   locale,
-  selfHostedFonts,
+  fontFamilies,
   onSubmit,
   onCancel,
   isSubmitting,
@@ -57,7 +57,7 @@ export const CountryElementForm: FC<CountryElementFormProps> = ({
               <TextPropsForm
                 textProps={state.textProps}
                 language={locale}
-                selfHostedFonts={selfHostedFonts}
+                fontFamilies={fontFamilies}
                 onTextPropsChange={updateTextProps}
                 errors={errors.textProps}
                 disabled={isSubmitting}

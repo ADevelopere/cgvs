@@ -37,11 +37,12 @@ export const createNumberElementMutationDocument: TypedDocumentNode<
         color
         fontRef {
           ... on FontReferenceGoogle {
-            identifier
+            family
             type
+            variant
           }
           ... on FontReferenceSelfHosted {
-            fontId
+            fontVariantId
             type
           }
         }
@@ -89,11 +90,12 @@ export const updateNumberElementMutationDocument: TypedDocumentNode<
         color
         fontRef {
           ... on FontReferenceGoogle {
-            identifier
+            family
             type
+            variant
           }
           ... on FontReferenceSelfHosted {
-            fontId
+            fontVariantId
             type
           }
         }

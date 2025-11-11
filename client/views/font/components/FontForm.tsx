@@ -1,22 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as MUI from "@mui/material";
 import { LocaleSelector } from "./LocaleSelector";
-import { FontFilePicker } from "./FontFilePicker";
+import { FontFilePicker, FontMetadata } from "./FontFilePicker";
 import { FontPreview } from "./FontPreview";
 import { FontFormData } from "../types";
 import { useAppTranslation } from "@/client/locale";
-import { FontCreateInput } from "@/client/graphql/generated/gql/graphql";
+import { FontFamilyCreateInput, FontVariantCreateInput } from "@/client/graphql/generated/gql/graphql";
 
 interface FontFormProps {
   initialData?: {
     name: string;
+    variant?: string;
+    metadata?: FontMetadata;
     locale: string[];
     filePath?: string | null;
     fileName?: string | null;
     fileUrl?: string | null;
   };
 
-  onSubmit: (input: FontCreateInput) => Promise<void>;
+  onSubmit: (familyInput: FontFamilyCreateInput, variantInput: FontVariantCreateInput) => Promise<void>;
   onCancel: () => void;
   submitLabel?: string;
   disabled?: boolean;
@@ -35,18 +37,29 @@ export const FontForm: React.FC<FontFormProps> = ({ initialData, onSubmit, onCan
     filePath: string;
     fileName: string;
     fileUrl: string;
+    metadata: FontMetadata;
   } | null>(
-    initialData?.filePath
+    initialData?.filePath && initialData?.metadata
       ? {
           filePath: initialData.filePath,
           fileName: initialData.fileName || "Font file",
           fileUrl: initialData.fileUrl || "",
+          metadata: initialData.metadata,
         }
       : null
   );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (selectedFile?.metadata) {
+      setFormData(prev => ({
+        ...prev,
+        name: selectedFile.metadata.fontFamily,
+      }));
+    }
+  }, [selectedFile]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -59,7 +72,7 @@ export const FontForm: React.FC<FontFormProps> = ({ initialData, onSubmit, onCan
       newErrors.locale = strings.localeRequired;
     }
 
-    if (formData.storageFilePath === null) {
+    if (formData.storageFilePath === null || !selectedFile?.metadata) {
       newErrors.file = strings.fontFileRequired;
     }
 
@@ -70,18 +83,24 @@ export const FontForm: React.FC<FontFormProps> = ({ initialData, onSubmit, onCan
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validate() || formData.storageFilePath === null) {
+    if (!validate() || formData.storageFilePath === null || !selectedFile?.metadata) {
       return;
     }
-    const input: FontCreateInput = {
+    const familyInput: FontFamilyCreateInput = {
       name: formData.name,
+      category: "custom",
       locale: formData.locale,
+    };
+
+    const variantInput: FontVariantCreateInput = {
+      familyId: 0, // Will be set by the parent component
+      variant: selectedFile.metadata.fontSubfamily,
       storageFilePath: formData.storageFilePath,
     };
 
     setIsSubmitting(true);
     try {
-      await onSubmit(input);
+      await onSubmit(familyInput, variantInput);
     } finally {
       setIsSubmitting(false);
     }
@@ -90,7 +109,7 @@ export const FontForm: React.FC<FontFormProps> = ({ initialData, onSubmit, onCan
   return (
     <form onSubmit={handleSubmit}>
       <MUI.Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-        {/* Font Name */}
+        {/* Font Name (Auto-extracted) */}
         <MUI.Box>
           <MUI.FormLabel htmlFor="name">{strings.fontNameLabel}</MUI.FormLabel>
           <MUI.TextField
@@ -98,14 +117,28 @@ export const FontForm: React.FC<FontFormProps> = ({ initialData, onSubmit, onCan
             fullWidth
             size="small"
             value={formData.name}
-            onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
             placeholder={strings.fontNamePlaceholder}
-            disabled={disabled || isSubmitting}
+            disabled
             error={Boolean(errors.name)}
-            helperText={errors.name}
+            helperText={errors.name || "Auto-extracted from font file"}
             sx={{ mt: 1 }}
           />
         </MUI.Box>
+
+        {/* Font Variant (Auto-extracted) */}
+        {selectedFile?.metadata && (
+          <MUI.Box>
+            <MUI.FormLabel>Font Variant</MUI.FormLabel>
+            <MUI.TextField
+              fullWidth
+              size="small"
+              value={selectedFile.metadata.fontSubfamily}
+              disabled
+              helperText="Auto-extracted from font file"
+              sx={{ mt: 1 }}
+            />
+          </MUI.Box>
+        )}
 
         {/* Locales */}
         <MUI.Box>
@@ -147,7 +180,11 @@ export const FontForm: React.FC<FontFormProps> = ({ initialData, onSubmit, onCan
           <MUI.Box>
             <MUI.FormLabel>{strings.preview}</MUI.FormLabel>
             <MUI.Box sx={{ mt: 1 }}>
-              <FontPreview fontName={formData.name || strings.preview} fontUrl={selectedFile.fileUrl} />
+              <FontPreview
+                fontName={formData.name || strings.preview}
+                fontUrl={selectedFile.fileUrl}
+                variant={selectedFile.metadata.fontSubfamily}
+              />
             </MUI.Box>
           </MUI.Box>
         )}

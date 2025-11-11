@@ -200,12 +200,7 @@ export class FileInitializationService implements IFileInitializationService {
   }
 
   async getTemplateCoverDemoFileIds(): Promise<bigint[]> {
-    const demoFiles = [
-      "public/img/demo1.jpg",
-      "public/img/demo2.jpg",
-      "public/img/demo3.jpg",
-      "public/img/demo4.jpg",
-    ];
+    const demoFiles = ["public/img/demo1.jpg", "public/img/demo2.jpg", "public/img/demo3.jpg", "public/img/demo4.jpg"];
 
     logger.info("   🔍 Checking for demo files and registering as needed...");
 

@@ -12,7 +12,7 @@ import {
   templateConfigByTemplateIdQueryDocument,
 } from "../../manage/editor/glqDocuments";
 import { resolveTextContent } from "./textDemo";
-import { FontFamily, getFontByFamily } from "@/lib/font/google";
+import { getFontByFamily } from "@/lib/font/google";
 
 // ============================================================================
 // TYPES
@@ -551,15 +551,15 @@ function renderTextElement(element: GQL.TextElement, page: PDFPage, font: PDFFon
 /**
  * Collect unique font families from text elements
  */
-function collectFontFamilies(elements: GQL.CertificateElementUnion[]): FontFamily[] {
-  const families = new Set<FontFamily>();
+function collectFontFamilies(elements: GQL.CertificateElementUnion[]): GQL.FontFamilyName[] {
+  const families = new Set<GQL.FontFamilyName>();
   for (const el of elements) {
     if (el.__typename === "TextElement") {
       const ref = el.textProps.fontRef;
-      if (ref.__typename === "FontReferenceGoogle" && ref.identifier) {
-        families.add(ref.identifier as FontFamily);
+      if (ref.__typename === "FontReferenceGoogle" && ref.family) {
+        families.add(ref.family);
       } else {
-        families.add(FontFamily.ROBOTO);
+        families.add(GQL.FontFamilyName.Roboto);
       }
     }
   }
@@ -581,13 +581,16 @@ async function fetchFontBytes(url: string): Promise<Uint8Array> {
 /**
  * Embed fonts in PDF document
  */
-async function embedFontsForPdf(pdfDoc: PDFDocument, fontFamilies: FontFamily[]): Promise<Map<FontFamily, PDFFont>> {
-  const fontMap = new Map<FontFamily, PDFFont>();
+async function embedFontsForPdf(
+  pdfDoc: PDFDocument,
+  fontFamilies: GQL.FontFamilyName[]
+): Promise<Map<GQL.FontFamilyName, PDFFont>> {
+  const fontMap = new Map<GQL.FontFamilyName, PDFFont>();
   const fallbackFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
   // Always add Roboto as fallback
-  if (!fontFamilies.includes(FontFamily.ROBOTO)) {
-    fontFamilies.push(FontFamily.ROBOTO);
+  if (!fontFamilies.includes(GQL.FontFamilyName.Roboto)) {
+    fontFamilies.push(GQL.FontFamilyName.Roboto);
   }
 
   for (const family of fontFamilies) {
@@ -763,11 +766,11 @@ export const DownloadPdf: React.FC<DownloadPdfProps> = ({ templateId, showDebugB
       for (const element of sortedElements) {
         if (element.__typename === "TextElement") {
           const family =
-            element.textProps.fontRef.__typename === "FontReferenceGoogle" && element.textProps.fontRef.identifier
-              ? (element.textProps.fontRef.identifier as FontFamily)
-              : FontFamily.ROBOTO;
+            element.textProps.fontRef.__typename === "FontReferenceGoogle" && element.textProps.fontRef.family
+              ? element.textProps.fontRef.family
+              : GQL.FontFamilyName.Roboto;
 
-          const font = fontMap.get(family) || fontMap.get(FontFamily.ROBOTO)!;
+          const font = fontMap.get(family) || fontMap.get(GQL.FontFamilyName.Roboto)!;
 
           renderTextElement(element, page, font, config);
         } else if (element.__typename === "ImageElement") {

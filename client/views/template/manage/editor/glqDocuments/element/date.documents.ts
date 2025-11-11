@@ -51,11 +51,12 @@ export const createDateElementMutationDocument: TypedDocumentNode<
         color
         fontRef {
           ... on FontReferenceGoogle {
-            identifier
+            family
             type
+            variant
           }
           ... on FontReferenceSelfHosted {
-            fontId
+            fontVariantId
             type
           }
         }
@@ -120,11 +121,12 @@ export const updateDateElementMutationDocument: TypedDocumentNode<
         color
         fontRef {
           ... on FontReferenceGoogle {
-            identifier
+            family
             type
+            variant
           }
           ... on FontReferenceSelfHosted {
-            fontId
+            fontVariantId
             type
           }
         }

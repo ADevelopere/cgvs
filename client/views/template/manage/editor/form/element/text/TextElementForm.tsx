@@ -6,7 +6,7 @@ import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../component/ActionButtons";
 import {
-  Font,
+  FontFamily,
   TemplateSelectVariable,
   TemplateTextVariable,
   TextDataSourceInput,
@@ -23,7 +23,7 @@ interface TextElementFormProps {
   language: string;
   textVariables: TemplateTextVariable[];
   selectVariables: TemplateSelectVariable[];
-  selfHostedFonts: Font[];
+  fontFamilies: FontFamily[];
   onSubmit: () => void;
   onCancel: () => void;
   isSubmitting: boolean;
@@ -40,7 +40,7 @@ export const TextElementForm: FC<TextElementFormProps> = ({
   language,
   textVariables,
   selectVariables,
-  selfHostedFonts,
+  fontFamilies,
   onSubmit,
   onCancel,
   isSubmitting,
@@ -71,7 +71,7 @@ export const TextElementForm: FC<TextElementFormProps> = ({
               <TextPropsForm
                 textProps={state.textProps}
                 language={language}
-                selfHostedFonts={selfHostedFonts}
+                fontFamilies={fontFamilies}
                 onTextPropsChange={updateTextProps}
                 errors={errors.textProps}
                 disabled={isSubmitting}

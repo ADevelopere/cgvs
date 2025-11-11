@@ -8,9 +8,10 @@ import { useAppTheme } from "@/client/contexts";
 interface FontPreviewProps {
   fontName: string;
   fontUrl: string;
+  variant?: string;
 }
 
-export const FontPreview: React.FC<FontPreviewProps> = ({ fontName, fontUrl }) => {
+export const FontPreview: React.FC<FontPreviewProps> = ({ fontName, fontUrl, variant }) => {
   const { fontManagementTranslations: strings } = useAppTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -157,9 +158,12 @@ export const FontPreview: React.FC<FontPreviewProps> = ({ fontName, fontUrl }) =
 
           {/* Font info */}
           <MUI.Divider sx={{ mt: 2 }} />
-          <MUI.Typography variant="caption" color="text.secondary">
-            {strings.previewFont.replace("%{fontName}", fontName)}
-          </MUI.Typography>
+          <MUI.Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <MUI.Typography variant="caption" color="text.secondary">
+              {strings.previewFont.replace("%{fontName}", fontName)}
+            </MUI.Typography>
+            {variant && <MUI.Chip label={variant} size="small" variant="outlined" />}
+          </MUI.Box>
         </MUI.Box>
       </MUI.CardContent>
     </MUI.Card>

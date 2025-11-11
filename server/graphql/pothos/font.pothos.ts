@@ -1,42 +1,34 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import {
-  FontPothosDefinition,
-  FontCreateInput,
-  FontUpdateInput,
-  FontUsageCheckResult,
+  FontVariantPothosDefinition,
+  FontVariantCreateInput,
+  FontVariantUpdateInput,
+  FontVariantUsageCheckResult,
   FontUsageReference,
-  FontsWithFiltersResponse,
-  FontFilterArgs,
-  FontsOrderByColumn,
-  FontsOrderByClause,
+  FontVariantsWithFiltersResponse,
+  FontVariantFilterArgs,
+  FontVariantsOrderByColumn,
+  FontVariantsOrderByClause,
 } from "@/server/types/font.types";
-import { FontRepository } from "@/server/db/repo";
+import { FontVariantRepository } from "@/server/db/repo/fontVariant.repository";
 import { PageInfoObject, OrderSortDirectionPothosObject, FileInfoPothosObject } from "../pothos";
 import { OrderSortDirection } from "@/lib/enum";
 import { getStorageService } from "@/server/storage/storage.service";
+// Font variant object
+const FontVariantObjectRef = gqlSchemaBuilder.objectRef<FontVariantPothosDefinition>("FontVariant");
 
-// Font object
-const FontObjectRef = gqlSchemaBuilder.objectRef<FontPothosDefinition>("Font");
-
-export const FontPothosObject = gqlSchemaBuilder.loadableObject<
-  FontPothosDefinition | Error,
+export const FontVariantPothosObject = gqlSchemaBuilder.loadableObject<
+  FontVariantPothosDefinition | Error,
   number,
   [],
-  typeof FontObjectRef
->(FontObjectRef, {
-  load: async (ids: number[]) => await FontRepository.loadByIds(ids),
+  typeof FontVariantObjectRef
+>(FontVariantObjectRef, {
+  load: async (ids: number[]) => await FontVariantRepository.loadByIds(ids),
   sort: f => f.id,
   fields: t => ({
     id: t.exposeInt("id", { nullable: false }),
-    name: t.exposeString("name", { nullable: false }),
-    locale: t.field({
-      type: ["String"],
-      nullable: false,
-      resolve: font => {
-        // Locale is stored as JSONB array, return directly
-        return Array.isArray(font.locale) ? font.locale : [];
-      },
-    }),
+    familyId: t.exposeInt("familyId", { nullable: false }),
+    variant: t.exposeString("variant", { nullable: false }),
     file: t.field({
       type: FileInfoPothosObject,
       resolve: async font => {
@@ -58,9 +50,9 @@ export const FontPothosObject = gqlSchemaBuilder.loadableObject<
   }),
 });
 
-// Font usage reference object
-export const FontUsageReferencePothosObject = gqlSchemaBuilder
-  .objectRef<FontUsageReference>("FontUsageReference")
+// Font variant usage reference object
+export const FontVariantUsageReferencePothosObject = gqlSchemaBuilder
+  .objectRef<FontUsageReference>("FontVariantUsageReference")
   .implement({
     fields: t => ({
       elementId: t.exposeInt("elementId", { nullable: false }),
@@ -70,15 +62,15 @@ export const FontUsageReferencePothosObject = gqlSchemaBuilder
     }),
   });
 
-// Font usage check result object
-export const FontUsageCheckResultPothosObject = gqlSchemaBuilder
-  .objectRef<FontUsageCheckResult>("FontUsageCheckResult")
+// Font variant usage check result object
+export const FontVariantUsageCheckResultPothosObject = gqlSchemaBuilder
+  .objectRef<FontVariantUsageCheckResult>("FontVariantUsageCheckResult")
   .implement({
     fields: t => ({
       isInUse: t.exposeBoolean("isInUse", { nullable: false }),
       usageCount: t.exposeInt("usageCount", { nullable: false }),
       usedBy: t.expose("usedBy", {
-        type: [FontUsageReferencePothosObject],
+        type: [FontVariantUsageReferencePothosObject],
         nullable: false,
       }),
       canDelete: t.exposeBoolean("canDelete", { nullable: false }),
@@ -88,77 +80,63 @@ export const FontUsageCheckResultPothosObject = gqlSchemaBuilder
     }),
   });
 
-// Font create input
-const FontCreateInputRef = gqlSchemaBuilder.inputRef<FontCreateInput>("FontCreateInput");
+// Font variant create input
+const FontVariantCreateInputRef = gqlSchemaBuilder.inputRef<FontVariantCreateInput>("FontVariantCreateInput");
 
-export const FontCreateInputPothosObject = FontCreateInputRef.implement({
+export const FontVariantCreateInputPothosObject = FontVariantCreateInputRef.implement({
   fields: t => ({
-    name: t.string({ required: true }),
-    locale: t.stringList({ required: true }),
+    familyId: t.int({ required: true }),
+    variant: t.string({ required: true }),
     storageFilePath: t.string({ required: true }),
   }),
 });
 
-// Font update input
-const FontUpdateInputRef = gqlSchemaBuilder.inputRef<FontUpdateInput>("FontUpdateInput");
+// Font variant update input
+const FontVariantUpdateInputRef = gqlSchemaBuilder.inputRef<FontVariantUpdateInput>("FontVariantUpdateInput");
 
-export const FontUpdateInputPothosObject = FontUpdateInputRef.implement({
+export const FontVariantUpdateInputPothosObject = FontVariantUpdateInputRef.implement({
   fields: t => ({
     id: t.int({ required: true }),
-    name: t.string({ required: true }),
-    locale: t.stringList({ required: true }),
+    variant: t.string({ required: true }),
     storageFilePath: t.string({ required: true }),
   }),
 });
 
-// FontsWithFiltersResponse
-export const FontsWithFiltersPothosObject = gqlSchemaBuilder
-  .objectRef<FontsWithFiltersResponse>("FontsWithFiltersResponse")
+// Font variants with filters response
+export const FontVariantsWithFiltersPothosObject = gqlSchemaBuilder
+  .objectRef<FontVariantsWithFiltersResponse>("FontVariantsWithFiltersResponse")
   .implement({
     fields: t => ({
-      data: t.expose("data", { type: [FontPothosObject], nullable: false }),
+      data: t.expose("data", { type: [FontVariantPothosObject], nullable: false }),
       pageInfo: t.expose("pageInfo", { type: PageInfoObject, nullable: false }),
     }),
   });
 
-// FontFilterArgs
-export const FontFilterArgsPothosObject = gqlSchemaBuilder.inputRef<FontFilterArgs>("FontFilterArgs").implement({
-  fields: t => ({
-    name: t.string(),
-    nameNotContains: t.string(),
-    nameEquals: t.string(),
-    nameNotEquals: t.string(),
-    nameStartsWith: t.string(),
-    nameEndsWith: t.string(),
-    nameIsEmpty: t.boolean(),
-    nameIsNotEmpty: t.boolean(),
+// Font variant filter args
+export const FontVariantFilterArgsPothosObject = gqlSchemaBuilder
+  .inputRef<FontVariantFilterArgs>("FontVariantFilterArgs")
+  .implement({
+    fields: t => ({
+      familyId: t.int(),
+      variant: t.string(),
+      variantContains: t.string(),
+      createdAtFrom: t.field({ type: "DateTime" }),
+      createdAtTo: t.field({ type: "DateTime" }),
+    }),
+  });
 
-    locale: t.string(),
-
-    createdAt: t.field({ type: "DateTime" }),
-    createdAtFrom: t.field({ type: "DateTime" }),
-    createdAtTo: t.field({ type: "DateTime" }),
-    createdAtAfter: t.field({ type: "DateTime" }),
-    createdAtBefore: t.field({ type: "DateTime" }),
-
-    updatedAt: t.field({ type: "DateTime" }),
-    updatedAtFrom: t.field({ type: "DateTime" }),
-    updatedAtTo: t.field({ type: "DateTime" }),
-  }),
+// Font variants order by column enum
+export const FontVariantsOrderByColumnPothosObject = gqlSchemaBuilder.enumType("FontVariantsOrderByColumn", {
+  values: Object.values(FontVariantsOrderByColumn),
 });
 
-// FontsOrderByColumn enum
-export const FontsOrderByColumnPothosObject = gqlSchemaBuilder.enumType("FontsOrderByColumn", {
-  values: Object.values(FontsOrderByColumn),
-});
-
-// FontsOrderByClause
-export const FontsOrderByClausePothosObject = gqlSchemaBuilder
-  .inputRef<FontsOrderByClause>("FontsOrderByClause")
+// Font variants order by clause
+export const FontVariantsOrderByClausePothosObject = gqlSchemaBuilder
+  .inputRef<FontVariantsOrderByClause>("FontVariantsOrderByClause")
   .implement({
     fields: t => ({
       column: t.field({
-        type: FontsOrderByColumnPothosObject,
+        type: FontVariantsOrderByColumnPothosObject,
         required: true,
       }),
       order: t.field({

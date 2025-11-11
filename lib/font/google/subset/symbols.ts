@@ -190,14 +190,14 @@ const data: GoogleFontItem[] = [
     family: "Borel",
     variants: ["regular"],
     subsets: ["latin", "latin-ext", "math", "symbols", "vietnamese"],
-    version: "v3",
-    lastModified: "2025-05-30",
+    version: "v9",
+    lastModified: "2025-11-04",
     files: {
-      regular: "https://fonts.gstatic.com/s/borel/v3/6qLOKZsftAPisgshYyMnOjwE.ttf",
+      regular: "https://fonts.gstatic.com/s/borel/v9/6qLOKZsftAPisgshYyMnOjwE.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",
-    menu: "https://fonts.gstatic.com/s/borel/v3/6qLOKZsftAPisjsgaSc.ttf",
+    menu: "https://fonts.gstatic.com/s/borel/v9/6qLOKZsftAPisjsgaSc.ttf",
   },
   {
     family: "David Libre",

@@ -5,7 +5,7 @@ import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { GenderElementForm } from "../../form/element/gender/GenderElementForm";
 import { useCertificateElementStates } from "../../context/CertificateElementContext";
 import { useElementCreateMutations } from "../../form/hooks/useElementCreateMutations";
-import { fontsQueryDocument } from "@/client/views/font/hooks/font.documents";
+import { fontFamiliesQueryDocument } from "@/client/views/font/hooks/font.documents";
 import { validateBaseElementField } from "../../form/element/base/cretElementBaseValidator";
 import { validateTextPropsField } from "../../form/element/textProps/textPropsValidator";
 import type { GenderElementFormState, GenderElementFormErrors } from "../../form/element/gender/types";
@@ -46,10 +46,10 @@ export const CreateGenderElementWrapper: React.FC<CreateGenderElementWrapperProp
   const language = config.state.language;
 
   // Query fonts
-  const { data: fontsData } = useQuery(fontsQueryDocument);
-  const selfHostedFonts = useMemo(() => {
-    return fontsData?.fonts.data || [];
-  }, [fontsData?.fonts]);
+  const { data: fontsData } = useQuery(fontFamiliesQueryDocument);
+  const fontFamilies = useMemo(() => {
+    return fontsData?.fontFamilies || [];
+  }, [fontsData?.fontFamilies]);
 
   // Get mutation
   const { createGenderElementMutation } = useElementCreateMutations();
@@ -77,7 +77,8 @@ export const CreateGenderElementWrapper: React.FC<CreateGenderElementWrapperProp
       textProps: {
         fontRef: {
           google: {
-            identifier: "Roboto",
+            family: GQL.FontFamilyName.Roboto,
+            variant: "400",
           },
         },
         fontSize: 16,
@@ -208,7 +209,7 @@ export const CreateGenderElementWrapper: React.FC<CreateGenderElementWrapperProp
     <GenderElementForm
       state={state}
       errors={errors}
-      selfHostedFonts={selfHostedFonts}
+      fontFamilies={fontFamilies}
       locale={language}
       updateBase={updateBaseElement}
       updateTextProps={updateTextProps}

@@ -14,7 +14,8 @@ export { StorageDbRepository } from "./storage.repository";
 export { SignedUrlRepository } from "./signedUrl.repository";
 export { CacheDbRepository } from "./cache.repository";
 
-export { FontRepository } from "./font.repository";
+export { FontFamilyRepository } from "./fontFamily.repository";
+export { FontVariantRepository } from "./fontVariant.repository";
 
 export * from "./element";
 

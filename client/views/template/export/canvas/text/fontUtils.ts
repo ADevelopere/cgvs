@@ -23,8 +23,8 @@ export function collectFontFamilies(elements: GQL.CertificateElementUnion[]): st
  * Complexity: 3 (conditional checks)
  */
 export function extractFontFamily(fontRef: GQL.FontReference): string {
-  if (fontRef.__typename === "FontReferenceGoogle" && fontRef.identifier) {
-    return fontRef.identifier;
+  if (fontRef.__typename === "FontReferenceGoogle" && fontRef.family) {
+    return fontRef.family;
   }
   return "Roboto";
 }

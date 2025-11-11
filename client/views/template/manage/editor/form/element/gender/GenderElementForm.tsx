@@ -4,7 +4,7 @@ import { BaseCertificateElementForm, UpdateBaseElementFn } from "../base";
 import { TextPropsForm, UpdateTextPropsFn } from "../textProps";
 import { ActionButtons } from "../component/ActionButtons";
 import type { GenderElementFormState, GenderElementFormErrors } from "./types";
-import type { Font } from "@/client/graphql/generated/gql/graphql";
+import type { FontFamily } from "@/client/graphql/generated/gql/graphql";
 
 export interface GenderElementFormProps {
   // State
@@ -12,7 +12,7 @@ export interface GenderElementFormProps {
   errors: GenderElementFormErrors;
 
   // Available fonts
-  selfHostedFonts: Font[];
+  fontFamilies: FontFamily[];
 
   // Locale
   locale: string;
@@ -32,7 +32,7 @@ export interface GenderElementFormProps {
 export const GenderElementForm: FC<GenderElementFormProps> = ({
   state,
   errors,
-  selfHostedFonts,
+  fontFamilies,
   locale,
   updateBase,
   updateTextProps,
@@ -52,7 +52,7 @@ export const GenderElementForm: FC<GenderElementFormProps> = ({
             <TextPropsForm
               textProps={state.textProps}
               language={locale}
-              selfHostedFonts={selfHostedFonts}
+              fontFamilies={fontFamilies}
               onTextPropsChange={updateTextProps}
               errors={errors.textProps}
               disabled={disabled}

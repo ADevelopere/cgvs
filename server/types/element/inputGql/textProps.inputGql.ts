@@ -3,13 +3,15 @@
 // ============================================================================
 
 import { TextPropsInput } from "../input";
+import { FontFamily } from "@/lib/font/google/fontFamily.enum";
 
 export type FontReferenceGoogleInputGraphql = {
-  identifier: string;
+  family: FontFamily;
+  variant: string;
 };
 
 export type FontReferenceSelfHostedInputGraphql = {
-  fontId: number;
+  fontVariantId: number;
 };
 
 export type FontReferenceInputGraphql =

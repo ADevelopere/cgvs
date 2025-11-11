@@ -17,7 +17,7 @@ import rtlPlugin from "stylis-plugin-rtl";
 import createCache from "@emotion/cache";
 import { CacheProvider } from "@emotion/react";
 import { loadFromLocalStorage } from "@/client/utils/localStorage";
-import { AppLanguage } from "@/lib/enum";
+import { AppLanguage } from "../graphql/generated/gql/graphql";
 
 // Create rtl cache
 const cacheRtl = createCache({
@@ -55,10 +55,10 @@ const getStoredLanguage = (): string => {
   // Only access window on the client
   if (typeof window !== "undefined") {
     const initialLanguage = (window as unknown as { __INITIAL_LANGUAGE__: string }).__INITIAL_LANGUAGE__;
-    return initialLanguage || loadFromLocalStorage("language") || AppLanguage.default;
+    return initialLanguage || loadFromLocalStorage("language") || AppLanguage.Ar;
   }
   // On server, return default
-  return AppLanguage.default;
+  return AppLanguage.Ar;
 };
 
 export function matchMedia(query: string): MediaQueryList | undefined {
@@ -103,7 +103,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children, in
     hasInitialProps && initialTheme ? initialTheme : ThemeMode.System
   );
   const [currentLanguage, setCurrentLanguage] = React.useState<AppLanguage>(
-    hasInitialProps && initialLanguage ? (initialLanguage as AppLanguage) : (AppLanguage.default as AppLanguage)
+    hasInitialProps && initialLanguage ? (initialLanguage as AppLanguage) : (AppLanguage.Ar as AppLanguage)
   );
   const [isTransitioning, setIsTransitioning] = React.useState(false);
   const [transitionDirection, setTransitionDirection] = React.useState<"rtl" | "ltr">("ltr");
@@ -113,7 +113,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({ children, in
   React.useEffect(() => {
     // If initial props are provided, use them instead of localStorage
     if (hasInitialProps) {
-      const language = initialLanguage || AppLanguage.default;
+      const language = initialLanguage || AppLanguage.Ar;
       const mode = initialTheme || ThemeMode.System;
 
       updateLanguage(language);

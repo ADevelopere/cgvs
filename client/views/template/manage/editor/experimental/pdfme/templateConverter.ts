@@ -1,7 +1,6 @@
 import type { Template, Schema } from "@pdfme/common";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { logger } from "@/client/lib/logger";
-import { FontFamily } from "@/lib/font/google";
 import { UseBaseElementStateReturn, UseTextPropsStateReturn, UseTextDataSourceStateReturn } from "../../form/hooks";
 
 const dumpVerificationCode = () => {
@@ -220,16 +219,16 @@ export class TemplateConverter {
    * Convert font reference to font name
    */
   private static convertFontRef(fontRef: GQL.FontReferenceInput): string {
-    if (fontRef.google?.identifier) {
-      const identifier = fontRef.google.identifier as FontFamily;
-      if (identifier) {
-        return identifier;
+    if (fontRef.google?.family) {
+      const family = fontRef.google.family;
+      if (family) {
+        return family;
       } else {
-        return FontFamily.ROBOTO;
+        return GQL.FontFamilyName.Roboto;
       }
     } else {
       // TODO: Add support for self-hosted fonts
-      return FontFamily.ROBOTO;
+      return GQL.FontFamilyName.Roboto;
     }
   }
 

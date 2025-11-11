@@ -10,6 +10,8 @@ import {
   CertificateElementBaseInput,
   CertificateElementBaseUpdateInput,
 } from "@/server/types/element";
+import { FontFamily } from "@/lib/font/google/fontFamily.enum";
+import { getFontByFamily } from "@/lib/font/google";
 import { ElementRepository } from "@/server/db/repo/element/element.repository";
 import { ElementUtils } from "./element.utils";
 
@@ -29,12 +31,13 @@ export namespace CommonElementUtils {
     if (input?.google) {
       return {
         type: FontSource.GOOGLE,
-        identifier: input?.google?.identifier,
+        family: input.google.family,
+        variant: input.google.variant,
       };
     } else if (input?.selfHosted) {
       return {
         type: FontSource.SELF_HOSTED,
-        fontId: input.selfHosted.fontId,
+        fontVariantId: input.selfHosted.fontVariantId,
       };
     }
     throw new Error("Invalid FontReference input: must specify either google or selfHosted");
@@ -94,24 +97,22 @@ export namespace CommonElementUtils {
    */
   export const validateFontReference = async (fontRef: FontReference): Promise<void> => {
     if (fontRef.type === FontSource.SELF_HOSTED) {
-      // Validate font ID exists in database
-      if (!fontRef.fontId) {
-        throw new Error("Font ID is required for SELF_HOSTED fonts");
+      // Validate font variant ID exists in database
+      if (!fontRef.fontVariantId) {
+        throw new Error("Font variant ID is required for SELF_HOSTED fonts");
       }
-      await ElementRepository.validateFontId(fontRef.fontId);
+      await ElementRepository.validateFontVariantId(fontRef.fontVariantId);
     } else if (fontRef.type === FontSource.GOOGLE) {
-      // Validate Google font identifier is not empty
-      if (!fontRef.identifier || fontRef.identifier.trim().length === 0) {
-        throw new Error("Google font identifier cannot be empty");
+      // Validate Google font family and variant
+      if (!fontRef.family) {
+        throw new Error("Google font family is required");
       }
-      // Validate identifier format (letters, numbers, spaces, hyphens)
-      if (!/^[a-zA-Z0-9\s\-+]+$/.test(fontRef.identifier)) {
-        throw new Error(
-          "Google font identifier contains invalid characters. Only letters, numbers, spaces, hyphens, and plus signs are allowed"
-        );
+      if (!fontRef.variant || fontRef.variant.trim().length === 0) {
+        throw new Error("Google font variant cannot be empty");
       }
+      validateGoogleFontReference(fontRef.family, fontRef.variant);
     } else {
-      throw new Error(`Invalid font source type}`);
+      throw new Error(`Invalid font source type`);
     }
   };
 
@@ -173,6 +174,21 @@ export namespace CommonElementUtils {
     const validOverflows = Object.values(ElementOverflow);
     if (!validOverflows.includes(overflow)) {
       throw new Error(`Invalid overflow value: ${overflow}. Must be one of: ${validOverflows.join(", ")}`);
+    }
+  };
+
+  /**
+   * Validate Google font family and variant combination
+   */
+  export const validateGoogleFontReference = (family: FontFamily, variant: string): void => {
+    const fontItem = getFontByFamily(family);
+
+    if (!fontItem) {
+      throw new Error(`Invalid Google Font family: "${family}".`);
+    }
+
+    if (!fontItem.variants.includes(variant)) {
+      throw new Error(`Invalid variant "${variant}" for Google Font "${family}".`);
     }
   };
 

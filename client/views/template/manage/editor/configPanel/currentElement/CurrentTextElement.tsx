@@ -5,7 +5,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { BaseCertificateElementForm } from "../../form/element/base";
 import { TextPropsForm } from "../../form/element/textProps";
 import { useQuery } from "@apollo/client/react";
-import { fontsQueryDocument } from "@/client/views/font/hooks";
+import { fontFamiliesQueryDocument } from "@/client/views/font/hooks";
 import { DataSourceForm } from "../../form/element/text";
 import { useBaseElement, useTextProps, useTextDataSource } from "../../form/hooks";
 import { useCertificateElementStates } from "../../context/CertificateElementContext";
@@ -18,11 +18,11 @@ export type CurrentTextElementProps = {
 
 export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({ element, templateConfig }) => {
   const { certificateElementsTranslations: strings } = useAppTranslation();
-  const { data: fontsData, loading: _fontsLoading, error: _fontsError } = useQuery(fontsQueryDocument);
+  const { data: fontsData, loading: _fontsLoading, error: _fontsError } = useQuery(fontFamiliesQueryDocument);
 
-  const fonts = React.useMemo(() => {
-    return fontsData?.fonts.data || [];
-  }, [fontsData?.fonts]);
+  const fontFamilies = React.useMemo(() => {
+    return fontsData?.fontFamilies || [];
+  }, [fontsData?.fontFamilies]);
 
   const { textPropsState, updateTextProps, textPropsErrors } = useTextProps({
     elementId: element.base.id,
@@ -80,7 +80,7 @@ export const CurrentTextElement: React.FC<CurrentTextElementProps> = ({ element,
             textProps={textPropsState}
             onTextPropsChange={updateTextProps}
             errors={textPropsErrors}
-            selfHostedFonts={fonts}
+            fontFamilies={fontFamilies}
             language={templateConfig.language}
             showTitle={false}
           />

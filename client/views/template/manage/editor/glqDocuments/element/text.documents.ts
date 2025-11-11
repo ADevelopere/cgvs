@@ -54,11 +54,12 @@ export const textElementByIdQueryDocument: TypedDocumentNode<
         color
         fontRef {
           ... on FontReferenceGoogle {
-            identifier
+            family
             type
+            variant
           }
           ... on FontReferenceSelfHosted {
-            fontId
+            fontVariantId
             type
           }
         }
@@ -123,11 +124,12 @@ export const createTextElementMutationDocument: TypedDocumentNode<
         color
         fontRef {
           ... on FontReferenceGoogle {
-            identifier
+            family
             type
+            variant
           }
           ... on FontReferenceSelfHosted {
-            fontId
+            fontVariantId
             type
           }
         }
@@ -192,11 +194,12 @@ export const updateTextElementMutationDocument: TypedDocumentNode<
         color
         fontRef {
           ... on FontReferenceGoogle {
-            identifier
+            family
             type
+            variant
           }
           ... on FontReferenceSelfHosted {
-            fontId
+            fontVariantId
             type
           }
         }

@@ -1,5 +1,5 @@
 export * from "./auth.pothos";
-export * from "./element";
+export * from "./element/index";
 export * from "./enum.pothos";
 export * from "./font.pothos";
 export * from "./pagination.objects";

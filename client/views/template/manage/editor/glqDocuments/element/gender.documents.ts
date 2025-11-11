@@ -27,11 +27,12 @@ export const createGenderElementMutationDocument: TypedDocumentNode<
         color
         fontRef {
           ... on FontReferenceGoogle {
-            identifier
+            family
             type
+            variant
           }
           ... on FontReferenceSelfHosted {
-            fontId
+            fontVariantId
             type
           }
         }
@@ -69,11 +70,12 @@ export const updateGenderElementMutationDocument: TypedDocumentNode<
         color
         fontRef {
           ... on FontReferenceGoogle {
-            identifier
+            family
             type
+            variant
           }
           ... on FontReferenceSelfHosted {
-            fontId
+            fontVariantId
             type
           }
         }

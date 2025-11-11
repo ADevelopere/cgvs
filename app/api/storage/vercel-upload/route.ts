@@ -42,12 +42,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     });
 
     // Step 2: Parse request body from Vercel SDK
-    const body = await request.json() as HandleUploadBody;
+    const body = (await request.json()) as HandleUploadBody;
     if (body.type !== "blob.generate-client-token") {
       throw new Error("InvalidEventType");
     }
 
-    const clientPlayload: VercelUploadUrlClientPlayload = body.payload.clientPayload ? JSON.parse(body.payload.clientPayload) : {};
+    const clientPlayload: VercelUploadUrlClientPlayload = body.payload.clientPayload
+      ? JSON.parse(body.payload.clientPayload)
+      : {};
     const pathName = body.payload.pathname;
     if (!pathName) {
       logger.warn("Missing pathname in upload request", {
@@ -56,8 +58,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: "Missing pathname in upload request" }, { status: 400 });
     }
 
-
-    const { sessionId, fileSize, contentType } = clientPlayload
+    const { sessionId, fileSize, contentType } = clientPlayload;
     if (!sessionId) {
       logger.warn("Missing upload session ID", {
         pathname: pathName,
@@ -108,7 +109,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       });
       return NextResponse.json({ error: "Uploads not allowed in this directory" }, { status: 403 });
     }
-
 
     // Step 6: Validate existing session
     const session = await SignedUrlRepository.getSignedUrlById(sessionId);

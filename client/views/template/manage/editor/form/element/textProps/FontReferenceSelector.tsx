@@ -10,7 +10,13 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
-import { AppLanguage, Font, FontReferenceInput, FontSource } from "@/client/graphql/generated/gql/graphql";
+import {
+  AppLanguage,
+  FontFamily,
+  FontReferenceInput,
+  FontSource,
+  FontFamilyName,
+} from "@/client/graphql/generated/gql/graphql";
 import { UpdateFontRefFn } from "./types";
 import { getLanguageFonts } from "@/lib/font/google/utils";
 import { Language } from "@/lib/font/google/enum";
@@ -18,7 +24,7 @@ import { Language } from "@/lib/font/google/enum";
 interface FontReferenceSelectorProps {
   fontRef: FontReferenceInput;
   language: AppLanguage;
-  selfHostedFonts: Font[];
+  fontFamilies: FontFamily[];
   onFontRefChange: UpdateFontRefFn;
   error?: string;
   disabled?: boolean;
@@ -27,7 +33,7 @@ interface FontReferenceSelectorProps {
 export const FontReferenceSelector: FC<FontReferenceSelectorProps> = ({
   fontRef,
   language,
-  selfHostedFonts,
+  fontFamilies,
   onFontRefChange,
   error,
   disabled,
@@ -40,68 +46,120 @@ export const FontReferenceSelector: FC<FontReferenceSelectorProps> = ({
 
   const handleSourceChange = (newSource: FontSource) => {
     if (newSource === "GOOGLE") {
-      onFontRefChange({ google: { identifier: "Roboto" } });
+      onFontRefChange({ google: { family: FontFamilyName.Roboto, variant: "400" } });
     } else {
-      const firstFontId = selfHostedFonts[0]?.id;
-      if (firstFontId) {
-        onFontRefChange({ selfHosted: { fontId: firstFontId } });
+      const firstVariant = fontFamilies[0]?.variants[0];
+      if (firstVariant) {
+        onFontRefChange({ selfHosted: { fontVariantId: firstVariant.id } });
       }
     }
   };
 
   const renderFontInput = () => {
-    if (fontRef.google?.identifier) {
-      const identifier = fontRef.google.identifier;
-      return (
-        <Autocomplete
-          value={googleFonts.find(f => f.family === identifier) || null}
-          options={googleFonts}
-          getOptionLabel={option => option.family}
-          onChange={(_event, newValue) => {
-            if (newValue) {
-              onFontRefChange({
-                google: { identifier: newValue.family },
-              });
-            }
-          }}
-          disabled={disabled}
-          renderInput={params => (
-            <TextField
-              {...params}
-              label={strings.textProps.googleFontLabel}
-              placeholder={strings.textProps.googleFontPlaceholder}
-              error={!!error}
-              helperText={error}
-            />
-          )}
-        />
-      );
-    } else if (fontRef.selfHosted?.fontId) {
-      const fontId = fontRef.selfHosted.fontId;
-      const selectedFont = selfHostedFonts.find(f => f.id === fontId) || null;
+    if (fontRef.google?.family) {
+      const family = fontRef.google.family;
+      const variant = fontRef.google.variant || "400";
 
       return (
-        <Autocomplete
-          value={selectedFont}
-          options={selfHostedFonts}
-          getOptionLabel={option => option.name || ""}
-          onChange={(_event, newValue) => {
-            if (newValue?.id) {
-              onFontRefChange({ selfHosted: { fontId: newValue.id } });
-            }
-          }}
-          disabled={disabled}
-          noOptionsText={strings.textProps.noFontsFound}
-          renderInput={params => (
-            <TextField
-              {...params}
-              label={strings.textProps.selfHostedFontLabel}
-              placeholder={strings.textProps.selfHostedFontPlaceholder}
-              error={!!error}
-              helperText={error}
+        <Box>
+          <Autocomplete
+            value={googleFonts.find(f => f.family === family) || null}
+            options={googleFonts}
+            getOptionLabel={option => option.family}
+            onChange={(_event, newValue) => {
+              if (newValue) {
+                onFontRefChange({
+                  google: { family: newValue.family as FontFamilyName, variant },
+                });
+              }
+            }}
+            disabled={disabled}
+            renderInput={params => (
+              <TextField
+                {...params}
+                label={strings.textProps.googleFontLabel}
+                placeholder={strings.textProps.googleFontPlaceholder}
+                error={!!error}
+                helperText={error}
+                sx={{ mb: 2 }}
+              />
+            )}
+          />
+          <TextField
+            label={strings.textProps.fontVariantLabel || "Variant"}
+            value={variant}
+            onChange={e => {
+              onFontRefChange({
+                google: { family, variant: e.target.value },
+              });
+            }}
+            disabled={disabled}
+            fullWidth
+            placeholder="400, 700, italic, etc."
+          />
+        </Box>
+      );
+    } else if (fontRef.selfHosted?.fontVariantId) {
+      const fontVariantId = fontRef.selfHosted.fontVariantId;
+
+      // Find the selected variant and its family
+      let selectedFamily: FontFamily | null = null;
+      let selectedVariant: any = null;
+
+      for (const family of fontFamilies) {
+        const variant = family.variants.find(v => v.id === fontVariantId);
+        if (variant) {
+          selectedFamily = family;
+          selectedVariant = variant;
+          break;
+        }
+      }
+
+      return (
+        <Box>
+          <Autocomplete
+            value={selectedFamily}
+            options={fontFamilies}
+            getOptionLabel={option => option.name || ""}
+            onChange={(_event, newFamily) => {
+              if (newFamily?.variants[0]) {
+                onFontRefChange({ selfHosted: { fontVariantId: newFamily.variants[0].id } });
+              }
+            }}
+            disabled={disabled}
+            noOptionsText={strings.textProps.noFontsFound}
+            renderInput={params => (
+              <TextField
+                {...params}
+                label={strings.textProps.selfHostedFontLabel}
+                placeholder={strings.textProps.selfHostedFontPlaceholder}
+                error={!!error}
+                helperText={error}
+                sx={{ mb: 2 }}
+              />
+            )}
+          />
+          {selectedFamily && (
+            <Autocomplete
+              value={selectedVariant}
+              options={selectedFamily.variants}
+              getOptionLabel={option => option.variant || ""}
+              onChange={(_event, newVariant) => {
+                if (newVariant?.id) {
+                  onFontRefChange({ selfHosted: { fontVariantId: newVariant.id } });
+                }
+              }}
+              disabled={disabled}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  label={strings.textProps.fontVariantLabel || "Variant"}
+                  placeholder="Select variant"
+                />
+              )}
             />
           )}
-        />
+        </Box>
       );
     }
     return null;
@@ -109,7 +167,7 @@ export const FontReferenceSelector: FC<FontReferenceSelectorProps> = ({
 
   // Determine current font source from FontReferenceInput
   const currentSource: FontSource = React.useMemo(
-    () => (fontRef.google?.identifier ? FontSource.Google : FontSource.SelfHosted),
+    () => (fontRef.google?.family ? FontSource.Google : FontSource.SelfHosted),
     [fontRef]
   );
 

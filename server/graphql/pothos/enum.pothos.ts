@@ -1,18 +1,23 @@
 import { OrderSortDirection, Gender, CountryCode, AppLanguage } from "@/lib/enum";
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
+import { FontFamily } from "@/lib/font/google";
 
-export const OrderSortDirectionPothosObject = gqlSchemaBuilder.enumType("OrderSortDirection", {
-  values: Object.values(OrderSortDirection),
+export const OrderSortDirectionPothosObject = gqlSchemaBuilder.enumType(OrderSortDirection, {
+  name: "OrderSortDirection",
 });
 
-export const GenderPothosObject = gqlSchemaBuilder.enumType("Gender", {
-  values: Object.values(Gender),
+export const GenderPothosObject = gqlSchemaBuilder.enumType(Gender, {
+  name: "Gender",
 });
 
-export const CountryCodePothosObject = gqlSchemaBuilder.enumType("CountryCode", {
-  values: Object.values(CountryCode),
+export const CountryCodePothosObject = gqlSchemaBuilder.enumType(CountryCode, {
+  name: "CountryCode",
 });
 
-export const AppLanguagePothosObject = gqlSchemaBuilder.enumType("AppLanguage", {
-  values: Object.values(AppLanguage),
+export const AppLanguagePothosObject = gqlSchemaBuilder.enumType(AppLanguage, {
+  name: "AppLanguage",
+});
+
+export const FontFamilyPothosObject = gqlSchemaBuilder.enumType(FontFamily, {
+  name: "FontFamilyName",
 });

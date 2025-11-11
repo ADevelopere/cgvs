@@ -46,8 +46,18 @@ function sanitizeSubsetForVar(name: string): string {
 function sanitizeFamilyForEnum(family: string): string {
   return family
     .toUpperCase()
-    .replace(/[^A-Z0-9]/g, "_")
+    .replace(/\s+/g, "_") // Replace all whitespace with underscores first
+    .replace(/[^A-Z0-9_]/g, "_") // Replace remaining non-alphanumeric chars with underscores
+    .replace(/_{2,}/g, "_") // Replace multiple consecutive underscores with single underscore
     .replace(/^(\d)/, "_$1"); // Prefix if starts with number
+}
+
+/**
+ * Sanitizes a font family name for use as enum value (replaces spaces with underscores).
+ * Example: "Open Sans" -> "Open_Sans", "Cairo" -> "Cairo"
+ */
+function sanitizeFamilyForEnumValue(family: string): string {
+  return family.replace(/\s+/g, "_");
 }
 
 /**
@@ -222,7 +232,8 @@ function createFontFamilyEnumContent(allFonts: GoogleFontItem[]): string {
   const enumEntries = allFonts
     .map(font => {
       const enumKey = sanitizeFamilyForEnum(font.family);
-      return `  ${enumKey} = "${font.family}",`;
+      const enumValue = sanitizeFamilyForEnumValue(font.family);
+      return `  ${enumKey} = "${enumValue}",`;
     })
     .join("\n");
 

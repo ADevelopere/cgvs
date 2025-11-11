@@ -725,53 +725,1952 @@ export type FolderCreateInput = {
   protected?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type Font = {
-  __typename?: 'Font';
+export type FontFamily = {
+  __typename?: 'FontFamily';
+  category?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
-  file?: Maybe<FileInfo>;
   id: Scalars['Int']['output'];
   locale: Array<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
-  url?: Maybe<Scalars['String']['output']>;
+  variants: Array<FontVariant>;
 };
 
-export type FontCreateInput = {
+export type FontFamilyCreateInput = {
+  category?: InputMaybe<Scalars['String']['input']>;
   locale: Array<Scalars['String']['input']>;
   name: Scalars['String']['input'];
-  storageFilePath: Scalars['String']['input'];
 };
 
-export type FontFilterArgs = {
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  createdAtAfter?: InputMaybe<Scalars['DateTime']['input']>;
-  createdAtBefore?: InputMaybe<Scalars['DateTime']['input']>;
-  createdAtFrom?: InputMaybe<Scalars['DateTime']['input']>;
-  createdAtTo?: InputMaybe<Scalars['DateTime']['input']>;
-  locale?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  nameEndsWith?: InputMaybe<Scalars['String']['input']>;
-  nameEquals?: InputMaybe<Scalars['String']['input']>;
-  nameIsEmpty?: InputMaybe<Scalars['Boolean']['input']>;
-  nameIsNotEmpty?: InputMaybe<Scalars['Boolean']['input']>;
-  nameNotContains?: InputMaybe<Scalars['String']['input']>;
-  nameNotEquals?: InputMaybe<Scalars['String']['input']>;
-  nameStartsWith?: InputMaybe<Scalars['String']['input']>;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  updatedAtFrom?: InputMaybe<Scalars['DateTime']['input']>;
-  updatedAtTo?: InputMaybe<Scalars['DateTime']['input']>;
+export enum FontFamilyName {
+  Abeezee = 'ABEEZEE',
+  Abel = 'ABEL',
+  AbhayaLibre = 'ABHAYA_LIBRE',
+  Aboreto = 'ABORETO',
+  AbrilFatface = 'ABRIL_FATFACE',
+  AbyssinicaSil = 'ABYSSINICA_SIL',
+  Aclonica = 'ACLONICA',
+  Acme = 'ACME',
+  Actor = 'ACTOR',
+  Adamina = 'ADAMINA',
+  AdlamDisplay = 'ADLAM_DISPLAY',
+  AdventPro = 'ADVENT_PRO',
+  Afacad = 'AFACAD',
+  AfacadFlux = 'AFACAD_FLUX',
+  Agbalumo = 'AGBALUMO',
+  Agdasima = 'AGDASIMA',
+  AguafinaScript = 'AGUAFINA_SCRIPT',
+  AguDisplay = 'AGU_DISPLAY',
+  Akatab = 'AKATAB',
+  AkayaKanadaka = 'AKAYA_KANADAKA',
+  AkayaTelivigala = 'AKAYA_TELIVIGALA',
+  Akronim = 'AKRONIM',
+  Akshar = 'AKSHAR',
+  Aladin = 'ALADIN',
+  AlanSans = 'ALAN_SANS',
+  Alata = 'ALATA',
+  Alatsi = 'ALATSI',
+  AlbertSans = 'ALBERT_SANS',
+  Aldrich = 'ALDRICH',
+  Alef = 'ALEF',
+  Alegreya = 'ALEGREYA',
+  AlegreyaSans = 'ALEGREYA_SANS',
+  AlegreyaSansSc = 'ALEGREYA_SANS_SC',
+  AlegreyaSc = 'ALEGREYA_SC',
+  Aleo = 'ALEO',
+  Alexandria = 'ALEXANDRIA',
+  AlexBrush = 'ALEX_BRUSH',
+  AlfaSlabOne = 'ALFA_SLAB_ONE',
+  Alice = 'ALICE',
+  Alike = 'ALIKE',
+  AlikeAngular = 'ALIKE_ANGULAR',
+  Alkalami = 'ALKALAMI',
+  Alkatra = 'ALKATRA',
+  Allan = 'ALLAN',
+  Allerta = 'ALLERTA',
+  AllertaStencil = 'ALLERTA_STENCIL',
+  Allison = 'ALLISON',
+  Allura = 'ALLURA',
+  Almarai = 'ALMARAI',
+  Almendra = 'ALMENDRA',
+  AlmendraDisplay = 'ALMENDRA_DISPLAY',
+  AlmendraSc = 'ALMENDRA_SC',
+  AlumniSans = 'ALUMNI_SANS',
+  AlumniSansCollegiateOne = 'ALUMNI_SANS_COLLEGIATE_ONE',
+  AlumniSansInlineOne = 'ALUMNI_SANS_INLINE_ONE',
+  AlumniSansPinstripe = 'ALUMNI_SANS_PINSTRIPE',
+  AlumniSansSc = 'ALUMNI_SANS_SC',
+  Amarante = 'AMARANTE',
+  Amaranth = 'AMARANTH',
+  AmaticSc = 'AMATIC_SC',
+  Amethysta = 'AMETHYSTA',
+  Amiko = 'AMIKO',
+  Amiri = 'AMIRI',
+  AmiriQuran = 'AMIRI_QURAN',
+  Amita = 'AMITA',
+  Anaheim = 'ANAHEIM',
+  AncizarSans = 'ANCIZAR_SANS',
+  AncizarSerif = 'ANCIZAR_SERIF',
+  AndadaPro = 'ANDADA_PRO',
+  Andika = 'ANDIKA',
+  AnekBangla = 'ANEK_BANGLA',
+  AnekDevanagari = 'ANEK_DEVANAGARI',
+  AnekGujarati = 'ANEK_GUJARATI',
+  AnekGurmukhi = 'ANEK_GURMUKHI',
+  AnekKannada = 'ANEK_KANNADA',
+  AnekLatin = 'ANEK_LATIN',
+  AnekMalayalam = 'ANEK_MALAYALAM',
+  AnekOdia = 'ANEK_ODIA',
+  AnekTamil = 'ANEK_TAMIL',
+  AnekTelugu = 'ANEK_TELUGU',
+  Angkor = 'ANGKOR',
+  AnnapurnaSil = 'ANNAPURNA_SIL',
+  AnnieUseYourTelescope = 'ANNIE_USE_YOUR_TELESCOPE',
+  AnonymousPro = 'ANONYMOUS_PRO',
+  Anta = 'ANTA',
+  Antic = 'ANTIC',
+  AnticDidone = 'ANTIC_DIDONE',
+  AnticSlab = 'ANTIC_SLAB',
+  Anton = 'ANTON',
+  Antonio = 'ANTONIO',
+  AntonSc = 'ANTON_SC',
+  Anuphan = 'ANUPHAN',
+  Anybody = 'ANYBODY',
+  AoboshiOne = 'AOBOSHI_ONE',
+  Arapey = 'ARAPEY',
+  Arbutus = 'ARBUTUS',
+  ArbutusSlab = 'ARBUTUS_SLAB',
+  ArchitectsDaughter = 'ARCHITECTS_DAUGHTER',
+  Archivo = 'ARCHIVO',
+  ArchivoBlack = 'ARCHIVO_BLACK',
+  ArchivoNarrow = 'ARCHIVO_NARROW',
+  ArefRuqaa = 'AREF_RUQAA',
+  ArefRuqaaInk = 'AREF_RUQAA_INK',
+  AreYouSerious = 'ARE_YOU_SERIOUS',
+  Arima = 'ARIMA',
+  Arimo = 'ARIMO',
+  Arizonia = 'ARIZONIA',
+  Armata = 'ARMATA',
+  Arsenal = 'ARSENAL',
+  ArsenalSc = 'ARSENAL_SC',
+  Artifika = 'ARTIFIKA',
+  Arvo = 'ARVO',
+  Arya = 'ARYA',
+  ArOneSans = 'AR_ONE_SANS',
+  Asap = 'ASAP',
+  AsapCondensed = 'ASAP_CONDENSED',
+  Asar = 'ASAR',
+  Asimovian = 'ASIMOVIAN',
+  Asset = 'ASSET',
+  Assistant = 'ASSISTANT',
+  AstaSans = 'ASTA_SANS',
+  Astloch = 'ASTLOCH',
+  Asul = 'ASUL',
+  Athiti = 'ATHITI',
+  AtkinsonHyperlegible = 'ATKINSON_HYPERLEGIBLE',
+  AtkinsonHyperlegibleMono = 'ATKINSON_HYPERLEGIBLE_MONO',
+  AtkinsonHyperlegibleNext = 'ATKINSON_HYPERLEGIBLE_NEXT',
+  Atma = 'ATMA',
+  AtomicAge = 'ATOMIC_AGE',
+  Aubrey = 'AUBREY',
+  Audiowide = 'AUDIOWIDE',
+  AutourOne = 'AUTOUR_ONE',
+  Average = 'AVERAGE',
+  AverageSans = 'AVERAGE_SANS',
+  AveriaGruesaLibre = 'AVERIA_GRUESA_LIBRE',
+  AveriaLibre = 'AVERIA_LIBRE',
+  AveriaSansLibre = 'AVERIA_SANS_LIBRE',
+  AveriaSerifLibre = 'AVERIA_SERIF_LIBRE',
+  AzeretMono = 'AZERET_MONO',
+  B612 = 'B612',
+  B612Mono = 'B612_MONO',
+  Babylonica = 'BABYLONICA',
+  BacasimeAntique = 'BACASIME_ANTIQUE',
+  BadeenDisplay = 'BADEEN_DISPLAY',
+  BadScript = 'BAD_SCRIPT',
+  BagelFatOne = 'BAGEL_FAT_ONE',
+  Bahiana = 'BAHIANA',
+  Bahianita = 'BAHIANITA',
+  BaiJamjuree = 'BAI_JAMJUREE',
+  BakbakOne = 'BAKBAK_ONE',
+  Ballet = 'BALLET',
+  Baloo_2 = 'BALOO_2',
+  BalooBhaijaan_2 = 'BALOO_BHAIJAAN_2',
+  BalooBhaina_2 = 'BALOO_BHAINA_2',
+  BalooBhai_2 = 'BALOO_BHAI_2',
+  BalooChettan_2 = 'BALOO_CHETTAN_2',
+  BalooDa_2 = 'BALOO_DA_2',
+  BalooPaaji_2 = 'BALOO_PAAJI_2',
+  BalooTamma_2 = 'BALOO_TAMMA_2',
+  BalooTammudu_2 = 'BALOO_TAMMUDU_2',
+  BalooThambi_2 = 'BALOO_THAMBI_2',
+  BalsamiqSans = 'BALSAMIQ_SANS',
+  Balthazar = 'BALTHAZAR',
+  Bangers = 'BANGERS',
+  Barlow = 'BARLOW',
+  BarlowCondensed = 'BARLOW_CONDENSED',
+  BarlowSemiCondensed = 'BARLOW_SEMI_CONDENSED',
+  Barriecito = 'BARRIECITO',
+  Barrio = 'BARRIO',
+  Basic = 'BASIC',
+  Baskervville = 'BASKERVVILLE',
+  BaskervvilleSc = 'BASKERVVILLE_SC',
+  Battambang = 'BATTAMBANG',
+  Baumans = 'BAUMANS',
+  Bayon = 'BAYON',
+  BbhSansBartle = 'BBH_SANS_BARTLE',
+  BbhSansBogle = 'BBH_SANS_BOGLE',
+  BbhSansHegarty = 'BBH_SANS_HEGARTY',
+  BeauRivage = 'BEAU_RIVAGE',
+  BebasNeue = 'BEBAS_NEUE',
+  Beiruti = 'BEIRUTI',
+  Belanosima = 'BELANOSIMA',
+  Belgrano = 'BELGRANO',
+  Bellefair = 'BELLEFAIR',
+  Belleza = 'BELLEZA',
+  Bellota = 'BELLOTA',
+  BellotaText = 'BELLOTA_TEXT',
+  Benchnine = 'BENCHNINE',
+  Benne = 'BENNE',
+  Bentham = 'BENTHAM',
+  BerkshireSwash = 'BERKSHIRE_SWASH',
+  Besley = 'BESLEY',
+  BethEllen = 'BETH_ELLEN',
+  Bevan = 'BEVAN',
+  BeVietnamPro = 'BE_VIETNAM_PRO',
+  BhutukaExpandedOne = 'BHUTUKA_EXPANDED_ONE',
+  BigelowRules = 'BIGELOW_RULES',
+  BigshotOne = 'BIGSHOT_ONE',
+  BigShoulders = 'BIG_SHOULDERS',
+  BigShouldersInline = 'BIG_SHOULDERS_INLINE',
+  BigShouldersStencil = 'BIG_SHOULDERS_STENCIL',
+  Bilbo = 'BILBO',
+  BilboSwashCaps = 'BILBO_SWASH_CAPS',
+  Biorhyme = 'BIORHYME',
+  BiorhymeExpanded = 'BIORHYME_EXPANDED',
+  Birthstone = 'BIRTHSTONE',
+  BirthstoneBounce = 'BIRTHSTONE_BOUNCE',
+  Biryani = 'BIRYANI',
+  Bitcount = 'BITCOUNT',
+  BitcountGridDouble = 'BITCOUNT_GRID_DOUBLE',
+  BitcountGridDoubleInk = 'BITCOUNT_GRID_DOUBLE_INK',
+  BitcountGridSingle = 'BITCOUNT_GRID_SINGLE',
+  BitcountGridSingleInk = 'BITCOUNT_GRID_SINGLE_INK',
+  BitcountInk = 'BITCOUNT_INK',
+  BitcountPropDouble = 'BITCOUNT_PROP_DOUBLE',
+  BitcountPropDoubleInk = 'BITCOUNT_PROP_DOUBLE_INK',
+  BitcountPropSingle = 'BITCOUNT_PROP_SINGLE',
+  BitcountPropSingleInk = 'BITCOUNT_PROP_SINGLE_INK',
+  BitcountSingle = 'BITCOUNT_SINGLE',
+  BitcountSingleInk = 'BITCOUNT_SINGLE_INK',
+  Bitter = 'BITTER',
+  BizUdgothic = 'BIZ_UDGOTHIC',
+  BizUdmincho = 'BIZ_UDMINCHO',
+  BizUdpgothic = 'BIZ_UDPGOTHIC',
+  BizUdpmincho = 'BIZ_UDPMINCHO',
+  BlackAndWhitePicture = 'BLACK_AND_WHITE_PICTURE',
+  BlackHanSans = 'BLACK_HAN_SANS',
+  BlackOpsOne = 'BLACK_OPS_ONE',
+  Blaka = 'BLAKA',
+  BlakaHollow = 'BLAKA_HOLLOW',
+  BlakaInk = 'BLAKA_INK',
+  Blinker = 'BLINKER',
+  BodoniModa = 'BODONI_MODA',
+  BodoniModaSc = 'BODONI_MODA_SC',
+  Bokor = 'BOKOR',
+  Boldonse = 'BOLDONSE',
+  BonaNova = 'BONA_NOVA',
+  BonaNovaSc = 'BONA_NOVA_SC',
+  Bonbon = 'BONBON',
+  BonheurRoyale = 'BONHEUR_ROYALE',
+  Boogaloo = 'BOOGALOO',
+  Borel = 'BOREL',
+  BowlbyOne = 'BOWLBY_ONE',
+  BowlbyOneSc = 'BOWLBY_ONE_SC',
+  BraahOne = 'BRAAH_ONE',
+  Brawler = 'BRAWLER',
+  BreeSerif = 'BREE_SERIF',
+  BricolageGrotesque = 'BRICOLAGE_GROTESQUE',
+  BrunoAce = 'BRUNO_ACE',
+  BrunoAceSc = 'BRUNO_ACE_SC',
+  Brygada_1918 = 'BRYGADA_1918',
+  BubblegumSans = 'BUBBLEGUM_SANS',
+  BubblerOne = 'BUBBLER_ONE',
+  Buda = 'BUDA',
+  Buenard = 'BUENARD',
+  Bungee = 'BUNGEE',
+  BungeeHairline = 'BUNGEE_HAIRLINE',
+  BungeeInline = 'BUNGEE_INLINE',
+  BungeeOutline = 'BUNGEE_OUTLINE',
+  BungeeShade = 'BUNGEE_SHADE',
+  BungeeSpice = 'BUNGEE_SPICE',
+  BungeeTint = 'BUNGEE_TINT',
+  Butcherman = 'BUTCHERMAN',
+  ButterflyKids = 'BUTTERFLY_KIDS',
+  Bytesized = 'BYTESIZED',
+  Cabin = 'CABIN',
+  CabinCondensed = 'CABIN_CONDENSED',
+  CabinSketch = 'CABIN_SKETCH',
+  CactusClassicalSerif = 'CACTUS_CLASSICAL_SERIF',
+  CaesarDressing = 'CAESAR_DRESSING',
+  Cagliostro = 'CAGLIOSTRO',
+  Cairo = 'CAIRO',
+  CairoPlay = 'CAIRO_PLAY',
+  Caladea = 'CALADEA',
+  Calistoga = 'CALISTOGA',
+  Calligraffitti = 'CALLIGRAFFITTI',
+  CalSans = 'CAL_SANS',
+  Cambay = 'CAMBAY',
+  Cambo = 'CAMBO',
+  Candal = 'CANDAL',
+  Cantarell = 'CANTARELL',
+  CantataOne = 'CANTATA_ONE',
+  CantoraOne = 'CANTORA_ONE',
+  Caprasimo = 'CAPRASIMO',
+  Capriola = 'CAPRIOLA',
+  Caramel = 'CARAMEL',
+  Carattere = 'CARATTERE',
+  Cardo = 'CARDO',
+  Carlito = 'CARLITO',
+  Carme = 'CARME',
+  CarroisGothic = 'CARROIS_GOTHIC',
+  CarroisGothicSc = 'CARROIS_GOTHIC_SC',
+  CarterOne = 'CARTER_ONE',
+  CascadiaCode = 'CASCADIA_CODE',
+  CascadiaMono = 'CASCADIA_MONO',
+  Castoro = 'CASTORO',
+  CastoroTitling = 'CASTORO_TITLING',
+  Catamaran = 'CATAMARAN',
+  Caudex = 'CAUDEX',
+  Caveat = 'CAVEAT',
+  CaveatBrush = 'CAVEAT_BRUSH',
+  CedarvilleCursive = 'CEDARVILLE_CURSIVE',
+  CevicheOne = 'CEVICHE_ONE',
+  ChakraPetch = 'CHAKRA_PETCH',
+  Changa = 'CHANGA',
+  ChangaOne = 'CHANGA_ONE',
+  Chango = 'CHANGO',
+  CharisSil = 'CHARIS_SIL',
+  Charm = 'CHARM',
+  Charmonman = 'CHARMONMAN',
+  Chathura = 'CHATHURA',
+  ChauPhilomeneOne = 'CHAU_PHILOMENE_ONE',
+  ChelaOne = 'CHELA_ONE',
+  ChelseaMarket = 'CHELSEA_MARKET',
+  Chenla = 'CHENLA',
+  Cherish = 'CHERISH',
+  CherryBombOne = 'CHERRY_BOMB_ONE',
+  CherryCreamSoda = 'CHERRY_CREAM_SODA',
+  CherrySwash = 'CHERRY_SWASH',
+  Chewy = 'CHEWY',
+  Chicle = 'CHICLE',
+  Chilanka = 'CHILANKA',
+  ChironGoroundTc = 'CHIRON_GOROUND_TC',
+  ChironHeiHk = 'CHIRON_HEI_HK',
+  ChironSungHk = 'CHIRON_SUNG_HK',
+  Chivo = 'CHIVO',
+  ChivoMono = 'CHIVO_MONO',
+  ChocolateClassicalSans = 'CHOCOLATE_CLASSICAL_SANS',
+  Chokokutai = 'CHOKOKUTAI',
+  Chonburi = 'CHONBURI',
+  Cinzel = 'CINZEL',
+  CinzelDecorative = 'CINZEL_DECORATIVE',
+  ClickerScript = 'CLICKER_SCRIPT',
+  ClimateCrisis = 'CLIMATE_CRISIS',
+  Coda = 'CODA',
+  Codystar = 'CODYSTAR',
+  Coiny = 'COINY',
+  Combo = 'COMBO',
+  Comfortaa = 'COMFORTAA',
+  Comforter = 'COMFORTER',
+  ComforterBrush = 'COMFORTER_BRUSH',
+  ComicNeue = 'COMIC_NEUE',
+  ComicRelief = 'COMIC_RELIEF',
+  ComingSoon = 'COMING_SOON',
+  Comme = 'COMME',
+  Commissioner = 'COMMISSIONER',
+  ConcertOne = 'CONCERT_ONE',
+  Condiment = 'CONDIMENT',
+  Content = 'CONTENT',
+  ContrailOne = 'CONTRAIL_ONE',
+  Convergence = 'CONVERGENCE',
+  Cookie = 'COOKIE',
+  Copse = 'COPSE',
+  CoralPixels = 'CORAL_PIXELS',
+  Corben = 'CORBEN',
+  Corinthia = 'CORINTHIA',
+  Cormorant = 'CORMORANT',
+  CormorantGaramond = 'CORMORANT_GARAMOND',
+  CormorantInfant = 'CORMORANT_INFANT',
+  CormorantSc = 'CORMORANT_SC',
+  CormorantUnicase = 'CORMORANT_UNICASE',
+  CormorantUpright = 'CORMORANT_UPRIGHT',
+  CossetteTexte = 'COSSETTE_TEXTE',
+  CossetteTitre = 'COSSETTE_TITRE',
+  Courgette = 'COURGETTE',
+  CourierPrime = 'COURIER_PRIME',
+  Cousine = 'COUSINE',
+  Coustard = 'COUSTARD',
+  CoveredByYourGrace = 'COVERED_BY_YOUR_GRACE',
+  CraftyGirls = 'CRAFTY_GIRLS',
+  Creepster = 'CREEPSTER',
+  CreteRound = 'CRETE_ROUND',
+  CrimsonPro = 'CRIMSON_PRO',
+  CrimsonText = 'CRIMSON_TEXT',
+  CroissantOne = 'CROISSANT_ONE',
+  Crushed = 'CRUSHED',
+  Cuprum = 'CUPRUM',
+  CuteFont = 'CUTE_FONT',
+  Cutive = 'CUTIVE',
+  CutiveMono = 'CUTIVE_MONO',
+  DaiBannaSil = 'DAI_BANNA_SIL',
+  Damion = 'DAMION',
+  DancingScript = 'DANCING_SCRIPT',
+  Danfo = 'DANFO',
+  Dangrek = 'DANGREK',
+  DarkerGrotesque = 'DARKER_GROTESQUE',
+  DarumadropOne = 'DARUMADROP_ONE',
+  DavidLibre = 'DAVID_LIBRE',
+  DawningOfANewDay = 'DAWNING_OF_A_NEW_DAY',
+  DaysOne = 'DAYS_ONE',
+  Dekko = 'DEKKO',
+  DelaGothicOne = 'DELA_GOTHIC_ONE',
+  DeliciousHandrawn = 'DELICIOUS_HANDRAWN',
+  Delius = 'DELIUS',
+  DeliusSwashCaps = 'DELIUS_SWASH_CAPS',
+  DeliusUnicase = 'DELIUS_UNICASE',
+  DellaRespira = 'DELLA_RESPIRA',
+  DenkOne = 'DENK_ONE',
+  Devonshire = 'DEVONSHIRE',
+  Dhurjati = 'DHURJATI',
+  DidactGothic = 'DIDACT_GOTHIC',
+  Diphylleia = 'DIPHYLLEIA',
+  Diplomata = 'DIPLOMATA',
+  DiplomataSc = 'DIPLOMATA_SC',
+  DmMono = 'DM_MONO',
+  DmSans = 'DM_SANS',
+  DmSerifDisplay = 'DM_SERIF_DISPLAY',
+  DmSerifText = 'DM_SERIF_TEXT',
+  Dokdo = 'DOKDO',
+  Domine = 'DOMINE',
+  DonegalOne = 'DONEGAL_ONE',
+  Dongle = 'DONGLE',
+  DoppioOne = 'DOPPIO_ONE',
+  Dorsa = 'DORSA',
+  Dosis = 'DOSIS',
+  Dotgothic16 = 'DOTGOTHIC16',
+  Doto = 'DOTO',
+  DoHyeon = 'DO_HYEON',
+  DrSugiyama = 'DR_SUGIYAMA',
+  DuruSans = 'DURU_SANS',
+  Dynalight = 'DYNALIGHT',
+  Dynapuff = 'DYNAPUFF',
+  EagleLake = 'EAGLE_LAKE',
+  EastSeaDokdo = 'EAST_SEA_DOKDO',
+  Eater = 'EATER',
+  EbGaramond = 'EB_GARAMOND',
+  Economica = 'ECONOMICA',
+  Eczar = 'ECZAR',
+  EduAuVicWaNtArrows = 'EDU_AU_VIC_WA_NT_ARROWS',
+  EduAuVicWaNtDots = 'EDU_AU_VIC_WA_NT_DOTS',
+  EduAuVicWaNtGuides = 'EDU_AU_VIC_WA_NT_GUIDES',
+  EduAuVicWaNtHand = 'EDU_AU_VIC_WA_NT_HAND',
+  EduAuVicWaNtPre = 'EDU_AU_VIC_WA_NT_PRE',
+  EduNswActCursive = 'EDU_NSW_ACT_CURSIVE',
+  EduNswActFoundation = 'EDU_NSW_ACT_FOUNDATION',
+  EduNswActHandPre = 'EDU_NSW_ACT_HAND_PRE',
+  EduQldBeginner = 'EDU_QLD_BEGINNER',
+  EduQldHand = 'EDU_QLD_HAND',
+  EduSaBeginner = 'EDU_SA_BEGINNER',
+  EduSaHand = 'EDU_SA_HAND',
+  EduTasBeginner = 'EDU_TAS_BEGINNER',
+  EduVicWaNtBeginner = 'EDU_VIC_WA_NT_BEGINNER',
+  EduVicWaNtHand = 'EDU_VIC_WA_NT_HAND',
+  EduVicWaNtHandPre = 'EDU_VIC_WA_NT_HAND_PRE',
+  Electrolize = 'ELECTROLIZE',
+  ElmsSans = 'ELMS_SANS',
+  Elsie = 'ELSIE',
+  ElsieSwashCaps = 'ELSIE_SWASH_CAPS',
+  ElMessiri = 'EL_MESSIRI',
+  EmblemaOne = 'EMBLEMA_ONE',
+  EmilysCandy = 'EMILYS_CANDY',
+  EncodeSans = 'ENCODE_SANS',
+  EncodeSansCondensed = 'ENCODE_SANS_CONDENSED',
+  EncodeSansExpanded = 'ENCODE_SANS_EXPANDED',
+  EncodeSansSc = 'ENCODE_SANS_SC',
+  EncodeSansSemiCondensed = 'ENCODE_SANS_SEMI_CONDENSED',
+  EncodeSansSemiExpanded = 'ENCODE_SANS_SEMI_EXPANDED',
+  Engagement = 'ENGAGEMENT',
+  Englebert = 'ENGLEBERT',
+  Enriqueta = 'ENRIQUETA',
+  Ephesis = 'EPHESIS',
+  Epilogue = 'EPILOGUE',
+  EpundaSans = 'EPUNDA_SANS',
+  EpundaSlab = 'EPUNDA_SLAB',
+  EricaOne = 'ERICA_ONE',
+  Esteban = 'ESTEBAN',
+  Estonia = 'ESTONIA',
+  EuphoriaScript = 'EUPHORIA_SCRIPT',
+  Ewert = 'EWERT',
+  Exile = 'EXILE',
+  Exo = 'EXO',
+  Exo_2 = 'EXO_2',
+  ExpletusSans = 'EXPLETUS_SANS',
+  Explora = 'EXPLORA',
+  FacultyGlyphic = 'FACULTY_GLYPHIC',
+  Fahkwang = 'FAHKWANG',
+  FamiljenGrotesk = 'FAMILJEN_GROTESK',
+  FanwoodText = 'FANWOOD_TEXT',
+  Farro = 'FARRO',
+  Farsan = 'FARSAN',
+  Fascinate = 'FASCINATE',
+  FascinateInline = 'FASCINATE_INLINE',
+  FasterOne = 'FASTER_ONE',
+  Fasthand = 'FASTHAND',
+  FaunaOne = 'FAUNA_ONE',
+  Faustina = 'FAUSTINA',
+  Federant = 'FEDERANT',
+  Federo = 'FEDERO',
+  Felipa = 'FELIPA',
+  Fenix = 'FENIX',
+  Festive = 'FESTIVE',
+  Figtree = 'FIGTREE',
+  FingerPaint = 'FINGER_PAINT',
+  Finlandica = 'FINLANDICA',
+  FiraCode = 'FIRA_CODE',
+  FiraMono = 'FIRA_MONO',
+  FiraSans = 'FIRA_SANS',
+  FiraSansCondensed = 'FIRA_SANS_CONDENSED',
+  FiraSansExtraCondensed = 'FIRA_SANS_EXTRA_CONDENSED',
+  FjallaOne = 'FJALLA_ONE',
+  FjordOne = 'FJORD_ONE',
+  Flamenco = 'FLAMENCO',
+  Flavors = 'FLAVORS',
+  FleurDeLeah = 'FLEUR_DE_LEAH',
+  FlowBlock = 'FLOW_BLOCK',
+  FlowCircular = 'FLOW_CIRCULAR',
+  FlowRounded = 'FLOW_ROUNDED',
+  Foldit = 'FOLDIT',
+  Fondamento = 'FONDAMENTO',
+  FontdinerSwanky = 'FONTDINER_SWANKY',
+  Forum = 'FORUM',
+  FragmentMono = 'FRAGMENT_MONO',
+  FrancoisOne = 'FRANCOIS_ONE',
+  FrankRuhlLibre = 'FRANK_RUHL_LIBRE',
+  Fraunces = 'FRAUNCES',
+  FreckleFace = 'FRECKLE_FACE',
+  FrederickaTheGreat = 'FREDERICKA_THE_GREAT',
+  Fredoka = 'FREDOKA',
+  Freehand = 'FREEHAND',
+  Freeman = 'FREEMAN',
+  Fresca = 'FRESCA',
+  Frijole = 'FRIJOLE',
+  Fruktur = 'FRUKTUR',
+  FugazOne = 'FUGAZ_ONE',
+  Fuggles = 'FUGGLES',
+  FunnelDisplay = 'FUNNEL_DISPLAY',
+  FunnelSans = 'FUNNEL_SANS',
+  Fustat = 'FUSTAT',
+  FuzzyBubbles = 'FUZZY_BUBBLES',
+  Gabarito = 'GABARITO',
+  Gabriela = 'GABRIELA',
+  Gaegu = 'GAEGU',
+  Gafata = 'GAFATA',
+  GajrajOne = 'GAJRAJ_ONE',
+  Galada = 'GALADA',
+  Galdeano = 'GALDEANO',
+  Galindo = 'GALINDO',
+  GamjaFlower = 'GAMJA_FLOWER',
+  Gantari = 'GANTARI',
+  GasoekOne = 'GASOEK_ONE',
+  Gayathri = 'GAYATHRI',
+  GaMaamli = 'GA_MAAMLI',
+  Geist = 'GEIST',
+  GeistMono = 'GEIST_MONO',
+  Gelasio = 'GELASIO',
+  GemunuLibre = 'GEMUNU_LIBRE',
+  Genos = 'GENOS',
+  GentiumBookPlus = 'GENTIUM_BOOK_PLUS',
+  GentiumPlus = 'GENTIUM_PLUS',
+  Geo = 'GEO',
+  Geologica = 'GEOLOGICA',
+  Georama = 'GEORAMA',
+  Geostar = 'GEOSTAR',
+  GeostarFill = 'GEOSTAR_FILL',
+  GermaniaOne = 'GERMANIA_ONE',
+  GfsDidot = 'GFS_DIDOT',
+  GfsNeohellenic = 'GFS_NEOHELLENIC',
+  GideonRoman = 'GIDEON_ROMAN',
+  Gidole = 'GIDOLE',
+  Gidugu = 'GIDUGU',
+  GildaDisplay = 'GILDA_DISPLAY',
+  Girassol = 'GIRASSOL',
+  GiveYouGlory = 'GIVE_YOU_GLORY',
+  GlassAntiqua = 'GLASS_ANTIQUA',
+  Glegoo = 'GLEGOO',
+  Gloock = 'GLOOCK',
+  GloriaHallelujah = 'GLORIA_HALLELUJAH',
+  Glory = 'GLORY',
+  Gluten = 'GLUTEN',
+  GoblinOne = 'GOBLIN_ONE',
+  GochiHand = 'GOCHI_HAND',
+  Goldman = 'GOLDMAN',
+  GolosText = 'GOLOS_TEXT',
+  GoogleSansCode = 'GOOGLE_SANS_CODE',
+  Gorditas = 'GORDITAS',
+  GothicA1 = 'GOTHIC_A1',
+  Gotu = 'GOTU',
+  GoudyBookletter_1911 = 'GOUDY_BOOKLETTER_1911',
+  GowunBatang = 'GOWUN_BATANG',
+  GowunDodum = 'GOWUN_DODUM',
+  Graduate = 'GRADUATE',
+  GrandifloraOne = 'GRANDIFLORA_ONE',
+  Grandstander = 'GRANDSTANDER',
+  GrandHotel = 'GRAND_HOTEL',
+  GrapeNuts = 'GRAPE_NUTS',
+  GravitasOne = 'GRAVITAS_ONE',
+  GreatVibes = 'GREAT_VIBES',
+  GrechenFuemen = 'GRECHEN_FUEMEN',
+  Grenze = 'GRENZE',
+  GrenzeGotisch = 'GRENZE_GOTISCH',
+  GreyQo = 'GREY_QO',
+  Griffy = 'GRIFFY',
+  Gruppo = 'GRUPPO',
+  Gudea = 'GUDEA',
+  Gugi = 'GUGI',
+  Gulzar = 'GULZAR',
+  Gupter = 'GUPTER',
+  Gurajada = 'GURAJADA',
+  Gwendolyn = 'GWENDOLYN',
+  Habibi = 'HABIBI',
+  HachiMaruPop = 'HACHI_MARU_POP',
+  Hahmlet = 'HAHMLET',
+  Halant = 'HALANT',
+  HammersmithOne = 'HAMMERSMITH_ONE',
+  Hanalei = 'HANALEI',
+  HanaleiFill = 'HANALEI_FILL',
+  Handjet = 'HANDJET',
+  Handlee = 'HANDLEE',
+  HankenGrotesk = 'HANKEN_GROTESK',
+  Hanuman = 'HANUMAN',
+  HappyMonkey = 'HAPPY_MONKEY',
+  Harmattan = 'HARMATTAN',
+  HeadlandOne = 'HEADLAND_ONE',
+  HedvigLettersSans = 'HEDVIG_LETTERS_SANS',
+  HedvigLettersSerif = 'HEDVIG_LETTERS_SERIF',
+  Heebo = 'HEEBO',
+  HennyPenny = 'HENNY_PENNY',
+  HeptaSlab = 'HEPTA_SLAB',
+  HerrVonMuellerhoff = 'HERR_VON_MUELLERHOFF',
+  HinaMincho = 'HINA_MINCHO',
+  Hind = 'HIND',
+  HindGuntur = 'HIND_GUNTUR',
+  HindMadurai = 'HIND_MADURAI',
+  HindMysuru = 'HIND_MYSURU',
+  HindSiliguri = 'HIND_SILIGURI',
+  HindVadodara = 'HIND_VADODARA',
+  HiMelody = 'HI_MELODY',
+  HoltwoodOneSc = 'HOLTWOOD_ONE_SC',
+  HomemadeApple = 'HOMEMADE_APPLE',
+  Homenaje = 'HOMENAJE',
+  Honk = 'HONK',
+  HostGrotesk = 'HOST_GROTESK',
+  Hubballi = 'HUBBALLI',
+  HubotSans = 'HUBOT_SANS',
+  Huninn = 'HUNINN',
+  Hurricane = 'HURRICANE',
+  Iansui = 'IANSUI',
+  IbarraRealNova = 'IBARRA_REAL_NOVA',
+  IbmPlexMono = 'IBM_PLEX_MONO',
+  IbmPlexSans = 'IBM_PLEX_SANS',
+  IbmPlexSansArabic = 'IBM_PLEX_SANS_ARABIC',
+  IbmPlexSansCondensed = 'IBM_PLEX_SANS_CONDENSED',
+  IbmPlexSansDevanagari = 'IBM_PLEX_SANS_DEVANAGARI',
+  IbmPlexSansHebrew = 'IBM_PLEX_SANS_HEBREW',
+  IbmPlexSansJp = 'IBM_PLEX_SANS_JP',
+  IbmPlexSansKr = 'IBM_PLEX_SANS_KR',
+  IbmPlexSansThai = 'IBM_PLEX_SANS_THAI',
+  IbmPlexSansThaiLooped = 'IBM_PLEX_SANS_THAI_LOOPED',
+  IbmPlexSerif = 'IBM_PLEX_SERIF',
+  Iceberg = 'ICEBERG',
+  Iceland = 'ICELAND',
+  Imbue = 'IMBUE',
+  ImperialScript = 'IMPERIAL_SCRIPT',
+  Imprima = 'IMPRIMA',
+  ImFellDoublePica = 'IM_FELL_DOUBLE_PICA',
+  ImFellDoublePicaSc = 'IM_FELL_DOUBLE_PICA_SC',
+  ImFellDwPica = 'IM_FELL_DW_PICA',
+  ImFellDwPicaSc = 'IM_FELL_DW_PICA_SC',
+  ImFellEnglish = 'IM_FELL_ENGLISH',
+  ImFellEnglishSc = 'IM_FELL_ENGLISH_SC',
+  ImFellFrenchCanon = 'IM_FELL_FRENCH_CANON',
+  ImFellFrenchCanonSc = 'IM_FELL_FRENCH_CANON_SC',
+  ImFellGreatPrimer = 'IM_FELL_GREAT_PRIMER',
+  ImFellGreatPrimerSc = 'IM_FELL_GREAT_PRIMER_SC',
+  InclusiveSans = 'INCLUSIVE_SANS',
+  Inconsolata = 'INCONSOLATA',
+  Inder = 'INDER',
+  IndieFlower = 'INDIE_FLOWER',
+  IngridDarling = 'INGRID_DARLING',
+  Inika = 'INIKA',
+  InknutAntiqua = 'INKNUT_ANTIQUA',
+  InriaSans = 'INRIA_SANS',
+  InriaSerif = 'INRIA_SERIF',
+  Inspiration = 'INSPIRATION',
+  InstrumentSans = 'INSTRUMENT_SANS',
+  InstrumentSerif = 'INSTRUMENT_SERIF',
+  IntelOneMono = 'INTEL_ONE_MONO',
+  Inter = 'INTER',
+  InterTight = 'INTER_TIGHT',
+  IrishGrover = 'IRISH_GROVER',
+  IslandMoments = 'ISLAND_MOMENTS',
+  IstokWeb = 'ISTOK_WEB',
+  Italiana = 'ITALIANA',
+  Italianno = 'ITALIANNO',
+  Itim = 'ITIM',
+  JacquardaBastarda_9 = 'JACQUARDA_BASTARDA_9',
+  JacquardaBastarda_9Charted = 'JACQUARDA_BASTARDA_9_CHARTED',
+  Jacquard_12 = 'JACQUARD_12',
+  Jacquard_12Charted = 'JACQUARD_12_CHARTED',
+  Jacquard_24 = 'JACQUARD_24',
+  Jacquard_24Charted = 'JACQUARD_24_CHARTED',
+  JacquesFrancois = 'JACQUES_FRANCOIS',
+  JacquesFrancoisShadow = 'JACQUES_FRANCOIS_SHADOW',
+  Jaini = 'JAINI',
+  JainiPurva = 'JAINI_PURVA',
+  Jaldi = 'JALDI',
+  Jaro = 'JARO',
+  Jersey_10 = 'JERSEY_10',
+  Jersey_10Charted = 'JERSEY_10_CHARTED',
+  Jersey_15 = 'JERSEY_15',
+  Jersey_15Charted = 'JERSEY_15_CHARTED',
+  Jersey_20 = 'JERSEY_20',
+  Jersey_20Charted = 'JERSEY_20_CHARTED',
+  Jersey_25 = 'JERSEY_25',
+  Jersey_25Charted = 'JERSEY_25_CHARTED',
+  JetbrainsMono = 'JETBRAINS_MONO',
+  JimNightshade = 'JIM_NIGHTSHADE',
+  Joan = 'JOAN',
+  JockeyOne = 'JOCKEY_ONE',
+  JollyLodger = 'JOLLY_LODGER',
+  Jomhuria = 'JOMHURIA',
+  Jomolhari = 'JOMOLHARI',
+  JosefinSans = 'JOSEFIN_SANS',
+  JosefinSlab = 'JOSEFIN_SLAB',
+  Jost = 'JOST',
+  JotiOne = 'JOTI_ONE',
+  Jua = 'JUA',
+  Judson = 'JUDSON',
+  Julee = 'JULEE',
+  JuliusSansOne = 'JULIUS_SANS_ONE',
+  Junge = 'JUNGE',
+  Jura = 'JURA',
+  JustAnotherHand = 'JUST_ANOTHER_HAND',
+  JustMeAgainDownHere = 'JUST_ME_AGAIN_DOWN_HERE',
+  K2D = 'K2D',
+  Kablammo = 'KABLAMMO',
+  Kadwa = 'KADWA',
+  KaiseiDecol = 'KAISEI_DECOL',
+  KaiseiHarunoumi = 'KAISEI_HARUNOUMI',
+  KaiseiOpti = 'KAISEI_OPTI',
+  KaiseiTokumin = 'KAISEI_TOKUMIN',
+  Kalam = 'KALAM',
+  Kalnia = 'KALNIA',
+  KalniaGlaze = 'KALNIA_GLAZE',
+  Kameron = 'KAMERON',
+  Kanchenjunga = 'KANCHENJUNGA',
+  Kanit = 'KANIT',
+  KantumruyPro = 'KANTUMRUY_PRO',
+  Kapakana = 'KAPAKANA',
+  Karantina = 'KARANTINA',
+  Karla = 'KARLA',
+  KarlaTamilInclined = 'KARLA_TAMIL_INCLINED',
+  KarlaTamilUpright = 'KARLA_TAMIL_UPRIGHT',
+  Karma = 'KARMA',
+  Katibeh = 'KATIBEH',
+  KaushanScript = 'KAUSHAN_SCRIPT',
+  Kavivanar = 'KAVIVANAR',
+  Kavoon = 'KAVOON',
+  KayPhoDu = 'KAY_PHO_DU',
+  KdamThmorPro = 'KDAM_THMOR_PRO',
+  KeaniaOne = 'KEANIA_ONE',
+  KellySlab = 'KELLY_SLAB',
+  Kenia = 'KENIA',
+  Khand = 'KHAND',
+  Khmer = 'KHMER',
+  Khula = 'KHULA',
+  Kings = 'KINGS',
+  KirangHaerang = 'KIRANG_HAERANG',
+  KiteOne = 'KITE_ONE',
+  KiwiMaru = 'KIWI_MARU',
+  KleeOne = 'KLEE_ONE',
+  Knewave = 'KNEWAVE',
+  Kodchasan = 'KODCHASAN',
+  KodeMono = 'KODE_MONO',
+  Koho = 'KOHO',
+  KohSantepheap = 'KOH_SANTEPHEAP',
+  KolkerBrush = 'KOLKER_BRUSH',
+  KonkhmerSleokchher = 'KONKHMER_SLEOKCHHER',
+  Kosugi = 'KOSUGI',
+  KosugiMaru = 'KOSUGI_MARU',
+  KottaOne = 'KOTTA_ONE',
+  Koulen = 'KOULEN',
+  Kranky = 'KRANKY',
+  Kreon = 'KREON',
+  Kristi = 'KRISTI',
+  KronaOne = 'KRONA_ONE',
+  Krub = 'KRUB',
+  Kufam = 'KUFAM',
+  KulimPark = 'KULIM_PARK',
+  KumarOne = 'KUMAR_ONE',
+  KumarOneOutline = 'KUMAR_ONE_OUTLINE',
+  KumbhSans = 'KUMBH_SANS',
+  Kurale = 'KURALE',
+  Labrada = 'LABRADA',
+  Lacquer = 'LACQUER',
+  Laila = 'LAILA',
+  LakkiReddy = 'LAKKI_REDDY',
+  Lalezar = 'LALEZAR',
+  Lancelot = 'LANCELOT',
+  Langar = 'LANGAR',
+  Lateef = 'LATEEF',
+  Lato = 'LATO',
+  LavishlyYours = 'LAVISHLY_YOURS',
+  LaBelleAurore = 'LA_BELLE_AURORE',
+  LeagueGothic = 'LEAGUE_GOTHIC',
+  LeagueScript = 'LEAGUE_SCRIPT',
+  LeagueSpartan = 'LEAGUE_SPARTAN',
+  LeckerliOne = 'LECKERLI_ONE',
+  Ledger = 'LEDGER',
+  Lekton = 'LEKTON',
+  Lemon = 'LEMON',
+  Lemonada = 'LEMONADA',
+  Lexend = 'LEXEND',
+  LexendDeca = 'LEXEND_DECA',
+  LexendExa = 'LEXEND_EXA',
+  LexendGiga = 'LEXEND_GIGA',
+  LexendMega = 'LEXEND_MEGA',
+  LexendPeta = 'LEXEND_PETA',
+  LexendTera = 'LEXEND_TERA',
+  LexendZetta = 'LEXEND_ZETTA',
+  LibertinusKeyboard = 'LIBERTINUS_KEYBOARD',
+  LibertinusMath = 'LIBERTINUS_MATH',
+  LibertinusMono = 'LIBERTINUS_MONO',
+  LibertinusSans = 'LIBERTINUS_SANS',
+  LibertinusSerif = 'LIBERTINUS_SERIF',
+  LibertinusSerifDisplay = 'LIBERTINUS_SERIF_DISPLAY',
+  LibreBarcode_39 = 'LIBRE_BARCODE_39',
+  LibreBarcode_39Extended = 'LIBRE_BARCODE_39_EXTENDED',
+  LibreBarcode_39ExtendedText = 'LIBRE_BARCODE_39_EXTENDED_TEXT',
+  LibreBarcode_39Text = 'LIBRE_BARCODE_39_TEXT',
+  LibreBarcode_128 = 'LIBRE_BARCODE_128',
+  LibreBarcode_128Text = 'LIBRE_BARCODE_128_TEXT',
+  LibreBarcodeEan13Text = 'LIBRE_BARCODE_EAN13_TEXT',
+  LibreBaskerville = 'LIBRE_BASKERVILLE',
+  LibreBodoni = 'LIBRE_BODONI',
+  LibreCaslonDisplay = 'LIBRE_CASLON_DISPLAY',
+  LibreCaslonText = 'LIBRE_CASLON_TEXT',
+  LibreFranklin = 'LIBRE_FRANKLIN',
+  Licorice = 'LICORICE',
+  LifeSavers = 'LIFE_SAVERS',
+  LilitaOne = 'LILITA_ONE',
+  LilyScriptOne = 'LILY_SCRIPT_ONE',
+  Limelight = 'LIMELIGHT',
+  LindenHill = 'LINDEN_HILL',
+  Linefont = 'LINEFONT',
+  LisuBosa = 'LISU_BOSA',
+  Liter = 'LITER',
+  Literata = 'LITERATA',
+  LiuJianMaoCao = 'LIU_JIAN_MAO_CAO',
+  Livvic = 'LIVVIC',
+  Lobster = 'LOBSTER',
+  LobsterTwo = 'LOBSTER_TWO',
+  LondrinaOutline = 'LONDRINA_OUTLINE',
+  LondrinaShadow = 'LONDRINA_SHADOW',
+  LondrinaSketch = 'LONDRINA_SKETCH',
+  LondrinaSolid = 'LONDRINA_SOLID',
+  LongCang = 'LONG_CANG',
+  Lora = 'LORA',
+  LovedByTheKing = 'LOVED_BY_THE_KING',
+  LoversQuarrel = 'LOVERS_QUARREL',
+  LoveLight = 'LOVE_LIGHT',
+  LoveYaLikeASister = 'LOVE_YA_LIKE_A_SISTER',
+  LuckiestGuy = 'LUCKIEST_GUY',
+  Lugrasimo = 'LUGRASIMO',
+  Lumanosimo = 'LUMANOSIMO',
+  Lunasima = 'LUNASIMA',
+  Lusitana = 'LUSITANA',
+  Lustria = 'LUSTRIA',
+  LuxuriousRoman = 'LUXURIOUS_ROMAN',
+  LuxuriousScript = 'LUXURIOUS_SCRIPT',
+  LxgwMarkerGothic = 'LXGW_MARKER_GOTHIC',
+  LxgwWenkaiMonoTc = 'LXGW_WENKAI_MONO_TC',
+  LxgwWenkaiTc = 'LXGW_WENKAI_TC',
+  Macondo = 'MACONDO',
+  MacondoSwashCaps = 'MACONDO_SWASH_CAPS',
+  Mada = 'MADA',
+  MadimiOne = 'MADIMI_ONE',
+  Magra = 'MAGRA',
+  MaidenOrange = 'MAIDEN_ORANGE',
+  Maitree = 'MAITREE',
+  MajorMonoDisplay = 'MAJOR_MONO_DISPLAY',
+  Mako = 'MAKO',
+  Mali = 'MALI',
+  Mallanna = 'MALLANNA',
+  Maname = 'MANAME',
+  Mandali = 'MANDALI',
+  Manjari = 'MANJARI',
+  Manrope = 'MANROPE',
+  Mansalva = 'MANSALVA',
+  Manuale = 'MANUALE',
+  ManufacturingConsent = 'MANUFACTURING_CONSENT',
+  Marcellus = 'MARCELLUS',
+  MarcellusSc = 'MARCELLUS_SC',
+  MarckScript = 'MARCK_SCRIPT',
+  Margarine = 'MARGARINE',
+  Marhey = 'MARHEY',
+  MarkaziText = 'MARKAZI_TEXT',
+  MarkoOne = 'MARKO_ONE',
+  Marmelad = 'MARMELAD',
+  Martel = 'MARTEL',
+  MartelSans = 'MARTEL_SANS',
+  MartianMono = 'MARTIAN_MONO',
+  Marvel = 'MARVEL',
+  Matangi = 'MATANGI',
+  Mate = 'MATE',
+  Matemasie = 'MATEMASIE',
+  MaterialIcons = 'MATERIAL_ICONS',
+  MaterialIconsOutlined = 'MATERIAL_ICONS_OUTLINED',
+  MaterialIconsRound = 'MATERIAL_ICONS_ROUND',
+  MaterialIconsSharp = 'MATERIAL_ICONS_SHARP',
+  MaterialIconsTwoTone = 'MATERIAL_ICONS_TWO_TONE',
+  MaterialSymbols = 'MATERIAL_SYMBOLS',
+  MaterialSymbolsOutlined = 'MATERIAL_SYMBOLS_OUTLINED',
+  MaterialSymbolsRounded = 'MATERIAL_SYMBOLS_ROUNDED',
+  MaterialSymbolsSharp = 'MATERIAL_SYMBOLS_SHARP',
+  MateSc = 'MATE_SC',
+  MavenPro = 'MAVEN_PRO',
+  MaShanZheng = 'MA_SHAN_ZHENG',
+  Mclaren = 'MCLAREN',
+  MeaCulpa = 'MEA_CULPA',
+  Meddon = 'MEDDON',
+  Medievalsharp = 'MEDIEVALSHARP',
+  MedulaOne = 'MEDULA_ONE',
+  MeeraInimai = 'MEERA_INIMAI',
+  Megrim = 'MEGRIM',
+  MeieScript = 'MEIE_SCRIPT',
+  Menbere = 'MENBERE',
+  MeowScript = 'MEOW_SCRIPT',
+  Merienda = 'MERIENDA',
+  Merriweather = 'MERRIWEATHER',
+  MerriweatherSans = 'MERRIWEATHER_SANS',
+  Metal = 'METAL',
+  MetalMania = 'METAL_MANIA',
+  Metamorphous = 'METAMORPHOUS',
+  Metrophobic = 'METROPHOBIC',
+  Michroma = 'MICHROMA',
+  Micro_5 = 'MICRO_5',
+  Micro_5Charted = 'MICRO_5_CHARTED',
+  Milonga = 'MILONGA',
+  Miltonian = 'MILTONIAN',
+  MiltonianTattoo = 'MILTONIAN_TATTOO',
+  Mina = 'MINA',
+  Mingzat = 'MINGZAT',
+  Miniver = 'MINIVER',
+  MiriamLibre = 'MIRIAM_LIBRE',
+  Mirza = 'MIRZA',
+  MissFajardose = 'MISS_FAJARDOSE',
+  Mitr = 'MITR',
+  MochiyPopOne = 'MOCHIY_POP_ONE',
+  MochiyPopPOne = 'MOCHIY_POP_P_ONE',
+  Modak = 'MODAK',
+  ModernAntiqua = 'MODERN_ANTIQUA',
+  Moderustic = 'MODERUSTIC',
+  Mogra = 'MOGRA',
+  Mohave = 'MOHAVE',
+  MoiraiOne = 'MOIRAI_ONE',
+  Molengo = 'MOLENGO',
+  Molle = 'MOLLE',
+  MomoSignature = 'MOMO_SIGNATURE',
+  MomoTrustDisplay = 'MOMO_TRUST_DISPLAY',
+  MomoTrustSans = 'MOMO_TRUST_SANS',
+  MonaSans = 'MONA_SANS',
+  Monda = 'MONDA',
+  Monofett = 'MONOFETT',
+  Monomakh = 'MONOMAKH',
+  MonomaniacOne = 'MONOMANIAC_ONE',
+  Monoton = 'MONOTON',
+  MonsieurLaDoulaise = 'MONSIEUR_LA_DOULAISE',
+  Montaga = 'MONTAGA',
+  MontaguSlab = 'MONTAGU_SLAB',
+  Montecarlo = 'MONTECARLO',
+  Montez = 'MONTEZ',
+  Montserrat = 'MONTSERRAT',
+  MontserratAlternates = 'MONTSERRAT_ALTERNATES',
+  MontserratUnderline = 'MONTSERRAT_UNDERLINE',
+  Mooli = 'MOOLI',
+  MoonDance = 'MOON_DANCE',
+  MooLahLah = 'MOO_LAH_LAH',
+  Moul = 'MOUL',
+  Moulpali = 'MOULPALI',
+  MountainsOfChristmas = 'MOUNTAINS_OF_CHRISTMAS',
+  MouseMemoirs = 'MOUSE_MEMOIRS',
+  MozillaHeadline = 'MOZILLA_HEADLINE',
+  MozillaText = 'MOZILLA_TEXT',
+  MrsSaintDelafield = 'MRS_SAINT_DELAFIELD',
+  MrsSheppards = 'MRS_SHEPPARDS',
+  MrBedfort = 'MR_BEDFORT',
+  MrDafoe = 'MR_DAFOE',
+  MrDeHaviland = 'MR_DE_HAVILAND',
+  MsMadi = 'MS_MADI',
+  Mukta = 'MUKTA',
+  MuktaMahee = 'MUKTA_MAHEE',
+  MuktaMalar = 'MUKTA_MALAR',
+  MuktaVaani = 'MUKTA_VAANI',
+  Mulish = 'MULISH',
+  Murecho = 'MURECHO',
+  Museomoderno = 'MUSEOMODERNO',
+  Mynerve = 'MYNERVE',
+  MysteryQuest = 'MYSTERY_QUEST',
+  MySoul = 'MY_SOUL',
+  MPlus_1 = 'M_PLUS_1',
+  MPlus_1P = 'M_PLUS_1P',
+  MPlus_1Code = 'M_PLUS_1_CODE',
+  MPlus_2 = 'M_PLUS_2',
+  MPlusCodeLatin = 'M_PLUS_CODE_LATIN',
+  MPlusRounded_1C = 'M_PLUS_ROUNDED_1C',
+  Nabla = 'NABLA',
+  Namdhinggo = 'NAMDHINGGO',
+  NanumBrushScript = 'NANUM_BRUSH_SCRIPT',
+  NanumGothic = 'NANUM_GOTHIC',
+  NanumGothicCoding = 'NANUM_GOTHIC_CODING',
+  NanumMyeongjo = 'NANUM_MYEONGJO',
+  NanumPenScript = 'NANUM_PEN_SCRIPT',
+  Narnoor = 'NARNOOR',
+  NataSans = 'NATA_SANS',
+  NationalPark = 'NATIONAL_PARK',
+  Neonderthaw = 'NEONDERTHAW',
+  NerkoOne = 'NERKO_ONE',
+  Neucha = 'NEUCHA',
+  Neuton = 'NEUTON',
+  Newsreader = 'NEWSREADER',
+  NewsCycle = 'NEWS_CYCLE',
+  NewAmsterdam = 'NEW_AMSTERDAM',
+  NewRocker = 'NEW_ROCKER',
+  NewTegomin = 'NEW_TEGOMIN',
+  Niconne = 'NICONNE',
+  Niramit = 'NIRAMIT',
+  NixieOne = 'NIXIE_ONE',
+  Nobile = 'NOBILE',
+  Nokora = 'NOKORA',
+  Norican = 'NORICAN',
+  Nosifer = 'NOSIFER',
+  Notable = 'NOTABLE',
+  NothingYouCouldDo = 'NOTHING_YOU_COULD_DO',
+  NoticiaText = 'NOTICIA_TEXT',
+  NotoColorEmoji = 'NOTO_COLOR_EMOJI',
+  NotoEmoji = 'NOTO_EMOJI',
+  NotoKufiArabic = 'NOTO_KUFI_ARABIC',
+  NotoMusic = 'NOTO_MUSIC',
+  NotoNaskhArabic = 'NOTO_NASKH_ARABIC',
+  NotoNastaliqUrdu = 'NOTO_NASTALIQ_URDU',
+  NotoRashiHebrew = 'NOTO_RASHI_HEBREW',
+  NotoSans = 'NOTO_SANS',
+  NotoSansAdlam = 'NOTO_SANS_ADLAM',
+  NotoSansAdlamUnjoined = 'NOTO_SANS_ADLAM_UNJOINED',
+  NotoSansAnatolianHieroglyphs = 'NOTO_SANS_ANATOLIAN_HIEROGLYPHS',
+  NotoSansArabic = 'NOTO_SANS_ARABIC',
+  NotoSansArmenian = 'NOTO_SANS_ARMENIAN',
+  NotoSansAvestan = 'NOTO_SANS_AVESTAN',
+  NotoSansBalinese = 'NOTO_SANS_BALINESE',
+  NotoSansBamum = 'NOTO_SANS_BAMUM',
+  NotoSansBassaVah = 'NOTO_SANS_BASSA_VAH',
+  NotoSansBatak = 'NOTO_SANS_BATAK',
+  NotoSansBengali = 'NOTO_SANS_BENGALI',
+  NotoSansBhaiksuki = 'NOTO_SANS_BHAIKSUKI',
+  NotoSansBrahmi = 'NOTO_SANS_BRAHMI',
+  NotoSansBuginese = 'NOTO_SANS_BUGINESE',
+  NotoSansBuhid = 'NOTO_SANS_BUHID',
+  NotoSansCanadianAboriginal = 'NOTO_SANS_CANADIAN_ABORIGINAL',
+  NotoSansCarian = 'NOTO_SANS_CARIAN',
+  NotoSansCaucasianAlbanian = 'NOTO_SANS_CAUCASIAN_ALBANIAN',
+  NotoSansChakma = 'NOTO_SANS_CHAKMA',
+  NotoSansCham = 'NOTO_SANS_CHAM',
+  NotoSansCherokee = 'NOTO_SANS_CHEROKEE',
+  NotoSansChorasmian = 'NOTO_SANS_CHORASMIAN',
+  NotoSansCoptic = 'NOTO_SANS_COPTIC',
+  NotoSansCuneiform = 'NOTO_SANS_CUNEIFORM',
+  NotoSansCypriot = 'NOTO_SANS_CYPRIOT',
+  NotoSansCyproMinoan = 'NOTO_SANS_CYPRO_MINOAN',
+  NotoSansDeseret = 'NOTO_SANS_DESERET',
+  NotoSansDevanagari = 'NOTO_SANS_DEVANAGARI',
+  NotoSansDisplay = 'NOTO_SANS_DISPLAY',
+  NotoSansDuployan = 'NOTO_SANS_DUPLOYAN',
+  NotoSansEgyptianHieroglyphs = 'NOTO_SANS_EGYPTIAN_HIEROGLYPHS',
+  NotoSansElbasan = 'NOTO_SANS_ELBASAN',
+  NotoSansElymaic = 'NOTO_SANS_ELYMAIC',
+  NotoSansEthiopic = 'NOTO_SANS_ETHIOPIC',
+  NotoSansGeorgian = 'NOTO_SANS_GEORGIAN',
+  NotoSansGlagolitic = 'NOTO_SANS_GLAGOLITIC',
+  NotoSansGothic = 'NOTO_SANS_GOTHIC',
+  NotoSansGrantha = 'NOTO_SANS_GRANTHA',
+  NotoSansGujarati = 'NOTO_SANS_GUJARATI',
+  NotoSansGunjalaGondi = 'NOTO_SANS_GUNJALA_GONDI',
+  NotoSansGurmukhi = 'NOTO_SANS_GURMUKHI',
+  NotoSansHanifiRohingya = 'NOTO_SANS_HANIFI_ROHINGYA',
+  NotoSansHanunoo = 'NOTO_SANS_HANUNOO',
+  NotoSansHatran = 'NOTO_SANS_HATRAN',
+  NotoSansHebrew = 'NOTO_SANS_HEBREW',
+  NotoSansHk = 'NOTO_SANS_HK',
+  NotoSansImperialAramaic = 'NOTO_SANS_IMPERIAL_ARAMAIC',
+  NotoSansIndicSiyaqNumbers = 'NOTO_SANS_INDIC_SIYAQ_NUMBERS',
+  NotoSansInscriptionalPahlavi = 'NOTO_SANS_INSCRIPTIONAL_PAHLAVI',
+  NotoSansInscriptionalParthian = 'NOTO_SANS_INSCRIPTIONAL_PARTHIAN',
+  NotoSansJavanese = 'NOTO_SANS_JAVANESE',
+  NotoSansJp = 'NOTO_SANS_JP',
+  NotoSansKaithi = 'NOTO_SANS_KAITHI',
+  NotoSansKannada = 'NOTO_SANS_KANNADA',
+  NotoSansKawi = 'NOTO_SANS_KAWI',
+  NotoSansKayahLi = 'NOTO_SANS_KAYAH_LI',
+  NotoSansKharoshthi = 'NOTO_SANS_KHAROSHTHI',
+  NotoSansKhmer = 'NOTO_SANS_KHMER',
+  NotoSansKhojki = 'NOTO_SANS_KHOJKI',
+  NotoSansKhudawadi = 'NOTO_SANS_KHUDAWADI',
+  NotoSansKr = 'NOTO_SANS_KR',
+  NotoSansLao = 'NOTO_SANS_LAO',
+  NotoSansLaoLooped = 'NOTO_SANS_LAO_LOOPED',
+  NotoSansLepcha = 'NOTO_SANS_LEPCHA',
+  NotoSansLimbu = 'NOTO_SANS_LIMBU',
+  NotoSansLinearA = 'NOTO_SANS_LINEAR_A',
+  NotoSansLinearB = 'NOTO_SANS_LINEAR_B',
+  NotoSansLisu = 'NOTO_SANS_LISU',
+  NotoSansLycian = 'NOTO_SANS_LYCIAN',
+  NotoSansLydian = 'NOTO_SANS_LYDIAN',
+  NotoSansMahajani = 'NOTO_SANS_MAHAJANI',
+  NotoSansMalayalam = 'NOTO_SANS_MALAYALAM',
+  NotoSansMandaic = 'NOTO_SANS_MANDAIC',
+  NotoSansManichaean = 'NOTO_SANS_MANICHAEAN',
+  NotoSansMarchen = 'NOTO_SANS_MARCHEN',
+  NotoSansMasaramGondi = 'NOTO_SANS_MASARAM_GONDI',
+  NotoSansMath = 'NOTO_SANS_MATH',
+  NotoSansMayanNumerals = 'NOTO_SANS_MAYAN_NUMERALS',
+  NotoSansMedefaidrin = 'NOTO_SANS_MEDEFAIDRIN',
+  NotoSansMeeteiMayek = 'NOTO_SANS_MEETEI_MAYEK',
+  NotoSansMendeKikakui = 'NOTO_SANS_MENDE_KIKAKUI',
+  NotoSansMeroitic = 'NOTO_SANS_MEROITIC',
+  NotoSansMiao = 'NOTO_SANS_MIAO',
+  NotoSansModi = 'NOTO_SANS_MODI',
+  NotoSansMongolian = 'NOTO_SANS_MONGOLIAN',
+  NotoSansMono = 'NOTO_SANS_MONO',
+  NotoSansMro = 'NOTO_SANS_MRO',
+  NotoSansMultani = 'NOTO_SANS_MULTANI',
+  NotoSansMyanmar = 'NOTO_SANS_MYANMAR',
+  NotoSansNabataean = 'NOTO_SANS_NABATAEAN',
+  NotoSansNagMundari = 'NOTO_SANS_NAG_MUNDARI',
+  NotoSansNandinagari = 'NOTO_SANS_NANDINAGARI',
+  NotoSansNewa = 'NOTO_SANS_NEWA',
+  NotoSansNewTaiLue = 'NOTO_SANS_NEW_TAI_LUE',
+  NotoSansNko = 'NOTO_SANS_NKO',
+  NotoSansNkoUnjoined = 'NOTO_SANS_NKO_UNJOINED',
+  NotoSansNushu = 'NOTO_SANS_NUSHU',
+  NotoSansOgham = 'NOTO_SANS_OGHAM',
+  NotoSansOldHungarian = 'NOTO_SANS_OLD_HUNGARIAN',
+  NotoSansOldItalic = 'NOTO_SANS_OLD_ITALIC',
+  NotoSansOldNorthArabian = 'NOTO_SANS_OLD_NORTH_ARABIAN',
+  NotoSansOldPermic = 'NOTO_SANS_OLD_PERMIC',
+  NotoSansOldPersian = 'NOTO_SANS_OLD_PERSIAN',
+  NotoSansOldSogdian = 'NOTO_SANS_OLD_SOGDIAN',
+  NotoSansOldSouthArabian = 'NOTO_SANS_OLD_SOUTH_ARABIAN',
+  NotoSansOldTurkic = 'NOTO_SANS_OLD_TURKIC',
+  NotoSansOlChiki = 'NOTO_SANS_OL_CHIKI',
+  NotoSansOriya = 'NOTO_SANS_ORIYA',
+  NotoSansOsage = 'NOTO_SANS_OSAGE',
+  NotoSansOsmanya = 'NOTO_SANS_OSMANYA',
+  NotoSansPahawhHmong = 'NOTO_SANS_PAHAWH_HMONG',
+  NotoSansPalmyrene = 'NOTO_SANS_PALMYRENE',
+  NotoSansPauCinHau = 'NOTO_SANS_PAU_CIN_HAU',
+  NotoSansPhagspa = 'NOTO_SANS_PHAGSPA',
+  NotoSansPhoenician = 'NOTO_SANS_PHOENICIAN',
+  NotoSansPsalterPahlavi = 'NOTO_SANS_PSALTER_PAHLAVI',
+  NotoSansRejang = 'NOTO_SANS_REJANG',
+  NotoSansRunic = 'NOTO_SANS_RUNIC',
+  NotoSansSamaritan = 'NOTO_SANS_SAMARITAN',
+  NotoSansSaurashtra = 'NOTO_SANS_SAURASHTRA',
+  NotoSansSc = 'NOTO_SANS_SC',
+  NotoSansSharada = 'NOTO_SANS_SHARADA',
+  NotoSansShavian = 'NOTO_SANS_SHAVIAN',
+  NotoSansSiddham = 'NOTO_SANS_SIDDHAM',
+  NotoSansSignwriting = 'NOTO_SANS_SIGNWRITING',
+  NotoSansSinhala = 'NOTO_SANS_SINHALA',
+  NotoSansSogdian = 'NOTO_SANS_SOGDIAN',
+  NotoSansSoraSompeng = 'NOTO_SANS_SORA_SOMPENG',
+  NotoSansSoyombo = 'NOTO_SANS_SOYOMBO',
+  NotoSansSundanese = 'NOTO_SANS_SUNDANESE',
+  NotoSansSunuwar = 'NOTO_SANS_SUNUWAR',
+  NotoSansSylotiNagri = 'NOTO_SANS_SYLOTI_NAGRI',
+  NotoSansSymbols = 'NOTO_SANS_SYMBOLS',
+  NotoSansSymbols_2 = 'NOTO_SANS_SYMBOLS_2',
+  NotoSansSyriac = 'NOTO_SANS_SYRIAC',
+  NotoSansSyriacEastern = 'NOTO_SANS_SYRIAC_EASTERN',
+  NotoSansSyriacWestern = 'NOTO_SANS_SYRIAC_WESTERN',
+  NotoSansTagalog = 'NOTO_SANS_TAGALOG',
+  NotoSansTagbanwa = 'NOTO_SANS_TAGBANWA',
+  NotoSansTaiLe = 'NOTO_SANS_TAI_LE',
+  NotoSansTaiTham = 'NOTO_SANS_TAI_THAM',
+  NotoSansTaiViet = 'NOTO_SANS_TAI_VIET',
+  NotoSansTakri = 'NOTO_SANS_TAKRI',
+  NotoSansTamil = 'NOTO_SANS_TAMIL',
+  NotoSansTamilSupplement = 'NOTO_SANS_TAMIL_SUPPLEMENT',
+  NotoSansTangsa = 'NOTO_SANS_TANGSA',
+  NotoSansTc = 'NOTO_SANS_TC',
+  NotoSansTelugu = 'NOTO_SANS_TELUGU',
+  NotoSansThaana = 'NOTO_SANS_THAANA',
+  NotoSansThai = 'NOTO_SANS_THAI',
+  NotoSansThaiLooped = 'NOTO_SANS_THAI_LOOPED',
+  NotoSansTifinagh = 'NOTO_SANS_TIFINAGH',
+  NotoSansTirhuta = 'NOTO_SANS_TIRHUTA',
+  NotoSansUgaritic = 'NOTO_SANS_UGARITIC',
+  NotoSansVai = 'NOTO_SANS_VAI',
+  NotoSansVithkuqi = 'NOTO_SANS_VITHKUQI',
+  NotoSansWancho = 'NOTO_SANS_WANCHO',
+  NotoSansWarangCiti = 'NOTO_SANS_WARANG_CITI',
+  NotoSansYi = 'NOTO_SANS_YI',
+  NotoSansZanabazarSquare = 'NOTO_SANS_ZANABAZAR_SQUARE',
+  NotoSerif = 'NOTO_SERIF',
+  NotoSerifAhom = 'NOTO_SERIF_AHOM',
+  NotoSerifArmenian = 'NOTO_SERIF_ARMENIAN',
+  NotoSerifBalinese = 'NOTO_SERIF_BALINESE',
+  NotoSerifBengali = 'NOTO_SERIF_BENGALI',
+  NotoSerifDevanagari = 'NOTO_SERIF_DEVANAGARI',
+  NotoSerifDisplay = 'NOTO_SERIF_DISPLAY',
+  NotoSerifDivesAkuru = 'NOTO_SERIF_DIVES_AKURU',
+  NotoSerifDogra = 'NOTO_SERIF_DOGRA',
+  NotoSerifEthiopic = 'NOTO_SERIF_ETHIOPIC',
+  NotoSerifGeorgian = 'NOTO_SERIF_GEORGIAN',
+  NotoSerifGrantha = 'NOTO_SERIF_GRANTHA',
+  NotoSerifGujarati = 'NOTO_SERIF_GUJARATI',
+  NotoSerifGurmukhi = 'NOTO_SERIF_GURMUKHI',
+  NotoSerifHebrew = 'NOTO_SERIF_HEBREW',
+  NotoSerifHentaigana = 'NOTO_SERIF_HENTAIGANA',
+  NotoSerifHk = 'NOTO_SERIF_HK',
+  NotoSerifJp = 'NOTO_SERIF_JP',
+  NotoSerifKannada = 'NOTO_SERIF_KANNADA',
+  NotoSerifKhitanSmallScript = 'NOTO_SERIF_KHITAN_SMALL_SCRIPT',
+  NotoSerifKhmer = 'NOTO_SERIF_KHMER',
+  NotoSerifKhojki = 'NOTO_SERIF_KHOJKI',
+  NotoSerifKr = 'NOTO_SERIF_KR',
+  NotoSerifLao = 'NOTO_SERIF_LAO',
+  NotoSerifMakasar = 'NOTO_SERIF_MAKASAR',
+  NotoSerifMalayalam = 'NOTO_SERIF_MALAYALAM',
+  NotoSerifMyanmar = 'NOTO_SERIF_MYANMAR',
+  NotoSerifNpHmong = 'NOTO_SERIF_NP_HMONG',
+  NotoSerifOldUyghur = 'NOTO_SERIF_OLD_UYGHUR',
+  NotoSerifOriya = 'NOTO_SERIF_ORIYA',
+  NotoSerifOttomanSiyaq = 'NOTO_SERIF_OTTOMAN_SIYAQ',
+  NotoSerifSc = 'NOTO_SERIF_SC',
+  NotoSerifSinhala = 'NOTO_SERIF_SINHALA',
+  NotoSerifTamil = 'NOTO_SERIF_TAMIL',
+  NotoSerifTangut = 'NOTO_SERIF_TANGUT',
+  NotoSerifTc = 'NOTO_SERIF_TC',
+  NotoSerifTelugu = 'NOTO_SERIF_TELUGU',
+  NotoSerifThai = 'NOTO_SERIF_THAI',
+  NotoSerifTibetan = 'NOTO_SERIF_TIBETAN',
+  NotoSerifTodhri = 'NOTO_SERIF_TODHRI',
+  NotoSerifToto = 'NOTO_SERIF_TOTO',
+  NotoSerifVithkuqi = 'NOTO_SERIF_VITHKUQI',
+  NotoSerifYezidi = 'NOTO_SERIF_YEZIDI',
+  NotoTraditionalNushu = 'NOTO_TRADITIONAL_NUSHU',
+  NotoZnamennyMusicalNotation = 'NOTO_ZNAMENNY_MUSICAL_NOTATION',
+  NovaCut = 'NOVA_CUT',
+  NovaFlat = 'NOVA_FLAT',
+  NovaMono = 'NOVA_MONO',
+  NovaOval = 'NOVA_OVAL',
+  NovaRound = 'NOVA_ROUND',
+  NovaScript = 'NOVA_SCRIPT',
+  NovaSlim = 'NOVA_SLIM',
+  NovaSquare = 'NOVA_SQUARE',
+  Ntr = 'NTR',
+  Numans = 'NUMANS',
+  Nunito = 'NUNITO',
+  NunitoSans = 'NUNITO_SANS',
+  NuosuSil = 'NUOSU_SIL',
+  OdibeeSans = 'ODIBEE_SANS',
+  OdorMeanChey = 'ODOR_MEAN_CHEY',
+  Offside = 'OFFSIDE',
+  Oi = 'OI',
+  Ojuju = 'OJUJU',
+  Oldenburg = 'OLDENBURG',
+  OldStandardTt = 'OLD_STANDARD_TT',
+  Ole = 'OLE',
+  OleoScript = 'OLEO_SCRIPT',
+  OleoScriptSwashCaps = 'OLEO_SCRIPT_SWASH_CAPS',
+  Onest = 'ONEST',
+  OoohBaby = 'OOOH_BABY',
+  OpenSans = 'OPEN_SANS',
+  Oranienbaum = 'ORANIENBAUM',
+  Orbit = 'ORBIT',
+  Orbitron = 'ORBITRON',
+  Oregano = 'OREGANO',
+  OrelegaOne = 'ORELEGA_ONE',
+  Orienta = 'ORIENTA',
+  OriginalSurfer = 'ORIGINAL_SURFER',
+  Oswald = 'OSWALD',
+  Outfit = 'OUTFIT',
+  Overlock = 'OVERLOCK',
+  OverlockSc = 'OVERLOCK_SC',
+  Overpass = 'OVERPASS',
+  OverpassMono = 'OVERPASS_MONO',
+  OverTheRainbow = 'OVER_THE_RAINBOW',
+  Ovo = 'OVO',
+  Oxanium = 'OXANIUM',
+  Oxygen = 'OXYGEN',
+  OxygenMono = 'OXYGEN_MONO',
+  Pacifico = 'PACIFICO',
+  Padauk = 'PADAUK',
+  PadyakkeExpandedOne = 'PADYAKKE_EXPANDED_ONE',
+  Palanquin = 'PALANQUIN',
+  PalanquinDark = 'PALANQUIN_DARK',
+  PaletteMosaic = 'PALETTE_MOSAIC',
+  Pangolin = 'PANGOLIN',
+  Paprika = 'PAPRIKA',
+  Parastoo = 'PARASTOO',
+  Parisienne = 'PARISIENNE',
+  Parkinsans = 'PARKINSANS',
+  PasseroOne = 'PASSERO_ONE',
+  PassionsConflict = 'PASSIONS_CONFLICT',
+  PassionOne = 'PASSION_ONE',
+  PathwayExtreme = 'PATHWAY_EXTREME',
+  PathwayGothicOne = 'PATHWAY_GOTHIC_ONE',
+  PatrickHand = 'PATRICK_HAND',
+  PatrickHandSc = 'PATRICK_HAND_SC',
+  Pattaya = 'PATTAYA',
+  PatuaOne = 'PATUA_ONE',
+  Pavanam = 'PAVANAM',
+  PaytoneOne = 'PAYTONE_ONE',
+  Peddana = 'PEDDANA',
+  Peralta = 'PERALTA',
+  PermanentMarker = 'PERMANENT_MARKER',
+  Petemoss = 'PETEMOSS',
+  PetitFormalScript = 'PETIT_FORMAL_SCRIPT',
+  Petrona = 'PETRONA',
+  Phetsarath = 'PHETSARATH',
+  Philosopher = 'PHILOSOPHER',
+  Phudu = 'PHUDU',
+  Piazzolla = 'PIAZZOLLA',
+  Piedra = 'PIEDRA',
+  PinyonScript = 'PINYON_SCRIPT',
+  PirataOne = 'PIRATA_ONE',
+  PixelifySans = 'PIXELIFY_SANS',
+  Plaster = 'PLASTER',
+  Platypi = 'PLATYPI',
+  Play = 'PLAY',
+  Playball = 'PLAYBALL',
+  Playfair = 'PLAYFAIR',
+  PlayfairDisplay = 'PLAYFAIR_DISPLAY',
+  PlayfairDisplaySc = 'PLAYFAIR_DISPLAY_SC',
+  PlaypenSans = 'PLAYPEN_SANS',
+  PlaypenSansArabic = 'PLAYPEN_SANS_ARABIC',
+  PlaypenSansDeva = 'PLAYPEN_SANS_DEVA',
+  PlaypenSansHebrew = 'PLAYPEN_SANS_HEBREW',
+  PlaypenSansThai = 'PLAYPEN_SANS_THAI',
+  PlaywriteAr = 'PLAYWRITE_AR',
+  PlaywriteArGuides = 'PLAYWRITE_AR_GUIDES',
+  PlaywriteAt = 'PLAYWRITE_AT',
+  PlaywriteAtGuides = 'PLAYWRITE_AT_GUIDES',
+  PlaywriteAuNsw = 'PLAYWRITE_AU_NSW',
+  PlaywriteAuNswGuides = 'PLAYWRITE_AU_NSW_GUIDES',
+  PlaywriteAuQld = 'PLAYWRITE_AU_QLD',
+  PlaywriteAuQldGuides = 'PLAYWRITE_AU_QLD_GUIDES',
+  PlaywriteAuSa = 'PLAYWRITE_AU_SA',
+  PlaywriteAuSaGuides = 'PLAYWRITE_AU_SA_GUIDES',
+  PlaywriteAuTas = 'PLAYWRITE_AU_TAS',
+  PlaywriteAuTasGuides = 'PLAYWRITE_AU_TAS_GUIDES',
+  PlaywriteAuVic = 'PLAYWRITE_AU_VIC',
+  PlaywriteAuVicGuides = 'PLAYWRITE_AU_VIC_GUIDES',
+  PlaywriteBeVlg = 'PLAYWRITE_BE_VLG',
+  PlaywriteBeVlgGuides = 'PLAYWRITE_BE_VLG_GUIDES',
+  PlaywriteBeWal = 'PLAYWRITE_BE_WAL',
+  PlaywriteBeWalGuides = 'PLAYWRITE_BE_WAL_GUIDES',
+  PlaywriteBr = 'PLAYWRITE_BR',
+  PlaywriteBrGuides = 'PLAYWRITE_BR_GUIDES',
+  PlaywriteCa = 'PLAYWRITE_CA',
+  PlaywriteCaGuides = 'PLAYWRITE_CA_GUIDES',
+  PlaywriteCl = 'PLAYWRITE_CL',
+  PlaywriteClGuides = 'PLAYWRITE_CL_GUIDES',
+  PlaywriteCo = 'PLAYWRITE_CO',
+  PlaywriteCoGuides = 'PLAYWRITE_CO_GUIDES',
+  PlaywriteCu = 'PLAYWRITE_CU',
+  PlaywriteCuGuides = 'PLAYWRITE_CU_GUIDES',
+  PlaywriteCz = 'PLAYWRITE_CZ',
+  PlaywriteCzGuides = 'PLAYWRITE_CZ_GUIDES',
+  PlaywriteDeGrund = 'PLAYWRITE_DE_GRUND',
+  PlaywriteDeGrundGuides = 'PLAYWRITE_DE_GRUND_GUIDES',
+  PlaywriteDeLa = 'PLAYWRITE_DE_LA',
+  PlaywriteDeLaGuides = 'PLAYWRITE_DE_LA_GUIDES',
+  PlaywriteDeSas = 'PLAYWRITE_DE_SAS',
+  PlaywriteDeSasGuides = 'PLAYWRITE_DE_SAS_GUIDES',
+  PlaywriteDeVa = 'PLAYWRITE_DE_VA',
+  PlaywriteDeVaGuides = 'PLAYWRITE_DE_VA_GUIDES',
+  PlaywriteDkLoopet = 'PLAYWRITE_DK_LOOPET',
+  PlaywriteDkLoopetGuides = 'PLAYWRITE_DK_LOOPET_GUIDES',
+  PlaywriteDkUloopet = 'PLAYWRITE_DK_ULOOPET',
+  PlaywriteDkUloopetGuides = 'PLAYWRITE_DK_ULOOPET_GUIDES',
+  PlaywriteEs = 'PLAYWRITE_ES',
+  PlaywriteEsDeco = 'PLAYWRITE_ES_DECO',
+  PlaywriteEsDecoGuides = 'PLAYWRITE_ES_DECO_GUIDES',
+  PlaywriteEsGuides = 'PLAYWRITE_ES_GUIDES',
+  PlaywriteFrModerne = 'PLAYWRITE_FR_MODERNE',
+  PlaywriteFrModerneGuides = 'PLAYWRITE_FR_MODERNE_GUIDES',
+  PlaywriteFrTrad = 'PLAYWRITE_FR_TRAD',
+  PlaywriteFrTradGuides = 'PLAYWRITE_FR_TRAD_GUIDES',
+  PlaywriteGbJ = 'PLAYWRITE_GB_J',
+  PlaywriteGbJGuides = 'PLAYWRITE_GB_J_GUIDES',
+  PlaywriteGbS = 'PLAYWRITE_GB_S',
+  PlaywriteGbSGuides = 'PLAYWRITE_GB_S_GUIDES',
+  PlaywriteHr = 'PLAYWRITE_HR',
+  PlaywriteHrGuides = 'PLAYWRITE_HR_GUIDES',
+  PlaywriteHrLijeva = 'PLAYWRITE_HR_LIJEVA',
+  PlaywriteHrLijevaGuides = 'PLAYWRITE_HR_LIJEVA_GUIDES',
+  PlaywriteHu = 'PLAYWRITE_HU',
+  PlaywriteHuGuides = 'PLAYWRITE_HU_GUIDES',
+  PlaywriteId = 'PLAYWRITE_ID',
+  PlaywriteIdGuides = 'PLAYWRITE_ID_GUIDES',
+  PlaywriteIe = 'PLAYWRITE_IE',
+  PlaywriteIeGuides = 'PLAYWRITE_IE_GUIDES',
+  PlaywriteIn = 'PLAYWRITE_IN',
+  PlaywriteInGuides = 'PLAYWRITE_IN_GUIDES',
+  PlaywriteIs = 'PLAYWRITE_IS',
+  PlaywriteIsGuides = 'PLAYWRITE_IS_GUIDES',
+  PlaywriteItModerna = 'PLAYWRITE_IT_MODERNA',
+  PlaywriteItModernaGuides = 'PLAYWRITE_IT_MODERNA_GUIDES',
+  PlaywriteItTrad = 'PLAYWRITE_IT_TRAD',
+  PlaywriteItTradGuides = 'PLAYWRITE_IT_TRAD_GUIDES',
+  PlaywriteMx = 'PLAYWRITE_MX',
+  PlaywriteMxGuides = 'PLAYWRITE_MX_GUIDES',
+  PlaywriteNgModern = 'PLAYWRITE_NG_MODERN',
+  PlaywriteNgModernGuides = 'PLAYWRITE_NG_MODERN_GUIDES',
+  PlaywriteNl = 'PLAYWRITE_NL',
+  PlaywriteNlGuides = 'PLAYWRITE_NL_GUIDES',
+  PlaywriteNo = 'PLAYWRITE_NO',
+  PlaywriteNoGuides = 'PLAYWRITE_NO_GUIDES',
+  PlaywriteNz = 'PLAYWRITE_NZ',
+  PlaywriteNzGuides = 'PLAYWRITE_NZ_GUIDES',
+  PlaywritePe = 'PLAYWRITE_PE',
+  PlaywritePeGuides = 'PLAYWRITE_PE_GUIDES',
+  PlaywritePl = 'PLAYWRITE_PL',
+  PlaywritePlGuides = 'PLAYWRITE_PL_GUIDES',
+  PlaywritePt = 'PLAYWRITE_PT',
+  PlaywritePtGuides = 'PLAYWRITE_PT_GUIDES',
+  PlaywriteRo = 'PLAYWRITE_RO',
+  PlaywriteRoGuides = 'PLAYWRITE_RO_GUIDES',
+  PlaywriteSk = 'PLAYWRITE_SK',
+  PlaywriteSkGuides = 'PLAYWRITE_SK_GUIDES',
+  PlaywriteTz = 'PLAYWRITE_TZ',
+  PlaywriteTzGuides = 'PLAYWRITE_TZ_GUIDES',
+  PlaywriteUsModern = 'PLAYWRITE_US_MODERN',
+  PlaywriteUsModernGuides = 'PLAYWRITE_US_MODERN_GUIDES',
+  PlaywriteUsTrad = 'PLAYWRITE_US_TRAD',
+  PlaywriteUsTradGuides = 'PLAYWRITE_US_TRAD_GUIDES',
+  PlaywriteVn = 'PLAYWRITE_VN',
+  PlaywriteVnGuides = 'PLAYWRITE_VN_GUIDES',
+  PlaywriteZa = 'PLAYWRITE_ZA',
+  PlaywriteZaGuides = 'PLAYWRITE_ZA_GUIDES',
+  PlusJakartaSans = 'PLUS_JAKARTA_SANS',
+  Pochaevsk = 'POCHAEVSK',
+  Podkova = 'PODKOVA',
+  PoetsenOne = 'POETSEN_ONE',
+  PoiretOne = 'POIRET_ONE',
+  PollerOne = 'POLLER_ONE',
+  PoltawskiNowy = 'POLTAWSKI_NOWY',
+  Poly = 'POLY',
+  Pompiere = 'POMPIERE',
+  Ponnala = 'PONNALA',
+  Ponomar = 'PONOMAR',
+  PontanoSans = 'PONTANO_SANS',
+  PoorStory = 'POOR_STORY',
+  Poppins = 'POPPINS',
+  PortLligatSans = 'PORT_LLIGAT_SANS',
+  PortLligatSlab = 'PORT_LLIGAT_SLAB',
+  PottaOne = 'POTTA_ONE',
+  PragatiNarrow = 'PRAGATI_NARROW',
+  Praise = 'PRAISE',
+  Prata = 'PRATA',
+  Preahvihear = 'PREAHVIHEAR',
+  PressStart_2P = 'PRESS_START_2P',
+  Pridi = 'PRIDI',
+  PrincessSofia = 'PRINCESS_SOFIA',
+  Prociono = 'PROCIONO',
+  Prompt = 'PROMPT',
+  ProstoOne = 'PROSTO_ONE',
+  ProtestGuerrilla = 'PROTEST_GUERRILLA',
+  ProtestRevolution = 'PROTEST_REVOLUTION',
+  ProtestRiot = 'PROTEST_RIOT',
+  ProtestStrike = 'PROTEST_STRIKE',
+  ProzaLibre = 'PROZA_LIBRE',
+  PtMono = 'PT_MONO',
+  PtSans = 'PT_SANS',
+  PtSansCaption = 'PT_SANS_CAPTION',
+  PtSansNarrow = 'PT_SANS_NARROW',
+  PtSerif = 'PT_SERIF',
+  PtSerifCaption = 'PT_SERIF_CAPTION',
+  PublicSans = 'PUBLIC_SANS',
+  PuppiesPlay = 'PUPPIES_PLAY',
+  Puritan = 'PURITAN',
+  PurplePurse = 'PURPLE_PURSE',
+  Qahiri = 'QAHIRI',
+  Quando = 'QUANDO',
+  Quantico = 'QUANTICO',
+  Quattrocento = 'QUATTROCENTO',
+  QuattrocentoSans = 'QUATTROCENTO_SANS',
+  Questrial = 'QUESTRIAL',
+  Quicksand = 'QUICKSAND',
+  Quintessential = 'QUINTESSENTIAL',
+  Qwigley = 'QWIGLEY',
+  QwitcherGrypen = 'QWITCHER_GRYPEN',
+  RacingSansOne = 'RACING_SANS_ONE',
+  RadioCanada = 'RADIO_CANADA',
+  RadioCanadaBig = 'RADIO_CANADA_BIG',
+  Radley = 'RADLEY',
+  Rajdhani = 'RAJDHANI',
+  Rakkas = 'RAKKAS',
+  Raleway = 'RALEWAY',
+  RalewayDots = 'RALEWAY_DOTS',
+  Ramabhadra = 'RAMABHADRA',
+  Ramaraja = 'RAMARAJA',
+  Rambla = 'RAMBLA',
+  RammettoOne = 'RAMMETTO_ONE',
+  RampartOne = 'RAMPART_ONE',
+  Ranchers = 'RANCHERS',
+  Rancho = 'RANCHO',
+  Ranga = 'RANGA',
+  Rasa = 'RASA',
+  Rationale = 'RATIONALE',
+  RaviPrakash = 'RAVI_PRAKASH',
+  ReadexPro = 'READEX_PRO',
+  Recursive = 'RECURSIVE',
+  Redacted = 'REDACTED',
+  RedactedScript = 'REDACTED_SCRIPT',
+  RedditMono = 'REDDIT_MONO',
+  RedditSans = 'REDDIT_SANS',
+  RedditSansCondensed = 'REDDIT_SANS_CONDENSED',
+  Redressed = 'REDRESSED',
+  RedHatDisplay = 'RED_HAT_DISPLAY',
+  RedHatMono = 'RED_HAT_MONO',
+  RedHatText = 'RED_HAT_TEXT',
+  RedRose = 'RED_ROSE',
+  ReemKufi = 'REEM_KUFI',
+  ReemKufiFun = 'REEM_KUFI_FUN',
+  ReemKufiInk = 'REEM_KUFI_INK',
+  ReenieBeanie = 'REENIE_BEANIE',
+  ReggaeOne = 'REGGAE_ONE',
+  Rem = 'REM',
+  RethinkSans = 'RETHINK_SANS',
+  Revalia = 'REVALIA',
+  RhodiumLibre = 'RHODIUM_LIBRE',
+  Ribeye = 'RIBEYE',
+  RibeyeMarrow = 'RIBEYE_MARROW',
+  Righteous = 'RIGHTEOUS',
+  Risque = 'RISQUE',
+  RoadRage = 'ROAD_RAGE',
+  Roboto = 'ROBOTO',
+  RobotoCondensed = 'ROBOTO_CONDENSED',
+  RobotoFlex = 'ROBOTO_FLEX',
+  RobotoMono = 'ROBOTO_MONO',
+  RobotoSerif = 'ROBOTO_SERIF',
+  RobotoSlab = 'ROBOTO_SLAB',
+  Rochester = 'ROCHESTER',
+  RocknrollOne = 'ROCKNROLL_ONE',
+  Rock_3D = 'ROCK_3D',
+  RockSalt = 'ROCK_SALT',
+  Rokkitt = 'ROKKITT',
+  Romanesco = 'ROMANESCO',
+  RopaSans = 'ROPA_SANS',
+  Rosario = 'ROSARIO',
+  Rosarivo = 'ROSARIVO',
+  RougeScript = 'ROUGE_SCRIPT',
+  Rowdies = 'ROWDIES',
+  RozhaOne = 'ROZHA_ONE',
+  Rubik = 'RUBIK',
+  Rubik_80SFade = 'RUBIK_80S_FADE',
+  RubikBeastly = 'RUBIK_BEASTLY',
+  RubikBrokenFax = 'RUBIK_BROKEN_FAX',
+  RubikBubbles = 'RUBIK_BUBBLES',
+  RubikBurned = 'RUBIK_BURNED',
+  RubikDirt = 'RUBIK_DIRT',
+  RubikDistressed = 'RUBIK_DISTRESSED',
+  RubikDoodleShadow = 'RUBIK_DOODLE_SHADOW',
+  RubikDoodleTriangles = 'RUBIK_DOODLE_TRIANGLES',
+  RubikGemstones = 'RUBIK_GEMSTONES',
+  RubikGlitch = 'RUBIK_GLITCH',
+  RubikGlitchPop = 'RUBIK_GLITCH_POP',
+  RubikIso = 'RUBIK_ISO',
+  RubikLines = 'RUBIK_LINES',
+  RubikMaps = 'RUBIK_MAPS',
+  RubikMarkerHatch = 'RUBIK_MARKER_HATCH',
+  RubikMaze = 'RUBIK_MAZE',
+  RubikMicrobe = 'RUBIK_MICROBE',
+  RubikMonoOne = 'RUBIK_MONO_ONE',
+  RubikMoonrocks = 'RUBIK_MOONROCKS',
+  RubikPixels = 'RUBIK_PIXELS',
+  RubikPuddles = 'RUBIK_PUDDLES',
+  RubikScribble = 'RUBIK_SCRIBBLE',
+  RubikSprayPaint = 'RUBIK_SPRAY_PAINT',
+  RubikStorm = 'RUBIK_STORM',
+  RubikVinyl = 'RUBIK_VINYL',
+  RubikWetPaint = 'RUBIK_WET_PAINT',
+  Ruda = 'RUDA',
+  Rufina = 'RUFINA',
+  RugeBoogie = 'RUGE_BOOGIE',
+  Ruluko = 'RULUKO',
+  RumRaisin = 'RUM_RAISIN',
+  RuslanDisplay = 'RUSLAN_DISPLAY',
+  RussoOne = 'RUSSO_ONE',
+  Ruthie = 'RUTHIE',
+  Ruwudu = 'RUWUDU',
+  Rye = 'RYE',
+  Sacramento = 'SACRAMENTO',
+  Sahitya = 'SAHITYA',
+  Sail = 'SAIL',
+  Saira = 'SAIRA',
+  SairaCondensed = 'SAIRA_CONDENSED',
+  SairaExtraCondensed = 'SAIRA_EXTRA_CONDENSED',
+  SairaSemiCondensed = 'SAIRA_SEMI_CONDENSED',
+  SairaStencilOne = 'SAIRA_STENCIL_ONE',
+  Salsa = 'SALSA',
+  Sanchez = 'SANCHEZ',
+  Sancreek = 'SANCREEK',
+  SankofaDisplay = 'SANKOFA_DISPLAY',
+  Sansation = 'SANSATION',
+  Sansita = 'SANSITA',
+  SansitaSwashed = 'SANSITA_SWASHED',
+  Sarabun = 'SARABUN',
+  Sarala = 'SARALA',
+  Sarina = 'SARINA',
+  Sarpanch = 'SARPANCH',
+  SassyFrass = 'SASSY_FRASS',
+  Satisfy = 'SATISFY',
+  Savate = 'SAVATE',
+  SawarabiGothic = 'SAWARABI_GOTHIC',
+  SawarabiMincho = 'SAWARABI_MINCHO',
+  Scada = 'SCADA',
+  ScheherazadeNew = 'SCHEHERAZADE_NEW',
+  SchibstedGrotesk = 'SCHIBSTED_GROTESK',
+  Schoolbell = 'SCHOOLBELL',
+  ScopeOne = 'SCOPE_ONE',
+  SeaweedScript = 'SEAWEED_SCRIPT',
+  SecularOne = 'SECULAR_ONE',
+  Sedan = 'SEDAN',
+  SedanSc = 'SEDAN_SC',
+  SedgwickAve = 'SEDGWICK_AVE',
+  SedgwickAveDisplay = 'SEDGWICK_AVE_DISPLAY',
+  Sen = 'SEN',
+  SendFlowers = 'SEND_FLOWERS',
+  Sevillana = 'SEVILLANA',
+  SeymourOne = 'SEYMOUR_ONE',
+  ShadowsIntoLight = 'SHADOWS_INTO_LIGHT',
+  ShadowsIntoLightTwo = 'SHADOWS_INTO_LIGHT_TWO',
+  Shafarik = 'SHAFARIK',
+  Shalimar = 'SHALIMAR',
+  ShantellSans = 'SHANTELL_SANS',
+  Shanti = 'SHANTI',
+  Share = 'SHARE',
+  ShareTech = 'SHARE_TECH',
+  ShareTechMono = 'SHARE_TECH_MONO',
+  ShipporiAntique = 'SHIPPORI_ANTIQUE',
+  ShipporiAntiqueB1 = 'SHIPPORI_ANTIQUE_B1',
+  ShipporiMincho = 'SHIPPORI_MINCHO',
+  ShipporiMinchoB1 = 'SHIPPORI_MINCHO_B1',
+  Shizuru = 'SHIZURU',
+  Shojumaru = 'SHOJUMARU',
+  ShortStack = 'SHORT_STACK',
+  Shrikhand = 'SHRIKHAND',
+  Siemreap = 'SIEMREAP',
+  Sigmar = 'SIGMAR',
+  SigmarOne = 'SIGMAR_ONE',
+  Signika = 'SIGNIKA',
+  SignikaNegative = 'SIGNIKA_NEGATIVE',
+  Silkscreen = 'SILKSCREEN',
+  Simonetta = 'SIMONETTA',
+  SingleDay = 'SINGLE_DAY',
+  Sintony = 'SINTONY',
+  SirinStencil = 'SIRIN_STENCIL',
+  Sirivennela = 'SIRIVENNELA',
+  Sixtyfour = 'SIXTYFOUR',
+  SixtyfourConvergence = 'SIXTYFOUR_CONVERGENCE',
+  SixCaps = 'SIX_CAPS',
+  Skranji = 'SKRANJI',
+  Slabo_13Px = 'SLABO_13PX',
+  Slabo_27Px = 'SLABO_27PX',
+  Slackey = 'SLACKEY',
+  SlacksideOne = 'SLACKSIDE_ONE',
+  Smokum = 'SMOKUM',
+  Smooch = 'SMOOCH',
+  SmoochSans = 'SMOOCH_SANS',
+  Smythe = 'SMYTHE',
+  Sniglet = 'SNIGLET',
+  Snippet = 'SNIPPET',
+  SnowburstOne = 'SNOWBURST_ONE',
+  SofadiOne = 'SOFADI_ONE',
+  Sofia = 'SOFIA',
+  SofiaSans = 'SOFIA_SANS',
+  SofiaSansCondensed = 'SOFIA_SANS_CONDENSED',
+  SofiaSansExtraCondensed = 'SOFIA_SANS_EXTRA_CONDENSED',
+  SofiaSansSemiCondensed = 'SOFIA_SANS_SEMI_CONDENSED',
+  Solitreo = 'SOLITREO',
+  Solway = 'SOLWAY',
+  SometypeMono = 'SOMETYPE_MONO',
+  SongMyung = 'SONG_MYUNG',
+  Sono = 'SONO',
+  SonsieOne = 'SONSIE_ONE',
+  Sora = 'SORA',
+  SortsMillGoudy = 'SORTS_MILL_GOUDY',
+  SourceCodePro = 'SOURCE_CODE_PRO',
+  SourceSans_3 = 'SOURCE_SANS_3',
+  SourceSerif_4 = 'SOURCE_SERIF_4',
+  SourGummy = 'SOUR_GUMMY',
+  SpaceGrotesk = 'SPACE_GROTESK',
+  SpaceMono = 'SPACE_MONO',
+  SpecialElite = 'SPECIAL_ELITE',
+  SpecialGothic = 'SPECIAL_GOTHIC',
+  SpecialGothicCondensedOne = 'SPECIAL_GOTHIC_CONDENSED_ONE',
+  SpecialGothicExpandedOne = 'SPECIAL_GOTHIC_EXPANDED_ONE',
+  Spectral = 'SPECTRAL',
+  SpectralSc = 'SPECTRAL_SC',
+  SpicyRice = 'SPICY_RICE',
+  Spinnaker = 'SPINNAKER',
+  Spirax = 'SPIRAX',
+  Splash = 'SPLASH',
+  SplineSans = 'SPLINE_SANS',
+  SplineSansMono = 'SPLINE_SANS_MONO',
+  SquadaOne = 'SQUADA_ONE',
+  SquarePeg = 'SQUARE_PEG',
+  SreeKrushnadevaraya = 'SREE_KRUSHNADEVARAYA',
+  Sriracha = 'SRIRACHA',
+  Srisakdi = 'SRISAKDI',
+  Staatliches = 'STAATLICHES',
+  StackSansHeadline = 'STACK_SANS_HEADLINE',
+  StackSansNotch = 'STACK_SANS_NOTCH',
+  StackSansText = 'STACK_SANS_TEXT',
+  Stalemate = 'STALEMATE',
+  StalinistOne = 'STALINIST_ONE',
+  StardosStencil = 'STARDOS_STENCIL',
+  Stick = 'STICK',
+  StickNoBills = 'STICK_NO_BILLS',
+  StintUltraCondensed = 'STINT_ULTRA_CONDENSED',
+  StintUltraExpanded = 'STINT_ULTRA_EXPANDED',
+  StixTwoText = 'STIX_TWO_TEXT',
+  Stoke = 'STOKE',
+  StoryScript = 'STORY_SCRIPT',
+  Strait = 'STRAIT',
+  StyleScript = 'STYLE_SCRIPT',
+  Stylish = 'STYLISH',
+  SuezOne = 'SUEZ_ONE',
+  SueEllenFrancisco = 'SUE_ELLEN_FRANCISCO',
+  SulphurPoint = 'SULPHUR_POINT',
+  Sumana = 'SUMANA',
+  Sunflower = 'SUNFLOWER',
+  Sunshiney = 'SUNSHINEY',
+  SupermercadoOne = 'SUPERMERCADO_ONE',
+  Sura = 'SURA',
+  Suranna = 'SURANNA',
+  Suravaram = 'SURAVARAM',
+  Suse = 'SUSE',
+  SuseMono = 'SUSE_MONO',
+  Suwannaphum = 'SUWANNAPHUM',
+  SwankyAndMooMoo = 'SWANKY_AND_MOO_MOO',
+  Syncopate = 'SYNCOPATE',
+  Syne = 'SYNE',
+  SyneMono = 'SYNE_MONO',
+  SyneTactile = 'SYNE_TACTILE',
+  TacOne = 'TAC_ONE',
+  Tagesschrift = 'TAGESSCHRIFT',
+  TaiHeritagePro = 'TAI_HERITAGE_PRO',
+  Tajawal = 'TAJAWAL',
+  Tangerine = 'TANGERINE',
+  Tapestry = 'TAPESTRY',
+  Taprom = 'TAPROM',
+  TasaExplorer = 'TASA_EXPLORER',
+  TasaOrbiter = 'TASA_ORBITER',
+  Tauri = 'TAURI',
+  Taviraj = 'TAVIRAJ',
+  Teachers = 'TEACHERS',
+  Teko = 'TEKO',
+  Tektur = 'TEKTUR',
+  Telex = 'TELEX',
+  TenaliRamakrishna = 'TENALI_RAMAKRISHNA',
+  TenorSans = 'TENOR_SANS',
+  Texturina = 'TEXTURINA',
+  TextMeOne = 'TEXT_ME_ONE',
+  Thasadith = 'THASADITH',
+  TheGirlNextDoor = 'THE_GIRL_NEXT_DOOR',
+  TheNautigal = 'THE_NAUTIGAL',
+  Tienne = 'TIENNE',
+  TiktokSans = 'TIKTOK_SANS',
+  Tillana = 'TILLANA',
+  TiltNeon = 'TILT_NEON',
+  TiltPrism = 'TILT_PRISM',
+  TiltWarp = 'TILT_WARP',
+  Timmana = 'TIMMANA',
+  Tinos = 'TINOS',
+  Tiny5 = 'TINY5',
+  TiroBangla = 'TIRO_BANGLA',
+  TiroDevanagariHindi = 'TIRO_DEVANAGARI_HINDI',
+  TiroDevanagariMarathi = 'TIRO_DEVANAGARI_MARATHI',
+  TiroDevanagariSanskrit = 'TIRO_DEVANAGARI_SANSKRIT',
+  TiroGurmukhi = 'TIRO_GURMUKHI',
+  TiroKannada = 'TIRO_KANNADA',
+  TiroTamil = 'TIRO_TAMIL',
+  TiroTelugu = 'TIRO_TELUGU',
+  Tirra = 'TIRRA',
+  TitanOne = 'TITAN_ONE',
+  TitilliumWeb = 'TITILLIUM_WEB',
+  Tomorrow = 'TOMORROW',
+  Tourney = 'TOURNEY',
+  TradeWinds = 'TRADE_WINDS',
+  TrainOne = 'TRAIN_ONE',
+  Triodion = 'TRIODION',
+  Trirong = 'TRIRONG',
+  Trispace = 'TRISPACE',
+  Trocchi = 'TROCCHI',
+  Trochut = 'TROCHUT',
+  Truculenta = 'TRUCULENTA',
+  Trykker = 'TRYKKER',
+  TsukimiRounded = 'TSUKIMI_ROUNDED',
+  Tuffy = 'TUFFY',
+  TulpenOne = 'TULPEN_ONE',
+  TurretRoad = 'TURRET_ROAD',
+  TwinkleStar = 'TWINKLE_STAR',
+  Ubuntu = 'UBUNTU',
+  UbuntuCondensed = 'UBUNTU_CONDENSED',
+  UbuntuMono = 'UBUNTU_MONO',
+  UbuntuSans = 'UBUNTU_SANS',
+  UbuntuSansMono = 'UBUNTU_SANS_MONO',
+  Uchen = 'UCHEN',
+  Ultra = 'ULTRA',
+  Unbounded = 'UNBOUNDED',
+  UncialAntiqua = 'UNCIAL_ANTIQUA',
+  Underdog = 'UNDERDOG',
+  UnicaOne = 'UNICA_ONE',
+  Unifrakturcook = 'UNIFRAKTURCOOK',
+  Unifrakturmaguntia = 'UNIFRAKTURMAGUNTIA',
+  Unkempt = 'UNKEMPT',
+  Unlock = 'UNLOCK',
+  Unna = 'UNNA',
+  Uoqmunthenkhung = 'UOQMUNTHENKHUNG',
+  Updock = 'UPDOCK',
+  Urbanist = 'URBANIST',
+  VampiroOne = 'VAMPIRO_ONE',
+  Varela = 'VARELA',
+  VarelaRound = 'VARELA_ROUND',
+  Varta = 'VARTA',
+  VastShadow = 'VAST_SHADOW',
+  Vazirmatn = 'VAZIRMATN',
+  VendSans = 'VEND_SANS',
+  VesperLibre = 'VESPER_LIBRE',
+  ViaodaLibre = 'VIAODA_LIBRE',
+  Vibes = 'VIBES',
+  Vibur = 'VIBUR',
+  VictorMono = 'VICTOR_MONO',
+  Vidaloka = 'VIDALOKA',
+  Viga = 'VIGA',
+  VinaSans = 'VINA_SANS',
+  Voces = 'VOCES',
+  Volkhov = 'VOLKHOV',
+  Vollkorn = 'VOLLKORN',
+  VollkornSc = 'VOLLKORN_SC',
+  Voltaire = 'VOLTAIRE',
+  Vt323 = 'VT323',
+  VujahdayScript = 'VUJAHDAY_SCRIPT',
+  WaitingForTheSunrise = 'WAITING_FOR_THE_SUNRISE',
+  Wallpoet = 'WALLPOET',
+  WalterTurncoat = 'WALTER_TURNCOAT',
+  Warnes = 'WARNES',
+  Waterfall = 'WATERFALL',
+  WaterBrush = 'WATER_BRUSH',
+  Wavefont = 'WAVEFONT',
+  WdxlLubrifontJpN = 'WDXL_LUBRIFONT_JP_N',
+  WdxlLubrifontSc = 'WDXL_LUBRIFONT_SC',
+  WdxlLubrifontTc = 'WDXL_LUBRIFONT_TC',
+  Wellfleet = 'WELLFLEET',
+  WendyOne = 'WENDY_ONE',
+  Whisper = 'WHISPER',
+  Windsong = 'WINDSONG',
+  WinkyRough = 'WINKY_ROUGH',
+  WinkySans = 'WINKY_SANS',
+  WireOne = 'WIRE_ONE',
+  Wittgenstein = 'WITTGENSTEIN',
+  WixMadeforDisplay = 'WIX_MADEFOR_DISPLAY',
+  WixMadeforText = 'WIX_MADEFOR_TEXT',
+  Workbench = 'WORKBENCH',
+  WorkSans = 'WORK_SANS',
+  XanhMono = 'XANH_MONO',
+  Yaldevi = 'YALDEVI',
+  YanoneKaffeesatz = 'YANONE_KAFFEESATZ',
+  Yantramanav = 'YANTRAMANAV',
+  Yarndings_12 = 'YARNDINGS_12',
+  Yarndings_12Charted = 'YARNDINGS_12_CHARTED',
+  Yarndings_20 = 'YARNDINGS_20',
+  Yarndings_20Charted = 'YARNDINGS_20_CHARTED',
+  YatraOne = 'YATRA_ONE',
+  Yellowtail = 'YELLOWTAIL',
+  YeonSung = 'YEON_SUNG',
+  YesevaOne = 'YESEVA_ONE',
+  Yesteryear = 'YESTERYEAR',
+  Yomogi = 'YOMOGI',
+  YoungSerif = 'YOUNG_SERIF',
+  Yrsa = 'YRSA',
+  Ysabeau = 'YSABEAU',
+  YsabeauInfant = 'YSABEAU_INFANT',
+  YsabeauOffice = 'YSABEAU_OFFICE',
+  YsabeauSc = 'YSABEAU_SC',
+  YujiBoku = 'YUJI_BOKU',
+  YujiHentaiganaAkari = 'YUJI_HENTAIGANA_AKARI',
+  YujiHentaiganaAkebono = 'YUJI_HENTAIGANA_AKEBONO',
+  YujiMai = 'YUJI_MAI',
+  YujiSyuku = 'YUJI_SYUKU',
+  YuseiMagic = 'YUSEI_MAGIC',
+  Zain = 'ZAIN',
+  ZalandoSans = 'ZALANDO_SANS',
+  ZalandoSansExpanded = 'ZALANDO_SANS_EXPANDED',
+  ZalandoSansSemiexpanded = 'ZALANDO_SANS_SEMIEXPANDED',
+  ZcoolKuaile = 'ZCOOL_KUAILE',
+  ZcoolQingkeHuangyou = 'ZCOOL_QINGKE_HUANGYOU',
+  ZcoolXiaowei = 'ZCOOL_XIAOWEI',
+  ZenAntique = 'ZEN_ANTIQUE',
+  ZenAntiqueSoft = 'ZEN_ANTIQUE_SOFT',
+  ZenDots = 'ZEN_DOTS',
+  ZenKakuGothicAntique = 'ZEN_KAKU_GOTHIC_ANTIQUE',
+  ZenKakuGothicNew = 'ZEN_KAKU_GOTHIC_NEW',
+  ZenKurenaido = 'ZEN_KURENAIDO',
+  ZenLoop = 'ZEN_LOOP',
+  ZenMaruGothic = 'ZEN_MARU_GOTHIC',
+  ZenOldMincho = 'ZEN_OLD_MINCHO',
+  ZenTokyoZoo = 'ZEN_TOKYO_ZOO',
+  Zeyada = 'ZEYADA',
+  ZhiMangXing = 'ZHI_MANG_XING',
+  ZillaSlab = 'ZILLA_SLAB',
+  ZillaSlabHighlight = 'ZILLA_SLAB_HIGHLIGHT'
+}
+
+export type FontFamilyUpdateInput = {
+  category?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['Int']['input'];
+  locale: Array<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
 };
 
 export type FontReference = FontReferenceGoogle | FontReferenceSelfHosted;
 
 export type FontReferenceGoogle = {
   __typename?: 'FontReferenceGoogle';
-  identifier?: Maybe<Scalars['String']['output']>;
+  family?: Maybe<FontFamilyName>;
   type?: Maybe<FontSource>;
+  variant?: Maybe<Scalars['String']['output']>;
 };
 
 export type FontReferenceGoogleInput = {
-  identifier: Scalars['String']['input'];
+  family: FontFamilyName;
+  variant: Scalars['String']['input'];
 };
 
 export type FontReferenceInput =
@@ -780,12 +2679,12 @@ export type FontReferenceInput =
 
 export type FontReferenceSelfHosted = {
   __typename?: 'FontReferenceSelfHosted';
-  fontId?: Maybe<Scalars['Int']['output']>;
+  fontVariantId?: Maybe<Scalars['Int']['output']>;
   type?: Maybe<FontSource>;
 };
 
 export type FontReferenceSelfHostedInput = {
-  fontId: Scalars['Int']['input'];
+  fontVariantId: Scalars['Int']['input'];
 };
 
 export enum FontSource {
@@ -793,45 +2692,69 @@ export enum FontSource {
   SelfHosted = 'SELF_HOSTED'
 }
 
-export type FontUpdateInput = {
-  id: Scalars['Int']['input'];
-  locale: Array<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-  storageFilePath: Scalars['String']['input'];
+export type FontVariant = {
+  __typename?: 'FontVariant';
+  createdAt: Scalars['DateTime']['output'];
+  familyId: Scalars['Int']['output'];
+  file?: Maybe<FileInfo>;
+  id: Scalars['Int']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  url?: Maybe<Scalars['String']['output']>;
+  variant: Scalars['String']['output'];
 };
 
-export type FontUsageCheckResult = {
-  __typename?: 'FontUsageCheckResult';
+export type FontVariantCreateInput = {
+  familyId: Scalars['Int']['input'];
+  storageFilePath: Scalars['String']['input'];
+  variant: Scalars['String']['input'];
+};
+
+export type FontVariantFilterArgs = {
+  createdAtFrom?: InputMaybe<Scalars['DateTime']['input']>;
+  createdAtTo?: InputMaybe<Scalars['DateTime']['input']>;
+  familyId?: InputMaybe<Scalars['Int']['input']>;
+  variant?: InputMaybe<Scalars['String']['input']>;
+  variantContains?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type FontVariantUpdateInput = {
+  id: Scalars['Int']['input'];
+  storageFilePath: Scalars['String']['input'];
+  variant: Scalars['String']['input'];
+};
+
+export type FontVariantUsageCheckResult = {
+  __typename?: 'FontVariantUsageCheckResult';
   canDelete: Scalars['Boolean']['output'];
   deleteBlockReason?: Maybe<Scalars['String']['output']>;
   isInUse: Scalars['Boolean']['output'];
   usageCount: Scalars['Int']['output'];
-  usedBy: Array<FontUsageReference>;
+  usedBy: Array<FontVariantUsageReference>;
 };
 
-export type FontUsageReference = {
-  __typename?: 'FontUsageReference';
+export type FontVariantUsageReference = {
+  __typename?: 'FontVariantUsageReference';
   elementId: Scalars['Int']['output'];
   elementType: Scalars['String']['output'];
   templateId?: Maybe<Scalars['Int']['output']>;
   templateName?: Maybe<Scalars['String']['output']>;
 };
 
-export type FontsOrderByClause = {
-  column: FontsOrderByColumn;
+export type FontVariantsOrderByClause = {
+  column: FontVariantsOrderByColumn;
   order?: InputMaybe<OrderSortDirection>;
 };
 
-export enum FontsOrderByColumn {
+export enum FontVariantsOrderByColumn {
   CreatedAt = 'CREATED_AT',
   Id = 'ID',
-  Name = 'NAME',
-  UpdatedAt = 'UPDATED_AT'
+  UpdatedAt = 'UPDATED_AT',
+  Variant = 'VARIANT'
 }
 
-export type FontsWithFiltersResponse = {
-  __typename?: 'FontsWithFiltersResponse';
-  data: Array<Font>;
+export type FontVariantsWithFiltersResponse = {
+  __typename?: 'FontVariantsWithFiltersResponse';
+  data: Array<FontVariant>;
   pageInfo: PageInfo;
 };
 
@@ -953,7 +2876,9 @@ export type Mutation = {
   createCountryElement?: Maybe<CountryElement>;
   createDateElement?: Maybe<DateElement>;
   createFolder?: Maybe<FileOperationResult>;
-  createFont: Font;
+  createFontFamily: FontFamily;
+  createFontVariant: FontVariant;
+  createFontWithFamily: FontVariant;
   createGenderElement?: Maybe<GenderElement>;
   createImageElement?: Maybe<ImageElement>;
   createNumberElement?: Maybe<NumberElement>;
@@ -974,7 +2899,8 @@ export type Mutation = {
   deleteElement?: Maybe<Scalars['Boolean']['output']>;
   deleteElements?: Maybe<Scalars['Boolean']['output']>;
   deleteFile?: Maybe<FileOperationResult>;
-  deleteFont: Font;
+  deleteFontFamily: FontFamily;
+  deleteFontVariant: FontVariant;
   deleteRecipient: TemplateRecipient;
   deleteRecipients: Array<TemplateRecipient>;
   deleteStorageItems?: Maybe<BulkOperationResult>;
@@ -1005,7 +2931,8 @@ export type Mutation = {
   updateDirectoryPermissions?: Maybe<FileOperationResult>;
   updateElementCommonProperties?: Maybe<UpdateElementBaseResponse>;
   updateElementTextProps?: Maybe<ElementWithTextProps>;
-  updateFont: Font;
+  updateFontFamily: FontFamily;
+  updateFontVariant: FontVariant;
   updateGenderElement?: Maybe<GenderElement>;
   updateImageElement?: Maybe<ImageElement>;
   updateImageElementDataSource?: Maybe<ImageDataSourceStandaloneUpdateResponse>;
@@ -1048,8 +2975,22 @@ export type MutationCreateFolderArgs = {
 };
 
 
-export type MutationCreateFontArgs = {
-  input: FontCreateInput;
+export type MutationCreateFontFamilyArgs = {
+  input: FontFamilyCreateInput;
+};
+
+
+export type MutationCreateFontVariantArgs = {
+  input: FontVariantCreateInput;
+};
+
+
+export type MutationCreateFontWithFamilyArgs = {
+  category?: InputMaybe<Scalars['String']['input']>;
+  familyName: Scalars['String']['input'];
+  locale: Array<Scalars['String']['input']>;
+  storageFilePath: Scalars['String']['input'];
+  variant: Scalars['String']['input'];
 };
 
 
@@ -1153,7 +3094,12 @@ export type MutationDeleteFileArgs = {
 };
 
 
-export type MutationDeleteFontArgs = {
+export type MutationDeleteFontFamilyArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationDeleteFontVariantArgs = {
   id: Scalars['Int']['input'];
 };
 
@@ -1294,8 +3240,13 @@ export type MutationUpdateElementTextPropsArgs = {
 };
 
 
-export type MutationUpdateFontArgs = {
-  input: FontUpdateInput;
+export type MutationUpdateFontFamilyArgs = {
+  input: FontFamilyUpdateInput;
+};
+
+
+export type MutationUpdateFontVariantArgs = {
+  input: FontVariantUpdateInput;
 };
 
 
@@ -1559,14 +3510,16 @@ export enum QrCodeErrorCorrection {
 export type Query = {
   __typename?: 'Query';
   categoryChildren: Array<TemplateCategory>;
-  checkFontUsage: FontUsageCheckResult;
+  checkFontVariantUsage: FontVariantUsageCheckResult;
   directoryChildren?: Maybe<Array<DirectoryInfo>>;
   elementsByTemplateId?: Maybe<Array<CertificateElement>>;
   fileInfo?: Maybe<FileInfo>;
   fileUsage?: Maybe<FileUsageResult>;
   folderInfo?: Maybe<DirectoryInfo>;
-  font?: Maybe<Font>;
-  fonts: FontsWithFiltersResponse;
+  fontFamilies: Array<FontFamily>;
+  fontFamily?: Maybe<FontFamily>;
+  fontVariant?: Maybe<FontVariant>;
+  fontVariants: FontVariantsWithFiltersResponse;
   listFiles?: Maybe<StorageObjectList>;
   mainTemplateCategory: TemplateCategory;
   me?: Maybe<User>;
@@ -1610,7 +3563,7 @@ export type QueryCategoryChildrenArgs = {
 };
 
 
-export type QueryCheckFontUsageArgs = {
+export type QueryCheckFontVariantUsageArgs = {
   id: Scalars['Int']['input'];
 };
 
@@ -1640,14 +3593,19 @@ export type QueryFolderInfoArgs = {
 };
 
 
-export type QueryFontArgs = {
+export type QueryFontFamilyArgs = {
   id: Scalars['Int']['input'];
 };
 
 
-export type QueryFontsArgs = {
-  filterArgs?: InputMaybe<FontFilterArgs>;
-  orderBy?: InputMaybe<Array<FontsOrderByClause>>;
+export type QueryFontVariantArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryFontVariantsArgs = {
+  filterArgs?: InputMaybe<FontVariantFilterArgs>;
+  orderBy?: InputMaybe<Array<FontVariantsOrderByClause>>;
   paginationArgs?: InputMaybe<PaginationArgs>;
 };
 
@@ -2528,49 +4486,84 @@ export type RefreshTokenMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type RefreshTokenMutation = { __typename?: 'Mutation', refreshToken?: { __typename?: 'RefreshTokenResponse', token?: string | null, user?: { __typename?: 'User', createdAt?: any | null, email?: string | null, emailVerifiedAt?: any | null, id?: number | null, name?: string | null, updatedAt?: any | null } | null } | null };
 
-export type FontQueryVariables = Exact<{
+export type FontFamiliesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FontFamiliesQuery = { __typename?: 'Query', fontFamilies: Array<{ __typename?: 'FontFamily', id: number, name: string, category?: string | null, locale: Array<string>, createdAt: any, updatedAt: any, variants: Array<{ __typename?: 'FontVariant', id: number, familyId: number, variant: string, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null, size: number } | null }> }> };
+
+export type FontFamilyQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type FontQuery = { __typename?: 'Query', font?: { __typename?: 'Font', id: number, name: string, locale: Array<string>, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null, size: number } | null } | null };
+export type FontFamilyQuery = { __typename?: 'Query', fontFamily?: { __typename?: 'FontFamily', id: number, name: string, category?: string | null, locale: Array<string>, createdAt: any, updatedAt: any, variants: Array<{ __typename?: 'FontVariant', id: number, familyId: number, variant: string, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null, size: number } | null }> } | null };
 
-export type FontsQueryVariables = Exact<{
-  paginationArgs?: InputMaybe<PaginationArgs>;
-  orderBy?: InputMaybe<Array<FontsOrderByClause> | FontsOrderByClause>;
-  filterArgs?: InputMaybe<FontFilterArgs>;
+export type FontVariantsQueryVariables = Exact<{
+  filterArgs?: InputMaybe<FontVariantFilterArgs>;
 }>;
 
 
-export type FontsQuery = { __typename?: 'Query', fonts: { __typename?: 'FontsWithFiltersResponse', data: Array<{ __typename?: 'Font', id: number, name: string, locale: Array<string>, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null, size: number } | null }>, pageInfo: { __typename?: 'PageInfo', total: number, perPage: number, currentPage: number, lastPage: number, hasMorePages: boolean } } };
+export type FontVariantsQuery = { __typename?: 'Query', fontVariants: { __typename?: 'FontVariantsWithFiltersResponse', data: Array<{ __typename?: 'FontVariant', id: number, familyId: number, variant: string, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null, size: number } | null }>, pageInfo: { __typename?: 'PageInfo', total: number, perPage: number, currentPage: number, lastPage: number, hasMorePages: boolean } } };
 
-export type CheckFontUsageQueryVariables = Exact<{
+export type CheckFontVariantUsageQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type CheckFontUsageQuery = { __typename?: 'Query', checkFontUsage: { __typename?: 'FontUsageCheckResult', isInUse: boolean, usageCount: number, canDelete: boolean, deleteBlockReason?: string | null, usedBy: Array<{ __typename?: 'FontUsageReference', elementId: number, elementType: string, templateId?: number | null, templateName?: string | null }> } };
+export type CheckFontVariantUsageQuery = { __typename?: 'Query', checkFontVariantUsage: { __typename?: 'FontVariantUsageCheckResult', isInUse: boolean, usageCount: number, canDelete: boolean, deleteBlockReason?: string | null, usedBy: Array<{ __typename?: 'FontVariantUsageReference', elementId: number, elementType: string, templateId?: number | null, templateName?: string | null }> } };
 
-export type CreateFontMutationVariables = Exact<{
-  input: FontCreateInput;
+export type CreateFontFamilyMutationVariables = Exact<{
+  input: FontFamilyCreateInput;
 }>;
 
 
-export type CreateFontMutation = { __typename?: 'Mutation', createFont: { __typename?: 'Font', id: number, name: string, locale: Array<string>, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null, size: number } | null } };
+export type CreateFontFamilyMutation = { __typename?: 'Mutation', createFontFamily: { __typename?: 'FontFamily', id: number, name: string, category?: string | null, locale: Array<string>, createdAt: any, updatedAt: any } };
 
-export type UpdateFontMutationVariables = Exact<{
-  input: FontUpdateInput;
+export type UpdateFontFamilyMutationVariables = Exact<{
+  input: FontFamilyUpdateInput;
 }>;
 
 
-export type UpdateFontMutation = { __typename?: 'Mutation', updateFont: { __typename?: 'Font', id: number, name: string, locale: Array<string>, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null, size: number } | null } };
+export type UpdateFontFamilyMutation = { __typename?: 'Mutation', updateFontFamily: { __typename?: 'FontFamily', id: number, name: string, category?: string | null, locale: Array<string>, createdAt: any, updatedAt: any } };
 
-export type DeleteFontMutationVariables = Exact<{
+export type DeleteFontFamilyMutationVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type DeleteFontMutation = { __typename?: 'Mutation', deleteFont: { __typename?: 'Font', id: number, name: string, locale: Array<string>, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null, size: number } | null } };
+export type DeleteFontFamilyMutation = { __typename?: 'Mutation', deleteFontFamily: { __typename?: 'FontFamily', id: number, name: string, category?: string | null, locale: Array<string>, createdAt: any, updatedAt: any } };
+
+export type CreateFontVariantMutationVariables = Exact<{
+  input: FontVariantCreateInput;
+}>;
+
+
+export type CreateFontVariantMutation = { __typename?: 'Mutation', createFontVariant: { __typename?: 'FontVariant', id: number, familyId: number, variant: string, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null, size: number } | null } };
+
+export type UpdateFontVariantMutationVariables = Exact<{
+  input: FontVariantUpdateInput;
+}>;
+
+
+export type UpdateFontVariantMutation = { __typename?: 'Mutation', updateFontVariant: { __typename?: 'FontVariant', id: number, familyId: number, variant: string, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null, size: number } | null } };
+
+export type DeleteFontVariantMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type DeleteFontVariantMutation = { __typename?: 'Mutation', deleteFontVariant: { __typename?: 'FontVariant', id: number, familyId: number, variant: string, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null, size: number } | null } };
+
+export type CreateFontWithFamilyMutationVariables = Exact<{
+  familyName: Scalars['String']['input'];
+  category?: InputMaybe<Scalars['String']['input']>;
+  locale: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  variant: Scalars['String']['input'];
+  storageFilePath: Scalars['String']['input'];
+}>;
+
+
+export type CreateFontWithFamilyMutation = { __typename?: 'Mutation', createFontWithFamily: { __typename?: 'FontVariant', id: number, familyId: number, variant: string, url?: string | null, createdAt: any, updatedAt: any, file?: { __typename?: 'FileInfo', path: string, url: string, name?: string | null, size: number } | null } };
 
 export type DirectoryChildrenQueryVariables = Exact<{
   path?: InputMaybe<Scalars['String']['input']>;
@@ -2931,8 +4924,8 @@ export type CreateCountryElementMutationVariables = Exact<{
 
 
 export type CreateCountryElementMutation = { __typename?: 'Mutation', createCountryElement?: { __typename?: 'CountryElement', base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, zIndex: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null }, countryProps?: { __typename?: 'CountryElementCountryProps', representation?: CountryRepresentation | null } | null, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
-        | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-        | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+        | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+        | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
        } } | null };
 
 export type UpdateCountryElementMutationVariables = Exact<{
@@ -2941,8 +4934,8 @@ export type UpdateCountryElementMutationVariables = Exact<{
 
 
 export type UpdateCountryElementMutation = { __typename?: 'Mutation', updateCountryElement?: { __typename?: 'CountryElement', base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, zIndex: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null }, countryProps?: { __typename?: 'CountryElementCountryProps', representation?: CountryRepresentation | null } | null, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
-        | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-        | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+        | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+        | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
        } } | null };
 
 export type UpdateCountryElementSpecPropsMutationVariables = Exact<{
@@ -2963,8 +4956,8 @@ export type CreateDateElementMutation = { __typename?: 'Mutation', createDateEle
       | { __typename?: 'DateDataSourceStudentField', studentField?: StudentDateField | null, type?: DateDataSourceType | null }
       | { __typename?: 'DateDataSourceTemplateVariable', dateVariableId?: number | null, type?: DateDataSourceType | null }
      | null, dateProps?: { __typename?: 'DateProps', calendarType?: CalendarType | null, format?: string | null, offsetDays?: number | null, transformation?: DateTransformationType | null } | null, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
-        | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-        | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+        | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+        | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
        } } | null };
 
 export type UpdateDateElementMutationVariables = Exact<{
@@ -2978,8 +4971,8 @@ export type UpdateDateElementMutation = { __typename?: 'Mutation', updateDateEle
       | { __typename?: 'DateDataSourceStudentField', studentField?: StudentDateField | null, type?: DateDataSourceType | null }
       | { __typename?: 'DateDataSourceTemplateVariable', dateVariableId?: number | null, type?: DateDataSourceType | null }
      | null, dateProps?: { __typename?: 'DateProps', calendarType?: CalendarType | null, format?: string | null, offsetDays?: number | null, transformation?: DateTransformationType | null } | null, template?: { __typename?: 'Template', id: number } | null, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
-        | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-        | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+        | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+        | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
        } } | null };
 
 export type UpdateDateElementDataSourceMutationVariables = Exact<{
@@ -3008,8 +5001,8 @@ export type ElementsByTemplateIdQueryVariables = Exact<{
 
 export type ElementsByTemplateIdQuery = { __typename?: 'Query', elementsByTemplateId?: Array<
     | { __typename?: 'CountryElement', countryProps?: { __typename?: 'CountryElementCountryProps', representation?: CountryRepresentation | null } | null, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
-          | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-          | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+          | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+          | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
          }, base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, zIndex: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null } }
     | { __typename?: 'DateElement', dateDataSource?:
         | { __typename?: 'DateDataSourceCertificateField', certificateField?: CertificateDateField | null, type?: DateDataSourceType | null }
@@ -3017,17 +5010,17 @@ export type ElementsByTemplateIdQuery = { __typename?: 'Query', elementsByTempla
         | { __typename?: 'DateDataSourceStudentField', studentField?: StudentDateField | null, type?: DateDataSourceType | null }
         | { __typename?: 'DateDataSourceTemplateVariable', dateVariableId?: number | null, type?: DateDataSourceType | null }
        | null, dateProps?: { __typename?: 'DateProps', calendarType?: CalendarType | null, format?: string | null, offsetDays?: number | null, transformation?: DateTransformationType | null } | null, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
-          | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-          | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+          | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+          | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
          }, base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, zIndex: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null } }
     | { __typename?: 'GenderElement', textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
-          | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-          | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+          | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+          | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
          }, base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, zIndex: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null } }
     | { __typename?: 'ImageElement', imageDataSource?: { __typename?: 'ImageDataSourceStorageFile', storageFilePath?: string | null, type?: ImageDataSourceType | null, imageUrl?: string | null } | null, imageProps?: { __typename?: 'ImageElementSpecProps', elementId?: number | null, fit?: ElementImageFit | null } | null, base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, zIndex: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null } }
     | { __typename?: 'NumberElement', numberDataSource?: { __typename?: 'NumberDataSource', numberVariableId?: number | null, type?: NumberDataSourceType | null } | null, numberProps?: { __typename?: 'NumberProps', elementId?: number | null, mapping?: any | null, textPropsId?: number | null, variableId?: number | null } | null, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
-          | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-          | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+          | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+          | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
          }, base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, zIndex: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null } }
     | { __typename?: 'QRCodeElement', qrCodeProps: { __typename?: 'QRCodeElementSpecProps', backgroundColor?: string | null, elementId?: number | null, errorCorrection?: QrCodeErrorCorrection | null, foregroundColor?: string | null }, base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, zIndex: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null } }
     | { __typename?: 'TextElement', textDataSource:
@@ -3037,8 +5030,8 @@ export type ElementsByTemplateIdQuery = { __typename?: 'Query', elementsByTempla
         | { __typename?: 'TextDataSourceTemplateSelectVariable', selectVariableId?: number | null, type?: TextDataSourceType | null }
         | { __typename?: 'TextDataSourceTemplateTextVariable', textVariableId?: number | null, type?: TextDataSourceType | null }
       , textElementSpecProps: { __typename?: 'TextElementSpecProps', elementId: number, textPropsId: number, variableId?: number | null }, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
-          | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-          | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+          | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+          | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
          }, base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, zIndex: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null } }
   > | null };
 
@@ -3093,8 +5086,8 @@ export type UpdateElementTextPropsMutationVariables = Exact<{
 
 
 export type UpdateElementTextPropsMutation = { __typename?: 'Mutation', updateElementTextProps?: { __typename?: 'ElementWithTextProps', textProps: { __typename?: 'TextProps', id: number, color: string, fontSize: number, overflow: ElementOverflow, fontRef:
-        | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-        | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+        | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+        | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
        } } | null };
 
 export type MoveElementMutationVariables = Exact<{
@@ -3124,8 +5117,8 @@ export type CreateGenderElementMutationVariables = Exact<{
 
 
 export type CreateGenderElementMutation = { __typename?: 'Mutation', createGenderElement?: { __typename?: 'GenderElement', base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, zIndex: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null }, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
-        | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-        | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+        | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+        | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
        } } | null };
 
 export type UpdateGenderElementMutationVariables = Exact<{
@@ -3134,8 +5127,8 @@ export type UpdateGenderElementMutationVariables = Exact<{
 
 
 export type UpdateGenderElementMutation = { __typename?: 'Mutation', updateGenderElement?: { __typename?: 'GenderElement', base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, zIndex: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null }, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
-        | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-        | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+        | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+        | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
        } } | null };
 
 export type CreateImageElementMutationVariables = Exact<{
@@ -3172,8 +5165,8 @@ export type CreateNumberElementMutationVariables = Exact<{
 
 
 export type CreateNumberElementMutation = { __typename?: 'Mutation', createNumberElement?: { __typename?: 'NumberElement', base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, zIndex: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null }, numberProps?: { __typename?: 'NumberProps', elementId?: number | null, mapping?: any | null, textPropsId?: number | null, variableId?: number | null } | null, numberDataSource?: { __typename?: 'NumberDataSource', numberVariableId?: number | null, type?: NumberDataSourceType | null } | null, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
-        | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-        | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+        | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+        | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
        } } | null };
 
 export type UpdateNumberElementMutationVariables = Exact<{
@@ -3182,8 +5175,8 @@ export type UpdateNumberElementMutationVariables = Exact<{
 
 
 export type UpdateNumberElementMutation = { __typename?: 'Mutation', updateNumberElement?: { __typename?: 'NumberElement', base: { __typename?: 'CertificateElementBase', id: number, templateId: number, alignment: ElementAlignment, createdAt: any, description?: string | null, height: number, name: string, positionX: number, positionY: number, zIndex: number, type: ElementType, updatedAt: any, width: number, hidden?: boolean | null }, numberDataSource?: { __typename?: 'NumberDataSource', numberVariableId?: number | null, type?: NumberDataSourceType | null } | null, numberProps?: { __typename?: 'NumberProps', elementId?: number | null, mapping?: any | null, textPropsId?: number | null, variableId?: number | null } | null, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
-        | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-        | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+        | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+        | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
        } } | null };
 
 export type UpdateNumberElementDataSourceMutationVariables = Exact<{
@@ -3233,8 +5226,8 @@ export type TextElementByIdQuery = { __typename?: 'Query', textElementById?: { _
       | { __typename?: 'TextDataSourceTemplateSelectVariable', selectVariableId?: number | null, type?: TextDataSourceType | null }
       | { __typename?: 'TextDataSourceTemplateTextVariable', textVariableId?: number | null, type?: TextDataSourceType | null }
     , textElementSpecProps: { __typename?: 'TextElementSpecProps', elementId: number, textPropsId: number, variableId?: number | null }, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
-        | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-        | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+        | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+        | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
        } } | null };
 
 export type CreateTextElementMutationVariables = Exact<{
@@ -3249,8 +5242,8 @@ export type CreateTextElementMutation = { __typename?: 'Mutation', createTextEle
       | { __typename?: 'TextDataSourceTemplateSelectVariable', selectVariableId?: number | null, type?: TextDataSourceType | null }
       | { __typename?: 'TextDataSourceTemplateTextVariable', textVariableId?: number | null, type?: TextDataSourceType | null }
     , textElementSpecProps: { __typename?: 'TextElementSpecProps', elementId: number, textPropsId: number, variableId?: number | null }, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
-        | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-        | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+        | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+        | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
        } } | null };
 
 export type UpdateTextElementMutationVariables = Exact<{
@@ -3265,8 +5258,8 @@ export type UpdateTextElementMutation = { __typename?: 'Mutation', updateTextEle
       | { __typename?: 'TextDataSourceTemplateSelectVariable', selectVariableId?: number | null, type?: TextDataSourceType | null }
       | { __typename?: 'TextDataSourceTemplateTextVariable', textVariableId?: number | null, type?: TextDataSourceType | null }
     , textElementSpecProps: { __typename?: 'TextElementSpecProps', elementId: number, textPropsId: number, variableId?: number | null }, textProps: { __typename?: 'TextProps', color: string, fontSize: number, id: number, overflow: ElementOverflow, fontRef:
-        | { __typename?: 'FontReferenceGoogle', identifier?: string | null, type?: FontSource | null }
-        | { __typename?: 'FontReferenceSelfHosted', fontId?: number | null, type?: FontSource | null }
+        | { __typename?: 'FontReferenceGoogle', family?: FontFamilyName | null, type?: FontSource | null, variant?: string | null }
+        | { __typename?: 'FontReferenceSelfHosted', fontVariantId?: number | null, type?: FontSource | null }
        } } | null };
 
 export type UpdateTextElementDataSourceMutationVariables = Exact<{
@@ -3463,12 +5456,17 @@ export const UsersDocument = {"kind":"Document","definitions":[{"kind":"Operatio
 export const LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"emailVerifiedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<LoginMutation, LoginMutationVariables>;
 export const LogoutDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"logout"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"logout"}}]}}]} as unknown as DocumentNode<LogoutMutation, LogoutMutationVariables>;
 export const RefreshTokenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"refreshToken"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refreshToken"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"emailVerifiedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<RefreshTokenMutation, RefreshTokenMutationVariables>;
-export const FontDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"font"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"font"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"file"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"size"}}]}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<FontQuery, FontQueryVariables>;
-export const FontsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"fonts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"paginationArgs"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationArgs"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FontsOrderByClause"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filterArgs"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"FontFilterArgs"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fonts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"paginationArgs"},"value":{"kind":"Variable","name":{"kind":"Name","value":"paginationArgs"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"filterArgs"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filterArgs"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"file"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"size"}}]}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"perPage"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"lastPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasMorePages"}}]}}]}}]}}]} as unknown as DocumentNode<FontsQuery, FontsQueryVariables>;
-export const CheckFontUsageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"checkFontUsage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"checkFontUsage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isInUse"}},{"kind":"Field","name":{"kind":"Name","value":"usageCount"}},{"kind":"Field","name":{"kind":"Name","value":"usedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"elementType"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"templateName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"canDelete"}},{"kind":"Field","name":{"kind":"Name","value":"deleteBlockReason"}}]}}]}}]} as unknown as DocumentNode<CheckFontUsageQuery, CheckFontUsageQueryVariables>;
-export const CreateFontDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createFont"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FontCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createFont"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"file"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"size"}}]}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateFontMutation, CreateFontMutationVariables>;
-export const UpdateFontDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateFont"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FontUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateFont"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"file"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"size"}}]}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateFontMutation, UpdateFontMutationVariables>;
-export const DeleteFontDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteFont"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteFont"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"file"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"size"}}]}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<DeleteFontMutation, DeleteFontMutationVariables>;
+export const FontFamiliesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"fontFamilies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontFamilies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"variants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"familyId"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}},{"kind":"Field","name":{"kind":"Name","value":"file"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"size"}}]}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<FontFamiliesQuery, FontFamiliesQueryVariables>;
+export const FontFamilyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"fontFamily"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontFamily"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"variants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"familyId"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}},{"kind":"Field","name":{"kind":"Name","value":"file"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"size"}}]}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<FontFamilyQuery, FontFamilyQueryVariables>;
+export const FontVariantsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"fontVariants"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filterArgs"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"FontVariantFilterArgs"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariants"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filterArgs"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filterArgs"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"familyId"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}},{"kind":"Field","name":{"kind":"Name","value":"file"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"size"}}]}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"perPage"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"lastPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasMorePages"}}]}}]}}]}}]} as unknown as DocumentNode<FontVariantsQuery, FontVariantsQueryVariables>;
+export const CheckFontVariantUsageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"checkFontVariantUsage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"checkFontVariantUsage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isInUse"}},{"kind":"Field","name":{"kind":"Name","value":"usageCount"}},{"kind":"Field","name":{"kind":"Name","value":"usedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"elementType"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"templateName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"canDelete"}},{"kind":"Field","name":{"kind":"Name","value":"deleteBlockReason"}}]}}]}}]} as unknown as DocumentNode<CheckFontVariantUsageQuery, CheckFontVariantUsageQueryVariables>;
+export const CreateFontFamilyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createFontFamily"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FontFamilyCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createFontFamily"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateFontFamilyMutation, CreateFontFamilyMutationVariables>;
+export const UpdateFontFamilyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateFontFamily"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FontFamilyUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateFontFamily"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateFontFamilyMutation, UpdateFontFamilyMutationVariables>;
+export const DeleteFontFamilyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteFontFamily"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteFontFamily"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"locale"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<DeleteFontFamilyMutation, DeleteFontFamilyMutationVariables>;
+export const CreateFontVariantDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createFontVariant"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FontVariantCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createFontVariant"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"familyId"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}},{"kind":"Field","name":{"kind":"Name","value":"file"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"size"}}]}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateFontVariantMutation, CreateFontVariantMutationVariables>;
+export const UpdateFontVariantDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateFontVariant"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FontVariantUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateFontVariant"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"familyId"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}},{"kind":"Field","name":{"kind":"Name","value":"file"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"size"}}]}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateFontVariantMutation, UpdateFontVariantMutationVariables>;
+export const DeleteFontVariantDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteFontVariant"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteFontVariant"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"familyId"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}},{"kind":"Field","name":{"kind":"Name","value":"file"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"size"}}]}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<DeleteFontVariantMutation, DeleteFontVariantMutationVariables>;
+export const CreateFontWithFamilyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createFontWithFamily"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"familyName"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"category"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locale"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"variant"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"storageFilePath"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createFontWithFamily"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"familyName"},"value":{"kind":"Variable","name":{"kind":"Name","value":"familyName"}}},{"kind":"Argument","name":{"kind":"Name","value":"category"},"value":{"kind":"Variable","name":{"kind":"Name","value":"category"}}},{"kind":"Argument","name":{"kind":"Name","value":"locale"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}},{"kind":"Argument","name":{"kind":"Name","value":"variant"},"value":{"kind":"Variable","name":{"kind":"Name","value":"variant"}}},{"kind":"Argument","name":{"kind":"Name","value":"storageFilePath"},"value":{"kind":"Variable","name":{"kind":"Name","value":"storageFilePath"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"familyId"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}},{"kind":"Field","name":{"kind":"Name","value":"file"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"size"}}]}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateFontWithFamilyMutation, CreateFontWithFamilyMutationVariables>;
 export const DirectoryChildrenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"directoryChildren"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"path"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"directoryChildren"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"path"},"value":{"kind":"Variable","name":{"kind":"Name","value":"path"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"fileCount"}},{"kind":"Field","name":{"kind":"Name","value":"folderCount"}},{"kind":"Field","name":{"kind":"Name","value":"isFromBucket"}},{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"lastModified"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"permissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"allowCreateSubDirs"}},{"kind":"Field","name":{"kind":"Name","value":"allowDelete"}},{"kind":"Field","name":{"kind":"Name","value":"allowDeleteFiles"}},{"kind":"Field","name":{"kind":"Name","value":"allowMove"}},{"kind":"Field","name":{"kind":"Name","value":"allowMoveFiles"}},{"kind":"Field","name":{"kind":"Name","value":"allowUploads"}}]}},{"kind":"Field","name":{"kind":"Name","value":"protectChildren"}},{"kind":"Field","name":{"kind":"Name","value":"totalSize"}}]}}]}}]} as unknown as DocumentNode<DirectoryChildrenQuery, DirectoryChildrenQueryVariables>;
 export const FileInfoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"fileInfo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"path"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fileInfo"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"path"},"value":{"kind":"Variable","name":{"kind":"Name","value":"path"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"contentType"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"directoryPath"}},{"kind":"Field","name":{"kind":"Name","value":"fileType"}},{"kind":"Field","name":{"kind":"Name","value":"isFromBucket"}},{"kind":"Field","name":{"kind":"Name","value":"isInUse"}},{"kind":"Field","name":{"kind":"Name","value":"isProtected"}},{"kind":"Field","name":{"kind":"Name","value":"isPublic"}},{"kind":"Field","name":{"kind":"Name","value":"lastModified"}},{"kind":"Field","name":{"kind":"Name","value":"md5Hash"}},{"kind":"Field","name":{"kind":"Name","value":"mediaLink"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"size"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"usages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"filePath"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"referenceId"}},{"kind":"Field","name":{"kind":"Name","value":"referenceTable"}},{"kind":"Field","name":{"kind":"Name","value":"usageType"}}]}}]}}]}}]} as unknown as DocumentNode<FileInfoQuery, FileInfoQueryVariables>;
 export const FileUsageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"fileUsage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FileUsageCheckInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fileUsage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"canDelete"}},{"kind":"Field","name":{"kind":"Name","value":"deleteBlockReason"}},{"kind":"Field","name":{"kind":"Name","value":"isInUse"}},{"kind":"Field","name":{"kind":"Name","value":"usages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"filePath"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"referenceId"}},{"kind":"Field","name":{"kind":"Name","value":"referenceTable"}},{"kind":"Field","name":{"kind":"Name","value":"usageType"}}]}}]}}]}}]} as unknown as DocumentNode<FileUsageQuery, FileUsageQueryVariables>;
@@ -3513,37 +5511,37 @@ export const TemplateConfigDocument = {"kind":"Document","definitions":[{"kind":
 export const TemplateConfigByTemplateIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TemplateConfigByTemplateId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"templateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"templateConfigByTemplateId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"templateId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"templateId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"language"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}}]}}]}}]} as unknown as DocumentNode<TemplateConfigByTemplateIdQuery, TemplateConfigByTemplateIdQueryVariables>;
 export const CreateTemplateConfigDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateTemplateConfig"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TemplateConfigCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTemplateConfig"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"language"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}}]}}]}}]} as unknown as DocumentNode<CreateTemplateConfigMutation, CreateTemplateConfigMutationVariables>;
 export const UpdateTemplateConfigDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateTemplateConfig"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TemplateConfigUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTemplateConfig"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"language"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}}]}}]}}]} as unknown as DocumentNode<UpdateTemplateConfigMutation, UpdateTemplateConfigMutationVariables>;
-export const CreateCountryElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createCountryElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CountryElementInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCountryElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"countryProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"representation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<CreateCountryElementMutation, CreateCountryElementMutationVariables>;
-export const UpdateCountryElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateCountryElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CountryElementUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateCountryElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"countryProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"representation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateCountryElementMutation, UpdateCountryElementMutationVariables>;
+export const CreateCountryElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createCountryElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CountryElementInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCountryElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"countryProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"representation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<CreateCountryElementMutation, CreateCountryElementMutationVariables>;
+export const UpdateCountryElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateCountryElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CountryElementUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateCountryElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"countryProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"representation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateCountryElementMutation, UpdateCountryElementMutationVariables>;
 export const UpdateCountryElementSpecPropsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateCountryElementSpecProps"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CountryElementSpecPropsStandaloneUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateCountryElementSpecProps"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"countryProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"representation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"elementId"}}]}}]}}]} as unknown as DocumentNode<UpdateCountryElementSpecPropsMutation, UpdateCountryElementSpecPropsMutationVariables>;
-export const CreateDateElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createDateElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateElementInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createDateElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"dateDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceTemplateVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dateVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"dateProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarType"}},{"kind":"Field","name":{"kind":"Name","value":"format"}},{"kind":"Field","name":{"kind":"Name","value":"offsetDays"}},{"kind":"Field","name":{"kind":"Name","value":"transformation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<CreateDateElementMutation, CreateDateElementMutationVariables>;
-export const UpdateDateElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateDateElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateElementUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateDateElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"dateDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceTemplateVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dateVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"dateProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarType"}},{"kind":"Field","name":{"kind":"Name","value":"format"}},{"kind":"Field","name":{"kind":"Name","value":"offsetDays"}},{"kind":"Field","name":{"kind":"Name","value":"transformation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"template"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateDateElementMutation, UpdateDateElementMutationVariables>;
+export const CreateDateElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createDateElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateElementInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createDateElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"dateDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceTemplateVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dateVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"dateProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarType"}},{"kind":"Field","name":{"kind":"Name","value":"format"}},{"kind":"Field","name":{"kind":"Name","value":"offsetDays"}},{"kind":"Field","name":{"kind":"Name","value":"transformation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<CreateDateElementMutation, CreateDateElementMutationVariables>;
+export const UpdateDateElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateDateElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateElementUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateDateElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"dateDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceTemplateVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dateVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"dateProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarType"}},{"kind":"Field","name":{"kind":"Name","value":"format"}},{"kind":"Field","name":{"kind":"Name","value":"offsetDays"}},{"kind":"Field","name":{"kind":"Name","value":"transformation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"template"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateDateElementMutation, UpdateDateElementMutationVariables>;
 export const UpdateDateElementDataSourceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateDateElementDataSource"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStandaloneInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateDateElementDataSource"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"dateDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceTemplateVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dateVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]}}]} as unknown as DocumentNode<UpdateDateElementDataSourceMutation, UpdateDateElementDataSourceMutationVariables>;
 export const UpdateDateElementSpecPropsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateDateElementSpecProps"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateElementSpecPropsStandaloneInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateDateElementSpecProps"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dateProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarType"}},{"kind":"Field","name":{"kind":"Name","value":"format"}},{"kind":"Field","name":{"kind":"Name","value":"offsetDays"}},{"kind":"Field","name":{"kind":"Name","value":"transformation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"elementId"}}]}}]}}]} as unknown as DocumentNode<UpdateDateElementSpecPropsMutation, UpdateDateElementSpecPropsMutationVariables>;
-export const ElementsByTemplateIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ElementsByTemplateId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"templateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementsByTemplateId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"templateId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"templateId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"CountryElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"countryProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"representation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dateDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceTemplateVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dateVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"dateProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarType"}},{"kind":"Field","name":{"kind":"Name","value":"format"}},{"kind":"Field","name":{"kind":"Name","value":"offsetDays"}},{"kind":"Field","name":{"kind":"Name","value":"transformation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GenderElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageDataSourceStorageFile"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"storageFilePath"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"imageProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"fit"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NumberElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"numberDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"numberVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"numberProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"mapping"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"QRCodeElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"qrCodeProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"backgroundColor"}},{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"errorCorrection"}},{"kind":"Field","name":{"kind":"Name","value":"foregroundColor"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateSelectVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"selectVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateTextVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"textElementSpecProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ElementsByTemplateIdQuery, ElementsByTemplateIdQueryVariables>;
+export const ElementsByTemplateIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ElementsByTemplateId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"templateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementsByTemplateId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"templateId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"templateId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"CountryElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"countryProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"representation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dateDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DateDataSourceTemplateVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dateVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"dateProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarType"}},{"kind":"Field","name":{"kind":"Name","value":"format"}},{"kind":"Field","name":{"kind":"Name","value":"offsetDays"}},{"kind":"Field","name":{"kind":"Name","value":"transformation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GenderElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageDataSourceStorageFile"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"storageFilePath"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"imageProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"fit"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NumberElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"numberDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"numberVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"numberProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"mapping"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"QRCodeElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"qrCodeProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"backgroundColor"}},{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"errorCorrection"}},{"kind":"Field","name":{"kind":"Name","value":"foregroundColor"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextElement"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateSelectVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"selectVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateTextVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"textElementSpecProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ElementsByTemplateIdQuery, ElementsByTemplateIdQueryVariables>;
 export const DeleteElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"deleteElementId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"deleteElementId"}}}]}]}}]} as unknown as DocumentNode<DeleteElementMutation, DeleteElementMutationVariables>;
 export const DeleteElementsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteElements"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ids"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteElements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ids"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ids"}}}]}]}}]} as unknown as DocumentNode<DeleteElementsMutation, DeleteElementsMutationVariables>;
 export const UpdateElementCommonPropertiesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateElementCommonProperties"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CertificateElementBaseUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateElementCommonProperties"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateElementCommonPropertiesMutation, UpdateElementCommonPropertiesMutationVariables>;
-export const UpdateElementTextPropsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateElementTextProps"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TextPropsUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateElementTextProps"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<UpdateElementTextPropsMutation, UpdateElementTextPropsMutationVariables>;
+export const UpdateElementTextPropsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateElementTextProps"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TextPropsUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateElementTextProps"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<UpdateElementTextPropsMutation, UpdateElementTextPropsMutationVariables>;
 export const MoveElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"MoveElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ElementMoveInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"moveElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}}]}}]}}]}}]} as unknown as DocumentNode<MoveElementMutation, MoveElementMutationVariables>;
 export const IncreaseElementOrderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"IncreaseElementOrder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"IncreaseElementOrderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"increaseElementOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}}]}}]}}]}}]} as unknown as DocumentNode<IncreaseElementOrderMutation, IncreaseElementOrderMutationVariables>;
 export const DecreaseElementOrderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"decreaseElementOrder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DecreaseElementOrderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"decreaseElementOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}}]}}]}}]}}]} as unknown as DocumentNode<DecreaseElementOrderMutation, DecreaseElementOrderMutationVariables>;
-export const CreateGenderElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createGenderElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GenderElementInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createGenderElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<CreateGenderElementMutation, CreateGenderElementMutationVariables>;
-export const UpdateGenderElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateGenderElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GenderElementUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateGenderElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateGenderElementMutation, UpdateGenderElementMutationVariables>;
+export const CreateGenderElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createGenderElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GenderElementInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createGenderElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<CreateGenderElementMutation, CreateGenderElementMutationVariables>;
+export const UpdateGenderElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateGenderElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GenderElementUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateGenderElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateGenderElementMutation, UpdateGenderElementMutationVariables>;
 export const CreateImageElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createImageElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ImageElementInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createImageElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"imageDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageDataSourceStorageFile"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"storageFilePath"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"imageProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"fit"}}]}}]}}]}}]} as unknown as DocumentNode<CreateImageElementMutation, CreateImageElementMutationVariables>;
 export const UpdateImageElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateImageElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ImageElementUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateImageElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"imageDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageDataSourceStorageFile"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"storageFilePath"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"imageProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"fit"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateImageElementMutation, UpdateImageElementMutationVariables>;
 export const UpdateImageElementSpecPropsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateImageElementSpecProps"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ImageElementSpecPropsStandaloneUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateImageElementSpecProps"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"imageProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"fit"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateImageElementSpecPropsMutation, UpdateImageElementSpecPropsMutationVariables>;
 export const UpdateImageElementDataSourceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateImageElementDataSource"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ImageDataSourceStandaloneUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateImageElementDataSource"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"imageDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ImageDataSourceStorageFile"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"storageFilePath"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]}}]}}]} as unknown as DocumentNode<UpdateImageElementDataSourceMutation, UpdateImageElementDataSourceMutationVariables>;
-export const CreateNumberElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createNumberElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NumberElementInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createNumberElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"numberProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"mapping"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"numberDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"numberVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<CreateNumberElementMutation, CreateNumberElementMutationVariables>;
-export const UpdateNumberElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateNumberElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NumberElementUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateNumberElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"numberDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"numberVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"numberProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"mapping"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateNumberElementMutation, UpdateNumberElementMutationVariables>;
+export const CreateNumberElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createNumberElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NumberElementInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createNumberElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"numberProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"mapping"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"numberDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"numberVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<CreateNumberElementMutation, CreateNumberElementMutationVariables>;
+export const UpdateNumberElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateNumberElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NumberElementUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateNumberElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"numberDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"numberVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"numberProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"mapping"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateNumberElementMutation, UpdateNumberElementMutationVariables>;
 export const UpdateNumberElementDataSourceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateNumberElementDataSource"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NumberElementDataSourceStandaloneUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateNumberElementDataSource"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"numberDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"numberVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateNumberElementDataSourceMutation, UpdateNumberElementDataSourceMutationVariables>;
 export const UpdateNumberElementSpecPropsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateNumberElementSpecProps"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NumberElementSpecPropsStandaloneUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateNumberElementSpecProps"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"numberProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"mapping"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateNumberElementSpecPropsMutation, UpdateNumberElementSpecPropsMutationVariables>;
 export const CreateQrCodeElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createQRCodeElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"QRCodeElementInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createQRCodeElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"qrCodeProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"backgroundColor"}},{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"errorCorrection"}},{"kind":"Field","name":{"kind":"Name","value":"foregroundColor"}}]}}]}}]}}]} as unknown as DocumentNode<CreateQrCodeElementMutation, CreateQrCodeElementMutationVariables>;
 export const UpdateQrCodeElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateQRCodeElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"QRCodeElementUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateQRCodeElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"qrCodeProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"backgroundColor"}},{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"errorCorrection"}},{"kind":"Field","name":{"kind":"Name","value":"foregroundColor"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateQrCodeElementMutation, UpdateQrCodeElementMutationVariables>;
 export const UpdateQrCodeElementSpecPropsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateQRCodeElementSpecProps"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"QRCodeElementSpecPropsStandaloneUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateQRCodeElementSpecProps"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"qrCodeProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"backgroundColor"}},{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"errorCorrection"}},{"kind":"Field","name":{"kind":"Name","value":"foregroundColor"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateQrCodeElementSpecPropsMutation, UpdateQrCodeElementSpecPropsMutationVariables>;
-export const TextElementByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"textElementById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textElementById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateSelectVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"selectVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateTextVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"textElementSpecProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<TextElementByIdQuery, TextElementByIdQueryVariables>;
-export const CreateTextElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createTextElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TextElementInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTextElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateSelectVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"selectVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateTextVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"textElementSpecProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<CreateTextElementMutation, CreateTextElementMutationVariables>;
-export const UpdateTextElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateTextElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TextElementUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTextElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateSelectVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"selectVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateTextVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"textElementSpecProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateTextElementMutation, UpdateTextElementMutationVariables>;
+export const TextElementByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"textElementById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textElementById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateSelectVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"selectVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateTextVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"textElementSpecProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<TextElementByIdQuery, TextElementByIdQueryVariables>;
+export const CreateTextElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createTextElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TextElementInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTextElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateSelectVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"selectVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateTextVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"textElementSpecProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<CreateTextElementMutation, CreateTextElementMutationVariables>;
+export const UpdateTextElementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateTextElement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TextElementUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTextElement"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"base"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"templateId"}},{"kind":"Field","name":{"kind":"Name","value":"alignment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"positionX"}},{"kind":"Field","name":{"kind":"Name","value":"positionY"}},{"kind":"Field","name":{"kind":"Name","value":"zIndex"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"hidden"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateSelectVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"selectVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateTextVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"textElementSpecProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"textPropsId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"textProps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"fontRef"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceGoogle"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"family"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"variant"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FontReferenceSelfHosted"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fontVariantId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fontSize"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"overflow"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateTextElementMutation, UpdateTextElementMutationVariables>;
 export const UpdateTextElementDataSourceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateTextElementDataSource"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStandaloneInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTextElementDataSource"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"elementId"}},{"kind":"Field","name":{"kind":"Name","value":"variableId"}},{"kind":"Field","name":{"kind":"Name","value":"textDataSource"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceCertificateField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"certificateField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStatic"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceStudentField"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentField"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateSelectVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"selectVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextDataSourceTemplateTextVariable"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"textVariableId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]}}]} as unknown as DocumentNode<UpdateTextElementDataSourceMutation, UpdateTextElementDataSourceMutationVariables>;
 export const RecipientDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"recipient"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recipient"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"studentId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"dateOfBirth"}},{"kind":"Field","name":{"kind":"Name","value":"nationality"}},{"kind":"Field","name":{"kind":"Name","value":"gender"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"recipientGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<RecipientQuery, RecipientQueryVariables>;
 export const RecipientsByGroupIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"recipientsByGroupId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"recipientGroupId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recipientsByGroupId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"recipientGroupId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"recipientGroupId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"studentId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"dateOfBirth"}},{"kind":"Field","name":{"kind":"Name","value":"nationality"}},{"kind":"Field","name":{"kind":"Name","value":"gender"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<RecipientsByGroupIdQuery, RecipientsByGroupIdQueryVariables>;

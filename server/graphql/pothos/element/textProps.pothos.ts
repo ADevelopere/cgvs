@@ -2,6 +2,7 @@ import { gqlSchemaBuilder, PothosTypes } from "@/server/graphql/gqlSchemaBuilder
 import * as Types from "@/server/types/element";
 import type { InputFieldBuilder, SchemaTypes } from "@pothos/core";
 import { ElementOverflowPothosEnum } from "./elementEnum.pothos";
+import { FontFamilyPothosObject } from "../enum.pothos";
 import { TextPropsUtils } from "@/server/utils";
 
 export const FontSourcePothosEnum = gqlSchemaBuilder.enumType("FontSource", {
@@ -13,7 +14,8 @@ export const FontReferenceGoogleObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: FontSourcePothosEnum }),
-      identifier: t.exposeString("identifier"),
+      family: t.expose("family", { type: FontFamilyPothosObject }),
+      variant: t.exposeString("variant"),
     }),
   });
 
@@ -22,7 +24,7 @@ export const FontReferenceSelfHostedObject = gqlSchemaBuilder
   .implement({
     fields: t => ({
       type: t.expose("type", { type: FontSourcePothosEnum }),
-      fontId: t.exposeInt("fontId"),
+      fontVariantId: t.exposeInt("fontVariantId"),
     }),
   });
 
@@ -39,7 +41,8 @@ export const FontReferenceGoogleInputObject = gqlSchemaBuilder
   .inputRef<Types.FontReferenceGoogleInputGraphql>("FontReferenceGoogleInput")
   .implement({
     fields: t => ({
-      identifier: t.string({ required: true }),
+      family: t.field({ type: FontFamilyPothosObject, required: true }),
+      variant: t.string({ required: true }),
     }),
   });
 
@@ -47,7 +50,7 @@ export const FontReferenceSelfHostedInputObject = gqlSchemaBuilder
   .inputRef<Types.FontReferenceSelfHostedInputGraphql>("FontReferenceSelfHostedInput")
   .implement({
     fields: t => ({
-      fontId: t.int({ required: true }),
+      fontVariantId: t.int({ required: true }),
     }),
   });
 

@@ -1,11 +1,11 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/console";
 import { NumberElementForm } from "./NumberElementForm";
-import { mockSelfHostedFonts, mockNumberVariables } from "../story.util";
+import { mockFontFamilies, mockNumberVariables } from "../story.util";
 import type { NumberElementFormState, NumberElementFormErrors } from "./types";
 import { UpdateBaseElementFn } from "../base";
 import { UpdateTextPropsFn } from "../textProps";
-import { AppLanguage, ElementAlignment, ElementOverflow } from "@/client/graphql/generated/gql/graphql";
+import { AppLanguage, ElementAlignment, ElementOverflow, FontFamilyName } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof NumberElementForm> = {
   title: "Template/Editor/Form/Element/Number/NumberElementForm",
@@ -29,7 +29,7 @@ const defaultState: NumberElementFormState = {
     templateId: 1,
   },
   textProps: {
-    fontRef: { google: { identifier: "Roboto" } },
+    fontRef: { google: { family: FontFamilyName.Roboto, variant: "400" } },
     fontSize: 18,
     color: "#000000",
     overflow: ElementOverflow.Wrap,
@@ -70,7 +70,7 @@ export const Default: Story = {
     updateMapping: mapping => logger.info("Mapping updated:", mapping),
     language: AppLanguage.Ar,
     numberVariables: mockNumberVariables,
-    selfHostedFonts: mockSelfHostedFonts,
+    fontFamilies: mockFontFamilies,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -115,7 +115,7 @@ export const WithErrors: Story = {
     updateMapping: mapping => logger.info("Mapping updated:", mapping),
     language: AppLanguage.Ar,
     numberVariables: mockNumberVariables,
-    selfHostedFonts: mockSelfHostedFonts,
+    fontFamilies: mockFontFamilies,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,
@@ -141,7 +141,7 @@ export const Submitting: Story = {
     updateMapping: mapping => logger.info("Mapping updated:", mapping),
     language: AppLanguage.Ar,
     numberVariables: mockNumberVariables,
-    selfHostedFonts: mockSelfHostedFonts,
+    fontFamilies: mockFontFamilies,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: true,
@@ -173,7 +173,7 @@ export const MultipleLocales: Story = {
     updateMapping: mapping => logger.info("Mapping updated:", mapping),
     language: AppLanguage.En,
     numberVariables: mockNumberVariables,
-    selfHostedFonts: mockSelfHostedFonts,
+    fontFamilies: mockFontFamilies,
     onSubmit: () => logger.info("Form submitted"),
     onCancel: () => logger.info("Form cancelled"),
     isSubmitting: false,

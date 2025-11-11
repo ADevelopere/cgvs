@@ -4,18 +4,28 @@ import { Description as FileIcon, CloudUpload as UploadIcon, Close as CloseIcon 
 import FilePickerDialog from "@/client/views/storage/dialogs/FilePickerDialog";
 import { useAppTranslation } from "@/client/locale";
 import * as GQL from "@/client/graphql/generated/gql/graphql";
+import opentype from "opentype.js";
+
+export interface FontMetadata {
+  fontFamily: string;
+  fontSubfamily: string;
+  fullName: string;
+  postScriptName: string;
+}
 
 interface FontFilePickerProps {
   value: {
     filePath: string;
     fileName: string;
     fileUrl?: string;
+    metadata?: FontMetadata;
   } | null;
   onChange: (
     file: {
       filePath: string;
       fileName: string;
       fileUrl: string;
+      metadata: FontMetadata;
     } | null
   ) => void;
   disabled?: boolean;
@@ -24,14 +34,44 @@ interface FontFilePickerProps {
 export const FontFilePicker: React.FC<FontFilePickerProps> = ({ value, onChange, disabled = false }) => {
   const { fontManagementTranslations: strings } = useAppTranslation();
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleFileSelect = (file: GQL.FileInfo) => {
-    onChange({
-      filePath: file.path,
-      fileName: file.name ?? file.path.split("/").pop() ?? "",
-      fileUrl: file.url,
+  const extractFontMetadata = async (fontUrl: string): Promise<FontMetadata> => {
+    return new Promise((resolve, reject) => {
+      opentype.load(fontUrl, (err, font) => {
+        if (err || !font) {
+          reject(new Error("Failed to load font file"));
+          return;
+        }
+
+        const names = font.names;
+        resolve({
+          fontFamily: names.fontFamily?.en || "Unknown",
+          fontSubfamily: names.fontSubfamily?.en || "Regular",
+          fullName: names.fullName?.en || "Unknown",
+          postScriptName: names.postScriptName?.en || "Unknown",
+        });
+      });
     });
-    setIsPickerOpen(false);
+  };
+
+  const handleFileSelect = async (file: GQL.FileInfo) => {
+    setIsProcessing(true);
+    try {
+      const metadata = await extractFontMetadata(file.url);
+      onChange({
+        filePath: file.path,
+        fileName: file.name ?? file.path.split("/").pop() ?? "",
+        fileUrl: file.url,
+        metadata,
+      });
+      setIsPickerOpen(false);
+    } catch (error) {
+      console.error("Error extracting font metadata:", error);
+      alert("Failed to extract font metadata. Please ensure the file is a valid font.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleClear = () => {
@@ -66,6 +106,11 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({ value, onChange,
                     <MUI.Typography variant="body2" fontWeight="medium" noWrap>
                       {value.fileName}
                     </MUI.Typography>
+                    {value.metadata && (
+                      <MUI.Typography variant="caption" color="text.secondary" display="block">
+                        {value.metadata.fontFamily} - {value.metadata.fontSubfamily}
+                      </MUI.Typography>
+                    )}
                     <MUI.Typography variant="caption" color="text.secondary">
                       {strings.fontFileSelected}
                     </MUI.Typography>
@@ -87,7 +132,7 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({ value, onChange,
             variant="outlined"
             fullWidth
             onClick={() => setIsPickerOpen(true)}
-            disabled={disabled}
+            disabled={disabled || isProcessing}
             sx={{
               height: 120,
               borderStyle: "dashed",
@@ -95,11 +140,20 @@ export const FontFilePicker: React.FC<FontFilePickerProps> = ({ value, onChange,
               gap: 1,
             }}
           >
-            <UploadIcon sx={{ fontSize: 32, color: "text.secondary" }} />
-            <MUI.Typography variant="body2">{strings.selectFontFile}</MUI.Typography>
-            <MUI.Typography variant="caption" color="text.secondary">
-              {strings.fontFileFormats}
-            </MUI.Typography>
+            {isProcessing ? (
+              <>
+                <MUI.CircularProgress size={32} />
+                <MUI.Typography variant="body2">Processing font...</MUI.Typography>
+              </>
+            ) : (
+              <>
+                <UploadIcon sx={{ fontSize: 32, color: "text.secondary" }} />
+                <MUI.Typography variant="body2">{strings.selectFontFile}</MUI.Typography>
+                <MUI.Typography variant="caption" color="text.secondary">
+                  {strings.fontFileFormats}
+                </MUI.Typography>
+              </>
+            )}
           </MUI.Button>
         )}
       </MUI.Box>

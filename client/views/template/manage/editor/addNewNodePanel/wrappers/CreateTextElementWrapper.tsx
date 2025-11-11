@@ -5,7 +5,7 @@ import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { TextElementForm } from "../../form/element/text/TextElementForm";
 import { useCertificateElementStates } from "../../context/CertificateElementContext";
 import { useElementCreateMutations } from "../../form/hooks/useElementCreateMutations";
-import { fontsQueryDocument } from "@/client/views/font/hooks/font.documents";
+import { fontFamiliesQueryDocument } from "@/client/views/font/hooks/font.documents";
 import { validateBaseElementField } from "../../form/element/base/cretElementBaseValidator";
 import { validateTextPropsField } from "../../form/element/textProps/textPropsValidator";
 import { validateTextDataSource } from "../../form/element/text/textValidators";
@@ -58,10 +58,10 @@ export const CreateTextElementWrapper: React.FC<CreateTextElementWrapperProps> =
   const language = config.state.language;
 
   // Query fonts
-  const { data: fontsData } = useQuery(fontsQueryDocument);
-  const selfHostedFonts = useMemo(() => {
-    return fontsData?.fonts.data || [];
-  }, [fontsData?.fonts]);
+  const { data: fontsData } = useQuery(fontFamiliesQueryDocument);
+  const fontFamilies = useMemo(() => {
+    return fontsData?.fontFamilies || [];
+  }, [fontsData?.fontFamilies]);
 
   // Get mutation
   const { createTextElementMutation } = useElementCreateMutations();
@@ -114,7 +114,8 @@ export const CreateTextElementWrapper: React.FC<CreateTextElementWrapperProps> =
       textProps: {
         fontRef: {
           google: {
-            identifier: "Roboto",
+            family: GQL.FontFamilyName.Roboto,
+            variant: "400",
           },
         },
         fontSize: 16,
@@ -287,7 +288,7 @@ export const CreateTextElementWrapper: React.FC<CreateTextElementWrapperProps> =
       language={language}
       textVariables={textVariables}
       selectVariables={selectVariables}
-      selfHostedFonts={selfHostedFonts}
+      fontFamilies={fontFamilies}
       onSubmit={handleSubmit}
       onCancel={handleCancel}
       isSubmitting={isSubmitting}

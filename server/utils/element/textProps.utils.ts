@@ -1,6 +1,6 @@
 import logger from "@/server/lib/logger";
 import { ElementOverflow, ElementTextPropsEntity, FontSource, TextProps } from "@/server/types/element";
-
+import { FontFamily } from "@/lib/font/google/fontFamily.enum";
 import { FontReference } from "@/server/types/element";
 
 export namespace TextPropsUtils {
@@ -16,10 +16,14 @@ export namespace TextPropsUtils {
     logger.debug("[entityToTextProps] Converting ElementTextPropsEntity to TextProps", entity, entity.fontSource);
     const fontRef: FontReference =
       entity.fontSource === FontSource.SELF_HOSTED
-        ? { type: FontSource.SELF_HOSTED as const, fontId: entity.fontId! }
+        ? {
+            type: FontSource.SELF_HOSTED as const,
+            fontVariantId: entity.fontVariantId!,
+          }
         : {
             type: FontSource.GOOGLE as const,
-            identifier: entity.googleFontIdentifier!,
+            family: entity.googleFontFamily! as FontFamily,
+            variant: entity.googleFontVariant!,
           };
 
     return {

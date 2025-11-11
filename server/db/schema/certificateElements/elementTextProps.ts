@@ -1,6 +1,6 @@
-import { integer, pgTable, serial, varchar, check } from "drizzle-orm/pg-core";
-import { fontSourceEnum, elementOverflowEnum } from "./templateElementEnums";
-import { font } from "../font";
+import { integer, pgTable, serial, varchar, check, text } from "drizzle-orm/pg-core";
+import { fontSourceEnum, elementOverflowEnum, googleFontFamilyEnum } from "./templateElementEnums";
+import { fontVariant } from "../font";
 import { sql } from "drizzle-orm";
 
 export const elementTextProps = pgTable(
@@ -8,10 +8,11 @@ export const elementTextProps = pgTable(
   {
     id: serial("id").primaryKey(),
     fontSource: fontSourceEnum("font_source").notNull(),
-    fontId: integer("font_id").references(() => font.id, {
+    fontVariantId: integer("font_variant_id").references(() => fontVariant.id, {
       onDelete: "restrict",
     }), // Only populated when fontSource = SELF_HOSTED
-    googleFontIdentifier: varchar("google_font_identifier", { length: 255 }), // Only populated when fontSource = GOOGLE
+    googleFontFamily: googleFontFamilyEnum("google_font_family"), // Only populated when fontSource = GOOGLE
+    googleFontVariant: text("google_font_variant"), // Only populated when fontSource = GOOGLE
     fontSize: integer("font_size").notNull(),
     color: varchar("color", { length: 50 }).notNull(), // e.g., "#000000", "rgba(0,0,0,1)"
     overflow: elementOverflowEnum("overflow").notNull(),
@@ -21,9 +22,9 @@ export const elementTextProps = pgTable(
     check(
       "font_source_check",
       sql`(
-        (${table.fontSource} = 'SELF_HOSTED' AND ${table.fontId} IS NOT NULL AND ${table.googleFontIdentifier} IS NULL)
+        (${table.fontSource} = 'SELF_HOSTED' AND ${table.fontVariantId} IS NOT NULL AND ${table.googleFontFamily} IS NULL AND ${table.googleFontVariant} IS NULL)
         OR
-        (${table.fontSource} = 'GOOGLE' AND ${table.googleFontIdentifier} IS NOT NULL AND ${table.fontId} IS NULL)
+        (${table.fontSource} = 'GOOGLE' AND ${table.googleFontFamily} IS NOT NULL AND ${table.googleFontVariant} IS NOT NULL AND ${table.fontVariantId} IS NULL)
       )`
     ),
   ]

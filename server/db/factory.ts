@@ -12,7 +12,7 @@ const createNeonDb = () => {
   const sql = neon(process.env.DATABASE_URL);
   const db = drizzleNeon(sql, { relations });
   return db;
-}
+};
 
 export type NeonDbType = ReturnType<typeof createNeonDb>;
 
@@ -24,7 +24,7 @@ const createPostgresDb = () => {
   });
   const db = drizzlePostgres(pool, { relations });
   return db;
-}
+};
 
 export type PostgresDbType = ReturnType<typeof createPostgresDb>;
 

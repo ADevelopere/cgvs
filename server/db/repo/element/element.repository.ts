@@ -1,6 +1,6 @@
 import { db } from "@/server/db/drizzleDb";
 import { eq, inArray, asc, max, and, gt, lt, sql, lte, gte } from "drizzle-orm";
-import { font, certificateElement, templateVariableBases } from "@/server/db/schema";
+import { font, fontVariant, certificateElement, templateVariableBases } from "@/server/db/schema";
 import {
   TextElementRepository,
   CountryElementRepository,
@@ -236,6 +236,22 @@ export namespace ElementRepository {
 
     if (result.length === 0) {
       throw new Error(`Font with ID ${fontId} does not exist.`);
+    }
+  };
+
+  /**
+   * Validate font variant exists by ID
+   * @throws Error if font variant doesn't exist
+   */
+  export const validateFontVariantId = async (fontVariantId: number): Promise<void> => {
+    const result = await db
+      .select({ id: fontVariant.id })
+      .from(fontVariant)
+      .where(eq(fontVariant.id, fontVariantId))
+      .limit(1);
+
+    if (result.length === 0) {
+      throw new Error(`Font variant with ID ${fontVariantId} does not exist.`);
     }
   };
 

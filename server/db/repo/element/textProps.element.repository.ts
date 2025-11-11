@@ -27,10 +27,11 @@ export namespace TextPropsRepository {
    * Always creates new row (no deduplication)
    */
   export const create = async (textProps: TextPropsInput): Promise<ElementTextPropsEntity> => {
-    // Extract fontId from fontRef
-    const fontId = textProps.fontRef.type === FontSource.SELF_HOSTED ? textProps.fontRef.fontId : null;
+    const fontVariantId = textProps.fontRef.type === FontSource.SELF_HOSTED ? textProps.fontRef.fontVariantId : null;
 
-    const googleFontIdentifier = textProps.fontRef.type === FontSource.GOOGLE ? textProps.fontRef.identifier : null;
+    const googleFontFamily = textProps.fontRef.type === FontSource.GOOGLE ? textProps.fontRef.family : null;
+
+    const googleFontVariant = textProps.fontRef.type === FontSource.GOOGLE ? textProps.fontRef.variant : null;
 
     // Insert
     const [created] = await db
@@ -38,8 +39,9 @@ export namespace TextPropsRepository {
       .values({
         ...textProps,
         fontSource: textProps.fontRef.type,
-        fontId,
-        googleFontIdentifier,
+        fontVariantId,
+        googleFontFamily,
+        googleFontVariant,
       })
       .returning();
 
@@ -71,8 +73,9 @@ export namespace TextPropsRepository {
     const updates: ElementTextPropsInsert = {
       ...input,
       fontSource: input.fontRef.type,
-      fontId: input.fontRef.type === FontSource.SELF_HOSTED ? input.fontRef.fontId : null,
-      googleFontIdentifier: input.fontRef.type === FontSource.GOOGLE ? input.fontRef.identifier : null,
+      fontVariantId: input.fontRef.type === FontSource.SELF_HOSTED ? input.fontRef.fontVariantId : null,
+      googleFontFamily: input.fontRef.type === FontSource.GOOGLE ? input.fontRef.family : null,
+      googleFontVariant: input.fontRef.type === FontSource.GOOGLE ? input.fontRef.variant : null,
     };
 
     // Update

@@ -7,7 +7,7 @@ import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../component/ActionButtons";
 import { UpdateBaseElementFn } from "../base";
-import { DateDataSourceInput, Font, TemplateDateVariable } from "@/client/graphql/generated/gql/graphql";
+import { DateDataSourceInput, FontFamily, TemplateDateVariable } from "@/client/graphql/generated/gql/graphql";
 import { UpdateTextPropsFn } from "../textProps";
 
 interface DateElementFormProps {
@@ -19,7 +19,7 @@ interface DateElementFormProps {
   updateDataSource: (dataSource: DateDataSourceInput) => void;
   language: string;
   dateVariables: TemplateDateVariable[];
-  selfHostedFonts: Font[];
+  fontFamilies: FontFamily[];
   onSubmit: () => void;
   onCancel: () => void;
   isSubmitting: boolean;
@@ -35,7 +35,7 @@ export const DateElementForm: FC<DateElementFormProps> = ({
   updateDataSource,
   language,
   dateVariables,
-  selfHostedFonts,
+  fontFamilies,
   onSubmit,
   onCancel,
   isSubmitting,
@@ -73,7 +73,7 @@ export const DateElementForm: FC<DateElementFormProps> = ({
               <TextPropsForm
                 textProps={state.textProps}
                 language={language}
-                selfHostedFonts={selfHostedFonts}
+                fontFamilies={fontFamilies}
                 onTextPropsChange={updateTextProps}
                 errors={errors.textProps}
                 disabled={isSubmitting}

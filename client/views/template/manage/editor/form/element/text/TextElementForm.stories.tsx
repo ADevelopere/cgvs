@@ -1,12 +1,13 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/console";
 import { TextElementForm } from "./TextElementForm";
-import { mockSelfHostedFonts, mockTextVariables, mockSelectVariables } from "../story.util";
+import { mockFontFamilies, mockTextVariables, mockSelectVariables } from "../story.util";
 import type { TextElementFormErrors, TextElementFormState } from "./types";
 import {
   AppLanguage,
   ElementAlignment,
   ElementOverflow,
+  FontFamilyName,
   StudentTextField,
 } from "@/client/graphql/generated/gql/graphql";
 
@@ -32,7 +33,7 @@ const defaultState: TextElementFormState = {
     templateId: 1,
   },
   textProps: {
-    fontRef: { google: { identifier: "Roboto" } },
+    fontRef: { google: { family: FontFamilyName.Roboto, variant: "400" } },
     fontSize: 16,
     color: "#000000",
     overflow: ElementOverflow.Wrap,
@@ -58,7 +59,7 @@ export const Default: Story = {
     language: AppLanguage.Ar,
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    selfHostedFonts: mockSelfHostedFonts,
+    fontFamilies: mockFontFamilies,
     onSubmit: () => logger.log("Form submitted"),
     onCancel: () => logger.log("Form cancelled"),
     isSubmitting: false,
@@ -81,7 +82,7 @@ export const WithStudentField: Story = {
     language: AppLanguage.En,
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    selfHostedFonts: mockSelfHostedFonts,
+    fontFamilies: mockFontFamilies,
     onSubmit: () => logger.log("Form submitted"),
     onCancel: () => logger.log("Form cancelled"),
     isSubmitting: false,
@@ -99,7 +100,7 @@ export const Submitting: Story = {
     language: AppLanguage.En,
     textVariables: mockTextVariables,
     selectVariables: mockSelectVariables,
-    selfHostedFonts: mockSelfHostedFonts,
+    fontFamilies: mockFontFamilies,
     onSubmit: () => logger.log("Form submitted"),
     onCancel: () => logger.log("Form cancelled"),
     isSubmitting: true,

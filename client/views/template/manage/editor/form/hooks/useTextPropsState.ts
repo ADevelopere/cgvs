@@ -37,14 +37,15 @@ function mapFontRefToFontRefInput(fontRef: GQL.FontReference): GQL.FontReference
     const googleRef = fontRef;
     return {
       google: {
-        identifier: googleRef.identifier ?? "",
+        family: googleRef.family ?? GQL.FontFamilyName.Roboto,
+        variant: googleRef.variant ?? "400",
       },
     };
   } else if (fontRef.__typename === "FontReferenceSelfHosted") {
     const selfHostedRef = fontRef;
     return {
       selfHosted: {
-        fontId: selfHostedRef.fontId ?? 0,
+        fontVariantId: selfHostedRef.fontVariantId ?? 0,
       },
     };
   } else {

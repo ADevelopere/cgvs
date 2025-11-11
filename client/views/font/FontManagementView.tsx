@@ -3,38 +3,17 @@ import * as MUI from "@mui/material";
 import { SplitPane } from "@/client/components/splitPane/SplitPane";
 import { FontList } from "./FontList";
 import { FontDetail } from "./FontDetail";
-import { Font, FontCreateInput, FontsQueryVariables, FontUpdateInput } from "@/client/graphql/generated/gql/graphql";
 
 type FontManagementViewProps = {
-  selectedFont: Font | null;
-  queryParams: FontsQueryVariables;
-  isCreating: boolean;
-  isEditing: boolean;
-
-  setQueryParams: (params: FontsQueryVariables) => void;
-  selectFont: (font: Font) => void;
-  startCreating: () => void;
-  cancelCreating: () => void;
-  startEditing: () => void;
-  cancelEditing: () => void;
-  createFont: (input: FontCreateInput) => Promise<boolean>;
-  updateFont: (input: FontUpdateInput) => Promise<boolean>;
+  selectedFamilyId: number | null;
+  selectFamily: (familyId: number) => void;
+  onCreateClick: () => void;
 };
 
 export const FontManagementView: React.FC<FontManagementViewProps> = ({
-  selectedFont,
-  queryParams,
-  isCreating,
-  isEditing,
-
-  setQueryParams,
-  selectFont,
-  startCreating,
-  cancelCreating,
-  startEditing,
-  cancelEditing,
-  createFont,
-  updateFont,
+  selectedFamilyId,
+  selectFamily,
+  onCreateClick,
 }) => {
   return (
     <MUI.Box
@@ -77,13 +56,7 @@ export const FontManagementView: React.FC<FontManagementViewProps> = ({
           }}
           elevation={0}
         >
-          <FontList
-            selectedFont={selectedFont}
-            queryParams={queryParams}
-            setQueryParams={setQueryParams}
-            startCreating={startCreating}
-            selectFont={selectFont}
-          />
+          <FontList selectedFamilyId={selectedFamilyId} selectFamily={selectFamily} onCreateClick={onCreateClick} />
         </MUI.Paper>
 
         {/* Right content - Font detail */}
@@ -95,16 +68,7 @@ export const FontManagementView: React.FC<FontManagementViewProps> = ({
             overflow: "hidden",
           }}
         >
-          <FontDetail
-            selectedFont={selectedFont}
-            isCreating={isCreating}
-            isEditing={isEditing}
-            cancelCreating={cancelCreating}
-            startEditing={startEditing}
-            cancelEditing={cancelEditing}
-            createFont={createFont}
-            updateFont={updateFont}
-          />
+          <FontDetail selectedFamilyId={selectedFamilyId} />
         </MUI.Box>
       </SplitPane>
     </MUI.Box>

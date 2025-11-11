@@ -1,29 +1,31 @@
 import { gqlSchemaBuilder } from "../gqlSchemaBuilder";
 import {
-  FontPothosObject,
-  FontUsageCheckResultPothosObject,
-  FontsWithFiltersPothosObject,
-  FontFilterArgsPothosObject,
-  FontsOrderByClausePothosObject,
+  FontVariantPothosObject,
+  FontVariantUsageCheckResultPothosObject,
+  FontVariantsWithFiltersPothosObject,
+  FontVariantFilterArgsPothosObject,
+  FontVariantsOrderByClausePothosObject,
 } from "../pothos/font.pothos";
 import { PaginationArgsObject } from "../pothos";
-import { FontRepository } from "@/server/db/repo";
+import { FontVariantRepository } from "@/server/db/repo/fontVariant.repository";
 import * as Types from "@/server/types";
+import { FontFamilyPothosObject } from "../mutation/fontFamily.mutation";
+import { FontFamilyRepository } from "@/server/db/repo/fontFamily.repository";
 
 gqlSchemaBuilder.queryFields(t => ({
-  font: t.field({
-    type: FontPothosObject,
+  fontVariant: t.field({
+    type: FontVariantPothosObject,
     nullable: true,
     args: {
       id: t.arg.int({ required: true }),
     },
     resolve: async (_parent, args) => {
-      return await FontRepository.findById(args.id);
+      return await FontVariantRepository.findById(args.id);
     },
   }),
 
-  fonts: t.field({
-    type: FontsWithFiltersPothosObject,
+  fontVariants: t.field({
+    type: FontVariantsWithFiltersPothosObject,
     nullable: false,
     args: {
       paginationArgs: t.arg({
@@ -31,30 +33,49 @@ gqlSchemaBuilder.queryFields(t => ({
         required: false,
       }),
       orderBy: t.arg({
-        type: [FontsOrderByClausePothosObject],
+        type: [FontVariantsOrderByClausePothosObject],
         required: false,
       }),
       filterArgs: t.arg({
-        type: FontFilterArgsPothosObject,
+        type: FontVariantFilterArgsPothosObject,
         required: false,
       }),
     },
     resolve: async (_, args) =>
-      await FontRepository.fetchWithFilters(
+      await FontVariantRepository.fetchWithFilters(
         new Types.PaginationArgs({ ...args.paginationArgs }),
-        args.filterArgs as unknown as Types.FontFilterArgs,
+        args.filterArgs as unknown as Types.FontVariantFilterArgs,
         args.orderBy
       ),
   }),
 
-  checkFontUsage: t.field({
-    type: FontUsageCheckResultPothosObject,
+  checkFontVariantUsage: t.field({
+    type: FontVariantUsageCheckResultPothosObject,
     nullable: false,
     args: {
       id: t.arg.int({ required: true }),
     },
     resolve: async (_parent, args) => {
-      return await FontRepository.checkUsage(args.id);
+      return await FontVariantRepository.checkUsage(args.id);
+    },
+  }),
+
+  fontFamily: t.field({
+    type: FontFamilyPothosObject,
+    nullable: true,
+    args: {
+      id: t.arg.int({ required: true }),
+    },
+    resolve: async (_parent, args) => {
+      return await FontFamilyRepository.findById(args.id);
+    },
+  }),
+
+  fontFamilies: t.field({
+    type: [FontFamilyPothosObject],
+    nullable: false,
+    resolve: async () => {
+      return await FontFamilyRepository.findAll();
     },
   }),
 }));

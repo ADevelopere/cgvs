@@ -29,6 +29,14 @@ if [ "$confirm" != "yes" ]; then
 fi
 
 echo ""
+echo "Setting up Git configuration..."
+git config user.name "$CORRECT_NAME"
+git config user.email "$CORRECT_EMAIL"
+echo "✓ Git config updated:"
+echo "  Name:  $(git config user.name)"
+echo "  Email: $(git config user.email)"
+
+echo ""
 echo "Cleaning up previous filter-branch backups..."
 rm -rf .git/refs/original/
 

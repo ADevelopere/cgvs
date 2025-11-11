@@ -50,12 +50,12 @@ const preview: Preview = {
   globalTypes: {
     language: {
       description: "Language",
-      defaultValue: AppLanguage.default,
+      defaultValue: AppLanguage.ar,
       toolbar: {
         title: "Language",
         icon: "globe",
         items: [
-          { value: AppLanguage.default, title: "العربية", icon: "circle" },
+          { value: AppLanguage.ar, title: "العربية", icon: "circle" },
           { value: AppLanguage.en, title: "English", icon: "circle" },
         ],
         dynamicTitle: true,

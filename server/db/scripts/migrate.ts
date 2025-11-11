@@ -11,9 +11,9 @@ import { NeonHttpDatabase } from "drizzle-orm/neon-http";
  */
 export async function runMigrations(closePool: boolean) {
   const provider = process.env.DB_PROVIDER || "postgres";
-  
+
   logger.log(`Running migrations with provider: ${provider}`);
-  
+
   if (provider === "postgres") {
     logger.warn("⚠️  Pool will be closed after migrations complete");
     await migratePostgres(db as NodePgDatabase, { migrationsFolder: "./server/drizzle" });

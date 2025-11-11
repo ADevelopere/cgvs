@@ -3,9 +3,13 @@ import { IconButton, Popover, Tooltip, Box, Stack, Typography, Paper } from "@mu
 import { Translate as TranslateIcon } from "@mui/icons-material";
 import { useAppTheme } from "@/client/contexts/ThemeContext";
 import { useAppTranslation } from "@/client/locale";
-import { AppLanguage } from "@/lib/enum";
+import { AppLanguage } from "@/client/graphql/generated/gql/graphql";
 
-export const LanguageSwitcher: React.FC = () => {
+interface LanguageSwitcherProps {
+  color?: string;
+}
+
+export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ color }) => {
   const { languageTranslations: strings } = useAppTranslation();
   const { language, setLanguage } = useAppTheme();
 
@@ -31,12 +35,12 @@ export const LanguageSwitcher: React.FC = () => {
 
   const languageOptions = [
     {
-      value: AppLanguage.default,
+      value: AppLanguage.Ar,
       label: strings.ar,
       shortLabel: strings.arShort,
     },
     {
-      value: AppLanguage.en,
+      value: AppLanguage.En,
       label: strings.en,
       shortLabel: strings.enShort,
     },
@@ -45,7 +49,12 @@ export const LanguageSwitcher: React.FC = () => {
   return (
     <React.Fragment>
       <Tooltip title="Language settings" enterDelay={1000}>
-        <IconButton type="button" aria-label="language-settings" onClick={toggleMenu} color="inherit">
+        <IconButton
+          type="button"
+          aria-label="language-settings"
+          onClick={toggleMenu}
+          sx={{ color: color || "inherit" }}
+        >
           <TranslateIcon />
         </IconButton>
       </Tooltip>

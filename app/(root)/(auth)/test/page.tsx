@@ -25,7 +25,7 @@ import {
   TextElementFormErrors,
   TextElementFormState,
 } from "@/client/views/template/manage/editor/form/element/text";
-import { fontsQueryDocument } from "@/client/views/font/hooks/font.documents";
+import { fontFamiliesQueryDocument } from "@/client/views/font/hooks/font.documents";
 import { templateVariablesByTemplateIdQueryDocument } from "@/client/views/template/manage/variables/hooks/templateVariable.documents";
 import { updateTextElementMutationDocument } from "@/client/views/template/manage/editor/glqDocuments";
 import { useElementCreateMutations } from "@/client/views/template/manage/editor/form/hooks";
@@ -41,13 +41,13 @@ export default function TestElementsPage() {
     data: fontsData,
     loading: fontsLoading,
     error: fontsError,
-  } = useQuery(fontsQueryDocument, {
+  } = useQuery(fontFamiliesQueryDocument, {
     variables: {},
   });
 
   // Derive fonts from query data
-  const fonts = useMemo(() => {
-    return fontsData?.fonts?.data || [];
+  const fontFamilies = useMemo(() => {
+    return fontsData?.fontFamilies || [];
   }, [fontsData]);
 
   const {
@@ -106,7 +106,7 @@ export default function TestElementsPage() {
       templateId: TEST_TEMPLATE_ID,
     },
     textProps: {
-      fontRef: { google: { identifier: "Roboto" } },
+      fontRef: { google: { family: GQL.FontFamilyName.Roboto, variant: "400" } },
       fontSize: 16,
       color: "#000000",
       overflow: GQL.ElementOverflow.Wrap,
@@ -157,14 +157,17 @@ export default function TestElementsPage() {
       let fontRefInput: GQL.FontReferenceInput;
       if (element.textProps.fontRef.__typename === "FontReferenceGoogle") {
         fontRefInput = {
-          google: { identifier: element.textProps.fontRef.identifier ?? "" },
+          google: {
+            family: element.textProps.fontRef.family ?? GQL.FontFamilyName.Roboto,
+            variant: element.textProps.fontRef.variant ?? "400",
+          },
         };
       } else if (element.textProps.fontRef.__typename === "FontReferenceSelfHosted") {
         fontRefInput = {
-          selfHosted: { fontId: element.textProps.fontRef.fontId ?? 0 },
+          selfHosted: { fontVariantId: element.textProps.fontRef.fontVariantId ?? 0 },
         };
       } else {
-        fontRefInput = { google: { identifier: "Roboto" } };
+        fontRefInput = { google: { family: GQL.FontFamilyName.Roboto, variant: "400" } };
       }
 
       const base: GQL.CertificateElementBaseInput = {
@@ -341,7 +344,7 @@ export default function TestElementsPage() {
               language={GQL.AppLanguage.Ar}
               textVariables={textVariables}
               selectVariables={selectVariables}
-              selfHostedFonts={fonts}
+              fontFamilies={fontFamilies}
               onSubmit={updateMode ? handleUpdateTextElement : handleCreateTextElement}
               onCancel={() => {
                 setOpenForm(false);

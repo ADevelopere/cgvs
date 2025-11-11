@@ -9,25 +9,25 @@ import { useAppTranslation } from "@/client/locale";
 interface DeleteFontDialogProps {
   open: boolean;
   onClose: () => void;
-  fontId: number;
+  fontVariantId: number;
   fontName: string;
 }
 
-export const DeleteFontDialog: React.FC<DeleteFontDialogProps> = ({ open, onClose, fontId, fontName }) => {
+export const DeleteFontDialog: React.FC<DeleteFontDialogProps> = ({ open, onClose, fontVariantId, fontName }) => {
   const { fontManagementTranslations: strings } = useAppTranslation();
-  const { deleteFont } = useFontOperations();
+  const { deleteFontVariant } = useFontOperations();
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Query usage check - only when dialog is open
   const { data: usageData, loading: checkingUsage } = useQuery(checkFontUsageQueryDocument, {
-    variables: { id: fontId },
+    variables: { id: fontVariantId },
     skip: !open,
   });
 
   // Derive usage info from query
   const usageInfo = useMemo(() => {
-    if (!usageData?.checkFontUsage) return null;
-    const data = usageData.checkFontUsage;
+    if (!usageData?.checkFontVariantUsage) return null;
+    const data = usageData.checkFontVariantUsage;
     return {
       isInUse: data.isInUse,
       usageCount: data.usageCount,
@@ -44,7 +44,7 @@ export const DeleteFontDialog: React.FC<DeleteFontDialogProps> = ({ open, onClos
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    const success = await deleteFont(fontId);
+    const success = await deleteFontVariant(fontVariantId);
     setIsDeleting(false);
 
     if (success) {

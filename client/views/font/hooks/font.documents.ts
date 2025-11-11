@@ -1,34 +1,77 @@
 import { TypedDocumentNode, gql } from "@apollo/client";
 import * as Graphql from "@/client/graphql/generated/gql/graphql";
 
-// Query: Get single font by ID
-export const fontQueryDocument: TypedDocumentNode<Graphql.FontQuery, Graphql.FontQueryVariables> = gql`
-  query font($id: Int!) {
-    font(id: $id) {
+// Query: Get all font families
+export const fontFamiliesQueryDocument: TypedDocumentNode<
+  Graphql.FontFamiliesQuery,
+  Graphql.FontFamiliesQueryVariables
+> = gql`
+  query fontFamilies {
+    fontFamilies {
       id
       name
+      category
       locale
-      file {
-        path
+      variants {
+        id
+        familyId
+        variant
+        file {
+          path
+          url
+          name
+          size
+        }
         url
-        name
-        size
+        createdAt
+        updatedAt
       }
-      url
       createdAt
       updatedAt
     }
   }
 `;
 
-// Query: Get all fonts with pagination, filtering, and sorting
-export const fontsQueryDocument: TypedDocumentNode<Graphql.FontsQuery, Graphql.FontsQueryVariables> = gql`
-  query fonts($paginationArgs: PaginationArgs, $orderBy: [FontsOrderByClause!], $filterArgs: FontFilterArgs) {
-    fonts(paginationArgs: $paginationArgs, orderBy: $orderBy, filterArgs: $filterArgs) {
-      data {
+// Query: Get single font family by ID
+export const fontFamilyQueryDocument: TypedDocumentNode<Graphql.FontFamilyQuery, Graphql.FontFamilyQueryVariables> =
+  gql`
+    query fontFamily($id: Int!) {
+      fontFamily(id: $id) {
         id
         name
+        category
         locale
+        variants {
+          id
+          familyId
+          variant
+          file {
+            path
+            url
+            name
+            size
+          }
+          url
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+    }
+  `;
+
+// Query: Get font variants by family ID
+export const fontVariantsByFamilyQueryDocument: TypedDocumentNode<
+  Graphql.FontVariantsQuery,
+  Graphql.FontVariantsQueryVariables
+> = gql`
+  query fontVariants($filterArgs: FontVariantFilterArgs) {
+    fontVariants(filterArgs: $filterArgs) {
+      data {
+        id
+        familyId
+        variant
         file {
           path
           url
@@ -50,13 +93,13 @@ export const fontsQueryDocument: TypedDocumentNode<Graphql.FontsQuery, Graphql.F
   }
 `;
 
-// Query: Check font usage before deletion
+// Query: Check font variant usage before deletion
 export const checkFontUsageQueryDocument: TypedDocumentNode<
-  Graphql.CheckFontUsageQuery,
-  Graphql.CheckFontUsageQueryVariables
+  Graphql.CheckFontVariantUsageQuery,
+  Graphql.CheckFontVariantUsageQueryVariables
 > = gql`
-  query checkFontUsage($id: Int!) {
-    checkFontUsage(id: $id) {
+  query checkFontVariantUsage($id: Int!) {
+    checkFontVariantUsage(id: $id) {
       isInUse
       usageCount
       usedBy {
@@ -71,16 +114,67 @@ export const checkFontUsageQueryDocument: TypedDocumentNode<
   }
 `;
 
-// Mutation: Create font
-export const createFontMutationDocument: TypedDocumentNode<
-  Graphql.CreateFontMutation,
-  Graphql.CreateFontMutationVariables
+// Mutation: Create font family
+export const createFontFamilyMutationDocument: TypedDocumentNode<
+  Graphql.CreateFontFamilyMutation,
+  Graphql.CreateFontFamilyMutationVariables
 > = gql`
-  mutation createFont($input: FontCreateInput!) {
-    createFont(input: $input) {
+  mutation createFontFamily($input: FontFamilyCreateInput!) {
+    createFontFamily(input: $input) {
       id
       name
+      category
       locale
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+// Mutation: Update font family
+export const updateFontFamilyMutationDocument: TypedDocumentNode<
+  Graphql.UpdateFontFamilyMutation,
+  Graphql.UpdateFontFamilyMutationVariables
+> = gql`
+  mutation updateFontFamily($input: FontFamilyUpdateInput!) {
+    updateFontFamily(input: $input) {
+      id
+      name
+      category
+      locale
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+// Mutation: Delete font family
+export const deleteFontFamilyMutationDocument: TypedDocumentNode<
+  Graphql.DeleteFontFamilyMutation,
+  Graphql.DeleteFontFamilyMutationVariables
+> = gql`
+  mutation deleteFontFamily($id: Int!) {
+    deleteFontFamily(id: $id) {
+      id
+      name
+      category
+      locale
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+// Mutation: Create font variant
+export const createFontVariantMutationDocument: TypedDocumentNode<
+  Graphql.CreateFontVariantMutation,
+  Graphql.CreateFontVariantMutationVariables
+> = gql`
+  mutation createFontVariant($input: FontVariantCreateInput!) {
+    createFontVariant(input: $input) {
+      id
+      familyId
+      variant
       file {
         path
         url
@@ -94,16 +188,16 @@ export const createFontMutationDocument: TypedDocumentNode<
   }
 `;
 
-// Mutation: Update font
-export const updateFontMutationDocument: TypedDocumentNode<
-  Graphql.UpdateFontMutation,
-  Graphql.UpdateFontMutationVariables
+// Mutation: Update font variant
+export const updateFontVariantMutationDocument: TypedDocumentNode<
+  Graphql.UpdateFontVariantMutation,
+  Graphql.UpdateFontVariantMutationVariables
 > = gql`
-  mutation updateFont($input: FontUpdateInput!) {
-    updateFont(input: $input) {
+  mutation updateFontVariant($input: FontVariantUpdateInput!) {
+    updateFontVariant(input: $input) {
       id
-      name
-      locale
+      familyId
+      variant
       file {
         path
         url
@@ -117,16 +211,51 @@ export const updateFontMutationDocument: TypedDocumentNode<
   }
 `;
 
-// Mutation: Delete font
-export const deleteFontMutationDocument: TypedDocumentNode<
-  Graphql.DeleteFontMutation,
-  Graphql.DeleteFontMutationVariables
+// Mutation: Delete font variant
+export const deleteFontVariantMutationDocument: TypedDocumentNode<
+  Graphql.DeleteFontVariantMutation,
+  Graphql.DeleteFontVariantMutationVariables
 > = gql`
-  mutation deleteFont($id: Int!) {
-    deleteFont(id: $id) {
+  mutation deleteFontVariant($id: Int!) {
+    deleteFontVariant(id: $id) {
       id
-      name
-      locale
+      familyId
+      variant
+      file {
+        path
+        url
+        name
+        size
+      }
+      url
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+// Mutation: Create font with family (creates family if doesn't exist)
+export const createFontWithFamilyMutationDocument: TypedDocumentNode<
+  Graphql.CreateFontWithFamilyMutation,
+  Graphql.CreateFontWithFamilyMutationVariables
+> = gql`
+  mutation createFontWithFamily(
+    $familyName: String!
+    $category: String
+    $locale: [String!]!
+    $variant: String!
+    $storageFilePath: String!
+  ) {
+    createFontWithFamily(
+      familyName: $familyName
+      category: $category
+      locale: $locale
+      variant: $variant
+      storageFilePath: $storageFilePath
+    ) {
+      id
+      familyId
+      variant
       file {
         path
         url

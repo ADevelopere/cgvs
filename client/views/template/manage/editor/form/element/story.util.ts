@@ -1,33 +1,73 @@
 import {
-  Font,
+  FontFamily,
   TemplateTextVariable,
   TemplateSelectVariable,
   TemplateNumberVariable,
 } from "@/client/graphql/generated/gql/graphql";
 
-export const mockSelfHostedFonts: Font[] = [
+export const mockFontFamilies: FontFamily[] = [
   {
     id: 1,
     name: "Cairo",
-    locale: ["all"],
+    category: "sans-serif",
+    locale: ["ar", "en"],
     createdAt: new Date(),
     updatedAt: new Date(),
+    variants: [
+      {
+        id: 1,
+        familyId: 1,
+        variant: "Regular",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: 2,
+        familyId: 1,
+        variant: "Bold",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
   },
   {
     id: 2,
     name: "Amiri",
-    locale: ["all"],
+    category: "serif",
+    locale: ["ar"],
     createdAt: new Date(),
     updatedAt: new Date(),
+    variants: [
+      {
+        id: 3,
+        familyId: 2,
+        variant: "Regular",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
   },
   {
     id: 3,
     name: "Tajawal",
-    locale: ["all"],
+    category: "sans-serif",
+    locale: ["ar", "en"],
     createdAt: new Date(),
     updatedAt: new Date(),
+    variants: [
+      {
+        id: 4,
+        familyId: 3,
+        variant: "Regular",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
   },
 ];
+
+// Legacy export for backward compatibility
+export const mockSelfHostedFonts = mockFontFamilies;
 
 export const mockTextVariables: TemplateTextVariable[] = [
   { id: 1, name: "Organization Name", __typename: "TemplateTextVariable" },

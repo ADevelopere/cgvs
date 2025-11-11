@@ -5,7 +5,7 @@ import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { useBaseElement } from "../../form/hooks/useBaseElementState";
 import { useTextProps } from "../../form/hooks/useTextPropsState";
 import React from "react";
-import { FontFamily, getFontByFamily } from "@/lib/font/google";
+import { getFontByFamily } from "@/lib/font/google";
 import WebFont from "webfontloader";
 import { useTextDataSource } from "../../form/hooks";
 import { useCertificateElementStates } from "../../context/CertificateElementContext";
@@ -74,9 +74,9 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
   const [fontFamily, setFontFamily] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (textPropsState.fontRef.google?.identifier) {
-      const family = textPropsState.fontRef.google.identifier;
-      const font = getFontByFamily(family as FontFamily);
+    if (textPropsState.fontRef.google?.family) {
+      const family = textPropsState.fontRef.google.family;
+      const font = getFontByFamily(family);
 
       if (font) {
         setFontFamily(family);
@@ -94,7 +94,7 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
         }
       }
     }
-  }, [textPropsState.fontRef.google?.identifier]);
+  }, [textPropsState.fontRef.google?.family]);
 
   const style: React.CSSProperties = React.useMemo(() => {
     return {

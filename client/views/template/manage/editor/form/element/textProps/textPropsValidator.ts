@@ -38,19 +38,20 @@ export const validateTextPropsField = () => {
 // Font reference validator (matches backend logic)
 export const validateFontReference = (fontRef: FontReferenceInput): string | undefined => {
   if (fontRef.google) {
-    const identifier = fontRef.google.identifier;
-    if (!identifier || identifier.trim().length === 0) {
-      return "Google font identifier is required";
+    const family = fontRef.google.family;
+    const variant = fontRef.google.variant;
+    if (!family) {
+      return "Google font family is required";
     }
-    if (!/^[a-zA-Z0-9\s\-+]+$/.test(identifier)) {
-      return "Invalid characters in font identifier";
+    if (!variant || variant.trim().length === 0) {
+      return "Google font variant is required";
     }
     return undefined;
   }
 
   if (fontRef.selfHosted) {
-    const fontId = fontRef.selfHosted.fontId;
-    if (!fontId || fontId <= 0) {
+    const fontVariantId = fontRef.selfHosted.fontVariantId;
+    if (!fontVariantId || fontVariantId <= 0) {
       return "Font selection is required";
     }
     return undefined;

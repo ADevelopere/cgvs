@@ -80,4 +80,34 @@ export const fontManagement: FontManagementTranslations = {
   saving: "جاري الحفظ...",
   deleting: "جاري الحذف...",
   saveChanges: "حفظ التغييرات",
+
+  // Font Family
+  familyName: "اسم العائلة",
+  familyNameRequired: "اسم العائلة مطلوب",
+  category: "الفئة",
+  categoryOptional: "الفئة (اختياري)",
+  categoryPlaceholder: "مثال: Serif، Sans-serif، Monospace",
+  editFontFamily: "تعديل عائلة الخط",
+  familyUpdatedSuccess: "تم تحديث العائلة بنجاح",
+
+  // Font Variant
+  variant: "المتغير",
+  addVariant: "إضافة متغير",
+  editVariant: "تعديل المتغير",
+  variantAddedSuccess: "تمت إضافة المتغير بنجاح",
+  variantUpdatedSuccess: "تم تحديث المتغير بنجاح",
+  variantDeletedSuccess: "تم حذف المتغير بنجاح",
+  deleteVariant: "حذف المتغير",
+  confirmDeleteVariant: "هل أنت متأكد أنك تريد حذف المتغير",
+  cannotDeleteVariant: "لا يمكن الحذف",
+  variantUsedInElements: "هذا المتغير مستخدم في %{count} عنصر(عناصر).",
+  noVariantsYet: "لا توجد متغيرات بعد. أضف أول متغير.",
+  addFirstVariant: "أضف أول متغير للبدء",
+  filePath: "مسار الملف",
+  fontVariants: "متغيرات الخط",
+
+  // Create with family
+  createNewFontFamily: "إنشاء خط جديد",
+  creating: "جاري الإنشاء...",
+  autoExtractedFromFile: "مستخرج تلقائياً من ملف الخط",
 };

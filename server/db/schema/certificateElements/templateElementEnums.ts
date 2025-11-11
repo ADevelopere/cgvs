@@ -1,4 +1,5 @@
 import * as ElementTypes from "@/server/types/element";
+import { FontFamily } from "@/lib/font/google/fontFamily.enum";
 import { createPgEnumFromEnum } from "@/server/utils/db.utils";
 
 /**
@@ -63,3 +64,4 @@ export const qrCodeErrorCorrectionEnum = createPgEnumFromEnum(
 
 // Font Configuration
 export const fontSourceEnum = createPgEnumFromEnum("font_source", ElementTypes.FontSource);
+export const googleFontFamilyEnum = createPgEnumFromEnum("google_font_family", FontFamily);

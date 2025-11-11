@@ -1,5 +1,5 @@
 export enum AppLanguage {
-  default = "ar",
+  ar = "ar",
   en = "en",
 }
 

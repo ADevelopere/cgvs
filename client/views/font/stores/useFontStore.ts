@@ -1,37 +1,38 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import logger from "@/client/lib/logger";
-import * as GQl from "@/client/graphql/generated/gql/graphql";
 
 /**
  * Font UI Store State
- * Manages query parameters, selection, and UI state only
+ * Manages selection and UI state only
  * Data is managed by Apollo Client
  */
 type State = {
-  // Query parameters (using GraphQL generated types)
-  queryParams: GQl.FontsQueryVariables;
-
-  // Selection - store the actual font object
-  selectedFont: GQl.Font | null;
+  // Selection
+  selectedFamilyId: number | null;
+  selectedVariantId: number | null;
 
   // UI state
   isCreating: boolean;
-  isEditing: boolean;
+  isEditingFamily: boolean;
+  isEditingVariant: boolean;
+  isAddingVariant: boolean;
 };
 
 type Actions = {
-  // Query params actions
-  setQueryParams: (params: Partial<GQl.FontsQueryVariables>) => void;
-
   // Selection actions
-  setSelectedFont: (font: GQl.Font | null) => void;
+  setSelectedFamilyId: (familyId: number | null) => void;
+  setSelectedVariantId: (variantId: number | null) => void;
 
   // UI actions
   startCreating: () => void;
   cancelCreating: () => void;
-  startEditing: () => void;
-  cancelEditing: () => void;
+  startEditingFamily: () => void;
+  cancelEditingFamily: () => void;
+  startEditingVariant: (variantId: number) => void;
+  cancelEditingVariant: () => void;
+  startAddingVariant: () => void;
+  cancelAddingVariant: () => void;
 
   // Utility actions
   reset: () => void;
@@ -39,20 +40,13 @@ type Actions = {
 
 type FontStoreState = State & Actions;
 
-const DEFAULT_QUERY_PARAMS: GQl.FontsQueryVariables = {
-  paginationArgs: {
-    first: 50,
-    page: 1,
-  },
-  orderBy: [{ column: GQl.FontsOrderByColumn.Name, order: GQl.OrderSortDirection.Asc }],
-  filterArgs: undefined,
-};
-
 const initialState: State = {
-  queryParams: DEFAULT_QUERY_PARAMS,
-  selectedFont: null,
+  selectedFamilyId: null,
+  selectedVariantId: null,
   isCreating: false,
-  isEditing: false,
+  isEditingFamily: false,
+  isEditingVariant: false,
+  isAddingVariant: false,
 };
 
 /**
@@ -64,41 +58,63 @@ export const useFontStore = create<FontStoreState>()(
     set => ({
       ...initialState,
 
-      // Query params actions
-      setQueryParams: params =>
-        set(state => ({
-          queryParams: { ...state.queryParams, ...params },
-        })),
-
       // Selection actions
-      setSelectedFont: font => {
-        logger.info({ caller: "useFontStore" }, "Setting selected font:", font?.id);
-        set({ selectedFont: font });
+      setSelectedFamilyId: familyId => {
+        logger.info({ caller: "useFontStore" }, "Setting selected family:", familyId);
+        set({ selectedFamilyId: familyId, selectedVariantId: null });
+      },
+
+      setSelectedVariantId: variantId => {
+        logger.info({ caller: "useFontStore" }, "Setting selected variant:", variantId);
+        set({ selectedVariantId: variantId });
       },
 
       // UI actions
       startCreating: () => {
-        logger.info({ caller: "useFontStore" }, "Starting font creation");
+        logger.info({ caller: "useFontStore" }, "Starting family creation");
         set({
           isCreating: true,
-          isEditing: false,
-          selectedFont: null,
+          isEditingFamily: false,
+          isEditingVariant: false,
+          isAddingVariant: false,
+          selectedFamilyId: null,
+          selectedVariantId: null,
         });
       },
 
       cancelCreating: () => {
-        logger.info({ caller: "useFontStore" }, "Canceling font creation");
+        logger.info({ caller: "useFontStore" }, "Canceling family creation");
         set({ isCreating: false });
       },
 
-      startEditing: () => {
-        logger.info({ caller: "useFontStore" }, "Starting font editing");
-        set({ isEditing: true });
+      startEditingFamily: () => {
+        logger.info({ caller: "useFontStore" }, "Starting family editing");
+        set({ isEditingFamily: true });
       },
 
-      cancelEditing: () => {
-        logger.info({ caller: "useFontStore" }, "Canceling font editing");
-        set({ isEditing: false });
+      cancelEditingFamily: () => {
+        logger.info({ caller: "useFontStore" }, "Canceling family editing");
+        set({ isEditingFamily: false });
+      },
+
+      startEditingVariant: variantId => {
+        logger.info({ caller: "useFontStore" }, "Starting variant editing:", variantId);
+        set({ isEditingVariant: true, selectedVariantId: variantId });
+      },
+
+      cancelEditingVariant: () => {
+        logger.info({ caller: "useFontStore" }, "Canceling variant editing");
+        set({ isEditingVariant: false, selectedVariantId: null });
+      },
+
+      startAddingVariant: () => {
+        logger.info({ caller: "useFontStore" }, "Starting add variant");
+        set({ isAddingVariant: true });
+      },
+
+      cancelAddingVariant: () => {
+        logger.info({ caller: "useFontStore" }, "Canceling add variant");
+        set({ isAddingVariant: false });
       },
 
       // Utility
@@ -110,29 +126,9 @@ export const useFontStore = create<FontStoreState>()(
     {
       name: "font-ui-store",
       storage: createJSONStorage(() => sessionStorage),
-      // Persist only essential state (don't persist font object, only ID for restoration)
       partialize: state => ({
-        selectedFontId: state.selectedFont?.id ?? null,
-        queryParams: state.queryParams,
+        selectedFamilyId: state.selectedFamilyId,
       }),
-      // Custom merge to handle restoration
-      merge: (persistedState, currentState) => {
-        const typedPersistedState = persistedState as Partial<{
-          selectedFontId: number | null;
-          queryParams: GQl.FontsQueryVariables;
-        }>;
-        return {
-          ...currentState,
-          // Don't restore selectedFont from persistence - will be loaded from query
-          selectedFont: null,
-          queryParams: typedPersistedState.queryParams
-            ? {
-                ...currentState.queryParams,
-                ...typedPersistedState.queryParams,
-              }
-            : currentState.queryParams,
-        };
-      },
     }
   )
 );

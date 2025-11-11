@@ -183,7 +183,7 @@ export const useStorageUploadOperations = () => {
           sessionId,
           fileSize: file.size,
           contentType: inferContentType(file),
-        }
+        };
 
         const blob = await vercelUpload(pathname, file, {
           access: "public",
@@ -234,7 +234,7 @@ export const useStorageUploadOperations = () => {
       const fileKey = getFileKey(file);
       const contentType = inferContentType(file);
 
-      const pathName = getStoragePath(targetPath) + file.name
+      const pathName = getStoragePath(targetPath) + file.name;
 
       try {
         updateFileState(fileKey, {

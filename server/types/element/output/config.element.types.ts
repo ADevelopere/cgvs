@@ -1,4 +1,5 @@
 import { FontSource } from "./enum.element.types";
+import { FontFamily } from "@/lib/font/google/fontFamily.enum";
 import type { elementTextProps } from "@/server/db/schema";
 
 export enum ElementOverflow {
@@ -13,8 +14,15 @@ export enum ElementOverflow {
 // ============================================================================
 
 export type FontReference =
-  | { type: FontSource.GOOGLE; identifier: string }
-  | { type: FontSource.SELF_HOSTED; fontId: number };
+  | {
+      type: FontSource.GOOGLE;
+      family: FontFamily;
+      variant: string;
+    }
+  | {
+      type: FontSource.SELF_HOSTED;
+      fontVariantId: number;
+    };
 
 // ============================================================================
 // Element Text Props Entity (Raw DB - for repository internal use)

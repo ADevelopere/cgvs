@@ -4297,14 +4297,14 @@ const data: GoogleFontItem[] = [
     family: "Borel",
     variants: ["regular"],
     subsets: ["latin", "latin-ext", "math", "symbols", "vietnamese"],
-    version: "v3",
-    lastModified: "2025-05-30",
+    version: "v9",
+    lastModified: "2025-11-04",
     files: {
-      regular: "https://fonts.gstatic.com/s/borel/v3/6qLOKZsftAPisgshYyMnOjwE.ttf",
+      regular: "https://fonts.gstatic.com/s/borel/v9/6qLOKZsftAPisgshYyMnOjwE.ttf",
     },
     category: "handwriting",
     kind: "webfonts#webfont",
-    menu: "https://fonts.gstatic.com/s/borel/v3/6qLOKZsftAPisjsgaSc.ttf",
+    menu: "https://fonts.gstatic.com/s/borel/v9/6qLOKZsftAPisjsgaSc.ttf",
   },
   {
     family: "Bowlby One SC",
@@ -7102,6 +7102,55 @@ const data: GoogleFontItem[] = [
     category: "sans-serif",
     kind: "webfonts#webfont",
     menu: "https://fonts.gstatic.com/s/elmessiri/v25/K2FhfZBRmr9vQ1pHEey6GIGo8_pv3myYjuXwe55hjDk.ttf",
+  },
+  {
+    family: "Elms Sans",
+    variants: [
+      "100",
+      "200",
+      "300",
+      "regular",
+      "500",
+      "600",
+      "700",
+      "800",
+      "900",
+      "100italic",
+      "200italic",
+      "300italic",
+      "italic",
+      "500italic",
+      "600italic",
+      "700italic",
+      "800italic",
+      "900italic",
+    ],
+    subsets: ["latin", "latin-ext", "vietnamese"],
+    version: "v5",
+    lastModified: "2025-11-04",
+    files: {
+      "100": "https://fonts.gstatic.com/s/elmssans/v5/q5uWsoS_Lf9xv7Su1FpSCByoURnrD9-jpp3bJi52PLM6RNU.ttf",
+      "200": "https://fonts.gstatic.com/s/elmssans/v5/q5uWsoS_Lf9xv7Su1FpSCByoURnrD9-jph3aJi52PLM6RNU.ttf",
+      "300": "https://fonts.gstatic.com/s/elmssans/v5/q5uWsoS_Lf9xv7Su1FpSCByoURnrD9-jpsPaJi52PLM6RNU.ttf",
+      "500": "https://fonts.gstatic.com/s/elmssans/v5/q5uWsoS_Lf9xv7Su1FpSCByoURnrD9-jpq_aJi52PLM6RNU.ttf",
+      "600": "https://fonts.gstatic.com/s/elmssans/v5/q5uWsoS_Lf9xv7Su1FpSCByoURnrD9-jpkPdJi52PLM6RNU.ttf",
+      "700": "https://fonts.gstatic.com/s/elmssans/v5/q5uWsoS_Lf9xv7Su1FpSCByoURnrD9-jpnrdJi52PLM6RNU.ttf",
+      "800": "https://fonts.gstatic.com/s/elmssans/v5/q5uWsoS_Lf9xv7Su1FpSCByoURnrD9-jph3dJi52PLM6RNU.ttf",
+      "900": "https://fonts.gstatic.com/s/elmssans/v5/q5uWsoS_Lf9xv7Su1FpSCByoURnrD9-jpjTdJi52PLM6RNU.ttf",
+      regular: "https://fonts.gstatic.com/s/elmssans/v5/q5uWsoS_Lf9xv7Su1FpSCByoURnrD9-jpp3aJi52PLM6RNU.ttf",
+      "100italic": "https://fonts.gstatic.com/s/elmssans/v5/q5uUsoS_Lf9xv7Su1Fp4AS5XiXCAlXGks1WZzmx8OJE_VNWoyQ.ttf",
+      "200italic": "https://fonts.gstatic.com/s/elmssans/v5/q5uUsoS_Lf9xv7Su1Fp4AS5XiXCAlXGks1WZTm18OJE_VNWoyQ.ttf",
+      "300italic": "https://fonts.gstatic.com/s/elmssans/v5/q5uUsoS_Lf9xv7Su1Fp4AS5XiXCAlXGks1WZkG18OJE_VNWoyQ.ttf",
+      italic: "https://fonts.gstatic.com/s/elmssans/v5/q5uUsoS_Lf9xv7Su1Fp4AS5XiXCAlXGks1WZzm18OJE_VNWoyQ.ttf",
+      "500italic": "https://fonts.gstatic.com/s/elmssans/v5/q5uUsoS_Lf9xv7Su1Fp4AS5XiXCAlXGks1WZ_G18OJE_VNWoyQ.ttf",
+      "600italic": "https://fonts.gstatic.com/s/elmssans/v5/q5uUsoS_Lf9xv7Su1Fp4AS5XiXCAlXGks1WZEGp8OJE_VNWoyQ.ttf",
+      "700italic": "https://fonts.gstatic.com/s/elmssans/v5/q5uUsoS_Lf9xv7Su1Fp4AS5XiXCAlXGks1WZKWp8OJE_VNWoyQ.ttf",
+      "800italic": "https://fonts.gstatic.com/s/elmssans/v5/q5uUsoS_Lf9xv7Su1Fp4AS5XiXCAlXGks1WZTmp8OJE_VNWoyQ.ttf",
+      "900italic": "https://fonts.gstatic.com/s/elmssans/v5/q5uUsoS_Lf9xv7Su1Fp4AS5XiXCAlXGks1WZZ2p8OJE_VNWoyQ.ttf",
+    },
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/elmssans/v5/q5uWsoS_Lf9xv7Su1FpSCByoURnrD9-jpp3aFi98OA.ttf",
   },
   {
     family: "Elsie",
@@ -13239,7 +13288,7 @@ const data: GoogleFontItem[] = [
     variants: ["regular", "italic", "700"],
     subsets: ["latin", "latin-ext"],
     version: "v17",
-    lastModified: "2025-09-11",
+    lastModified: "2025-11-04",
     files: {
       "700": "https://fonts.gstatic.com/s/librebaskerville/v17/kmKiZrc3Hgbbcjq75U4uslyuy4kn0qviTjYwI8Gcw6Oi.ttf",
       regular: "https://fonts.gstatic.com/s/librebaskerville/v17/kmKnZrc3Hgbbcjq75U4uslyuy4kn0pNeYRI4CN2V.ttf",
@@ -26475,6 +26524,73 @@ const data: GoogleFontItem[] = [
     category: "display",
     kind: "webfonts#webfont",
     menu: "https://fonts.gstatic.com/s/staatliches/v15/HI_OiY8KO6hCsQSoAPmtMYedvpU.ttf",
+  },
+  {
+    family: "Stack Sans Headline",
+    variants: ["200", "300", "regular", "500", "600", "700"],
+    subsets: ["latin", "latin-ext"],
+    version: "v1",
+    lastModified: "2025-11-04",
+    files: {
+      "200":
+        "https://fonts.gstatic.com/s/stacksansheadline/v1/1PtFg9jZXvmMnkLnuURbaukKZJTyrDV326uH6mSinjBIwc7tIgFHqgUA3ZCX.ttf",
+      "300":
+        "https://fonts.gstatic.com/s/stacksansheadline/v1/1PtFg9jZXvmMnkLnuURbaukKZJTyrDV326uH6mSinjBIwc4zIgFHqgUA3ZCX.ttf",
+      "500":
+        "https://fonts.gstatic.com/s/stacksansheadline/v1/1PtFg9jZXvmMnkLnuURbaukKZJTyrDV326uH6mSinjBIwc5fIgFHqgUA3ZCX.ttf",
+      "600":
+        "https://fonts.gstatic.com/s/stacksansheadline/v1/1PtFg9jZXvmMnkLnuURbaukKZJTyrDV326uH6mSinjBIwc6zJQFHqgUA3ZCX.ttf",
+      "700":
+        "https://fonts.gstatic.com/s/stacksansheadline/v1/1PtFg9jZXvmMnkLnuURbaukKZJTyrDV326uH6mSinjBIwc6KJQFHqgUA3ZCX.ttf",
+      regular:
+        "https://fonts.gstatic.com/s/stacksansheadline/v1/1PtFg9jZXvmMnkLnuURbaukKZJTyrDV326uH6mSinjBIwc5tIgFHqgUA3ZCX.ttf",
+    },
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/stacksansheadline/v1/1PtFg9jZXvmMnkLnuURbaukKZJTyrDV326uH6mSinjBIwc5tIjFGoAE.ttf",
+  },
+  {
+    family: "Stack Sans Notch",
+    variants: ["200", "300", "regular", "500", "600", "700"],
+    subsets: ["latin", "latin-ext"],
+    version: "v5",
+    lastModified: "2025-11-04",
+    files: {
+      "200":
+        "https://fonts.gstatic.com/s/stacksansnotch/v5/TwMY-JcVXlQd3ooGEx9EbUzgioTr5BY5lEpidqlSR8diuR2ZGGf6Bw3r.ttf",
+      "300":
+        "https://fonts.gstatic.com/s/stacksansnotch/v5/TwMY-JcVXlQd3ooGEx9EbUzgioTr5BY5lEpidqlSR8e8uR2ZGGf6Bw3r.ttf",
+      "500":
+        "https://fonts.gstatic.com/s/stacksansnotch/v5/TwMY-JcVXlQd3ooGEx9EbUzgioTr5BY5lEpidqlSR8fQuR2ZGGf6Bw3r.ttf",
+      "600":
+        "https://fonts.gstatic.com/s/stacksansnotch/v5/TwMY-JcVXlQd3ooGEx9EbUzgioTr5BY5lEpidqlSR8c8vh2ZGGf6Bw3r.ttf",
+      "700":
+        "https://fonts.gstatic.com/s/stacksansnotch/v5/TwMY-JcVXlQd3ooGEx9EbUzgioTr5BY5lEpidqlSR8cFvh2ZGGf6Bw3r.ttf",
+      regular:
+        "https://fonts.gstatic.com/s/stacksansnotch/v5/TwMY-JcVXlQd3ooGEx9EbUzgioTr5BY5lEpidqlSR8fiuR2ZGGf6Bw3r.ttf",
+    },
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/stacksansnotch/v5/TwMY-JcVXlQd3ooGEx9EbUzgioTr5BY5lEpidqlSR8fiuS2YEmM.ttf",
+  },
+  {
+    family: "Stack Sans Text",
+    variants: ["200", "300", "regular", "500", "600", "700"],
+    subsets: ["latin", "latin-ext"],
+    version: "v1",
+    lastModified: "2025-11-04",
+    files: {
+      "200": "https://fonts.gstatic.com/s/stacksanstext/v1/kJEkBuAJ-Q0hiGPmzHEu345X1JJNBpRJ3RPan47MNo-KJO1yGgKF1a0.ttf",
+      "300": "https://fonts.gstatic.com/s/stacksanstext/v1/kJEkBuAJ-Q0hiGPmzHEu345X1JJNBpRJ3RPan47MNlGKJO1yGgKF1a0.ttf",
+      "500": "https://fonts.gstatic.com/s/stacksanstext/v1/kJEkBuAJ-Q0hiGPmzHEu345X1JJNBpRJ3RPan47MNj2KJO1yGgKF1a0.ttf",
+      "600": "https://fonts.gstatic.com/s/stacksanstext/v1/kJEkBuAJ-Q0hiGPmzHEu345X1JJNBpRJ3RPan47MNtGNJO1yGgKF1a0.ttf",
+      "700": "https://fonts.gstatic.com/s/stacksanstext/v1/kJEkBuAJ-Q0hiGPmzHEu345X1JJNBpRJ3RPan47MNuiNJO1yGgKF1a0.ttf",
+      regular:
+        "https://fonts.gstatic.com/s/stacksanstext/v1/kJEkBuAJ-Q0hiGPmzHEu345X1JJNBpRJ3RPan47MNg-KJO1yGgKF1a0.ttf",
+    },
+    category: "sans-serif",
+    kind: "webfonts#webfont",
+    menu: "https://fonts.gstatic.com/s/stacksanstext/v1/kJEkBuAJ-Q0hiGPmzHEu345X1JJNBpRJ3RPan47MNg-KFOx4Hg.ttf",
   },
   {
     family: "Stalemate",

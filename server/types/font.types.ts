@@ -1,30 +1,52 @@
-import { font } from "@/server/db/schema/font";
+import { fontFamily, fontVariant } from "@/server/db/schema/font";
 import { PageInfo } from "./pagination.types";
 import { OrderSortDirection } from "@/lib/enum";
 import { FileInfo } from "./storage.types";
 
-// Type aliases to match schema
-export type FontEntity = typeof font.$inferSelect;
-export type FontInsertInput = typeof font.$inferInsert;
-export type FontSelectType = typeof font.$inferSelect;
+// Font Family types
+export type FontFamilyEntity = typeof fontFamily.$inferSelect;
+export type FontFamilyInsertInput = typeof fontFamily.$inferInsert;
+export type FontFamilySelectType = typeof fontFamily.$inferSelect;
 
-// Pothos definition with relations
-export type FontPothosDefinition = FontSelectType & {
+// Font Variant types
+export type FontVariantEntity = typeof fontVariant.$inferSelect;
+export type FontVariantInsertInput = typeof fontVariant.$inferInsert;
+export type FontVariantSelectType = typeof fontVariant.$inferSelect;
+
+// Pothos definitions with relations
+export type FontFamilyPothosDefinition = FontFamilySelectType & {
+  variants?: FontVariantPothosDefinition[];
+};
+
+export type FontVariantPothosDefinition = FontVariantSelectType & {
+  family?: FontFamilyPothosDefinition;
   file?: FileInfo | null;
   url?: string | null;
 };
 
 // Input types for GraphQL
-export type FontCreateInput = {
+export type FontFamilyCreateInput = {
   name: string;
-  locale: string[]; // Array of locale codes: ["all", "en", "ar", etc.]
+  category?: string | null;
+  locale: string[];
+};
+
+export type FontFamilyUpdateInput = {
+  id: number;
+  name: string;
+  category?: string | null;
+  locale: string[];
+};
+
+export type FontVariantCreateInput = {
+  familyId: number;
+  variant: string;
   storageFilePath: string;
 };
 
-export type FontUpdateInput = {
+export type FontVariantUpdateInput = {
   id: number;
-  name: string;
-  locale: string[];
+  variant: string;
   storageFilePath: string;
 };
 
@@ -36,7 +58,7 @@ export type FontUsageReference = {
   templateName?: string | null;
 };
 
-export type FontUsageCheckResult = {
+export type FontVariantUsageCheckResult = {
   isInUse: boolean;
   usageCount: number;
   usedBy: FontUsageReference[];
@@ -44,49 +66,64 @@ export type FontUsageCheckResult = {
   deleteBlockReason?: string | null;
 };
 
+export type FontFamilyUsageCheckResult = {
+  isInUse: boolean;
+  variantsInUse: number;
+  totalVariants: number;
+  canDelete: boolean;
+  deleteBlockReason?: string | null;
+};
+
 // Response with pagination
-export type FontsWithFiltersResponse = {
-  data: FontSelectType[];
+export type FontFamiliesWithFiltersResponse = {
+  data: FontFamilySelectType[];
+  pageInfo: PageInfo;
+};
+
+export type FontVariantsWithFiltersResponse = {
+  data: FontVariantSelectType[];
   pageInfo: PageInfo;
 };
 
 // Filter arguments
-export type FontFilterArgs = {
-  // Name filters
+export type FontFamilyFilterArgs = {
   name?: string | null;
-  nameNotContains?: string | null;
-  nameEquals?: string | null;
-  nameNotEquals?: string | null;
-  nameStartsWith?: string | null;
-  nameEndsWith?: string | null;
-  nameIsEmpty?: boolean | null;
-  nameIsNotEmpty?: boolean | null;
-
-  // Locale filter
-  locale?: string | null; // Search in locale string
-
-  // Date filters for createdAt
-  createdAt?: Date | null;
+  nameContains?: string | null;
+  category?: string | null;
+  locale?: string | null;
   createdAtFrom?: Date | null;
   createdAtTo?: Date | null;
-  createdAtAfter?: Date | null;
-  createdAtBefore?: Date | null;
+};
 
-  // Date filters for updatedAt
-  updatedAt?: Date | null;
-  updatedAtFrom?: Date | null;
-  updatedAtTo?: Date | null;
+export type FontVariantFilterArgs = {
+  familyId?: number | null;
+  variant?: string | null;
+  variantContains?: string | null;
+  createdAtFrom?: Date | null;
+  createdAtTo?: Date | null;
 };
 
 // Order by
-export enum FontsOrderByColumn {
+export enum FontFamiliesOrderByColumn {
   ID = "ID",
   NAME = "NAME",
   CREATED_AT = "CREATED_AT",
   UPDATED_AT = "UPDATED_AT",
 }
 
-export type FontsOrderByClause = {
-  column: FontsOrderByColumn;
+export enum FontVariantsOrderByColumn {
+  ID = "ID",
+  VARIANT = "VARIANT",
+  CREATED_AT = "CREATED_AT",
+  UPDATED_AT = "UPDATED_AT",
+}
+
+export type FontFamiliesOrderByClause = {
+  column: FontFamiliesOrderByColumn;
+  order?: OrderSortDirection | null;
+};
+
+export type FontVariantsOrderByClause = {
+  column: FontVariantsOrderByColumn;
   order?: OrderSortDirection | null;
 };

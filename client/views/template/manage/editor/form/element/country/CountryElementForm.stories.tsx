@@ -1,9 +1,14 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/console";
 import { CountryElementForm } from "./CountryElementForm";
-import { mockSelfHostedFonts } from "../story.util";
+import { mockFontFamilies } from "../story.util";
 import type { CountryElementFormState, CountryElementFormErrors } from "./types";
-import { CountryRepresentation, ElementAlignment, ElementOverflow } from "@/client/graphql/generated/gql/graphql";
+import {
+  CountryRepresentation,
+  ElementAlignment,
+  ElementOverflow,
+  FontFamilyName,
+} from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof CountryElementForm> = {
   title: "Template/Editor/Form/Element/Country/CountryElementForm",
@@ -27,7 +32,7 @@ const defaultState: CountryElementFormState = {
     templateId: 1,
   },
   textProps: {
-    fontRef: { google: { identifier: "Roboto" } },
+    fontRef: { google: { family: FontFamilyName.Roboto, variant: "400" } },
     fontSize: 16,
     color: "#000000",
     overflow: ElementOverflow.Wrap,
@@ -51,7 +56,7 @@ export const Default: Story = {
     updateTextProps: ({ key, value }) => logger.log("Text props updated:", key, value),
     updateRepresentation: value => logger.log("Representation updated:", value),
     locale: "en",
-    selfHostedFonts: mockSelfHostedFonts,
+    fontFamilies: mockFontFamilies,
     onSubmit: () => logger.log("Form submitted"),
     onCancel: () => logger.log("Form cancelled"),
     isSubmitting: false,
@@ -68,7 +73,7 @@ export const WithNationality: Story = {
     updateTextProps: ({ key, value }) => logger.log("Text props updated:", key, value),
     updateRepresentation: value => logger.log("Representation updated:", value),
     locale: "en",
-    selfHostedFonts: mockSelfHostedFonts,
+    fontFamilies: mockFontFamilies,
     onSubmit: () => logger.log("Form submitted"),
     onCancel: () => logger.log("Form cancelled"),
     isSubmitting: false,
@@ -90,7 +95,7 @@ export const WithErrors: Story = {
         templateId: 1,
       },
       textProps: {
-        fontRef: { google: { identifier: "" } },
+        fontRef: { google: { family: FontFamilyName.Roboto, variant: "" } },
         fontSize: 0,
         color: "",
         overflow: ElementOverflow.Wrap,
@@ -118,7 +123,7 @@ export const WithErrors: Story = {
     updateTextProps: ({ key, value }) => logger.log("Text props updated:", key, value),
     updateRepresentation: value => logger.log("Representation updated:", value),
     locale: "en",
-    selfHostedFonts: mockSelfHostedFonts,
+    fontFamilies: mockFontFamilies,
     onSubmit: () => logger.log("Form submitted"),
     onCancel: () => logger.log("Form cancelled"),
     isSubmitting: false,
@@ -134,7 +139,7 @@ export const Submitting: Story = {
     updateTextProps: ({ key, value }) => logger.log("Text props updated:", key, value),
     updateRepresentation: value => logger.log("Representation updated:", value),
     locale: "en",
-    selfHostedFonts: mockSelfHostedFonts,
+    fontFamilies: mockFontFamilies,
     onSubmit: () => logger.log("Form submitted"),
     onCancel: () => logger.log("Form cancelled"),
     isSubmitting: true,

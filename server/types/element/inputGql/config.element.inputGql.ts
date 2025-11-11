@@ -2,14 +2,16 @@
 // Font Reference (GraphQL isOneOf pattern)
 // ============================================================================
 
+import { FontFamily } from "@/lib/font/google/fontFamily.enum";
 import { TextPropsInput } from "../input";
 
 export type FontReferenceGoogleInputGraphql = {
-  identifier: string;
+  family: FontFamily;
+  variant: string;
 };
 
 export type FontReferenceSelfHostedInputGraphql = {
-  fontId: number;
+  fontVariantId: number;
 };
 
 export type FontReferenceInputGraphql =

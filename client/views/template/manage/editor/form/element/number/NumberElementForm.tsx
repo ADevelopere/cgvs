@@ -5,7 +5,7 @@ import type { NumberElementFormErrors, NumberElementFormState } from "./types";
 import { TextPropsForm } from "../textProps/TextPropsForm";
 import { BaseCertificateElementForm } from "../base/BaseCertificateElementForm";
 import { ActionButtons } from "../component/ActionButtons";
-import { Font, NumberDataSourceInput, TemplateNumberVariable } from "@/client/graphql/generated/gql/graphql";
+import { FontFamily, NumberDataSourceInput, TemplateNumberVariable } from "@/client/graphql/generated/gql/graphql";
 import { TemplateNumberVariableSelector } from "../variableSelector";
 import { NumberMappingInput } from "./NumberMappingInput";
 import { UpdateBaseElementFn } from "../base";
@@ -20,7 +20,7 @@ interface NumberElementFormProps {
   updateMapping: (mapping: Record<string, string>) => void;
   language: string;
   numberVariables: TemplateNumberVariable[];
-  selfHostedFonts: Font[];
+  fontFamilies: FontFamily[];
   onSubmit: () => void;
   onCancel: () => void;
   isSubmitting: boolean;
@@ -36,7 +36,7 @@ export const NumberElementForm: FC<NumberElementFormProps> = ({
   updateMapping,
   language,
   numberVariables,
-  selfHostedFonts,
+  fontFamilies,
   onSubmit,
   onCancel,
   isSubmitting,
@@ -81,7 +81,7 @@ export const NumberElementForm: FC<NumberElementFormProps> = ({
               <TextPropsForm
                 textProps={state.textProps}
                 language={language}
-                selfHostedFonts={selfHostedFonts}
+                fontFamilies={fontFamilies}
                 onTextPropsChange={updateTextProps}
                 errors={errors.textProps}
                 disabled={isSubmitting}

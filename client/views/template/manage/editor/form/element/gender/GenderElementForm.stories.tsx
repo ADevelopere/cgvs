@@ -1,10 +1,9 @@
 import { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { logger } from "@/client/lib/console";
-import { mockSelfHostedFonts } from "../story.util";
+import { mockFontFamilies } from "../story.util";
 import { GenderElementForm } from "./GenderElementForm";
 import type { GenderElementFormErrors, GenderElementFormState } from "./types";
-import { ElementAlignment, ElementOverflow } from "@/client/graphql/generated/gql/graphql";
-import { AppLanguage } from "@/lib/enum";
+import { AppLanguage, ElementAlignment, ElementOverflow, FontFamilyName } from "@/client/graphql/generated/gql/graphql";
 
 const meta: Meta<typeof GenderElementForm> = {
   title: "Template/Editor/Form/Element/Gender/GenderElementForm",
@@ -28,7 +27,7 @@ const mockState: GenderElementFormState = {
     templateId: 1,
   },
   textProps: {
-    fontRef: { google: { identifier: "Roboto" } },
+    fontRef: { google: { family: FontFamilyName.Roboto, variant: "400" } },
     color: "#000000",
     fontSize: 14,
     overflow: ElementOverflow.Truncate,
@@ -44,8 +43,8 @@ export const Default: Story = {
   args: {
     state: mockState,
     errors: mockErrors,
-    selfHostedFonts: mockSelfHostedFonts,
-    locale: AppLanguage.default,
+    fontFamilies: mockFontFamilies,
+    locale: AppLanguage.Ar,
     updateBase: ({ key, value }) => logger.info("updateBase", { key, value }),
     updateTextProps: ({ key, value }) => logger.info("updateTextProps", { key, value }),
     onSubmit: () => logger.info("Submit"),
@@ -69,7 +68,7 @@ export const WithErrors: Story = {
         templateId: 1,
       },
       textProps: {
-        fontRef: { google: { identifier: "" } },
+        fontRef: { google: { family: FontFamilyName.Roboto, variant: "" } },
         color: "",
         fontSize: 0,
         overflow: ElementOverflow.Truncate,
@@ -88,8 +87,8 @@ export const WithErrors: Story = {
         fontRef: "Font is required",
       },
     },
-    selfHostedFonts: mockSelfHostedFonts,
-    locale: AppLanguage.default,
+    fontFamilies: mockFontFamilies,
+    locale: AppLanguage.Ar,
     updateBase: ({ key, value }) => logger.info("updateBase", { key, value }),
     updateTextProps: ({ key, value }) => logger.info("updateTextProps", { key, value }),
     onSubmit: () => logger.info("Submit"),
@@ -102,8 +101,8 @@ export const Submitting: Story = {
   args: {
     state: mockState,
     errors: mockErrors,
-    selfHostedFonts: mockSelfHostedFonts,
-    locale: AppLanguage.en,
+    fontFamilies: mockFontFamilies,
+    locale: AppLanguage.En,
     updateBase: ({ key, value }) => logger.info("updateBase", { key, value }),
     updateTextProps: ({ key, value }) => logger.info("updateTextProps", { key, value }),
     onSubmit: () => logger.info("Submit"),
@@ -116,8 +115,8 @@ export const Disabled: Story = {
   args: {
     state: mockState,
     errors: mockErrors,
-    selfHostedFonts: mockSelfHostedFonts,
-    locale: AppLanguage.en,
+    fontFamilies: mockFontFamilies,
+    locale: AppLanguage.En,
     updateBase: ({ key, value }) => logger.info("updateBase", { key, value }),
     updateTextProps: ({ key, value }) => logger.info("updateTextProps", { key, value }),
     onSubmit: () => logger.info("Submit"),

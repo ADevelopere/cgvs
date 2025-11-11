@@ -16,14 +16,14 @@ import {
 } from "@mui/material";
 import { useAppTranslation } from "@/client/locale";
 import { FontReferenceSelector } from "./FontReferenceSelector";
-import { ElementOverflow, Font, AppLanguage } from "@/client/graphql/generated/gql/graphql";
+import { ElementOverflow, FontFamily, AppLanguage } from "@/client/graphql/generated/gql/graphql";
 import { TextPropsFormErrors, UpdateTextPropsFn, TextPropsFormState } from "./types";
 import { SketchPicker } from "react-color";
 
 interface TextPropsFormProps {
   textProps: TextPropsFormState;
   language: string;
-  selfHostedFonts: Font[];
+  fontFamilies: FontFamily[];
   onTextPropsChange: UpdateTextPropsFn;
   errors: TextPropsFormErrors;
   disabled?: boolean;
@@ -33,7 +33,7 @@ interface TextPropsFormProps {
 export const TextPropsForm: FC<TextPropsFormProps> = ({
   textProps,
   language,
-  selfHostedFonts,
+  fontFamilies,
   onTextPropsChange,
   errors,
   disabled,
@@ -65,7 +65,7 @@ export const TextPropsForm: FC<TextPropsFormProps> = ({
           <FontReferenceSelector
             fontRef={textProps.fontRef}
             language={language as AppLanguage}
-            selfHostedFonts={selfHostedFonts}
+            fontFamilies={fontFamilies}
             onFontRefChange={fontRef => onTextPropsChange({ key: "fontRef", value: fontRef })}
             error={errors.fontRef}
             disabled={disabled}

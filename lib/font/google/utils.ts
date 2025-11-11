@@ -4,6 +4,7 @@ import { languageSubsetMap } from "./languageSubsetMap";
 import { GoogleFontItem } from "./types";
 import { googleFontFamilyMap } from "./fontFamily.map";
 import { FontFamily } from "./fontFamily.enum";
+import { FontFamilyName } from "@/client/graphql/generated/gql/graphql";
 
 /**
  * Get the required font subsets for a given language
@@ -56,6 +57,8 @@ export function getLanguageFonts(language: Language): GoogleFontItem[] {
  * @param family - The FontFamily enum value
  * @returns The GoogleFontItem for that family, or undefined if not found
  */
-export function getFontByFamily(family: FontFamily): GoogleFontItem | undefined {
-  return googleFontFamilyMap[family];
+export function getFontByFamily(family: FontFamily): GoogleFontItem | undefined;
+export function getFontByFamily(family: FontFamilyName): GoogleFontItem | undefined;
+export function getFontByFamily(family: FontFamily | FontFamilyName): GoogleFontItem | undefined {
+  return googleFontFamilyMap[family as FontFamily];
 }

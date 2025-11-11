@@ -226,11 +226,7 @@ const LoginForm: React.FC = () => {
           }}
           disabled={isLoading || !email || !password}
         >
-          {isLoading ? (
-            <MUI.CircularProgress size={24} color="inherit" />
-          ) : (
-            strings.signin
-          )}
+          {isLoading ? <MUI.CircularProgress size={24} color="inherit" /> : strings.signin}
         </MUI.Button>
 
         <MUI.Divider sx={{ my: 2 }}>

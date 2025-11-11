@@ -9,7 +9,11 @@ import { useAppTheme } from "@/client/contexts/ThemeContext";
 import ThemeMode from "@/client/theme/ThemeMode";
 import { useAppTranslation } from "@/client/locale";
 
-export const ThemeSwitcher: React.FC = () => {
+interface ThemeSwitcherProps {
+  color?: string;
+}
+
+export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ color }) => {
   const { setThemeMode, themeMode, isDark } = useAppTheme();
   const { headerTranslations: strings } = useAppTranslation();
 
@@ -56,7 +60,7 @@ export const ThemeSwitcher: React.FC = () => {
   return (
     <React.Fragment>
       <Tooltip title={strings.themeSettings} enterDelay={1000}>
-        <IconButton type="button" aria-label="theme-settings" onClick={toggleMenu} color="inherit">
+        <IconButton type="button" aria-label="theme-settings" onClick={toggleMenu} sx={{ color: color || "inherit" }}>
           {themeMode === ThemeMode.System ? <SystemModeIcon /> : !isDark ? <LightModeIcon /> : <DarkModeIcon />}
         </IconButton>
       </Tooltip>

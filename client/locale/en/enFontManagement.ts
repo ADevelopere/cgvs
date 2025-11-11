@@ -80,4 +80,34 @@ export const enFontManagement: FontManagementTranslations = {
   saving: "Saving...",
   deleting: "Deleting...",
   saveChanges: "Save Changes",
+
+  // Font Family
+  familyName: "Family Name",
+  familyNameRequired: "Family name is required",
+  category: "Category",
+  categoryOptional: "Category (Optional)",
+  categoryPlaceholder: "e.g., Serif, Sans-serif, Monospace",
+  editFontFamily: "Edit Font Family",
+  familyUpdatedSuccess: "Family updated successfully",
+
+  // Font Variant
+  variant: "Variant",
+  addVariant: "Add Variant",
+  editVariant: "Edit Variant",
+  variantAddedSuccess: "Variant added successfully",
+  variantUpdatedSuccess: "Variant updated successfully",
+  variantDeletedSuccess: "Variant deleted successfully",
+  deleteVariant: "Delete Variant",
+  confirmDeleteVariant: "Are you sure you want to delete the variant",
+  cannotDeleteVariant: "Cannot Delete",
+  variantUsedInElements: "This variant is used in %{count} element(s).",
+  noVariantsYet: "No variants yet. Add your first variant.",
+  addFirstVariant: "Add your first variant to get started",
+  filePath: "File Path",
+  fontVariants: "Font Variants",
+
+  // Create with family
+  createNewFontFamily: "Create New Font",
+  creating: "Creating...",
+  autoExtractedFromFile: "Auto-extracted from font file",
 };

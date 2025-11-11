@@ -31,11 +31,12 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
           color
           fontRef {
             ... on FontReferenceGoogle {
-              identifier
+              family
               type
+              variant
             }
             ... on FontReferenceSelfHosted {
-              fontId
+              fontVariantId
               type
             }
           }
@@ -73,11 +74,12 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
           color
           fontRef {
             ... on FontReferenceGoogle {
-              identifier
+              family
               type
+              variant
             }
             ... on FontReferenceSelfHosted {
-              fontId
+              fontVariantId
               type
             }
           }
@@ -91,11 +93,12 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
           color
           fontRef {
             ... on FontReferenceGoogle {
-              identifier
+              family
               type
+              variant
             }
             ... on FontReferenceSelfHosted {
-              fontId
+              fontVariantId
               type
             }
           }
@@ -135,11 +138,12 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
           overflow
           fontRef {
             ... on FontReferenceGoogle {
-              identifier
+              family
               type
+              variant
             }
             ... on FontReferenceSelfHosted {
-              fontId
+              fontVariantId
               type
             }
           }
@@ -185,11 +189,12 @@ export const elementsByTemplateIdQueryDocument: TypedDocumentNode<
           color
           fontRef {
             ... on FontReferenceGoogle {
-              identifier
+              family
               type
+              variant
             }
             ... on FontReferenceSelfHosted {
-              fontId
+              fontVariantId
               type
             }
           }
@@ -300,11 +305,12 @@ export const updateElementTextPropsMutationDocument: TypedDocumentNode<
         overflow
         fontRef {
           ... on FontReferenceGoogle {
-            identifier
+            family
             type
+            variant
           }
           ... on FontReferenceSelfHosted {
-            fontId
+            fontVariantId
             type
           }
         }

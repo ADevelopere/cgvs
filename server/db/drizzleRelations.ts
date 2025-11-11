@@ -189,20 +189,31 @@ export const relations = defineRelations(schema, r => ({
       to: r.qrCodeElement.elementId,
     }),
   },
-  font: {
+  fontFamily: {
+    variants: r.many.fontVariant({
+      from: r.fontFamily.id,
+      to: r.fontVariant.familyId,
+    }),
+  },
+  fontVariant: {
+    family: r.one.fontFamily({
+      from: r.fontVariant.familyId,
+      to: r.fontFamily.id,
+    }),
     storageFile: r.one.storageFiles({
-      from: r.font.storageFileId,
+      from: r.fontVariant.storageFileId,
       to: r.storageFiles.id,
     }),
     textProps: r.many.elementTextProps({
-      from: r.font.id,
-      to: r.elementTextProps.fontId,
+      from: r.fontVariant.id,
+      to: r.elementTextProps.fontVariantId,
     }),
   },
+
   elementTextProps: {
-    font: r.one.font({
-      from: r.elementTextProps.fontId,
-      to: r.font.id,
+    fontVariant: r.one.fontVariant({
+      from: r.elementTextProps.fontVariantId,
+      to: r.fontVariant.id,
     }),
     textElements: r.many.textElement({
       from: r.elementTextProps.id,

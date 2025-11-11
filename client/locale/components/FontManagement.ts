@@ -80,4 +80,34 @@ export type FontManagementTranslations = {
   saving: string;
   deleting: string;
   saveChanges: string;
+
+  // Font Family
+  familyName: string;
+  familyNameRequired: string;
+  category: string;
+  categoryOptional: string;
+  categoryPlaceholder: string;
+  editFontFamily: string;
+  familyUpdatedSuccess: string;
+
+  // Font Variant
+  variant: string;
+  addVariant: string;
+  editVariant: string;
+  variantAddedSuccess: string;
+  variantUpdatedSuccess: string;
+  variantDeletedSuccess: string;
+  deleteVariant: string;
+  confirmDeleteVariant: string;
+  cannotDeleteVariant: string;
+  variantUsedInElements: string;
+  noVariantsYet: string;
+  addFirstVariant: string;
+  filePath: string;
+  fontVariants: string;
+
+  // Create with family
+  createNewFontFamily: string;
+  creating: string;
+  autoExtractedFromFile: string;
 };
