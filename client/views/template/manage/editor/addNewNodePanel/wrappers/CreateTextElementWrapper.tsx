@@ -15,6 +15,8 @@ import type { UpdateTextPropsFn } from "../../form/element/textProps";
 import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale/useAppTranslation";
 import { useNode } from "../../context/NodesStateProvider";
+import { getLanguageFonts } from "@/lib/font/google/utils";
+import { Language } from "@/lib/font/google/enum";
 
 // ============================================================================
 // PROPS INTERFACE
@@ -95,6 +97,18 @@ export const CreateTextElementWrapper: React.FC<CreateTextElementWrapperProps> =
     return { static: { value: "Sample Text" } };
   }, [initialStudentField, initialCertificateField, initialTemplateTextVariable, initialTemplateSelectVariable]);
 
+  const defaultGoogleFontInput = useMemo(() => {
+    const googleFonts = getLanguageFonts(language as string as Language);
+    const font = googleFonts[0];
+    const variant = font.variants.includes("regular") ? "regular" : font.variants[0];
+    return {
+      google: {
+        family: font.family.toLocaleUpperCase() as GQL.FontFamilyName,
+        variant: variant,
+      },
+    };
+  }, [language]);
+
   const getInitialState = useCallback((): TextElementFormState => {
     if (!templateId) {
       throw new Error("Template ID is required");
@@ -112,19 +126,14 @@ export const CreateTextElementWrapper: React.FC<CreateTextElementWrapperProps> =
         templateId,
       },
       textProps: {
-        fontRef: {
-          google: {
-            family: GQL.FontFamilyName.Roboto,
-            variant: "400",
-          },
-        },
+        fontRef: defaultGoogleFontInput,
         fontSize: 16,
         color: "#000000",
         overflow: GQL.ElementOverflow.Wrap,
       },
       dataSource: getInitialDataSource(),
     };
-  }, [templateId, getInitialDataSource]);
+  }, [templateId, defaultGoogleFontInput, getInitialDataSource]);
 
   const [state, setState] = useState<TextElementFormState>(getInitialState);
   const [errors, setErrors] = useState<TextElementFormErrors>({

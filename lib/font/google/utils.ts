@@ -4,8 +4,9 @@ import { languageSubsetMap } from "./languageSubsetMap";
 import { GoogleFontItem } from "./types";
 import { googleFontFamilyMap } from "./fontFamily.map";
 import { FontFamily } from "./fontFamily.enum";
-import { FontFamilyName } from "@/client/graphql/generated/gql/graphql";
-
+import {
+  FontFamilyName,
+} from "@/client/graphql/generated/gql/graphql";
 /**
  * Get the required font subsets for a given language
  * @param language - The language enum key
@@ -58,7 +59,27 @@ export function getLanguageFonts(language: Language): GoogleFontItem[] {
  * @returns The GoogleFontItem for that family, or undefined if not found
  */
 export function getFontByFamily(family: FontFamily): GoogleFontItem | undefined;
-export function getFontByFamily(family: FontFamilyName): GoogleFontItem | undefined;
-export function getFontByFamily(family: FontFamily | FontFamilyName): GoogleFontItem | undefined {
-  return googleFontFamilyMap[family as FontFamily];
+export function getFontByFamily(family: FontFamily): GoogleFontItem | undefined {
+  return googleFontFamilyMap[family];
+}
+
+/**
+ * Converts a FontFamilyName enum value to its corresponding FontFamily enum value.
+ */
+
+/**
+ * Converts a FontFamilyName enum value to its corresponding FontFamily enum value.
+ */
+export function getFontFamily(familyName: FontFamilyName): FontFamily {
+  // We use the 'familyName' value (which is a string like 'ABEEZEE')
+  // as a key to access the 'FontFamily' enum object.
+  //
+  // The 'as keyof typeof FontFamily' assertion tells TypeScript
+  // that the string value is a valid key for the FontFamily enum.
+  return FontFamily[familyName as keyof typeof FontFamily];
+}
+
+export function getFontByFamilyName(familyName: FontFamilyName): GoogleFontItem {
+  const family = getFontFamily(familyName);
+  return googleFontFamilyMap[family];
 }

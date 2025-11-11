@@ -5,13 +5,13 @@ import * as GQL from "@/client/graphql/generated/gql/graphql";
 import { useBaseElement } from "../../form/hooks/useBaseElementState";
 import { useTextProps } from "../../form/hooks/useTextPropsState";
 import React from "react";
-import { getFontByFamily } from "@/lib/font/google";
 import WebFont from "webfontloader";
 import { useTextDataSource } from "../../form/hooks";
 import { useCertificateElementStates } from "../../context/CertificateElementContext";
 import { useAppTranslationForLanguage } from "@/client/locale";
-import { getFontFamilyString, getFlexAlignment } from "./utils";
+import { getFlexAlignment } from "./utils";
 import { NodeResizer } from "@xyflow/react";
+import { getFontFamily } from "@/lib/font/google/utils";
 
 export type TextElementNodeData = {
   // templateId: number;
@@ -74,27 +74,23 @@ export const TextElementNode = ({ data }: TextElementNodeProps) => {
   const [fontFamily, setFontFamily] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (textPropsState.fontRef.google?.family) {
-      const family = textPropsState.fontRef.google.family;
-      const font = getFontByFamily(family);
+    if (textPropsState.fontRef.google?.family && textPropsState.fontRef.google?.variant) {
+      const family = getFontFamily(textPropsState.fontRef.google.family);
+      const variant = textPropsState.fontRef.google.variant;
 
-      if (font) {
-        setFontFamily(family);
-        const fontFamily = getFontFamilyString(font);
+      setFontFamily(family);
+      const fontFamilyWithVariant = `${family}:${variant}`;
 
-        if (fontFamily) {
-          WebFont.load({
-            google: {
-              families: [fontFamily],
-            },
-            active: () => {
-              // You can set a state here to update your UI
-            },
-          });
-        }
-      }
+      WebFont.load({
+        google: {
+          families: [fontFamilyWithVariant],
+        },
+        active: () => {
+          // You can set a state here to update your UI
+        },
+      });
     }
-  }, [textPropsState.fontRef.google?.family]);
+  }, [textPropsState.fontRef.google?.family, textPropsState.fontRef.google?.variant]);
 
   const style: React.CSSProperties = React.useMemo(() => {
     return {

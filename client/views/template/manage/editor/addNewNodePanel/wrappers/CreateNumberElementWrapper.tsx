@@ -14,6 +14,8 @@ import type { UpdateBaseElementFn } from "../../form/element/base";
 import type { UpdateTextPropsFn } from "../../form/element/textProps";
 import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale/useAppTranslation";
+import { getLanguageFonts } from "@/lib/font/google/utils";
+import { Language } from "@/lib/font/google/enum";
 
 // ============================================================================
 // PROPS INTERFACE
@@ -71,6 +73,18 @@ export const CreateNumberElementWrapper: React.FC<CreateNumberElementWrapperProp
     return { variableId: numberVariables[0]?.id ?? 0 };
   }, [initialNumberVariable, numberVariables]);
 
+  const defaultGoogleFontInput = useMemo(() => {
+    const googleFonts = getLanguageFonts(language as string as Language);
+    const font = googleFonts[0];
+    const variant = font.variants.includes("regular") ? "regular" : font.variants[0];
+    return {
+      google: {
+        family: font.family.toLocaleUpperCase() as GQL.FontFamilyName,
+        variant: variant,
+      },
+    };
+  }, [language]);
+
   const getInitialState = useCallback((): NumberElementFormState => {
     if (!templateId) {
       throw new Error("Template ID is required");
@@ -88,12 +102,7 @@ export const CreateNumberElementWrapper: React.FC<CreateNumberElementWrapperProp
         templateId,
       },
       textProps: {
-        fontRef: {
-          google: {
-            family: GQL.FontFamilyName.Roboto,
-            variant: "400",
-          },
-        },
+        fontRef: defaultGoogleFontInput,
         fontSize: 16,
         color: "#000000",
         overflow: GQL.ElementOverflow.Wrap,
@@ -103,7 +112,7 @@ export const CreateNumberElementWrapper: React.FC<CreateNumberElementWrapperProp
       },
       dataSource: getInitialDataSource(),
     };
-  }, [templateId, initialElementName, getInitialDataSource]);
+  }, [templateId, initialElementName, defaultGoogleFontInput, getInitialDataSource]);
 
   const [state, setState] = useState<NumberElementFormState>(getInitialState);
   const [errors, setErrors] = useState<NumberElementFormErrors>({

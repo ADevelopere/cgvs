@@ -15,6 +15,8 @@ import type { UpdateTextPropsFn } from "../../form/element/textProps";
 import type { UpdateDatePropsFn } from "../../form/element/date/types";
 import { logger } from "@/client/lib/logger";
 import { useAppTranslation } from "@/client/locale/useAppTranslation";
+import { getLanguageFonts } from "@/lib/font/google/utils";
+import { Language } from "@/lib/font/google/enum";
 
 // ============================================================================
 // PROPS INTERFACE
@@ -89,6 +91,18 @@ export const CreateDateElementWrapper: React.FC<CreateDateElementWrapperProps> =
     return { static: { value: "" } };
   }, [initialStudentField, initialCertificateField, initialTemplateDateVariable]);
 
+  const defaultGoogleFontInput = useMemo(() => {
+    const googleFonts = getLanguageFonts(language as string as Language);
+    const font = googleFonts[0];
+    const variant = font.variants.includes("regular") ? "regular" : font.variants[0];
+    return {
+      google: {
+       family: font.family.toLocaleUpperCase() as GQL.FontFamilyName,
+        variant: variant,
+      },
+    };
+  }, [language]);
+
   const getInitialState = useCallback((): DateElementFormState => {
     if (!templateId) {
       throw new Error("Template ID is required");
@@ -106,12 +120,7 @@ export const CreateDateElementWrapper: React.FC<CreateDateElementWrapperProps> =
         templateId,
       },
       textProps: {
-        fontRef: {
-          google: {
-            family: GQL.FontFamilyName.Roboto,
-            variant: "400",
-          },
-        },
+        fontRef: defaultGoogleFontInput,
         fontSize: 16,
         color: "#000000",
         overflow: GQL.ElementOverflow.Wrap,
@@ -124,7 +133,7 @@ export const CreateDateElementWrapper: React.FC<CreateDateElementWrapperProps> =
       },
       dataSource: getInitialDataSource(),
     };
-  }, [templateId, initialElementName, initialTransformation, getInitialDataSource]);
+  }, [templateId, initialElementName, initialTransformation, defaultGoogleFontInput, getInitialDataSource]);
 
   const [state, setState] = useState<DateElementFormState>(getInitialState);
   const [errors, setErrors] = useState<DateElementFormErrors>({
