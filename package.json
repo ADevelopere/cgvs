@@ -12,7 +12,8 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "tsc": "tsc --noEmit",
+    "tsc": "tsc --extendedDiagnostics --noEmit",
+    "tsgo": "tsgo -p . --noEmit --extendedDiagnostics",
     "generate:gqlSchema": "bun run server/graphql/generateGqlSchema.ts",
     "codegen": "graphql-codegen --watch",
     "storybook": "storybook dev -p 6006",
@@ -132,6 +133,7 @@
     "@types/pg": "^8.15.5",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
+    "@typescript/native-preview": "^7.0.0-dev.20251111.1",
     "@vitest/browser-playwright": "^4.0.6",
     "@vitest/coverage-v8": "^4.0.6",
     "eslint": "^9.39.0",
@@ -147,7 +149,7 @@
     "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
-    "typescript": "^5.9.3",
+    "typescript": "6.0.0-dev.20251111",
     "vitest": "^4.0.6"
   },
   "lint-staged": {
