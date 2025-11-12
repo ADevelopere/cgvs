@@ -32,7 +32,7 @@
 ## Code Quality Checks
 
 - After making any code modifications, ALWAYS run `~/.bun/bin/bun lint` to check for linting issues
-- After making any code modifications, ALWAYS run `~/.bun/bin/bun tsc` to check for TypeScript compilation errors
+- After making any code modifications, ALWAYS run `~/.bun/bin/bun tsgo` to check for TypeScript compilation errors
 - Fix any linting or TypeScript errors before considering the task complete
 - If linting or TypeScript errors are found, address them immediately and re-run the checks
 - These checks should be run automatically after any file modifications or code changes

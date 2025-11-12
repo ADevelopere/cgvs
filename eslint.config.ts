@@ -1,5 +1,7 @@
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
+import sonarjs from "eslint-plugin-sonarjs";
+import cspellESLintPluginRecommended from "@cspell/eslint-plugin/recommended";
 
 export default [
   {
@@ -17,6 +19,8 @@ export default [
     ],
   },
   eslint.configs.recommended,
+  sonarjs.configs.recommended,
+  cspellESLintPluginRecommended,
   // Use recommended rules WITHOUT type-aware linting for fast performance
   // Run `~/.bun/bin/bun tsc` separately for type checking
   // ...tseslint.configs.recommended,
@@ -57,6 +61,16 @@ export default [
        * `any` disables all null checking.
        */
       "@typescript-eslint/no-explicit-any": "error",
+
+      // 3. (Optional) Customize the rule severity
+      "@cspell/spellchecker": [
+        "warn",
+        {
+          autoFix: true,
+          configFile: new URL("./cspell.config.yaml", import.meta.url).toString(),
+          cspellOptionsRoot: import.meta.url,
+        },
+      ], // Use "warn" instead of "error"
     },
   },
 ];

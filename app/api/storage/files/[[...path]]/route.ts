@@ -38,7 +38,7 @@ function getContentType(filePath: string): string {
  */
 function parseRange(rangeHeader: string, fileSize: number): { start: number; end: number } | null {
   const match = rangeHeader.match(/bytes=(\d+)-(\d*)/);
-  if (!match) return null;
+  if (!match || !match[1]) return null;
 
   const start = parseInt(match[1], 10);
   const end = match[2] ? parseInt(match[2], 10) : fileSize - 1;
