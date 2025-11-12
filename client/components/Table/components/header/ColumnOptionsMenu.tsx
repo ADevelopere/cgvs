@@ -1,6 +1,10 @@
-import type React from "react";
 import { Menu, MenuItem, Typography, Divider } from "@mui/material";
-import { PushPin, VisibilityOff, FitScreen, PinDrop } from "@mui/icons-material";
+import {
+  PushPin,
+  VisibilityOff,
+  FitScreen,
+  PinDrop,
+} from "@mui/icons-material";
 import type { ColumnOptionsMenuProps } from "../../types";
 import { useTableLocale } from "../../contexts";
 
@@ -42,12 +46,18 @@ export const ColumnOptionsMenu = ({
       {/* Pin options */}
       {isPinnedLeft ? (
         <MenuItem onClick={() => onUnpin(columnId)}>
-          <PushPin style={{ marginInlineEnd: 8, transform: "rotate(45deg)" }} fontSize="small" />
+          <PushPin
+            style={{ marginInlineEnd: 8, transform: "rotate(45deg)" }}
+            fontSize="small"
+          />
           {strings.column.unpin}
         </MenuItem>
       ) : (
         <MenuItem onClick={() => onPinLeft(columnId)}>
-          <PushPin style={{ marginInlineEnd: 8, transform: "rotate(45deg)" }} fontSize="small" />
+          <PushPin
+            style={{ marginInlineEnd: 8, transform: "rotate(45deg)" }}
+            fontSize="small"
+          />
           {strings.column.pinLeft}
         </MenuItem>
       )}

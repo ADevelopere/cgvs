@@ -12,7 +12,7 @@ import {
   templateConfigByTemplateIdQueryDocument,
 } from "../../manage/editor/glqDocuments";
 import { resolveTextContent } from "./textDemo";
-import { getFontByFamily } from "@/lib/font/google";
+import { getFontByFamilyName } from "@/lib/font/google";
 
 // ============================================================================
 // TYPES
@@ -55,7 +55,10 @@ function measureLineHeight(font: PDFFont, size: number): number {
 /**
  * Calculate total height of a text block
  */
-function calculateTextBlockHeight(lineCount: number, lineHeight: number): number {
+function calculateTextBlockHeight(
+  lineCount: number,
+  lineHeight: number
+): number {
   return lineCount * lineHeight;
 }
 
@@ -66,7 +69,12 @@ function calculateTextBlockHeight(lineCount: number, lineHeight: number): number
 /**
  * TRUNCATE: Hard clip text to fit width (no ellipsis)
  */
-function handleTruncate(text: string, maxWidth: number, font: PDFFont, size: number): string {
+function handleTruncate(
+  text: string,
+  maxWidth: number,
+  font: PDFFont,
+  size: number
+): string {
   let truncated = text;
   let textWidth = measureTextWidth(truncated, font, size);
 
@@ -81,7 +89,12 @@ function handleTruncate(text: string, maxWidth: number, font: PDFFont, size: num
 /**
  * ELLIPSE: Truncate text and append "..." to fit width
  */
-function handleEllipse(text: string, maxWidth: number, font: PDFFont, size: number): string {
+function handleEllipse(
+  text: string,
+  maxWidth: number,
+  font: PDFFont,
+  size: number
+): string {
   const ellipsis = "...";
   const ellipsisWidth = measureTextWidth(ellipsis, font, size);
 
@@ -112,7 +125,12 @@ function handleEllipse(text: string, maxWidth: number, font: PDFFont, size: numb
  * WRAP: Break text into multiple lines that fit within maxWidth
  * Uses greedy word-wrap algorithm
  */
-function handleWrap(text: string, maxWidth: number, font: PDFFont, size: number): string[] {
+function handleWrap(
+  text: string,
+  maxWidth: number,
+  font: PDFFont,
+  size: number
+): string[] {
   const words = text.split(" ");
   const lines: string[] = [];
   let currentLine = "";
@@ -434,7 +452,10 @@ async function renderImageElement(
 
   const imageUrl = element.imageDataSource?.imageUrl;
   if (!imageUrl) {
-    logger.error({ caller: "DownloadPdf" }, `Image element ${element.base.id} has no imageUrl`);
+    logger.error(
+      { caller: "DownloadPdf" },
+      `Image element ${element.base.id} has no imageUrl`
+    );
     return;
   }
 
@@ -454,7 +475,11 @@ async function renderImageElement(
         // Fall back to JPEG
         image = await pdfDoc.embedJpg(imageBytes);
       } catch (error) {
-        logger.error({ caller: "DownloadPdf" }, `Unsupported image format for element ${element.base.id}:`, error);
+        logger.error(
+          { caller: "DownloadPdf" },
+          `Unsupported image format for element ${element.base.id}:`,
+          error
+        );
         return;
       }
     }
@@ -478,7 +503,13 @@ async function renderImageElement(
       height,
       x: offsetX,
       y: offsetY,
-    } = calculateImageDimensions(imageWidth, imageHeight, containerWidth, containerHeight, fit);
+    } = calculateImageDimensions(
+      imageWidth,
+      imageHeight,
+      containerWidth,
+      containerHeight,
+      fit
+    );
 
     // Draw image
     // Note: For COVER mode, we may need to clip the image
@@ -490,17 +521,30 @@ async function renderImageElement(
       height,
     });
   } catch (error) {
-    logger.error({ caller: "DownloadPdf" }, `Error rendering image element ${element.base.id}:`, error);
+    logger.error(
+      { caller: "DownloadPdf" },
+      `Error rendering image element ${element.base.id}:`,
+      error
+    );
   }
 }
 
 /**
  * Render text element with proper overflow and alignment handling
  */
-function renderTextElement(element: GQL.TextElement, page: PDFPage, font: PDFFont, config: GQL.TemplateConfig): void {
+function renderTextElement(
+  element: GQL.TextElement,
+  page: PDFPage,
+  font: PDFFont,
+  config: GQL.TemplateConfig
+): void {
   if (element.base.hidden) return;
 
-  const text = resolveTextContent(element.textDataSource, config.language, "Text");
+  const text = resolveTextContent(
+    element.textDataSource,
+    config.language,
+    "Text"
+  );
 
   const fontSize = element.textProps.fontSize;
   const color = element.textProps.color || "#000000";
@@ -514,7 +558,14 @@ function renderTextElement(element: GQL.TextElement, page: PDFPage, font: PDFFon
   const maxHeight = element.base.height * 0.75;
 
   // Process text based on overflow mode
-  const { lines, finalSize, lineHeight } = processTextOverflow(text, overflow, maxWidth, maxHeight, font, fontSize);
+  const { lines, finalSize, lineHeight } = processTextOverflow(
+    text,
+    overflow,
+    maxWidth,
+    maxHeight,
+    font,
+    fontSize
+  );
 
   // Calculate text position based on alignment
   const { height: pageHeight } = page.getSize();
@@ -551,7 +602,9 @@ function renderTextElement(element: GQL.TextElement, page: PDFPage, font: PDFFon
 /**
  * Collect unique font families from text elements
  */
-function collectFontFamilies(elements: GQL.CertificateElementUnion[]): GQL.FontFamilyName[] {
+function collectFontFamilies(
+  elements: GQL.CertificateElementUnion[]
+): GQL.FontFamilyName[] {
   const families = new Set<GQL.FontFamilyName>();
   for (const el of elements) {
     if (el.__typename === "TextElement") {
@@ -595,17 +648,24 @@ async function embedFontsForPdf(
 
   for (const family of fontFamilies) {
     try {
-      const fontItem = getFontByFamily(family);
+      const fontItem = getFontByFamilyName(family);
       if (!fontItem) {
-        logger.error({ caller: "DownloadPdf" }, `Font family "${family}" not found, using fallback`);
+        logger.error(
+          { caller: "DownloadPdf" },
+          `Font family "${family}" not found, using fallback`
+        );
         fontMap.set(family, fallbackFont);
         continue;
       }
 
       // Get font URL (prioritize "regular" variant)
-      const fontUrl = fontItem.files.regular || Object.values(fontItem.files)[0];
+      const fontUrl =
+        fontItem.files.regular || Object.values(fontItem.files)[0];
       if (!fontUrl) {
-        logger.error({ caller: "DownloadPdf" }, `No font file found for family "${family}", using fallback`);
+        logger.error(
+          { caller: "DownloadPdf" },
+          `No font file found for family "${family}", using fallback`
+        );
         fontMap.set(family, fallbackFont);
         continue;
       }
@@ -615,7 +675,11 @@ async function embedFontsForPdf(
       const embeddedFont = await pdfDoc.embedFont(fontBytes);
       fontMap.set(family, embeddedFont);
     } catch (error) {
-      logger.error({ caller: "DownloadPdf" }, `Error embedding font "${family}":`, error);
+      logger.error(
+        { caller: "DownloadPdf" },
+        `Error embedding font "${family}":`,
+        error
+      );
       fontMap.set(family, fallbackFont);
     }
   }
@@ -656,7 +720,10 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
 /**
  * Trigger PDF download
  */
-async function downloadPdf(pdfBytes: Uint8Array, filename: string = "certificate.pdf") {
+async function downloadPdf(
+  pdfBytes: Uint8Array,
+  filename: string = "certificate.pdf"
+) {
   const blob = new Blob([pdfBytes.buffer as ArrayBuffer], {
     type: "application/pdf",
   });
@@ -673,7 +740,10 @@ async function downloadPdf(pdfBytes: Uint8Array, filename: string = "certificate
 // COMPONENT
 // ============================================================================
 
-export const DownloadPdf: React.FC<DownloadPdfProps> = ({ templateId, showDebugBorders = true }) => {
+export const DownloadPdf: React.FC<DownloadPdfProps> = ({
+  templateId,
+  showDebugBorders = true,
+}) => {
   const theme = useTheme();
   const [isGenerating, setIsGenerating] = React.useState(false);
 
@@ -712,16 +782,24 @@ export const DownloadPdf: React.FC<DownloadPdfProps> = ({ templateId, showDebugB
     if (isGenerating || !isDataReady) return;
 
     if (configError) {
-      logger.error({ caller: "DownloadPdf" }, "DownloadPdf: config query error", {
-        error: configError,
-      });
+      logger.error(
+        { caller: "DownloadPdf" },
+        "DownloadPdf: config query error",
+        {
+          error: configError,
+        }
+      );
       return;
     }
 
     if (elementsError) {
-      logger.error({ caller: "DownloadPdf" }, "DownloadPdf: elements query error", {
-        error: elementsError,
-      });
+      logger.error(
+        { caller: "DownloadPdf" },
+        "DownloadPdf: elements query error",
+        {
+          error: elementsError,
+        }
+      );
       return;
     }
 
@@ -729,7 +807,10 @@ export const DownloadPdf: React.FC<DownloadPdfProps> = ({ templateId, showDebugB
     const elements = elementsData?.elementsByTemplateId;
 
     if (!config || !elements) {
-      logger.error({ caller: "DownloadPdf" }, "DownloadPdf: Missing config or elements");
+      logger.error(
+        { caller: "DownloadPdf" },
+        "DownloadPdf: Missing config or elements"
+      );
       return;
     }
 
@@ -760,17 +841,21 @@ export const DownloadPdf: React.FC<DownloadPdfProps> = ({ templateId, showDebugB
       const { height: pageHeightPdf } = page.getSize();
 
       // Sort all elements by zIndex to maintain proper layering
-      const sortedElements = elements.slice().sort((a, b) => a.base.zIndex - b.base.zIndex);
+      const sortedElements = elements
+        .slice()
+        .sort((a, b) => a.base.zIndex - b.base.zIndex);
 
       // Render elements in order
       for (const element of sortedElements) {
         if (element.__typename === "TextElement") {
           const family =
-            element.textProps.fontRef.__typename === "FontReferenceGoogle" && element.textProps.fontRef.family
+            element.textProps.fontRef.__typename === "FontReferenceGoogle" &&
+            element.textProps.fontRef.family
               ? element.textProps.fontRef.family
               : GQL.FontFamilyName.Roboto;
 
-          const font = fontMap.get(family) || fontMap.get(GQL.FontFamilyName.Roboto)!;
+          const font =
+            fontMap.get(family) || fontMap.get(GQL.FontFamilyName.Roboto)!;
 
           renderTextElement(element, page, font, config);
         } else if (element.__typename === "ImageElement") {
@@ -801,13 +886,28 @@ export const DownloadPdf: React.FC<DownloadPdfProps> = ({ templateId, showDebugB
 
       await downloadPdf(pdfBytes, `certificate-${templateId}_experimental.pdf`);
 
-      logger.info({ caller: "DownloadPdf" }, "PDF generated successfully (experimental)");
+      logger.info(
+        { caller: "DownloadPdf" },
+        "PDF generated successfully (experimental)"
+      );
     } catch (error) {
-      logger.error({ caller: "DownloadPdf" }, "Error generating PDF (experimental):", error);
+      logger.error(
+        { caller: "DownloadPdf" },
+        "Error generating PDF (experimental):",
+        error
+      );
     } finally {
       setIsGenerating(false);
     }
-  }, [templateId, isGenerating, isDataReady, configData, elementsData, configError, elementsError]);
+  }, [
+    templateId,
+    isGenerating,
+    isDataReady,
+    configData,
+    elementsData,
+    configError,
+    elementsError,
+  ]);
 
   return (
     <Panel position="top-center">
@@ -826,7 +926,11 @@ export const DownloadPdf: React.FC<DownloadPdfProps> = ({ templateId, showDebugB
           marginLeft: "8px",
         }}
       >
-        {isGenerating ? <CircularProgress size={16} color="inherit" /> : "Download PDF (Experimental)"}
+        {isGenerating ? (
+          <CircularProgress size={16} color="inherit" />
+        ) : (
+          "Download PDF (Experimental)"
+        )}
       </button>
     </Panel>
   );

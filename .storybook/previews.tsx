@@ -1,18 +1,27 @@
 import type { Preview } from "@storybook/nextjs-vite";
-import React from "react";
-import { ApolloClient, InMemoryCache, ApolloLink, Observable } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloLink,
+  Observable,
+} from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
 import { AppThemeProvider } from "../client/contexts/ThemeContext";
 import ThemeMode from "../client/theme/ThemeMode";
 import { Box } from "@mui/material";
 import { AppLanguage } from "@/lib/enum";
-import { ltrDarkTheme, ltrLightTheme, rtlDarkTheme, rtlLightTheme } from "@/client/theme";
+import {
+  ltrDarkTheme,
+  ltrLightTheme,
+  rtlDarkTheme,
+  rtlLightTheme,
+} from "@/client/theme";
 import { DecoratorHelpers } from "@storybook/addon-themes";
 const { pluckThemeFromContext, initializeThemeState } = DecoratorHelpers;
 
 // Create a lightweight mock Apollo Client for Storybook
 const mockLink = new ApolloLink(() => {
-  return new Observable(subscriber => {
+  return new Observable((subscriber) => {
     // Return empty data for all operations
     subscriber.next({ data: {} });
     subscriber.complete();
@@ -80,7 +89,10 @@ const preview: Preview = {
 
       return (
         <ApolloProvider client={mockApolloClient}>
-          <AppThemeProvider initialTheme={selectedTheme} initialLanguage={language}>
+          <AppThemeProvider
+            initialTheme={selectedTheme}
+            initialLanguage={language}
+          >
             <Box
               sx={{
                 backgroundColor: "background.default",

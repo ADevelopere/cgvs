@@ -1,7 +1,13 @@
 import React, { useCallback, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { styled } from "@mui/material/styles";
-import { IconButton, Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
+import {
+  IconButton,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import { MoreVert, PushPin, VisibilityOff } from "@mui/icons-material";
 import { ResizeHandle } from "./ResizeHandle";
 import { AnyColumn, PinPosition } from "../../types";
@@ -9,7 +15,10 @@ import { useTableLocale } from "../../contexts";
 import { TABLE_CHECKBOX_CONTAINER_SIZE } from "../../constants";
 import { useAppTheme } from "@/client/contexts";
 
-export interface ColumnHeaderProps<TRowData, TRowId extends string | number = string | number> {
+export interface ColumnHeaderProps<
+  TRowData,
+  TRowId extends string | number = string | number
+> {
   column: AnyColumn<TRowData, TRowId>;
   isPinned: PinPosition;
   columnWidth: number;
@@ -32,18 +41,20 @@ interface HeaderContainerProps {
   columnWidth: number;
 }
 
-const HeaderContainer = styled("div")<HeaderContainerProps>(({ columnWidth, theme }) => ({
-  position: "relative",
-  maxWidth: columnWidth,
-  width: columnWidth,
-  minWidth: columnWidth,
-  overflow: "visible",
-  minHeight: TABLE_CHECKBOX_CONTAINER_SIZE,
-  textAlign: "start" as const,
-  color: theme.palette.text.primary,
-  paddingInlineStart: 12,
-  paddingInlineEnd: 8,
-}));
+const HeaderContainer = styled("div")<HeaderContainerProps>(
+  ({ columnWidth, theme }) => ({
+    position: "relative",
+    maxWidth: columnWidth,
+    width: columnWidth,
+    minWidth: columnWidth,
+    overflow: "visible",
+    minHeight: TABLE_CHECKBOX_CONTAINER_SIZE,
+    textAlign: "start" as const,
+    color: theme.palette.text.primary,
+    paddingInlineStart: 12,
+    paddingInlineEnd: 8,
+  })
+);
 
 const HeaderContentWrapper = styled("div")({
   overflow: "hidden",
@@ -69,23 +80,25 @@ interface HeaderContentProps {
   pinnedRightStyle: CSSProperties;
 }
 
-const HeaderContent = styled("div")<HeaderContentProps>(({ isPinned, pinnedLeftStyle, pinnedRightStyle }) => {
-  let style: CSSProperties = {};
-  if (isPinned === "left") {
-    style = { ...pinnedLeftStyle };
-  } else if (isPinned === "right") {
-    style = { ...pinnedRightStyle };
-  }
+const HeaderContent = styled("div")<HeaderContentProps>(
+  ({ isPinned, pinnedLeftStyle, pinnedRightStyle }) => {
+    let style: CSSProperties = {};
+    if (isPinned === "left") {
+      style = { ...pinnedLeftStyle };
+    } else if (isPinned === "right") {
+      style = { ...pinnedRightStyle };
+    }
 
-  return {
-    ...style,
-    flex: 1,
-    overflow: "hidden",
-    fontWeight: "bold",
-    position: "relative",
-    display: "flex",
-  };
-});
+    return {
+      ...style,
+      flex: 1,
+      overflow: "hidden",
+      fontWeight: "bold",
+      position: "relative",
+      display: "flex",
+    };
+  }
+);
 
 /**
  * ColumnHeaderCell Component
@@ -98,7 +111,10 @@ const HeaderContent = styled("div")<HeaderContentProps>(({ isPinned, pinnedLeftS
  *
  * Delegates header content rendering to column.headerRenderer
  */
-const ColumnHeaderCellComponent = <TRowData, TRowId extends string | number = string | number>({
+const ColumnHeaderCellComponent = <
+  TRowData,
+  TRowId extends string | number = string | number
+>({
   column,
   isPinned,
   columnWidth,
@@ -123,12 +139,17 @@ const ColumnHeaderCellComponent = <TRowData, TRowId extends string | number = st
       e.preventDefault();
       e.stopPropagation();
 
-      const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+      const clientX = "touches" in e ? e.touches[0]?.clientX : e.clientX;
+      if (!clientX) throw new Error("undefined clientX");
       resizeStartX.current = clientX;
       resizeStartWidth.current = columnWidth;
 
       const handleMouseMove = (moveEvent: MouseEvent | TouchEvent) => {
-        const moveClientX = "touches" in moveEvent ? moveEvent.touches[0].clientX : moveEvent.clientX;
+        const moveClientX =
+          "touches" in moveEvent
+            ? moveEvent.touches[0]?.clientX
+            : moveEvent.clientX;
+        if (!moveClientX) throw new Error("undefined moveClientX");
 
         const rawDelta = moveClientX - resizeStartX.current;
 
@@ -191,13 +212,21 @@ const ColumnHeaderCellComponent = <TRowData, TRowId extends string | number = st
       <HeaderContainer columnWidth={columnWidth}>
         <HeaderContentWrapper>
           <HeaderInner>
-            <HeaderContent isPinned={isPinned} pinnedLeftStyle={pinnedLeftStyle} pinnedRightStyle={pinnedRightStyle}>
+            <HeaderContent
+              isPinned={isPinned}
+              pinnedLeftStyle={pinnedLeftStyle}
+              pinnedRightStyle={pinnedRightStyle}
+            >
               {/* Render custom header content */}
               {column.headerRenderer()}
             </HeaderContent>
 
             {/* Table-managed options menu */}
-            <IconButton onClick={handleOptionsClick} size="small" aria-label={`${column.id} options`}>
+            <IconButton
+              onClick={handleOptionsClick}
+              size="small"
+              aria-label={`${column.id} options`}
+            >
               <MoreVert fontSize="small" />
             </IconButton>
 
@@ -245,7 +274,10 @@ const ColumnHeaderCellComponent = <TRowData, TRowId extends string | number = st
         </HeaderContentWrapper>
 
         {/* Resize handle - now outside overflow:hidden wrapper */}
-        <ResizeHandle onResize={handleResizeStart} enabled={column.resizable !== false} />
+        <ResizeHandle
+          onResize={handleResizeStart}
+          enabled={column.resizable !== false}
+        />
       </HeaderContainer>
     </StyledTh>
   );
@@ -253,4 +285,6 @@ const ColumnHeaderCellComponent = <TRowData, TRowId extends string | number = st
 
 ColumnHeaderCellComponent.displayName = "ColumnHeaderCell";
 
-export const ColumnHeaderCell = React.memo(ColumnHeaderCellComponent) as typeof ColumnHeaderCellComponent;
+export const ColumnHeaderCell = React.memo(
+  ColumnHeaderCellComponent
+) as typeof ColumnHeaderCellComponent;

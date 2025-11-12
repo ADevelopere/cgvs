@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useMutation, useQuery } from "@apollo/client/react";
 import {
   Box,
@@ -35,7 +35,9 @@ const TEST_TEMPLATE_ID = 1;
 export default function TestElementsPage() {
   const { createTextElementMutation } = useElementCreateMutations();
 
-  const [updateTextElementMutation] = useMutation(updateTextElementMutationDocument);
+  const [updateTextElementMutation] = useMutation(
+    updateTextElementMutationDocument
+  );
   // Query fonts with variables from store
   const {
     data: fontsData,
@@ -73,15 +75,17 @@ export default function TestElementsPage() {
 
   const textVariables: GQL.TemplateTextVariable[] = useMemo(
     () =>
-      (varsData?.templateVariablesByTemplateId?.filter(variable => variable.type === GQL.TemplateVariableType.Text) ||
-        []) as GQL.TemplateTextVariable[],
+      (varsData?.templateVariablesByTemplateId?.filter(
+        (variable) => variable.type === GQL.TemplateVariableType.Text
+      ) || []) as GQL.TemplateTextVariable[],
     [varsData]
   );
 
   const selectVariables: GQL.TemplateSelectVariable[] = useMemo(
     () =>
-      (varsData?.templateVariablesByTemplateId?.filter(variable => variable.type === GQL.TemplateVariableType.Select) ||
-        []) as GQL.TemplateSelectVariable[],
+      (varsData?.templateVariablesByTemplateId?.filter(
+        (variable) => variable.type === GQL.TemplateVariableType.Select
+      ) || []) as GQL.TemplateSelectVariable[],
     [varsData]
   );
 
@@ -90,7 +94,8 @@ export default function TestElementsPage() {
   const [openForm, setOpenForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [updateMode, setUpdateMode] = useState(false);
-  const [elementToUpdate, setElementToUpdate] = useState<GQL.CertificateElementUnion | null>(null);
+  const [elementToUpdate, setElementToUpdate] =
+    useState<GQL.CertificateElementUnion | null>(null);
 
   // Dummy state for TextElementForm
   const [formState, setFormState] = useState<TextElementFormState>({
@@ -106,7 +111,9 @@ export default function TestElementsPage() {
       templateId: TEST_TEMPLATE_ID,
     },
     textProps: {
-      fontRef: { google: { family: GQL.FontFamilyName.Roboto, variant: "400" } },
+      fontRef: {
+        google: { family: GQL.FontFamilyName.Roboto, variant: "400" },
+      },
       fontSize: 16,
       color: "#000000",
       overflow: GQL.ElementOverflow.Wrap,
@@ -158,16 +165,23 @@ export default function TestElementsPage() {
       if (element.textProps.fontRef.__typename === "FontReferenceGoogle") {
         fontRefInput = {
           google: {
-            family: element.textProps.fontRef.family ?? GQL.FontFamilyName.Roboto,
+            family:
+              element.textProps.fontRef.family ?? GQL.FontFamilyName.Roboto,
             variant: element.textProps.fontRef.variant ?? "400",
           },
         };
-      } else if (element.textProps.fontRef.__typename === "FontReferenceSelfHosted") {
+      } else if (
+        element.textProps.fontRef.__typename === "FontReferenceSelfHosted"
+      ) {
         fontRefInput = {
-          selfHosted: { fontVariantId: element.textProps.fontRef.fontVariantId ?? 0 },
+          selfHosted: {
+            fontVariantId: element.textProps.fontRef.fontVariantId ?? 0,
+          },
         };
       } else {
-        fontRefInput = { google: { family: GQL.FontFamilyName.Roboto, variant: "400" } };
+        fontRefInput = {
+          google: { family: GQL.FontFamilyName.Roboto, variant: "400" },
+        };
       }
 
       const base: GQL.CertificateElementBaseInput = {
@@ -228,12 +242,20 @@ export default function TestElementsPage() {
       <Typography variant="h4" gutterBottom>
         Test Elements By Template
       </Typography>
-      {(elLoading || fontsLoading || varsLoading) && <Typography>Loading...</Typography>}
+      {(elLoading || fontsLoading || varsLoading) && (
+        <Typography>Loading...</Typography>
+      )}
       {(elError || fontsError || varsError) && (
-        <Typography color="error">Error: {elError?.message || fontsError?.message || varsError?.message}</Typography>
+        <Typography color="error">
+          Error: {elError?.message || fontsError?.message || varsError?.message}
+        </Typography>
       )}
       <Box sx={{ mb: 2 }}>
-        <Button variant="contained" color="primary" onClick={() => setOpenForm(true)}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setOpenForm(true)}
+        >
           Create Text Element
         </Button>
       </Box>
@@ -259,93 +281,140 @@ export default function TestElementsPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {elements.map((el: GQL.CertificateElementUnion, idx: number) => {
-                  let updating = false;
+                {elements.map(
+                  (el: GQL.CertificateElementUnion, idx: number) => {
+                    let updating = false;
 
-                  if (elementToUpdate?.base.id === el.base?.id) {
-                    updating = true;
+                    if (elementToUpdate?.base.id === el.base?.id) {
+                      updating = true;
+                    }
+                    return (
+                      <TableRow
+                        key={el.base?.id ?? idx}
+                        sx={{
+                          backgroundColor: updating
+                            ? (formState as TextElementFormState).textProps
+                                .color
+                            : (el as GQL.TextElement).textProps.color,
+                        }}
+                      >
+                        <TableCell>{el.base?.id}</TableCell>
+                        <TableCell>
+                          {updating ? formState.base.name : el.base?.name}
+                        </TableCell>
+                        <TableCell>
+                          {updating
+                            ? formState.base.description
+                            : el.base?.description ?? ""}
+                        </TableCell>
+                        <TableCell>{el.base?.type}</TableCell>
+                        <TableCell>
+                          {updating
+                            ? formState.base.alignment
+                            : el.base?.alignment}
+                        </TableCell>
+                        <TableCell>
+                          {updating
+                            ? formState.base.positionX
+                            : el.base?.positionX}
+                        </TableCell>
+                        <TableCell>
+                          {updating
+                            ? formState.base.positionY
+                            : el.base?.positionY}
+                        </TableCell>
+                        <TableCell>
+                          {updating ? formState.base.width : el.base?.width}
+                        </TableCell>
+                        <TableCell>
+                          {updating ? formState.base.height : el.base?.height}
+                        </TableCell>
+                        <TableCell>{el.base?.zIndex}</TableCell>
+                        <TableCell>{el.base?.createdAt}</TableCell>
+                        <TableCell>{el.base?.updatedAt}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => handleShowElement(el)}
+                          >
+                            Show JSON
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="secondary"
+                            size="small"
+                            sx={{ ml: 1 }}
+                            onClick={() => handleUpdateElementClick(el)}
+                          >
+                            Update
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
                   }
-                  return (
-                    <TableRow
-                      key={el.base?.id ?? idx}
-                      sx={{
-                        backgroundColor: updating
-                          ? (formState as TextElementFormState).textProps.color
-                          : (el as GQL.TextElement).textProps.color,
-                      }}
-                    >
-                      <TableCell>{el.base?.id}</TableCell>
-                      <TableCell>{updating ? formState.base.name : el.base?.name}</TableCell>
-                      <TableCell>{updating ? formState.base.description : (el.base?.description ?? "")}</TableCell>
-                      <TableCell>{el.base?.type}</TableCell>
-                      <TableCell>{updating ? formState.base.alignment : el.base?.alignment}</TableCell>
-                      <TableCell>{updating ? formState.base.positionX : el.base?.positionX}</TableCell>
-                      <TableCell>{updating ? formState.base.positionY : el.base?.positionY}</TableCell>
-                      <TableCell>{updating ? formState.base.width : el.base?.width}</TableCell>
-                      <TableCell>{updating ? formState.base.height : el.base?.height}</TableCell>
-                      <TableCell>{el.base?.zIndex}</TableCell>
-                      <TableCell>{el.base?.createdAt}</TableCell>
-                      <TableCell>{el.base?.updatedAt}</TableCell>
-                      <TableCell>
-                        <Button variant="outlined" size="small" onClick={() => handleShowElement(el)}>
-                          Show JSON
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="secondary"
-                          size="small"
-                          sx={{ ml: 1 }}
-                          onClick={() => handleUpdateElementClick(el)}
-                        >
-                          Update
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                )}
               </TableBody>
             </Table>
           </TableContainer>
         )}
       </Box>
       {/* Dialog for showing element JSON */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="md" fullWidth>
+      <Dialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
         <DialogTitle>Element Object</DialogTitle>
         <DialogContent>
-          <pre style={{ whiteSpace: "pre-wrap", direction: "ltr" }}>{dialogContent}</pre>
+          <pre style={{ whiteSpace: "pre-wrap", direction: "ltr" }}>
+            {dialogContent}
+          </pre>
         </DialogContent>
       </Dialog>
       {/* Dialog for create/update form */}
-      <Dialog open={openForm} onClose={() => setOpenForm(false)} maxWidth="md" fullWidth>
-        <DialogTitle>{updateMode ? "Update Text Element" : "Create Text Element"}</DialogTitle>
+      <Dialog
+        open={openForm}
+        onClose={() => setOpenForm(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          {updateMode ? "Update Text Element" : "Create Text Element"}
+        </DialogTitle>
         <DialogContent>
           {/* Only show form for TextElement type */}
-          {(!updateMode || (elementToUpdate && elementToUpdate.__typename === "TextElement")) && (
+          {(!updateMode ||
+            (elementToUpdate &&
+              elementToUpdate.__typename === "TextElement")) && (
             <TextElementForm
               state={formState}
               errors={formErrors}
-              updateBaseElement={action => {
+              updateBaseElement={(action) => {
                 if (!action) return;
                 const { key, value } = action;
-                setFormState(prev => ({
+                setFormState((prev) => ({
                   ...prev,
                   base: { ...prev.base, [key]: value },
                 }));
               }}
               updateTextProps={({ key, value }) =>
-                setFormState(prev => ({
+                setFormState((prev) => ({
                   ...prev,
                   textProps: { ...prev.textProps, [key]: value },
                 }))
               }
-              updateDataSource={dataSource => {
-                setFormState(prev => ({ ...prev, dataSource }));
+              updateDataSource={(dataSource) => {
+                setFormState((prev) => ({ ...prev, dataSource }));
               }}
               language={GQL.AppLanguage.Ar}
               textVariables={textVariables}
               selectVariables={selectVariables}
               fontFamilies={fontFamilies}
-              onSubmit={updateMode ? handleUpdateTextElement : handleCreateTextElement}
+              onSubmit={
+                updateMode ? handleUpdateTextElement : handleCreateTextElement
+              }
               onCancel={() => {
                 setOpenForm(false);
                 setUpdateMode(false);

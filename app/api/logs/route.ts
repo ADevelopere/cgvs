@@ -22,9 +22,15 @@ const cleanupEnabled = false;
 const cleanedSessions = new Set<string>();
 
 // Buffer to store out-of-order log entries per session
-const logBuffers = new Map<string, { entries: LogEntry[]; nextSequence: number; writeLock: Promise<void> }>();
+const logBuffers = new Map<
+  string,
+  { entries: LogEntry[]; nextSequence: number; writeLock: Promise<void> }
+>();
 
-async function cleanupOldClientLogs(logsDir: string, sessionId: string): Promise<void> {
+async function cleanupOldClientLogs(
+  logsDir: string,
+  sessionId: string
+): Promise<void> {
   // Check if cleanup is enabled (default: false to keep logs)
   if (!cleanupEnabled) return;
 
@@ -39,10 +45,10 @@ async function cleanupOldClientLogs(logsDir: string, sessionId: string): Promise
     const files = await readdir(logsDir);
 
     // Find all client log files (files starting with 'client_')
-    const clientLogFiles = files.filter(file => file.startsWith("client_"));
+    const clientLogFiles = files.filter((file) => file.startsWith("client_"));
 
     // Delete all previous client log files
-    const deletePromises = clientLogFiles.map(file =>
+    const deletePromises = clientLogFiles.map((file) =>
       unlink(join(logsDir, file)).catch(() => {
         // Silently ignore deletion errors
       })
@@ -57,7 +63,10 @@ async function cleanupOldClientLogs(logsDir: string, sessionId: string): Promise
   }
 }
 
-async function writeLogEntry(logEntry: LogEntry, logsDir: string): Promise<void> {
+async function writeLogEntry(
+  logEntry: LogEntry,
+  logsDir: string
+): Promise<void> {
   const { sessionId } = logEntry;
 
   // Get or create buffer for this session
@@ -82,7 +91,7 @@ async function writeLogEntry(logEntry: LogEntry, logsDir: string): Promise<void>
 
   // Create a new write lock promise
   let resolveWriteLock: () => void;
-  buffer.writeLock = new Promise(resolve => {
+  buffer.writeLock = new Promise((resolve) => {
     resolveWriteLock = resolve;
   });
 
@@ -91,9 +100,16 @@ async function writeLogEntry(logEntry: LogEntry, logsDir: string): Promise<void>
     const logFileName = `client_${sessionId}.log`;
     const logFilePath = join(logsDir, logFileName);
 
-    while (buffer.entries.length > 0 && buffer.entries[0].sequence === buffer.nextSequence) {
+    while (
+      buffer.entries.length > 0 &&
+      buffer.entries[0]?.sequence === buffer.nextSequence
+    ) {
       const entry = buffer.entries.shift()!;
-      const logLine = `[${entry.timestamp}] [${entry.level.toUpperCase()}] [SEQ:${entry.sequence}] [${entry.caller || "unknown"}] ${entry.message}\n`;
+      const logLine = `[${
+        entry.timestamp
+      }] [${entry.level.toUpperCase()}] [SEQ:${entry.sequence}] [${
+        entry.caller || "unknown"
+      }] ${entry.message}\n`;
 
       await writeFile(logFilePath, logLine, { flag: "a" });
       buffer.nextSequence++;
@@ -103,7 +119,10 @@ async function writeLogEntry(logEntry: LogEntry, logsDir: string): Promise<void>
   }
 }
 
-async function writeBatchLogs(logs: LogEntry[], logsDir: string): Promise<void> {
+async function writeBatchLogs(
+  logs: LogEntry[],
+  logsDir: string
+): Promise<void> {
   // Group logs by sessionId
   const logsBySession = new Map<string, LogEntry[]>();
 
@@ -139,8 +158,16 @@ export async function POST(request: NextRequest) {
     if (body.logs && Array.isArray(body.logs)) {
       // Validate that all entries have required fields
       for (const logEntry of body.logs) {
-        if (!logEntry.sessionId || !logEntry.level || !logEntry.message || typeof logEntry.sequence !== "number") {
-          return NextResponse.json({ error: "Missing required fields in log entry" }, { status: 400 });
+        if (
+          !logEntry.sessionId ||
+          !logEntry.level ||
+          !logEntry.message ||
+          typeof logEntry.sequence !== "number"
+        ) {
+          return NextResponse.json(
+            { error: "Missing required fields in log entry" },
+            { status: 400 }
+          );
         }
       }
 
@@ -159,9 +186,15 @@ export async function POST(request: NextRequest) {
     }
 
     // If not a batch request, return error
-    return NextResponse.json({ error: "Invalid request format. Expected { logs: LogEntry[] }" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid request format. Expected { logs: LogEntry[] }" },
+      { status: 400 }
+    );
   } catch {
     // Use a simple error response without logging to avoid potential issues
-    return NextResponse.json({ error: "Failed to write logs" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to write logs" },
+      { status: 500 }
+    );
   }
 }
