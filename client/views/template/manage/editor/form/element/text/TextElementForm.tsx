@@ -24,7 +24,7 @@ interface TextElementFormProps {
   textVariables: TemplateTextVariable[];
   selectVariables: TemplateSelectVariable[];
   fontFamilies: FontFamily[];
-  onSubmit: () => void;
+  onSubmit: () => Promise<void>;
   onCancel: () => void;
   isSubmitting: boolean;
   submitLabel: string;
