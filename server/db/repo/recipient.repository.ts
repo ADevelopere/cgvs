@@ -60,6 +60,7 @@ export namespace RecipientRepository {
 
     try {
       const [newRecipient] = await db.insert(templateRecipientGroupItems).values(insertInput).returning();
+      if(!newRecipient) throw new Error("Failed to create recipient.")
       return newRecipient;
     } catch (error) {
       logger.error(error);

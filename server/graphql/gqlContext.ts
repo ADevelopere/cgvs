@@ -4,10 +4,10 @@ import { ResponseCookies } from "next/dist/compiled/@edge-runtime/cookies";
 export type BaseContext = {
   user?: {
     id: number;
-  };
+  } | undefined;
   roles: string[];
-  refreshToken?: string;
-  sessionId?: string;
+  refreshToken?: string | undefined;
+  sessionId?: string | undefined;
   cookies?: ResponseCookies;
 };
 

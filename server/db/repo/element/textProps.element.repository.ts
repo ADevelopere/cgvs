@@ -45,6 +45,8 @@ export namespace TextPropsRepository {
       })
       .returning();
 
+    if (!created) throw new Error("Failed to create TextProps");
+
     logger.info(`TextProps created: ID ${created.id}`);
     return created;
   };
@@ -84,6 +86,8 @@ export namespace TextPropsRepository {
       .set(updates)
       .where(eq(elementTextProps.id, input.id))
       .returning();
+
+    if (!updated) throw new Error("Failed to update TextProps");
 
     logger.info(`TextProps updated: ID ${updated.id}`);
     return updated;

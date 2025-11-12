@@ -20,21 +20,21 @@ export type StudentDto = {
 
 export type StudentCreateInput = {
   name: string;
-  email?: Email | null;
-  phoneNumber?: PhoneNumber | null;
-  dateOfBirth?: Date | null;
-  gender?: Gender | null;
-  nationality?: CountryCode | null;
+  email?: Email | null | undefined;
+  phoneNumber?: PhoneNumber | null | undefined;
+  dateOfBirth?: Date | null | undefined;
+  gender?: Gender | null | undefined;
+  nationality?: CountryCode | null | undefined;
 };
 
 export type PartialStudentUpdateInput = {
   id: number;
-  name?: string | null;
-  email?: Email | null;
-  phoneNumber?: PhoneNumber | null;
-  dateOfBirth?: Date | null;
-  gender?: Gender | null;
-  nationality?: CountryCode | null;
+  name?: string | null | undefined;
+  email?: Email | null | undefined;
+  phoneNumber?: PhoneNumber | null | undefined;
+  dateOfBirth?: Date | null | undefined;
+  gender?: Gender | null | undefined;
+  nationality?: CountryCode | null | undefined;
 };
 
 export type StudentsWithFiltersResponse = {
@@ -43,49 +43,49 @@ export type StudentsWithFiltersResponse = {
 };
 
 export type StudentFilterArgs = {
-  name?: string | null;
-  nameNotContains?: string | null;
-  nameEquals?: string | null;
-  nameNotEquals?: string | null;
-  nameStartsWith?: string | null;
-  nameEndsWith?: string | null;
-  nameIsEmpty?: boolean | null;
-  nameIsNotEmpty?: boolean | null;
+  name?: string | null | undefined;
+  nameNotContains?: string | null | undefined;
+  nameEquals?: string | null | undefined;
+  nameNotEquals?: string | null | undefined;
+  nameStartsWith?: string | null | undefined;
+  nameEndsWith?: string | null | undefined;
+  nameIsEmpty?: boolean | null | undefined;
+  nameIsNotEmpty?: boolean | null | undefined;
 
-  email?: string | null;
-  emailNotContains?: string | null;
-  emailEquals?: Email | null;
-  emailNotEquals?: string | null;
-  emailStartsWith?: string | null;
-  emailEndsWith?: string | null;
-  emailIsEmpty?: boolean | null;
-  emailIsNotEmpty?: boolean | null;
+  email?: string | null | undefined;
+  emailNotContains?: string | null | undefined;
+  emailEquals?: Email | null | undefined;
+  emailNotEquals?: string | null | undefined;
+  emailStartsWith?: string | null | undefined;
+  emailEndsWith?: string | null | undefined;
+  emailIsEmpty?: boolean | null | undefined;
+  emailIsNotEmpty?: boolean | null | undefined;
 
-  phoneNumber?: PhoneNumber | null;
-  gender?: Gender | null;
-  nationality?: CountryCode | null;
+  phoneNumber?: PhoneNumber | null | undefined;
+  gender?: Gender | null | undefined;
+  nationality?: CountryCode | null | undefined;
 
-  createdAt?: Date | null;
-  createdAtNot?: Date | null;
-  createdAtFrom?: Date | null;
-  createdAtTo?: Date | null;
-  createdAtAfter?: Date | null;
-  createdAtBefore?: Date | null;
-  createdAtOnOrAfter?: Date | null;
-  createdAtOnOrBefore?: Date | null;
-  createdAtIsEmpty?: boolean | null;
-  createdAtIsNotEmpty?: boolean | null;
+  createdAt?: Date | null | undefined;
+  createdAtNot?: Date | null | undefined;
+  createdAtFrom?: Date | null | undefined;
+  createdAtTo?: Date | null | undefined;
+  createdAtAfter?: Date | null | undefined;
+  createdAtBefore?: Date | null | undefined;
+  createdAtOnOrAfter?: Date | null | undefined;
+  createdAtOnOrBefore?: Date | null | undefined;
+  createdAtIsEmpty?: boolean | null | undefined;
+  createdAtIsNotEmpty?: boolean | null | undefined;
 
-  birthDate?: Date | null;
-  birthDateNot?: Date | null;
-  birthDateFrom?: Date | null;
-  birthDateTo?: Date | null;
-  birthDateAfter?: Date | null;
-  birthDateBefore?: Date | null;
-  birthDateOnOrAfter?: Date | null;
-  birthDateOnOrBefore?: Date | null;
-  birthDateIsEmpty?: boolean | null;
-  birthDateIsNotEmpty?: boolean | null;
+  birthDate?: Date | null | undefined;
+  birthDateNot?: Date | null | undefined;
+  birthDateFrom?: Date | null | undefined;
+  birthDateTo?: Date | null | undefined;
+  birthDateAfter?: Date | null | undefined;
+  birthDateBefore?: Date | null | undefined;
+  birthDateOnOrAfter?: Date | null | undefined;
+  birthDateOnOrBefore?: Date | null | undefined;
+  birthDateIsEmpty?: boolean | null | undefined;
+  birthDateIsNotEmpty?: boolean | null | undefined;
 };
 
 /**
@@ -93,7 +93,7 @@ export type StudentFilterArgs = {
  */
 export type StudentsOrderByClause = {
   column: StudentsOrderByColumn;
-  order?: OrderSortDirection | null;
+  order?: OrderSortDirection | null | undefined;
 };
 
 export enum StudentsOrderByColumn {

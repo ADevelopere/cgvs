@@ -61,6 +61,10 @@ export namespace NumberElementRepository {
       })
       .returning();
 
+    if (!newNumberElement) {
+      throw new Error("Failed to create NUMBER element");
+    }
+
     logger.info(`NUMBER element created: ${baseElement.name} (ID: ${baseElement.id})`);
 
     // 6. Return full output
@@ -142,10 +146,9 @@ export namespace NumberElementRepository {
       .where(eq(certificateElement.id, id))
       .limit(1);
 
-    if (result.length === 0) return null;
+    if (result.length === 0 || !result[0]) return null;
 
     const row = result[0];
-
     // Reconstruct output
     return {
       base: row.certificate_element,
@@ -164,7 +167,7 @@ export namespace NumberElementRepository {
       .where(eq(numberElement.elementId, base.id))
       .limit(1);
 
-    if (result.length === 0) throw new Error(`NUMBER element with base ID ${base.id} does not exist.`);
+    if (result.length === 0 || !result[0]) throw new Error(`NUMBER element with base ID ${base.id} does not exist.`);
 
     const row = result[0];
 
@@ -216,7 +219,7 @@ export namespace NumberElementRepository {
   export const findById = async (id: number): Promise<ElType.NumberElementEntity | null> => {
     const result = await db.select().from(numberElement).where(eq(numberElement.elementId, id)).limit(1);
 
-    if (result.length === 0) return null;
+    if (result.length === 0 || !result[0]) return null;
 
     return result[0];
   };
@@ -255,6 +258,10 @@ export namespace NumberElementRepository {
       .where(eq(numberElement.elementId, input.id))
       .returning();
 
+    if (!updated) {
+      throw new Error(`NUMBER element with ID ${input.id} does not exist.`);
+    }
+
     return updated;
   };
 
@@ -284,6 +291,10 @@ export namespace NumberElementRepository {
       .where(eq(numberElement.elementId, input.elementId))
       .returning();
 
+    if (!updated) {
+      throw new Error(`NUMBER element with ID ${input.elementId} does not exist.`);
+    }
+
     return updated;
   };
 
@@ -301,6 +312,9 @@ export namespace NumberElementRepository {
       .set(numberUpdates)
       .where(eq(numberElement.elementId, input.elementId))
       .returning();
+    if (!updated) {
+      throw new Error(`NUMBER element with ID ${input.elementId} does not exist.`);
+    }
 
     return {
       elementId: updated.elementId,

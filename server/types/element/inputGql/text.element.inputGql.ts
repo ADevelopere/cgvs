@@ -30,38 +30,38 @@ export type TextDataSourceTemplateSelectVariableInputGraphql = {
 export type TextDataSourceInputGraphql =
   | {
       static: TextDataSourceStaticInputGraphql;
-      studentField?: never | null;
-      certificateField?: never | null;
-      templateTextVariable?: never | null;
-      templateSelectVariable?: never | null;
+      studentField?: never | null | undefined;
+      certificateField?: never | null | undefined;
+      templateTextVariable?: never | null | undefined;
+      templateSelectVariable?: never | null | undefined;
     }
   | {
       studentField: TextDataSourceStudentFieldInputGraphql;
-      static?: never | null;
-      certificateField?: never | null;
-      templateTextVariable?: never | null;
-      templateSelectVariable?: never | null;
+      static?: never | null | undefined;
+      certificateField?: never | null | undefined;
+      templateTextVariable?: never | null | undefined;
+      templateSelectVariable?: never | null | undefined;
     }
   | {
       certificateField: TextDataSourceCertificateFieldInputGraphql;
-      static?: never | null;
-      studentField?: never | null;
-      templateTextVariable?: never | null;
-      templateSelectVariable?: never | null;
+      static?: never | null | undefined;
+      studentField?: never | null | undefined;
+      templateTextVariable?: never | null | undefined;
+      templateSelectVariable?: never | null | undefined;
     }
   | {
       templateTextVariable: TextDataSourceTemplateTextVariableInputGraphql;
-      static?: never | null;
-      studentField?: never | null;
-      certificateField?: never | null;
-      templateSelectVariable?: never | null;
+      static?: never | null | undefined;
+      studentField?: never | null | undefined;
+      certificateField?: never | null | undefined;
+      templateSelectVariable?: never | null | undefined;
     }
   | {
       templateSelectVariable: TextDataSourceTemplateSelectVariableInputGraphql;
-      static?: never | null;
-      studentField?: never | null;
-      certificateField?: never | null;
-      templateTextVariable?: never | null;
+      static?: never | null | undefined;
+      studentField?: never | null | undefined;
+      certificateField?: never | null | undefined;
+      templateTextVariable?: never | null | undefined;
     };
 
 // ============================================================================

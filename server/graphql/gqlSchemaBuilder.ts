@@ -67,8 +67,8 @@ export const gqlSchemaBuilder = new SchemaBuilder<PothosTypes>({
     // Enable tracing for rootFields by default, other fields need to opt in
     default: config => isRootField(config),
     // Log resolver execution duration
-    wrap: (resolver, options, config) =>
-      wrapResolver(resolver, (error, duration) => {
+    wrap: (resolver, _options, config) =>
+      wrapResolver(resolver, (_error, duration) => {
         logger.log(`Executed resolver ${config.parentType}.${config.name} in ${duration}ms`);
       }),
   },

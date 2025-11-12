@@ -14,15 +14,15 @@ export type TemplateCategoryPothosDefintion = TemplateCategorySelectType & {
 
 export type TemplateCategoryCreateInput = {
   name: string;
-  description?: string | null;
-  parentCategoryId?: number | null;
+  description?: string | null | undefined;
+  parentCategoryId?: number | null | undefined;
 };
 
 export type TemplateCategoryUpdateInput = {
   id: number;
   name: string;
-  description?: string | null;
-  parentCategoryId?: number | null;
+  description?: string | null | undefined;
+  parentCategoryId?: number | null | undefined;
 };
 
 export type TemplateCategoryWithParentTree = TemplateCategorySelectType & {

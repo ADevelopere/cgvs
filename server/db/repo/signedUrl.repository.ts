@@ -12,6 +12,7 @@ export namespace SignedUrlRepository {
    */
   export const createSignedUrl = async (data: SignedUrlEntityInput): Promise<SignedUrlEntity> => {
     const [result] = await db.insert(signedUrls).values(data).returning();
+    if (!result) throw new Error("Failed to create signed URL");
     logger.info(`Created signed URL: ${result.id} for path: ${result.filePath}`);
     return result;
   };
@@ -55,6 +56,7 @@ export namespace SignedUrlRepository {
 
         // Mark as used
         const [updated] = await tx.update(signedUrls).set({ used: true }).where(eq(signedUrls.id, id)).returning();
+        if (!updated) throw new Error("Failed to update signed URL");
 
         logger.info(`Claimed signed URL: ${id} for path: ${updated.filePath}`);
         return updated;

@@ -13,14 +13,14 @@ export class PaginationArgs {
   public static readonly DEFAULT_COUNT = 10;
   public static readonly MAX_COUNT = 5000;
 
-  first?: number | null;
-  skip?: number | null;
-  after?: string | null;
-  before?: string | null;
-  last?: number | null;
-  page?: number | null;
-  defaultCount?: number | null;
-  maxCount?: number | null;
+  first?: number | null | undefined;
+  skip?: number | null | undefined;
+  after?: string | null | undefined;
+  before?: string | null | undefined;
+  last?: number | null | undefined;
+  page?: number | null | undefined;
+  defaultCount?: number | null | undefined;
+  maxCount?: number | null | undefined;
 
   constructor({
     first = null,
@@ -32,14 +32,14 @@ export class PaginationArgs {
     defaultCount = PaginationArgs.DEFAULT_COUNT,
     maxCount = PaginationArgs.MAX_COUNT,
   }: {
-    first?: number | null;
-    skip?: number | null;
-    after?: string | null;
-    before?: string | null;
-    last?: number | null;
-    page?: number | null;
-    defaultCount?: number | null;
-    maxCount?: number | null;
+    first?: number | null | undefined;
+    skip?: number | null | undefined;
+    after?: string | null | undefined;
+    before?: string | null | undefined;
+    last?: number | null | undefined;
+    page?: number | null | undefined;
+    defaultCount?: number | null | undefined;
+    maxCount?: number | null | undefined;
   } = {}) {
     this.first = first;
     this.skip = skip;

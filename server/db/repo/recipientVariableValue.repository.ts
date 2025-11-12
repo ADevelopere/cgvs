@@ -78,7 +78,7 @@ export namespace RecipientVariableValueRepository {
   // Get values for all recipients in group (table-ready with pagination)
   export const findByRecipientGroupId = async (
     recipientGroupId: number,
-    pagination?: { limit?: number; offset?: number }
+    pagination?: { limit?: number | undefined; offset?: number | undefined }
   ): Promise<Types.RecipientVariableValuesGroupResult> => {
     // 1. Fetch recipient group to get template ID
     const group = await db

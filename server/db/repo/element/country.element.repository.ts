@@ -50,6 +50,8 @@ export namespace CountryElementRepository {
       })
       .returning();
 
+    if (!newCountryElement) throw new Error("Failed to create COUNTRY element");
+
     logger.info(`COUNTRY element created: ${baseElement.name} (ID: ${baseElement.id})`);
 
     // 5. Return full output
@@ -135,7 +137,7 @@ export namespace CountryElementRepository {
       .where(eq(certificateElement.id, id))
       .limit(1);
 
-    if (result.length === 0) return null;
+    if (result.length === 0 || !result[0]) return null;
 
     const row = result[0];
 
@@ -170,7 +172,7 @@ export namespace CountryElementRepository {
       .where(eq(countryElement.elementId, base.id))
       .limit(1);
 
-    if (result.length === 0) throw new Error(`No COUNTRY element found for base ID ${base.id}`);
+    if (result.length === 0 || !result[0]) throw new Error(`No COUNTRY element found for base ID ${base.id}`);
 
     const row = result[0];
 
@@ -213,7 +215,7 @@ export namespace CountryElementRepository {
   export const findById = async (id: number): Promise<ElTypes.CountryElementEntity | null> => {
     const countryEl = await db.select().from(countryElement).where(eq(countryElement.elementId, id)).limit(1);
 
-    if (countryEl.length === 0) return null;
+    if (countryEl.length === 0 || !countryEl[0]) return null;
     return countryEl[0];
   };
 
@@ -248,6 +250,8 @@ export namespace CountryElementRepository {
       .where(eq(countryElement.elementId, elementId))
       .returning();
 
+    if (!updated) throw new Error(`Country element with ID ${elementId} does not exist.`);
+
     return updated;
   };
 
@@ -266,6 +270,8 @@ export namespace CountryElementRepository {
       })
       .where(eq(countryElement.elementId, input.elementId))
       .returning();
+
+    if (!updatedCountryElement[0]) throw new Error(`Country element with ID ${input.elementId} does not exist.`);
 
     logger.info(`COUNTRY element specProps updated: (ID: ${input.elementId})`);
 

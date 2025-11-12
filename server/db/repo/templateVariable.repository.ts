@@ -6,11 +6,11 @@ import { TemplateVariableUtils } from "@/server/utils";
 
 export namespace TemplateVariableRepository {
   const findTemplateVariableMaxOrderByTemplateId = async (templateId: number): Promise<number> => {
-    const [{ maxOrder }] = await DB.db
+    const [result] = await DB.db
       .select({ maxOrder: max(DB.templateVariableBases.order) })
       .from(DB.templateVariableBases)
       .where(eq(DB.templateVariableBases.templateId, templateId));
-    return maxOrder ?? 0;
+    return result?.maxOrder ?? 0;
   };
 
   const checkCreateInput = async (input: Types.TemplateVariableCreateInput) => {
@@ -33,7 +33,7 @@ export namespace TemplateVariableRepository {
       .from(DB.templateVariableBases)
       .where(eq(DB.templateVariableBases.id, id))
       .then(res => {
-        if (res.length === 0) return null;
+        if (res.length === 0 || !res[0]) return null;
         return {
           ...res[0],
           type: res[0].type as Types.TemplateVariableType,
@@ -77,6 +77,7 @@ export namespace TemplateVariableRepository {
       updatedAt: now,
     };
     const [newVar] = await DB.db.insert(DB.templateVariableBases).values(insertInput).returning();
+    if (!newVar) throw new Error("Failed to create template variable");
     return {
       ...newVar,
       type: newVar.type as Types.TemplateVariableType,
@@ -84,7 +85,7 @@ export namespace TemplateVariableRepository {
   };
 
   export const createTextVar = async (
-    input: Types.TextTemplaeVariableCreateInput
+    input: Types.TextTemplateVariableCreateInput
   ): Promise<Types.TemplateTextVariablePothosDefinition> => {
     await checkCreateInput(input);
 
@@ -100,6 +101,9 @@ export namespace TemplateVariableRepository {
     };
 
     const [txtVar] = await DB.db.insert(DB.templateTextVariables).values(textInput).returning();
+
+    if (!txtVar) throw new Error("Failed to create text variable");
+
     const result: Types.TemplateTextVariablePothosDefinition = {
       ...baseVar,
       ...txtVar,
@@ -125,6 +129,8 @@ export namespace TemplateVariableRepository {
     } as Types.TemplateNumberVariableEntityInput;
 
     const [numberVar] = await DB.db.insert(DB.templateNumberVariables).values(numberVarInput).returning();
+
+    if (!numberVar) throw new Error("Failed to create number variable");
 
     const result: Types.TemplateNumberVariablePothosDefinition = {
       ...baseVar,
@@ -153,6 +159,8 @@ export namespace TemplateVariableRepository {
 
     const [dateVar] = await DB.db.insert(DB.templateDateVariables).values(dateVarInput).returning();
 
+    if (!dateVar) throw new Error("Failed to create date variable");
+
     const result: Types.TemplateDateVariablePothosDefinition = {
       ...baseVar,
       ...dateVar,
@@ -179,6 +187,8 @@ export namespace TemplateVariableRepository {
 
     const [selectVar] = await DB.db.insert(DB.templateSelectVariables).values(dateVarInput).returning();
 
+    if (!selectVar) throw new Error("Failed to create select variable");
+
     const result: Types.TemplateSelectVariablePothosDefinition = {
       ...baseVar,
       ...selectVar,
@@ -201,6 +211,11 @@ export namespace TemplateVariableRepository {
       .set(insertInput)
       .where(eq(DB.templateVariableBases.id, input.id))
       .returning();
+
+    if (updatedVar.length === 0 || !updatedVar[0]) {
+      throw new Error("Error while updating template variable");
+    }
+
     return {
       ...updatedVar[0],
       type: updatedVar[0].type as Types.TemplateVariableType,
@@ -208,7 +223,7 @@ export namespace TemplateVariableRepository {
   };
 
   export const updateTextVar = async (
-    input: Types.TextTemplaeVariableUpdateInput
+    input: Types.TextTemplateVariableUpdateInput
   ): Promise<Types.TemplateTextVariablePothosDefinition> => {
     const baseVar = await checkUpdateInput(input, Types.TemplateVariableType.TEXT);
 
@@ -346,7 +361,7 @@ export namespace TemplateVariableRepository {
       .innerJoin(DB.templateTextVariables, eq(DB.templateVariableBases.id, DB.templateTextVariables.id))
       .where(eq(DB.templateVariableBases.id, id))
       .then(res => {
-        if (res.length === 0) return null;
+        if (res.length === 0 || !res[0]) return null;
         return {
           ...res[0].template_variable_base,
           type: res[0].template_variable_base.type as Types.TemplateVariableType,
@@ -364,7 +379,7 @@ export namespace TemplateVariableRepository {
       .innerJoin(DB.templateNumberVariables, eq(DB.templateVariableBases.id, DB.templateNumberVariables.id))
       .where(eq(DB.templateVariableBases.id, id))
       .then(res => {
-        if (res.length === 0) return null;
+        if (res.length === 0 || !res[0]) return null;
         return {
           ...res[0].template_variable_base,
           type: res[0].template_variable_base.type as Types.TemplateVariableType,
@@ -382,7 +397,7 @@ export namespace TemplateVariableRepository {
       .innerJoin(DB.templateDateVariables, eq(DB.templateVariableBases.id, DB.templateDateVariables.id))
       .where(eq(DB.templateVariableBases.id, id))
       .then(res => {
-        if (res.length === 0) return null;
+        if (res.length === 0 || !res[0]) return null;
         return {
           ...res[0].template_variable_base,
           type: res[0].template_variable_base.type as Types.TemplateVariableType,
@@ -400,7 +415,7 @@ export namespace TemplateVariableRepository {
       .innerJoin(DB.templateSelectVariables, eq(DB.templateVariableBases.id, DB.templateSelectVariables.id))
       .where(eq(DB.templateVariableBases.id, id))
       .then(res => {
-        if (res.length === 0) return null;
+        if (res.length === 0 || !res[0]) return null;
         return {
           ...res[0].template_variable_base,
           type: res[0].template_variable_base.type as Types.TemplateVariableType,

@@ -130,7 +130,7 @@ export namespace GenderElementRepository {
       .where(eq(certificateElement.id, id))
       .limit(1);
 
-    if (result.length === 0) return null;
+    if (result.length === 0 || !result[0]) return null;
 
     const row = result[0];
 
@@ -150,7 +150,7 @@ export namespace GenderElementRepository {
       .where(eq(genderElement.elementId, base.id))
       .limit(1);
 
-    if (result.length === 0) throw new Error(`GENDER element with base ID ${base.id} does not exist.`);
+    if (result.length === 0 || !result[0]) throw new Error(`GENDER element with base ID ${base.id} does not exist.`);
 
     const row = result[0];
 

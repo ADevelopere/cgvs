@@ -43,6 +43,7 @@ export namespace RecipientGroupRepository {
 
     try {
       const [newTrg] = await db.insert(templateRecipientGroups).values(insertInput).returning();
+      if (!newTrg) throw new Error("Failed to create recipient group.");
       return newTrg;
     } catch {
       throw new Error("Failed to create recipient group.");
@@ -80,6 +81,7 @@ export namespace RecipientGroupRepository {
         })
         .where(eq(templateRecipientGroups.id, input.id))
         .returning();
+      if (!updatedTrg) throw new Error("Failed to update recipient group.");
       return updatedTrg;
     } catch {
       throw new Error("Failed to update recipient group.");
@@ -107,6 +109,9 @@ export namespace RecipientGroupRepository {
       });
 
       const deletedTrg = await db.delete(templateRecipientGroups).where(eq(templateRecipientGroups.id, id)).returning();
+      if (!deletedTrg || deletedTrg.length === 0 || !deletedTrg[0]) {
+        throw new Error("Failed to delete recipient group.");
+      }
       return deletedTrg[0];
     } catch {
       throw new Error("Failed to delete recipient group.");

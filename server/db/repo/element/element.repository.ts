@@ -51,6 +51,10 @@ export namespace ElementRepository {
       .where(eq(certificateElement.id, input.id))
       .returning();
 
+    if (!updated) throw new Error(`Element with ID ${input.id} does not exist.`);
+
+    logger.info(`Element updated: ${updated.name} (ID: ${input.id})`);
+
     return updated;
   };
   // ============================================================================
@@ -95,11 +99,11 @@ export namespace ElementRepository {
   };
 
   export const findMaxOrderInTemplate = async (templateId: number): Promise<number> => {
-    const [{ maxOrder }] = await db
+    const [result] = await db
       .select({ maxOrder: max(certificateElement.zIndex) })
       .from(certificateElement)
       .where(eq(certificateElement.templateId, templateId));
-    return maxOrder ?? 0;
+    return result?.maxOrder ?? 0;
   };
 
   // ============================================================================
@@ -269,7 +273,7 @@ export namespace ElementRepository {
       .where(eq(templateVariableBases.id, variableId))
       .limit(1);
 
-    if (variable.length === 0) {
+    if (variable.length === 0 || !variable[0]) {
       throw new Error(`Template variable with ID ${variableId} does not exist.`);
     }
 
@@ -336,6 +340,8 @@ export namespace ElementRepository {
         zIndex: newOrder,
       })
       .returning();
+
+    if (!newBaseElement) throw new Error("Failed to create element");
 
     return newBaseElement;
   };
@@ -420,11 +426,15 @@ export namespace ElementRepository {
       return [...affectedSiblings, movedElement];
     });
 
+    if (!updatedElements) throw new Error("Failed to move element");
+
     logger.info(
       `Moved element ID ${elementId} to render order ${newZIndex}. Affected ${updatedElements.length} element(s).`
     );
 
-    return updatedElements.map(el => ({ base: el }));
+    return updatedElements
+      .filter(el => el !== undefined)
+      .map(el => ({ base: el }));
   };
 
   /**

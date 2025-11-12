@@ -55,8 +55,8 @@ export namespace TemplateRepository {
   };
 
   export const totalCount = async (): Promise<number> => {
-    const [{ total }] = await db.select({ total: count() }).from(templates);
-    return total;
+    const [result] = await db.select({ total: count() }).from(templates);
+    return result?.total ?? 0;
   };
 
   export const findAll = async (opts: { limit: number; offset: number }): Promise<TemplateEntity[]> => {
@@ -138,11 +138,11 @@ export namespace TemplateRepository {
   };
 
   export const findMaxOrderInCategory = async (categoryId: number): Promise<number> => {
-    const [{ maxOrder }] = await db
+    const [result] = await db
       .select({ maxOrder: max(templates.order) })
       .from(templates)
       .where(eq(templates.categoryId, categoryId));
-    return maxOrder ?? 0;
+    return result?.maxOrder ?? 0;
   };
 
   export const create = async (input: TemplateCreateInput): Promise<TemplateEntity> => {
@@ -186,6 +186,10 @@ export namespace TemplateRepository {
         })
         .returning();
 
+      if (!newTemplate) {
+        throw new Error(`Failed to create template with name: ${input.name}`);
+      }
+
       return newTemplate;
     } catch (err) {
       logger.error(err);
@@ -209,14 +213,17 @@ export namespace TemplateRepository {
     if (file.isFromBucket && file.isPublic && file.contentType === "image/jpeg") {
       try {
         const template = await create({ ...input });
-        const [reult] = await db
+        const [result] = await db
           .update(templates)
           .set({
             imageFileId: input.imageFileId,
           })
           .where(eq(templates.id, template.id))
           .returning();
-        return reult;
+        if (!result) {
+          throw new Error(`Failed to update template imageFileId: ${input.imageFileId}`);
+        }
+        return result;
       } catch (err) {
         logger.error(err);
       }
@@ -335,6 +342,7 @@ export namespace TemplateRepository {
     };
 
     const [updatedTemplate] = await db.update(templates).set(updateData).where(eq(templates.id, id)).returning();
+    if (!updatedTemplate) throw new Error(`Failed to update template with ID: ${id}`);
 
     logger.info(`✓ Template ${id} updated successfully`);
     return updatedTemplate;
@@ -374,6 +382,8 @@ export namespace TemplateRepository {
       .where(eq(templates.id, id))
       .returning();
 
+    if (!updatedTemplate) throw new Error(`Failed to suspend template with ID: ${id}`);
+
     return updatedTemplate;
   };
 
@@ -402,6 +412,8 @@ export namespace TemplateRepository {
       })
       .where(eq(templates.id, id))
       .returning();
+
+    if (!updatedTemplate) throw new Error(`Failed to unsuspend template with ID: ${id}`);
 
     return updatedTemplate;
   };

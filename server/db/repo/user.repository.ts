@@ -31,7 +31,7 @@ export namespace UserRepository {
     }
   };
 
-  export const findById = async (id: number): Promise<UserEntity | null> => {
+  export const findById = async (id: number): Promise<UserEntity | null | undefined> => {
     try {
       return await db
         .select()
@@ -45,7 +45,7 @@ export namespace UserRepository {
     }
   };
 
-  export const findByEmail = async (email: string): Promise<UserEntity | null> => {
+  export const findByEmail = async (email: string): Promise<UserEntity | null | undefined> => {
     try {
       return await db
         .select()
@@ -60,8 +60,8 @@ export namespace UserRepository {
   };
 
   export const usersTotalCount = async (): Promise<number> => {
-    const [{ total }] = await db.select({ total: count() }).from(users);
-    return total;
+    const [result] = await db.select({ total: count() }).from(users);
+    return result?.total ?? 0;
   };
 
   export const findAll = async (): Promise<UserEntity[]> => {
@@ -146,6 +146,10 @@ export namespace UserRepository {
           updatedAt: now,
         })
         .returning();
+      if (!result) {
+        throw new Error(`Failed to create user with email: ${input.email.value}`);
+      }
+
       return result;
     } catch (err) {
       logger.error(err);

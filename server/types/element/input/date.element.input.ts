@@ -51,8 +51,8 @@ export type DateElementEntityInput = typeof dateElement.$inferInsert;
 export type DateElementSpecPropsInput = {
   format: string;
   calendarType: CalendarType;
-  offsetDays?: number | null;
-  transformation?: DateTransformationType | null;
+  offsetDays?: number | null | undefined;
+  transformation?: DateTransformationType | null | undefined;
 };
 
 export type DateElementInput = {

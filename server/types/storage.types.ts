@@ -50,7 +50,7 @@ export type DirectoryInfo = StorageObject &
     path: string;
     name: string;
     isProtected: boolean;
-    dbId?: bigint | null;
+    dbId?: bigint | null | undefined;
     permissions: DirectoryPermissions;
     protectChildren: boolean;
     isFromBucket: boolean;
@@ -63,12 +63,12 @@ export type BucketFile = {
   path: string;
   directoryPath: string;
   size: bigint;
-  contentType?: string;
-  md5Hash?: string;
+  contentType?: string | undefined;
+  md5Hash?: string | undefined;
   createdAt: Date;
   lastModified: Date;
   url: string;
-  mediaLink?: string;
+  mediaLink?: string | undefined;
   fileType: FileTypes;
   isPublic: boolean;
 };
@@ -79,7 +79,7 @@ export type FileInfo = Omit<FileEntity, "id"> &
     path: string;
     name: string;
     isProtected: boolean;
-    dbId?: bigint | null;
+    dbId?: bigint | null | undefined;
     isFromBucket: boolean;
     isInUse: boolean;
     usages: FileUsageInfo[];
@@ -114,9 +114,9 @@ export enum FileSortField {
 // Input types
 export interface FolderCreateInput {
   path: string;
-  permissions?: DirectoryPermissions | null;
-  protected?: boolean | null;
-  protectChildren?: boolean | null;
+  permissions?: DirectoryPermissions | null | undefined;
+  protected?: boolean | null | undefined;
+  protectChildren?: boolean | null | undefined;
 }
 
 export interface DirectoryPermissionsUpdateInput {
@@ -127,7 +127,7 @@ export interface DirectoryPermissionsUpdateInput {
 export interface StorageItemProtectionUpdateInput {
   path: string;
   isProtected: boolean;
-  protectChildren?: boolean | null;
+  protectChildren?: boolean | null | undefined;
 }
 
 export interface StorageItemsMoveInput {
@@ -142,7 +142,7 @@ export interface StorageItemsCopyInput {
 
 export interface StorageItemsDeleteInput {
   paths: string[];
-  force?: boolean | null;
+  force?: boolean | null | undefined;
 }
 
 export interface FileUsageCheckInput {
@@ -163,15 +163,15 @@ export interface FileRenameInput {
 
 export interface FilesListSearchInput {
   path: string;
-  limit?: number | null;
-  offset?: number | null;
-  searchTerm?: string | null;
-  includeDirectories?: boolean | null;
-  fileType?: string | null; // Deprecated: Use fileTypes instead
-  fileTypes?: string[] | null; // List of FileTypes enum values
-  contentTypes?: string[] | null; // List of MIME types
-  sortBy?: FileSortField | null;
-  sortDirection?: OrderSortDirection | null;
+  limit?: number | null | undefined;
+  offset?: number | null | undefined;
+  searchTerm?: string | null | undefined;
+  includeDirectories?: boolean | null | undefined;
+  fileType?: string | null | undefined; // Deprecated: Use fileTypes instead
+  fileTypes?: string[] | null | undefined; // List of FileTypes enum values
+  contentTypes?: string[] | null | undefined; // List of MIME types
+  sortBy?: FileSortField | null | undefined;
+  sortDirection?: OrderSortDirection | null | undefined;
 }
 
 export interface UploadPreparationInput {
@@ -192,7 +192,7 @@ export interface FileUsageResult {
   isInUse: boolean;
   usages: FileUsageInfo[];
   canDelete: boolean;
-  deleteBlockReason?: string;
+  deleteBlockReason?: string | undefined;
 }
 
 export interface BulkOperationResult {

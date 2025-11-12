@@ -55,6 +55,8 @@ export namespace TextElementRepository {
       })
       .returning();
 
+    if (!newTextElement) throw new Error("Failed to create TEXT element");
+
     logger.info(`TEXT element created: ${baseElement.name} (ID: ${baseElement.id})`);
 
     // 6. Return full output
@@ -144,7 +146,7 @@ export namespace TextElementRepository {
       .where(eq(certificateElement.id, id))
       .limit(1);
 
-    if (result.length === 0) return null;
+    if (result.length === 0 || !result[0]) return null;
 
     const row = result[0];
 
@@ -180,7 +182,7 @@ export namespace TextElementRepository {
       .where(eq(textElement.elementId, base.id))
       .limit(1);
 
-    if (result.length === 0) throw new Error(`No TEXT element found for base ID ${base.id}`);
+    if (result.length === 0 || !result[0]) throw new Error(`No TEXT element found for base ID ${base.id}`);
 
     const row = result[0];
 
@@ -257,6 +259,8 @@ export namespace TextElementRepository {
       .set(textUpdates)
       .where(eq(textElement.elementId, elementId))
       .returning();
+
+    if (!updated) throw new Error("Failed to update TEXT element");
 
     return {
       textDataSource: updated.textDataSource,

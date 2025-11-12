@@ -58,6 +58,8 @@ export namespace DateElementRepository {
       })
       .returning();
 
+    if (!newDateElement) throw new Error("Failed to create DATE element");
+
     logger.info(`DATE element created: ${newBaseElement.name} (ID: ${newBaseElement.id})`);
 
     // 6. Load and return full output
@@ -147,7 +149,7 @@ export namespace DateElementRepository {
       .where(eq(certificateElement.id, id))
       .limit(1);
 
-    if (result.length === 0) return null;
+    if (result.length === 0 || !result[0]) return null;
 
     const row = result[0];
 
@@ -173,7 +175,7 @@ export namespace DateElementRepository {
       .where(eq(dateElement.elementId, base.id))
       .limit(1);
 
-    if (result.length === 0) throw new Error(`DATE element with base ID ${base.id} does not exist.`);
+    if (result.length === 0 || !result[0]) throw new Error(`DATE element with base ID ${base.id} does not exist.`);
 
     const row = result[0];
 
@@ -250,13 +252,15 @@ export namespace DateElementRepository {
       .where(eq(dateElement.elementId, input.id))
       .returning();
 
+    if (!updated) throw new Error(`DATE element with ID ${input.id} does not exist.`);
+
     return updated;
   };
 
   export const findById = async (id: number): Promise<ElType.DateElementEntity | null> => {
     const result = await db.select().from(dateElement).where(eq(dateElement.elementId, id)).limit(1);
 
-    if (result.length === 0) return null;
+    if (result.length === 0 || !result[0]) return null;
 
     return result[0];
   };
@@ -293,6 +297,8 @@ export namespace DateElementRepository {
       .where(eq(dateElement.elementId, input.elementId))
       .returning();
 
+    if (!updated) throw new Error(`DATE element with ID ${input.elementId} does not exist.`);
+
     return updated;
   };
 
@@ -319,6 +325,8 @@ export namespace DateElementRepository {
       .set(dateUpdates)
       .where(eq(dateElement.elementId, input.elementId))
       .returning();
+
+    if (!updated) throw new Error(`DATE element with ID ${input.elementId} does not exist.`);
 
     return {
       elementId: updated.elementId,

@@ -6,13 +6,13 @@ export type RecipientGroupEntityInput = typeof Db.templateRecipientGroups.$infer
 export type RecipientGroupCreateInput = {
   templateId: number;
   name: string;
-  description?: string | null;
-  date?: Date | null;
+  description?: string | null | undefined;
+  date?: Date | null | undefined;
 };
 
 export type RecipientGroupUpdateInput = {
   id: number;
   name: string;
-  description?: string | null;
-  date?: Date | null;
+  description?: string | null | undefined;
+  date?: Date | null | undefined;
 };

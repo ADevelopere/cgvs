@@ -11,7 +11,7 @@ export namespace CacheDbRepository {
     try {
       const result = await db.select().from(cache).where(eq(cache.key, key)).limit(1);
 
-      if (result.length === 0) {
+      if (result.length === 0 || !result[0]) {
         return null;
       }
 

@@ -13,7 +13,7 @@ export namespace SessionRepository {
         .from(sessions)
         .where(eq(sessions.id, id))
         .then(res => {
-          return res[0];
+          return res[0] ?? null;
         });
     } catch {
       return null;
@@ -27,7 +27,7 @@ export namespace SessionRepository {
         .from(sessions)
         .where(eq(sessions.userId, userId))
         .then(res => {
-          return res[0];
+          return res[0] ?? null;
         });
     } catch {
       return null;
@@ -41,11 +41,15 @@ export namespace SessionRepository {
   export const create = async (input: SessionEntityInput): Promise<SessionEntity> => {
     const [createdSession] = await db.insert(sessions).values(input).returning();
 
+    if (!createdSession) throw new Error("Failed to create session.");
+
     return createdSession;
   };
 
   export const update = async (input: SessionEntityInput): Promise<SessionEntity> => {
     const [updatedSession] = await db.update(sessions).set(input).where(eq(sessions.id, input.id)).returning();
+
+    if (!updatedSession) throw new Error("Failed to update session.");
 
     return updatedSession;
   };

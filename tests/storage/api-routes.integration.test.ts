@@ -433,9 +433,13 @@ describe("Storage API Routes Integration Tests", () => {
 
       // Verify database record created
       const dbFiles = await db.select().from(storageFiles);
-      expect(dbFiles.length).toBe(1);
-      expect(dbFiles[0].path).toBe(filePath);
-
+      if (dbFiles.length === 0 || !dbFiles[0]) {
+        // test should fail here
+        expect(true).toBe(false);
+      } else {
+        expect(dbFiles.length).toBe(1);
+        expect(dbFiles[0].path).toBe(filePath);
+      }
       // Verify signed URL marked as used
       const token = await SignedUrlRepository.getSignedUrlById(tokenId);
       expect(token?.used).toBe(true);

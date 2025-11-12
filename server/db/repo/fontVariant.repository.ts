@@ -75,7 +75,7 @@ export namespace FontVariantRepository {
       .where(eq(storageFiles.path, filePath))
       .limit(1);
 
-    if (existingFile.length > 0) {
+    if (existingFile.length > 0 && existingFile[0]) {
       return Number(existingFile[0].id);
     }
 

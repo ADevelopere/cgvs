@@ -27,14 +27,14 @@ export type FontVariantPothosDefinition = FontVariantSelectType & {
 // Input types for GraphQL
 export type FontFamilyCreateInput = {
   name: string;
-  category?: string | null;
+  category?: string | null | undefined;
   locale: string[];
 };
 
 export type FontFamilyUpdateInput = {
   id: number;
   name: string;
-  category?: string | null;
+  category?: string | null | undefined;
   locale: string[];
 };
 
@@ -87,20 +87,20 @@ export type FontVariantsWithFiltersResponse = {
 
 // Filter arguments
 export type FontFamilyFilterArgs = {
-  name?: string | null;
-  nameContains?: string | null;
-  category?: string | null;
-  locale?: string | null;
-  createdAtFrom?: Date | null;
-  createdAtTo?: Date | null;
+  name?: string | null | undefined;
+  nameContains?: string | null | undefined;
+  category?: string | null | undefined;
+  locale?: string | null | undefined;
+  createdAtFrom?: Date | null | undefined;
+  createdAtTo?: Date | null | undefined;
 };
 
 export type FontVariantFilterArgs = {
-  familyId?: number | null;
-  variant?: string | null;
-  variantContains?: string | null;
-  createdAtFrom?: Date | null;
-  createdAtTo?: Date | null;
+  familyId?: number | null | undefined;
+  variant?: string | null | undefined;
+  variantContains?: string | null | undefined;
+  createdAtFrom?: Date | null | undefined;
+  createdAtTo?: Date | null | undefined;
 };
 
 // Order by
@@ -120,10 +120,10 @@ export enum FontVariantsOrderByColumn {
 
 export type FontFamiliesOrderByClause = {
   column: FontFamiliesOrderByColumn;
-  order?: OrderSortDirection | null;
+  order?: OrderSortDirection | null | undefined;
 };
 
 export type FontVariantsOrderByClause = {
   column: FontVariantsOrderByColumn;
-  order?: OrderSortDirection | null;
+  order?: OrderSortDirection | null | undefined;
 };

@@ -14,7 +14,7 @@ export interface EnvironmentConfig {
   redisUrl: string;
   upstashRedisUrl?: string;
   upstashRedisToken?: string;
-  allowedOrigin?: string;
+  allowedOrigin?: string | undefined;
 }
 
 /**

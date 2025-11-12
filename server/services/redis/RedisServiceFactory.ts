@@ -24,7 +24,7 @@ export class RedisServiceFactory {
    * Create Redis service based on provider type
    */
   private static createRedisService(): IRedisService {
-    const provider = (process.env.REDIS_PROVIDER || "local") as RedisProvider;
+    const provider = process.env.REDIS_PROVIDER as RedisProvider;
 
     logger.log(`🔧 Initializing Redis with provider: ${provider}`);
 
@@ -36,7 +36,7 @@ export class RedisServiceFactory {
         return this.createUpstashRedis();
 
       default:
-        logger.warn(`Unknown Redis provider: ${provider}, falling back to local`);
+        logger.warn(`Unknown Redis provider, falling back to local`);
         return this.createLocalRedis();
     }
   }
@@ -76,7 +76,7 @@ export class RedisServiceFactory {
    */
   static reset(): void {
     if (this.instance) {
-      this.instance.disconnect();
+      void this.instance.disconnect();
       this.instance = null;
     }
   }
@@ -107,7 +107,7 @@ export const getRedisService = () => RedisServiceFactory.getInstance();
 export const redisService = new Proxy(
   {},
   {
-    get(target, prop) {
+    get(prop) {
       const service = getRedisService();
       return service[prop as keyof typeof service];
     },

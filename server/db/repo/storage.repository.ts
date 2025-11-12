@@ -39,6 +39,7 @@ export namespace StorageDbRepository {
         },
       })
       .returning();
+    if (!file) throw new Error("Failed to create file.");
     return file;
   };
 
@@ -72,7 +73,7 @@ export namespace StorageDbRepository {
   export const directoryByPath = async (path: string): Promise<StorageTypes.DirectoryEntity | null> => {
     try {
       const result = await db.select().from(storageDirectories).where(eq(storageDirectories.path, path)).limit(1);
-      if (result.length === 0) {
+      if (result.length === 0 || !result[0]) {
         return null;
       }
       return result[0];
@@ -123,6 +124,7 @@ export namespace StorageDbRepository {
         protectChildren: input.protectChildren || false,
       })
       .returning();
+    if (!directory) throw new Error("Failed to create directory.");
     return directory;
   };
 

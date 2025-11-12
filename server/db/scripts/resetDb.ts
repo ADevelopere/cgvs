@@ -5,13 +5,14 @@ import { runMigrations } from "./migrate";
 function parseDatabaseUrl(url: string) {
   // Example: postgres://user:password@host:port/dbname or postgresql://user:password@host/dbname?params
   const matchWithPort = url.match(/^postgres(?:ql)?:\/\/(.*?):(.*?)@(.*?):(\d+)\/(.*)$/);
+
   if (matchWithPort) {
     return {
       user: matchWithPort[1],
       password: matchWithPort[2],
       host: matchWithPort[3],
       port: matchWithPort[4],
-      database: matchWithPort[5].split("?")[0],
+      database: matchWithPort[5]?.split("?")[0],
     };
   }
 
@@ -23,7 +24,7 @@ function parseDatabaseUrl(url: string) {
       password: matchWithoutPort[2],
       host: matchWithoutPort[3],
       port: process.env.PGPORT || "5432",
-      database: matchWithoutPort[4].split("?")[0],
+      database: matchWithoutPort[4]?.split("?")[0],
     };
   }
 

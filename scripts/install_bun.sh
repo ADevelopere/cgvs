@@ -9,11 +9,11 @@ BUN_INSTALL="$HOME/.bun"
 
 # 3. Define shell configuration files and their respective bun configurations
 declare -A SHELL_CONFIGS=(
-  ["$HOME/.zshrc"]="\n# bun\nexport BUN_INSTALL=\"$HOME/.bun\"\nexport PATH=\"$BUN_INSTALL/bin:$PATH\"\n[ -s \"$HOME/.bun/_bun\" ] && source \"$HOME/.bun/_bun\"\n"
-  ["$HOME/.bashrc"]="\n# bun\nexport BUN_INSTALL=\"$HOME/.bun\"\nexport PATH=\"$BUN_INSTALL/bin:$PATH\"\n[ -s \"$HOME/.bun/_bun\" ] && source \"$HOME/.bun/_bun\"\n"
-  ["$HOME/.bash_profile"]="\n# bun\nexport BUN_INSTALL=\"$HOME/.bun\"\nexport PATH=\"$BUN_INSTALL/bin:$PATH\"\n[ -s \"$HOME/.bun/_bun\" ] && source \"$HOME/.bun/_bun\"\n"
-  ["$HOME/.profile"]="\n# bun\nexport BUN_INSTALL=\"$HOME/.bun\"\nexport PATH=\"$BUN_INSTALL/bin:$PATH\"\n[ -s \"$HOME/.bun/_bun\" ] && source \"$HOME/.bun/_bun\"\n"
-  ["$HOME/.config/fish/config.fish"]="\n# bun\nset -gx BUN_INSTALL \"$HOME/.bun\"\nset -gx PATH \"$BUN_INSTALL/bin\" $PATH\n# Bun shell completion (not supported in fish)\n"
+  ["$HOME/.zshrc"]="\n# bun\nexport BUN_INSTALL=\"$HOME/.bun\"\nexport PATH=\"$BUN_INSTALL/bin:\$PATH\""
+  ["$HOME/.bashrc"]="\n# bun\nexport BUN_INSTALL=\"$HOME/.bun\"\nexport PATH=\"$BUN_INSTALL/bin:\$PATH\""
+  ["$HOME/.bash_profile"]="\n# bun\nexport BUN_INSTALL=\"$HOME/.bun\"\nexport PATH=\"$BUN_INSTALL/bin:\$PATH\""
+  ["$HOME/.profile"]="\n# bun\nexport BUN_INSTALL=\"$HOME/.bun\"\nexport PATH=\"$BUN_INSTALL/bin:\$PATH\""
+  ["$HOME/.config/fish/config.fish"]="\n# bun\nset -gx BUN_INSTALL \"$HOME/.bun\"\nset -gx PATH \"$BUN_INSTALL/bin\" \$PATH"
 )
 
 # 4. Add bun configuration to all existing shell config files
@@ -38,29 +38,24 @@ if [ ! -f "$HOME/.profile" ]; then
   echo -e "${SHELL_CONFIGS["$HOME/.profile"]}" > "$HOME/.profile"
 fi
 
+# 6. Export PATH for current session
+export PATH="$BUN_INSTALL/bin:$PATH"
+
 echo "✅ Bun configuration added to all available shell profiles."
 
-# 6. Provide final instructions
-echo "\n🎉 Bun is installed!"
-echo "To get started, you can:"
+# 7. Verify installation
+echo "\n🔍 Verifying installation..."
+if command -v bun >/dev/null 2>&1; then
+  echo "✅ Bun is now available in PATH: $(which bun)"
+  echo "📋 Bun version: $(bun --version)"
+else
+  echo "⚠️  Bun not found in current PATH. Please restart your terminal or run:"
+  echo "    export PATH=\"$BUN_INSTALL/bin:\$PATH\""
+fi
+
+# 8. Provide final instructions
+echo "\n🎉 Bun installation complete!"
+echo "To get started:"
 echo "  1. Restart your terminal, or"
-echo "  2. Run one of these commands to reload your shell configuration:"
-
-# Check which shells are available and provide appropriate source commands
-if command -v zsh >/dev/null 2>&1 && [ -f "$HOME/.zshrc" ]; then
-  echo "    For zsh: source ~/.zshrc"
-fi
-
-if command -v bash >/dev/null 2>&1 && [ -f "$HOME/.bashrc" ]; then
-  echo "    For bash: source ~/.bashrc"
-fi
-
-if command -v fish >/dev/null 2>&1 && [ -f "$HOME/.config/fish/config.fish" ]; then
-  echo "    For fish: source ~/.config/fish/config.fish"
-fi
-
-if [ -f "$HOME/.profile" ]; then
-  echo "    For other shells: source ~/.profile"
-fi
-
-echo ""
+echo "  2. Run: source ~/.profile (or your shell's config file)"
+echo "  3. Test with: bun --help"

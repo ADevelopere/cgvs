@@ -26,27 +26,27 @@ export type DateDataSourceTemplateVariableInputGraphql = {
 export type DateDataSourceInputGraphql =
   | {
       static: DateDataSourceStaticInputGraphql;
-      studentField?: never | null;
-      certificateField?: never | null;
-      templateVariable?: never | null;
+      studentField?: never | null | undefined;
+      certificateField?: never | null | undefined;
+      templateVariable?: never | null | undefined;
     }
   | {
       studentField: DateDataSourceStudentFieldInputGraphql;
-      static?: never | null;
-      certificateField?: never | null;
-      templateVariable?: never | null;
+      static?: never | null | undefined;
+      certificateField?: never | null | undefined;
+      templateVariable?: never | null | undefined;
     }
   | {
       certificateField: DateDataSourceCertificateFieldInputGraphql;
-      static?: never | null;
-      studentField?: never | null;
-      templateVariable?: never | null;
+      static?: never | null | undefined;
+      studentField?: never | null | undefined;
+      templateVariable?: never | null | undefined;
     }
   | {
       templateVariable: DateDataSourceTemplateVariableInputGraphql;
-      static?: never | null;
-      studentField?: never | null;
-      certificateField?: never | null;
+      static?: never | null | undefined;
+      studentField?: never | null | undefined;
+      certificateField?: never | null | undefined;
     };
 
 // ============================================================================

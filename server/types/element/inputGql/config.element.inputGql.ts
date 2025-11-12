@@ -15,8 +15,8 @@ export type FontReferenceSelfHostedInputGraphql = {
 };
 
 export type FontReferenceInputGraphql =
-  | { google: FontReferenceGoogleInputGraphql; selfHosted?: never | null }
-  | { selfHosted: FontReferenceSelfHostedInputGraphql; google?: never | null };
+  | { google: FontReferenceGoogleInputGraphql; selfHosted?: never | null | undefined }
+  | { selfHosted: FontReferenceSelfHostedInputGraphql; google?: never | null | undefined };
 
 // ============================================================================
 // Text Props (GraphQL version with isOneOf font reference)

@@ -76,6 +76,8 @@ export namespace TemplateConfigRepository {
     // 3. Insert into DB
     const [newConfig] = await db.insert(templateConfig).values(insertInput).returning();
 
+    if(!newConfig) throw new Error("Failed to create template config.")
+
     return { ...newConfig, language: newConfig.language as AppLanguage };
   }
 

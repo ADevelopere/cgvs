@@ -1,20 +1,13 @@
 import { BaseContext, createContext } from "./gqlContext";
 import { extractTokenFromHeader, verifyToken } from "@/server/lib/auth/jwt";
 import { headers, cookies } from "next/headers";
-import { ResponseCookies } from "next/dist/compiled/@edge-runtime/cookies";
 import logger from "@/server/lib/logger";
 
 /**
  * Create GraphQL context from Next.js request
  * This extracts authentication information from headers and cookies
  */
-export async function createGraphQLContext(): Promise<
-  BaseContext & {
-    refreshToken?: string;
-    sessionId?: string;
-    cookies: ResponseCookies;
-  }
-> {
+export async function createGraphQLContext(): Promise<BaseContext> {
   const headersList = await headers();
   const cookieStore = await cookies();
 

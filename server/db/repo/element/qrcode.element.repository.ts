@@ -57,6 +57,8 @@ export namespace QRCodeElementRepository {
       })
       .returning();
 
+    if (!newQRCodeElement) throw new Error("Failed to create QR_CODE element");
+
     logger.info(`QR_CODE element created: ${baseElement.name} (ID: ${baseElement.id})`);
 
     return {
@@ -127,7 +129,7 @@ export namespace QRCodeElementRepository {
       .where(eq(certificateElement.id, id))
       .limit(1);
 
-    if (result.length === 0) return null;
+    if (result.length === 0 || !result[0]) return null;
 
     const row = result[0];
 
@@ -144,7 +146,7 @@ export namespace QRCodeElementRepository {
     // Join both tables
     const result = await db.select().from(qrCodeElement).where(eq(qrCodeElement.elementId, base.id)).limit(1);
 
-    if (result.length === 0) throw new Error(`QR_CODE element with base ID ${base.id} does not exist.`);
+    if (result.length === 0 || !result[0]) throw new Error(`QR_CODE element with base ID ${base.id} does not exist.`);
 
     const row = result[0];
 
@@ -204,7 +206,7 @@ export namespace QRCodeElementRepository {
   export const findById = async (id: number): Promise<QRCodeElementEntity | null> => {
     const qrCodeEl = await db.select().from(qrCodeElement).where(eq(qrCodeElement.elementId, id)).limit(1);
 
-    if (qrCodeEl.length === 0) return null;
+    if (qrCodeEl.length === 0 || !qrCodeEl[0]) return null;
     return qrCodeEl[0];
   };
 
@@ -241,6 +243,8 @@ export namespace QRCodeElementRepository {
       .where(eq(qrCodeElement.elementId, input.id))
       .returning();
 
+    if (!updated) throw new Error(`QR_CODE element with ID ${input.id} does not exist.`);
+
     return updated;
   };
 
@@ -265,6 +269,10 @@ export namespace QRCodeElementRepository {
       })
       .where(eq(qrCodeElement.elementId, input.elementId))
       .returning();
+
+    if (!updatedQRCodeElement[0]) {
+      throw new Error(`QR_CODE element with ID ${input.elementId} does not exist.`);
+    }
 
     logger.info(`QR_CODE element specProps updated: (ID: ${input.elementId})`);
 

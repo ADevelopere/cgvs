@@ -265,7 +265,7 @@ export const TableRowsProvider = <TRowData, TRowId extends string | number = str
       // Row styling and dimensions
       rowHeights,
       resizeRowHeight,
-      getRowStyle,
+      ...(getRowStyle && { getRowStyle }),
 
       // Data loading and pagination
       totalRows,

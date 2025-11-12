@@ -1,7 +1,6 @@
 import { gqlSchemaBuilder } from "../../gqlSchemaBuilder";
 import * as ElementPothos from "../../pothos/element";
 import { TextElementRepository } from "@/server/db/repo";
-import * as Types from "@/server/types";
 import { TextElementUtils } from "@/server/utils";
 
 gqlSchemaBuilder.mutationFields(t => ({
@@ -19,7 +18,7 @@ gqlSchemaBuilder.mutationFields(t => ({
     resolve: async (_, args) => {
       const input = TextElementUtils.mapTextElementGraphqlToInput(args.input);
       const element = await TextElementRepository.create(input);
-      return element as Types.TextElementOutput;
+      return element;
     },
   }),
 

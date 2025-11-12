@@ -93,6 +93,10 @@ async function createAdminUser() {
       adminRole = existingRoles[0];
     }
 
+    if (!adminRole) {
+      throw new Error("Error Creating Admin Role");
+    }
+
     // Assign admin role to user
     await db.insert(userRoles).values({
       userId: adminUser.id,
@@ -197,6 +201,9 @@ async function createTemplates(
     // Randomly select a file ID if available
     const randomFileId = fileIds[Math.floor(Math.random() * fileIds.length)];
 
+    if (!randomFileId) {
+      throw new Error("No demo files available for templates.");
+    }
     const template = await TemplateRepository.internalCreateWithImageFileId({
       name: `نموذج ${category.name}`,
       description: `نموذج تجريبي لـ${category.name}`,

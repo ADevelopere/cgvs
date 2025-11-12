@@ -65,11 +65,11 @@ export const TableColumnsProvider = <TRowData, TRowId extends string | number = 
 
   // Calculate the index column width dynamically based on the maximum index value
   const maxIndexValue = useMemo(() => {
-    return pageInfo ? pageInfo.total : data.length;
-  }, [pageInfo, data.length]);
+    return pageInfo?.total ?? data.length;
+  }, [pageInfo?.total, data.length]);
 
   const indexColWidth = useMemo(() => {
-    const maxDigits = maxIndexValue?.toString().length || 1;
+    const maxDigits = maxIndexValue.toString().length;
     return Math.max(50, maxDigits * 15 + 20); // Minimum width of 50px, 15px per digit, and 20px padding
   }, [maxIndexValue]);
 
@@ -80,8 +80,9 @@ export const TableColumnsProvider = <TRowData, TRowId extends string | number = 
       const updated = { ...prev };
       let changed = false;
       for (const col of columns) {
-        if (!(col.id in updated) && initialWidths[col.id] !== undefined) {
-          updated[col.id] = initialWidths[col.id];
+        const width = initialWidths[col.id];
+        if (!(col.id in updated) && width !== undefined) {
+          updated[col.id] = width;
           changed = true;
         }
       }
@@ -107,8 +108,9 @@ export const TableColumnsProvider = <TRowData, TRowId extends string | number = 
       if (column.widthStorageKey) {
         const saved = localStorage.getItem(column.widthStorageKey);
         if (saved) {
-          newWidths[column.id] = Math.max(parseInt(saved, 10), 50);
-          totalFixedWidth += newWidths[column.id];
+          const newWidth = Math.max(parseInt(saved, 10), 50);
+          newWidths[column.id] = newWidth;
+          totalFixedWidth += newWidth;
           return;
         }
       }

@@ -84,7 +84,7 @@ export const TemplateSelectVariablePothosObjectType = gqlSchemaBuilder
 
 // Input types for creating template variables
 export const TemplateTextVariableCreateInputPothosObject = gqlSchemaBuilder
-  .inputRef<Types.TextTemplaeVariableCreateInput>("TemplateTextVariableCreateInput")
+  .inputRef<Types.TextTemplateVariableCreateInput>("TemplateTextVariableCreateInput")
   .implement({
     fields: t => ({
       templateId: t.int({ required: true }),
@@ -99,7 +99,7 @@ export const TemplateTextVariableCreateInputPothosObject = gqlSchemaBuilder
   });
 
 export const TemplateTextVariableUpdateInputPothosObject = gqlSchemaBuilder
-  .inputRef<Types.TextTemplaeVariableUpdateInput>("TemplateTextVariableUpdateInput")
+  .inputRef<Types.TextTemplateVariableUpdateInput>("TemplateTextVariableUpdateInput")
   .implement({
     fields: t => ({
       id: t.int({ required: true }),

@@ -19,7 +19,7 @@ export type TemplatePothosDefintion = TemplateEntity & {
 
 export type TemplateCreateInput = {
   name: string;
-  description?: string | null;
+  description?: string | null | undefined;
   categoryId: number;
 };
 
@@ -27,8 +27,8 @@ export type TemplateUpdateInput = {
   id: number;
   name: string;
   categoryId: number;
-  description?: string | null;
-  imagePath?: string | null;
+  description?: string | null | undefined;
+  imagePath?: string | null | undefined;
 };
 
 export type PaginatedTemplatesEntityResponse = {
@@ -58,7 +58,7 @@ export type TemplatesWithFiltersResponse = {
 };
 
 export type TemplateFilterArgs = {
-  name?: string | null;
+  name?: string | null | undefined;
 };
 
 /**
@@ -66,7 +66,7 @@ export type TemplateFilterArgs = {
  */
 export type TemplatesOrderByClause = {
   column: TemplatesOrderByColumn;
-  order?: OrderSortDirection | null;
+  order?: OrderSortDirection | null | undefined;
 };
 
 export enum TemplatesOrderByColumn {

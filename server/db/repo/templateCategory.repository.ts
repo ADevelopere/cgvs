@@ -209,6 +209,8 @@ export namespace TemplateCategoryRepository {
       .where(eq(templateCategories.id, input.id))
       .returning();
 
+    if (!updatedCategory) throw new Error("Failed to update category.");
+
     return updatedCategory;
   };
 
@@ -230,6 +232,7 @@ export namespace TemplateCategoryRepository {
     };
     try {
       const [mainCategory] = await db.insert(templateCategories).values(input).returning();
+      if (!mainCategory) throw new Error("Failed to create the main category");
 
       return mainCategory;
     } catch (err) {
@@ -256,6 +259,8 @@ export namespace TemplateCategoryRepository {
     };
     try {
       const [suspensionCategory] = await db.insert(templateCategories).values(input).returning();
+
+      if (!suspensionCategory) throw new Error("Failed to create the Suspension category");
 
       return suspensionCategory;
     } catch (err) {
@@ -285,6 +290,10 @@ export namespace TemplateCategoryRepository {
       .where(eq(templateCategories.parentCategoryId, id))
       .then(res => res[0]);
 
+    if (!subCategoryCountResult) {
+      throw new Error("Failed to count sub-categories");
+    }
+
     if (subCategoryCountResult.count > 0) {
       throw new Error(
         "Cannot delete category with existing sub-categories. Please remove or reassign sub-categories first."
@@ -298,6 +307,8 @@ export namespace TemplateCategoryRepository {
       .where(eq(templates.categoryId, id))
       .then(res => res[0]);
 
+    if (!templateCountResult) throw new Error("Failed to count templates");
+
     if (templateCountResult.count > 0) {
       throw new Error("Cannot delete category with existing templates. Please remove or reassign templates first.");
     }
@@ -305,13 +316,15 @@ export namespace TemplateCategoryRepository {
     // Proceed to delete the category
     const [deletedCategory] = await db.delete(templateCategories).where(eq(templateCategories.id, id)).returning();
 
+    if (!deletedCategory) throw new Error("Failed to delete category");
+
     return deletedCategory;
   };
 
   export const findTemplateCategoryMaxOrderByParentCategoryId = async (
     parentCategoryId: number | null
   ): Promise<number> => {
-    const [{ maxOrder }] = await db
+    const [result] = await db
       .select({ maxOrder: max(templateCategories.order) })
       .from(templateCategories)
       .where(
@@ -321,7 +334,7 @@ export namespace TemplateCategoryRepository {
       );
 
     // if root categories, then max order to start with is 2, (1, 2) reserved for main and suspenstion categories
-    return maxOrder ?? (parentCategoryId ? 0 : 2);
+    return result?.maxOrder ?? (parentCategoryId ? 0 : 2);
   };
 
   export const searchByName = async (

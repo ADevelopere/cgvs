@@ -53,32 +53,32 @@ export type TemplateVariableCreateInput = {
   templateId: number;
   name: string;
   required: boolean;
-  description?: string | null;
-  previewValue?: string | null;
+  description?: string | null | undefined;
+  previewValue?: string | null | undefined;
 };
 
 export type TemplateVariableUpdateInput = {
   id: number;
   name: string;
   required: boolean;
-  description?: string | null;
-  previewValue?: string | null;
+  description?: string | null | undefined;
+  previewValue?: string | null | undefined;
 };
 
 type TemplateTextVariableProps = {
-  minLength?: number | null;
-  maxLength?: number | null;
-  pattern?: string | null;
+  minLength?: number | null | undefined;
+  maxLength?: number | null | undefined;
+  pattern?: string | null | undefined;
 };
 
-export type TextTemplaeVariableCreateInput = TemplateVariableCreateInput & TemplateTextVariableProps;
-export type TextTemplaeVariableUpdateInput = TemplateVariableUpdateInput & TemplateTextVariableProps;
+export type TextTemplateVariableCreateInput = TemplateVariableCreateInput & TemplateTextVariableProps;
+export type TextTemplateVariableUpdateInput = TemplateVariableUpdateInput & TemplateTextVariableProps;
 
 type TemplateNumberVariableProps = {
-  previewValue?: number | null;
-  minValue?: number | null;
-  maxValue?: number | null;
-  decimalPlaces?: number | null;
+  previewValue?: number | null | undefined;
+  minValue?: number | null | undefined;
+  maxValue?: number | null | undefined;
+  decimalPlaces?: number | null | undefined;
 };
 
 export type TemplateNumberVariableCreateInput = Omit<TemplateVariableCreateInput, "previewValue"> &
@@ -88,10 +88,10 @@ export type TemplateNumberVariableUpdateInput = Omit<TemplateVariableUpdateInput
   TemplateNumberVariableProps;
 
 type TemplateDateVariableProps = {
-  previewValue?: Date | null;
-  minDate?: Date | null;
-  maxDate?: Date | null;
-  format?: string | null;
+  previewValue?: Date | null | undefined;
+  minDate?: Date | null | undefined;
+  maxDate?: Date | null | undefined;
+  format?: string | null | undefined;
 };
 export type TemplateDateVariableCreateInput = Omit<TemplateVariableCreateInput, "previewValue"> &
   TemplateDateVariableProps;
@@ -100,8 +100,8 @@ export type TemplateDateVariableUpdateInput = Omit<TemplateVariableUpdateInput, 
   TemplateDateVariableProps;
 
 type TemplateSelectVariableProps = {
-  options?: string[] | null;
-  multiple?: boolean | null;
+  options?: string[] | null | undefined;
+  multiple?: boolean | null | undefined;
 };
 
 export type TemplateSelectVariableCreateInput = TemplateVariableCreateInput & TemplateSelectVariableProps;

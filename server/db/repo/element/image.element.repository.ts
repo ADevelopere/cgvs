@@ -70,6 +70,8 @@ export namespace ImageElementRepository {
       })
       .returning();
 
+    if (!newImageElement) throw new Error("Failed to create IMAGE element");
+
     logger.info(`IMAGE element created: ${baseElement.name} (ID: ${baseElement.id})`);
 
     // 5. Return full output
@@ -146,7 +148,7 @@ export namespace ImageElementRepository {
       .where(eq(certificateElement.id, id))
       .limit(1);
 
-    if (result.length === 0) return null;
+    if (result.length === 0 || !result[0]) return null;
 
     const row = result[0];
 
@@ -166,7 +168,7 @@ export namespace ImageElementRepository {
     // Join both tables
     const result = await db.select().from(imageElement).where(eq(imageElement.elementId, base.id)).limit(1);
 
-    if (result.length === 0) throw new Error(`IMAGE element with base ID ${base.id} does not exist.`);
+    if (result.length === 0 || !result[0]) throw new Error(`IMAGE element with base ID ${base.id} does not exist.`);
 
     const row = result[0];
 
@@ -229,7 +231,7 @@ export namespace ImageElementRepository {
   export const findById = async (id: number): Promise<ImageElementEntity | null> => {
     const imageEl = await db.select().from(imageElement).where(eq(imageElement.elementId, id)).limit(1);
 
-    if (imageEl.length === 0) return null;
+    if (imageEl.length === 0 || !imageEl[0]) return null;
     return imageEl[0];
   };
 
@@ -272,6 +274,8 @@ export namespace ImageElementRepository {
       .where(eq(imageElement.elementId, input.id))
       .returning();
 
+    if (!updated) throw new Error("Failed to update IMAGE element");
+
     return updated;
   };
 
@@ -294,6 +298,8 @@ export namespace ImageElementRepository {
       })
       .where(eq(imageElement.elementId, input.elementId))
       .returning();
+
+    if (!updatedImageElement[0]) throw new Error("Failed to update IMAGE element");
 
     logger.info(`IMAGE element specProps updated: (ID: ${input.elementId})`);
 
@@ -334,6 +340,8 @@ export namespace ImageElementRepository {
       })
       .where(eq(imageElement.elementId, input.elementId))
       .returning();
+
+    if (!updatedImageElement) throw new Error("Failed to update IMAGE element");
 
     logger.info(`IMAGE element dataSource updated: (ID: ${input.elementId})`);
 
